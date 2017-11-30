@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CESM Coupled Model XML Files &mdash; CIME 5.3.0 documentation</title>
+    <title>CESM Coupled Model XML Files &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="Common XML Files" href="common.html" />
-    <link rel="prev" title="ACME Coupled Model XML Files" href="acme.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="E3SM Coupled Model XML Files" href="acme.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -48,49 +42,12 @@
           <a href="common.html" title="Common XML Files"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="acme.html" title="ACME Coupled Model XML Files"
+          <a href="acme.html" title="E3SM Coupled Model XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">CESM Coupled Model XML Files</a><ul>
-<li><a class="reference internal" href="#cimeroot-config-cesm">CIMEROOT/config/cesm</a></li>
-<li><a class="reference internal" href="#cimeroot-config-cesm-machines">CIMEROOT/config/cesm/machines</a></li>
-<li><a class="reference internal" href="#allactive-srcroot-cime-config">allactive SRCROOT/cime_config</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="acme.html"
-                        title="previous chapter">ACME Coupled Model XML Files</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="common.html"
-                        title="next chapter">Common XML Files</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/cesm.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -316,7 +273,7 @@
     &lt;values&gt;
       &lt;value&gt;$CIMEROOT/config/config_tests.xml&lt;/value&gt;
       &lt;!-- component specific config_tests files --&gt;
-      &lt;value component=&quot;clm&quot;&gt;$SRCROOT/components/clm/cime_config/config_tests.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;&gt;$COMP_ROOT_DIR_LND/cime_config/config_tests.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;test&lt;/group&gt;
     &lt;file&gt;env_test.xml&lt;/file&gt;
@@ -328,17 +285,147 @@
   &lt;!-- Depends on component attribute value   --&gt;
   &lt;!-- ============================================================ --&gt;
 
+  &lt;entry id=&quot;COMP_ROOT_DIR_ATM&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;datm&quot;      &gt;$CIMEROOT/src/components/data_comps/datm&lt;/value&gt;
+      &lt;value component=&quot;satm&quot;      &gt;$CIMEROOT/src/components/stub_comps/satm&lt;/value&gt;
+      &lt;value component=&quot;xatm&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xatm&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case atmospheric component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_CPL&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;values&gt;
+      &lt;value &gt;$CIMEROOT/src/drivers/mct&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;&gt;$CIMEROOT/src/drivers/mct&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case driver/coupler component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_OCN&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/&lt;/value&gt;
+      &lt;value component=&quot;docn&quot;      &gt;$CIMEROOT/src/components/data_comps/docn&lt;/value&gt;
+      &lt;value component=&quot;socn&quot;      &gt;$CIMEROOT/src/components/stub_comps/socn&lt;/value&gt;
+      &lt;value component=&quot;xocn&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xocn&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case ocean component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_WAV&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;ww3&quot;      &gt;$SRCROOT/components/ww3/&lt;/value&gt;
+      &lt;value component=&quot;dwav&quot;      &gt;$CIMEROOT/src/components/data_comps/dwav&lt;/value&gt;
+      &lt;value component=&quot;swav&quot;      &gt;$CIMEROOT/src/components/stub_comps/swav&lt;/value&gt;
+      &lt;value component=&quot;xwav&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xwav&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case wave model component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_GLC&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;cism&quot;      &gt;$SRCROOT/components/cism/&lt;/value&gt;
+      &lt;value component=&quot;dglc&quot;      &gt;$CIMEROOT/src/components/data_comps/dglc&lt;/value&gt;
+      &lt;value component=&quot;sglc&quot;      &gt;$CIMEROOT/src/components/stub_comps/sglc&lt;/value&gt;
+      &lt;value component=&quot;xglc&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xglc&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case land ice component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_ICE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;cice&quot;      &gt;$SRCROOT/components/cice/&lt;/value&gt;
+      &lt;value component=&quot;dice&quot;      &gt;$CIMEROOT/src/components/data_comps/dice&lt;/value&gt;
+      &lt;value component=&quot;sice&quot;      &gt;$CIMEROOT/src/components/stub_comps/sice&lt;/value&gt;
+      &lt;value component=&quot;xice&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xice&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case sea ice component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_ROF&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;rtm&quot;      &gt;$SRCROOT/components/rtm/&lt;/value&gt;
+      &lt;value component=&quot;mosart&quot;      &gt;$SRCROOT/components/mosart/&lt;/value&gt;
+      &lt;value component=&quot;drof&quot;      &gt;$CIMEROOT/src/components/data_comps/drof&lt;/value&gt;
+      &lt;value component=&quot;srof&quot;      &gt;$CIMEROOT/src/components/stub_comps/srof&lt;/value&gt;
+      &lt;value component=&quot;xrof&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xrof&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case river runoff model component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_LND&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/&lt;/value&gt;
+      &lt;value component=&quot;dlnd&quot;      &gt;$CIMEROOT/src/components/data_comps/dlnd&lt;/value&gt;
+      &lt;value component=&quot;slnd&quot;      &gt;$CIMEROOT/src/components/stub_comps/slnd&lt;/value&gt;
+      &lt;value component=&quot;xlnd&quot;      &gt;$CIMEROOT/src/components/xcpl_comps/xlnd&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case land model component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COMP_ROOT_DIR_ESP&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;desp&quot;      &gt;$CIMEROOT/src/components/data_comps/desp&lt;/value&gt;
+      &lt;value component=&quot;sesp&quot;      &gt;$CIMEROOT/src/components/stub_comps/sesp&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;case_comps&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Root directory of the case external system processing (esp) component  &lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_compsets.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;COMPSETS_SPEC_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;allactive&quot;&gt;$SRCROOT/cime_config/config_compsets.xml&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/config_compsets.xml&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/config_compsets.xml&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/config_compsets.xml&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/config_compsets.xml&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/config_compsets.xml&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$COMP_ROOT_DIR_CPL/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -351,12 +438,12 @@
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;allactive&quot;&gt;$SRCROOT/cime_config/config_pes.xml&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/config_pes.xml&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/config_pes.xml&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/config_pes.xml&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/config_pes.xml&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/config_pes.xml&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$COMP_ROOT_DIR_CPL/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -368,20 +455,20 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;values&gt;
       &lt;value&gt;$CIMEROOT/config/cesm/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;cpl&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$COMP_ROOT_DIR_CPL/cime_config/config_archive.xml&lt;/value&gt;
       &lt;!-- data model components --&gt;
-      &lt;value component=&quot;drof&quot;&gt;$CIMEROOT/src/components/data_comps/drof/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;datm&quot;&gt;$CIMEROOT/src/components/data_comps/datm/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;dice&quot;&gt;$CIMEROOT/src/components/data_comps/dice/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;dlnd&quot;&gt;$CIMEROOT/src/components/data_comps/dlnd/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;docn&quot;&gt;$CIMEROOT/src/components/data_comps/docn/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;dwav&quot;&gt;$CIMEROOT/src/components/data_comps/dwav/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;drof&quot;&gt;$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;datm&quot;&gt;$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;dice&quot;&gt;$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;dlnd&quot;&gt;$COMP_ROOT_DIR_LND/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;docn&quot;&gt;$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;dwav&quot;&gt;$COMP_ROOT_DIR_WAV/cime_config/config_archive.xml&lt;/value&gt;
       &lt;!-- external model components --&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/config_archive.xml&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -393,13 +480,13 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;values&gt;
       &lt;value component=&quot;any&quot;&gt;$CIMEROOT/scripts/lib/CIME/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;&gt;$SRCROOT/components/clm/cime_config/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;&gt;$SRCROOT/components/cam/cime_config/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;&gt;$SRCROOT/components/pop/cime_config/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;&gt;$SRCROOT/components/cice/cime_config/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;&gt;$SRCROOT/components/cism/cime_config/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;rtm&quot;&gt;$SRCROOT/components/rtm/cime_config/SystemTests&lt;/value&gt;
-      &lt;value component=&quot;mosart&quot;&gt;$SRCROOT/components/mosart/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;&gt;$COMP_ROOT_DIR_LND/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;&gt;$COMP_ROOT_DIR_ATM/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;&gt;$COMP_ROOT_DIR_OCN/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;&gt;$COMP_ROOT_DIR_ICE/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;&gt;$COMP_ROOT_DIR_GLC/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;rtm&quot;&gt;$COMP_ROOT_DIR_ROF/cime_config/SystemTests&lt;/value&gt;
+      &lt;value component=&quot;mosart&quot;&gt;$COMP_ROOT_DIR_ROF/cime_config/SystemTests&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;test&lt;/group&gt;
     &lt;file&gt;env_test.xml&lt;/file&gt;
@@ -411,14 +498,14 @@
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;allactive&quot;&gt;$SRCROOT/cime_config/testlist_allactive.xml&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/testdefs/testlist_drv.xml&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/testdefs/testlist_cam.xml&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/testdefs/testlist_cism.xml&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/testdefs/testlist_clm.xml&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/testdefs/testlist_cice.xml&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/testdefs/testlist_pop.xml&lt;/value&gt;
-      &lt;value component=&quot;rtm&quot;      &gt;$SRCROOT/components/rtm/cime_config/testdefs/testlist_rtm.xml&lt;/value&gt;
-      &lt;value component=&quot;mosart&quot;   &gt;$SRCROOT/components/mosart/cime_config/testdefs/testlist_mosart.xml&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$COMP_ROOT_DIR_CPL/cime_config/testdefs/testlist_drv.xml&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/testdefs/testlist_cam.xml&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/testdefs/testlist_cism.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_clm.xml&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_pop.xml&lt;/value&gt;
+      &lt;value component=&quot;rtm&quot;      &gt;$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_rtm.xml&lt;/value&gt;
+      &lt;value component=&quot;mosart&quot;   &gt;$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_mosart.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -431,14 +518,14 @@
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;allactive&quot;&gt;$SRCROOT/cime_config/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;rtm&quot;      &gt;$SRCROOT/components/rtm/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;mosart&quot;   &gt;$SRCROOT/components/mosart/cime_config/testdefs/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$COMP_ROOT_DIR_CPL/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;rtm&quot;      &gt;$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;mosart&quot;   &gt;$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -450,14 +537,14 @@
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;allactive&quot;&gt;$SRCROOT/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;rtm&quot;      &gt;$SRCROOT/components/rtm/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;mosart&quot;   &gt;$SRCROOT/components/mosart/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$COMP_ROOT_DIR_CPL/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;rtm&quot;      &gt;$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;mosart&quot;   &gt;$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/cime_config/usermods_dirs&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -469,9 +556,7 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;modelio&quot; &gt;$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_modelio.xml&lt;/value&gt;
-      &lt;value component=&quot;drv_flds&quot;&gt;$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_drv_flds.xml&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;     &gt;$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_drv.xml&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;     &gt;$COMP_ROOT_DIR_CPL/cime_config/namelist_definition_drv.xml&lt;/value&gt;
       &lt;!-- data model components --&gt;
       &lt;value component=&quot;drof&quot;&gt;$CIMEROOT/src/components/data_comps/drof/cime_config/namelist_definition_drof.xml&lt;/value&gt;
       &lt;value component=&quot;datm&quot;&gt;$CIMEROOT/src/components/data_comps/datm/cime_config/namelist_definition_datm.xml&lt;/value&gt;
@@ -481,12 +566,12 @@
       &lt;value component=&quot;dwav&quot;&gt;$CIMEROOT/src/components/data_comps/dwav/cime_config/namelist_definition_dwav.xml&lt;/value&gt;
       &lt;!-- external model components --&gt;
       &lt;!--  TODO
-      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/bld/namelist_files/namelist_definition.xml&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/bld/namelist_files/namelist_definition_cism.xml&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/namelist_definition_cice.xml&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/bld/namelist_files/namelist_definition_clm4_5.xml&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/bld/namelist_files/namelist_definition_clm4_0.xml&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/bld/namelist_files/namelist_definition_pop.xml&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$COMP_ROOT_DIR_ATM/bld/namelist_files/namelist_definition.xml&lt;/value&gt;
+      &lt;value component=&quot;cism&quot;     &gt;$COMP_ROOT_DIR_GLC/bld/namelist_files/namelist_definition_cism.xml&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_clm4_5.xml&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_clm4_0.xml&lt;/value&gt;
+      &lt;value component=&quot;pop&quot;      &gt;$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_pop.xml&lt;/value&gt;
       --&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
@@ -501,7 +586,7 @@
 
   &lt;entry id=&quot;CONFIG_CPL_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;$CIMEROOT/src/drivers/mct/cime_config/config_component.xml&lt;/default_value&gt;
+    &lt;default_value&gt;$COMP_ROOT_DIR_CPL/cime_config/config_component.xml&lt;/default_value&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;desc&gt;file containing all non-component specific case configuration variables (for documentation only - DO NOT EDIT)&lt;/desc&gt;
@@ -523,10 +608,7 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;cam&quot; &gt;$SRCROOT/components/cam/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;datm&quot;&gt;$CIMEROOT/src/components/data_comps/datm/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;satm&quot;&gt;$CIMEROOT/src/components/stub_comps/satm/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xatm&quot;&gt;$CIMEROOT/src/components/xcpl_comps/xatm/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_ATM/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -537,12 +619,8 @@
 
   &lt;entry id=&quot;CONFIG_LND_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;clm&quot; &gt;$SRCROOT/components/clm/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;dlnd&quot;&gt;$CIMEROOT/src/components/data_comps/dlnd/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;slnd&quot;&gt;$CIMEROOT/src/components/stub_comps/slnd/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xlnd&quot;&gt;$CIMEROOT/src/components/xcpl_comps/xlnd/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_LND/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -553,13 +631,8 @@
 
   &lt;entry id=&quot;CONFIG_ROF_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;rtm&quot;	&gt;$SRCROOT/components/rtm/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;mosart&quot;	&gt;$SRCROOT/components/mosart/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;drof&quot;	&gt;$CIMEROOT/src/components/data_comps/drof/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;srof&quot;	&gt;$CIMEROOT/src/components/stub_comps/srof/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xrof&quot;	&gt;$CIMEROOT/src/components/xcpl_comps/xrof/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_ROF/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -570,12 +643,8 @@
 
   &lt;entry id=&quot;CONFIG_ICE_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;cice&quot;&gt;$SRCROOT/components/cice/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;dice&quot;&gt;$CIMEROOT/src/components/data_comps/dice/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;sice&quot;&gt;$CIMEROOT/src/components/stub_comps/sice/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xice&quot;&gt;$CIMEROOT/src/components/xcpl_comps/xice/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_ICE/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -586,13 +655,8 @@
 
   &lt;entry id=&quot;CONFIG_OCN_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;pop&quot;  &gt;$SRCROOT/components/pop/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;aquap&quot;&gt;$SRCROOT/components/aquap/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;docn&quot; &gt;$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;socn&quot; &gt;$CIMEROOT/src/components/stub_comps/socn/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xocn&quot; &gt;$CIMEROOT/src/components/xcpl_comps/xocn/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_OCN/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -603,11 +667,8 @@
 
   &lt;entry id=&quot;CONFIG_GLC_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;cism&quot;&gt;$SRCROOT/components/cism/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;sglc&quot;&gt;$CIMEROOT/src/components/stub_comps/sglc/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xglc&quot;&gt;$CIMEROOT/src/components/xcpl_comps/xglc/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_GLC/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -618,12 +679,8 @@
 
   &lt;entry id=&quot;CONFIG_WAV_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ww3&quot; &gt;$SRCROOT/components/ww3/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;dwav&quot;&gt;$CIMEROOT/src/components/data_comps/dwav/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;swav&quot;&gt;$CIMEROOT/src/components/stub_comps/swav/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;xwav&quot;&gt;$CIMEROOT/src/components/xcpl_comps/xwav/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value&gt;$COMP_ROOT_DIR_WAV/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -634,10 +691,8 @@
 
   &lt;entry id=&quot;CONFIG_ESP_FILE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;$CIMEROOT/src/components/stub_comps/sesp/cime_config/config_component.xml&lt;/default_value&gt;
     &lt;values&gt;
-      &lt;value component=&quot;desp&quot;&gt;$CIMEROOT/src/components/data_comps/desp/cime_config/config_component.xml&lt;/value&gt;
-      &lt;value component=&quot;sesp&quot;&gt;$CIMEROOT/src/components/stub_comps/sesp/cime_config/config_component.xml&lt;/value&gt;
+      &lt;value &gt;$COMP_ROOT_DIR_ESP/cime_config/config_component.xml&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -1272,18 +1327,18 @@
       &lt;mask&gt;gx3v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;ne16_g37&quot;&gt;
+    &lt;model_grid alias=&quot;ne16_g17&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;ne16np4&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
-      &lt;mask&gt;gx3v7&lt;/mask&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;ne16_ne16_mg37&quot; not_compset=&quot;_POP&quot;&gt;
+    &lt;model_grid alias=&quot;ne16_ne16_mg17&quot; not_compset=&quot;_POP&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;ne16np4&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;ne16np4&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;mask&gt;gx3v7&lt;/mask&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
     &lt;model_grid alias=&quot;ne30_g16&quot;&gt;
@@ -1791,8 +1846,8 @@
 
     &lt;domain name=&quot;ne16np4&quot;&gt;
       &lt;nx&gt;13826&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne16_gx1v7.171003.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne16_gx1v7.171003.nc&lt;/file&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne16np4_gx1v7.171018.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne16np4_gx1v7.171018.nc&lt;/file&gt;
       &lt;desc&gt;ne16np4 is Spectral Elem 2-deg grid:&lt;/desc&gt;
       &lt;support&gt;For low resolution spectral element grid testing&lt;/support&gt;
     &lt;/domain&gt;
@@ -2131,12 +2186,12 @@
       &lt;map name=&quot;OCN2ATM_SMAPNAME&quot;&gt;cpl/cpl6/map_gx3v7_to_fv4x5_aave_da_091218.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
-    &lt;gridmap atm_grid=&quot;ne16np4&quot; ocn_grid=&quot;gx3v7&quot;&gt;
-      &lt;map name=&quot;ATM2OCN_FMAPNAME&quot;&gt;cpl/gridmaps/ne16np4/map_ne16np4_TO_gx3v7_aave.120406.nc&lt;/map&gt;
-      &lt;map name=&quot;ATM2OCN_SMAPNAME&quot;&gt;cpl/gridmaps/ne16np4/map_ne16np4_TO_gx3v7_aave.120406.nc&lt;/map&gt;
-      &lt;map name=&quot;ATM2OCN_VMAPNAME&quot;&gt;cpl/gridmaps/ne16np4/map_ne16np4_TO_gx3v7_aave.120406.nc&lt;/map&gt;
-      &lt;map name=&quot;OCN2ATM_FMAPNAME&quot;&gt;cpl/gridmaps/gx3v7/map_gx3v7_TO_ne16np4_aave.120406.nc&lt;/map&gt;
-      &lt;map name=&quot;OCN2ATM_SMAPNAME&quot;&gt;cpl/gridmaps/gx3v7/map_gx3v7_TO_ne16np4_aave.120406.nc&lt;/map&gt;
+    &lt;gridmap atm_grid=&quot;ne16np4&quot; ocn_grid=&quot;gx1v7&quot;&gt;
+      &lt;map name=&quot;ATM2OCN_FMAPNAME&quot;&gt;cpl/gridmaps/ne16np4/map_ne16np4_TO_gx1v7_aave.171018.nc&lt;/map&gt;
+      &lt;map name=&quot;ATM2OCN_SMAPNAME&quot;&gt;cpl/gridmaps/ne16np4/map_ne16np4_TO_gx1v7_aave.171018.nc&lt;/map&gt;
+      &lt;map name=&quot;ATM2OCN_VMAPNAME&quot;&gt;cpl/gridmaps/ne16np4/map_ne16np4_TO_gx1v7_aave.171018.nc&lt;/map&gt;
+      &lt;map name=&quot;OCN2ATM_FMAPNAME&quot;&gt;cpl/gridmaps/gx1v7/map_gx1v7_TO_ne16np4_aave.171018.nc&lt;/map&gt;
+      &lt;map name=&quot;OCN2ATM_SMAPNAME&quot;&gt;cpl/gridmaps/gx1v7/map_gx1v7_TO_ne16np4_aave.171018.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
     &lt;gridmap atm_grid=&quot;ne30np4&quot; ocn_grid=&quot;gx1v6&quot;&gt;
@@ -2446,6 +2501,11 @@
       &lt;map name=&quot;ROF2LND_FMAPNAME&quot;&gt;lnd/clm2/mappingdata/maps/128x256/map_0.5x0.5_nomask_to_128x256_nomask_aave_da_c110920.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
+    &lt;gridmap lnd_grid=&quot;T42&quot; rof_grid=&quot;r05&quot;&gt;
+      &lt;map name=&quot;LND2ROF_FMAPNAME&quot;&gt;lnd/clm2/mappingdata/maps/64x128/map_64x128_nomask_to_0.5x0.5_nomask_aave_da_c110920.nc&lt;/map&gt;
+      &lt;map name=&quot;ROF2LND_FMAPNAME&quot;&gt;lnd/clm2/mappingdata/maps/64x128/map_0.5x0.5_nomask_to_64x128_nomask_aave_da_c110920.nc&lt;/map&gt;
+    &lt;/gridmap&gt;
+
     &lt;gridmap lnd_grid=&quot;T31&quot; rof_grid=&quot;r05&quot;&gt;
       &lt;map name=&quot;LND2ROF_FMAPNAME&quot;&gt;lnd/clm2/mappingdata/maps/48x96/map_48x96_nomask_to_0.5x0.5_nomask_aave_da_c110822.nc&lt;/map&gt;
       &lt;map name=&quot;ROF2LND_FMAPNAME&quot;&gt;lnd/clm2/mappingdata/maps/48x96/map_0.5x0.5_nomask_to_48x96_nomask_aave_da_c110822.nc&lt;/map&gt;
@@ -2733,33 +2793,48 @@
     &lt;!-- ======================================================== --&gt;
 
     &lt;gridmap ocn_grid=&quot;gx1v6&quot; glc_grid=&quot;gland4&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx1v6_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx1v6_nn_open_ocean_nnsm_e1000r300_marginal_sea_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx1v6_nnsm_e1000r300_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
     &lt;gridmap ocn_grid=&quot;gx1v7&quot; glc_grid=&quot;gland4&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx1v7_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx1v7_nn_open_ocean_nnsm_e1000r300_marginal_sea_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx1v7_nnsm_e1000r300_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
+    &lt;!-- POP&#39;s estuary box model is currently not active for gx3v7, so
+         we need nnsm maps for liquid as well as ice. --&gt;
     &lt;gridmap ocn_grid=&quot;gx3v7&quot; glc_grid=&quot;gland4&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx3v7_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx3v7_nnsm_e1000r500_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland4km/map_gland4km_to_gx3v7_nnsm_e1000r500_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
     &lt;gridmap ocn_grid=&quot;gx1v6&quot; glc_grid=&quot;gland5UM&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx1v6_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx1v6_nn_open_ocean_nnsm_e1000r300_marginal_sea_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx1v6_nnsm_e1000r300_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
     &lt;gridmap ocn_grid=&quot;gx1v7&quot; glc_grid=&quot;gland5UM&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx1v7_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx1v7_nn_open_ocean_nnsm_e1000r300_marginal_sea_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx1v7_nnsm_e1000r300_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
+    &lt;!-- POP&#39;s estuary box model is currently not active for gx3v7, so
+         we need nnsm maps for liquid as well as ice. --&gt;
     &lt;gridmap ocn_grid=&quot;gx3v7&quot; glc_grid=&quot;gland5UM&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx3v7_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx3v7_nnsm_e1000r500_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland5km/map_gland5km_to_gx3v7_nnsm_e1000r500_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
     &lt;gridmap ocn_grid=&quot;gx1v6&quot; glc_grid=&quot;gland20&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx1v6_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx1v6_nn_open_ocean_nnsm_e1000r300_marginal_sea_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx1v6_nnsm_e1000r300_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
     &lt;gridmap ocn_grid=&quot;gx1v7&quot; glc_grid=&quot;gland20&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx1v7_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx1v7_nn_open_ocean_nnsm_e1000r300_marginal_sea_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx1v7_nnsm_e1000r300_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
+    &lt;!-- POP&#39;s estuary box model is currently not active for gx3v7, so
+         we need nnsm maps for liquid as well as ice. --&gt;
     &lt;gridmap ocn_grid=&quot;gx3v7&quot; glc_grid=&quot;gland20&quot; &gt;
-      &lt;map name=&quot;GLC2OCN_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx3v7_nnsm_e1000r300_170501.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx3v7_nnsm_e1000r500_171105.nc&lt;/map&gt;
+      &lt;map name=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;cpl/gridmaps/gland20km/map_gland20km_to_gx3v7_nnsm_e1000r500_171105.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
   &lt;/gridmaps&gt;
@@ -2792,6 +2867,9 @@
  queues across machines.  The batch_system tag denotes the name for a particular
  batch system, these can either be shared between one or more machines, or can be
  defined for a specific machine if need be.
+
+ Machine specific entries take precidence over generic entries, directives are appended
+
  queues:
  one or more queues can be defined per batch_system. if the attribute default=&quot;true&quot;
  is used, then that queue will be used by default. Alternatively, multiple queues can
@@ -2872,6 +2950,7 @@
     &lt;batch_directive&gt;#BSUB&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;&amp;lt;(\d+)&amp;gt;&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; -w &#39;done(jobid)&#39;&lt;/depend_string&gt;
+    &lt;depend_separator&gt;&amp;amp;&amp;amp;&lt;/depend_separator&gt;
     &lt;walltime_format&gt;%H:%M&lt;/walltime_format&gt;
     &lt;batch_mail_flag&gt;-u&lt;/batch_mail_flag&gt;
     &lt;batch_mail_type_flag&gt;&lt;/batch_mail_type_flag&gt;
@@ -2900,6 +2979,7 @@
     &lt;batch_directive&gt;#PBS&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;^(\S+)$&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; -W depend=afterok:jobid&lt;/depend_string&gt;
+    &lt;depend_separator&gt;:&lt;/depend_separator&gt;
     &lt;walltime_format&gt;%H:%M:%S&lt;/walltime_format&gt;
     &lt;batch_mail_flag&gt;-M&lt;/batch_mail_flag&gt;
     &lt;batch_mail_type_flag&gt;-m&lt;/batch_mail_type_flag&gt;
@@ -2968,13 +3048,14 @@
 
   &lt;!-- bluewaters is PBS --&gt;
   &lt;batch_system MACH=&quot;bluewaters&quot; type=&quot;pbs&quot; &gt;
+    &lt;jobid_pattern&gt;(\d+.bw)$&lt;/jobid_pattern&gt;
     &lt;directives&gt;
       &lt;directive&gt;-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}:xe&lt;/directive&gt;
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }} &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;24:00:00&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;16&quot;&gt;debug&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;24:00:00&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;16&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3215,6 +3296,30 @@
       &lt;queue walltimemax=&quot;12:00&quot; nodemin=&quot;9&quot; nodemax=&quot;546&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
       &lt;queue walltimemax=&quot;12:00&quot; nodemin=&quot;16385&quot; nodemax=&quot;2184&quot;&gt;capability&lt;/queue&gt;
       &lt;queue walltimemax=&quot;12:00&quot; nodemin=&quot;1&quot; nodemax=&quot;546&quot;&gt;premium&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+
+  &lt;batch_system MACH=&quot;lbl-lr3&quot; type=&quot;slurm&quot;&gt;
+    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;directives&gt;
+       &lt;directive&gt;--qos=lr_normal&lt;/directive&gt;
+       &lt;directive&gt;--partition=lr3&lt;/directive&gt;
+       &lt;directive&gt;--account={{ project }}&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemin=&quot;00:00:00&quot; walltimemax=&quot;72:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+
+  &lt;batch_system MACH=&quot;lbl-lr2&quot; type=&quot;slurm&quot;&gt;
+    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;directives&gt;
+       &lt;directive&gt;--qos=lr_normal&lt;/directive&gt;
+       &lt;directive&gt;--partition=lr2&lt;/directive&gt;
+       &lt;directive&gt;--account={{ project }}&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemin=&quot;00:00:00&quot; walltimemax=&quot;72:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;64&quot; default=&quot;true&quot;&gt;lr2&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -4321,6 +4426,38 @@ using a fortran linker.
   &lt;SFC MPILIB=&quot;mpi-serial&quot;&gt;pgfortran&lt;/SFC&gt;
 &lt;/compiler&gt;
 
+&lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;lbl-lr3&quot;&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -lnetcdff -lnetcdf -mkl &lt;/append&gt;
+  &lt;/SLIBS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/CFLAGS&gt; 
+  &lt;NETCDF_PATH&gt;$ENV{NETCDF_DIR}&lt;/NETCDF_PATH&gt;
+&lt;/compiler&gt;
+
+&lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;lbl-lr2&quot;&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -lnetcdff -lnetcdf -mkl &lt;/append&gt;
+  &lt;/SLIBS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/CFLAGS&gt; 
+  &lt;NETCDF_PATH&gt;$ENV{NETCDF_DIR}&lt;/NETCDF_PATH&gt;
+&lt;/compiler&gt;
+
 &lt;/config_compilers&gt;
 </pre></div>
 </div>
@@ -4383,12 +4520,13 @@ using a fortran linker.
     &lt;OS&gt;CNL&lt;/OS&gt;
     &lt;COMPILERS&gt;pgi,cray,gnu&lt;/COMPILERS&gt;
     &lt;MPILIBS&gt;mpich&lt;/MPILIBS&gt;
+    &lt;PROJECT&gt;banu&lt;/PROJECT&gt;
     &lt;CIME_OUTPUT_ROOT&gt;/scratch/sciteam/$USER&lt;/CIME_OUTPUT_ROOT&gt;
     &lt;DIN_LOC_ROOT&gt;$ENV{CESMDATAROOT}/inputdata&lt;/DIN_LOC_ROOT&gt;
     &lt;DIN_LOC_ROOT_CLMFORC&gt;$ENV{CESMDATAROOT}/inputdata/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
-    &lt;DOUT_S_ROOT&gt;/scratch/sciteam/$USER/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
     &lt;BASELINE_ROOT&gt;$ENV{CESMDATAROOT}/ccsm_baselines&lt;/BASELINE_ROOT&gt;
-    &lt;CCSM_CPRNC&gt;$ENV{CESMDATAROOT}/tools/ccsm_cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;CCSM_CPRNC&gt;$ENV{CESMDATAROOT}/tools/cprnc&lt;/CCSM_CPRNC&gt;
     &lt;GMAKE_J&gt; 8&lt;/GMAKE_J&gt;
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
@@ -4422,28 +4560,28 @@ using a fortran linker.
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;PrgEnv-pgi&lt;/command&gt;
-	&lt;command name=&quot;switch&quot;&gt;pgi pgi/16.3.0&lt;/command&gt;
+	&lt;command name=&quot;switch&quot;&gt;pgi pgi/17.5.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot;&gt;
-	&lt;command name=&quot;load&quot;&gt;PrgEnv-gnu/4.2.84&lt;/command&gt;
-	&lt;command name=&quot;switch&quot;&gt;gcc gcc/4.8.2&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;PrgEnv-gnu&lt;/command&gt;
+	&lt;command name=&quot;switch&quot;&gt;gcc gcc/6.3.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;cray&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;PrgEnv-cray&lt;/command&gt;
-	&lt;command name=&quot;switch&quot;&gt;cce cce/8.4.6&lt;/command&gt;
+	&lt;command name=&quot;switch&quot;&gt;cce cce/8.5.8&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
-	&lt;command name=&quot;load&quot;&gt;papi/5.3.2&lt;/command&gt;
-	&lt;command name=&quot;switch&quot;&gt;cray-mpich cray-mpich/7.3.3&lt;/command&gt;
-	&lt;command name=&quot;switch&quot;&gt;cray-libsci cray-libsci/16.03.1&lt;/command&gt;
-	&lt;command name=&quot;load&quot;&gt;torque/6.0.2&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;papi/5.5.1.1&lt;/command&gt;
+	&lt;command name=&quot;switch&quot;&gt;cray-mpich cray-mpich/7.5.3&lt;/command&gt;
+	&lt;command name=&quot;switch&quot;&gt;cray-libsci cray-libsci/16.11.1&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;torque/6.0.4&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;!mpi-serial&quot;&gt;
-	&lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel/4.4.0&lt;/command&gt;
-	&lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf/1.7.0&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-netcdf-hdf5parallel/4.4.1.1&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-parallel-netcdf/1.8.0&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
-	&lt;command name=&quot;load&quot;&gt;cray-netcdf/4.4.0&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;cray-netcdf/4.4.1.1&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules&gt;
 	&lt;command name=&quot;load&quot;&gt;cmake/3.1.3&lt;/command&gt;
@@ -4521,7 +4659,7 @@ using a fortran linker.
   &lt;machine MACH=&quot;centos7-linux&quot;&gt;
     &lt;DESC&gt;
 	Example port to centos7 linux system with gcc, netcdf, pnetcdf and mpich
-        using modules from http://www.admin-magazine.com/HPC/Articles/Environment-Modules         
+	using modules from http://www.admin-magazine.com/HPC/Articles/Environment-Modules
     &lt;/DESC&gt;
     &lt;NODENAME_REGEX&gt;regex.expression.matching.your.machine&lt;/NODENAME_REGEX&gt;
     &lt;OS&gt;LINUX&lt;/OS&gt;
@@ -4612,8 +4750,8 @@ using a fortran linker.
     &lt;/mpirun&gt;
     &lt;mpirun mpilib=&quot;default&quot; unit_testing=&quot;true&quot;&gt;
       &lt;!-- The only place we can build and run the unit tests is on cheyenne&#39;s
-           shared nodes. However, running mpi jobs on the shared nodes currently
-           requires some workarounds; these workarounds are implemented here --&gt;
+	   shared nodes. However, running mpi jobs on the shared nodes currently
+	   requires some workarounds; these workarounds are implemented here --&gt;
       &lt;executable&gt;/opt/sgi/mpt/mpt-2.15/bin/mpirun $ENV{UNIT_TEST_HOST} -np 1 &lt;/executable&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
@@ -4634,16 +4772,16 @@ using a fortran linker.
 	&lt;command name=&quot;load&quot;&gt;esmf_libs&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;mkl&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; debug=&quot;true&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-defio-mpi-g&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; debug=&quot;false&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-defio-mpi-O&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; debug=&quot;true&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-ncdfio-uni-g&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; debug=&quot;false&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-ncdfio-uni-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;gnu&quot;&gt;
@@ -4651,9 +4789,9 @@ using a fortran linker.
 	&lt;command name=&quot;load&quot;&gt;openblas/0.2.14&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;mpt&quot;&gt;
-	&lt;command name=&quot;load&quot;&gt;mpt/2.15f&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;mpt/2.16&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;netcdf-mpi/4.4.1.1&lt;/command&gt;
-	&lt;command name=&quot;load&quot;&gt;pnetcdf/1.8.0&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;pnetcdf/1.8.1&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;openmpi&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;openmpi/2.1.0&lt;/command&gt;
@@ -4673,7 +4811,7 @@ using a fortran linker.
     &lt;/environment_variables&gt;
     &lt;environment_variables unit_testing=&quot;true&quot;&gt;
       &lt;!-- It&#39;s possible that we also need to set:
-           LD_LIBRARY_PATH=/opt/sgi/mpt/mpt-2.15/lib:$LD_LIBRARY_PATH
+	   LD_LIBRARY_PATH=/opt/sgi/mpt/mpt-2.15/lib:$LD_LIBRARY_PATH
       --&gt;
       &lt;env name=&quot;MPI_USE_ARRAY&quot;&gt;false&lt;/env&gt;
     &lt;/environment_variables&gt;
@@ -4898,6 +5036,7 @@ using a fortran linker.
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;256&lt;/MAX_TASKS_PER_NODE&gt;
     &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;COSTPES_PER_NODE&gt;68&lt;/COSTPES_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;srun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -5060,7 +5199,7 @@ using a fortran linker.
       &lt;arguments&gt;
 	&lt;arg name=&quot;label&quot;&gt; --label&lt;/arg&gt;
 	&lt;arg name=&quot;num_tasks&quot; &gt; -n $TOTALPES&lt;/arg&gt;
-     	&lt;arg name=&quot;thread_count&quot; &gt; -c $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
+	&lt;arg name=&quot;thread_count&quot; &gt; -c $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
@@ -5409,7 +5548,7 @@ using a fortran linker.
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
-        &lt;arg name=&quot;num_tasks&quot;&gt; -np $TOTALPES&lt;/arg&gt;
+	&lt;arg name=&quot;num_tasks&quot;&gt; -np $TOTALPES&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
@@ -5423,8 +5562,8 @@ using a fortran linker.
       &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
       &lt;modules&gt;
 	&lt;command name=&quot;purge&quot;/&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-env&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-git&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-env&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-git&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;sems-python/2.7.9&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;sems-gcc/5.1.0&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;sems-openmpi/1.8.7&lt;/command&gt;
@@ -5574,12 +5713,12 @@ using a fortran linker.
 	&lt;command name=&quot;purge&quot;/&gt;
 	&lt;command name=&quot;load&quot;&gt;nas&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;comp-intel/2016.2.181&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;comp-intel/2016.2.181&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -5629,11 +5768,11 @@ using a fortran linker.
 	&lt;command name=&quot;load&quot;&gt;nas&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;comp-intel/2016.2.181&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -5684,10 +5823,10 @@ using a fortran linker.
 	&lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;comp-intel/2016.2.181&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
- 	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -5738,10 +5877,10 @@ using a fortran linker.
 	&lt;command name=&quot;load&quot;&gt;pkgsrc&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;comp-intel/2016.2.181&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;mpi-sgi/mpt.2.15r20&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
- 	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;szip/2.1.1&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf4/4.2.12&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;hdf5/1.8.18_mpt&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1_mpt&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -5809,7 +5948,7 @@ using a fortran linker.
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
-        &lt;arg name=&quot;num_tasks&quot;&gt; -np $TOTALPES&lt;/arg&gt;
+	&lt;arg name=&quot;num_tasks&quot;&gt; -np $TOTALPES&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
@@ -5823,8 +5962,8 @@ using a fortran linker.
       &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
       &lt;modules&gt;
 	&lt;command name=&quot;purge&quot;/&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-env&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-git&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-env&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-git&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;sems-python/2.7.9&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;sems-gcc/5.1.0&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;sems-openmpi/1.8.7&lt;/command&gt;
@@ -5877,21 +6016,21 @@ using a fortran linker.
       &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
       &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
       &lt;modules&gt;
-        &lt;command name=&quot;purge&quot;/&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-env&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-git&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;sems-python/2.7.9&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;gnu/4.9.2&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;intel/intel-15.0.3.187&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;libraries/intel-mkl-15.0.2.164&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;libraries/intel-mkl-15.0.2.164&lt;/command&gt;
+	&lt;command name=&quot;purge&quot;/&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-env&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-git&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;sems-python/2.7.9&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;gnu/4.9.2&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;intel/intel-15.0.3.187&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;libraries/intel-mkl-15.0.2.164&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;libraries/intel-mkl-15.0.2.164&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules mpilib=&quot;!mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot; &gt;openmpi-intel/1.8&lt;/command&gt;
-        &lt;command name=&quot;load&quot; &gt;sems-hdf5/1.8.12/parallel&lt;/command&gt;
-        &lt;command name=&quot;load&quot; &gt;sems-netcdf/4.3.2/parallel&lt;/command&gt;
-        &lt;command name=&quot;load&quot; &gt;sems-hdf5/1.8.12/base&lt;/command&gt;
-        &lt;command name=&quot;load&quot; &gt;sems-netcdf/4.3.2/base&lt;/command&gt;
+	&lt;command name=&quot;load&quot; &gt;openmpi-intel/1.8&lt;/command&gt;
+	&lt;command name=&quot;load&quot; &gt;sems-hdf5/1.8.12/parallel&lt;/command&gt;
+	&lt;command name=&quot;load&quot; &gt;sems-netcdf/4.3.2/parallel&lt;/command&gt;
+	&lt;command name=&quot;load&quot; &gt;sems-hdf5/1.8.12/base&lt;/command&gt;
+	&lt;command name=&quot;load&quot; &gt;sems-netcdf/4.3.2/base&lt;/command&gt;
       &lt;/modules&gt;
     &lt;/module_system&gt;
     &lt;environment_variables&gt;
@@ -5963,6 +6102,104 @@ using a fortran linker.
       &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
       &lt;env name=&quot;PERL5LIB&quot;&gt;/scratch/projects/xsede/CESM/perl5/lib/perl5/x86_64-linux-thread-multi:/scratch/projects/xsede/CESM/perl5/lib/perl5&lt;/env&gt;
      &lt;/environment_variables&gt;
+  &lt;/machine&gt;
+
+  &lt;machine MACH=&quot;lbl-lr3&quot;&gt;
+    &lt;DESC&gt;Lawrencium LR3 cluster at LBL, OS is Linux (intel), batch system is SLURM&lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;n0*.lr3.lbl.gov&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/global/scratch/$ENV{USER}&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;rgknox and gbisht at lbl dot gov&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/etc/profile.d/modules.sh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/etc/profile.d/modules.csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/Modules/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/Modules/python.py&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/Modules/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/Modules/bin/modulecmd python&lt;/cmd_path&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;purge&quot;/&gt;
+	&lt;command name=&quot;load&quot;&gt;cmake&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;perl xml-libxml switch python/2.7.11&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;intel/2015.6.233&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;mkl&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.0-intel-s&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;openmpi&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.0-intel-p&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+  &lt;/machine&gt;
+
+  &lt;machine MACH=&quot;lbl-lr2&quot;&gt;
+    &lt;DESC&gt;Lawrencium LR2 cluster at LBL, OS is Linux (intel), batch system is SLURM&lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;n0*.lr2.lbl.gov&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/global/scratch/$ENV{USER}&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;rgknox and gbisht at lbl dot gov&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;12&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;12&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/etc/profile.d/modules.sh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/etc/profile.d/modules.csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/Modules/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/Modules/python.py&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/Modules/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/Modules/bin/modulecmd python&lt;/cmd_path&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;purge&quot;/&gt;
+	&lt;command name=&quot;load&quot;&gt;cmake&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;perl xml-libxml switch python/2.7.11&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;intel/2015.6.233&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;mkl&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.0-intel-s&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;openmpi&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;netcdf/4.4.0-intel-p&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
   &lt;/machine&gt;
 
   &lt;machine MACH=&quot;theta&quot;&gt;
@@ -6071,17 +6308,18 @@ using a fortran linker.
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;30&lt;/MAX_TASKS_PER_NODE&gt;
     &lt;MAX_MPITASKS_PER_NODE&gt;15&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;COSTPES_PER_NODE&gt;16&lt;/COSTPES_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot; unit_testing=&quot;true&quot;&gt;
       &lt;!-- For unit testing, avoid all of the extra stuff that we use before and
-           after the mpirun command when launching cesm on yellowstone --&gt;
+	   after the mpirun command when launching cesm on yellowstone --&gt;
       &lt;executable&gt;mpirun.lsf &lt;/executable&gt;
     &lt;/mpirun&gt;
     &lt;mpirun mpilib=&quot;default&quot; threaded=&quot;false&quot;&gt;
       &lt;executable&gt;TARGET_PROCESSOR_LIST=AUTO_SELECT $ENV{CESMDATAROOT}/tools/bin/mpirun &lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;anum_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
-        &lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
 	&lt;arg name=&quot;bindtool&quot;&gt;$ENV{CESMDATAROOT}/tools/bin/launch &lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
@@ -6089,7 +6327,7 @@ using a fortran linker.
       &lt;executable&gt;unset MP_PE_AFFINITY; unset MP_TASK_AFFINITY; unset MP_CPU_BIND_LIST; $ENV{CESMDATAROOT}/tools/bin/mpirun &lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;anum_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
-        &lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
 	&lt;arg name=&quot;bindtool&quot;&gt;$ENV{CESMDATAROOT}/tools/bin/hybrid_launch &lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
@@ -6097,7 +6335,7 @@ using a fortran linker.
       &lt;executable&gt; $ENV{CESMDATAROOT}/tools/bin/mpirun &lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;anum_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
-        &lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
@@ -6125,16 +6363,16 @@ using a fortran linker.
 	&lt;command name=&quot;load&quot;&gt;trilinos/11.10.2&lt;/command&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; debug=&quot;true&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-ncdfio-mpi-g&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; debug=&quot;false&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-defio-mpi-O&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; debug=&quot;true&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;TRUE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-ncdfio-uni-g&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; debug=&quot;false&quot;&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot; DEBUG=&quot;FALSE&quot;&gt;
 	&lt;command name=&quot;load&quot;&gt;esmf-7.0.0-ncdfio-uni-O&lt;/command&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;pgi&quot;&gt;
@@ -6179,7 +6417,7 @@ using a fortran linker.
       &lt;env name=&quot;MP_STDOUTMODE&quot;&gt;unordered&lt;/env&gt;
       &lt;env name=&quot;MP_RC_USE_LMC&quot;&gt;yes&lt;/env&gt;
     &lt;/environment_variables&gt;
-    &lt;environment_variables debug=&quot;true&quot;&gt;
+    &lt;environment_variables DEBUG=&quot;TRUE&quot;&gt;
       &lt;env name=&quot;MP_EAGER_LIMIT&quot;&gt;0&lt;/env&gt;
     &lt;/environment_variables&gt;
     &lt;environment_variables mpilib=&quot;!mpi-serial&quot;&gt;
@@ -6927,7 +7165,7 @@ the following XML files.</p>
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
     &lt;/machines&gt;
     &lt;options&gt;
-      &lt;option name=&quot;wallclock&quot;&gt; 06:00 &lt;/option&gt;
+      &lt;option name=&quot;wallclock&quot;&gt; 04:00 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
   &lt;test name=&quot;IRT&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850C4L45BGCRBPRPWs&quot; testmods=&quot;allactive/defaultio&quot;&gt;
@@ -7084,6 +7322,15 @@ the following XML files.</p>
     &lt;options&gt;
       &lt;option name=&quot;wallclock&quot;&gt; 01:30 &lt;/option&gt;
       &lt;option name=&quot;comment&quot;&gt;Needs to be B1850GWs rather than B1850G because WW3 currently does not support multi-instance&lt;/option&gt;
+    &lt;/options&gt;
+  &lt;/test&gt;
+  &lt;test name=&quot;PEA_P1&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+    &lt;machines&gt;
+      &lt;machine name=&quot;hobart&quot; compiler=&quot;intel&quot; category=&quot;prebeta&quot;/&gt;
+      &lt;machine name=&quot;hobart&quot; compiler=&quot;pgi&quot; category=&quot;prebeta&quot;/&gt;
+    &lt;/machines&gt;
+    &lt;options&gt;
+      &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
   &lt;test name=&quot;PET_PM&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
@@ -8454,7 +8701,6 @@ the following XML files.</p>
 	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
-
       &lt;pes pesize=&quot;any&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+SWAV&quot;&gt;
 	&lt;comment&gt;about 8 ypd expected&lt;/comment&gt;
 	&lt;ntasks&gt;
@@ -8551,41 +8797,6 @@ the following XML files.</p>
 	  &lt;rootpe_ocn&gt;-32&lt;/rootpe_ocn&gt;
 	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
 	  &lt;rootpe_wav&gt;1408&lt;/rootpe_wav&gt;
-	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
-	&lt;/rootpe&gt;
-      &lt;/pes&gt;
-    &lt;/mach&gt;
-    &lt;mach name=&quot;edison&quot;&gt;
-      &lt;pes pesize=&quot;any&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+WW3&quot;&gt;
-	&lt;comment&gt;about 17ypd expected&lt;/comment&gt;
-	&lt;ntasks&gt;
-	  &lt;ntasks_atm&gt;-50&lt;/ntasks_atm&gt;
-	  &lt;ntasks_lnd&gt;-30&lt;/ntasks_lnd&gt;
-	  &lt;ntasks_rof&gt;-30&lt;/ntasks_rof&gt;
-	  &lt;ntasks_ice&gt;-18&lt;/ntasks_ice&gt;
-	  &lt;ntasks_ocn&gt;-20&lt;/ntasks_ocn&gt;
-	  &lt;ntasks_glc&gt;-30&lt;/ntasks_glc&gt;
-	  &lt;ntasks_wav&gt;-2&lt;/ntasks_wav&gt;
-	  &lt;ntasks_cpl&gt;-50&lt;/ntasks_cpl&gt;
-	&lt;/ntasks&gt;
-	&lt;nthrds&gt;
-	  &lt;nthrds_atm&gt;4&lt;/nthrds_atm&gt;
-	  &lt;nthrds_lnd&gt;4&lt;/nthrds_lnd&gt;
-	  &lt;nthrds_rof&gt;4&lt;/nthrds_rof&gt;
-	  &lt;nthrds_ice&gt;4&lt;/nthrds_ice&gt;
-	  &lt;nthrds_ocn&gt;4&lt;/nthrds_ocn&gt;
-	  &lt;nthrds_glc&gt;4&lt;/nthrds_glc&gt;
-	  &lt;nthrds_wav&gt;4&lt;/nthrds_wav&gt;
-	  &lt;nthrds_cpl&gt;4&lt;/nthrds_cpl&gt;
-	&lt;/nthrds&gt;
-	&lt;rootpe&gt;
-	  &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
-	  &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
-	  &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
-	  &lt;rootpe_ice&gt;-30&lt;/rootpe_ice&gt;
-	  &lt;rootpe_ocn&gt;-50&lt;/rootpe_ocn&gt;
-	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
-	  &lt;rootpe_wav&gt;-48&lt;/rootpe_wav&gt;
 	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
@@ -9311,6 +9522,43 @@ the following XML files.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CESM Coupled Model XML Files</a><ul>
+<li><a class="reference internal" href="#cimeroot-config-cesm">CIMEROOT/config/cesm</a></li>
+<li><a class="reference internal" href="#cimeroot-config-cesm-machines">CIMEROOT/config/cesm/machines</a></li>
+<li><a class="reference internal" href="#allactive-srcroot-cime-config">allactive SRCROOT/cime_config</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="acme.html"
+                        title="previous chapter">E3SM Coupled Model XML Files</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="common.html"
+                        title="next chapter">Common XML Files</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/xml_files/cesm.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -9326,9 +9574,9 @@ the following XML files.</p>
           <a href="common.html" title="Common XML Files"
              >next</a> |</li>
         <li class="right" >
-          <a href="acme.html" title="ACME Coupled Model XML Files"
+          <a href="acme.html" title="E3SM Coupled Model XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
       </ul>
     </div>

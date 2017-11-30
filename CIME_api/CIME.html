@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME package &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME package &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME" href="modules.html" />
     <link rel="next" title="CIME.BuildTools package" href="CIME.BuildTools.html" />
-    <link rel="prev" title="CIME" href="modules.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="CIME" href="modules.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,78 +44,10 @@
         <li class="right" >
           <a href="modules.html" title="CIME"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">CIME</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">CIME package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-CIME.aprun">CIME.aprun module</a></li>
-<li><a class="reference internal" href="#module-CIME.bless_test_results">CIME.bless_test_results module</a></li>
-<li><a class="reference internal" href="#module-CIME.build">CIME.build module</a></li>
-<li><a class="reference internal" href="#module-CIME.buildlib">CIME.buildlib module</a></li>
-<li><a class="reference internal" href="#module-CIME.buildnml">CIME.buildnml module</a></li>
-<li><a class="reference internal" href="#module-CIME.case">CIME.case module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_clone">CIME.case_clone module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_cmpgen_namelists">CIME.case_cmpgen_namelists module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_run">CIME.case_run module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_setup">CIME.case_setup module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_st_archive">CIME.case_st_archive module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_submit">CIME.case_submit module</a></li>
-<li><a class="reference internal" href="#module-CIME.case_test">CIME.case_test module</a></li>
-<li><a class="reference internal" href="#module-CIME.check_input_data">CIME.check_input_data module</a></li>
-<li><a class="reference internal" href="#module-CIME.check_lockedfiles">CIME.check_lockedfiles module</a></li>
-<li><a class="reference internal" href="#module-CIME.code_checker">CIME.code_checker module</a></li>
-<li><a class="reference internal" href="#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
-<li><a class="reference internal" href="#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
-<li><a class="reference internal" href="#module-CIME.get_timing">CIME.get_timing module</a></li>
-<li><a class="reference internal" href="#module-CIME.hist_utils">CIME.hist_utils module</a></li>
-<li><a class="reference internal" href="#module-CIME.namelist">CIME.namelist module</a></li>
-<li><a class="reference internal" href="#module-CIME.nmlgen">CIME.nmlgen module</a></li>
-<li><a class="reference internal" href="#module-CIME.preview_namelists">CIME.preview_namelists module</a></li>
-<li><a class="reference internal" href="#module-CIME.provenance">CIME.provenance module</a></li>
-<li><a class="reference internal" href="#module-CIME.simple_compare">CIME.simple_compare module</a></li>
-<li><a class="reference internal" href="#module-CIME.test_scheduler">CIME.test_scheduler module</a></li>
-<li><a class="reference internal" href="#module-CIME.test_status">CIME.test_status module</a></li>
-<li><a class="reference internal" href="#module-CIME.test_utils">CIME.test_utils module</a></li>
-<li><a class="reference internal" href="#module-CIME.user_mod_support">CIME.user_mod_support module</a></li>
-<li><a class="reference internal" href="#module-CIME.utils">CIME.utils module</a></li>
-<li><a class="reference internal" href="#module-CIME.wait_for_tests">CIME.wait_for_tests module</a></li>
-<li><a class="reference internal" href="#module-CIME">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="modules.html"
-                        title="previous chapter">CIME</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CIME.BuildTools.html"
-                        title="next chapter">CIME.BuildTools package</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -169,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ldsta">CIME.SystemTests.ldsta module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.mcc">CIME.SystemTests.mcc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
@@ -269,12 +196,12 @@ code to compute and assemble aprun commands.</p>
 <span id="cime-bless-test-results-module"></span><h2>CIME.bless_test_results module<a class="headerlink" href="#module-CIME.bless_test_results" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="CIME.bless_test_results.bless_history">
-<code class="descclassname">CIME.bless_test_results.</code><code class="descname">bless_history</code><span class="sig-paren">(</span><em>test_name</em>, <em>testcase_dir_for_test</em>, <em>baseline_name</em>, <em>baseline_root</em>, <em>compiler</em>, <em>report_only</em>, <em>force</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/bless_test_results.html#bless_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.bless_test_results.bless_history" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.bless_test_results.</code><code class="descname">bless_history</code><span class="sig-paren">(</span><em>test_name</em>, <em>test_dir</em>, <em>baseline_name</em>, <em>baseline_root</em>, <em>report_only</em>, <em>force</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/bless_test_results.html#bless_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.bless_test_results.bless_history" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.bless_test_results.bless_namelists">
-<code class="descclassname">CIME.bless_test_results.</code><code class="descname">bless_namelists</code><span class="sig-paren">(</span><em>test_name</em>, <em>report_only</em>, <em>force</em>, <em>baseline_name</em>, <em>baseline_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/bless_test_results.html#bless_namelists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.bless_test_results.bless_namelists" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.bless_test_results.</code><code class="descname">bless_namelists</code><span class="sig-paren">(</span><em>test_name</em>, <em>test_dir</em>, <em>report_only</em>, <em>force</em>, <em>baseline_name</em>, <em>baseline_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/bless_test_results.html#bless_namelists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.bless_test_results.bless_namelists" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -293,7 +220,7 @@ code to compute and assemble aprun commands.</p>
 
 <dl class="function">
 <dt id="CIME.build.clean">
-<code class="descclassname">CIME.build.</code><code class="descname">clean</code><span class="sig-paren">(</span><em>case</em>, <em>cleanlist=None</em>, <em>clean_all=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.clean" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.build.</code><code class="descname">clean</code><span class="sig-paren">(</span><em>case</em>, <em>cleanlist=None</em>, <em>clean_all=False</em>, <em>clean_depends=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.clean" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -393,7 +320,7 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.configure">
-<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -403,7 +330,7 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -511,7 +438,7 @@ for variable substitution using the {{ var }} syntax</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.load_env">
-<code class="descname">load_env</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.load_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.load_env" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_env</code><span class="sig-paren">(</span><em>reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.load_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.load_env" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -571,7 +498,7 @@ name is returned</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.submit_jobs">
-<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type='never'</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>prereq=None</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -661,7 +588,7 @@ directories. It is an error to provide exeroot if keepexe is True.</p>
 <p>short term archiving</p>
 <dl class="function">
 <dt id="CIME.case_st_archive.archive_last_restarts">
-<code class="descclassname">CIME.case_st_archive.</code><code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>case</em>, <em>archive_restdir</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#archive_last_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_st_archive.</code><code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>case</em>, <em>archive_restdir</em>, <em>last_date=None</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#archive_last_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function for archiving just the last set of restart
 files to a given directory. This also saves files attached to the
 restart set, such as rpointer files and necessary history
@@ -675,14 +602,45 @@ files that are associated with these restart files.)</p>
 
 <dl class="function">
 <dt id="CIME.case_st_archive.case_st_archive">
-<code class="descclassname">CIME.case_st_archive.</code><code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>case</em>, <em>last_date=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>no_resubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#case_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.case_st_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_st_archive.</code><code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>case</em>, <em>last_date_str=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>no_resubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#case_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.case_st_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create archive object and perform short term archiving</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="CIME.case_st_archive.get_file_date">
+<code class="descclassname">CIME.case_st_archive.</code><code class="descname">get_file_date</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#get_file_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.get_file_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date associated with the filename as a datetime object representing the correct date
+Formats supported:
+&#8220;%Y-%m-%d_%h.%M.%s
+&#8220;%Y-%m-%d_%05s&#8221;
+&#8220;%Y-%m-%d-%05s&#8221;
+&#8220;%Y-%m-%d&#8221;
+&#8220;%Y-%m&#8221;
+&#8220;%Y.%m&#8221;</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0001-01-06-00435.nc&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(1, 1, 6, 0, 7, 15)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0010-1-06_00435.nc&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(10, 1, 6, 0, 7, 15)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0010-10.nc&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(10, 10, 1, 0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0064-3-8_10.20.30.nc&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(64, 3, 8, 10, 20, 30)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140-3-5&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(140, 3, 5, 0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140-3&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(140, 3, 1, 0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140.3&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(140, 3, 1, 0, 0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="CIME.case_st_archive.get_histfiles_for_restarts">
-<code class="descclassname">CIME.case_st_archive.</code><code class="descname">get_histfiles_for_restarts</code><span class="sig-paren">(</span><em>case</em>, <em>archive</em>, <em>archive_entry</em>, <em>restfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#get_histfiles_for_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.get_histfiles_for_restarts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">CIME.case_st_archive.</code><code class="descname">get_histfiles_for_restarts</code><span class="sig-paren">(</span><em>rundir</em>, <em>archive</em>, <em>archive_entry</em>, <em>restfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#get_histfiles_for_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.get_histfiles_for_restarts" title="Permalink to this definition">¶</a></dt>
+<dd><p>determine history files that are needed for restarts</p>
+<p>Not doc-testable due to filesystem dependence</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="CIME.case_st_archive.restore_from_archive">
@@ -708,7 +666,7 @@ jobs.</p>
 
 <dl class="function">
 <dt id="CIME.case_submit.submit">
-<code class="descclassname">CIME.case_submit.</code><code class="descname">submit</code><span class="sig-paren">(</span><em>case</em>, <em>job=None</em>, <em>resubmit=False</em>, <em>no_batch=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type='never'</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_submit.html#submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_submit.submit" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_submit.</code><code class="descname">submit</code><span class="sig-paren">(</span><em>case</em>, <em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>resubmit=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_submit.html#submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_submit.submit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -830,12 +788,12 @@ jobs.</p>
 
 <dl class="function">
 <dt id="CIME.compare_test_results.compare_history">
-<code class="descclassname">CIME.compare_test_results.</code><code class="descname">compare_history</code><span class="sig-paren">(</span><em>case</em>, <em>baseline_name</em>, <em>baseline_root</em>, <em>log_id</em>, <em>compiler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/compare_test_results.html#compare_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.compare_test_results.compare_history" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.compare_test_results.</code><code class="descname">compare_history</code><span class="sig-paren">(</span><em>case</em>, <em>baseline_name</em>, <em>baseline_root</em>, <em>log_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/compare_test_results.html#compare_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.compare_test_results.compare_history" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.compare_test_results.compare_namelists">
-<code class="descclassname">CIME.compare_test_results.</code><code class="descname">compare_namelists</code><span class="sig-paren">(</span><em>case</em>, <em>baseline_name</em>, <em>baseline_root</em>, <em>logfile_name</em>, <em>compiler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/compare_test_results.html#compare_namelists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.compare_test_results.compare_namelists" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.compare_test_results.</code><code class="descname">compare_namelists</code><span class="sig-paren">(</span><em>case</em>, <em>baseline_name</em>, <em>baseline_root</em>, <em>logfile_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/compare_test_results.html#compare_namelists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.compare_test_results.compare_namelists" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -2014,7 +1972,7 @@ phases. All other phases need to handle their own status because
 they can be run outside the context of TestScheduler.</p>
 <dl class="class">
 <dt id="CIME.test_scheduler.TestScheduler">
-<em class="property">class </em><code class="descclassname">CIME.test_scheduler.</code><code class="descname">TestScheduler</code><span class="sig-paren">(</span><em>test_names</em>, <em>test_data=None</em>, <em>no_run=False</em>, <em>no_build=False</em>, <em>no_setup=False</em>, <em>no_batch=None</em>, <em>test_root=None</em>, <em>test_id=None</em>, <em>machine_name=None</em>, <em>compiler=None</em>, <em>baseline_root=None</em>, <em>baseline_cmp_name=None</em>, <em>baseline_gen_name=None</em>, <em>clean=False</em>, <em>namelists_only=False</em>, <em>project=None</em>, <em>parallel_jobs=None</em>, <em>walltime=None</em>, <em>proc_pool=None</em>, <em>use_existing=False</em>, <em>save_timing=False</em>, <em>queue=None</em>, <em>allow_baseline_overwrite=False</em>, <em>output_root=None</em>, <em>force_procs=None</em>, <em>force_threads=None</em>, <em>mpilib=None</em>, <em>input_dir=None</em>, <em>pesfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.test_scheduler.</code><code class="descname">TestScheduler</code><span class="sig-paren">(</span><em>test_names</em>, <em>test_data=None</em>, <em>no_run=False</em>, <em>no_build=False</em>, <em>no_setup=False</em>, <em>no_batch=None</em>, <em>test_root=None</em>, <em>test_id=None</em>, <em>machine_name=None</em>, <em>compiler=None</em>, <em>baseline_root=None</em>, <em>baseline_cmp_name=None</em>, <em>baseline_gen_name=None</em>, <em>clean=False</em>, <em>namelists_only=False</em>, <em>project=None</em>, <em>parallel_jobs=None</em>, <em>walltime=None</em>, <em>proc_pool=None</em>, <em>use_existing=False</em>, <em>save_timing=False</em>, <em>queue=None</em>, <em>allow_baseline_overwrite=False</em>, <em>output_root=None</em>, <em>force_procs=None</em>, <em>force_threads=None</em>, <em>mpilib=None</em>, <em>input_dir=None</em>, <em>pesfile=None</em>, <em>mail_user=None</em>, <em>mail_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="CIME.test_scheduler.TestScheduler.get_testnames">
@@ -2265,6 +2223,11 @@ Provided None as seconds makes this class a no-op</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="CIME.utils.add_mail_type_args">
+<code class="descclassname">CIME.utils.</code><code class="descname">add_mail_type_args</code><span class="sig-paren">(</span><em>parser</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#add_mail_type_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.add_mail_type_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="CIME.utils.analyze_build_log">
 <code class="descclassname">CIME.utils.</code><code class="descname">analyze_build_log</code><span class="sig-paren">(</span><em>comp</em>, <em>log</em>, <em>compiler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#analyze_build_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.analyze_build_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>Capture and report warning count,
@@ -2388,6 +2351,12 @@ vid is only for generating better error messages.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="CIME.utils.copyifnewer">
+<code class="descclassname">CIME.utils.</code><code class="descname">copyifnewer</code><span class="sig-paren">(</span><em>src</em>, <em>dest</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#copyifnewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.copyifnewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>if dest does not exist or is older than src copy src to dest</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="CIME.utils.does_file_have_string">
 <code class="descclassname">CIME.utils.</code><code class="descname">does_file_have_string</code><span class="sig-paren">(</span><em>filepath</em>, <em>text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#does_file_have_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.does_file_have_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does the text string appear in the filepath file</p>
@@ -2405,6 +2374,12 @@ checking user error, not programming error.</p>
 <span class="gr">SystemExit</span>: <span class="n">ERROR: error2</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.filter_unicode">
+<code class="descclassname">CIME.utils.</code><code class="descname">filter_unicode</code><span class="sig-paren">(</span><em>unistr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#filter_unicode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.filter_unicode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sometimes unicode chars can cause problems</p>
 </dd></dl>
 
 <dl class="function">
@@ -2448,6 +2423,29 @@ Unlike strptime, this does support %H &gt;= 24</p>
 <dt id="CIME.utils.get_acme_root">
 <code class="descclassname">CIME.utils.</code><code class="descname">get_acme_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_acme_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_acme_root" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the absolute path to the root of ACME that contains this script</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.get_charge_account">
+<code class="descclassname">CIME.utils.</code><code class="descname">get_charge_account</code><span class="sig-paren">(</span><em>machobj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_charge_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_charge_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hierarchy for choosing CHARGE_ACCOUNT:
+1. Environment variable CHARGE_ACCOUNT
+2. File $HOME/.cime/config
+3. config_machines.xml (if machobj provided)
+4. default to same value as PROJECT</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">CIME</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">CIME.XML.machines</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">XML</span><span class="o">.</span><span class="n">machines</span><span class="o">.</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;theta&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">get_project</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">charge_account</span> <span class="o">=</span> <span class="n">get_charge_account</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">==</span> <span class="n">charge_account</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ChargeAccount&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_charge_account</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
+<span class="go">&#39;ChargeAccount&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CHARGE_ACCOUNT&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -2728,6 +2726,11 @@ parse and return the partial results.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="CIME.utils.redirect_logger">
+<code class="descclassname">CIME.utils.</code><code class="descname">redirect_logger</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="CIME.utils.redirect_stderr">
 <code class="descclassname">CIME.utils.</code><code class="descname">redirect_stderr</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stderr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2738,14 +2741,29 @@ parse and return the partial results.</p>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="CIME.utils.redirect_stdout_stderr">
+<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stdout_stderr</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stdout_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stdout_stderr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="CIME.utils.reset_cime_config">
 <code class="descclassname">CIME.utils.</code><code class="descname">reset_cime_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#reset_cime_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.reset_cime_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Useful to keep unit tests from interfering with each other</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="CIME.utils.resolve_mail_type_args">
+<code class="descclassname">CIME.utils.</code><code class="descname">resolve_mail_type_args</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#resolve_mail_type_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.resolve_mail_type_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="CIME.utils.run_and_log_case_status">
 <code class="descclassname">CIME.utils.</code><code class="descname">run_and_log_case_status</code><span class="sig-paren">(</span><em>func</em>, <em>phase</em>, <em>caseroot='.'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_and_log_case_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_and_log_case_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.run_bld_cmd_ensure_logging">
+<code class="descclassname">CIME.utils.</code><code class="descname">run_bld_cmd_ensure_logging</code><span class="sig-paren">(</span><em>cmd</em>, <em>arg_logger</em>, <em>from_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_bld_cmd_ensure_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_bld_cmd_ensure_logging" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -2781,7 +2799,7 @@ Expects command to work. Just returns output string.</p>
 
 <dl class="function">
 <dt id="CIME.utils.run_sub_or_cmd">
-<code class="descclassname">CIME.utils.</code><code class="descname">run_sub_or_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>cmdargs</em>, <em>subname</em>, <em>subargs</em>, <em>logfile=None</em>, <em>case=None</em>, <em>from_dir=None</em>, <em>combine_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_sub_or_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_sub_or_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">run_sub_or_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>cmdargs</em>, <em>subname</em>, <em>subargs</em>, <em>logfile=None</em>, <em>case=None</em>, <em>from_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_sub_or_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_sub_or_cmd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -2917,6 +2935,74 @@ recursively.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CIME package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-CIME.aprun">CIME.aprun module</a></li>
+<li><a class="reference internal" href="#module-CIME.bless_test_results">CIME.bless_test_results module</a></li>
+<li><a class="reference internal" href="#module-CIME.build">CIME.build module</a></li>
+<li><a class="reference internal" href="#module-CIME.buildlib">CIME.buildlib module</a></li>
+<li><a class="reference internal" href="#module-CIME.buildnml">CIME.buildnml module</a></li>
+<li><a class="reference internal" href="#module-CIME.case">CIME.case module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_clone">CIME.case_clone module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_cmpgen_namelists">CIME.case_cmpgen_namelists module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_run">CIME.case_run module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_setup">CIME.case_setup module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_st_archive">CIME.case_st_archive module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_submit">CIME.case_submit module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_test">CIME.case_test module</a></li>
+<li><a class="reference internal" href="#module-CIME.check_input_data">CIME.check_input_data module</a></li>
+<li><a class="reference internal" href="#module-CIME.check_lockedfiles">CIME.check_lockedfiles module</a></li>
+<li><a class="reference internal" href="#module-CIME.code_checker">CIME.code_checker module</a></li>
+<li><a class="reference internal" href="#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
+<li><a class="reference internal" href="#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
+<li><a class="reference internal" href="#module-CIME.get_timing">CIME.get_timing module</a></li>
+<li><a class="reference internal" href="#module-CIME.hist_utils">CIME.hist_utils module</a></li>
+<li><a class="reference internal" href="#module-CIME.namelist">CIME.namelist module</a></li>
+<li><a class="reference internal" href="#module-CIME.nmlgen">CIME.nmlgen module</a></li>
+<li><a class="reference internal" href="#module-CIME.preview_namelists">CIME.preview_namelists module</a></li>
+<li><a class="reference internal" href="#module-CIME.provenance">CIME.provenance module</a></li>
+<li><a class="reference internal" href="#module-CIME.simple_compare">CIME.simple_compare module</a></li>
+<li><a class="reference internal" href="#module-CIME.test_scheduler">CIME.test_scheduler module</a></li>
+<li><a class="reference internal" href="#module-CIME.test_status">CIME.test_status module</a></li>
+<li><a class="reference internal" href="#module-CIME.test_utils">CIME.test_utils module</a></li>
+<li><a class="reference internal" href="#module-CIME.user_mod_support">CIME.user_mod_support module</a></li>
+<li><a class="reference internal" href="#module-CIME.utils">CIME.utils module</a></li>
+<li><a class="reference internal" href="#module-CIME.wait_for_tests">CIME.wait_for_tests module</a></li>
+<li><a class="reference internal" href="#module-CIME">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">CIME</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CIME.BuildTools.html"
+                        title="next chapter">CIME.BuildTools package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/CIME_api/CIME.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -2934,7 +3020,7 @@ recursively.</p>
         <li class="right" >
           <a href="modules.html" title="CIME"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li> 
       </ul>
     </div>

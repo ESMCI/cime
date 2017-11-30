@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.case_setup &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.case_setup &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -81,7 +61,7 @@
 <span class="kn">from</span> <span class="nn">CIME.utils</span>             <span class="kn">import</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_model</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span>       <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">six</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -149,7 +129,7 @@
 
     <span class="c1"># Check that userdefine settings are specified before expanding variable</span>
     <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">case</span><span class="p">:</span>
-        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="s2">&quot;USERDEFINED_required_build&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">),</span>
+        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;USERDEFINED_required_build&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">),</span>
                <span class="s2">&quot;Parameter &#39;{}&#39; must be defined&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vid</span><span class="p">))</span>
 
     <span class="c1"># Remove batch scripts</span>
@@ -191,7 +171,7 @@
         <span class="c1"># Set tasks to 1 if mpi-serial library</span>
         <span class="k">if</span> <span class="n">mpilib</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">case</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">vid</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;NTASKS_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">vid</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;NTASKS&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Check ninst.</span>
@@ -219,6 +199,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Machine/Decomp/Pes configuration has already been done ...skipping&quot;</span><span class="p">)</span>
 
             <span class="n">case</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
+
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SMP_PRESENT&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">())</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="n">check_pelayouts_require_rebuild</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">models</span><span class="p">)</span>
 
@@ -226,15 +209,13 @@
 
             <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-            <span class="n">env_mach_pes</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_pes&quot;</span><span class="p">)</span>
-            <span class="n">pestot</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;at update TOTALPES = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pestot</span><span class="p">))</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">,</span> <span class="n">pestot</span><span class="p">)</span>
-            <span class="n">thread_count</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_max_thread_count</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-            <span class="n">cost_pes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_cost_pes</span><span class="p">(</span><span class="n">pestot</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">))</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COST_PES&quot;</span><span class="p">,</span> <span class="n">cost_pes</span><span class="p">)</span>
 
             <span class="n">case</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
+
+            <span class="n">cost_per_node</span> <span class="o">=</span> <span class="mi">16</span> <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;yellowstone&quot;</span> <span class="k">else</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COST_PES&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">*</span> <span class="n">cost_per_node</span><span class="p">)</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">)</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SMP_PRESENT&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">())</span>
 
             <span class="c1"># create batch files</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating batch script case.run&quot;</span><span class="p">)</span>
@@ -285,8 +266,8 @@
 
         <span class="c1"># Record env information</span>
         <span class="n">env_module</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
-        <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;sh&quot;</span><span class="p">)</span>
-        <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;csh&quot;</span><span class="p">)</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="s2">&quot;sh&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="s2">&quot;csh&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
         <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="s2">&quot;software_environment.txt&quot;</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
@@ -316,6 +297,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -327,7 +322,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

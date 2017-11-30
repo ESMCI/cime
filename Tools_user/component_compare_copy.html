@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>component_compare_copy &mdash; CIME 5.3.0 documentation</title>
+    <title>component_compare_copy &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="component_compare_test" href="component_compare_test.html" />
-    <link rel="prev" title="component_compare_baseline" href="component_compare_baseline.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="next" title="check_input_data" href="check_input_data.html" />
+    <link rel="prev" title="code_checker" href="code_checker.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -45,42 +39,15 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="component_compare_test.html" title="component_compare_test"
+          <a href="check_input_data.html" title="check_input_data"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="component_compare_baseline.html" title="component_compare_baseline"
+          <a href="code_checker.html" title="code_checker"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="component_compare_baseline.html"
-                        title="previous chapter">component_compare_baseline</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="component_compare_test.html"
-                        title="next chapter">component_compare_test</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tools_user/component_compare_copy.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -112,12 +79,12 @@ This allows us to save these results if we want to run the case again.
 positional arguments:
   suffix         Suffix to append to hist files
   caseroot       Case directory (default:
-                 /Users/aliceb/cesm2_0_alpha07/cime/scripts/Tools)
+                 /Users/aliceb/cesm2_0_beta07/cime/scripts/Tools)
 
 optional arguments:
   -h, --help     show this help message and exit
   -d, --debug    Print debug information (very verbose) to file /Users/aliceb/
-                 cesm2_0_alpha07/cime/scripts/Tools/component_compare_copy.log
+                 cesm2_0_beta07/cime/scripts/Tools/component_compare_copy.log
                  (default: False)
   -v, --verbose  Add additional context (time and file) to log messages
                  (default: False)
@@ -128,6 +95,33 @@ optional arguments:
 
 
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="code_checker.html"
+                        title="previous chapter">code_checker</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="check_input_data.html"
+                        title="next chapter">check_input_data</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tools_user/component_compare_copy.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -142,12 +136,12 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="component_compare_test.html" title="component_compare_test"
+          <a href="check_input_data.html" title="check_input_data"
              >next</a> |</li>
         <li class="right" >
-          <a href="component_compare_baseline.html" title="component_compare_baseline"
+          <a href="code_checker.html" title="code_checker"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
       </ul>
     </div>

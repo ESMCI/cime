@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.XML.component &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.XML.component &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -231,7 +211,6 @@
             <span class="n">modifier_mode</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">modifier_mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;?&#39;</span><span class="p">,</span><span class="s1">&#39;+&#39;</span><span class="p">),</span>
                <span class="s2">&quot;Invalid modifier_mode {} in file {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modifier_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
-
         <span class="n">optiondesc</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">comp_class</span> <span class="o">==</span> <span class="s2">&quot;forcing&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">desc_nodes</span><span class="p">:</span>
@@ -245,30 +224,36 @@
                 <span class="n">desc</span> <span class="o">=</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">desc</span>
 
+
         <span class="c1"># first pass just make a hash of the option descriptions</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">desc_nodes</span><span class="p">:</span>
             <span class="n">option</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;option&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="n">optiondesc</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span>
+
         <span class="c1">#second pass find a comp_class match</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">desc_nodes</span><span class="p">:</span>
             <span class="n">compdesc</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">comp_class</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">compdesc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="n">opt_parts</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">compdesc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[%&quot;</span><span class="p">)</span> <span class="p">]</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">opt_parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compdesc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">opt_parts</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">compdesc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[%&quot;</span><span class="p">)</span> <span class="p">]</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">opt_parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+                <span class="n">reqset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+                <span class="n">fullset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span><span class="o">+</span><span class="n">opt_parts</span><span class="p">)</span>
+                <span class="n">match</span><span class="p">,</span> <span class="n">complist</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_match</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">desc</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span>
+                    <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">complist</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">optiondesc</span><span class="p">:</span>
+                            <span class="n">desc</span> <span class="o">+=</span> <span class="n">optiondesc</span><span class="p">[</span><span class="n">opt</span><span class="p">]</span>
 
-            <span class="n">reqset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
-            <span class="n">fullset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parts</span><span class="o">+</span><span class="n">opt_parts</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_description_match</span><span class="p">(</span><span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span><span class="p">):</span>
-                <span class="n">desc</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span>
-                <span class="k">break</span>
+
         <span class="c1"># cpl and esp components may not have a description</span>
         <span class="k">if</span> <span class="n">comp_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cpl&#39;</span><span class="p">,</span><span class="s1">&#39;esp&#39;</span><span class="p">]:</span>
             <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
-                   <span class="s2">&quot;No description found for comp_class {} matching compsetname {} in file {}&quot;</span>\
-                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_class</span><span class="p">,</span><span class="n">compsetname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+                   <span class="s2">&quot;No description found for comp_class {} matching compsetname {} in file {}, expected match in {} % {}&quot;</span>\
+                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_class</span><span class="p">,</span><span class="n">compsetname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">reqset</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">opt_parts</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">desc</span>
 
     <span class="k">def</span> <span class="nf">_get_description_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compsetname</span><span class="p">,</span> <span class="n">reqset</span><span class="p">,</span> <span class="n">fullset</span><span class="p">,</span> <span class="n">modifier_mode</span><span class="p">):</span>
@@ -276,50 +261,53 @@
 
 <span class="sd">        &gt;&gt;&gt; obj = Component(&#39;testingonly&#39;, &#39;ATM&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM%CRU_FRED&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;*&quot;)</span>
-<span class="sd">        True</span>
+<span class="sd">        (True, [&#39;DATM&#39;, &#39;CRU&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM%FRED_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;*&quot;)</span>
-<span class="sd">        False</span>
+<span class="sd">        (False, None)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;?&quot;)</span>
-<span class="sd">        True</span>
+<span class="sd">        (True, [&#39;DATM&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;1&quot;)</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        SystemExit: ERROR: Expected exactly one modifer found 0</span>
+<span class="sd">        SystemExit: ERROR: Expected exactly one modifer found 0 in [&#39;DATM&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM%CRU%HSI_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;1&quot;)</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        SystemExit: ERROR: Expected exactly one modifer found 2</span>
+<span class="sd">        SystemExit: ERROR: Expected exactly one modifer found 2 in [&#39;DATM&#39;, &#39;CRU&#39;, &#39;HSI&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_CAM50%WCCM%RCO2_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;*&quot;)</span>
-<span class="sd">        True</span>
+<span class="sd">        (True, [&#39;CAM50&#39;, &#39;WCCM&#39;, &#39;RCO2&#39;])</span>
 
 <span class="sd">        # The following is not allowed because the required WCCM field is missing</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_CAM50%RCO2_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;*&quot;)</span>
-<span class="sd">        False</span>
+<span class="sd">        (False, None)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_CAM50_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;+&quot;)</span>
-<span class="sd">        False</span>
+<span class="sd">        (False, None)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_CAM50%WCCM_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;+&quot;)</span>
-<span class="sd">        True</span>
+<span class="sd">        (True, [&#39;CAM50&#39;, &#39;WCCM&#39;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">match</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">comparts</span> <span class="o">=</span> <span class="n">compsetname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">matchcomplist</span> <span class="o">=</span> <span class="bp">None</span>
+
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comparts</span><span class="p">:</span>
             <span class="n">complist</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">)</span>
             <span class="n">cset</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cset</span> <span class="o">==</span> <span class="n">reqset</span> <span class="ow">or</span> <span class="p">(</span><span class="n">cset</span> <span class="o">&gt;</span> <span class="n">reqset</span> <span class="ow">and</span> <span class="n">cset</span> <span class="o">&lt;=</span> <span class="n">fullset</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span>
-                           <span class="s2">&quot;Expected exactly one modifer found {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                           <span class="s2">&quot;Expected exactly one modifer found {} in {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">complist</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s1">&#39;+&#39;</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span>
-                           <span class="s2">&quot;Expected one or more modifers found {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                           <span class="s2">&quot;Expected one or more modifers found {} in {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">reqset</span><span class="p">)))</span>
                 <span class="k">elif</span> <span class="n">modifier_mode</span> <span class="o">==</span> <span class="s1">&#39;?&#39;</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">,</span>
-                           <span class="s2">&quot;Expected 0 or one modifers found {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                           <span class="s2">&quot;Expected 0 or one modifers found {} in {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">complist</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">complist</span><span class="p">))</span>
                 <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">match</span><span class="p">,</span><span class="s2">&quot;Found multiple matches in file {} for {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span><span class="n">comp</span><span class="p">))</span>
                 <span class="n">match</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">matchcomplist</span> <span class="o">=</span> <span class="n">complist</span>
                 <span class="c1"># found a match</span>
 
-        <span class="k">return</span> <span class="n">match</span>
+        <span class="k">return</span> <span class="n">match</span><span class="p">,</span> <span class="n">matchcomplist</span>
 
 
 
@@ -358,6 +346,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -369,7 +371,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

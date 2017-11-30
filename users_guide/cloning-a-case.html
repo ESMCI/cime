@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Cloning a Case &mdash; CIME 5.3.0 documentation</title>
+    <title>8. Cloning a Case &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="9. Troubleshooting" href="troubleshooting.html" />
-    <link rel="prev" title="7. Customizing a Case" href="customizing-a-case.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="7. Customizing a Case" href="customizing-a-case.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,10 +44,80 @@
         <li class="right" >
           <a href="customizing-a-case.html" title="7. Customizing a Case"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
-    </div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cloning-a-case">
+<span id="id1"></span><h1>8. Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h1>
+<p>If you have access to a run that you want to clone, the
+<strong>create_clone</strong> command will create a new case and run <strong>case.setup</strong>
+while preserving local modifications to the case.</p>
+<p>Here is a simple example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+&gt; create_clone --case $CASEROOT --clone $CLONEROOT
+&gt; cd $CLONEROOT
+&gt; case.build
+&gt; case.submit
+</pre></div>
+</div>
+<p>The <strong>create_clone</strong> script preserves any local namelist modifications
+made in the <strong>user_nl_xxxx</strong> files as well as any source code
+modifications in the <strong>SourceMods</strong> tree. Otherwise, <strong>$CASEROOT/</strong>
+directory will appear as if <strong>create_newcase</strong> had just been run.</p>
+<p><strong>Important</strong>: Do not change anything in the <strong>env_case.xml</strong> file.</p>
+<p>See the <strong>help</strong> text for more usage information.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p><strong>create_clone</strong> has several useful optional arguments. To point to
+the executable of the original case you are cloning from.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; create_clone --case $CASEROOT --clone $CLONEROOT --keepexe
+&gt; cd $CLONEROOT
+&gt; case.submit
+</pre></div>
+</div>
+<p>If the <code class="docutils literal"><span class="pre">--keepexe</span></code> optional argument is used, then no SourceMods
+will be permitted in the cloned directory.  A link will be made when
+the cloned case is created pointing the cloned SourceMods/ directory
+to the original case SourceMods directory.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">No changes should be made to <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> in the cloned directory.</p>
+</div>
+<dl class="docutils">
+<dt><strong>create_clone</strong> also permits you to invoked the <code class="docutils literal"><span class="pre">shell_commands</span></code></dt>
+<dd>and <code class="docutils literal"><span class="pre">user_nl_xxx</span></code> files in a user_mods directory by calling:</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; create_clone --case $CASEROOT --clone $CLONEROOT --user-mods-dir USER_MODS_DIR [--keepexe]
+</pre></div>
+</div>
+<p>Note that an optional <code class="docutils literal"><span class="pre">--keepexe</span></code> flag can also be used in this case.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If there is a <code class="docutils literal"><span class="pre">shell_commands</span></code> file, it should not have</p>
+</div>
+<p>any changes to xml variables in either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or
+<code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>.</p>
+<p>Another approach to duplicating a case is to use the information in
+the case&#8217;s <strong>README.case</strong> and <strong>CaseStatus</strong> files to create a new
+case and duplicate the relevant <strong>xlmchange</strong> commands that were
+issued in the original case. This alternative will <em>not</em> preserve any
+local modifications that were made to the original case, such as
+source-code or build-script revisions; you will need to import those
+changes manually.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
@@ -81,52 +145,6 @@
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="cloning-a-case">
-<span id="id1"></span><h1>8. Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h1>
-<p>If you have access to a run that you want to clone, the <strong>create_clone</strong> command will create a new case while preserving local modifications to the case.</p>
-<p>Here is a simple example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
-&gt; create_clone --case $CASEROOT --clone $CLONEROOT
-</pre></div>
-</div>
-<p>The <strong>create_clone</strong> script preserves any local namelist modifications made in the <strong>user_nl_xxxx</strong> files as well as any source code modifications in the <strong>SourceMods</strong> tree. Otherwise, <strong>$CASEROOT/</strong> directory will appear as if <strong>create_newcase</strong> had just been run.</p>
-<p><strong>Important</strong>: Do not change anything in the <strong>env_case.xml</strong> file.</p>
-<p>See the <strong>help</strong> text for more usage information.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<p><strong>create_clone</strong> has several useful optional arguments. To point to the executable of the original case you are cloning from.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; create_clone --case $CASEROOT --clone $CLONEROOT --keepexe
-</pre></div>
-</div>
-<p>If the <code class="docutils literal"><span class="pre">--keepexe</span></code> optional argument is used, then no SourceMods will be permitted in the cloned directory.
-A link will be made when the cloned case is created pointing the cloned SourceMods/ directory to the original case SourceMods directory.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">No changes should be made to <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> in the cloned directory.</p>
-</div>
-<p><strong>create_clone</strong> also permits you to invoked the <code class="docutils literal"><span class="pre">shell_commands</span></code> and <code class="docutils literal"><span class="pre">user_nl_xxx</span></code> files in a user_mods directory by calling:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; create_clone --case $CASEROOT --clone $CLONEROOT --user-mods-dir USER_MODS_DIR [--keepexe]
-</pre></div>
-</div>
-<p>Note that an optional <code class="docutils literal"><span class="pre">--keepexe</span></code> flag can also be used in this case.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If there is a <code class="docutils literal"><span class="pre">shell_commands</span></code> file, it should not have any changes to xml variables in either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>.</p>
-</div>
-<p>Another approach to duplicating a case is to use the information in the case&#8217;s <strong>README.case</strong> and <strong>CaseStatus</strong> files to create a new case and duplicate the relevant <strong>xlmchange</strong> commands that were issued in the original case. This alternative will <em>not</em> preserve any local modifications that were made to the original case, such as source-code or build-script revisions; you will need to import those changes manually.</p>
-</div>
-
-
-          </div>
-        </div>
-      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -144,7 +162,7 @@ A link will be made when the cloned case is created pointing the cloned SourceMo
         <li class="right" >
           <a href="customizing-a-case.html" title="7. Customizing a Case"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>

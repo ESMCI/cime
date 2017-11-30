@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>9. Data Ocean (DOCN) &mdash; CIME 5.3.0 documentation</title>
+    <title>9. Data Ocean (DOCN) &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME Data Models" href="index.html" />
     <link rel="next" title="10. Data River (DROF)" href="data-river.html" />
-    <link rel="prev" title="8. Data Ice (DICE)" href="data-seaice.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="8. Data Ice (DICE)" href="data-seaice.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,51 +44,10 @@
         <li class="right" >
           <a href="data-seaice.html" title="8. Data Ice (DICE)"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">9. Data Ocean (DOCN)</a><ul>
-<li><a class="reference internal" href="#xml-variables">9.1. xml variables</a></li>
-<li><a class="reference internal" href="#datamode-values">9.2. datamode values</a></li>
-<li><a class="reference internal" href="#docn-mode-datamode-and-streams">9.3. DOCN_MODE, datamode and streams</a></li>
-<li><a class="reference internal" href="#namelists">9.4. Namelists</a></li>
-<li><a class="reference internal" href="#datamode-independent-streams">9.5. Datamode independent streams</a></li>
-<li><a class="reference internal" href="#field-names">9.6. Field names</a></li>
-<li><a class="reference internal" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">9.7. Creating SSTDATA mode input from a fully prognostic run (CESM only)</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="data-seaice.html"
-                        title="previous chapter">8. Data Ice (DICE)</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="data-river.html"
-                        title="next chapter">10. Data River (DROF)</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/data-ocean.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -110,33 +63,54 @@ Therefore, the data ocean model does not compute fluxes like the data ice (DICE)
 DOCN has two distinct modes of operation.
 DOCN can run as a pure data model, reading in ocean SSTs (normally climatological) from input datasets, performing time/spatial  interpolations, and passing these to the coupler.
 Alternatively, DOCN can compute updated SSTs by running as a slab ocean model where bottom ocean heat flux convergence and boundary layer depths are read in and used with the atmosphere/ocean and ice/ocean fluxes obtained from the driver.</p>
-<p>DOCN running in prescribed mode assumes that the only field in the input stream is SST and also that SST is in Celsius and must be converted to Kelvin.
-All other fields are set to zero except for ocean salinity, which is set to a constant reference salinity value.
-Normally the ice fraction data (used for prescribed CICE) is found in the same data files that provide SST data to the data ocean model since SST and ice fraction data are derived from the same observational data sets and are consistent with each other.
-For DOCN prescribed mode, default yearly climatological datasets are provided for various model resolutions.</p>
-<p>DOCN running as a slab ocean model is used in conjunction with active ice mode running in full prognostic mode (e.g. CICE for CESM).
-This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model.
-This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
-Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled CCSM run.
-Note that this mode no longer runs out of the box, the default testing SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only.
-Users must create scientifically appropriate data for their particular application or use one of the standard SOM forcing files from the full prognostic control runs.
-For CESM, some of these are available in the <a class="reference external" href="https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/ocn/docn7/SOM/">inputdata repository</a>.
-The user then modifies the <code class="docutils literal"><span class="pre">$DOCN_SOM_FILENAME</span></code> variable in env_run.xml to point to the appropriate SOM forcing dataset.</p>
+<p>DOCN running in prescribed mode assumes that the only field in the
+input stream is SST and also that SST is in Celsius and must be
+converted to Kelvin.  All other fields are set to zero except for
+ocean salinity, which is set to a constant reference salinity value.
+Normally the ice fraction data (used for prescribed CICE) is found in
+the same data files that provide SST data to the data ocean model
+since SST and ice fraction data are derived from the same
+observational data sets and are consistent with each other.  For DOCN
+prescribed mode, default yearly climatological datasets are provided
+for various model resolutions.</p>
+<p>DOCN running as a slab ocean model is used in conjunction with active
+ice mode running in full prognostic mode (e.g. CICE for CESM).  This
+mode computes a prognostic sea surface temperature and a freeze/melt
+potential (surface Q-flux) used by the sea ice model.  This
+calculation requires an external SOM forcing data file that includes
+ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
+Scientifically appropriate bottom-of-the-slab Q-fluxes are normally
+ocean resolution dependent and are derived from the ocean model output
+of a fully coupled CCSM run.  Note that this mode no longer runs out
+of the box, the default testing SOM forcing file is not scientifically
+appropriate and is provided for testing and development purposes only.
+Users must create scientifically appropriate data for their particular
+application or use one of the standard SOM forcing files from the full
+prognostic control runs.  For CESM, some of these are available in the
+<a class="reference external" href="https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/ocn/docn7/SOM/">inputdata repository</a>.
+The user then modifies the <code class="docutils literal"><span class="pre">$DOCN_SOM_FILENAME</span></code> variable in
+env_run.xml to point to the appropriate SOM forcing dataset.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">A tool is available to derive valid <a class="reference external" href="http://www.cesm.ucar.edu/models/ccsm1.1/data8/SOM.pdf">SOM forcing</a> and more information on creating the SOM forcing is also available.</p>
+<p class="last">A tool is available to derive valid <a href="#id1"><span class="problematic" id="id2">`</span></a>SOM forcing</p>
 </div>
+<p>&lt;<a class="reference external" href="http://www.cesm.ucar.edu/models/cesm1.2/data8/doc/SOM.pdf">http://www.cesm.ucar.edu/models/cesm1.2/data8/doc/SOM.pdf</a>&gt;`_ and more
+information on creating the SOM forcing is also available.</p>
 <div class="section" id="xml-variables">
 <span id="docn-xml-vars"></span><h2>9.1. xml variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
-<p>The following are xml variables that CIME supports for DOCN.
-These variables are defined in <code class="docutils literal"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code>.
-These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DOCN <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DOCN namelist file <code class="docutils literal"><span class="pre">docn_in</span></code> and the required associated stream files for the case.</p>
+<p>The following are xml variables that CIME supports for DOCN.  These
+variables are defined in
+<code class="docutils literal"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code>.
+These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the
+DOCN <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DOCN namelist
+file <code class="docutils literal"><span class="pre">docn_in</span></code> and the required associated stream files for the
+case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">These xml variables are used by the the docn&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with docn&#8217;s <strong>cime_config/namelist_definition_docn.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">docn_in</span></code>.</p>
 </div>
-<table border="1" class="colwidths-given docutils" id="id1">
-<caption><span class="caption-text">&#8220;DOCN xml variables&#8221;</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id3">
+<caption><span class="caption-text">&#8220;DOCN xml variables&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -231,8 +205,8 @@ These variables will appear in <code class="docutils literal"><span class="pre">
 <p>The xml variable <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> (described in <a class="reference internal" href="#docn-mode"><span class="std std-ref">DOCN_MODE, datamode and streams</span></a>) sets the streams that are associated with DOCN and also sets the namelist variable <code class="docutils literal"><span class="pre">datamode</span></code>.
 <code class="docutils literal"><span class="pre">datamode</span></code> (which appears in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>) specifies what additional operations need to be done by DOCN on the streams before returning to the driver.</p>
 <p>Each data model has its own set of supported <code class="docutils literal"><span class="pre">datamode</span></code> values. The following are the supported DOCN <code class="docutils literal"><span class="pre">datamode</span></code> values, as defined in the file <code class="docutils literal"><span class="pre">namelist_definition_docn.xml</span></code>.</p>
-<table border="1" class="colwidths-given docutils" id="id2">
-<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -265,8 +239,8 @@ These variables will appear in <code class="docutils literal"><span class="pre">
 <span id="docn-mode"></span><h2>9.3. DOCN_MODE, datamode and streams<a class="headerlink" href="#docn-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
 <p>The following table describes the valid values of <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> (defined in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DOCN), and how they relate to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.
 CIME will generate a value of <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> based on the compset.</p>
-<table border="1" class="colwidths-given docutils" id="id3">
-<caption><span class="caption-text">&#8220;Relationship between DOCN_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id5">
+<caption><span class="caption-text">&#8220;Relationship between DOCN_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -364,8 +338,8 @@ CIME will generate a value of <code class="docutils literal"><span class="pre">D
 <span id="docn-fields"></span><h2>9.6. Field names<a class="headerlink" href="#field-names" title="Permalink to this headline">¶</a></h2>
 <p>DOCN defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
 In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">docn_fld</span></code> names below for use within the data ocn model.</p>
-<table border="1" class="colwidths-given docutils" id="id4">
-<caption><span class="caption-text">&#8220;DOCN internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id6">
+<caption><span class="caption-text">&#8220;DOCN internal field names&#8221;</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -566,6 +540,47 @@ To do this, invoke <code class="docutils literal"><span class="pre">$SRCROOT/com
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">9. Data Ocean (DOCN)</a><ul>
+<li><a class="reference internal" href="#xml-variables">9.1. xml variables</a></li>
+<li><a class="reference internal" href="#datamode-values">9.2. datamode values</a></li>
+<li><a class="reference internal" href="#docn-mode-datamode-and-streams">9.3. DOCN_MODE, datamode and streams</a></li>
+<li><a class="reference internal" href="#namelists">9.4. Namelists</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">9.5. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#field-names">9.6. Field names</a></li>
+<li><a class="reference internal" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">9.7. Creating SSTDATA mode input from a fully prognostic run (CESM only)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="data-seaice.html"
+                        title="previous chapter">8. Data Ice (DICE)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="data-river.html"
+                        title="next chapter">10. Data River (DROF)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/data_models/data-ocean.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -583,7 +598,7 @@ To do this, invoke <code class="docutils literal"><span class="pre">$SRCROOT/com
         <li class="right" >
           <a href="data-seaice.html" title="8. Data Ice (DICE)"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
       </ul>
     </div>

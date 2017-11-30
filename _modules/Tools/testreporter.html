@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tools.testreporter &mdash; CIME 5.3.0 documentation</title>
+    <title>Tools.testreporter &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -194,75 +174,77 @@
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;BASELINE&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;TPUTCOMP&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;TPUTCOMP&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;FAIL PFS&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;FAIL&quot;</span>
             <span class="k">if</span> <span class="s2">&quot;INIT&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;INIT&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;SFAIL&quot;</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;INIT fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;CREATE_NEWCASE&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;CREATE_NEWCASE&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;SFAIL&quot;</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;CREATE_NEWCASE fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;XML&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;XML&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;SFAIL&quot;</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;XML fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;SETUP&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;SETUP&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;SFAIL&quot;</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;SETUP fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;SHAREDLIB_BUILD&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;SHAREDLIB_BUILD&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;CFAIL&quot;</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;SHAREDLIB_BUILD fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;MODEL_BUILD&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;MODEL_BUILD&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;CFAIL&quot;</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;MODEL_BUILD fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;SUBMIT&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;SUBMIT fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;RUN&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;RUN fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;COMPARE_base_rest&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;Restart fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;COMPARE_base_hybrid&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;Hybrid fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;COMPARE_base_multiinst&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;Multi instance fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;COMPARE_base_test&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;Base test fail! &quot;</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="s2">&quot;COMPARE_base_single_thread&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;STATUS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FAIL&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="s2">&quot;PEND&quot;</span><span class="p">):</span>
                     <span class="n">test_status</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span><span class="o">+=</span><span class="s2">&quot;Thread test fail! &quot;</span>
                     <span class="k">break</span>
 
@@ -318,6 +300,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -329,7 +325,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

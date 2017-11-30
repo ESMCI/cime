@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.case_run &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.case_run &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -69,7 +49,7 @@
   <h1>Source code for CIME.case_run</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.case_submit</span>               <span class="kn">import</span> <span class="n">submit</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">new_lid</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_timestamp</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">new_lid</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">run_sub_or_cmd</span>
 <span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span>         <span class="kn">import</span> <span class="n">check_lockedfiles</span>
 <span class="kn">from</span> <span class="nn">CIME.get_timing</span>                <span class="kn">import</span> <span class="n">get_timing</span>
 <span class="kn">from</span> <span class="nn">CIME.provenance</span>                <span class="kn">import</span> <span class="n">save_prerun_provenance</span><span class="p">,</span> <span class="n">save_postrun_provenance</span>
@@ -175,7 +155,11 @@
 
     <span class="k">while</span> <span class="n">loop</span><span class="p">:</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="n">stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">save_prerun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">run_func</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">stat</span> <span class="o">=</span> <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">run_func</span><span class="p">,</span> <span class="s2">&quot;model execution&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
+
         <span class="n">model_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">model</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
         <span class="c1"># Determine if failure was due to a failed node, if so, try to restart</span>
         <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -306,20 +290,18 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="do_external"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_run.do_external">[docs]</a><span class="k">def</span> <span class="nf">do_external</span><span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">script_name</span><span class="p">),</span> <span class="s2">&quot;External script {} not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">script_name</span><span class="p">))</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;{}.external.log.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
     <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="n">script_name</span> <span class="o">+</span> <span class="s2">&quot; 1&gt; {} {} 2&gt;&amp;1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">script_name</span><span class="p">))</span>
-    <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+    <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="p">[</span><span class="n">caseroot</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">script_name</span><span class="p">),</span> <span class="p">[</span><span class="n">caseroot</span><span class="p">],</span> <span class="n">logfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span></div>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="do_data_assimilation"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_run.do_data_assimilation">[docs]</a><span class="k">def</span> <span class="nf">do_data_assimilation</span><span class="p">(</span><span class="n">da_script</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">rundir</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">da_script</span><span class="p">),</span> <span class="s2">&quot;Data Assimilation script {} not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">da_script</span><span class="p">))</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;da.log.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)</span>
     <span class="n">outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="n">da_script</span> <span class="o">+</span> <span class="s2">&quot; 1&gt; {} {} {:d} 2&gt;&amp;1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">cycle</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">da_script</span><span class="p">))</span>
-    <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+    <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">da_script</span><span class="p">,</span> <span class="p">[</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cycle</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">da_script</span><span class="p">),</span> <span class="p">[</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cycle</span><span class="p">],</span> <span class="n">logfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span></div>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="case_run"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_run.case_run">[docs]</a><span class="k">def</span> <span class="nf">case_run</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -339,14 +321,19 @@
     <span class="n">prerun_script</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PRERUN_SCRIPT&quot;</span><span class="p">)</span>
     <span class="n">postrun_script</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;POSTRUN_SCRIPT&quot;</span><span class="p">)</span>
 
-    <span class="n">data_assimilation</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION&quot;</span><span class="p">)</span>
     <span class="n">data_assimilation_cycles</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_CYCLES&quot;</span><span class="p">)</span>
     <span class="n">data_assimilation_script</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_SCRIPT&quot;</span><span class="p">)</span>
-
+    <span class="n">data_assimilation</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_assimilation_cycles</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+                         <span class="nb">len</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">))</span>
     <span class="c1"># set up the LID</span>
     <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
 
-    <span class="n">save_prerun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">prerun_script</span><span class="p">:</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">do_external</span><span class="p">(</span><span class="n">prerun_script</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
+                    <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;prerun&quot;</span><span class="p">)</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data_assimilation_cycles</span><span class="p">):</span>
         <span class="c1"># After the first DA cycle, runs are restart runs</span>
@@ -354,14 +341,8 @@
             <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
             <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">prerun_script</span><span class="p">:</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="n">do_external</span><span class="p">(</span><span class="n">prerun_script</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
-                        <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;prerun&quot;</span><span class="p">)</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
-
         <span class="n">lid</span> <span class="o">=</span> <span class="n">run_model</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="p">,</span> <span class="n">da_cycle</span><span class="o">=</span><span class="n">cycle</span><span class="p">)</span>
-        <span class="n">save_logs</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>       <span class="c1"># Copy log files back to caseroot</span>
+
         <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CHECK_TIMING&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">):</span>
             <span class="n">get_timing</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>     <span class="c1"># Run the getTiming script</span>
 
@@ -371,13 +352,17 @@
                                  <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
             <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">postrun_script</span><span class="p">:</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="n">do_external</span><span class="p">(</span><span class="n">postrun_script</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
-                        <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;postrun&quot;</span><span class="p">)</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
+        <span class="n">save_logs</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>       <span class="c1"># Copy log files back to caseroot</span>
 
         <span class="n">save_postrun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">postrun_script</span><span class="p">:</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">do_external</span><span class="p">(</span><span class="n">postrun_script</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
+                    <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;postrun&quot;</span><span class="p">)</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
+
+    <span class="n">save_logs</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>       <span class="c1"># Copy log files back to caseroot</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;check for resubmit&quot;</span><span class="p">)</span>
     <span class="n">resubmit_check</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
@@ -386,6 +371,20 @@
 </pre></div>
 
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -399,7 +398,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Running a Case &mdash; CIME 5.3.0 documentation</title>
+    <title>6. Running a Case &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="7. Customizing a Case" href="customizing-a-case.html" />
-    <link rel="prev" title="5. Building a Case" href="building-a-case.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="5. Building a Case" href="building-a-case.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,66 +44,10 @@
         <li class="right" >
           <a href="building-a-case.html" title="5. Building a Case"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">6. Running a Case</a><ul>
-<li><a class="reference internal" href="#calling-case-submit">6.1. Calling <strong>case.submit</strong></a><ul>
-<li><a class="reference internal" href="#result-of-running-case-submit">6.1.1. Result of running case.submit</a></li>
-<li><a class="reference internal" href="#monitoring-case-job-statuses">6.1.2. Monitoring case job statuses</a></li>
-<li><a class="reference internal" href="#troubleshooting-a-job-that-fails">6.1.3. Troubleshooting a job that fails</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#input-data">6.2. Input data</a></li>
-<li><a class="reference internal" href="#controlling-starting-stopping-and-restarting-a-run">6.3. Controlling starting, stopping and restarting a run</a><ul>
-<li><a class="reference internal" href="#run-type-initialization">6.3.1. Run-type initialization</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#controlling-output-data">6.4. Controlling output data</a></li>
-<li><a class="reference internal" href="#restarting-a-run">6.5. Restarting a run</a><ul>
-<li><a class="reference internal" href="#backing-up-to-a-previous-restart">6.5.1. Backing up to a previous restart</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#archiving-model-output-data">6.6. Archiving model output data</a><ul>
-<li><a class="reference internal" href="#no-archiving">6.6.1. No archiving</a></li>
-<li><a class="reference internal" href="#short-term-archiving">6.6.2. Short-term archiving</a></li>
-<li><a class="reference internal" href="#long-term-archiving">6.6.3. Long-term archiving</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="building-a-case.html"
-                        title="previous chapter">5. Building a Case</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="customizing-a-case.html"
-                        title="next chapter">7. Customizing a Case</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/running-a-case.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -489,10 +427,116 @@ However, with the industry migration away from tape archives, it is no longer
 feasible for CIME to support all the possible archival schemes available.</p>
 </div>
 </div>
+<div class="section" id="data-assimilation-and-other-external-processing">
+<h2>6.7. Data Assimilation and other External Processing<a class="headerlink" href="#data-assimilation-and-other-external-processing" title="Permalink to this headline">¶</a></h2>
+<p>CIME provides a capability to run a task on the compute nodes either
+before or after the model run.  CIME also provides a data assimilation
+capability which will cycle the model and then a user defined task for
+a user determined number of cycles.</p>
+<div class="section" id="pre-and-post-run-scripts">
+<h3>6.7.1. Pre and Post run scripts<a class="headerlink" href="#pre-and-post-run-scripts" title="Permalink to this headline">¶</a></h3>
+<p>Variables <code class="docutils literal"><span class="pre">PRERUN_SCRIPT</span></code> and <code class="docutils literal"><span class="pre">POSTRUN_SCRIPT</span></code> can each be used to name
+a script which should be exectuted immediately prior starting or
+following completion of the CESM executable within the batch
+environment.  The script is expected to be found in the case directory
+and will recieve one argument which is the full path to that
+directory.  If the script is written in python and contains a
+subroutine with the same name as the script, it will be called as a
+subroutine rather than as an external shell script.</p>
+</div>
+<div class="section" id="data-assimilation-scripts">
+<h3>6.7.2. Data Assimilation scripts<a class="headerlink" href="#data-assimilation-scripts" title="Permalink to this headline">¶</a></h3>
+<p>Variables <code class="docutils literal"><span class="pre">DATA_ASSIMILATION</span></code>, <code class="docutils literal"><span class="pre">DATA_ASSIMILATION_SCRIPT</span></code>, and
+<code class="docutils literal"><span class="pre">DATA_ASSIMILATION_CYCLES</span></code> may also be used to externally control
+model evolution.  If <code class="docutils literal"><span class="pre">DATA_ASSIMILATION</span></code> is true after the model
+completes the <code class="docutils literal"><span class="pre">DATA_ASSIMILATION_SCRIPT</span></code> will be run and then the
+model will be started again <code class="docutils literal"><span class="pre">DATA_ASSIMILATION_CYCLES</span></code> times.  The
+script is expected to be found in the case directory and will recieve
+two arguments, the full path to that directory and the cycle number.
+If the script is written in python and contains a subroutine with the
+same name as the script, it will be called as a subroutine rather than
+as an external shell script.</p>
+<p>..: A simple example pre run script.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="k">import</span> <span class="n">Case</span>
+
+<span class="k">def</span> <span class="nf">myprerun</span><span class="p">(</span><span class="n">caseroot</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+         <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;rundir is &quot;</span><span class="p">,</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
+
+ <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+   <span class="n">caseroot</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+   <span class="n">myprerun</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 
 
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6. Running a Case</a><ul>
+<li><a class="reference internal" href="#calling-case-submit">6.1. Calling <strong>case.submit</strong></a><ul>
+<li><a class="reference internal" href="#result-of-running-case-submit">6.1.1. Result of running case.submit</a></li>
+<li><a class="reference internal" href="#monitoring-case-job-statuses">6.1.2. Monitoring case job statuses</a></li>
+<li><a class="reference internal" href="#troubleshooting-a-job-that-fails">6.1.3. Troubleshooting a job that fails</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#input-data">6.2. Input data</a></li>
+<li><a class="reference internal" href="#controlling-starting-stopping-and-restarting-a-run">6.3. Controlling starting, stopping and restarting a run</a><ul>
+<li><a class="reference internal" href="#run-type-initialization">6.3.1. Run-type initialization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#controlling-output-data">6.4. Controlling output data</a></li>
+<li><a class="reference internal" href="#restarting-a-run">6.5. Restarting a run</a><ul>
+<li><a class="reference internal" href="#backing-up-to-a-previous-restart">6.5.1. Backing up to a previous restart</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#archiving-model-output-data">6.6. Archiving model output data</a><ul>
+<li><a class="reference internal" href="#no-archiving">6.6.1. No archiving</a></li>
+<li><a class="reference internal" href="#short-term-archiving">6.6.2. Short-term archiving</a></li>
+<li><a class="reference internal" href="#long-term-archiving">6.6.3. Long-term archiving</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-assimilation-and-other-external-processing">6.7. Data Assimilation and other External Processing</a><ul>
+<li><a class="reference internal" href="#pre-and-post-run-scripts">6.7.1. Pre and Post run scripts</a></li>
+<li><a class="reference internal" href="#data-assimilation-scripts">6.7.2. Data Assimilation scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="building-a-case.html"
+                        title="previous chapter">5. Building a Case</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="customizing-a-case.html"
+                        title="next chapter">7. Customizing a Case</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/running-a-case.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -512,7 +556,7 @@ feasible for CIME to support all the possible archival schemes available.</p>
         <li class="right" >
           <a href="building-a-case.html" title="5. Building a Case"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>

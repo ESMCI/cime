@@ -107,6 +107,14 @@ CIME.SystemTests.irt module
     :undoc-members:
     :show-inheritance:
 
+CIME.SystemTests.ldsta module
+-----------------------------
+
+.. automodule:: CIME.SystemTests.ldsta
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.SystemTests.mcc module
 ---------------------------
 

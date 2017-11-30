@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Driver XML Files &mdash; CIME 5.3.0 documentation</title>
+    <title>Driver XML Files &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="CIME" href="../CIME_api/modules.html" />
-    <link rel="prev" title="CIME Wave Data and Stub XML Files" href="wave.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="CIME Wave Data and Stub XML Files" href="wave.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,46 +44,10 @@
         <li class="right" >
           <a href="wave.html" title="CIME Wave Data and Stub XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Driver XML Files</a><ul>
-<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config">CIMEROOT/src/drivers/mct/cime_config</a></li>
-<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml">CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="wave.html"
-                        title="previous chapter">CIME Wave Data and Stub XML Files</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="../CIME_api/modules.html"
-                        title="next chapter">CIME</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/drivers.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -110,7 +68,7 @@ treated as a component by CIME with associated XML files
 to define behavior.</p>
 <p>XML specification for archiving coupler output files.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
-  &lt;comp_archive_spec compname=&quot;cpl&quot; compclass=&quot;cpl&quot;&gt;
+  &lt;comp_archive_spec compname=&quot;drv&quot; compclass=&quot;cpl&quot;&gt;
     &lt;rest_file_extension&gt;\.r\..*&lt;/rest_file_extension&gt;
     &lt;hist_file_extension&gt;\.h.*.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
@@ -507,21 +465,6 @@ to define behavior.</p>
     &lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;PAUSE_COMPONENT_LIST&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;none&lt;/default_value&gt;
-    &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;_DESP&quot;&gt;cpl&lt;/value&gt;
-    &lt;/values&gt;
-    &lt;group&gt;run_begin_stop_restart&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;
-      A colon-separated list of components to receive pause and resume signals
-      A value of &#39;all&#39; means all components will pause and resume
-      A value of &#39;none&#39; means that no components will pause or resume
-    &lt;/desc&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;BARRIER_N&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;1&lt;/default_value&gt;
@@ -550,13 +493,13 @@ to define behavior.</p>
     &lt;group&gt;run_begin_stop_restart&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;
-      ESP component runs after driver &#39;pause cycle&#39;
-      If any component &#39;pauses&#39; (see PAUSE_OPTION, PAUSE_N and
-      PAUSE_COMPONENT_LIST XML variables), the ESP component (if
-      present) will be run to process the component &#39;pause&#39; (restart)
-      files and set any required &#39;resume&#39; signals.
-      If true, esp_cpl_dt and esp_cpl_offset settings are ignored.
-      default: false
+      ESP component runs after driver &#39;pause cycle&#39; If any component
+      &#39;pauses&#39; (see PAUSE_OPTION,
+      PAUSE_N and DATA_ASSIMILATION XML variables),
+      the ESP component (if present) will be run to process the
+      component &#39;pause&#39; (restart) files and set any required &#39;resume&#39;
+      signals.  If true, esp_cpl_dt and esp_cpl_offset settings are
+      ignored.  default: false
     &lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -818,7 +761,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;COMP_INTERFACE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;mct&lt;/valid_values&gt;
+    &lt;valid_values&gt;mct,nuopc&lt;/valid_values&gt;
     &lt;default_value&gt;mct&lt;/default_value&gt;
     &lt;group&gt;build_def&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
@@ -860,6 +803,15 @@ to define behavior.</p>
       If TRUE, the component libraries are always built with OpenMP capability.&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;SMP_PRESENT&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
+    &lt;default_value&gt;FALSE&lt;/default_value&gt;
+    &lt;group&gt;build_def&lt;/group&gt;
+    &lt;file&gt;env_build.xml&lt;/file&gt;
+    &lt;desc&gt;TRUE implies that at least one of the components is built threaded (DO NOT EDIT)&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;USE_PETSC&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
@@ -885,6 +837,15 @@ to define behavior.</p>
     variable to TRUE will involve the inclusion of C++ code in the
     MPASLI executable. This is currently only supported for certain
     machines.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;USE_MOAB&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
+    &lt;default_value&gt;FALSE&lt;/default_value&gt;
+    &lt;group&gt;build_def&lt;/group&gt;
+    &lt;file&gt;env_build.xml&lt;/file&gt;
+    &lt;desc&gt;TRUE implies linking to the MOAB library&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;USE_TRILINOS&quot;&gt;
@@ -1019,15 +980,6 @@ to define behavior.</p>
     &lt;group&gt;run_flags&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;logical to diagnose model timing at the end of the run&lt;/desc&gt;
-  &lt;/entry&gt;
-
-
-  &lt;entry id=&quot;TIMER_LEVEL&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;12&lt;/default_value&gt;
-    &lt;group&gt;run_flags&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;timer output depth&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;PROFILE_PAPI_ENABLE&quot;&gt;
@@ -1752,21 +1704,38 @@ to define behavior.</p>
     &lt;desc&gt;glc2ice runoff mapping file decomp type&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;GLC2OCN_RMAPNAME&quot;&gt;
+  &lt;entry id=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;idmap&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn runoff mapping file&lt;/desc&gt;
+    &lt;desc&gt;glc2ocn runoff mapping file for liquid runoff&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;GLC2OCN_RMAPTYPE&quot;&gt;
+  &lt;entry id=&quot;GLC2OCN_LIQ_RMAPTYPE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
     &lt;default_value&gt;Y&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn runoff mapping file decomp type&lt;/desc&gt;
+    &lt;desc&gt;glc2ocn runoff mapping file decomp type for liquid runoff&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn runoff mapping file for ice runoff&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_ICE_RMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn runoff mapping file decomp type for ice runoff&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;OCN2WAV_SMAPNAME&quot;&gt;
@@ -2164,7 +2133,7 @@ to define behavior.</p>
     &lt;default_value&gt;0&lt;/default_value&gt;
     &lt;group&gt;mach_pes_last&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
-    &lt;desc&gt;total number of tasks and threads (setup automatically - DO NOT EDIT)&lt;/desc&gt;
+    &lt;desc&gt;total number of MPI tasks (setup automatically - DO NOT EDIT)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;MAX_TASKS_PER_NODE&quot;&gt;
@@ -2178,6 +2147,14 @@ to define behavior.</p>
   &lt;entry id=&quot;MAX_MPITASKS_PER_NODE&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;default_value&gt;0&lt;/default_value&gt;
+    &lt;group&gt;mach_pes_last&lt;/group&gt;
+    &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
+    &lt;desc&gt;pes or cores per node for mpitasks &lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;COSTPES_PER_NODE&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;$MAX_MPITASKS_PER_NODE&lt;/default_value&gt;
     &lt;group&gt;mach_pes_last&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
     &lt;desc&gt;pes or cores per node for accounting purposes &lt;/desc&gt;
@@ -2399,15 +2376,15 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;pio root processor relative to component root&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value compclass=&quot;ATM&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;CPL&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;OCN&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;WAV&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;GLC&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;ICE&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;ATM&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;CPL&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;OCN&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;WAV&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;GLC&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;ICE&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;ROF&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;LND&quot;&gt;1&lt;/value&gt;
+      &lt;value component=&quot;ESP&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2499,6 +2476,14 @@ to define behavior.</p>
     &lt;group&gt;test&lt;/group&gt;
     &lt;file&gt;env_test.xml&lt;/file&gt;
     &lt;desc&gt;Expected relative memory usage growth for test&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;TEST_TPUT_TOLERANCE&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;default_value&gt;0.25&lt;/default_value&gt;
+    &lt;group&gt;test&lt;/group&gt;
+    &lt;file&gt;env_test.xml&lt;/file&gt;
+    &lt;desc&gt;Expected throughput deviation&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GENERATE_BASELINE&quot;&gt;
@@ -2684,11 +2669,21 @@ to define behavior.</p>
   &lt;entry id=&quot;DATA_ASSIMILATION&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
-    &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;group&gt;external_tools&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt; Run the external tool pointed to by DATA_ASSIMILATION_SCRIPT after the model run completes &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;FALSE&lt;/value&gt;
+    &lt;/values&gt;
   &lt;/entry&gt;
+
   &lt;entry id=&quot;DATA_ASSIMILATION_CYCLES&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
@@ -2709,15 +2704,15 @@ to define behavior.</p>
  &lt;!-- Job Submission stuff --&gt;
  &lt;entry id=&quot;USER_REQUESTED_QUEUE&quot;&gt;
    &lt;type&gt;char&lt;/type&gt;
-   &lt;group&gt;run_desc&lt;/group&gt;
-   &lt;file&gt;env_run.xml&lt;/file&gt;
+   &lt;group&gt;job_submission&lt;/group&gt;
+   &lt;file&gt;env_batch.xml&lt;/file&gt;
    &lt;desc&gt;Store user override for queue&lt;/desc&gt;
  &lt;/entry&gt;
 
  &lt;entry id=&quot;USER_REQUESTED_WALLTIME&quot;&gt;
    &lt;type&gt;char&lt;/type&gt;
-   &lt;group&gt;run_desc&lt;/group&gt;
-   &lt;file&gt;env_run.xml&lt;/file&gt;
+   &lt;group&gt;job_submission&lt;/group&gt;
+   &lt;file&gt;env_batch.xml&lt;/file&gt;
    &lt;desc&gt;Store user override for walltime&lt;/desc&gt;
  &lt;/entry&gt;
 
@@ -2756,6 +2751,14 @@ to define behavior.</p>
    &lt;desc&gt;project for project-sensitive build and run paths, and job scripts&lt;/desc&gt;
  &lt;/entry&gt;
 
+ &lt;entry id=&quot;CHARGE_ACCOUNT&quot;&gt;
+   &lt;type&gt;char&lt;/type&gt;
+   &lt;default_value&gt;&lt;/default_value&gt;
+   &lt;group&gt;job_submission&lt;/group&gt;
+   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;desc&gt;project to charge in scripts if different from PROJECT&lt;/desc&gt;
+ &lt;/entry&gt;
+
  &lt;entry id=&quot;MODEL_VERSION&quot;&gt;
    &lt;type&gt;char&lt;/type&gt;
    &lt;default_value&gt;unknown&lt;/default_value&gt;
@@ -2784,7 +2787,7 @@ to define behavior.</p>
 &lt;/entry_id&gt;
 </pre></div>
 </div>
-<p>XML variables and component descriptions specific to the ACME driver/coupler</p>
+<p>XML variables and component descriptions specific to the E3SM driver/coupler</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
 &lt;entry_id version=&quot;2.0&quot;&gt;
@@ -2818,6 +2821,14 @@ to define behavior.</p>
   &lt;/entry&gt;
 
   &lt;entry id=&quot;TIMER_DETAIL&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;12&lt;/default_value&gt;
+    &lt;group&gt;run_flags&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;timer output depth&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;TIMER_LEVEL&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;default_value&gt;20&lt;/default_value&gt;
     &lt;group&gt;run_flags&lt;/group&gt;
@@ -2957,9 +2968,13 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM&quot;    &gt;none&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BDRD&quot;&gt;CO2C&lt;/value&gt;
-      &lt;value compset=&quot;HIST.*_DATM%(QIA|CRU)&quot;&gt;CO2A&lt;/value&gt;
-      &lt;value compset=&quot;20TR.*_DATM%(QIA|CRU)&quot;&gt;CO2A&lt;/value&gt;
-      &lt;value compset=&quot;RCP.*_DATM%(QIA|CRU)&quot; &gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;HIST.*_DATM%(QIA|CRU|GSW)&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;20TR.*_DATM%(QIA|CRU|GSW)&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;RCP.*_DATM%(QIA|CRU|GSW)&quot; &gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%IAF*_MPASO%OECO&quot; &gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%IAF*_MPASO%OIECO&quot; &gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%IAF*_MPASO%TOIECO_&quot; &gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%IAF_SLND_MPASCICE%BGC_MPASO%TOIECO_&quot; &gt;CO2A&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3030,16 +3045,16 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oQU240&quot;&gt;12&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oQU240wLI&quot;&gt;12&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oQU120&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oEC60to30&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oEC60to30v3&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oEC60to30wLI&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oRRS30to10v3&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oRRS30to10wLI&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oRRS18to6v3&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO&quot; grid=&quot;oi%oRRS15to5&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU240&quot;&gt;12&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU240wLI&quot;&gt;12&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU120&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oEC60to30&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oEC60to30v3&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oEC60to30wLI&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS30to10v3&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS30to10wLI&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS18to6v3&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS15to5&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
@@ -3053,6 +3068,8 @@ to define behavior.</p>
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_conus_x4v1&quot; &gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_svalbard_x8v1&quot; &gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_sooberingoa_x4x8v1&quot; &gt;144&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_enax4v1&quot; &gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_twpx4v1&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T42&quot;&gt;72&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T85&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T341&quot;&gt;288&lt;/value&gt;
@@ -3226,7 +3243,6 @@ to define behavior.</p>
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;DATM.+POP\d&quot;&gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;DATM.*_MPASO&quot;&gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;DATM.+DOCN%IAF&quot;&gt;TRUE&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_cpl&lt;/group&gt;
@@ -3467,6 +3483,74 @@ to define behavior.</p>
       compsets.&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;OCN2GLC_FMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc flux mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;OCN2GLC_FMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc flux mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;OCN2GLC_SMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc state mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;OCN2GLC_SMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc state mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_FMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn flux mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_FMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn flux mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_SMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn state mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_SMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn state mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;CCSM_GCOST&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
@@ -3531,7 +3615,7 @@ to define behavior.</p>
 &lt;/entry_id&gt;
 </pre></div>
 </div>
-<p>XML variables and component descriptions specific to the ACME driver/coupler</p>
+<p>XML variables and component descriptions specific to the E3SM driver/coupler</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
 &lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;config_compsets.xsl&quot; ?&gt;
@@ -3602,6 +3686,14 @@ to define behavior.</p>
   &lt;entry id=&quot;TIMER_DETAIL&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;default_value&gt;2&lt;/default_value&gt;
+    &lt;group&gt;run_flags&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;timer output depth&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;TIMER_LEVEL&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;12&lt;/default_value&gt;
     &lt;group&gt;run_flags&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;timer output depth&lt;/desc&gt;
@@ -3716,13 +3808,13 @@ to define behavior.</p>
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4.pg3&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4.pg4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg2&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg3&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4&quot;&gt;144&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg2&quot;&gt;144&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg3&quot;&gt;144&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4&quot;&gt;192&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg2&quot;&gt;192&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg3&quot;&gt;192&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg4&quot;&gt;192&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4&quot;&gt;384&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg2&quot;&gt;384&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg3&quot;&gt;384&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4CONUS.ne30x8&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T42&quot;&gt;72&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T85&quot;&gt;144&lt;/value&gt;
@@ -4163,6 +4255,13 @@ to define behavior.</p>
     &lt;lname&gt;2000_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV&lt;/lname&gt;
   &lt;/compset&gt;
 
+  &lt;entries&gt;
+    &lt;entry id=&quot;DATA_ASSIMILATION_CPL&quot;&gt;
+      &lt;values match=&quot;last&quot;&gt;
+	&lt;value compset=&quot;DESP&quot;&gt;TRUE&lt;/value&gt;
+      &lt;/values&gt;
+    &lt;/entry&gt;
+  &lt;/entries&gt;
 &lt;/compsets&gt;
 </pre></div>
 </div>
@@ -6028,13 +6127,13 @@ to define behavior.</p>
     &lt;category&gt;time&lt;/category&gt;
     &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
     &lt;desc&gt;
-      true =&gt; ESP component runs after driver &#39;pause cycle&#39;
-      If any component &#39;pauses&#39; (see PAUSE_OPTION, PAUSE_N and
-      PAUSE_COMPONENT_LIST XML variables), the ESP component (if
-      present) will be run to process the component &#39;pause&#39; (restart)
-      files and set any required &#39;resume&#39; signals.
-      If true, esp_cpl_dt and esp_cpl_offset settings are ignored.
-      default: true
+      true =&gt; ESP component runs after driver &#39;pause cycle&#39; If any
+      component &#39;pauses&#39; (see PAUSE_OPTION,
+      PAUSE_N and DATA_ASSIMILATION_XXX XML
+      variables), the ESP component (if present) will be run to
+      process the component &#39;pause&#39; (restart) files and set any
+      required &#39;resume&#39; signals.  If true, esp_cpl_dt and
+      esp_cpl_offset settings are ignored.  default: true
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;.true.&lt;/value&gt;
@@ -6441,20 +6540,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$PAUSE_N&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;pause_component_list&quot; modify_via_xml=&quot;PAUSE_COMPONENT_LIST&quot; skip_default_entry=&quot;true&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;time&lt;/category&gt;
-    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      A colon-separated list of component types (e.g., ocn,atm) to receive a
-      resume signal after a pause has happened. Special values &quot;all&quot; or &quot;none&quot;
-      may be used in place of a list
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$PAUSE_COMPONENT_LIST&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -7943,20 +8028,20 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;glc2ocn_rmapname&quot;    modify_via_xml=&quot;GLC2OCN_RMAPNAME&quot;&gt;
+  &lt;entry id=&quot;glc2ocn_liq_rmapname&quot;    modify_via_xml=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;mapping&lt;/category&gt;
     &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
     &lt;group&gt;seq_maps&lt;/group&gt;
     &lt;desc&gt;
-      glc to ocn runoff conservative mapping file
+      glc to ocn runoff conservative mapping file for liquid runoff
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;$GLC2OCN_RMAPNAME&lt;/value&gt;
+      &lt;value&gt;$GLC2OCN_LIQ_RMAPNAME&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;glc2ocn_rmaptype&quot;    modify_via_xml=&quot;GLC2OCN_RMAPTYPE&quot;&gt;
+  &lt;entry id=&quot;glc2ocn_liq_rmaptype&quot;    modify_via_xml=&quot;GLC2OCN_LIQ_RMAPTYPE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;mapping&lt;/category&gt;
     &lt;group&gt;seq_maps&lt;/group&gt;
@@ -7968,7 +8053,37 @@ to define behavior.</p>
       grid.
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;$GLC2OCN_RMAPTYPE&lt;/value&gt;
+      &lt;value&gt;$GLC2OCN_LIQ_RMAPTYPE&lt;/value&gt;
+      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;glc2ocn_ice_rmapname&quot;    modify_via_xml=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;mapping&lt;/category&gt;
+    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
+    &lt;group&gt;seq_maps&lt;/group&gt;
+    &lt;desc&gt;
+      glc to ocn runoff conservative mapping file for ice runoff
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$GLC2OCN_ICE_RMAPNAME&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;glc2ocn_ice_rmaptype&quot;    modify_via_xml=&quot;GLC2OCN_ICE_RMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;mapping&lt;/category&gt;
+    &lt;group&gt;seq_maps&lt;/group&gt;
+    &lt;desc&gt;
+      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$GLC2OCN_ICE_RMAPTYPE&lt;/value&gt;
       &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -8316,6 +8431,102 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_atm&quot; modify_via_xml=&quot;DATA_ASSIMILATION_ATM&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component atm
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_ATM&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_cpl&quot; modify_via_xml=&quot;DATA_ASSIMILATION_CPL&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component CPL
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_CPL&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_ocn&quot; modify_via_xml=&quot;DATA_ASSIMILATION_OCN&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component ocn
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_OCN&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_wav&quot; modify_via_xml=&quot;DATA_ASSIMILATION_WAV&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component wav
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_WAV&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_glc&quot; modify_via_xml=&quot;DATA_ASSIMILATION_GLC&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component glc
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_GLC&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_rof&quot; modify_via_xml=&quot;DATA_ASSIMILATION_ROF&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component rof
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_ROF&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_ice&quot; modify_via_xml=&quot;DATA_ASSIMILATION_ICE&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component ice
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_ICE&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;data_assimilation_lnd&quot; modify_via_xml=&quot;DATA_ASSIMILATION_LND&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;data_assimilation&lt;/category&gt;
+    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Whether Data Assimilation is on for component lnd
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$DATA_ASSIMILATION_LND&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -8689,6 +8900,42 @@ to define behavior.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Driver XML Files</a><ul>
+<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config">CIMEROOT/src/drivers/mct/cime_config</a></li>
+<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml">CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="wave.html"
+                        title="previous chapter">CIME Wave Data and Stub XML Files</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../CIME_api/modules.html"
+                        title="next chapter">CIME</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/xml_files/drivers.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -8706,7 +8953,7 @@ to define behavior.</p>
         <li class="right" >
           <a href="wave.html" title="CIME Wave Data and Stub XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
       </ul>
     </div>

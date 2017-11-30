@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.tests.SystemTests package &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.tests.SystemTests package &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME.tests package" href="CIME.tests.html" />
     <link rel="next" title="CIME.tests.SystemTests.test_utils package" href="CIME.tests.SystemTests.test_utils.html" />
-    <link rel="prev" title="CIME.tests package" href="CIME.tests.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="CIME.tests package" href="CIME.tests.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,51 +44,12 @@
         <li class="right" >
           <a href="CIME.tests.html" title="CIME.tests package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li>
           <li class="nav-item nav-item-3"><a href="CIME.tests.html" accesskey="U">CIME.tests package</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">CIME.tests.SystemTests package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-CIME.tests.SystemTests.test_system_tests_compare_two">CIME.tests.SystemTests.test_system_tests_compare_two module</a></li>
-<li><a class="reference internal" href="#module-CIME.tests.SystemTests.test_system_tests_compare_two_link_to_case2_output">CIME.tests.SystemTests.test_system_tests_compare_two_link_to_case2_output module</a></li>
-<li><a class="reference internal" href="#module-CIME.tests.SystemTests">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="CIME.tests.html"
-                        title="previous chapter">CIME.tests package</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CIME.tests.SystemTests.test_utils.html"
-                        title="next chapter">CIME.tests.SystemTests.test_utils package</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.tests.SystemTests.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -142,7 +97,7 @@
 
 <dl class="class">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake">
-<em class="property">class </em><code class="descclassname">CIME.tests.SystemTests.test_system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwoFake</code><span class="sig-paren">(</span><em>case1</em>, <em>run_one_suffix='base'</em>, <em>run_two_suffix='test'</em>, <em>separate_builds=False</em>, <em>multisubmit=False</em>, <em>case2setup_raises_exception=False</em>, <em>run_one_should_pass=True</em>, <em>run_two_should_pass=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#SystemTestsCompareTwoFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.tests.SystemTests.test_system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwoFake</code><span class="sig-paren">(</span><em>case1</em>, <em>run_one_suffix='base'</em>, <em>run_two_suffix='test'</em>, <em>separate_builds=False</em>, <em>multisubmit=False</em>, <em>case2setup_raises_exception=False</em>, <em>run_one_should_pass=True</em>, <em>run_two_should_pass=True</em>, <em>compare_should_pass=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#SystemTestsCompareTwoFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
 <dl class="method">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake.run_indv">
@@ -168,6 +123,12 @@ removed if it&#8217;s a maintenance problem.)</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.get_compare_phase_name">
+<code class="descname">get_compare_phase_name</code><span class="sig-paren">(</span><em>mytest</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.get_compare_phase_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.get_compare_phase_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string giving the compare phase name for this test</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.setUp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -175,6 +136,16 @@ removed if it&#8217;s a maintenance problem.)</p>
 <dl class="method">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.tearDown">
 <code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_compare_fails">
+<code class="descname">test_compare_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.test_compare_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_compare_fails" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_compare_passes">
+<code class="descname">test_compare_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.test_compare_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_compare_passes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -290,6 +261,45 @@ SystemTestsCompareTwo._link_to_case2_output</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CIME.tests.SystemTests package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-CIME.tests.SystemTests.test_system_tests_compare_two">CIME.tests.SystemTests.test_system_tests_compare_two module</a></li>
+<li><a class="reference internal" href="#module-CIME.tests.SystemTests.test_system_tests_compare_two_link_to_case2_output">CIME.tests.SystemTests.test_system_tests_compare_two_link_to_case2_output module</a></li>
+<li><a class="reference internal" href="#module-CIME.tests.SystemTests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CIME.tests.html"
+                        title="previous chapter">CIME.tests package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CIME.tests.SystemTests.test_utils.html"
+                        title="next chapter">CIME.tests.SystemTests.test_utils package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/CIME_api/CIME.tests.SystemTests.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -307,7 +317,7 @@ SystemTestsCompareTwo._link_to_case2_output</p>
         <li class="right" >
           <a href="CIME.tests.html" title="CIME.tests package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li>
           <li class="nav-item nav-item-3"><a href="CIME.tests.html" >CIME.tests package</a> &raquo;</li> 

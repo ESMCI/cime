@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.XML.env_mach_pes &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.XML.env_mach_pes &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -86,7 +66,7 @@
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_pes.xsd&quot;</span><span class="p">)</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EnvMachPes.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">MAX_MPITASKS_PER_NODE</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> <span class="c1"># pylint: disable=arguments-differ</span>
+<div class="viewcode-block" id="EnvMachPes.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">max_mpitasks_per_node</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="c1"># Special variable NINST_MAX is used to determine the number of</span>
         <span class="c1"># drivers in multi-driver mode.</span>
         <span class="k">if</span> <span class="n">vid</span> <span class="o">==</span> <span class="s2">&quot;NINST_MAX&quot;</span><span class="p">:</span>
@@ -99,10 +79,10 @@
         <span class="n">value</span> <span class="o">=</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;NTASKS&quot;</span> <span class="ow">in</span> <span class="n">vid</span> <span class="ow">or</span> <span class="s2">&quot;ROOTPE&quot;</span> <span class="ow">in</span> <span class="n">vid</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">MAX_MPITASKS_PER_NODE</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">MAX_MPITASKS_PER_NODE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">max_mpitasks_per_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">max_mpitasks_per_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">value</span><span class="o">*</span><span class="n">MAX_MPITASKS_PER_NODE</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">value</span><span class="o">*</span><span class="n">max_mpitasks_per_node</span>
 
         <span class="k">return</span> <span class="n">value</span></div>
 
@@ -133,21 +113,6 @@
             <span class="k">if</span> <span class="n">threads</span> <span class="o">&gt;</span> <span class="n">max_threads</span><span class="p">:</span>
                 <span class="n">max_threads</span> <span class="o">=</span> <span class="n">threads</span>
         <span class="k">return</span> <span class="n">max_threads</span></div>
-
-<div class="viewcode-block" id="EnvMachPes.get_cost_pes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_cost_pes">[docs]</a>    <span class="k">def</span> <span class="nf">get_cost_pes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">totaltasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        figure out the value of COST_PES which is the pe value used to estimate model cost</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">totaltasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span><span class="s2">&quot;totaltasks &gt; 0 expected totaltasks = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">totaltasks</span><span class="p">))</span>
-        <span class="n">pespn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
-        <span class="n">num_nodes</span><span class="p">,</span> <span class="n">spare_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_nodes</span><span class="p">(</span><span class="n">totaltasks</span><span class="p">,</span> <span class="n">max_thread_count</span><span class="p">)</span>
-        <span class="n">num_nodes</span> <span class="o">+=</span> <span class="n">spare_nodes</span>
-        <span class="c1"># This is hardcoded because on yellowstone by default we</span>
-        <span class="c1"># run with 15 pes per node</span>
-        <span class="c1"># but pay for 16 pes per node.  See github issue #518</span>
-        <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">machine</span> <span class="o">==</span> <span class="s2">&quot;yellowstone&quot;</span><span class="p">:</span>
-            <span class="n">pespn</span> <span class="o">=</span> <span class="mi">16</span>
-        <span class="k">return</span> <span class="n">num_nodes</span> <span class="o">*</span> <span class="n">pespn</span></div>
 
 <div class="viewcode-block" id="EnvMachPes.get_total_tasks"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_pes.EnvMachPes.get_total_tasks">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">):</span>
         <span class="n">total_tasks</span> <span class="o">=</span> <span class="mi">0</span>
@@ -199,6 +164,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -210,7 +189,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

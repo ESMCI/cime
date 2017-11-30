@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.XML.env_mach_specific &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.XML.env_mach_specific &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -123,44 +103,43 @@
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_modules_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_modules_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">module_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="s2">&quot;modules&quot;</span><span class="p">)</span>
         <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="n">module_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_module_actions</span><span class="p">(</span><span class="n">module_nodes</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+            <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_module_actions</span><span class="p">(</span><span class="n">module_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">modules_to_load</span>
 
-    <span class="k">def</span> <span class="nf">_get_envs_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_envs_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">env_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="s2">&quot;environment_variables&quot;</span><span class="p">)</span>
 
         <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="n">env_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_env_actions</span><span class="p">(</span><span class="n">env_nodes</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+            <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_env_actions</span><span class="p">(</span><span class="n">env_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">envs_to_set</span>
 
-<div class="viewcode-block" id="EnvMachSpecific.load_env"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.load_env">[docs]</a>    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
+<div class="viewcode-block" id="EnvMachSpecific.load_env"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.load_env">[docs]</a>    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should only be called by case.load_env</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Do the modules so we can refer to env vars set by the modules</span>
         <span class="c1"># in the environment_variables block</span>
-        <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modules_for_case</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+        <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modules_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">modules_to_load</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_modules</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">)</span>
 
-        <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_envs_for_case</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+        <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_envs_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">envs_to_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_envs</span><span class="p">(</span><span class="n">envs_to_set</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_resources_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_resources_for_case</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_get_resources_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_resources_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">resource_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="s2">&quot;resource_limits&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resource_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_resource_actions</span><span class="p">(</span><span class="n">resource_nodes</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_resource_actions</span><span class="p">(</span><span class="n">resource_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                 <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                 <span class="n">limits</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
@@ -172,6 +151,8 @@
         <span class="n">module_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_type</span><span class="p">()</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_module_modules</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;module_lmod&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_modules_generic</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">)</span>
         <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;soft&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_modules_generic</span><span class="p">(</span><span class="n">modules_to_load</span><span class="p">)</span>
         <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;generic&quot;</span><span class="p">):</span>
@@ -193,7 +174,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">source_cmd</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">module_system</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;module_lmod&quot;</span><span class="p">]):</span>
             <span class="k">return</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;{}module list&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_cmd</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="p">(</span><span class="n">module_system</span> <span class="o">==</span> <span class="s2">&quot;soft&quot;</span><span class="p">):</span>
             <span class="c1"># Does soft really not provide this capability?</span>
@@ -214,9 +195,9 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_modules</span><span class="p">())</span>
         <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;echo -e &#39;</span><span class="se">\n</span><span class="s2">&#39; &amp;&amp; env&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvMachSpecific.make_env_mach_specific_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.make_env_mach_specific_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_env_mach_specific_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
-        <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modules_for_case</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
-        <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_envs_for_case</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+<div class="viewcode-block" id="EnvMachSpecific.make_env_mach_specific_file"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.make_env_mach_specific_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_env_mach_specific_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modules_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">envs_to_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_envs_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;.env_mach_specific.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">modules_to_load</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -236,29 +217,28 @@
 
 <div class="viewcode-block" id="EnvMachSpecific.load_envs"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.load_envs">[docs]</a>    <span class="k">def</span> <span class="nf">load_envs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">envs_to_set</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span> <span class="ow">in</span> <span class="n">envs_to_set</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">env_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_value</span></div>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">env_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">env_value</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">env_value</span></div>
 
     <span class="c1"># Private API</span>
 
-    <span class="k">def</span> <span class="nf">_compute_module_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_nodes</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">module_nodes</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_compute_module_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">module_nodes</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_compute_env_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_nodes</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">env_nodes</span><span class="p">,</span> <span class="s2">&quot;env&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_compute_env_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">env_nodes</span><span class="p">,</span> <span class="s2">&quot;env&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_compute_resource_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_nodes</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">resource_nodes</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_compute_resource_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_nodes</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_actions</span><span class="p">(</span><span class="n">resource_nodes</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
-
-
-    <span class="k">def</span> <span class="nf">_compute_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">child_tag</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_compute_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">child_tag</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># list of tuples (&quot;name&quot;, &quot;argument&quot;)</span>
+        <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">,</span> <span class="n">case</span><span class="p">)):</span>
                 <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">child_tag</span><span class="p">,</span> <span class="s2">&quot;Expected {} element&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">child_tag</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_attribs</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">attrib</span><span class="p">,</span> <span class="n">case</span><span class="p">)):</span>
                         <span class="n">val</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">text</span>
                         <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                             <span class="c1"># We allow a couple special substitutions for these fields</span>
@@ -267,36 +247,39 @@
 
                             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
                             <span class="n">expect</span><span class="p">(</span><span class="s2">&quot;$&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">val</span><span class="p">,</span> <span class="s2">&quot;Not safe to leave unresolved items in env var value: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+
                         <span class="c1"># intentional unindent, result is appended even if val is None</span>
                         <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;compiler&quot;</span> <span class="ow">in</span> <span class="n">attribs</span> <span class="ow">and</span>
-            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;compiler&quot;</span><span class="p">])):</span>
-            <span class="k">return</span> <span class="bp">False</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;mpilib&quot;</span> <span class="ow">in</span> <span class="n">attribs</span> <span class="ow">and</span>
-            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">mpilib</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;mpilib&quot;</span><span class="p">])):</span>
-            <span class="k">return</span> <span class="bp">False</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;debug&quot;</span> <span class="ow">in</span> <span class="n">attribs</span> <span class="ow">and</span>
-            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="s2">&quot;TRUE&quot;</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())):</span>
-            <span class="k">return</span> <span class="bp">False</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;unit_testing&quot;</span> <span class="ow">in</span> <span class="n">attribs</span> <span class="ow">and</span>
-              <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="s2">&quot;TRUE&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit_testing</span> <span class="k">else</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">,</span>
-                              <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;unit_testing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())):</span>
-            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">def</span> <span class="nf">_match_attribs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="c1"># check for matches with case-vars</span>
+        <span class="k">for</span> <span class="n">attrib</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;unit_testing&quot;</span><span class="p">:</span> <span class="c1"># special case</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unit_testing</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="s2">&quot;unit_testing&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()):</span>
+                    <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">elif</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;Cannot match attrib &#39;</span><span class="si">%s</span><span class="s2">&#39;, case has no value for it&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="n">attrib</span><span class="p">]):</span>
+                    <span class="k">return</span> <span class="bp">False</span>
 
         <span class="k">return</span> <span class="bp">True</span>
 
     <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_value</span><span class="p">,</span> <span class="n">xml_value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">xml_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">)):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">my_value</span> <span class="o">!=</span> <span class="n">xml_value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">xml_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">xml_value</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="nb">str</span><span class="p">(</span><span class="n">my_value</span><span class="p">))</span> <span class="ow">is</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">my_value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">my_value</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">xml_value</span> <span class="o">==</span> <span class="s2">&quot;TRUE&quot;</span>
+            <span class="k">else</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">xml_value</span> <span class="o">==</span> <span class="s2">&quot;FALSE&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">my_value</span> <span class="o">==</span> <span class="n">xml_value</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">xml_value</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">my_value</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(env_mach_specific) _match {} {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">my_value</span><span class="p">,</span> <span class="n">xml_value</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">result</span>
-
 
     <span class="k">def</span> <span class="nf">_get_module_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules_to_load</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
         <span class="c1"># Note this is independent of module system type</span>
@@ -484,6 +467,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -495,7 +492,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

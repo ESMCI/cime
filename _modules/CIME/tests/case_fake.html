@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.tests.case_fake &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.tests.case_fake &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -98,6 +78,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASE&#39;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASEBASEID&#39;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUN_TYPE&#39;</span><span class="p">,</span> <span class="s1">&#39;startup&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_exeroot</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_rundir</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CaseFake.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
@@ -134,6 +115,7 @@
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASE&#39;</span><span class="p">,</span> <span class="n">newcasename</span><span class="p">)</span>
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASEBASEID&#39;</span><span class="p">,</span> <span class="n">newcasename</span><span class="p">)</span>
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">)</span>
+        <span class="n">newcase</span><span class="o">.</span><span class="n">set_exeroot</span><span class="p">()</span>
         <span class="n">newcase</span><span class="o">.</span><span class="n">set_rundir</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">newcase</span></div>
@@ -155,8 +137,7 @@
 <span class="sd">            mach_dir (str, optional): Ignored</span>
 <span class="sd">            project (str, optional): Ignored</span>
 <span class="sd">            cime_output_root (str, optional): New CIME_OUTPUT_ROOT for the clone</span>
-<span class="sd">            exeroot (str, optional): Ignored (because exeroot isn&#39;t used</span>
-<span class="sd">                in this fake case implementation)</span>
+<span class="sd">            exeroot (str, optional): New EXEROOT for the clone</span>
 <span class="sd">            rundir (str, optional): New RUNDIR for the clone</span>
 
 <span class="sd">        Returns the clone case object</span>
@@ -166,9 +147,11 @@
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">)</span>
         <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">newcasename</span> <span class="o">=</span> <span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span> <span class="o">=</span> <span class="n">newcaseroot</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cime_output_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CIME_OUTPUT_ROOT&#39;</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="p">)</span>
+            <span class="n">clone</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CIME_OUTPUT_ROOT&#39;</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exeroot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">clone</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;EXEROOT&#39;</span><span class="p">,</span> <span class="n">exeroot</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rundir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
+            <span class="n">clone</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">clone</span></div>
 
@@ -181,12 +164,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="CaseFake.set_exeroot"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_exeroot">[docs]</a>    <span class="k">def</span> <span class="nf">set_exeroot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assumes CASEROOT is already set; sets an appropriate EXEROOT</span>
+<span class="sd">        (nested inside CASEROOT)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;EXEROOT&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">),</span> <span class="s1">&#39;bld&#39;</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="CaseFake.set_rundir"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.set_rundir">[docs]</a>    <span class="k">def</span> <span class="nf">set_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assumes CASEROOT is already set; sets an appropriate RUNDIR (nested</span>
 <span class="sd">        inside CASEROOT)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">),</span> <span class="s1">&#39;run&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CaseFake.load_env"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.load_env">[docs]</a>    <span class="k">def</span> <span class="nf">load_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -196,6 +189,20 @@
 </pre></div>
 
           </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -209,7 +216,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

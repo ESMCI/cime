@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.SystemTests.system_tests_common &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.SystemTests.system_tests_common &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -265,6 +245,7 @@
 <span class="sd">        Use for tests that have multiple cases</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span> <span class="o">=</span> <span class="n">case</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SystemTestsCommon.run_indv"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.run_indv">[docs]</a>    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -312,7 +293,7 @@
                     <span class="n">allgood</span> <span class="o">=</span> <span class="n">allgood</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
-                    
+
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;{} is not compressed, assuming run failed {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cpllog</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">allgood</span><span class="o">==</span><span class="mi">0</span>
@@ -327,7 +308,7 @@
 <span class="sd">        run case needs indirection based on success.</span>
 <span class="sd">        If success_change is True, success requires some files to be different</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">success</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="n">compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+        <span class="n">success</span><span class="p">,</span> <span class="n">comments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_compare_test</span><span class="p">(</span><span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">success_change</span><span class="p">:</span>
             <span class="n">success</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">success</span>
 
@@ -336,6 +317,13 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">&quot;{}_{}_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">COMPARE_PHASE</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">),</span> <span class="n">status</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">success</span>
+
+    <span class="k">def</span> <span class="nf">_do_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wraps the call to compare_test to facilitate replacement in unit</span>
+<span class="sd">        tests</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_mem_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -468,25 +456,31 @@
                     <span class="c1"># for backward compatibility</span>
                     <span class="n">baselog</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basecmp_dir</span><span class="p">,</span> <span class="s2">&quot;cpl.log&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">baselog</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">memlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="n">blmem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mem_usage</span><span class="p">(</span><span class="n">baselog</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">blmem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mem_usage</span><span class="p">(</span><span class="n">baselog</span><span class="p">)</span>
+                    <span class="n">blmem</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">blmem</span> <span class="o">==</span> <span class="p">[]</span> <span class="k">else</span> <span class="n">blmem</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                     <span class="n">curmem</span> <span class="o">=</span> <span class="n">memlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                     <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">curmem</span><span class="o">-</span><span class="n">blmem</span><span class="p">)</span><span class="o">/</span><span class="n">blmem</span>
-                    <span class="k">if</span><span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mf">0.1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
                         <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: Memory usage increase &gt; 10</span><span class="si">% f</span><span class="s2">rom baseline&quot;</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span>
                         <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+
                     <span class="c1"># compare throughput to baseline</span>
                     <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_throughput</span><span class="p">(</span><span class="n">cpllog</span><span class="p">)</span>
                     <span class="n">baseline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_throughput</span><span class="p">(</span><span class="n">baselog</span><span class="p">)</span>
                     <span class="c1">#comparing ypd so bigger is better</span>
                     <span class="k">if</span> <span class="n">baseline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">current</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                         <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">baseline</span> <span class="o">-</span> <span class="n">current</span><span class="p">)</span><span class="o">/</span><span class="n">baseline</span>
-                        <span class="k">if</span><span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="mf">0.25</span><span class="p">):</span>
+                        <span class="n">tolerance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST_TPUT_TOLERANCE&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">tolerance</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">0.25</span>
+                        <span class="n">expect</span><span class="p">(</span><span class="n">tolerance</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;Bad value for throughput tolerance in test&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="n">tolerance</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: Computation time increase &gt; 25</span><span class="si">% f</span><span class="s2">rom baseline&quot;</span>
+                        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
+                            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;Error: Computation time increase &gt; {:d} pct from baseline&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tolerance</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span>
                             <span class="n">append_testlog</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
@@ -702,6 +696,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -713,7 +721,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

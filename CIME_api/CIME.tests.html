@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.tests package &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.tests package &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME package" href="CIME.html" />
     <link rel="next" title="CIME.tests.SystemTests package" href="CIME.tests.SystemTests.html" />
-    <link rel="prev" title="CIME.XML package" href="CIME.XML.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="CIME.XML package" href="CIME.XML.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,51 +44,11 @@
         <li class="right" >
           <a href="CIME.XML.html" title="CIME.XML package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">CIME.tests package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-CIME.tests.case_fake">CIME.tests.case_fake module</a></li>
-<li><a class="reference internal" href="#module-CIME.tests.test_case_fake">CIME.tests.test_case_fake module</a></li>
-<li><a class="reference internal" href="#module-CIME.tests.test_user_mod_support">CIME.tests.test_user_mod_support module</a></li>
-<li><a class="reference internal" href="#module-CIME.tests">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="CIME.XML.html"
-                        title="previous chapter">CIME.XML package</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CIME.tests.SystemTests.html"
-                        title="next chapter">CIME.tests.SystemTests package</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.tests.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -160,14 +114,12 @@ for the clone case (given by newcase).</p>
 <dt>newcase (str): full path to the new case. This directory should not</dt>
 <dd>already exist; it will be created</dd>
 </dl>
-<p>keepexe (bool, optional): Ignored
+<p class="last">keepexe (bool, optional): Ignored
 mach_dir (str, optional): Ignored
 project (str, optional): Ignored
 cime_output_root (str, optional): New CIME_OUTPUT_ROOT for the clone
-exeroot (str, optional): Ignored (because exeroot isn&#8217;t used</p>
-<blockquote>
-<div>in this fake case implementation)</div></blockquote>
-<p class="last">rundir (str, optional): New RUNDIR for the clone</p>
+exeroot (str, optional): New EXEROOT for the clone
+rundir (str, optional): New RUNDIR for the clone</p>
 </dd>
 </dl>
 <p>Returns the clone case object</p>
@@ -190,9 +142,21 @@ exeroot (str, optional): Ignored (because exeroot isn&#8217;t used</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="CIME.tests.case_fake.CaseFake.load_env">
+<code class="descname">load_env</code><span class="sig-paren">(</span><em>reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.load_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.load_env" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="CIME.tests.case_fake.CaseFake.make_rundir">
 <code class="descname">make_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.make_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.make_rundir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make directory given by RUNDIR</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CIME.tests.case_fake.CaseFake.set_exeroot">
+<code class="descname">set_exeroot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_exeroot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_exeroot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes CASEROOT is already set; sets an appropriate EXEROOT
+(nested inside CASEROOT)</p>
 </dd></dl>
 
 <dl class="method">
@@ -326,6 +290,46 @@ line.</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CIME.tests package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-CIME.tests.case_fake">CIME.tests.case_fake module</a></li>
+<li><a class="reference internal" href="#module-CIME.tests.test_case_fake">CIME.tests.test_case_fake module</a></li>
+<li><a class="reference internal" href="#module-CIME.tests.test_user_mod_support">CIME.tests.test_user_mod_support module</a></li>
+<li><a class="reference internal" href="#module-CIME.tests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CIME.XML.html"
+                        title="previous chapter">CIME.XML package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CIME.tests.SystemTests.html"
+                        title="next chapter">CIME.tests.SystemTests package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/CIME_api/CIME.tests.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -343,7 +347,7 @@ line.</p>
         <li class="right" >
           <a href="CIME.XML.html" title="CIME.XML package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
       </ul>

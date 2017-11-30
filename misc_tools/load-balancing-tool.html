@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME Load Balancing Tool &mdash; CIME 5.3.0 documentation</title>
+    <title>1. CIME Load Balancing Tool &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,12 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="Miscellaneous Tools" href="index.html" />
+    <link rel="next" title="Glossary" href="../glossary/index.html" />
+    <link rel="prev" title="Miscellaneous Tools" href="index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -41,41 +38,16 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="../glossary/index.html" title="Glossary"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Miscellaneous Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Miscellaneous Tools</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">CIME Load Balancing Tool</a></li>
-<li><a class="reference internal" href="#for-the-impatient">For the impatient</a></li>
-<li><a class="reference internal" href="#testing">Testing</a></li>
-<li><a class="reference internal" href="#running-simulations-using-load-balancing-submit-py">1. Running simulations using load_balancing_submit.py</a></li>
-<li><a class="reference internal" href="#optimizing-the-layout-using-load-balacing-solve-py">2. Optimizing the layout using load_balacing_solve.py</a></li>
-<li><a class="reference internal" href="#more-about-the-algorithm">3. More about the algorithm</a></li>
-<li><a class="reference internal" href="#extending-the-load-balancing-tool">4. Extending the Load Balancing Tool</a></li>
-</ul>
-
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/misc_tools/load-balancing-tool.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -83,7 +55,7 @@
           <div class="body" role="main">
             
   <div class="section" id="cime-load-balancing-tool">
-<span id="load-balancing-tool"></span><h1>CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
+<span id="load-balancing-tool"></span><h1>1. CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><dl class="docutils">
 <dt>Originally Developed by Sheri Mickelson <a class="reference external" href="mailto:mickelso&#37;&#52;&#48;ucar&#46;edu">mickelso<span>&#64;</span>ucar<span>&#46;</span>edu</a></dt>
@@ -111,7 +83,7 @@ steps:</p>
 </div>
 </div>
 <div class="section" id="for-the-impatient">
-<h1>For the impatient<a class="headerlink" href="#for-the-impatient" title="Permalink to this headline">¶</a></h1>
+<h1>2. For the impatient<a class="headerlink" href="#for-the-impatient" title="Permalink to this headline">¶</a></h1>
 <dl class="docutils">
 <dt>set PYTHONPATH to include</dt>
 <dd>$CIME_DIR/scripts:$CIME_DIR/tools/load_balancing_tool</dd>
@@ -123,7 +95,7 @@ steps:</p>
 <p>$ ./load_balancing_solve.py &#8211;total-tasks &lt;N&gt; &#8211;blocksize 8</p>
 </div>
 <div class="section" id="testing">
-<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<h1>3. Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
@@ -153,7 +125,7 @@ NTASKS_TOTAL = 1024</p>
 $ ./tests/load_balancing_test.py</p>
 </div>
 <div class="section" id="running-simulations-using-load-balancing-submit-py">
-<h1>1. Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Permalink to this headline">¶</a></h1>
+<h1>4. 1. Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Permalink to this headline">¶</a></h1>
 <p>Simulations can be run on a given system by executing the load_balancing_tool.py
 script, located in cime/tools/load_balancing_tool/load_balancing_tool_submit.py.
 This creates timing files in the case directory which will be used to solve
@@ -210,7 +182,7 @@ directly forwarded to the passed:</p>
 </div>
 </div>
 <div class="section" id="optimizing-the-layout-using-load-balacing-solve-py">
-<h1>2. Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Permalink to this headline">¶</a></h1>
+<h1>5. 2. Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Permalink to this headline">¶</a></h1>
 <p>Reads timing data created with load_balancing_submit.py (or otherwise,
 see &#8211;timing-files option) and solves an mixed integer optimization problem
 using these timings. The default layout (IceLndAtmOcn) minimizes the cost per
@@ -272,7 +244,7 @@ all timing data have the same threading structure (i.e. all ATM runs use two thr
 </div>
 </div>
 <div class="section" id="more-about-the-algorithm">
-<h1>3. More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Permalink to this headline">¶</a></h1>
+<h1>6. 3. More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Permalink to this headline">¶</a></h1>
 <p>Before solving the mixed-integer linear program, a model of the cost vs ntasks
 function is constructed for each component.</p>
 <p>Given a component data set of costs (C1,C2,..,Cn) and nblocks (N1,N2,..,Nn),
@@ -356,7 +328,7 @@ follows from the layout:</p>
 <a class="reference external" href="https://www.coin-or.org/Cbc/">https://www.coin-or.org/Cbc/</a></p>
 </div>
 <div class="section" id="extending-the-load-balancing-tool">
-<h1>4. Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
+<h1>7. 4. Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
 <p>The file $CIME_DIR/tools/load_balancing_tool/optimize_model.py
 contains a base class OptimizeModel as well as an implementation class
 IceLndAtmOcn. Any layout solver will look similar to IceLndAtmOcn
@@ -424,6 +396,44 @@ line argument (see test for atm_lnd)</li>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. CIME Load Balancing Tool</a></li>
+<li><a class="reference internal" href="#for-the-impatient">2. For the impatient</a></li>
+<li><a class="reference internal" href="#testing">3. Testing</a></li>
+<li><a class="reference internal" href="#running-simulations-using-load-balancing-submit-py">4. 1. Running simulations using load_balancing_submit.py</a></li>
+<li><a class="reference internal" href="#optimizing-the-layout-using-load-balacing-solve-py">5. 2. Optimizing the layout using load_balacing_solve.py</a></li>
+<li><a class="reference internal" href="#more-about-the-algorithm">6. 3. More about the algorithm</a></li>
+<li><a class="reference internal" href="#extending-the-load-balancing-tool">7. 4. Extending the Load Balancing Tool</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Miscellaneous Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../glossary/index.html"
+                        title="next chapter">Glossary</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc_tools/load-balancing-tool.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -435,7 +445,14 @@ line argument (see test for atm_lnd)</li>
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="../glossary/index.html" title="Glossary"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Miscellaneous Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Miscellaneous Tools</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

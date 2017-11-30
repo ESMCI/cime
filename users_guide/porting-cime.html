@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. Porting and validating CIME on a new platform &mdash; CIME 5.3.0 documentation</title>
+    <title>2. Porting and validating CIME on a new platform &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="3. Optimizing Processor Layout" href="optimizing-processor-layout.html" />
-    <link rel="prev" title="1. CIME internals" href="cime-internals.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="1. CIME internals" href="cime-internals.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,50 +44,10 @@
         <li class="right" >
           <a href="cime-internals.html" title="1. CIME internals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">2. Porting and validating CIME on a new platform</a><ul>
-<li><a class="reference internal" href="#required-libraries-packages">2.1. Required libraries/packages</a></li>
-<li><a class="reference internal" href="#steps-for-porting">2.2. Steps for porting</a></li>
-<li><a class="reference internal" href="#config-machines-xml-machine-specific-file">2.3. config_machines.xml - machine specific file</a></li>
-<li><a class="reference internal" href="#config-compilers-xml-compiler-paths-and-options">2.4. config_compilers.xml - compiler paths and options</a></li>
-<li><a class="reference internal" href="#config-batch-xml-batch-directives">2.5. config_batch.xml - batch directives</a></li>
-<li><a class="reference internal" href="#validating-your-port">2.6. Validating your port</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="cime-internals.html"
-                        title="previous chapter">1. CIME internals</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="optimizing-processor-layout.html"
-                        title="next chapter">3. Optimizing Processor Layout</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/porting-cime.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -119,7 +73,7 @@ This section describes that process.</p>
 <h2>2.2. Steps for porting<a class="headerlink" href="#steps-for-porting" title="Permalink to this headline">¶</a></h2>
 <p>Porting CIME involves several steps in which you create, at a minimum, a <strong>config_machines.xml</strong> file in your <strong>$HOME/.cime</strong> directory.
 In addition, if you have a batch system, you will also need to add a <strong>config_batch.xml</strong> file to your <strong>$HOME/.cime</strong> directory.</p>
-<p>All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the <strong>$CIME/config/[model]</strong>, where <strong>[model]</strong> is either <code class="docutils literal"><span class="pre">acme</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</p>
+<p>All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the <strong>$CIME/config/[model]</strong>, where <strong>[model]</strong> is either <code class="docutils literal"><span class="pre">e3sm</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</p>
 <p>Follow these steps:</p>
 <ol class="arabic">
 <li><p class="first">Create a <strong>$HOME/.cime</strong> directory</p>
@@ -131,7 +85,7 @@ In addition, if you have a batch system, you will also need to add a <strong>con
 </div>
 <p>or</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">main</span><span class="p">]</span>
-<span class="n">CIME_MODEL</span><span class="o">=</span><span class="n">acme</span>
+<span class="n">CIME_MODEL</span><span class="o">=</span><span class="n">e3sm</span>
 </pre></div>
 </div>
 </li>
@@ -152,14 +106,14 @@ In addition, if you have a batch system, you will also need to add a <strong>con
 </div>
 </li>
 <li><p class="first">If you have compiler settings that are specific to your machine, create a <strong>$HOME/.cime/config_compilers.xml</strong> file.</p>
-<p>The default compiler settings are set in <strong>$CIME/config/[model]/machines/config_compilers.xml</strong>, where <strong>[model]</strong> can be either <code class="docutils literal"><span class="pre">acme</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</p>
+<p>The default compiler settings are set in <strong>$CIME/config/[model]/machines/config_compilers.xml</strong>, where <strong>[model]</strong> can be either <code class="docutils literal"><span class="pre">e3sm</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</p>
 <p>There is no template for <strong>config_compilers.xml</strong>.</p>
 </li>
 <li><p class="first">If you have a batch system, create a <strong>$HOME/.cime/config_batch.xml</strong> file.</p>
 </li>
 </ol>
 <blockquote>
-<div>Out-of-the-box batch settings are set in <strong>$CIME/config/[model]/machines/config_batch.xml</strong>, where <strong>[model]</strong> can be either <code class="docutils literal"><span class="pre">acme</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</div></blockquote>
+<div>Out-of-the-box batch settings are set in <strong>$CIME/config/[model]/machines/config_batch.xml</strong>, where <strong>[model]</strong> can be either <code class="docutils literal"><span class="pre">e3sm</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</div></blockquote>
 <ol class="arabic simple">
 <li>Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run <strong>scripts_regression_test.py</strong> interactively from the <strong>$CIME/scripts/tests</strong> directory.
 This performs a number of basic unit tests starting from the simplest and working toward more complicated ones.</li>
@@ -190,7 +144,7 @@ If you would like to make this machine definition available generally you may th
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">PROJECT</span></code>: a project or account number used for batch jobs; can be overridden in environment or in <strong>$HOME/.cime/config</strong></p>
 </li>
-<li><p class="first"><code class="docutils literal"><span class="pre">SAVE_TIMING_DIR</span></code>: (ACME only) target directory for writing timing output</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">SAVE_TIMING_DIR</span></code>: (E3SM only) target directory for writing timing output</p>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">CIME_OUTPUT_ROOT</span></code>: Base directory for case output; the <strong>bld</strong> and <strong>run</strong> directories are written below here</p>
 </li>
@@ -210,7 +164,7 @@ If you would like to make this machine definition available generally you may th
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">GMAKE_J</span></code>: optional number of threads to pass to the gmake flag</p>
 </li>
-<li><p class="first"><code class="docutils literal"><span class="pre">TESTS</span></code>: (ACME only) list of tests to run on the machine</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">TESTS</span></code>: (E3SM only) list of tests to run on the machine</p>
 </li>
 <li><p class="first"><code class="docutils literal"><span class="pre">BATCH_SYSTEM</span></code>: batch system used on this machine (none is okay)</p>
 </li>
@@ -255,7 +209,7 @@ These specify the arguments to the mpi executable and are dependent on your mpi 
 </div>
 <div class="section" id="config-compilers-xml-compiler-paths-and-options">
 <span id="customizing-compiler-file"></span><h2>2.4. config_compilers.xml - compiler paths and options<a class="headerlink" href="#config-compilers-xml-compiler-paths-and-options" title="Permalink to this headline">¶</a></h2>
-<p>The <strong>config_compilers.xml</strong> file defines compiler flags for building CIME (and also CESM and ACME prognostic CIME-driven components).</p>
+<p>The <strong>config_compilers.xml</strong> file defines compiler flags for building CIME (and also CESM and E3SM prognostic CIME-driven components).</p>
 <ol class="arabic simple">
 <li>General compiler flags (e.g., for the gnu compiler) that are machine- and componen-independent are listed first.</li>
 <li>Compiler flags specific to a particular operating system are listed next.</li>
@@ -363,6 +317,46 @@ Model output data for these runs will be available on the <a class="reference ex
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Porting and validating CIME on a new platform</a><ul>
+<li><a class="reference internal" href="#required-libraries-packages">2.1. Required libraries/packages</a></li>
+<li><a class="reference internal" href="#steps-for-porting">2.2. Steps for porting</a></li>
+<li><a class="reference internal" href="#config-machines-xml-machine-specific-file">2.3. config_machines.xml - machine specific file</a></li>
+<li><a class="reference internal" href="#config-compilers-xml-compiler-paths-and-options">2.4. config_compilers.xml - compiler paths and options</a></li>
+<li><a class="reference internal" href="#config-batch-xml-batch-directives">2.5. config_batch.xml - batch directives</a></li>
+<li><a class="reference internal" href="#validating-your-port">2.6. Validating your port</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cime-internals.html"
+                        title="previous chapter">1. CIME internals</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="optimizing-processor-layout.html"
+                        title="next chapter">3. Optimizing Processor Layout</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/porting-cime.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -380,7 +374,7 @@ Model output data for these runs will be available on the <a class="reference ex
         <li class="right" >
           <a href="cime-internals.html" title="1. CIME internals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>

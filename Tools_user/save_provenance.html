@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>save_provenance &mdash; CIME 5.3.0 documentation</title>
+    <title>save_provenance &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="simple-py-prof" href="simple-py-prof.html" />
-    <link rel="prev" title="preview_run" href="preview_run.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="next" title="check_lockedfiles" href="check_lockedfiles.html" />
+    <link rel="prev" title="normalize_cases" href="normalize_cases.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -45,42 +39,15 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="simple-py-prof.html" title="simple-py-prof"
+          <a href="check_lockedfiles.html" title="check_lockedfiles"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="preview_run.html" title="preview_run"
+          <a href="normalize_cases.html" title="normalize_cases"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="preview_run.html"
-                        title="previous chapter">preview_run</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="simple-py-prof.html"
-                        title="next chapter">simple-py-prof</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/Tools_user/save_provenance.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -114,13 +81,13 @@ positional arguments:
                         for infrastructure testing; it does not make sense to
                         store this information manually otherwise
   caseroot              Case directory (default:
-                        /Users/aliceb/cesm2_0_alpha07/cime/scripts/Tools)
+                        /Users/aliceb/cesm2_0_beta07/cime/scripts/Tools)
 
 optional arguments:
   -h, --help            show this help message and exit
   -d, --debug           Print debug information (very verbose) to file /Users/
-                        aliceb/cesm2_0_alpha07/cime/scripts/Tools/save_provena
-                        nce.log (default: False)
+                        aliceb/cesm2_0_beta07/cime/scripts/Tools/save_provenan
+                        ce.log (default: False)
   -v, --verbose         Add additional context (time and file) to log messages
                         (default: False)
   -s, --silent          Print only warnings and error messages (default:
@@ -135,6 +102,33 @@ optional arguments:
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="normalize_cases.html"
+                        title="previous chapter">normalize_cases</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="check_lockedfiles.html"
+                        title="next chapter">check_lockedfiles</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tools_user/save_provenance.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -147,12 +141,12 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="simple-py-prof.html" title="simple-py-prof"
+          <a href="check_lockedfiles.html" title="check_lockedfiles"
              >next</a> |</li>
         <li class="right" >
-          <a href="preview_run.html" title="preview_run"
+          <a href="normalize_cases.html" title="normalize_cases"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
       </ul>
     </div>

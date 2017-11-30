@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.test_scheduler &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.test_scheduler &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,13 +23,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,24 +36,10 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -157,7 +137,7 @@
                  <span class="n">use_existing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">save_timing</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">allow_baseline_overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                  <span class="n">force_procs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">force_threads</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
-                 <span class="n">input_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pesfile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                 <span class="n">input_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pesfile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="c1">###########################################################################</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cime_root</span>       <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span>      <span class="o">=</span> <span class="n">get_model</span><span class="p">()</span>
@@ -169,6 +149,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_dir</span>       <span class="o">=</span> <span class="n">input_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span>         <span class="o">=</span> <span class="n">pesfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_allow_baseline_overwrite</span> <span class="o">=</span> <span class="n">allow_baseline_overwrite</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mail_user</span> <span class="o">=</span> <span class="n">mail_user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mail_type</span> <span class="o">=</span> <span class="n">mail_type</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">)</span>
 
@@ -287,21 +270,26 @@
 
         <span class="k">if</span> <span class="n">use_existing</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">:</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">TestStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">CORE_PHASES</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PEND_STATUS</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">]:</span>
-                            <span class="c1"># We need to pick up here</span>
-                            <span class="k">break</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="n">SUBMIT_PHASE</span><span class="p">:</span>
-                                <span class="c1"># Somewhat subtle. Create_test considers submit/run to be the run phase,</span>
-                                <span class="c1"># so don&#39;t try to update test status for a passed submit phase</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">))</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">CORE_PHASES</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PEND_STATUS</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">]:</span>
+                                <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
+                                    <span class="c1"># Import for potential subsequent waits</span>
+                                    <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
 
-                                <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">RUN_PHASE</span><span class="p">:</span>
-                                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Test {} passed and will not be re-run&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                                <span class="c1"># We need to pick up here</span>
+                                <span class="k">break</span>
+
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="n">SUBMIT_PHASE</span><span class="p">:</span>
+                                    <span class="c1"># Somewhat subtle. Create_test considers submit/run to be the run phase,</span>
+                                    <span class="c1"># so don&#39;t try to update test status for a passed submit phase</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+                                    <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">RUN_PHASE</span><span class="p">:</span>
+                                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Test {} passed and will not be re-run&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
 
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using existing test directory {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -480,19 +468,22 @@
                     <span class="n">mpilib</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --mpilib {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; MPILIB set to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
+                <span class="k">elif</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
                     <span class="n">expect</span><span class="p">(</span><span class="n">ncpl</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span><span class="s2">&quot;Cannot combine _C and _N options&quot;</span><span class="p">)</span>
                     <span class="n">ninst</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --ninst {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninst</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; NINST set to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninst</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+                <span class="k">elif</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
                     <span class="n">expect</span><span class="p">(</span><span class="n">ninst</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span><span class="s2">&quot;Cannot combine _C and _N options&quot;</span><span class="p">)</span>
                     <span class="n">ncpl</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --ninst {} --multi-driver&quot;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ncpl</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; NCPL set to {}&quot;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ncpl</span><span class="p">))</span>
-                <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">):</span>
+                <span class="k">elif</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">):</span>
                     <span class="n">pesize</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --pecount {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pesize</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">):</span>
+                    <span class="n">driver</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --driver {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">)</span>
 
         <span class="c1"># create_test mpilib option overrides default but not explicitly set case_opt mpilib</span>
         <span class="k">if</span> <span class="n">mpilib</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpilib</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
@@ -561,6 +552,8 @@
         <span class="n">envtest</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GENERATE_BASELINE&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_gen_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
         <span class="n">envtest</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMPARE_BASELINE&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_cmp_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span>
         <span class="n">envtest</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CCSM_CPRNC&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CCSM_CPRNC&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+        <span class="n">tput_tolerance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST_TPUT_TOLERANCE&quot;</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">envtest</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TEST_TPUT_TOLERANCE&quot;</span><span class="p">,</span> <span class="mf">0.25</span> <span class="k">if</span> <span class="n">tput_tolerance</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">tput_tolerance</span><span class="p">)</span>
 
         <span class="c1"># Add the test instructions from config_test to env_test in the case</span>
         <span class="n">config_test</span> <span class="o">=</span> <span class="n">Tests</span><span class="p">()</span>
@@ -595,26 +588,26 @@
                     <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">,</span><span class="n">stop_option</span><span class="p">[</span><span class="n">opt</span><span class="p">])</span>
                     <span class="n">opti</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
                     <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">opti</span><span class="p">)</span>
+
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; STOP_OPTION set to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_option</span><span class="p">[</span><span class="n">opt</span><span class="p">]))</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; STOP_N      set to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">opti</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">):</span>
-                    <span class="c1"># Marker to distinguish tests with same name - ignored</span>
-                    <span class="k">continue</span>
 
-                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">):</span>
-                    <span class="c1"># M option handled by create newcase</span>
-                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">):</span>
+                    <span class="c1"># R option is for testing in PTS_MODE or Single Column Model</span>
+                    <span class="c1">#  (SCM) mode</span>
+                    <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;PTS_MODE&quot;</span><span class="p">,</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
 
-                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">):</span>
-                    <span class="c1"># P option handled by create newcase</span>
-                    <span class="k">continue</span>
+                    <span class="c1"># For PTS_MODE, compile with mpi-serial</span>
+                    <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">,</span> <span class="s2">&quot;mpi-serial&quot;</span><span class="p">)</span>
 
-                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
-                    <span class="c1"># handled in create_newcase</span>
-                    <span class="k">continue</span>
-                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
-                    <span class="c1"># handled in create_newcase</span>
-                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># Marker to distinguish tests with same name - ignored</span>
+                      <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># handled in create_newcase</span>
+                      <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># handled in create_newcase</span>
+                      <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># handled in create_newcase</span>
+                      <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># handled in create_newcase</span>
+                      <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;V&#39;</span><span class="p">)):</span>  <span class="c1"># handled in create_newcase</span>
+                    <span class="k">pass</span>
+
                 <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;IOP&#39;</span><span class="p">):</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;IOP test option not yet implemented&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -671,10 +664,14 @@
     <span class="k">def</span> <span class="nf">_run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
     <span class="c1">###########################################################################</span>
         <span class="n">test_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;./case.submit --skip-preview-namelist&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_batch</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;./case.submit --no-batch --skip-preview-namelist&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;./case.submit --skip-preview-namelist&quot;</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; --no-batch&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mail_user</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; --mail-user={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mail_user</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mail_type</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; -M={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mail_type</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shell_cmd_for_phase</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">test_dir</span><span class="p">)</span>
 
@@ -967,6 +964,20 @@
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -978,7 +989,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

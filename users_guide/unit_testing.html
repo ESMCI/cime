@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Fortran Unit Testing &mdash; CIME 5.3.0 documentation</title>
+    <title>5. Fortran Unit Testing &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="6. Multi-instance component functionality" href="multi-instance.html" />
-    <link rel="prev" title="4. Testing with create_test" href="testing.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="4. Testing with create_test" href="testing.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,69 +44,10 @@
         <li class="right" >
           <a href="testing.html" title="4. Testing with create_test"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">5. Fortran Unit Testing</a><ul>
-<li><a class="reference internal" href="#introduction">5.1. Introduction</a><ul>
-<li><a class="reference internal" href="#what-is-a-unit-test">5.1.1. What is a unit test?</a></li>
-<li><a class="reference internal" href="#overview-of-unit-test-support-in-cime">5.1.2. Overview of unit test support in CIME</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#running-cime-s-fortran-unit-tests">5.2. Running CIME&#8217;s Fortran unit tests</a></li>
-<li><a class="reference internal" href="#how-to-add-unit-testing-support-on-your-machine">5.3. How to add unit testing support on your machine</a><ul>
-<li><a class="reference internal" href="#building-pfunit">5.3.1. Building pFUnit</a></li>
-<li><a class="reference internal" href="#adding-to-the-xml-file">5.3.2. Adding to the xml file</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#how-to-write-a-new-unit-test">5.4. How to write a new unit test</a></li>
-<li><a class="reference internal" href="#general-guidelines-for-writing-unit-tests">5.5. General guidelines for writing unit tests</a></li>
-<li><a class="reference internal" href="#more-details-on-writing-pfunit-based-unit-tests">5.6. More details on writing pFUnit-based unit tests</a><ul>
-<li><a class="reference internal" href="#assertion-methods">5.6.1. Assertion methods</a></li>
-<li><a class="reference internal" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods">5.6.2. Defining a test class in order to define setUp and tearDown methods</a></li>
-<li><a class="reference internal" href="#more-on-test-teardown">5.6.3. More on test teardown</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#finding-more-documentation-and-examples">5.7. Finding more documentation and examples</a><ul>
-<li><a class="reference internal" href="#more-detailed-examples-in-cime">5.7.1. More detailed examples in CIME</a></li>
-<li><a class="reference internal" href="#other-pfunit-documentation-sources">5.7.2. Other pFUnit documentation sources</a></li>
-<li><a class="reference internal" href="#documentation-of-the-unit-test-build-system">5.7.3. Documentation of the unit test build system</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="testing.html"
-                        title="previous chapter">4. Testing with create_test</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="multi-instance.html"
-                        title="next chapter">6. Multi-instance component functionality</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/unit_testing.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -479,6 +414,65 @@ documentation about how to use the CIME unit test infrastructure (in the
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. Fortran Unit Testing</a><ul>
+<li><a class="reference internal" href="#introduction">5.1. Introduction</a><ul>
+<li><a class="reference internal" href="#what-is-a-unit-test">5.1.1. What is a unit test?</a></li>
+<li><a class="reference internal" href="#overview-of-unit-test-support-in-cime">5.1.2. Overview of unit test support in CIME</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-cime-s-fortran-unit-tests">5.2. Running CIME&#8217;s Fortran unit tests</a></li>
+<li><a class="reference internal" href="#how-to-add-unit-testing-support-on-your-machine">5.3. How to add unit testing support on your machine</a><ul>
+<li><a class="reference internal" href="#building-pfunit">5.3.1. Building pFUnit</a></li>
+<li><a class="reference internal" href="#adding-to-the-xml-file">5.3.2. Adding to the xml file</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-to-write-a-new-unit-test">5.4. How to write a new unit test</a></li>
+<li><a class="reference internal" href="#general-guidelines-for-writing-unit-tests">5.5. General guidelines for writing unit tests</a></li>
+<li><a class="reference internal" href="#more-details-on-writing-pfunit-based-unit-tests">5.6. More details on writing pFUnit-based unit tests</a><ul>
+<li><a class="reference internal" href="#assertion-methods">5.6.1. Assertion methods</a></li>
+<li><a class="reference internal" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods">5.6.2. Defining a test class in order to define setUp and tearDown methods</a></li>
+<li><a class="reference internal" href="#more-on-test-teardown">5.6.3. More on test teardown</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#finding-more-documentation-and-examples">5.7. Finding more documentation and examples</a><ul>
+<li><a class="reference internal" href="#more-detailed-examples-in-cime">5.7.1. More detailed examples in CIME</a></li>
+<li><a class="reference internal" href="#other-pfunit-documentation-sources">5.7.2. Other pFUnit documentation sources</a></li>
+<li><a class="reference internal" href="#documentation-of-the-unit-test-build-system">5.7.3. Documentation of the unit test build system</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="testing.html"
+                        title="previous chapter">4. Testing with create_test</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="multi-instance.html"
+                        title="next chapter">6. Multi-instance component functionality</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/unit_testing.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -496,7 +490,7 @@ documentation about how to use the CIME unit test infrastructure (in the
         <li class="right" >
           <a href="testing.html" title="4. Testing with create_test"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>

@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3.9. More on Driver Namelists &mdash; CIME 5.3.0 documentation</title>
+    <title>3.9. More on Driver Namelists &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="3. Implementation" href="implementation.html" />
     <link rel="next" title="Miscellaneous Tools" href="../misc_tools/index.html" />
-    <link rel="prev" title="3.8. Multi-instance Functionality" href="multi-instance.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="3.8. Multi-instance Functionality" href="multi-instance.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,11 +44,36 @@
         <li class="right" >
           <a href="multi-instance.html" title="3.8. Multi-instance Functionality"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Driver/Coupler</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &raquo;</li> 
       </ul>
-    </div>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="more-on-driver-namelists">
+<h1>3.9. More on Driver Namelists<a class="headerlink" href="#more-on-driver-namelists" title="Permalink to this headline">¶</a></h1>
+<p>There are a series of driver/coupler namelist input files created by the driver namelist generator <code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/cime_config/buildnml</span></code>. These are</p>
+<ul class="simple">
+<li>drv_in</li>
+<li>drv_flds_in</li>
+<li>cpl_modelio.nml, atm_modelio.nml, esp_modelio.nml, glc_modelio.nml, ice_modelio.nml, lnd_modelio.nmlo, ocn_modelio.nml, rof_modelio.nml, wav_modelio.nml</li>
+<li>seq_maps.rc</li>
+</ul>
+<p>The <code class="docutils literal"><span class="pre">*_modelio.nml</span></code> files set the filename for the primary standard output file and also provide settings for the parallel IO library, PIO.
+The drv_in namelist file contains several different namelist groups associated with general options, time manager options, pe layout, timing output, and parallel IO settings.
+The seq_maps.rc file specifies the mapping files for the configuration.
+Note that seq_maps.rc is NOT a Fortran namelist file but the format should be relatively clear from the default settings.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
@@ -82,31 +101,6 @@
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="more-on-driver-namelists">
-<h1>3.9. More on Driver Namelists<a class="headerlink" href="#more-on-driver-namelists" title="Permalink to this headline">¶</a></h1>
-<p>There are a series of driver/coupler namelist input files created by the driver namelist generator <code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/cime_config/buildnml</span></code>. These are</p>
-<ul class="simple">
-<li>drv_in</li>
-<li>drv_flds_in</li>
-<li>cpl_modelio.nml, atm_modelio.nml, esp_modelio.nml, glc_modelio.nml, ice_modelio.nml, lnd_modelio.nmlo, ocn_modelio.nml, rof_modelio.nml, wav_modelio.nml</li>
-<li>seq_maps.rc</li>
-</ul>
-<p>The <code class="docutils literal"><span class="pre">*_modelio.nml</span></code> files set the filename for the primary standard output file and also provide settings for the parallel IO library, PIO.
-The drv_in namelist file contains several different namelist groups associated with general options, time manager options, pe layout, timing output, and parallel IO settings.
-The seq_maps.rc file specifies the mapping files for the configuration.
-Note that seq_maps.rc is NOT a Fortran namelist file but the format should be relatively clear from the default settings.</p>
-</div>
-
-
-          </div>
-        </div>
-      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -124,7 +118,7 @@ Note that seq_maps.rc is NOT a Fortran namelist file but the format should be re
         <li class="right" >
           <a href="multi-instance.html" title="3.8. Multi-instance Functionality"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Driver/Coupler</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &raquo;</li> 
       </ul>

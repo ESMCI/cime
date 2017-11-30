@@ -1,21 +1,20 @@
-
-
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.SystemTests package &mdash; CIME 5.3.0 documentation</title>
+    <title>CIME.SystemTests package &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0',
+        VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,15 +23,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME package" href="CIME.html" />
     <link rel="next" title="CIME.SystemTests.test_utils package" href="CIME.SystemTests.test_utils.html" />
-    <link rel="prev" title="CIME.BuildTools package" href="CIME.BuildTools.html" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
-    <![endif]-->
+    <link rel="prev" title="CIME.BuildTools package" href="CIME.BuildTools.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -50,75 +44,11 @@
         <li class="right" >
           <a href="CIME.BuildTools.html" title="CIME.BuildTools package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
       </ul>
-    </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">CIME.SystemTests package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.dae">CIME.SystemTests.dae module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.eri">CIME.SystemTests.eri module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.erio">CIME.SystemTests.erio module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.erp">CIME.SystemTests.erp module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.err">CIME.SystemTests.err module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.erri">CIME.SystemTests.erri module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.ers">CIME.SystemTests.ers module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.ers2">CIME.SystemTests.ers2 module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.ert">CIME.SystemTests.ert module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.mcc">CIME.SystemTests.mcc module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.pea">CIME.SystemTests.pea module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.pem">CIME.SystemTests.pem module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.pet">CIME.SystemTests.pet module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.pfs">CIME.SystemTests.pfs module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.pre">CIME.SystemTests.pre module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.rep">CIME.SystemTests.rep module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.restart_tests">CIME.SystemTests.restart_tests module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.seq">CIME.SystemTests.seq module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.sms">CIME.SystemTests.sms module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.system_tests_common">CIME.SystemTests.system_tests_common module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests.system_tests_compare_two">CIME.SystemTests.system_tests_compare_two module</a></li>
-<li><a class="reference internal" href="#module-CIME.SystemTests">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="CIME.BuildTools.html"
-                        title="previous chapter">CIME.BuildTools package</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CIME.SystemTests.test_utils.html"
-                        title="next chapter">CIME.SystemTests.test_utils package</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.SystemTests.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -335,6 +265,23 @@ This test the model&#8217;s restart capability as well as the short term archive
 </dd></dl>
 
 </div>
+<div class="section" id="module-CIME.SystemTests.ldsta">
+<span id="cime-systemtests-ldsta-module"></span><h2>CIME.SystemTests.ldsta module<a class="headerlink" href="#module-CIME.SystemTests.ldsta" title="Permalink to this headline">¶</a></h2>
+<p>CIME last date short term archiver test. This class inherits from SystemTestsCommon
+It does a run without restarting, then runs the archiver with various last-date parameters
+The test verifies the archive directory contains the expected files</p>
+<dl class="class">
+<dt id="CIME.SystemTests.ldsta.LDSTA">
+<em class="property">class </em><code class="descclassname">CIME.SystemTests.ldsta.</code><code class="descname">LDSTA</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/ldsta.html#LDSTA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.ldsta.LDSTA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_common.SystemTestsCommon</span></code></a></p>
+<dl class="method">
+<dt id="CIME.SystemTests.ldsta.LDSTA.run_phase">
+<code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/ldsta.html#LDSTA.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.ldsta.LDSTA.run_phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-CIME.SystemTests.mcc">
 <span id="cime-systemtests-mcc-module"></span><h2>CIME.SystemTests.mcc module<a class="headerlink" href="#module-CIME.SystemTests.mcc" title="Permalink to this headline">¶</a></h2>
 <p>Implemetation of CIME MCC test: Compares ensemble methods</p>
@@ -408,12 +355,12 @@ The second is a default build</p>
 </div>
 <div class="section" id="module-CIME.SystemTests.pem">
 <span id="cime-systemtests-pem-module"></span><h2>CIME.SystemTests.pem module<a class="headerlink" href="#module-CIME.SystemTests.pem" title="Permalink to this headline">¶</a></h2>
-<p>CIME PEM test.  This class inherits from SystemTestsCommon</p>
-<p>This is a  modified pe counts mpi bfb test
-This is just like running a smoke test twice - but the pe-counts
-count are modified the second time.
-(1) Do an initial run with pes set up out of the box (suffix base)
-(2) Do an initial run with half the number of tasks (suffix modpes)</p>
+<p>Implementation of the CIME PEM test: Tests bfb with different MPI
+processor counts</p>
+<p>This is just like running a smoke test twice - but the pe-counts
+are modified the second time.
+(1) Run with pes set up out of the box (suffix base)
+(2) Run with half the number of tasks (suffix modpes)</p>
 <dl class="class">
 <dt id="CIME.SystemTests.pem.PEM">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.pem.</code><code class="descname">PEM</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/pem.html#PEM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.pem.PEM" title="Permalink to this definition">¶</a></dt>
@@ -495,22 +442,11 @@ file. Compare to non-pause/resume run.</p>
 </div>
 <div class="section" id="module-CIME.SystemTests.seq">
 <span id="cime-systemtests-seq-module"></span><h2>CIME.SystemTests.seq module<a class="headerlink" href="#module-CIME.SystemTests.seq" title="Permalink to this headline">¶</a></h2>
-<p>CIME smoke test  This class inherits from SystemTestsCommon</p>
+<p>sequencing bfb test (10 day seq,conc tests)</p>
 <dl class="class">
 <dt id="CIME.SystemTests.seq.SEQ">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.seq.</code><code class="descname">SEQ</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/seq.html#SEQ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.seq.SEQ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_common.SystemTestsCommon</span></code></a></p>
-<dl class="method">
-<dt id="CIME.SystemTests.seq.SEQ.build_phase">
-<code class="descname">build_phase</code><span class="sig-paren">(</span><em>sharedlib_only=False</em>, <em>model_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/seq.html#SEQ.build_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.seq.SEQ.build_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build two cases.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="CIME.SystemTests.seq.SEQ.run_phase">
-<code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/seq.html#SEQ.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.seq.SEQ.run_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -795,6 +731,71 @@ If success_change is True, success requires some files to be different</p>
           </div>
         </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">CIME.SystemTests package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.dae">CIME.SystemTests.dae module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.eri">CIME.SystemTests.eri module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.erio">CIME.SystemTests.erio module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.erp">CIME.SystemTests.erp module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.err">CIME.SystemTests.err module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.erri">CIME.SystemTests.erri module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.ers">CIME.SystemTests.ers module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.ers2">CIME.SystemTests.ers2 module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.ert">CIME.SystemTests.ert module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.ldsta">CIME.SystemTests.ldsta module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.mcc">CIME.SystemTests.mcc module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.pea">CIME.SystemTests.pea module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.pem">CIME.SystemTests.pem module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.pet">CIME.SystemTests.pet module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.pfs">CIME.SystemTests.pfs module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.pre">CIME.SystemTests.pre module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.rep">CIME.SystemTests.rep module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.restart_tests">CIME.SystemTests.restart_tests module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.seq">CIME.SystemTests.seq module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.sms">CIME.SystemTests.sms module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.system_tests_common">CIME.SystemTests.system_tests_common module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.system_tests_compare_two">CIME.SystemTests.system_tests_compare_two module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CIME.BuildTools.html"
+                        title="previous chapter">CIME.BuildTools package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CIME.SystemTests.test_utils.html"
+                        title="next chapter">CIME.SystemTests.test_utils package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/CIME_api/CIME.SystemTests.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="clearer"></div>
     </div>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -812,7 +813,7 @@ If success_change is True, success requires some files to be different</p>
         <li class="right" >
           <a href="CIME.BuildTools.html" title="CIME.BuildTools package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
           <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
       </ul>
