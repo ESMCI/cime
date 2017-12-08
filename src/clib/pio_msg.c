@@ -190,7 +190,8 @@ int create_file_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode);
-    
+
+
     LOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;
 }
@@ -276,7 +277,7 @@ int inq_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     PIOc_inq(ncid, ndimsp, nvarsp, ngattsp, unlimdimidp);
-    
+
     return PIO_NOERR;
 }
 
@@ -1006,7 +1007,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     char name[NC_MAX_NAME + 1], *namep = NULL;
     nc_type xtype, *xtypep = NULL;
     int *ndimsp = NULL, *dimidsp = NULL, *nattsp = NULL;
-    int ndims, dimids[NC_MAX_DIMS], natts;
+    int ndims, natts;
     int mpierr;
 
     LOG((1, "inq_var_handler"));
@@ -1040,7 +1041,8 @@ int inq_var_handler(iosystem_desc_t *ios)
     if (ndims_present)
         ndimsp = &ndims;
     if (dimids_present)
-        dimidsp = dimids;
+        if (!(dimidsp = malloc(ndims)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if (natts_present)
         nattsp = &natts;
 
@@ -1064,9 +1066,10 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
+    int ndims;
     char storage_present, chunksizes_present;
     int storage, *storagep = NULL;
-    PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
+    PIO_Offset *chunksizesp = NULL;
     int mpierr;
 
     assert(ios);
@@ -1080,6 +1083,8 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&storage_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2,"inq_var_handler ncid = %d varid = %d storage_present = %d chunksizes_present = %d",
@@ -1089,7 +1094,8 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     if (storage_present)
         storagep = &storage;
     if (chunksizes_present)
-        chunksizesp = chunksizes;
+        if (!(chunksizesp = malloc(ndims)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Call the inq function to get the values. */
     PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp);
@@ -1492,7 +1498,7 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     int ndims;
     int storage;
     char chunksizes_present;
-    PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
+    PIO_Offset *chunksizesp = NULL;
     int mpierr;
 
     assert(ios);
@@ -1510,15 +1516,14 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (chunksizes_present)
-        if ((mpierr = MPI_Bcast(chunksizes, ndims, MPI_OFFSET, 0, ios->intercomm)))
+    if (chunksizes_present){
+        if (!(chunksizesp = malloc(ndims)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(chunksizesp, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
     LOG((1, "def_var_chunking_handler got parameters ncid = %d varid = %d storage = %d "
          "ndims = %d chunksizes_present = %d", ncid, varid, storage, ndims, chunksizes_present));
-
-    /* Set the non-NULL pointers. */
-    if (chunksizes_present)
-        chunksizesp = chunksizes;
 
     /* Call the function. */
     PIOc_def_var_chunking(ncid, varid, storage, chunksizesp);
@@ -2703,7 +2708,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         /* If an error was returned by the handler, exit. */
         LOG((3, "pio_msg_handler2 ret %d msg %d index %d io_rank %d", ret, msg, index, io_rank));
         if (ret)
-            return pio_err(my_iosys, NULL, ret, __FILE__, __LINE__);            
+            return pio_err(my_iosys, NULL, ret, __FILE__, __LINE__);
 
         /* Listen for another msg from the component whose message we
          * just handled. */
