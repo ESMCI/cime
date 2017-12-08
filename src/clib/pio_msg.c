@@ -1051,6 +1051,8 @@ int inq_var_handler(iosystem_desc_t *ios)
 
     if (ndims_present)
         LOG((2, "inq_var_handler ndims = %d", ndims));
+    if (dimids_present)
+	free(dimidsp);
 
     return PIO_NOERR;
 }
@@ -1099,6 +1101,9 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp);
+
+    if(chunksizes_present)
+	free(chunksizesp);
 
     return PIO_NOERR;
 }
@@ -1527,6 +1532,9 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     PIOc_def_var_chunking(ncid, varid, storage, chunksizesp);
+
+    if(chunksizes_present)
+	free(chunksizesp);
 
     LOG((1, "def_var_chunking_handler succeeded!"));
     return PIO_NOERR;
