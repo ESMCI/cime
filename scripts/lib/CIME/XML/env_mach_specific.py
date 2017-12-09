@@ -34,7 +34,7 @@ class EnvMachSpecific(EnvBase):
             nodes = machobj.get_first_child_nodes(item)
             if item == "run_exe" or item == "run_misc_suffix":
                 newnode = ConstantElement(ET.Element(item))
-                newnode.tag = "entry"
+                newnode.set_tag("entry")
                 newnode.set("id", item)
                 if len(nodes) == 0:
                     if item == "run_exe":
@@ -189,7 +189,7 @@ class EnvMachSpecific(EnvBase):
         for node in nodes:
             if (self._match_attribs(node.attrib(), case)):
                 for child in node:
-                    expect(child.tag == child_tag, "Expected {} element".format(child_tag))
+                    expect(child.tag() == child_tag, "Expected {} element".format(child_tag))
                     if (self._match_attribs(child.attrib(), case)):
                         val = child.text()
                         if val is not None:

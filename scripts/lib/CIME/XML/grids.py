@@ -373,9 +373,9 @@ class Grids(GenericXML):
                 nodes = self.get_nodes(nodename="gridmap", attributes={grid[0]:grid[1], other_grid[0]:other_grid[1]})
                 for gridmap_node in nodes:
                     for child in gridmap_node:
-                        gridmap = (child.tag, child.text())
+                        gridmap = (child.tag(), child.text())
                         if gridmap is not None:
-                            gridmaps[child.tag] = child.text()
+                            gridmaps[child.tag()] = child.text()
                             logger.debug(" {}: {}".format(*gridmap))
 
         return gridmaps
@@ -548,7 +548,7 @@ class Grids(GenericXML):
                         logger.info("   domain is {}".format(domain))
                         domain_node = self.get_node(nodename="domain", attributes={"name":domain})
                         for child in domain_node:
-                            logger.info("        {}: {}".format(child.tag, child.text()))
+                            logger.info("        {}: {}".format(child.tag(), child.text()))
 
                 # write out mapping files
                 grids = [ ("atm_grid", component_grids[0]), ("lnd_grid", component_grids[1]), ("ocn_grid", component_grids[2]), \
@@ -559,7 +559,7 @@ class Grids(GenericXML):
                         nodes = self.get_nodes(nodename="gridmap", attributes={grid[0]:grid[1], other_grid[0]:other_grid[1]})
                         for gridmap_node in nodes:
                             for child in gridmap_node:
-                                logger.info("    mapping file {}: {}".format(child.tag, child.text()))
+                                logger.info("    mapping file {}: {}".format(child.tag(), child.text()))
 
                 logger.info("   ")
 
@@ -598,7 +598,7 @@ class Grids(GenericXML):
                     domain_list = list()
                     domain_node = self.get_node(nodename="domain", attributes={"name":domain})
                     for child in domain_node:
-                        domain_list.append({'domain':child.tag, 'text':child.text()})
+                        domain_list.append({'domain':child.tag(), 'text':child.text()})
 
             grid_info.update({'domains': domain_list})
 
@@ -612,7 +612,7 @@ class Grids(GenericXML):
                     nodes = self.get_nodes(nodename="gridmap", attributes={grid[0]:grid[1], other_grid[0]:other_grid[1]})
                     for gridmap_node in nodes:
                         for child in gridmap_node:
-                            map_list.append({'map':child.tag, 'file':child.text()})
+                            map_list.append({'map':child.tag(), 'file':child.text()})
 
             grid_info.update({'maps': map_list})
 

@@ -34,8 +34,12 @@ class ConstantElement(object):
     def tag(self):
         return self._xml_element.tag
 
+    def set_tag(self, value):
+        # Technically not constant, but it won't affect findall cache
+        self._xml_element.tag = value
+
     def set_text(self, text):
-        # Technically, not constant, but it won't affect findall cache
+        # Technically not constant, but it won't affect findall cache
         self._xml_element.text = text
 
     def text(self):
@@ -59,7 +63,9 @@ class ConstantElement(object):
         if xpath in self._cache_find:
             return self._cache_find[xpath]
         else:
-            return [ConstantElement(item) for item in self._xml_element.findall(xpath)]
+            result = [ConstantElement(item) for item in self._xml_element.findall(xpath)]
+            self._cache_find[xpath] = result
+            return result
 
     def find(self, xpath):
         all_matches = self.findall(xpath)
