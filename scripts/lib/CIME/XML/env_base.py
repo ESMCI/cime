@@ -136,26 +136,26 @@ class EnvBase(EntryID):
         """
         Remove the <group>, <file>, <values> and <value> childnodes from node
         """
-        fnode = node.find(".//file")
-        node.remove(fnode)
-        gnode = node.find(".//group")
-        node.remove(gnode)
-        dnode = node.find(".//default_value")
-        if dnode is not None:
-            node.remove(dnode)
-        vnode = node.find(".//values")
-        if vnode is not None:
-            componentatt = vnode.findall(".//value[@component=\"ATM\"]")
-            # backward compatibility (compclasses and component were mixed
-            # now we seperated into component and compclass)
-            if len(componentatt) > 0:
-                for ccnode in vnode.findall(".//value[@component]"):
-                    val = ccnode.attrib.get("component")
-                    ccnode.attrib.pop("component")
-                    ccnode.set("compclass",val)
-            compclassatt = vnode.findall(".//value[@compclass]")
+        for xpath in [".//file", ".//group", ".//default_value"]:
+            removes = node.findall(xpath)
+            if removes:
+                for remove in removes:
+                    node.remove(remove)
 
-            if len(compclassatt) == 0:
-                node.remove(vnode)
+        vnodes = node.findall(".//values")
+        if vnodes:
+            for vnode in vnodes:
+                componentatt = vnode.findall(".//value[@component=\"ATM\"]")
+                # backward compatibility (compclasses and component were mixed
+                # now we seperated into component and compclass)
+                if len(componentatt) > 0:
+                    for ccnode in vnode.findall(".//value[@component]"):
+                        val = ccnode.attrib.get("component")
+                        ccnode.pop("component")
+                        ccnode.set("compclass", val)
+                compclassatt = vnode.findall(".//value[@compclass]")
+
+                if len(compclassatt) == 0:
+                    node.remove(vnode)
 
         return node

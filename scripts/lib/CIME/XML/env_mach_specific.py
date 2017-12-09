@@ -186,10 +186,10 @@ class EnvMachSpecific(EnvBase):
         compiler, mpilib = case.get_value("COMPILER"), case.get_value("MPILIB")
 
         for node in nodes:
-            if (self._match_attribs(node.attrib, case)):
+            if (self._match_attribs(node.attrib(), case)):
                 for child in node:
                     expect(child.tag == child_tag, "Expected {} element".format(child_tag))
-                    if (self._match_attribs(child.attrib, case)):
+                    if (self._match_attribs(child.attrib(), case)):
                         val = child.text
                         if val is not None:
                             # We allow a couple special substitutions for these fields
@@ -206,16 +206,16 @@ class EnvMachSpecific(EnvBase):
 
     def _match_attribs(self, attribs, case):
         # check for matches with case-vars
-        for attrib in attribs:
-            if attrib == "unit_testing": # special case
-                if not self._match(self._unit_testing, attribs["unit_testing"].upper()):
+        for key, value in attribs:
+            if key == "unit_testing": # special case
+                if not self._match(self._unit_testing, value.upper()):
                     return False
-            elif attrib == "name":
+            elif key == "name":
                 pass
             else:
-                val = case.get_value(attrib.upper())
-                expect(val is not None, "Cannot match attrib '%s', case has no value for it" % attrib.upper())
-                if not self._match(val, attribs[attrib]):
+                val = case.get_value(key)
+                expect(val is not None, "Cannot match attrib '%s', case has no value for it" % key.upper())
+                if not self._match(val, value):
                     return False
 
         return True
@@ -354,7 +354,7 @@ class EnvMachSpecific(EnvBase):
         best_num_matched_default = -1
         args = []
         for mpirun_node in mpirun_nodes:
-            xml_attribs = mpirun_node.attrib
+            xml_attribs = dict(mpirun_node.attrib())
             all_match = True
             matches = 0
             is_default = False

@@ -9,6 +9,88 @@ import six
 
 logger = logging.getLogger(__name__)
 
+class ConstantElement(object):
+
+    def __init__(self, xml_element):
+        self._xml_element = xml_element
+        self._cache_find  = {}
+
+    #
+    # const methods
+    #
+
+    def get(self, key):
+        return self._xml_element.get(key)
+
+    def has(self, key):
+        return key in self._xml_element.attrib
+
+    def attrib(self):
+        return None if self._xml_element.attrib is None else tuple(self._xml_element.attrib.iteritems())
+
+    def tag(self):
+        return self._xml_element.tag
+
+    def set_text(self, text):
+        # Technically, not constant, but it won't affect findall cache
+        self._xml_element.text = text
+
+    def get_text(self):
+        return self._xml_element.text
+
+    def __eq__(self, rhs):
+        expect(isinstance(rhs, ConstantElement), "Wrong type")
+        return self._xml_element == rhs._xml_element # pylint: disable=protected-access
+
+    def __ne__(self, rhs):
+        expect(isinstance(rhs, ConstantElement), "Wrong type")
+        return self._xml_element != rhs._xml_element # pylint: disable=protected-access
+
+    def __hash__(self):
+        return hash(self._xml_element)
+
+    def findall(self, xpath):
+        """
+        Special caching version of findall. This is the entire point of the class
+        """
+        if xpath in self._cache_find:
+            return self._cache_find[xpath]
+        else:
+            return [ConstantElement(item) for item in self._xml_element.findall(xpath)]
+
+    def find(self, xpath):
+        all_matches = self.findall(xpath)
+        if all_matches:
+            return all_matches[0]
+        else:
+            return None
+
+    #
+    # non-const methods
+    #
+
+    def set(self, key, value):
+        self._cache_find = {}
+        self._xml_element.set(key, value)
+
+    def pop(self, key):
+        self._cache_find = {}
+        return self._xml_element.attrib.pop(key)
+
+    def append(self, constant_element):
+        expect(isinstance(constant_element, ConstantElement), "Wrong type")
+
+        self._cache_find = {}
+
+        self._xml_element.append(constant_element._xml_element) # pylint: disable=protected-access
+
+    def remove(self, constant_element):
+        expect(isinstance(constant_element, ConstantElement), "Wrong type")
+
+        self._cache_find = {}
+
+        self._xml_element.remove(constant_element._xml_element) # pylint: disable=protected-access
+
 class GenericXML(object):
 
     def __init__(self, infile=None, schema=None):
@@ -36,9 +118,10 @@ class GenericXML(object):
 
             self.filename = infile
             root = ET.Element("xml")
-            self.root = ET.SubElement(root, "file")
+            self.root = ConstantElement(ET.SubElement(root, "file"))
             self.root.set("id", os.path.basename(infile))
             self.root.set("version", "2.0")
+
             self.tree = ET.ElementTree(root)
 
     def read(self, infile, schema=None):
@@ -48,10 +131,10 @@ class GenericXML(object):
         logger.debug("read: " + infile)
         with open(infile, 'r') as fd:
             if self.tree:
-                self.root.append(ET.parse(fd).getroot())
+                self.root.append(ConstantElement(ET.parse(fd).getroot()))
             else:
                 self.tree = ET.parse(fd)
-                self.root = self.tree.getroot()
+                self.root = ConstantElement(self.tree.getroot())
 
         if schema is not None and self.get_version() > 1.0:
             self.validate_xml_file(infile, schema)
@@ -106,6 +189,7 @@ class GenericXML(object):
         return nodes[0] if nodes else None
 
     def get_nodes(self, nodename, attributes=None, root=None, xpath=None):
+        expect(root is None or isinstance(root, ConstantElement), "Wrong type")
 
         logger.debug("(get_nodes) Input values: {}, {}, {}, {}, {}".format(self.__class__.__name__, nodename, attributes, root, xpath))
 
@@ -158,7 +242,7 @@ class GenericXML(object):
         """
         if root is None:
             root = self.root
-        self.root.append(node)
+        root.append(node)
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None): # pylint: disable=unused-argument
         """
@@ -179,7 +263,7 @@ class GenericXML(object):
         valnodes = self.get_nodes(vid)
         if valnodes:
             for node in valnodes:
-                node.text = value
+                node.set_text(value)
 
     def get_resolved_value(self, raw_value):
         """
@@ -251,8 +335,8 @@ class GenericXML(object):
 
     def add_sub_node(self, node, subnode_name, subnode_text):
         expect(node is not None," Bad value passed")
-        subnode = ET.Element(subnode_name)
-        subnode.text = subnode_text
+        subnode = ConstantElement(ET.Element(subnode_name))
+        subnode.set_text(subnode_text)
         node.append(subnode)
         return node
 
@@ -272,7 +356,7 @@ class GenericXML(object):
     def get_element_text(self, element_name, attributes=None, root=None, xpath=None):
         element_node = self.get_optional_node(element_name, attributes, root, xpath)
         if element_node is not None:
-            return element_node.text
+            return element_node.get_text()
         return None
 
     def set_element_text(self, element_name, new_text, attributes=None, root=None, xpath=None):
@@ -297,4 +381,4 @@ class GenericXML(object):
         xmlid = self.root.get("id")
         if xmlid is not None:
             return xmlid
-        return self.root.tag
+        return self.root.tag()

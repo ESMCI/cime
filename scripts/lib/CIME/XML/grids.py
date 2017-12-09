@@ -92,7 +92,7 @@ class Grids(GenericXML):
         nodes = self.get_nodes("grid")
         # first search for all grids that have a compset match - if one is found then return
         for node in nodes:
-            if "compset" in node.attrib:
+            if node.has("compset"):
                 attrib = node.get("compset")
                 compset_match = re.search(attrib,compset)
                 if compset_match is not None:
@@ -106,7 +106,7 @@ class Grids(GenericXML):
         # if no matches were found for a possible compset match, then search for just a grid match with no
         # compset attribute
         for node in nodes:
-            if "compset" not in node.attrib:
+            if not node.has("compset"):
                 sname = self.get_element_text("sname", root=node)
                 alias = self.get_element_text("alias", root=node)
                 lname = self.get_element_text("lname", root=node)
@@ -406,8 +406,8 @@ class Grids(GenericXML):
                 gridmap_nodes = self.get_nodes(nodename="gridmap",
                                                attributes={gridname:gridvalue, other_gridname:other_gridvalue})
                 for gridmap_node in gridmap_nodes:
-                    expect(len(gridmap_node.attrib) == 2,
-                           " Bad attribute count in gridmap node %s"%gridmap_node.attrib)
+                    expect(len(gridmap_node.attrib()) == 2,
+                           " Bad attribute count in gridmap node %s"%gridmap_node.attrib())
                     map_nodes = self.get_nodes(nodename="map",root=gridmap_node)
                     for map_node in map_nodes:
                         name = map_node.get("name")

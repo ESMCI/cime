@@ -306,7 +306,7 @@ class EntryID(GenericXML):
             logger.debug("No node")
             return val
 
-        logger.debug("Found node {} with attributes {}".format(node.tag , node.attrib))
+        logger.debug("Found node {} with attributes {}".format(node.tag , node.attrib()))
         if attribute:
             val = self.get_element_text("value", attributes=attribute, root=node)
         elif node.get("value") is not None:
@@ -415,12 +415,12 @@ class EntryID(GenericXML):
                             if f2val != f1val:
                                 f1value_nodes = self.get_nodes("value", root=node)
                                 for valnode in f1value_nodes:
-                                    f2valnodes = other.get_nodes("value", root=f2match, attributes=valnode.attrib)
+                                    f2valnodes = other.get_nodes("value", root=f2match, attributes=dict(valnode.attrib()))
                                     for f2valnode in f2valnodes:
-                                        if valnode.attrib is None and f2valnode.attrib is None or \
-                                           f2valnode.attrib == valnode.attrib:
+                                        if valnode.attrib() is None and f2valnode.attrib() is None or \
+                                           f2valnode.attrib() == valnode.attrib():
                                             if other.get_resolved_value(f2valnode.text) != self.get_resolved_value(valnode.text):
-                                                xmldiffs["{}:{}".format(vid, valnode.attrib)] = [valnode.text, f2valnode.text]
+                                                xmldiffs["{}:{}".format(vid, valnode.attrib())] = [valnode.text, f2valnode.text]
         return xmldiffs
 
     def overwrite_existing_entries(self):

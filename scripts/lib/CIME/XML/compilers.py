@@ -83,7 +83,7 @@ class Compilers(GenericXML):
 
     def _is_compatible(self, compiler_node, compiler, machine, os_, mpilib):
         for xmlid, value in [ ("COMPILER", compiler), ("MACH", machine), ("OS", os_), ("MPILIB", mpilib) ]:
-            if value is not None and xmlid in compiler_node.attrib and value != compiler_node.get(xmlid):
+            if value is not None and compiler_node.has(xmlid) and value != compiler_node.get(xmlid):
                 return False
 
         return True
@@ -238,7 +238,7 @@ class Compilers(GenericXML):
 def _add_to_macros(node, macros):
     for child in node:
         name = child.tag
-        attrib = child.attrib
+        attrib = child.attrib()
         value = child.text
 
         if not attrib:
@@ -255,7 +255,7 @@ def _add_to_macros(node, macros):
 
         else:
             cond_macros = macros["_COND_"]
-            for key, value2 in attrib.items():
+            for key, value2 in attrib:
                 if key not in cond_macros:
                     cond_macros[key] = {}
                 if value2 not in cond_macros[key]:
