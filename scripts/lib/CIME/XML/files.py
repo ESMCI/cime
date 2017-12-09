@@ -47,7 +47,7 @@ class Files(EntryID):
         schemanode = self.get_optional_node("schema", root=node, attributes=attributes)
         if schemanode is not None:
             logger.debug("Found schema for {}".format(nodename))
-            return self.get_resolved_value(schemanode.text)
+            return self.get_resolved_value(schemanode.text())
         return None
 
     def get_components(self, nodename):

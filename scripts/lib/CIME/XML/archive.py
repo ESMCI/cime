@@ -4,7 +4,7 @@ Interface to the archive.xml file.  This class inherits from GenericXML.py
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.XML.generic_xml import GenericXML
+from CIME.XML.generic_xml import GenericXML, ConstantElement
 from CIME.XML.files import Files
 from CIME.utils import expect, get_model
 
@@ -26,9 +26,8 @@ class Archive(GenericXML):
         if files is None:
             files = Files()
 
-        components_node = ET.Element("components")
+        components_node = ConstantElement(ET.Element("components"))
         components_node.set("version", "2.0")
-
 
         model = get_model()
         if 'drv' not in components:

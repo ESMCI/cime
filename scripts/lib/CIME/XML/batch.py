@@ -91,7 +91,7 @@ class Batch(GenericXML):
 
         node = self.get_optional_batch_node(name)
         if node is not None:
-            value = node.text
+            value = node.text()
 
         if value is None:
             # if all else fails
@@ -117,7 +117,7 @@ class Batch(GenericXML):
                 name = jnode.get("name")
                 jdict = {}
                 for child in jnode:
-                    jdict[child.tag] = child.text
+                    jdict[child.tag] = child.text()
 
             jobs.append((name, jdict))
 

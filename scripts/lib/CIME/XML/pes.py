@@ -94,16 +94,16 @@ class Pes(GenericXML):
                                         logger.info("vid is {}".format(vid))
                                         if "ntasks" in vid:
                                             for child in node:
-                                                pes_ntasks[child.tag.upper()] = int(child.text)
+                                                pes_ntasks[child.tag.upper()] = int(child.text())
                                         elif "nthrds" in vid:
                                             for child in node:
-                                                pes_nthrds[child.tag.upper()] = int(child.text)
+                                                pes_nthrds[child.tag.upper()] = int(child.text())
                                         elif "rootpe" in vid:
                                             for child in node:
-                                                pes_rootpe[child.tag.upper()] = int(child.text)
+                                                pes_rootpe[child.tag.upper()] = int(child.text())
                                     # if the value is already upper case its something else we are trying to set
                                         elif vid == node.tag:
-                                            other_settings[vid] = node.text
+                                            other_settings[vid] = node.text()
 
                                 else:
                                     if points > max_points:
@@ -126,16 +126,16 @@ class Pes(GenericXML):
                 logger.debug("vid is {}".format(vid))
                 if "ntasks" in vid:
                     for child in node:
-                        pes_ntasks[child.tag.upper()] = int(child.text)
+                        pes_ntasks[child.tag.upper()] = int(child.text())
                 elif "nthrds" in vid:
                     for child in node:
-                        pes_nthrds[child.tag.upper()] = int(child.text)
+                        pes_nthrds[child.tag.upper()] = int(child.text())
                 elif "rootpe" in vid:
                     for child in node:
-                        pes_rootpe[child.tag.upper()] = int(child.text)
+                        pes_rootpe[child.tag.upper()] = int(child.text())
             # if the value is already upper case its something else we are trying to set
                 elif vid == node.tag and vid != "comment":
-                    other_settings[vid] = node.text
+                    other_settings[vid] = node.text()
             if grid_choice != 'any' or logger.isEnabledFor(logging.DEBUG):
                 logger.info("Pes setting: grid match    is {} ".format(grid_choice ))
             if mach_choice != 'any' or logger.isEnabledFor(logging.DEBUG):

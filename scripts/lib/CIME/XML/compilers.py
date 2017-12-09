@@ -126,7 +126,7 @@ class Compilers(GenericXML):
 
         node = self.get_optional_compiler_node(name, attributes=attribute)
         if node is not None:
-            value = node.text
+            value = node.text()
 
         if value is None:
             # if all else fails
@@ -239,7 +239,7 @@ def _add_to_macros(node, macros):
     for child in node:
         name = child.tag
         attrib = child.attrib()
-        value = child.text
+        value = child.text()
 
         if not attrib:
             if name.startswith("ADD_"):

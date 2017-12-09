@@ -131,7 +131,7 @@ class Machines(GenericXML):
             machtocheck = node.get("MACH")
             logger.debug("machine is " + machtocheck)
             regex_str_node = self.get_optional_node("NODENAME_REGEX", root=node)
-            regex_str = machtocheck if regex_str_node is None else regex_str_node.text
+            regex_str = machtocheck if regex_str_node is None else regex_str_node.text()
 
             if regex_str is not None:
                 logger.debug("machine regex string is " + regex_str)
@@ -181,7 +181,7 @@ class Machines(GenericXML):
         else:
             node = self.get_optional_node(name, root=self.machine_node, attributes=attributes)
             if node is not None:
-                value = node.text
+                value = node.text()
 
         if value is None:
             # if all else fails
@@ -275,7 +275,7 @@ class Machines(GenericXML):
         result = False
         batch_system = self.get_optional_node("BATCH_SYSTEM", root=self.machine_node)
         if batch_system is not None:
-            result = (batch_system.text is not None and batch_system.text != "none")
+            result = (batch_system.text() is not None and batch_system.text() != "none")
         logger.debug("Machine {} has batch: {}".format(self.machine, result))
         return result
 
@@ -284,7 +284,7 @@ class Machines(GenericXML):
         if node is not None:
             suffix_node = self.get_optional_node(suffix_type, root=node)
             if suffix_node is not None:
-                return suffix_node.text
+                return suffix_node.text()
 
         return None
 
@@ -300,13 +300,13 @@ class Machines(GenericXML):
             max_tasks_per_node = machine.find("MAX_TASKS_PER_NODE")
             max_mpitasks_per_node = machine.find("MAX_MPITASKS_PER_NODE")
 
-            print( "  {} : {} ".format(name , desc.text))
-            print( "      os             ", os_.text)
-            print( "      compilers      ",compilers.text)
+            print( "  {} : {} ".format(name , desc.text()))
+            print( "      os             ", os_.text())
+            print( "      compilers      ",compilers.text())
             if max_mpitasks_per_node is not None:
-                print("      pes/node       ",max_mpitasks_per_node.text)
+                print("      pes/node       ",max_mpitasks_per_node.text())
             if max_tasks_per_node is not None:
-                print("      max_tasks/node ",max_tasks_per_node.text)
+                print("      max_tasks/node ",max_tasks_per_node.text())
 
     def return_all_values(self):
         # return a dictionary of machines
@@ -321,15 +321,15 @@ class Machines(GenericXML):
             max_mpitasks_per_node = machine.find("MAX_MPITASKS_PER_NODE")
             ppn = ''
             if max_mpitasks_per_node is not None:
-                ppn = max_mpitasks_per_node.text
+                ppn = max_mpitasks_per_node.text()
 
             max_tasks_pn = ''
             if max_tasks_per_node is not None:
-                max_tasks_pn = max_tasks_per_node.text
+                max_tasks_pn = max_tasks_per_node.text()
 
-            mach_dict[name] = { 'description'    : desc.text,
-                                'os'             : os_.text,
-                                'compilers'      : compilers.text,
+            mach_dict[name] = { 'description'    : desc.text(),
+                                'os'             : os_.text(),
+                                'compilers'      : compilers.text(),
                                 'pes/node'       : ppn,
                                 'max_tasks/node' : max_tasks_pn }
 

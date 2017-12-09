@@ -29,13 +29,13 @@ class EnvTest(EnvBase):
         """
         tnode = self.get_node("test")
         for child in tnode:
-            if child.text is not None:
-                logger.debug("Setting {} to {} for test".format(child.tag, child.text))
-                if "$" in child.text:
-                    case.set_value(child.tag,child.text,ignore_type=True)
+            if child.text() is not None:
+                logger.debug("Setting {} to {} for test".format(child.tag, child.text()))
+                if "$" in child.text():
+                    case.set_value(child.tag,child.text(),ignore_type=True)
                 else:
                     item_type = case.get_type_info(child.tag)
-                    value = convert_to_type(child.text,item_type,child.tag)
+                    value = convert_to_type(child.text(),item_type,child.tag)
                     case.set_value(child.tag,value)
         case.flush()
         return
@@ -53,9 +53,9 @@ class EnvTest(EnvBase):
 
         if idnode is None:
             newnode = ET.SubElement(tnode, name)
-            newnode.text = value
+            newnode.set_text(value)
         else:
-            idnode.text = value
+            idnode.set_text(value)
 
     def get_test_parameter(self, name):
         case = self.get_value("TESTCASE")
@@ -65,7 +65,7 @@ class EnvTest(EnvBase):
         value = None
         idnode = self.get_optional_node(name, root=tnode, xpath=name)
         if idnode is not None:
-            value = idnode.text
+            value = idnode.text()
         return value
 
     def get_step_phase_cnt(self,step):
@@ -80,8 +80,8 @@ class EnvTest(EnvBase):
         settings = []
         if node is not None:
             for child in node:
-                logger.debug ("Here child is {} with value {}".format(child.tag, child.text))
-                settings.append((child.tag, child.text))
+                logger.debug ("Here child is {} with value {}".format(child.tag, child.text()))
+                settings.append((child.tag, child.text()))
 
         return settings
 

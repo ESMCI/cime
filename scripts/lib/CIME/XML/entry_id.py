@@ -5,7 +5,7 @@ be used by other XML interface modules and not directly.
 """
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, convert_to_string, convert_to_type
-from CIME.XML.generic_xml import GenericXML
+from CIME.XML.generic_xml import GenericXML, ConstantElement
 
 from copy import deepcopy
 import six
@@ -125,7 +125,7 @@ class EntryID(GenericXML):
                 expect(False,
                        "match attribute can only have a value of 'last' or 'first', value is %s" %match_type)
 
-        return mnode.text
+        return mnode.text()
 
     def get_node_element_info(self, vid, element_name):
         node = self.get_optional_node("entry", {"id":vid})
@@ -201,8 +201,8 @@ class EntryID(GenericXML):
     def _set_valid_values(self, node, new_valid_values):
         old_vv = self._get_valid_values(node)
         if old_vv is None:
-            vv_node = ET.Element("valid_values")
-            vv_node.text = new_valid_values
+            vv_node = ConstantElement(ET.Element("valid_values"))
+            vv_node.set_text(new_valid_values)
             self.add_child(vv_node)
             logger.debug("Adding valid_values {} for {}".format(new_valid_values, node.get("id")))
         else:
@@ -356,13 +356,13 @@ class EntryID(GenericXML):
         for src_node in nodelist:
             node  = deepcopy(src_node)
             gnode = src_node.find(".//group")
-            gname = gnode.text
+            gname = gnode.text()
             if gname is None:
                 gname = "group_not_set"
             # If group with id=$gname does not exist in self.groups
             # then create the group node and add it to infile file
             if gname not in self.groups.keys():
-                newgroup = ET.Element("group")
+                newgroup = ConstantElement(ET.Element("group"))
                 newgroup.set("id",gname)
                 # initialize an empty list
                 self.groups[gname] = newgroup
@@ -419,8 +419,8 @@ class EntryID(GenericXML):
                                     for f2valnode in f2valnodes:
                                         if valnode.attrib() is None and f2valnode.attrib() is None or \
                                            f2valnode.attrib() == valnode.attrib():
-                                            if other.get_resolved_value(f2valnode.text) != self.get_resolved_value(valnode.text):
-                                                xmldiffs["{}:{}".format(vid, valnode.attrib())] = [valnode.text, f2valnode.text]
+                                            if other.get_resolved_value(f2valnode.text()) != self.get_resolved_value(valnode.text()):
+                                                xmldiffs["{}:{}".format(vid, valnode.attrib())] = [valnode.text(), f2valnode.text()]
         return xmldiffs
 
     def overwrite_existing_entries(self):

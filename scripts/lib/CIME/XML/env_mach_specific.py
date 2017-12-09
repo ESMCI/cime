@@ -4,6 +4,7 @@ Interface to the env_mach_specific.xml file.  This class inherits from EnvBase
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
+from CIME.XML.generic_xml import ConstantElement
 from CIME.utils import transform_vars, get_cime_root
 import string, resource
 
@@ -32,16 +33,16 @@ class EnvMachSpecific(EnvBase):
         for item in items:
             nodes = machobj.get_first_child_nodes(item)
             if item == "run_exe" or item == "run_misc_suffix":
-                newnode = ET.Element(item)
+                newnode = ConstantElement(ET.Element(item))
                 newnode.tag = "entry"
                 newnode.set("id", item)
                 if len(nodes) == 0:
                     if item == "run_exe":
-                        value = default_run_exe_node.text
+                        value = default_run_exe_node.text()
                     else:
-                        value =  default_run_misc_suffix_node.text
+                        value =  default_run_misc_suffix_node.text()
                 else:
-                    value = nodes[0].text
+                    value = nodes[0].text()
                 newnode.set("value", value)
                 newnode = self.add_sub_node(newnode, "type", "char")
                 if item == "run_exe":
@@ -190,7 +191,7 @@ class EnvMachSpecific(EnvBase):
                 for child in node:
                     expect(child.tag == child_tag, "Expected {} element".format(child_tag))
                     if (self._match_attribs(child.attrib(), case)):
-                        val = child.text
+                        val = child.text()
                         if val is not None:
                             # We allow a couple special substitutions for these fields
                             for repl_this, repl_with in [("$COMPILER", compiler), ("$MPILIB", mpilib)]:
@@ -337,11 +338,11 @@ class EnvMachSpecific(EnvBase):
 
     def get_module_system_init_path(self, lang):
         init_nodes = self.get_optional_node("init_path", attributes={"lang":lang})
-        return init_nodes.text if init_nodes is not None else None
+        return init_nodes.text() if init_nodes is not None else None
 
     def get_module_system_cmd_path(self, lang):
         cmd_nodes = self.get_optional_node("cmd_path", attributes={"lang":lang})
-        return cmd_nodes.text if cmd_nodes is not None else None
+        return cmd_nodes.text() if cmd_nodes is not None else None
 
     def get_mpirun(self, case, attribs, job="case.run", exe_only=False):
         """
@@ -402,7 +403,7 @@ class EnvMachSpecific(EnvBase):
             if arg_node is not None:
                 arg_nodes = self.get_nodes("arg", root=arg_node)
                 for arg_node in arg_nodes:
-                    arg_value = transform_vars(arg_node.text,
+                    arg_value = transform_vars(arg_node.text(),
                                                case=case,
                                                subgroup=job,
                                                default=arg_node.get("default"))
@@ -410,6 +411,6 @@ class EnvMachSpecific(EnvBase):
 
         exec_node = self.get_node("executable", root=the_match)
         expect(exec_node is not None,"No executable found")
-        executable = exec_node.text
+        executable = exec_node.text()
 
         return executable, args

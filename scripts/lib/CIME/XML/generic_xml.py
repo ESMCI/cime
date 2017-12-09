@@ -19,11 +19,14 @@ class ConstantElement(object):
     # const methods
     #
 
-    def get(self, key):
-        return self._xml_element.get(key)
+    def get(self, key, default=None):
+        return self._xml_element.get(key, default=default)
 
     def has(self, key):
         return key in self._xml_element.attrib
+
+    def keys(self):
+        return self._xml_element.keys()
 
     def attrib(self):
         return None if self._xml_element.attrib is None else tuple(self._xml_element.attrib.iteritems())
@@ -35,7 +38,7 @@ class ConstantElement(object):
         # Technically, not constant, but it won't affect findall cache
         self._xml_element.text = text
 
-    def get_text(self):
+    def text(self):
         return self._xml_element.text
 
     def __eq__(self, rhs):
@@ -64,6 +67,10 @@ class ConstantElement(object):
             return all_matches[0]
         else:
             return None
+
+    def __iter__(self):
+        for child in self._xml_element:
+            yield(ConstantElement(child))
 
     #
     # non-const methods
@@ -356,13 +363,13 @@ class GenericXML(object):
     def get_element_text(self, element_name, attributes=None, root=None, xpath=None):
         element_node = self.get_optional_node(element_name, attributes, root, xpath)
         if element_node is not None:
-            return element_node.get_text()
+            return element_node.text()
         return None
 
     def set_element_text(self, element_name, new_text, attributes=None, root=None, xpath=None):
         element_node = self.get_optional_node(element_name, attributes, root, xpath)
         if element_node is not None:
-            element_node.text = new_text
+            element_node.set_text(new_text)
             return new_text
         return None
 
@@ -371,9 +378,9 @@ class GenericXML(object):
         if root is None:
             root = self.root
         try:
-            xmlstr = ET.tostring(root)
+            xmlstr = ET.tostring(root._xml_element) # pylint: disable=protected-access
         except ET.ParseError as e:
-            ET.dump(root)
+            ET.dump(root._xml_element) # pylint: disable=protected-access
             expect(False, "Could not write file {}, xml formatting error '{}'".format(self.filename, e))
         return xmlstr
 

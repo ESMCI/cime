@@ -30,7 +30,7 @@ class Tests(GenericXML):
     def get_test_node(self, testname):
         logger.debug("Get settings for {}".format(testname))
         node = self.get_node("test",{"NAME":testname})
-        logger.debug("Found {}".format(node.text))
+        logger.debug("Found {}".format(node.text()))
         return node
 
     def print_values(self, skip_infrastructure_tests=True):
@@ -49,5 +49,5 @@ class Tests(GenericXML):
                     infrastructure_test.upper() == "TRUE"):
                     continue
             name = one_test.get("NAME")
-            desc = one_test.find("DESC").text
+            desc = one_test.find("DESC").text()
             print("{}: {}".format(name, desc))

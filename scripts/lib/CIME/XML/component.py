@@ -69,7 +69,7 @@ class Component(EntryID):
         if val_node is None:
             logger.debug("No default_value for {}".format(node.get("id")))
             return val_node
-        value = val_node.text
+        value = val_node.text()
         if value is not None and len(value) > 0 and value != "UNSET":
             match_values.append(value)
 
@@ -90,14 +90,14 @@ class Component(EntryID):
             if match_count > 0:
                 # append the current result
                 if values.get("modifier") == "additive":
-                    match_values.append(valnode.text)
+                    match_values.append(valnode.text())
 
                 # replace the current result if it already contains the new value
                 # otherwise append the current result
                 elif values.get("modifier") == "merge":
-                    if valnode.text in match_values:
+                    if valnode.text() in match_values:
                         del match_values[:]
-                    match_values.append(valnode.text)
+                    match_values.append(valnode.text())
 
                 else:
                     if match_type == "last":
@@ -105,13 +105,13 @@ class Component(EntryID):
                         if match_count >= match_max:
                             del match_values[:]
                             match_max = match_count
-                            match_value = valnode.text
+                            match_value = valnode.text()
                     elif match_type == "first":
                         # take the *first* best match
                         if match_count > match_max:
                             del match_values[:]
                             match_max = match_count
-                            match_value = valnode.text
+                            match_value = valnode.text()
                     else:
                         expect(False, "match attribute can only have a value of 'last' or 'first'")
 
@@ -170,7 +170,7 @@ class Component(EntryID):
                     expect(len(desc)==0,
                            "Too many matches on forcing field {} in file {}".\
                                format(forcing, self.filename))
-                    desc = node.text
+                    desc = node.text()
             if desc is None:
                 desc = compsetname.split('_')[0]
             return desc
@@ -180,7 +180,7 @@ class Component(EntryID):
         for node in desc_nodes:
             option = node.get('option')
             if option is not None:
-                optiondesc[option] = node.text
+                optiondesc[option] = node.text()
 
         #second pass find a comp_class match
         desc = ""
@@ -194,7 +194,7 @@ class Component(EntryID):
                 fullset = set(parts+opt_parts)
                 match, complist =  self._get_description_match(compsetname, reqset, fullset, modifier_mode)
                 if match:
-                    desc = node.text
+                    desc = node.text()
                     for opt in complist:
                         if opt in optiondesc:
                             desc += optiondesc[opt]
@@ -269,7 +269,7 @@ class Component(EntryID):
         for node in desc_nodes:
             compsetmatch = node.get("compset")
             if compsetmatch is not None and re.search(compsetmatch, compsetname):
-                desc += node.text
+                desc += node.text()
 
         return desc
 
@@ -278,14 +278,14 @@ class Component(EntryID):
         print values for help and description in target config_component.xml file
         """
         rootnode = self.get_node("help")
-        helptext = rootnode.text
+        helptext = rootnode.text()
 
         rootnode = self.get_node("description")
         compsets = {}
         descs = self.get_nodes("desc", root=rootnode)
         for desc in descs:
             attrib = desc.get("compset")
-            text = desc.text
+            text = desc.text()
             compsets[attrib] = text
 
         logger.info(" {}".format(helptext))
