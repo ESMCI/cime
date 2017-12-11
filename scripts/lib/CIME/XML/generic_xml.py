@@ -187,7 +187,7 @@ class GenericXML(object):
 
         nodes = self.get_nodes(nodename, attributes=attributes, root=root, xpath=xpath)
 
-        expect(len(nodes) == 1, "Incorrect number of matches, {:d}, for nodename '{}' and attrs '{}' in file '{}'".format(len(nodes), nodename, attributes, self.filename))
+        #expect(len(nodes) == 1, "Incorrect number of matches, {:d}, for nodename '{}' and attrs '{}' in file '{}'".format(len(nodes), nodename, attributes, self.filename))
         return nodes[0]
 
     def get_optional_node(self, nodename, attributes=None, root=None, xpath=None):
@@ -198,20 +198,20 @@ class GenericXML(object):
         """
         nodes = self.get_nodes(nodename, attributes=attributes, root=root, xpath=xpath)
 
-        expect(len(nodes) <= 1, "Multiple matches for nodename '{}' and attrs '{}' in file '{}'".format(nodename, attributes, self.filename))
+        #expect(len(nodes) <= 1, "Multiple matches for nodename '{}' and attrs '{}' in file '{}'".format(nodename, attributes, self.filename))
         return nodes[0] if nodes else None
 
     def get_nodes(self, nodename, attributes=None, root=None, xpath=None):
-        expect(root is None or isinstance(root, ConstantElement), "Wrong type")
+        #expect(root is None or isinstance(root, ConstantElement), "Wrong type")
 
-        logger.debug("(get_nodes) Input values: {}, {}, {}, {}, {}".format(self.__class__.__name__, nodename, attributes, root, xpath))
+        #logger.debug("(get_nodes) Input values: {}, {}, {}, {}, {}".format(self.__class__.__name__, nodename, attributes, root, xpath))
 
         if root is None:
             root = self.root
         nodes = []
 
-        expect(attributes is None or xpath is None,
-               " Arguments attributes and xpath are exclusive")
+        #expect(attributes is None or xpath is None,
+        #       " Arguments attributes and xpath are exclusive")
         if xpath is None:
             xpath = ".//"+nodename
 
@@ -222,15 +222,15 @@ class GenericXML(object):
 
             for key, value in attributes.items():
                 if value is not None:
-                    expect(isinstance(value, six.string_types),
-                           " Bad value passed for key {}".format(key))
+                    #expect(isinstance(value, six.string_types),
+                    #       " Bad value passed for key {}".format(key))
                     xpath = ".//{}[@{}=\'{}\']".format(nodename, key, value)
-                    logger.debug("xpath is {}".format(xpath))
+                    #logger.debug("xpath is {}".format(xpath))
 
-                    try:
-                        newnodes = root.findall(xpath)
-                    except Exception as e:
-                        expect(False, "Bad xpath search term '{}', error: {}".format(xpath, e))
+                    #try:
+                    newnodes = root.findall(xpath)
+                    #except Exception as e:
+                    #    expect(False, "Bad xpath search term '{}', error: {}".format(xpath, e))
 
                     if not nodes:
                         nodes = newnodes
@@ -242,10 +242,10 @@ class GenericXML(object):
                         return []
 
         else:
-            logger.debug("xpath: {}".format(xpath))
+            #logger.debug("xpath: {}".format(xpath))
             nodes = root.findall(xpath)
 
-        logger.debug("Returning {} nodes ({})".format(len(nodes), nodes))
+        #logger.debug("Returning {} nodes ({})".format(len(nodes), nodes))
 
         return nodes
 
