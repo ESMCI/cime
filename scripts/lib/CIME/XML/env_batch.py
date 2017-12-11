@@ -111,8 +111,9 @@ class EnvBatch(EnvBase):
         orig_group = self.get_optional_node("group", {"id":"job_submission"})
         expect(orig_group, "Looks like job groups have already been created")
 
+        rev_child = [child for child in orig_group]
         childnodes = []
-        for child in reversed(orig_group):
+        for child in reversed(rev_child):
             childnodes.append(deepcopy(child))
             orig_group.remove(child)
 
@@ -123,8 +124,8 @@ class EnvBatch(EnvBase):
             new_job_group.set("id", name)
             for field in jdict.keys():
                 val = jdict[field]
-                node = ConstantElement(ET.SubElement(new_job_group, "entry", {"id":field,"value":val}))
-                tnode = ConstantElement(ET.SubElement(node, "type"))
+                node = ConstantElement(ET.SubElement(new_job_group._xml_element, "entry", {"id":field,"value":val}))
+                tnode = ConstantElement(ET.SubElement(node._xml_element, "type"))
                 tnode.set_text("char")
 
             for child in childnodes:

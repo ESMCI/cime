@@ -214,7 +214,7 @@ class EnvMachSpecific(EnvBase):
             elif key == "name":
                 pass
             else:
-                val = case.get_value(key)
+                val = case.get_value(key.upper())
                 expect(val is not None, "Cannot match attrib '%s', case has no value for it" % key.upper())
                 if not self._match(val, value):
                     return False
