@@ -1095,7 +1095,7 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     if (storage_present)
         storagep = &storage;
     if (chunksizes_present)
-        if (!(chunksizesp = malloc(ndims)))
+        if (!(chunksizesp = malloc(ndims *sizeof(PIO_Offset))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Call the inq function to get the values. */
@@ -1521,7 +1521,7 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (chunksizes_present){
-        if (!(chunksizesp = malloc(ndims)))
+        if (!(chunksizesp = malloc(ndims* sizeof(PIO_Offset))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(chunksizesp, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);

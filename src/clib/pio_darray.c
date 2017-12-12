@@ -561,12 +561,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     }
     LOG((2, "wmb->num_arrays = %d arraylen = %d vdesc->mpi_type_size = %d\n",
          wmb->num_arrays, arraylen, vdesc->mpi_type_size));
-    /* the limit of data_size < INT_MAX is due to a bug in ROMIO which limits
-       the size of contiguous data to INT_MAX, a fix has been proposed in
-       https://github.com/pmodels/mpich/pull/2888 */
-    io_data_size = (1 + wmb->num_arrays) * iodesc->maxiobuflen * vdesc->mpi_type_size;
-    if(io_data_size > INT_MAX)
-	needsflush = 2;
 #if PIO_USE_MALLOC
     /* Try realloc first and call flush if realloc fails. */
     if (arraylen > 0)
@@ -594,6 +588,12 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (needsflush == 0)
         needsflush = (maxfree <= 1.1 * (1 + wmb->num_arrays) * arraylen * vdesc->mpi_type_size);
 #endif
+    /* the limit of data_size < INT_MAX is due to a bug in ROMIO which limits
+       the size of contiguous data to INT_MAX, a fix has been proposed in
+       https://github.com/pmodels/mpich/pull/2888 */
+    io_data_size = (1 + wmb->num_arrays) * iodesc->maxiobuflen * vdesc->mpi_type_size;
+    if(io_data_size > INT_MAX)
+	needsflush = 2;
 
     /* Tell all tasks on the computation communicator whether we need
      * to flush data. */
