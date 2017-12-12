@@ -1006,6 +1006,8 @@ int inq_var_handler(iosystem_desc_t *ios)
     char name_present, xtype_present, ndims_present, dimids_present, natts_present;
     char name[NC_MAX_NAME + 1], *namep = NULL;
     nc_type xtype, *xtypep = NULL;
+    /* no easy way not to hard code this array length */
+    int dimids[8];
     int *ndimsp = NULL, *dimidsp = NULL, *nattsp = NULL;
     int ndims, natts;
     int mpierr;
@@ -1041,8 +1043,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     if (ndims_present)
         ndimsp = &ndims;
     if (dimids_present)
-        if (!(dimidsp = malloc(ndims)))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+	dimidsp = dimids;
     if (natts_present)
         nattsp = &natts;
 
@@ -1051,8 +1052,6 @@ int inq_var_handler(iosystem_desc_t *ios)
 
     if (ndims_present)
         LOG((2, "inq_var_handler ndims = %d", ndims));
-    if (dimids_present)
-	free(dimidsp);
 
     return PIO_NOERR;
 }
