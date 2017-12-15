@@ -55,6 +55,8 @@ elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
   set ( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -mismatch_all" )
   #    target_compile_options (piof
   #        PRIVATE -mismatch_all)
+elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Cray")
+  set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ef")
 endif()
 
 # Look for c_sizeof capability
