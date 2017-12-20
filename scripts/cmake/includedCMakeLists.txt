@@ -10,7 +10,18 @@
 cmake_minimum_required(VERSION 2.7)
 INCLUDE(ExternalProject)
 
+
+message("Hardwiring include path -- must automate")
+include(/home/agsalin/CIME/src/CMake/CIME_initial_setup.cmake)
+
+#include(/home/agsalin/buildmacrocime/Macros.cmake)
+
 PROJECT(ACME Fortran C)
+
+message("XXX ${NetCDF_PATH}")
+message("XXY ${FFLAGS}")
+set(CMAKE_Fortran_FLAGS ${FFLAGS})
+
 
 # May want to rename CIME_BUILD
 OPTION(ACME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
@@ -24,8 +35,8 @@ GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_SOURCE_DIR}/${CIME_REL_DIR} ABSOL
 SET(CIME_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to CIME.")
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_BINARY_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_BINARY_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to binary directory for CIME.")
-SET(ACME_NETCDF_DIR "." CACHE PATH "Install location of NetCDF. Default set by CIME.")
-SET(ACME_HDF5_DIR "." CACHE PATH "Install location of HDF5. Default set by CIME.")
+SET(ACME_NETCDF_DIR "${NetCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
+SET(ACME_HDF5_DIR "${PNetCDF_PATH}" CACHE PATH "Install location of HDF5. Default set by CIME.")
 SET(ACME_PIO_DIR "${CIME_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
 SET(GENF90_EXE "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Degault set by CIME")
 
@@ -53,14 +64,14 @@ FIND_PATH(ACME_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a libpnetcdf.a PA
 INCLUDE_DIRECTORIES(${ACME_NETCDF_INCLUDE_DIR})
 MESSAGE("-- Found netcdf.mod at ${ACME_NETCDF_INCLUDE_DIR}")
 
-FIND_PATH(ACME_HDF5_INCLUDE_DIR hdf5.h PATHS ${ACME_HDF5_DIR}/include NO_DEFAULT_PATHS)
-IF(NOT ACME_HDF5_INCLUDE_DIR)
-  MESSAGE(FATAL_ERROR "Can't find hdf5.h under ${ACME_HDF5_DIR}/include")
-ENDIF()
-FIND_PATH(ACME_HDF5_LIBRARY_DIR NAMES libhdf5_hl.a libhdf5.a PATHS ${ACME_HDF5_DIR}/lib NO_DEFAULT_PATHS)
-
-INCLUDE_DIRECTORIES(${ACME_HDF5_INCLUDE_DIR})
-MESSAGE("-- Found hdf5.h at ${ACME_HDF5_INCLUDE_DIR}")
+#FIND_PATH(ACME_HDF5_INCLUDE_DIR hdf5.h PATHS ${ACME_HDF5_DIR}/include NO_DEFAULT_PATHS)
+#IF(NOT ACME_HDF5_INCLUDE_DIR)
+#  MESSAGE(FATAL_ERROR "Can't find hdf5.h under ${ACME_HDF5_DIR}/include")
+#ENDIF()
+#FIND_PATH(ACME_HDF5_LIBRARY_DIR NAMES libhdf5_hl.a libhdf5.a PATHS ${ACME_HDF5_DIR}/lib NO_DEFAULT_PATHS)
+#
+#INCLUDE_DIRECTORIES(${ACME_HDF5_INCLUDE_DIR})
+#MESSAGE("-- Found hdf5.h at ${ACME_HDF5_INCLUDE_DIR}")
 
 # Require installed PIO under ACME_PIO_DIR
 IF (NOT DEFINED ACME_PIO_DIR)

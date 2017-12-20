@@ -295,8 +295,11 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Choose the type of buil
                             fd.write("list(APPEND CPPDEFS ${TEMP})\n\n")
                         elif "SLIBS" in key or "LDFLAGS" in key:
                             fd.write("add_flags(LDFLAGS ${TEMP})\n\n")
+                    else:
+                        fd.write("SET({} {})\n".format(key, value))
 
         # Recursively print the conditionals, combining tests to avoid repetition
+        fd.write("\n# Start conditional settings\n")
         _parse_hash(macros["_COND_"], fd, 0, output_format)
 
 
@@ -304,10 +307,12 @@ def _parse_hash(macros, fd, depth, output_format, cmakedebug=""):
     width = 2 * depth
     for key, value in macros.items():
         if type(value) is dict:
-            if output_format == "make" or "DEBUG" in key:
+            if output_format == "make" or output_format == "cmake" or "DEBUG" in key:
                 for key2, value2 in value.items():
                     if output_format == "make":
                         fd.write("{}ifeq ($({}), {}) \n".format(" " * width, key, key2))
+                    if output_format == "cmake":
+                        fd.write("{}IF (${}{}{} STREQUAL {}) \n".format(" " * width, "{", key, "}", key2))
 
                     _parse_hash(value2, fd, depth + 1, output_format, key2)
         else:
@@ -317,18 +322,23 @@ def _parse_hash(macros, fd, depth, output_format, cmakedebug=""):
                 else:
                     fd.write("{} {} += {}\n".format(" " * width, key, value))
 
-            else:
+            if output_format == "cmake":
                 value = value.replace("(", "{").replace(")", "}")
                 release = "DEBUG" if "TRUE" in cmakedebug else "RELEASE"
                 if "CFLAGS" in key:
-                    fd.write("add_flags(CMAKE_C_FLAGS_{} {})\n\n".format(release, value))
+                    fd.write("{}add_flags(CMAKE_C_FLAGS_{} {} {})\n".format(" " * width, release, value, "${CFLAGS}"))
                 elif "FFLAGS" in key:
-                    fd.write("add_flags(CMAKE_Fortran_FLAGS_{} {})\n\n".format(release, value))
+                    fd.write("{}add_flags(CMAKE_Fortran_FLAGS_{} {} {})\n".format(" " * width, release, value, "${FFLAGS}"))
                 elif "CPPDEF" in key:
-                    fd.write("add_config_definitions({} {})\n\n".format(release, value))
+                    fd.write("{}add_config_definitions({} {})\n".format(" " * width, release, value))
                 elif "SLIBS" in key or "LDFLAGS" in key:
-                    fd.write("add_flags(CMAKE_EXE_LINKER_FLAGS_{} {})\n\n".format(release, value))
+                    fd.write("{}add_flags(CMAKE_EXE_LINKER_FLAGS_{} {})\n".format(" " * width, release, value))
 
     width -= 2
     if output_format == "make" and depth > 0:
         fd.write("{}endif\n\n".format(" " * width))
+
+    if output_format == "cmake" and depth > 0:
+        fd.write("{}ENDIF()\n".format(" " * width))
+        if depth == 1:
+            fd.write("\n")

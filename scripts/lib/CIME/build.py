@@ -280,6 +280,59 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     return logs
 
 ###############################################################################
+def _build_model_cmake(case, build_threaded, exeroot, clm_config_opts, incroot, complist,
+                       lid, caseroot, cimeroot, compiler, buildlist, comp_interface):
+###############################################################################
+    #ToDo: pare down arg list to what is used
+    t1 = time.time()
+    logger.info("TRYING CMAKE {} {}".format(caseroot, cimeroot) )
+
+    # Dump out case-specific compilation info for CMake into caseInfo.cmake
+    cc = os.path.join(exeroot, "caseInfo.cmake")
+    f = open(cc, "w")
+    f.write("#Set some needed variables\n")
+    f.write("SET(ACME_BUILD ON CACHE BOOL \"Switch in CMake logic to build the model, as opposed to unit tests\")\n")
+    f.write("SET(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL \"Switch for verbose makefile info\")\n")
+
+    f.write("\n#Set info needed by Macros.cmake\n")
+    f.write("SET(DEBUG {} CACHE BOOL \"Debug flag needed in Macros.cmake\")\n"
+            .format(case.get_value("DEBUG")) )
+
+    smp = "SMP" in os.environ and os.environ["SMP"] == "TRUE"
+    f.write("SET(compile_threaded {} CACHE BOOL \"SMP flag needed in Macros.cmake\")\n"
+            .format(smp) )
+
+    f.write("SET(MODEL {} CACHE STRING \"Model needed in Macros.cmake\")\n"
+            .format(get_model() ) )
+
+    # Specify which components are to be compiled in this case (e.g. satm vs datm, ocn vs docn, ...)
+    f.write("\n# Set each of the components\n")
+    for model, component, _, _, _ in complist:
+      f.write("SET(CIME_{} {} CACHE STRING \"Choice of {} component for this case\")\n"
+              .format(model.upper(), component, model) )
+    f.close()
+    # End of writing to caseInfo.cmake
+    
+    # Call CMake and  make -j N
+    cf = os.path.join(exeroot, "cmake.out")
+    f = open(cf, "w")
+    stat = run_cmd("rm CMakeCache.txt; cmake -C caseInfo.cmake {} "
+                   .format(cimeroot),
+                   from_dir=exeroot, arg_stdout=f, arg_stderr=f)
+    f.close()  
+
+    mf = os.path.join(exeroot, "make.out")
+    f = open(mf, "w")
+    gmake   = case.get_value("GMAKE")
+    gmake_j = case.get_value("GMAKE_J")
+    stat = run_cmd("{} -j {:d} ".format(gmake, gmake_j),
+                   from_dir=exeroot, arg_stdout=f, arg_stderr=f)
+    f.close()  
+
+    t2 = time.time()
+    logger.info("CMake built in {:f} seconds".format((t2 - t1)))
+
+###############################################################################
 def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldroot, incroot, file_build,
                         thread_bad_results, smp, compiler):
 ###############################################################################
@@ -514,6 +567,13 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist):
 
     t2 = time.time()
     logs = []
+
+    #### AGS attempting to spawn CMake
+    logger.info("Launching CMake")
+    _build_model_cmake(case, build_threaded, exeroot, clm_config_opts, incroot, complist,
+                       lid, caseroot, cimeroot, compiler, buildlist, comp_interface)
+    logger.info("End Launching CMake")
+    ####
 
     if not model_only:
         logs = _build_libraries(case, exeroot, sharedpath, caseroot,

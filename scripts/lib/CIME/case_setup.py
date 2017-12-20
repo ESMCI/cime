@@ -119,6 +119,10 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         if not os.path.isfile("Macros.make") or not os.path.isfile("env_mach_specific.xml"):
             configure(Machines(machine=mach), caseroot, ["Makefile"], compiler, mpilib, debug, sysos)
 
+        # Also write out Cmake macro file
+        if not os.path.isfile("Macros.cmake")):
+            configure(Machines(machine=mach), caseroot, ["CMake"], compiler, mpilib, debug, sysos)
+
         # Set tasks to 1 if mpi-serial library
         if mpilib == "mpi-serial":
             for vid, value in case:
