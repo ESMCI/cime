@@ -20,7 +20,6 @@ MODULE shr_orb_mod
    public :: shr_orb_params
    public :: shr_orb_decl
    public :: shr_orb_print
-   public :: shr_orb_doalbavg
 
    real   (SHR_KIND_R8),public,parameter :: SHR_ORB_UNDEF_REAL = 1.e36_SHR_KIND_R8 ! undefined real
    integer(SHR_KIND_IN),public,parameter :: SHR_ORB_UNDEF_INT  = 2000000000        ! undefined int
@@ -38,13 +37,12 @@ MODULE shr_orb_mod
    real   (SHR_KIND_R8),parameter :: SHR_ORB_MVELP_MIN  =   0.0_SHR_KIND_R8 ! min value for mvelp
    real   (SHR_KIND_R8),parameter :: SHR_ORB_MVELP_MAX  = 360.0_SHR_KIND_R8 ! max value for mvelp
 
-   logical, save :: alb_cosz_avg
 
 !===============================================================================
 CONTAINS
 !===============================================================================
 
-real(SHR_KIND_R8) pure FUNCTION shr_orb_cosz(jday,lat,lon,declin,dt_avg,rad_call)
+real(SHR_KIND_R8) pure FUNCTION shr_orb_cosz(jday,lat,lon,declin,dt_avg)
 
    !----------------------------------------------------------------------------
    !
@@ -65,19 +63,13 @@ real(SHR_KIND_R8) pure FUNCTION shr_orb_cosz(jday,lat,lon,declin,dt_avg,rad_call
    real   (SHR_KIND_R8),intent(in) :: declin ! Solar declination (radians)
    real   (SHR_KIND_R8),intent(in), optional   :: dt_avg ! if present and set non-zero, then use in the
                                                          ! average cosz calculation
-   logical, intent(in), optional :: rad_call ! if present and T, do time avg'ing
-   logical :: use_dt_avg                     ! if T, do time avg'ing
+   logical :: use_dt_avg
 
    !----------------------------------------------------------------------------
 
    use_dt_avg = .false.
    if (present(dt_avg)) then
-    if (dt_avg /= 0.0_shr_kind_r8) then
-     if (alb_cosz_avg) use_dt_avg=.true.
-     if (present(rad_call)) then
-      if (rad_call)    use_dt_avg=.true.
-     endif
-    endif
+      if (dt_avg /= 0.0_shr_kind_r8) use_dt_avg = .true.
    end if
 
 
@@ -91,24 +83,6 @@ real(SHR_KIND_R8) pure FUNCTION shr_orb_cosz(jday,lat,lon,declin,dt_avg,rad_call
    end if
 
 END FUNCTION shr_orb_cosz
-
-!===============================================================================
-!
-! !IROUTINE: shr_orb_doalbavg-- set alb_cosz_avg flag
-
-subroutine shr_orb_doalbavg(iflag)
-
-  implicit none
-
-! !INPUT/OUTPUT PARAMETERS:
-
-  logical, intent(in) :: iflag
-
-
-  alb_cosz_avg = iflag
-
-
-end subroutine shr_orb_doalbavg
 
 !=======================================================================
 ! A New Algorithm for Calculation of Cosine Solar Zenith Angle

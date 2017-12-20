@@ -5,7 +5,7 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
 from CIME.utils import transform_vars, get_cime_root
-import string
+import string, resource
 
 logger = logging.getLogger(__name__)
 
@@ -18,15 +18,14 @@ class EnvMachSpecific(EnvBase):
         """
         initialize an object interface to file env_mach_specific.xml in the case directory
         """
-        fullpath = infile if os.path.isabs(infile) else os.path.join(caseroot, infile)
         schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_mach_specific.xsd")
-        EnvBase.__init__(self, caseroot, fullpath,schema=schema)
+        EnvBase.__init__(self, caseroot, infile, schema=schema)
         self._allowed_mpi_attributes = ("compiler", "mpilib", "threaded", "unit_testing")
         self._unit_testing = unit_testing
 
     def populate(self, machobj):
         """Add entries to the file using information from a Machines object."""
-        items = ("module_system", "environment_variables", "mpirun", "run_exe","run_misc_suffix")
+        items = ("module_system", "environment_variables", "resource_limits", "mpirun", "run_exe","run_misc_suffix")
         default_run_exe_node = machobj.get_node("default_run_exe")
         default_run_misc_suffix_node = machobj.get_node("default_run_misc_suffix")
 
@@ -85,6 +84,20 @@ class EnvMachSpecific(EnvBase):
         envs_to_set = self._get_envs_for_case(compiler, debug, mpilib)
         if (envs_to_set is not None):
             self.load_envs(envs_to_set)
+
+
+        self._get_resources_for_case(compiler, debug, mpilib)
+
+    def _get_resources_for_case(self, compiler, debug, mpilib):
+        resource_nodes = self.get_nodes("resource_limits")
+        if resource_nodes is not None:
+            nodes = self._compute_resource_actions(resource_nodes, compiler, debug, mpilib)
+            for name, val in nodes:
+                attr = getattr(resource, name)
+                limits = resource.getrlimit(attr)
+                logger.info("Setting resource.{} to {} from {}".format(name, val, limits))
+                limits = (int(val), limits[1])
+                resource.setrlimit(attr, limits)
 
     def load_modules(self, modules_to_load):
         module_system = self.get_module_system_type()
@@ -164,6 +177,11 @@ class EnvMachSpecific(EnvBase):
     def _compute_env_actions(self, env_nodes, compiler, debug, mpilib):
         return self._compute_actions(env_nodes, "env", compiler, debug, mpilib)
 
+    def _compute_resource_actions(self, resource_nodes, compiler, debug, mpilib):
+        return self._compute_actions(resource_nodes, "resource", compiler, debug, mpilib)
+
+
+
     def _compute_actions(self, nodes, child_tag, compiler, debug, mpilib):
         result = [] # list of tuples ("name", "argument")
 
@@ -236,7 +254,7 @@ class EnvMachSpecific(EnvBase):
         # Purpose is for environment management system that does not have
         # a python interface and therefore can only determine what they
         # do by running shell command and looking at the changes
-        # in the environment.  
+        # in the environment.
 
         cmd = "source {}".format(sh_init_cmd)
 
@@ -283,7 +301,7 @@ class EnvMachSpecific(EnvBase):
             if key in os.environ and key not in newenv:
                 del(os.environ[key])
             else:
-                os.environ[key] = newenv[key] 
+                os.environ[key] = newenv[key]
 
     def _load_none_modules(self, modules_to_load):
         """
@@ -322,7 +340,7 @@ class EnvMachSpecific(EnvBase):
         cmd_nodes = self.get_optional_node("cmd_path", attributes={"lang":lang})
         return cmd_nodes.text if cmd_nodes is not None else None
 
-    def get_mpirun(self, case, attribs, check_members=None, job="case.run", exe_only=False):
+    def get_mpirun(self, case, attribs, job="case.run", exe_only=False):
         """
         Find best match, return (executable, {arg_name : text})
         """
@@ -384,7 +402,6 @@ class EnvMachSpecific(EnvBase):
                     arg_value = transform_vars(arg_node.text,
                                                case=case,
                                                subgroup=job,
-                                               check_members=check_members,
                                                default=arg_node.get("default"))
                     args.append(arg_value)
 

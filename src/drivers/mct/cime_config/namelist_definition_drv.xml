@@ -41,6 +41,23 @@
   -->
 
   <!-- =========================== -->
+  <!-- group cime_driver_inst              -->
+  <!-- =========================== -->
+
+  <entry id="ninst_driver" modify_via_xml="NINST_MAX">
+    <type>integer</type>
+    <category>cime_driver_inst</category>
+    <group>cime_driver_inst</group>
+    <desc>
+      Number of CESM driver instances.  Only used if MULTI_DRIVER is TRUE.
+    </desc>
+    <values>
+      <value>1</value>
+      <value MULTI_DRIVER=".true.">$NINST_MAX</value>
+    </values>
+  </entry>
+
+  <!-- =========================== -->
   <!-- group seq_cplflds_inparm    -->
   <!-- =========================== -->
 
@@ -164,6 +181,19 @@
     </desc>
     <values>
       <value>$CPL_I2O_PER_CAT</value>
+    </values>
+  </entry>
+
+  <entry id="nan_check_component_fields">
+    <type>logical</type>
+    <category>seq_flds</category>
+    <group>seq_cplflds_inparm</group>
+    <desc>
+      .true. means that all fields passed to coupler are checked for NaN values
+    </desc>
+    <values>
+      <value>.false.</value>
+      <value cime_model='cesm'>.true.</value>
     </values>
   </entry>
 
@@ -646,42 +676,6 @@
     </values>
   </entry>
 
-  <entry id="flux_scheme">
-    <type>integer</type>
-    <category>control</category>
-    <group>seq_infodata_inparm</group>
-    <valid_values>0,1,2</valid_values>
-    <desc>
-      integer parameter controlling choice of notional equilibrium
-      self-similarity parametrisation scheme for surface turbulent
-      fluxes between ocean and atmosphere: 
-	=0 -> CESM default (derived from of Large et al. 1994)
-        =1 -> COARE v3.0 (Fairall et al. 2003)
-        =2 -> like 0, but with fixed number of iterations 
-              towards convergence - N.B. 2 not allowed if
-              FLUX_DIURNAL is set to TRUE
-    </desc>
-    <values>
-      <value>0</value>
-    </values>
-  </entry>
-
-  <entry id="alb_cosz_avg">
-    <type>logical</type>
-    <category>control</category>
-    <group>seq_infodata_inparm</group>
-    <desc>
-      logical parameter controlling whether a time-step average is
-      used for the computation of albedos in addition to the      
-      computation for radiances: 
-	=F -> CESM default 
-        =T -> use cosz average over time-step also for albedos
-    </desc>
-    <values>
-      <value>.false.</value>
-    </values>
-  </entry>
-
   <entry id="atm_gnam" modify_via_xml="ATM_GRID">
     <type>char</type>
     <category>mapping</category>
@@ -869,18 +863,6 @@
     </desc>
     <values>
       <value>$CPL_SEQ_OPTION</value>
-    </values>
-  </entry>
-
-  <entry id="cpl_cdf64">
-    <type>logical</type>
-    <category>expdef</category>
-    <group>seq_infodata_inparm</group>
-    <desc>
-      default: true
-    </desc>
-    <values>
-      <value>.true.</value>
     </values>
   </entry>
 
@@ -2707,24 +2689,6 @@
     </values>
   </entry>
 
-  <entry id="esmf_logging" modify_via_xml="ESMF_LOGFILE_KIND">
-    <type>char</type>
-    <category>ccsm_pes</category>
-    <group>ccsm_pes</group>
-    <desc>
-      Determines what ESMF log files (if any) are generated when
-          USE_ESMF_LIB is TRUE. 
-      ESMF_LOGKIND_SINGLE: Use a single log file, combining messages from
-          all of the PETs. Not supported on some platforms.
-      ESMF_LOGKIND_MULTI: Use multiple log files — one per PET.
-      ESMF_LOGKIND_NONE: Do not issue messages to a log file.
-      By default, no ESMF log files are generated.
-    </desc>
-    <values>
-      <value>$ESMF_LOGFILE_KIND</value>
-    </values>
-  </entry>
-
   <!-- =========================== -->
   <!-- group prof_inparm           -->
   <!--  in perf_mod.F90            -->
@@ -3971,4 +3935,3 @@
   </entry>
 
 </entry_id>
-

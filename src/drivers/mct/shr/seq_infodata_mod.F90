@@ -18,6 +18,7 @@
 ! !REVISION HISTORY:
 !     2005-Nov-11 - E. Kluzek - creation of shr_inputinfo_mod
 !     2007-Nov-15 - T. Craig - refactor for ccsm4 system and move to seq_infodata_mod
+!     2016-Dec-08 - R. Montuoro - updated for multiple coupler instances
 !
 ! !INTERFACE: ------------------------------------------------------------------
 
@@ -124,8 +125,6 @@ MODULE seq_infodata_mod
       logical                 :: flux_albav      ! T => no diurnal cycle in ocn albedos
       logical                 :: flux_diurnal    ! T => diurnal cycle in atm/ocn fluxes
       real(SHR_KIND_R8)       :: gust_fac        ! wind gustiness factor
-      integer                 :: flux_scheme     !+tht option for COARE flux computation (=0,1,2)
-      logical                 :: alb_cosz_avg    !+tht T=>use time-step average cosz for albedo computation
       character(SHR_KIND_CL)  :: glc_renormalize_smb ! Whether to renormalize smb sent from lnd -> glc
       real(SHR_KIND_R8)       :: wall_time_limit ! force stop time limit (hours)
       character(SHR_KIND_CS)  :: force_stop_at   ! when to force a stop (month, day, etc)
@@ -141,7 +140,7 @@ MODULE seq_infodata_mod
       character(SHR_KIND_CS)  :: aoflux_grid     ! grid for atm ocn flux calc
       integer                 :: cpl_decomp      ! coupler decomp
       character(SHR_KIND_CL)  :: cpl_seq_option  ! coupler sequencing option
-      logical                 :: cpl_cdf64       ! use netcdf 64 bit offset, large file support
+
       logical                 :: do_budgets      ! do heat/water budgets diagnostics
       logical                 :: do_histinit     ! write out initial history file
       integer                 :: budget_inst     ! instantaneous budget level
@@ -278,16 +277,16 @@ CONTAINS
 !===============================================================================
 !BOP ===========================================================================
 !
-! !IROUTINE: seq_infodata_Init -- read in CCSM shared namelist
+! !IROUTINE: seq_infodata_Init -- read in CIME shared namelist
 !
 ! !DESCRIPTION:
 !
-!     Read in input from seq_infodata_inparm namelist, output ccsm derived type for
+!     Read in input from seq_infodata_inparm namelist, output cime derived type for
 !     miscillaneous info.
 !
 ! !INTERFACE: ------------------------------------------------------------------
 
-SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
+SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid, cpl_tag)
 
 ! !USES:
 
@@ -304,6 +303,7 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
    character(len=*),        intent(IN)    :: nmlfile   ! Name-list filename
    integer(SHR_KIND_IN),    intent(IN)    :: ID        ! seq_comm ID
    type(file_desc_T) :: pioid
+   character(len=*), optional, intent(IN) :: cpl_tag   ! cpl instance suffix
 !EOP
 
     !----- local -----
@@ -359,8 +359,6 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
     logical                :: flux_albav         ! T => no diurnal cycle in ocn albedos
     logical                :: flux_diurnal       ! T => diurnal cycle in atm/ocn fluxes
     real(SHR_KIND_R8)      :: gust_fac           ! wind gustiness factor
-    integer                :: flux_scheme        !+tht option for COARE flux computation (=0,1,2)
-    logical                :: alb_cosz_avg       !+tht T=>use time-step average cosz for albedo computation
     character(SHR_KIND_CL) :: glc_renormalize_smb ! Whether to renormalize smb sent from lnd -> glc
     real(SHR_KIND_R8)      :: wall_time_limit    ! force stop time limit (hours)
     character(SHR_KIND_CS) :: force_stop_at      ! when to force a stop (month, day, etc)
@@ -376,7 +374,7 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
     character(SHR_KIND_CS) :: aoflux_grid        ! grid for atm ocn flux calc
     integer                :: cpl_decomp         ! coupler decomp
     character(SHR_KIND_CL) :: cpl_seq_option     ! coupler sequencing option
-    logical                :: cpl_cdf64          ! use netcdf 64 bit offset, large file support
+
     logical                :: do_budgets         ! do heat/water budgets diagnostics
     logical                :: do_histinit        ! write out initial history file
     integer                :: budget_inst        ! instantaneous budget level
@@ -426,7 +424,6 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
          restart_pfile, restart_file, run_barriers,        &
          single_column, scmlat, force_stop_at,             &
          scmlon, logFilePostFix, outPathRoot, flux_diurnal, gust_fac,&
-         flux_scheme, alb_cosz_avg,                        & !+tht options for COARE fluxes and avg cosz albedos
          perpetual, perpetual_ymd, flux_epbal, flux_albav, &
          orb_iyear_align, orb_mode, wall_time_limit,       &
          orb_iyear, orb_obliq, orb_eccen, orb_mvelp,       &
@@ -445,7 +442,7 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
          histavg_atm, histavg_lnd, histavg_ocn, histavg_ice, &
          histavg_rof, histavg_glc, histavg_wav, histavg_xao, &
          histaux_l2x1yr, cpl_seq_option,                   &
-         cpl_cdf64, eps_frac, eps_amask,                   &
+         eps_frac, eps_amask,                   &
          eps_agrid, eps_aarea, eps_omask, eps_ogrid,       &
          eps_oarea, esmf_map_flag,                         &
          reprosum_use_ddpdd, reprosum_diffmax, reprosum_recompute, &
@@ -503,8 +500,6 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
        flux_albav            = .false.
        flux_diurnal          = .false.
        gust_fac              = huge(1.0_SHR_KIND_R8)
-       flux_scheme           = 0       !+tht COARE flux computation not default
-       alb_cosz_avg          = .false. !+tht time-step average cosz for albedos not default
        glc_renormalize_smb   = 'on_if_glc_coupled_fluxes'
        wall_time_limit       = -1.0
        force_stop_at         = 'month'
@@ -520,7 +515,6 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
        aoflux_grid           = 'ocn'
        cpl_decomp            = 0
        cpl_seq_option        = 'CESM1_MOD'
-       cpl_cdf64             = .true.
        do_budgets            = .false.
        do_histinit           = .false.
        budget_inst           = 0
@@ -596,6 +590,20 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
        infodata%brnch_retain_casename = brnch_retain_casename
        infodata%restart_pfile         = restart_pfile
        infodata%restart_file          = restart_file
+       if (present(cpl_tag)) then
+          if (len(cpl_tag) > 0) then
+             if (trim(restart_file) /= trim(sp_str)) then
+                write(logunit,*) trim(subname),' ERROR: restart_file can '//&
+                'only be read from restart pointer files when using multiple couplers '
+                call shr_sys_abort(subname//' ERROR: invalid settings for restart_file ')
+             end if
+          end if
+          infodata%restart_file       = restart_file
+          infodata%restart_pfile      = trim(restart_pfile) // trim(cpl_tag)
+       else
+          infodata%restart_pfile      = restart_pfile
+          infodata%restart_file       = restart_file
+       end if
        infodata%single_column         = single_column
        infodata%scmlat                = scmlat
        infodata%scmlon                = scmlon
@@ -612,8 +620,6 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
        infodata%flux_albav            = flux_albav
        infodata%flux_diurnal          = flux_diurnal
        infodata%gust_fac              = gust_fac
-       infodata%flux_scheme           = flux_scheme  !+tht COARE
-       infodata%alb_cosz_avg          = alb_cosz_avg !+tht albedos
        infodata%glc_renormalize_smb   = glc_renormalize_smb
        infodata%wall_time_limit       = wall_time_limit
        infodata%force_stop_at         = force_stop_at
@@ -629,7 +635,6 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
        infodata%aoflux_grid           = aoflux_grid
        infodata%cpl_decomp            = cpl_decomp
        infodata%cpl_seq_option        = cpl_seq_option
-       infodata%cpl_cdf64             = cpl_cdf64
        infodata%do_budgets            = do_budgets
        infodata%do_histinit           = do_histinit
        infodata%budget_inst           = budget_inst
@@ -937,7 +942,6 @@ SUBROUTINE seq_infodata_GetData_explicit( infodata, cime_model, case_name, case_
            nextsw_cday, precip_fact, flux_epbal, flux_albav,                  &
            glc_g2lupdate, atm_aero, run_barriers, esmf_map_flag,              &
            do_budgets, do_histinit, drv_threading, flux_diurnal, gust_fac,    &
-           flux_scheme, alb_cosz_avg,                                         &!+tht: COARE option (=1), albedo avg (=T)
            budget_inst, budget_daily, budget_month, wall_time_limit,          &
            budget_ann, budget_ltann, budget_ltend , force_stop_at,            &
            histaux_a2x    , histaux_a2x1hri, histaux_a2x1hr,                  &
@@ -945,7 +949,7 @@ SUBROUTINE seq_infodata_GetData_explicit( infodata, cime_model, case_name, case_
            histaux_a2x24hr, histaux_l2x   , histaux_r2x     , orb_obliq,      &
            histavg_atm, histavg_lnd, histavg_ocn, histavg_ice,                &
            histavg_rof, histavg_glc, histavg_wav, histavg_xao,                &
-           cpl_cdf64, orb_iyear, orb_iyear_align, orb_mode, orb_mvelp,        &
+           orb_iyear, orb_iyear_align, orb_mode, orb_mvelp,        &
            orb_eccen, orb_obliqr, orb_lambm0, orb_mvelpp, wv_sat_scheme,      &
            wv_sat_transition_start, wv_sat_use_tables, wv_sat_table_spacing,  &
            tfreeze_option, glc_renormalize_smb,                               &
@@ -1007,8 +1011,6 @@ SUBROUTINE seq_infodata_GetData_explicit( infodata, cime_model, case_name, case_
    logical,                optional, intent(OUT) :: flux_albav              ! T => no diurnal cycle in ocn albedos
    logical,                optional, intent(OUT) :: flux_diurnal            ! T => diurnal cycle in atm/ocn flux
    real(SHR_KIND_R8),      optional, intent(OUT) :: gust_fac                ! wind gustiness factor
-   integer          ,      optional, intent(OUT) :: flux_scheme             !+tht COARE option (=1)
-   logical          ,      optional, intent(OUT) :: alb_cosz_avg            !+tht albedo avg option (=T)
    character(len=*),       optional, intent(OUT) :: glc_renormalize_smb     ! Whether to renormalize smb sent from lnd -> glc
    real(SHR_KIND_R8),      optional, intent(OUT) :: wall_time_limit         ! force stop wall time (hours)
    character(len=*),       optional, intent(OUT) :: force_stop_at           ! force stop at next (month, day, etc)
@@ -1024,7 +1026,6 @@ SUBROUTINE seq_infodata_GetData_explicit( infodata, cime_model, case_name, case_
    character(len=*),       optional, intent(OUT) :: aoflux_grid             ! grid for atm ocn flux calc
    integer,                optional, intent(OUT) :: cpl_decomp              ! coupler decomp
    character(len=*),       optional, intent(OUT) :: cpl_seq_option          ! coupler sequencing option
-   logical,                optional, intent(OUT) :: cpl_cdf64               ! netcdf large file setting
    logical,                optional, intent(OUT) :: do_budgets              ! heat/water budgets
    logical,                optional, intent(OUT) :: do_histinit             ! initial history file
    integer,                optional, intent(OUT) :: budget_inst             ! inst budget
@@ -1181,8 +1182,6 @@ SUBROUTINE seq_infodata_GetData_explicit( infodata, cime_model, case_name, case_
     if ( present(flux_albav)     ) flux_albav     = infodata%flux_albav
     if ( present(flux_diurnal)   ) flux_diurnal   = infodata%flux_diurnal
     if ( present(gust_fac)       ) gust_fac       = infodata%gust_fac
-    if ( present(flux_scheme)    ) flux_scheme    = infodata%flux_scheme  !+tht COARE
-    if ( present(alb_cosz_avg)   ) alb_cosz_avg   = infodata%alb_cosz_avg !+tht albedos
     if ( present(glc_renormalize_smb)) glc_renormalize_smb = infodata%glc_renormalize_smb
     if ( present(wall_time_limit)) wall_time_limit= infodata%wall_time_limit
     if ( present(force_stop_at)  ) force_stop_at  = infodata%force_stop_at
@@ -1198,7 +1197,6 @@ SUBROUTINE seq_infodata_GetData_explicit( infodata, cime_model, case_name, case_
     if ( present(aoflux_grid)    ) aoflux_grid    = infodata%aoflux_grid
     if ( present(cpl_decomp)     ) cpl_decomp     = infodata%cpl_decomp
     if ( present(cpl_seq_option) ) cpl_seq_option = infodata%cpl_seq_option
-    if ( present(cpl_cdf64)      ) cpl_cdf64      = infodata%cpl_cdf64
     if ( present(do_budgets)     ) do_budgets     = infodata%do_budgets
     if ( present(do_histinit)    ) do_histinit    = infodata%do_histinit
     if ( present(budget_inst)    ) budget_inst    = infodata%budget_inst
@@ -1469,7 +1467,7 @@ SUBROUTINE seq_infodata_GetData_bytype( component_firstletter, infodata,      &
           write(logunit,*) trim(subname),' Note: ESP type has no resume property'
         end if
       end if
-     
+
       call seq_infodata_GetData(infodata, esp_present=comp_present,           &
            esp_prognostic=comp_prognostic, esp_phase=comp_phase)
     else
@@ -1507,7 +1505,6 @@ SUBROUTINE seq_infodata_PutData_explicit( infodata, cime_model, case_name, case_
            nextsw_cday, precip_fact, flux_epbal, flux_albav,                  &
            glc_g2lupdate, atm_aero, esmf_map_flag, wall_time_limit,           &
            do_budgets, do_histinit, drv_threading, flux_diurnal, gust_fac,    &
-           flux_scheme, alb_cosz_avg,                                         &!+tht COARE, albedos
            budget_inst, budget_daily, budget_month, force_stop_at,            &
            budget_ann, budget_ltann, budget_ltend ,                           &
            histaux_a2x    , histaux_a2x1hri, histaux_a2x1hr,                  &
@@ -1515,7 +1512,7 @@ SUBROUTINE seq_infodata_PutData_explicit( infodata, cime_model, case_name, case_
            histaux_a2x24hr, histaux_l2x   , histaux_r2x     , orb_obliq,      &
            histavg_atm, histavg_lnd, histavg_ocn, histavg_ice,                &
            histavg_rof, histavg_glc, histavg_wav, histavg_xao,                &
-           cpl_cdf64, orb_iyear, orb_iyear_align, orb_mode, orb_mvelp,        &
+           orb_iyear, orb_iyear_align, orb_mode, orb_mvelp,        &
            orb_eccen, orb_obliqr, orb_lambm0, orb_mvelpp, wv_sat_scheme,      &
            wv_sat_transition_start, wv_sat_use_tables, wv_sat_table_spacing,  &
            tfreeze_option, glc_renormalize_smb, &
@@ -1577,8 +1574,6 @@ SUBROUTINE seq_infodata_PutData_explicit( infodata, cime_model, case_name, case_
    logical,                optional, intent(IN)    :: flux_albav              ! T => no diurnal cycle in ocn albedos
    logical,                optional, intent(IN)    :: flux_diurnal            ! T => diurnal cycle in atm/ocn flux
    real(SHR_KIND_R8),      optional, intent(IN)    :: gust_fac                ! wind gustiness factor
-   integer,                optional, intent(IN)    :: flux_scheme             !+tht COARE
-   logical,                optional, intent(IN)    :: alb_cosz_avg            !+tht albedos
    character(len=*),       optional, intent(IN)    :: glc_renormalize_smb     ! Whether to renormalize smb sent from lnd -> glc
    real(SHR_KIND_R8),      optional, intent(IN)    :: wall_time_limit         ! force stop wall time (hours)
    character(len=*),       optional, intent(IN)    :: force_stop_at           ! force a stop at next (month, day, etc)
@@ -1594,7 +1589,6 @@ SUBROUTINE seq_infodata_PutData_explicit( infodata, cime_model, case_name, case_
    character(len=*),       optional, intent(IN)    :: aoflux_grid             ! grid for atm ocn flux calc
    integer,                optional, intent(IN)    :: cpl_decomp              ! coupler decomp
    character(len=*),       optional, intent(IN)    :: cpl_seq_option          ! coupler sequencing option
-   logical,                optional, intent(IN)    :: cpl_cdf64               ! netcdf large file setting
    logical,                optional, intent(IN)    :: do_budgets              ! heat/water budgets
    logical,                optional, intent(IN)    :: do_histinit             ! initial history file
    integer,                optional, intent(IN)    :: budget_inst             ! inst budget
@@ -1750,8 +1744,6 @@ SUBROUTINE seq_infodata_PutData_explicit( infodata, cime_model, case_name, case_
     if ( present(flux_albav)     ) infodata%flux_albav     = flux_albav
     if ( present(flux_diurnal)   ) infodata%flux_diurnal   = flux_diurnal
     if ( present(gust_fac)       ) infodata%gust_fac       = gust_fac
-    if ( present(flux_scheme)    ) infodata%flux_scheme    = flux_scheme  !+tht COARE
-    if ( present(alb_cosz_avg)   ) infodata%alb_cosz_avg   = alb_cosz_avg !+tht albedos
     if ( present(glc_renormalize_smb)) infodata%glc_renormalize_smb = glc_renormalize_smb
     if ( present(wall_time_limit)) infodata%wall_time_limit= wall_time_limit
     if ( present(force_stop_at)  ) infodata%force_stop_at  = force_stop_at
@@ -1767,7 +1759,6 @@ SUBROUTINE seq_infodata_PutData_explicit( infodata, cime_model, case_name, case_
     if ( present(aoflux_grid)    ) infodata%aoflux_grid    = aoflux_grid
     if ( present(cpl_decomp)     ) infodata%cpl_decomp     = cpl_decomp
     if ( present(cpl_seq_option) ) infodata%cpl_seq_option = cpl_seq_option
-    if ( present(cpl_cdf64)      ) infodata%cpl_cdf64      = cpl_cdf64
     if ( present(do_budgets)     ) infodata%do_budgets     = do_budgets
     if ( present(do_histinit)    ) infodata%do_histinit    = do_histinit
     if ( present(budget_inst)    ) infodata%budget_inst    = budget_inst
@@ -2019,9 +2010,9 @@ SUBROUTINE seq_infodata_PutData_bytype( component_firstletter, infodata,      &
         if (present(comp_resume)) then
           write(logunit,*) trim(subname),' Note: ESP type has no resume property'
         end if
-     
+
       end if
-     
+
       call seq_infodata_PutData(infodata, esp_present=comp_present,           &
            esp_prognostic=comp_prognostic, esp_phase=comp_phase)
     else
@@ -2172,8 +2163,6 @@ subroutine seq_infodata_bcast(infodata,mpicom)
     call shr_mpi_bcast(infodata%flux_albav,              mpicom)
     call shr_mpi_bcast(infodata%flux_diurnal,            mpicom)
     call shr_mpi_bcast(infodata%gust_fac,                mpicom)
-    call shr_mpi_bcast(infodata%flux_scheme,             mpicom) !+tht COARE
-    call shr_mpi_bcast(infodata%alb_cosz_avg,            mpicom) !+tht albedos
     call shr_mpi_bcast(infodata%glc_renormalize_smb,     mpicom)
     call shr_mpi_bcast(infodata%wall_time_limit,         mpicom)
     call shr_mpi_bcast(infodata%force_stop_at,           mpicom)
@@ -2189,7 +2178,6 @@ subroutine seq_infodata_bcast(infodata,mpicom)
     call shr_mpi_bcast(infodata%aoflux_grid,             mpicom)
     call shr_mpi_bcast(infodata%cpl_decomp,              mpicom)
     call shr_mpi_bcast(infodata%cpl_seq_option,          mpicom)
-    call shr_mpi_bcast(infodata%cpl_cdf64,               mpicom)
     call shr_mpi_bcast(infodata%do_budgets,              mpicom)
     call shr_mpi_bcast(infodata%do_histinit,             mpicom)
     call shr_mpi_bcast(infodata%budget_inst,             mpicom)
@@ -2842,8 +2830,6 @@ SUBROUTINE seq_infodata_print( infodata )
        write(logunit,F0L) subname,'flux_albav               = ', infodata%flux_albav
        write(logunit,F0L) subname,'flux_diurnal             = ', infodata%flux_diurnal
        write(logunit,F0R) subname,'gust_fac                 = ', infodata%gust_fac
-       write(logunit,F0I) subname,'flux_scheme              = ', infodata%flux_scheme  !+tht COARE
-       write(logunit,F0I) subname,'alb_cosz_avg             = ', infodata%alb_cosz_avg !+tht albedos
        write(logunit,F0A) subname,'glc_renormalize_smb      = ', trim(infodata%glc_renormalize_smb)
        write(logunit,F0R) subname,'wall_time_limit          = ', infodata%wall_time_limit
        write(logunit,F0A) subname,'force_stop_at            = ', trim(infodata%force_stop_at)
@@ -2859,7 +2845,6 @@ SUBROUTINE seq_infodata_print( infodata )
        write(logunit,F0A) subname,'aoflux_grid              = ', trim(infodata%aoflux_grid)
        write(logunit,F0A) subname,'cpl_seq_option           = ', trim(infodata%cpl_seq_option)
        write(logunit,F0S) subname,'cpl_decomp               = ', infodata%cpl_decomp
-       write(logunit,F0L) subname,'cpl_cdf64                = ', infodata%cpl_cdf64
        write(logunit,F0L) subname,'do_budgets               = ', infodata%do_budgets
        write(logunit,F0L) subname,'do_histinit              = ', infodata%do_histinit
        write(logunit,F0S) subname,'budget_inst              = ', infodata%budget_inst

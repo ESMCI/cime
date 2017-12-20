@@ -175,6 +175,7 @@ class NamelistGenerator(object):
                 value[i] = self.quote_string(scalar)
         return compress_literal_list(value)
 
+
     def get_value(self, name):
         """Get the current value of a given namelist variable.
 
@@ -585,6 +586,10 @@ class NamelistGenerator(object):
             for variable in self._streams_variables:
                 self.add_default(variable,
                                  value=self._streams_namelists[variable])
+
+    def get_group_variables(self, group_name):
+        return self._namelist.get_group_variables(group_name)
+
 
     def _write_input_files(self, input_data_list):
         """Write input data files to list."""

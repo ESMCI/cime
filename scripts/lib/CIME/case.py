@@ -5,12 +5,12 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, string
+import glob, os, shutil, math
 from CIME.XML.standard_module_setup import *
 
 from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, get_project
-from CIME.utils                     import get_current_commit
+from CIME.utils                     import get_current_commit, check_name
 from CIME.check_lockedfiles         import LOCKED_DIR, lock_file
 from CIME.XML.machines              import Machines
 from CIME.XML.pes                   import Pes
@@ -32,8 +32,8 @@ from CIME.XML.env_archive           import EnvArchive
 from CIME.XML.env_batch             import EnvBatch
 from CIME.XML.generic_xml           import GenericXML
 from CIME.user_mod_support          import apply_user_mods
-from CIME.case_setup import case_setup
 from CIME.aprun import get_aprun_cmd_for_case
+from CIME.case_clone import create_case_clone
 
 logger = logging.getLogger(__name__)
 
@@ -112,14 +112,12 @@ class Case(object):
             self.initialize_derived_attributes()
 
     def check_if_comp_var(self, vid):
-        vid = vid
-        comp = None
-        iscompvar = False
         for env_file in self._env_entryid_files:
-            vid, comp, iscompvar = env_file.check_if_comp_var(vid)
+            new_vid, new_comp, iscompvar = env_file.check_if_comp_var(vid)
             if iscompvar:
-                return vid, comp, iscompvar
-        return vid, comp, iscompvar
+                return new_vid, new_comp, iscompvar
+
+        return vid, None, False
 
     def initialize_derived_attributes(self):
         """
@@ -129,7 +127,7 @@ class Case(object):
         env_mach_pes  = self.get_env("mach_pes")
         env_mach_spec = self.get_env('mach_specific')
         comp_classes  = self.get_values("COMP_CLASSES")
-        pes_per_node  = self.get_value("PES_PER_NODE")
+        MAX_MPITASKS_PER_NODE  = self.get_value("MAX_MPITASKS_PER_NODE")
 
         self.total_tasks = env_mach_pes.get_total_tasks(comp_classes)
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
@@ -137,10 +135,10 @@ class Case(object):
         logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
-        smt_factor = max(1,int(self.get_value("MAX_TASKS_PER_NODE") / pes_per_node))
+        smt_factor = max(1,int(self.get_value("MAX_TASKS_PER_NODE") / MAX_MPITASKS_PER_NODE))
 
         threads_per_node = self.tasks_per_node * self.thread_count
-        threads_per_core = 1 if (threads_per_node <= pes_per_node) else smt_factor
+        threads_per_core = 1 if (threads_per_node <= MAX_MPITASKS_PER_NODE) else smt_factor
         self.cores_per_task = self.thread_count / threads_per_core
 
         mpi_attribs = {
@@ -381,6 +379,13 @@ class Case(object):
                 self._env_files_that_need_rewrite.add(env_file)
                 return result
 
+        for env_file in self._env_generic_files:
+            result = env_file.set_value(item, value, subgroup, ignore_type)
+            if (result is not None):
+                logger.debug("Will rewrite file {} {}".format(env_file.filename, item))
+                self._env_files_that_need_rewrite.add(env_file)
+                return result
+
         expect(allow_undefined or result is not None,
                "No variable {} found in case".format(item))
 
@@ -411,7 +416,7 @@ class Case(object):
             if result is not None:
                 del self.lookups[key]
 
-    def _set_compset(self, compset_name, files, user_compset=False):
+    def _set_compset(self, compset_name, files):
         """
         Loop through all the compset files and find the compset
         specifation file that matches either the input 'compset_name'.
@@ -425,7 +430,6 @@ class Case(object):
         """
         science_support = []
         compset_alias = None
-        component_defining_compset = None
         components = files.get_components("COMPSETS_SPEC_FILE")
         logger.debug(" Possible components for COMPSETS_SPEC_FILE are {}".format(components))
 
@@ -445,22 +449,18 @@ class Case(object):
                     self._compsetname = match
                     self.set_lookup_value("COMPSETS_SPEC_FILE" ,
                                    files.get_value("COMPSETS_SPEC_FILE", {"component":component}, resolved=False))
-                    component_defining_compset = component
                     logger.info("Compset longname is {}".format(match))
                     logger.info("Compset specification file is {}".format(compsets_filename))
-                    if user_compset is True:
-                        logger.info("Found a compset match for longname {} in alias {}".format(compset_name, compset_alias))
+                    return compset_alias, science_support
 
-                    return compset_alias, science_support, component_defining_compset
-
-        if user_compset is True:
+        if compset_alias is None:
+            logger.info("Did not find an alias or longname compset match for {} ".format(compset_name))
             self._compsetname = compset_name
-        else:
-            expect(False,
-                   "Could not find a compset match for either alias or longname in {}\n".format(compset_name)
-                   + "You may need the --user-compset argument.")
+            # if this is a valiid compset longname there will be at least 7 components.
+            components = self.get_compset_components()
+            expect(len(components) > 6, "No compset alias {} found and this does not appear to be a compset longname.".format(compset_name))
 
-        return None, science_support, None
+        return None, science_support
 
     def _find_primary_component(self):
         """
@@ -531,6 +531,8 @@ class Case(object):
         else:
             self._pesfile = pesfile
             pesfile_unresolved = pesfile
+        expect(self._pesfile is not None,"No pesfile found for component {}".format(component))
+
         self.set_lookup_value("PES_SPEC_FILE", pesfile_unresolved)
 
         tests_filename = files.get_value("TESTS_SPEC_FILE", {"component":component}, resolved=False)
@@ -548,7 +550,7 @@ class Case(object):
         if compset is None:
             compset = self._compsetname
         expect(compset is not None,
-               "ERROR: compset is not set")
+               "compset is not set")
         # the first element is always the date operator - skip it
         elements = compset.split('_')[1:] # pylint: disable=maybe-no-member
         for element in elements:
@@ -589,12 +591,18 @@ class Case(object):
             env_file.add_elements_by_group(files, attlist)
 
         drv_config_file = files.get_value("CONFIG_CPL_FILE")
-        drv_comp = Component(drv_config_file)
+        drv_comp = Component(drv_config_file, "CPL")
         for env_file in self._env_entryid_files:
             env_file.add_elements_by_group(drv_comp, attributes=attlist)
 
         drv_config_file_model_specific = files.get_value("CONFIG_CPL_FILE_MODEL_SPECIFIC")
-        drv_comp_model_specific = Component(drv_config_file_model_specific)
+        drv_comp_model_specific = Component(drv_config_file_model_specific, 'CPL')
+
+        self._component_description["forcing"] = drv_comp_model_specific.get_forcing_description(self._compsetname)
+        logger.info("Compset forcing is {}".format(self._component_description["forcing"]))
+        self._component_description["CPL"] = drv_comp_model_specific.get_description(self._compsetname)
+        if len(self._component_description["CPL"]) > 0:
+            logger.info("Com forcing is {}".format(self._component_description["CPL"]))
         for env_file in self._env_entryid_files:
             env_file.add_elements_by_group(drv_comp_model_specific, attributes=attlist)
 
@@ -606,27 +614,28 @@ class Case(object):
         if len(self._component_classes) > len(self._components):
             self._components.append('sesp')
 
-
         for i in xrange(1,len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name  = self._components[i-1]
             node_name = 'CONFIG_' + comp_class + '_FILE'
             # Add the group and elements for the config_files.xml
             comp_config_file = files.get_value(node_name, {"component":comp_name}, resolved=False)
+            expect(comp_config_file is not None,"No component {} found for class {}".format(comp_name, comp_class))
             self.set_value(node_name, comp_config_file)
             comp_config_file = self.get_resolved_value(comp_config_file)
             expect(comp_config_file is not None and os.path.isfile(comp_config_file),
                    "Config file {} for component {} not found.".format(comp_config_file, comp_name))
-            compobj = Component(comp_config_file)
+            compobj = Component(comp_config_file, comp_class)
+            # For files following version 3 schema this also checks the compsetname validity
             self._component_description[comp_class] = compobj.get_description(self._compsetname)
-            expect(self._component_description[comp_class] is not None,"No description found in file {} for component {}".format(comp_config_file, comp_name))
+            expect(self._component_description[comp_class] is not None,"No description found in file {} for component {} in comp_class {}".format(comp_config_file, comp_name, comp_class))
             logger.info("{} component is {}".format(comp_class, self._component_description[comp_class]))
             for env_file in self._env_entryid_files:
                 env_file.add_elements_by_group(compobj, attributes=attlist)
 
         self.clean_up_lookups()
 
-    def _setup_mach_pes(self, pecount, ninst, machine_name, mpilib):
+    def _setup_mach_pes(self, pecount, multi_driver, ninst, machine_name, mpilib):
         #--------------------------------------------
         # pe layout
         #--------------------------------------------
@@ -639,6 +648,7 @@ class Case(object):
             new_mach_pes_obj = EnvMachPes(infile=self._pesfile, components=self._component_classes)
             self.update_env(new_mach_pes_obj, "mach_pes")
             return new_mach_pes_obj.get_value("TOTALPES")
+
         pesobj = Pes(self._pesfile)
 
         match1 = re.match('(.+)x([0-9]+)', "" if pecount is None else pecount)
@@ -704,24 +714,23 @@ class Case(object):
             mach_pes_obj.set_value(rootpe_str, rootpe)
 
         pesize = 1
-        pes_per_node = self.get_value("PES_PER_NODE")
+        MAX_MPITASKS_PER_NODE = self.get_value("MAX_MPITASKS_PER_NODE")
         for val in totaltasks:
             if val < 0:
-                val = -1*val*pes_per_node
+                val = -1*val*MAX_MPITASKS_PER_NODE
             if val > pesize:
                 pesize = val
+        if multi_driver:
+            pesize *= int(ninst)
+            mach_pes_obj.set_value("MULTI_DRIVER", True)
 
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
         for compclass in self._component_classes:
+            key = "NINST_{}".format(compclass)
             if compclass == "CPL":
                 continue
-            key = "NINST_{}".format(compclass)
-            # ESP models are currently limited to 1 instance
-            if compclass == "ESP":
-                mach_pes_obj.set_value(key, 1)
-            else:
-                mach_pes_obj.set_value(key, ninst)
+            mach_pes_obj.set_value(key, ninst)
 
             key = "NTASKS_{}".format(compclass)
             if key not in pes_ntasks.keys():
@@ -732,20 +741,21 @@ class Case(object):
 
         return pesize
 
-
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
-                  user_compset=False, pesfile=None,
-                  user_grid=False, gridfile=None, ninst=1, test=False,
-                  walltime=None, queue=None, output_root=None, run_unsupported=False, answer=None,
+                  pesfile=None,user_grid=False, gridfile=None,
+                  multi_driver=False, ninst=1, test=False,
+                  walltime=None, queue=None, output_root=None,
+                  run_unsupported=False, answer=None,
                   input_dir=None):
 
+        expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
         #--------------------------------------------
         # compset, pesfile, and compset components
         #--------------------------------------------
         files = Files()
-        compset_alias, science_support, component_defining_compset = self._set_compset(
-            compset_name, files, user_compset=user_compset)
+        compset_alias, science_support = self._set_compset(
+            compset_name, files)
 
         self._components = self.get_compset_components()
         #--------------------------------------------
@@ -767,12 +777,10 @@ class Case(object):
         #--------------------------------------------
         self._get_component_config_data(files)
 
-        if component_defining_compset is None:
-            # This needs to be called after self.set_comp_classes, which is called
-            # from self._get_component_config_data
-            self._primary_component = self._find_primary_component()
-        else:
-            self._primary_component = component_defining_compset
+        # This needs to be called after self.set_comp_classes, which is called
+        # from self._get_component_config_data
+        self._primary_component = self._find_primary_component()
+
         self._set_info_from_primary_component(files, pesfile=pesfile)
 
         self.get_compset_var_settings()
@@ -827,21 +835,10 @@ class Case(object):
         env_mach_specific_obj.populate(machobj)
         self.schedule_rewrite(env_mach_specific_obj)
 
-        pesize = self._setup_mach_pes(pecount, ninst, machine_name, mpilib)
+        self._setup_mach_pes(pecount, multi_driver, ninst, machine_name, mpilib)
 
-        #--------------------------------------------
-        # batch system
-        #--------------------------------------------
-        env_batch = self.get_env("batch")
-
-        batch_system_type = machobj.get_value("BATCH_SYSTEM")
-        batch = Batch(batch_system=batch_system_type, machine=machine_name)
-        bjobs = batch.get_batch_jobs()
-
-        env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
-        env_batch.create_job_groups(bjobs)
-        env_batch.set_job_defaults(bjobs, pesize=pesize, walltime=walltime, force_queue=queue, allow_walltime_override=test)
-        self.schedule_rewrite(env_batch)
+        if multi_driver and ninst>1:
+            logger.info(" Driver/Coupler has %s instances" % ninst)
 
         #--------------------------------------------
         # archiving system
@@ -915,6 +912,25 @@ class Case(object):
 
         self.initialize_derived_attributes()
 
+        #--------------------------------------------
+        # batch system (must come after initialize_derived_attributes)
+        #--------------------------------------------
+        if walltime:
+            self.set_value("USER_REQUESTED_WALLTIME", walltime)
+        if queue:
+            self.set_value("USER_REQUESTED_QUEUE", queue)
+
+        env_batch = self.get_env("batch")
+
+        batch_system_type = machobj.get_value("BATCH_SYSTEM")
+        batch = Batch(batch_system=batch_system_type, machine=machine_name)
+        bjobs = batch.get_batch_jobs()
+
+        env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
+        env_batch.create_job_groups(bjobs)
+        env_batch.set_job_defaults(bjobs, self)
+        self.schedule_rewrite(env_batch)
+
         # Make sure that parallel IO is not specified if total_tasks==1
         if self.total_tasks == 1:
             for compclass in self._component_classes:
@@ -963,12 +979,12 @@ class Case(object):
         exefiles = (os.path.join(toolsdir, "case.setup"),
                     os.path.join(toolsdir, "case.build"),
                     os.path.join(toolsdir, "case.submit"),
+                    os.path.join(toolsdir, "case.qstatus"),
                     os.path.join(toolsdir, "case.cmpgen_namelists"),
                     os.path.join(toolsdir, "preview_namelists"),
                     os.path.join(toolsdir, "preview_run"),
                     os.path.join(toolsdir, "check_input_data"),
                     os.path.join(toolsdir, "check_case"),
-                    os.path.join(toolsdir, "archive_metadata.sh"),
                     os.path.join(toolsdir, "xmlchange"),
                     os.path.join(toolsdir, "xmlquery"),
                     os.path.join(toolsdir, "pelayout"))
@@ -1061,12 +1077,20 @@ class Case(object):
                       "README.case", caseroot=self._caseroot)
         append_status("Pes     specification file is {}".format(self.get_value("PES_SPEC_FILE")),
                       "README.case", caseroot=self._caseroot)
+        if "forcing" in self._component_description:
+            append_status("Forcing is {}".format(self._component_description["forcing"])
+                      ,"README.case", caseroot=self._caseroot)
         for component_class in self._component_classes:
+            if component_class in self._component_description and \
+               len(self._component_description[component_class])>0:
+                append_status("Component {} is {}".format(component_class, self._component_description[component_class]),"README.case", caseroot=self._caseroot)
             if component_class == "CPL":
+                append_status("Using %s coupler instances" %
+                              (self.get_value("NINST_CPL")),
+                              "README.case", caseroot=self._caseroot)
                 continue
             comp_grid = "{}_GRID".format(component_class)
-            append_status("Component {} is {}".format(component_class, self._component_description[component_class]),
-                          "README.case", caseroot=self._caseroot)
+
             append_status("{} is {}".format(comp_grid,self.get_value(comp_grid)),
                           "README.case", caseroot=self._caseroot)
             comp = str(self.get_value("COMP_{}".format(component_class)))
@@ -1122,111 +1146,49 @@ class Case(object):
         else:
             return comp_user_mods
 
-    def create_clone(self, newcase, keepexe=False, mach_dir=None, project=None, cime_output_root=None):
-        if cime_output_root is None:
-            cime_output_root = self.get_value("CIME_OUTPUT_ROOT")
-        expect(os.access(cime_output_root, os.W_OK), "Directory {} is not writable"
-               "by this user.  Use the --cime-output-root flag to provide a writable "
-               "scratch directory".format(cime_output_root))
-
-        newcaseroot = os.path.abspath(newcase)
-        expect(not os.path.isdir(newcaseroot),
-               "New caseroot directory {} already exists".format(newcaseroot))
-        newcasename = os.path.basename(newcaseroot)
-        newcase_cimeroot = os.path.abspath(get_cime_root())
-
-        # create clone from self to case
-        clone_cimeroot = self.get_value("CIMEROOT")
-        if newcase_cimeroot != clone_cimeroot:
-            logger.warning(" case  CIMEROOT is {} ".format(newcase_cimeroot))
-            logger.warning(" clone CIMEROOT is {} ".format(clone_cimeroot))
-            logger.warning(" It is NOT recommended to clone cases from different versions of CIME.")
-
-
-        # *** create case object as deepcopy of clone object ***
-        srcroot = os.path.join(newcase_cimeroot,"..")
-        newcase = self.copy(newcasename, newcaseroot, newsrcroot=srcroot)
-        newcase.set_value("CIMEROOT", newcase_cimeroot)
-        newcase.set_value("CIME_OUTPUT_ROOT", cime_output_root)
-
-        # if we are cloning to a different user modify the output directory
-        olduser = self.get_value("USER")
-        newuser = os.environ.get("USER")
-        if olduser != newuser:
-            outputroot = self.get_value("CIME_OUTPUT_ROOT")
-            outputroot = string.replace(outputroot, olduser, newuser)
-            # try to make the new output directory and raise an exception
-            # on any error other than directory already exists.
-            try:
-                os.makedirs(outputroot)
-            except OSError:
-                if not os.path.isdir(outputroot):
-                    raise
-            newcase.set_value("CIME_OUTPUT_ROOT", outputroot)
-            newcase.set_value("USER", newuser)
-        # determine if will use clone executable or not
-        if keepexe:
-            orig_exeroot = self.get_value("EXEROOT")
-            newcase.set_value("EXEROOT", orig_exeroot)
-            newcase.set_value("BUILD_COMPLETE","TRUE")
-            orig_bld_complete = self.get_value("BUILD_COMPLETE")
-            if not orig_bld_complete:
-                logger.warn("\nWARNING: Creating a clone with --keepexe before building the original case may cause PIO_TYPENAME to be invalid in the clone")
-                logger.warn("Avoid this message by building case one before you clone.\n")
-        else:
-            newcase.set_value("BUILD_COMPLETE","FALSE")
-
-        # set machdir
-        if mach_dir is not None:
-            newcase.set_value("MACHDIR", mach_dir)
-
-        # Set project id
-        # Note: we do not just copy this from the clone because it seems likely that
-        # users will want to change this sometimes, especially when cloning another
-        # user's case. However, note that, if a project is not given, the fallback will
-        # be to copy it from the clone, just like other xml variables are copied.
-        if project is None:
-            project = self.get_value("PROJECT", subgroup="case.run")
-        if project is not None:
-            newcase.set_value("PROJECT", project)
-
-        # create caseroot
-        newcase.create_caseroot(clone=True)
-        newcase.flush(flushall=True)
-
-        # copy user_ files
-        cloneroot = self._caseroot
-        files = glob.glob(cloneroot + '/user_*')
-
-        for item in files:
-            shutil.copy(item, newcaseroot)
-
-        # copy SourceMod and Buildconf files
-        # if symlinks exist, copy rather than follow links
-        for casesub in ("SourceMods", "Buildconf"):
-            shutil.copytree(os.path.join(cloneroot, casesub),
-                            os.path.join(newcaseroot, casesub),
-                            symlinks=True)
-
-        # lock env_case.xml in new case
-        lock_file("env_case.xml", newcaseroot)
-
-        # Update README.case
-        fclone   = open(cloneroot + "/README.case", "r")
-        fnewcase = open(newcaseroot  + "/README.case", "a")
-        fnewcase.write("\n    *** original clone README follows ****")
-        fnewcase.write("\n " +  fclone.read())
-
-        clonename = self.get_value("CASE")
-        logger.info(" Successfully created new case {} from clone case {} ".format(newcasename, clonename))
-
-        case_setup(newcase)
-
-        return newcase
-
-    def submit_jobs(self, no_batch=False, job=None, skip_pnl=False, batch_args=None, dry_run=False):
+    def submit_jobs(self, no_batch=False, job=None, skip_pnl=False,
+                    mail_user=None, mail_type='never', batch_args=None,
+                    dry_run=False):
         env_batch = self.get_env('batch')
-        return env_batch.submit_jobs(self, no_batch=no_batch, job=job, skip_pnl=skip_pnl, batch_args=batch_args, dry_run=dry_run)
+        return env_batch.submit_jobs(self, no_batch=no_batch, job=job,
+                                     skip_pnl=skip_pnl, mail_user=mail_user,
+                                     mail_type=mail_type, batch_args=batch_args,
+                                     dry_run=dry_run)
+
+    def get_job_info(self):
+        """
+        Get information on batch jobs associated with this case
+        """
+        xml_job_ids = self.get_value("JOB_IDS")
+        if not xml_job_ids:
+            return {}
+        else:
+            result = {}
+            job_infos = xml_job_ids.split(", ") # pylint: disable=no-member
+            for job_info in job_infos:
+                jobname, jobid = job_info.split(":")
+                result[jobname] = jobid
+
+            return result
+
+    def report_job_status(self):
+        jobmap = self.get_job_info()
+        if not jobmap:
+            logger.info("No job ids associated with this case. Either case.submit was not run or was run with no-batch")
+        else:
+            for jobname, jobid in jobmap.iteritems():
+                status = self.get_env("batch").get_status(jobid)
+                if status:
+                    logger.info("{}: {}".format(jobname, status))
+                else:
+                    logger.info("{}: Unable to get status. Job may be complete already.".format(jobname))
+
+    def cancel_batch_jobs(self, jobids):
+        env_batch = self.get_env('batch')
+        for jobid in jobids:
+            success = env_batch.cancel_job(jobid)
+            if not success:
+                logger.warning("Failed to kill {}".format(jobid))
 
     def get_mpirun_cmd(self, job="case.run"):
         env_mach_specific = self.get_env('mach_specific')
@@ -1322,7 +1284,9 @@ class Case(object):
                 if test["category"] == "prealpha" or test["category"] == "prebeta" or "aux_" in test["category"]:
                     testcnt += 1
         if testcnt > 0:
-            logger.info("\nThis compset and grid combination is not scientifically supported, however it is used in {:d} tests.\n".format(testcnt))
+            logger.warn("\n*********************************************************************************************************************************")
+            logger.warn("This compset and grid combination is not scientifically supported, however it is used in {:d} tests.".format(testcnt))
+            logger.warn("*********************************************************************************************************************************\n")
         else:
             expect(False, "\nThis compset and grid combination is untested in CESM.  "
                    "Override this warning with the --run-unsupported option to create_newcase.",
@@ -1396,11 +1360,13 @@ class Case(object):
         self._files.append(new_object)
         self.schedule_rewrite(new_object)
 
-    def get_latest_cpl_log(self):
+    def get_latest_cpl_log(self, coupler_log_path=None):
         """
-        find and return the latest cpl log file in the run directory
+        find and return the latest cpl log file in the
+        coupler_log_path directory
         """
-        coupler_log_path = self.get_value("RUNDIR")
+        if coupler_log_path is None:
+            coupler_log_path = self.get_value("RUNDIR")
         cpllog = None
         cpllogs = glob.glob(os.path.join(coupler_log_path, 'cpl.log.*'))
         if cpllogs:
@@ -1408,3 +1374,55 @@ class Case(object):
             return cpllog
         else:
             return None
+
+    def create(self, casename, srcroot, compset_name, grid_name,
+               user_mods_dir=None, machine_name=None,
+               project=None, pecount=None, compiler=None, mpilib=None,
+               pesfile=None,user_grid=False, gridfile=None,
+               multi_driver=False, ninst=1, test=False,
+               walltime=None, queue=None, output_root=None,
+               run_unsupported=False, answer=None,
+               input_dir=None):
+        try:
+            # Set values for env_case.xml
+            self.set_lookup_value("CASE", os.path.basename(casename))
+            self.set_lookup_value("CASEROOT", self._caseroot)
+            self.set_lookup_value("SRCROOT", srcroot)
+
+            # Configure the Case
+            self.configure(compset_name, grid_name, machine_name=machine_name,
+                           project=project,
+                           pecount=pecount, compiler=compiler, mpilib=mpilib,
+                           pesfile=pesfile,user_grid=user_grid, gridfile=gridfile,
+                           multi_driver=multi_driver, ninst=ninst, test=test,
+                           walltime=walltime, queue=queue,
+                           output_root=output_root,
+                           run_unsupported=run_unsupported, answer=answer,
+                           input_dir=input_dir)
+
+            self.create_caseroot()
+
+            # Write out the case files
+            self.flush(flushall=True)
+            self.apply_user_mods(user_mods_dir)
+
+            # Lock env_case.xml
+            lock_file("env_case.xml", self._caseroot)
+        except:
+            if os.path.exists(self._caseroot):
+                if not logger.isEnabledFor(logging.DEBUG) and not test:
+                    logger.warn("Failed to setup case, removing {}\nUse --debug to force me to keep caseroot".format(self._caseroot))
+                    shutil.rmtree(self._caseroot)
+                else:
+                    logger.warn("Leaving broken case dir {}".format(self._caseroot))
+
+            raise
+
+    def create_clone(self, newcase, keepexe=False, mach_dir=None, project=None,
+                     cime_output_root=None, exeroot=None, rundir=None,
+                     user_mods_dir=None):
+        """ moved to case_clone """
+        return create_case_clone(self, newcase, keepexe=keepexe, mach_dir=mach_dir,
+                                 project=project, cime_output_root=cime_output_root,
+                                 exeroot=exeroot, rundir=rundir,
+                                 user_mods_dir=user_mods_dir)

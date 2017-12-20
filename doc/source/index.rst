@@ -3,42 +3,44 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the CIME documentation!
-==================================
+CIME documentation
+==================
 
-:ref:`What is CIME? <what-cime>`
-
-:ref:`User's guide - Part 1 <users-guide1>`: basic use of the scripting infrastructure.
-
-:ref:`User's guide - Part 2 <users-guide2>`: CIME internals, porting, testing and use cases 
-
-:ref:`Data Models <data-models>`: design and usage of the data models.
-
-:ref:`Driver/Coupler (cpl7) <driver-cpl>`: design and usage of the driver/coupler.
-
-:ref:`Building a Coupled Model with CIME <build-cpl>`: how to bring a new model in to CIME.
-
-:ref:`Miscellaneous Tools <misc-tools>`: various tools for climate modeling
+The Common Infrastructure for Modeling the Earth (CIME - pronounced
+"SEAM") provides a UNIX command-line-based interface for configuring,
+compiling and executing Earth system models.
 
 Table of contents
 -----------------
-
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
       
    what_cime/index.rst
    users_guide/index.rst
+   build_cpl/index.rst
    data_models/index.rst
    driver_cpl/index.rst
-   build_cpl/index.rst
    misc_tools/index.rst
 
-Indices and tables
-==================
+Addendum
+---------
+.. toctree::
+   :maxdepth: 2
+
+   glossary/index.rst
+   Tools_user/index.rst
+   xml_files/index.rst
+   CIME_api/modules.rst
+   Tools_api/modules.rst
+
+Python Module Indices and Search
+---------------------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
 
 CIME is developed by the 
 `ACME <https://climatemodeling.science.energy.gov/projects/accelerated-climate-modeling-energy>`_ and 

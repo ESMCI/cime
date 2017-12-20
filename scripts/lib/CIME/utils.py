@@ -2,12 +2,32 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import logging, gzip, sys, os, time, re, shutil, glob, string, random
+import logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, errno, signal
 import stat as statlib
 import warnings
+from contextlib import contextmanager
+
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
 logger = logging.getLogger(__name__)
+
+@contextmanager
+def redirect_stdout(new_target):
+    old_target, sys.stdout = sys.stdout, new_target # replace sys.stdout
+    try:
+        yield new_target # run some code with the replaced stdout
+    finally:
+        sys.stdout = old_target # restore to the previous value
+
+
+@contextmanager
+def redirect_stderr(new_target):
+    old_target, sys.stderr = sys.stderr, new_target # replace sys.stdout
+    try:
+        yield new_target # run some code with the replaced stdout
+    finally:
+        sys.stderr = old_target # restore to the previous value
+
 
 def expect(condition, error_msg, exc_type=SystemExit, error_prefix="ERROR:"):
     """
@@ -177,6 +197,43 @@ def _convert_to_fd(filearg, from_dir):
     return open(filearg, "a")
 
 _hack=object()
+
+def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
+                   from_dir=None, combine_output=False):
+
+    # This code will try to import and run each buildnml as a subroutine
+    # if that fails it will run it as a program in a seperate shell
+    do_run_cmd = False
+    stat = 0
+    output = ""
+    errput = ""
+    try:
+        mod = imp.load_source(subname, cmd)
+        logger.info("   Calling {}".format(cmd))
+        if logfile:
+            with redirect_stdout(open(logfile,"w")):
+                getattr(mod, subname)(*subargs)
+        else:
+            getattr(mod, subname)(*subargs)
+    except SyntaxError:
+        do_run_cmd = True
+    except AttributeError:
+        do_run_cmd = True
+    except:
+        raise
+
+    if do_run_cmd:
+        logger.info("   Running {} ".format(cmd))
+        if case is not None:
+            case.flush()
+        output = run_cmd_no_fail("{} {}".format(cmd, cmdargs), combine_output=combine_output,
+                                 from_dir=from_dir)
+        logger.info(output)
+        # refresh case xml object from file
+        if case is not None:
+            case.read_xml()
+    return stat, output, errput
+
 def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
             arg_stdout=_hack, arg_stderr=_hack, env=None, combine_output=False):
     """
@@ -298,7 +355,9 @@ def normalize_case_id(case_id):
 def parse_test_name(test_name):
     """
     Given a CIME test name TESTCASE[_CASEOPTS].GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]],
-    return each component of the testname with machine and compiler split
+    return each component of the testname with machine and compiler split.
+    Do not error if a partial testname is provided (TESTCASE or TESTCASE.GRID) instead
+    parse and return the partial results.
 
     >>> parse_test_name('ERS')
     ['ERS', None, None, None, None, None, None]
@@ -316,11 +375,17 @@ def parse_test_name(test_name):
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', 'test/mods']
+    >>> parse_test_name('SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods')
+    Traceback (most recent call last):
+        ...
+    SystemExit: ERROR: Expected 4th item of 'SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods' ('A_XLND_SICE_SOCN_XROF_XGLC_SWAV') to be in form machine_compiler
+    >>> parse_test_name('SMS.f19_g16.2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods')
+    Traceback (most recent call last):
+        ...
+    SystemExit: ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV
     """
     rv = [None] * 7
     num_dots = test_name.count(".")
-    expect(num_dots <= 4,
-           "'{}' does not look like a CIME test name, expect TESTCASE.GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]]".format(test_name))
 
     rv[0:num_dots+1] = test_name.split(".")
     testcase_field_underscores = rv[0].count("_")
@@ -332,6 +397,8 @@ def parse_test_name(test_name):
         rv[1]    = full_str.split("_")[1:]
 
     if (num_dots >= 3):
+        expect(check_name( rv[3] ), "Invalid compset name {}".format(rv[3]))
+
         expect(rv[4].count("_") == 1,
                "Expected 4th item of '{}' ('{}') to be in form machine_compiler".format(test_name, rv[4]))
         rv[4:5] = rv[4].split("_")
@@ -339,6 +406,9 @@ def parse_test_name(test_name):
 
     if (rv[-1] is not None):
         rv[-1] = rv[-1].replace("-", "/")
+
+    expect(num_dots <= 4,
+           "'{}' does not look like a CIME test name, expect TESTCASE.GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]]".format(test_name))
 
     return rv
 
@@ -528,6 +598,21 @@ def safe_copy(src_dir, tgt_dir, file_map):
         if (os.path.isfile(full_tgt)):
             os.remove(full_tgt)
         shutil.copy2(full_src, full_tgt)
+
+def symlink_force(target, link_name):
+    """
+    Makes a symlink from link_name to target. Unlike the standard
+    os.symlink, this will work even if link_name already exists (in
+    which case link_name will be overwritten).
+    """
+    try:
+        os.symlink(target, link_name)
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            os.remove(link_name)
+            os.symlink(target, link_name)
+        else:
+            raise e
 
 def find_proc_id(proc_name=None,
                  children_only=False,
@@ -985,7 +1070,7 @@ def does_file_have_string(filepath, text):
     """
     return os.path.isfile(filepath) and text in open(filepath).read()
 
-def transform_vars(text, case=None, subgroup=None, check_members=None, default=None):
+def transform_vars(text, case=None, subgroup=None, overrides=None, default=None):
     """
     Do the variable substitution for any variables that need transforms
     recursively.
@@ -994,29 +1079,35 @@ def transform_vars(text, case=None, subgroup=None, check_members=None, default=N
     'cesm.stdout'
     >>> member_store = lambda : None
     >>> member_store.foo = "hi"
-    >>> transform_vars("I say {{ foo }}", check_members=member_store)
+    >>> transform_vars("I say {{ foo }}", overrides={"foo":"hi"})
     'I say hi'
     """
     directive_re = re.compile(r"{{ (\w+) }}", flags=re.M)
     # loop through directive text, replacing each string enclosed with
     # template characters with the necessary values.
-    if check_members is None and case is not None:
-        check_members = case
     while directive_re.search(text):
         m = directive_re.search(text)
         variable = m.groups()[0]
         whole_match = m.group()
-        if check_members is not None and hasattr(check_members, variable.lower()) and getattr(check_members, variable.lower()) is not None:
-            repl = getattr(check_members, variable.lower())
-            logger.debug("from check_members: in {}, replacing {} with {}".format(text, whole_match, str(repl)))
+        if overrides is not None and variable.lower() in overrides and overrides[variable.lower()] is not None:
+            repl = overrides[variable.lower()]
+            logger.debug("from overrides: in {}, replacing {} with {}".format(text, whole_match, str(repl)))
             text = text.replace(whole_match, str(repl))
+
+        elif case is not None and hasattr(case, variable.lower()) and getattr(case, variable.lower()) is not None:
+            repl = getattr(case, variable.lower())
+            logger.debug("from case members: in {}, replacing {} with {}".format(text, whole_match, str(repl)))
+            text = text.replace(whole_match, str(repl))
+
         elif case is not None and case.get_value(variable.upper(), subgroup=subgroup) is not None:
             repl = case.get_value(variable.upper(), subgroup=subgroup)
             logger.debug("from case: in {}, replacing {} with {}".format(text, whole_match, str(repl)))
             text = text.replace(whole_match, str(repl))
+
         elif default is not None:
             logger.debug("from default: in {}, replacing {} with {}".format(text, whole_match, str(default)))
             text = text.replace(whole_match, default)
+
         else:
             # If no queue exists, then the directive '-q' by itself will cause an error
             if "-q {{ queue }}" in text:
@@ -1026,14 +1117,6 @@ def transform_vars(text, case=None, subgroup=None, check_members=None, default=N
                 text = text.replace(whole_match, "")
 
     return text
-
-def get_my_queued_jobs():
-    # TODO
-    return []
-
-def delete_jobs(_):
-    # TODO
-    return True
 
 def wait_for_unlocked(filepath):
     locked = True
@@ -1151,6 +1234,11 @@ def _get_most_recent_lid_impl(files):
 
     return sorted(results)
 
+def ls_sorted_by_mtime(path):
+    ''' return list of path sorted by timestamp oldest first'''
+    mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
+    return list(sorted(os.listdir(path), key=mtime))
+
 def get_lids(case):
     model = case.get_value("MODEL")
     logdir = case.get_value("LOGDIR")
@@ -1192,10 +1280,12 @@ def analyze_build_log(comp, log, compiler):
         logger.info("Component {} build complete with {} warnings".format(comp, warncnt))
 
 def is_python_executable(filepath):
-    with open(filepath, "r") as f:
-        first_line = f.readline()
+    if os.path.isfile(filepath):
+        with open(filepath, "r") as f:
+            first_line = f.readline()
 
-    return first_line.startswith("#!") and "python" in first_line
+        return first_line.startswith("#!") and "python" in first_line
+    return False
 
 def get_umask():
     current_umask = os.umask(0)
@@ -1254,3 +1344,25 @@ class SharedArea(object):
 
     def __exit__(self, *_):
         os.umask(self._orig_umask)
+
+class Timeout(object):
+    """
+    A context manager that implements a timeout. By default, it
+    will raise exception, but a custon function call can be provided.
+    Provided None as seconds makes this class a no-op
+    """
+    def __init__(self, seconds, action=None):
+        self._seconds = seconds
+        self._action  = action if action is not None else self._handle_timeout
+
+    def _handle_timeout(self, *_):
+        raise RuntimeError("Timeout expired")
+
+    def __enter__(self):
+        if self._seconds is not None:
+            signal.signal(signal.SIGALRM, self._action)
+            signal.alarm(self._seconds)
+
+    def __exit__(self, *_):
+        if self._seconds is not None:
+            signal.alarm(0)

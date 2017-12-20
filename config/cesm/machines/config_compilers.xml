@@ -107,9 +107,9 @@ using a fortran linker.
 
 <compiler COMPILER="gnu">
   <CFLAGS>
-    <base> -mcmodel=medium -std=gnu99 </base>
+    <base> -std=gnu99 </base>
     <append compile_threaded="true"> -fopenmp </append>
-    <append DEBUG="TRUE"> -g -Wall -ffpe-trap=invalid,zero,overflow -fcheck=bounds </append>
+    <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=invalid,zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </CFLAGS>
   <CPPDEFS>
@@ -123,14 +123,14 @@ using a fortran linker.
   <FFLAGS>
     <!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
        so that these are passed to cmake builds (cmake builds don't use FIXEDFLAGS and FREEFLAGS). -->
-    <base> -mcmodel=medium -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
+    <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
     <append compile_threaded="true"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
-         least with some versions of gfortran (confirmed with 5.3.0), gfortran's
-         isnan (which is called in cime via the CPRGNU-specific
-         shr_infnan_isnan) causes a floating point exception when called on a
-         signaling NaN. -->
-    <append DEBUG="TRUE"> -g -Wall -ffpe-trap=zero,overflow -fcheck=bounds </append>
+         least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
+         7.1.0), gfortran's isnan (which is called in cime via the
+         CPRGNU-specific shr_infnan_isnan) causes a floating point exception
+         when called on a signaling NaN. -->
+    <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </FFLAGS>
   <FFLAGS_NOOPT>
@@ -262,6 +262,30 @@ using a fortran linker.
     <append MPILIB="mpi-serial"> -mkl </append>
   </SLIBS>
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+</compiler>
+
+<compiler MACH="fram">
+ <CPPDEFS>
+  <append> -D$(OS) </append>
+ </CPPDEFS>
+  <FFLAGS>
+  <append> -xCORE-AVX2 </append>
+  </FFLAGS>
+  <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
+  <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <MPICC> mpiicc </MPICC>
+  <MPICXX> mpiicpc </MPICXX>
+  <MPIFC> mpiifort </MPIFC>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <SLIBS>
+    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
+  </SLIBS>
 </compiler>
 
 <compiler COMPILER="nag">
@@ -715,6 +739,21 @@ using a fortran linker.
   </LDFLAGS>
 </compiler>
 
+<compiler MACH="hobart" COMPILER="gnu">
+  <SLIBS>
+    <append> -lm </append>
+    <append> -ldl </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="homebrew" COMPILER="gnu">
+  <LDFLAGS>
+    <!-- These LDFLAGS provide lapack and blas support on a Mac. This
+         may require installation of the Apple Developer Tools. -->
+    <append> -framework Accelerate </append>
+  </LDFLAGS>
+</compiler>
+
 <compiler MACH="juqueen" COMPILER="ibm">
   <MPICC> mpixlc_r </MPICC>
   <MPIFC> mpixlf2003_r </MPIFC>
@@ -792,17 +831,32 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="pleiades-has">
+<compiler MACH="pleiades-bro">
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -aCORE-AVX2 -align array32byte </append>
+    <append DEBUG="FALSE"> -O2 -xCORE-AVX2 </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <MPI_PATH>$ENV{MPI_ROOT}</MPI_PATH>
-  <NETCDF_PATH>/nasa/netcdf/4.1.3/intel/mpt</NETCDF_PATH>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
   <SLIBS>
-    <append>-L$ENV{NETCDF_DIR}/lib -lnetcdff -lnetcdf</append>
+    <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
+  <ESMF_LIBDIR>/home6/fvitt/esmf_7_0_0/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+</compiler>
+
+<compiler MACH="pleiades-has">
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 -xCORE-AVX2 </append>
+  </FFLAGS>
+  <MPICC>icc</MPICC>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <MPI_PATH>$ENV{MPI_ROOT}</MPI_PATH>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <SLIBS>
+    <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
+  </SLIBS>
+  <ESMF_LIBDIR>/home6/fvitt/esmf_7_0_0/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-ivy">
@@ -812,10 +866,11 @@ using a fortran linker.
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <MPI_PATH>$ENV{MPI_ROOT}</MPI_PATH>
-  <NETCDF_PATH>/nasa/netcdf/4.1.3/intel/mpt</NETCDF_PATH>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
   <SLIBS>
-    <append>-L$ENV{NETCDF_DIR}/lib -lnetcdff -lnetcdf</append>
+    <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
+  <ESMF_LIBDIR>/home6/fvitt/esmf_7_0_0/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-san">
@@ -825,76 +880,11 @@ using a fortran linker.
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <MPI_PATH>$ENV{MPI_ROOT}</MPI_PATH>
-  <NETCDF_PATH>/nasa/netcdf/4.1.3/intel/mpt</NETCDF_PATH>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
   <SLIBS>
-    <append>-L$ENV{NETCDF_DIR}/lib -lnetcdff -lnetcdf</append>
+    <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-</compiler>
-
-<compiler MACH="hexagon">
-  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
-  <PNETCDF_PATH>$ENV{PARALLEL_NETCDF_DIR}</PNETCDF_PATH>
-  <MPI_PATH>$ENV{MPI_ROOT}</MPI_PATH>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 </append>
-    <append MODEL="micom"> -r8 </append>
-  </FFLAGS>
-  <SLIBS>
-    <append>-L$ENV{NETCDF_DIR}/lib -lnetcdff -lnetcdf</append>
-  </SLIBS>
-  <MPICC> cc </MPICC>
-</compiler>
-
-<compiler MACH="fram">
- <CPPDEFS>
-  <append> -D$(OS) </append>
- </CPPDEFS>
-  <FFLAGS>
-  <append> -xCORE-AVX2 </append>
-  </FFLAGS>
-  <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
-  <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
-  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 </append>
-    <append MODEL="micom"> -r8 </append>
-  </FFLAGS>
-  <MPICC> mpiicc </MPICC>
-  <MPICXX> mpiicpc </MPICXX>
-  <MPIFC> mpiifort </MPIFC>
-  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
-  <SLIBS>
-    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
-  </SLIBS>
-</compiler>
-
-<compiler MACH="vilje">
-  <NETCDF_PATH>$(NETCDF_ROOT)</NETCDF_PATH>
-  <PNETCDF_PATH>$(NETCDF_ROOT)</PNETCDF_PATH>
-  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
-    <append MODEL="micom"> -r8 </append>
-  </FFLAGS>
-  <SLIBS>
-    <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
-  </SLIBS>
-</compiler>
-
-<compiler MACH="pleiades-wes">
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xSSE4.2 </append>
-  </FFLAGS>
-  <MPICC>icc</MPICC>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <MPI_PATH>$ENV{MPI_ROOT}</MPI_PATH>
-  <NETCDF_PATH>/nasa/netcdf/4.1.3/intel/mpt</NETCDF_PATH>
-  <SLIBS>
-    <append>-L$ENV{NETCDF_DIR}/lib -lnetcdff -lnetcdf</append>
-  </SLIBS>
+  <ESMF_LIBDIR>/home6/fvitt/esmf_7_0_0/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="sierra">
@@ -1031,10 +1021,10 @@ using a fortran linker.
 </compiler>
 <compiler MACH="cheyenne" COMPILER="intel">
   <CFLAGS>
-    <append> -qopt-report </append>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
   </CFLAGS>
   <FFLAGS>
-    <append> -qopt-report </append>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
   </FFLAGS>
   <CMAKE_OPTS>
     <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
