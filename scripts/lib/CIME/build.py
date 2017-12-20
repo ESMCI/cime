@@ -284,7 +284,7 @@ def _build_model_cmake(case, build_threaded, exeroot, clm_config_opts, incroot, 
 ###############################################################################
     #ToDo: pare down arg list to what is used
     t1 = time.time()
-    logger.info("TRYING CMAKE {} {}".format(caseroot, cimeroot) )
+    logger.info("TRYING CMAKE {} {} {}".format(caseroot, cimeroot, case.get_value("SRCROOT")) )
 
     # Dump out case-specific compilation info for CMake into caseInfo.cmake
     cc = os.path.join(exeroot, "caseInfo.cmake")
@@ -296,6 +296,9 @@ def _build_model_cmake(case, build_threaded, exeroot, clm_config_opts, incroot, 
     f.write("\n#Set info needed by Macros.cmake\n")
     f.write("SET(DEBUG {} CACHE BOOL \"Debug flag needed in Macros.cmake\")\n"
             .format(case.get_value("DEBUG")) )
+
+    f.write("SET(MPILIB {} CACHE BOOL \"MPILIB flag needed in CIME_initial_setup.cmake\")\n"
+            .format(case.get_value("MPILIB")) )
 
     smp = "SMP" in os.environ and os.environ["SMP"] == "TRUE"
     f.write("SET(compile_threaded {} CACHE BOOL \"SMP flag needed in Macros.cmake\")\n"
