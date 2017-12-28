@@ -9,11 +9,12 @@ fi
 
 module reset
 module unload netcdf
-module swap intel gnu/6.1.0
-module load git/2.3.0
-module load cmake/3.0.2
-module load netcdf-mpi/4.4.1
-module load pnetcdf/1.7.0
+module swap intel gnu/7.1.0
+module swap mpt openmpi/3.0.0
+module load git/2.10.2
+module load cmake/3.9.1
+module load netcdf/4.4.1.1
+export PNETCDF=/glade/u/home/jedwards/pnetcdf/svn3652/openmpi300/gnu710
 
 export CC=mpicc
 export FC=mpif90
