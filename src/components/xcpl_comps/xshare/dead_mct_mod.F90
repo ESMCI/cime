@@ -1,24 +1,24 @@
 module dead_mct_mod
 
   use shr_kind_mod,         only : IN =>SHR_KIND_IN, R8=>SHR_KIND_R8
-  use shr_log_mod,           only: logunit => shr_log_Unit
-  use shr_sys_mod		, only : shr_sys_abort, shr_sys_flush
-  use seq_flds_mod	, only : seq_flds_dom_coord, seq_flds_dom_other
-  use shr_file_mod		, only : shr_file_getlogunit, shr_file_getunit, shr_file_setio, shr_file_getloglevel, &
-                                         shr_file_setlogunit, shr_file_freeunit,shr_file_setloglevel
-  use esmf                      , only : esmf_clock
-  use seq_cdata_mod		, only : seq_cdata, seq_cdata_setptrs
-  use seq_infodata_mod		, only : seq_infodata_type, seq_infodata_getData, seq_infodata_PutData
-  use mct_mod			, only : mct_gsmap, mct_ggrid, mct_avect, mct_ggrid_init, mct_gsmap_lsize, mct_ggrid_lsize, &
-                                         mct_avect_lsize, MCT_AVECT_NRATTR, mct_avect_indexra,mct_avect_zero, &
-                                         mct_ggrid_importiattr, mct_ggrid_importrattr, mct_gsmap_init, mct_aVect_init, &
-                                         mct_gsmap_orderedpoints
-  use dead_data_mod		, only : dead_grid_lat, dead_grid_lon, dead_grid_area, dead_grid_mask, dead_grid_frac, dead_grid_index
-  use dead_mod			, only : dead_setnewgrid
-  use seq_comm_mct		, only : seq_comm_suffix, seq_comm_name,seq_comm_inst, seq_comm_get_ncomps
-  use shr_const_mod		, only : shr_const_pi
-  use seq_timemgr_mod		, only : seq_timemgr_EClockGetData
-  use shr_mpi_mod		, only : shr_mpi_bcast
+  use shr_log_mod,          only: logunit => shr_log_Unit
+  use shr_sys_mod,          only : shr_sys_abort, shr_sys_flush
+  use seq_flds_mod,         only : seq_flds_dom_coord, seq_flds_dom_other
+  use shr_file_mod,         only : shr_file_getlogunit, shr_file_getunit, shr_file_setio, shr_file_getloglevel, &
+       shr_file_setlogunit, shr_file_freeunit,shr_file_setloglevel
+  use esmf,                 only : esmf_clock
+  use seq_cdata_mod,        only : seq_cdata, seq_cdata_setptrs
+  use seq_infodata_mod,     only : seq_infodata_type, seq_infodata_getData, seq_infodata_PutData
+  use mct_mod,              only : mct_gsmap, mct_ggrid, mct_avect, mct_ggrid_init, mct_gsmap_lsize, mct_ggrid_lsize, &
+       mct_avect_lsize, MCT_AVECT_NRATTR, mct_avect_indexra,mct_avect_zero, &
+       mct_ggrid_importiattr, mct_ggrid_importrattr, mct_gsmap_init, mct_aVect_init, &
+       mct_gsmap_orderedpoints
+  use dead_data_mod,        only : dead_grid_lat, dead_grid_lon, dead_grid_area, dead_grid_mask, dead_grid_frac, dead_grid_index
+  use dead_mod,             only : dead_setnewgrid
+  use seq_comm_mct,         only : seq_comm_suffix, seq_comm_name,seq_comm_inst, seq_comm_get_ncomps
+  use shr_const_mod,        only : shr_const_pi
+  use seq_timemgr_mod,      only : seq_timemgr_EClockGetData
+  use shr_mpi_mod,          only : shr_mpi_bcast
 
   implicit none
   private
@@ -30,7 +30,7 @@ module dead_mct_mod
 
   interface dead_domain_mct ; module procedure &
        dead_domain_mct_new
-  end interface
+  end interface dead_domain_mct
 
   real(r8), pointer	:: gbuf_atm(:,:)
   real(r8), pointer	:: gbuf_lnd(:,:)
@@ -448,15 +448,15 @@ contains
 
     lsize = mct_avect_lsize(x2d)
     nflds_d2x = mct_avect_nRattr(d2x)
-!    nflds_x2d = mct_avect_nRattr(x2d)
+    !    nflds_x2d = mct_avect_nRattr(x2d)
 
     ! UNPACK
 
-!    do nf=1,nflds_x2d
-!       do n=1,lsize
-!          ?? = x2d%rAttr(nf,n)
-!       enddo
-!    enddo
+    !    do nf=1,nflds_x2d
+    !       do n=1,lsize
+    !          ?? = x2d%rAttr(nf,n)
+    !       enddo
+    !    enddo
 
     ! PACK
     selectcase(model)
