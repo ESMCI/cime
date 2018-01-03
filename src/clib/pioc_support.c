@@ -2023,9 +2023,9 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
          * learn about type. */
         if (iotype == PIO_IOTYPE_PNETCDF)
         {
+#ifdef _PNETCDF
             PIO_Offset type_size;
             
-#ifdef _PNETCDF
             if ((ret = ncmpi_inq_var(ncid, v, NULL, &my_type, &var_ndims, NULL, NULL)))
                 return pio_err(NULL, file, ret, __FILE__, __LINE__);
             (*pio_type)[v] = (int)my_type;
