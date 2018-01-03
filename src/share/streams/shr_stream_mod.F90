@@ -3087,7 +3087,7 @@ contains
     !-------------------------------------------------------------------------------
 
     strm%init = .true.
-   deallocate(strm%initarr)
+   if (allocated(strm%initarr)) deallocate(strm%initarr)
     allocate(strm%initarr(initarr_size))
 
     if (present(rc)) rc = 0
@@ -3126,7 +3126,7 @@ contains
     !-------------------------------------------------------------------------------
 
     strm%init = .true.
-   deallocate(strm%initarr)
+   if(allocated(strm%initarr)) deallocate(strm%initarr)
     allocate(strm%initarr(initarr_size + 5))
 
     if (present(rc)) rc = 0
