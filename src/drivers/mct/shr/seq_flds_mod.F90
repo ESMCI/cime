@@ -266,7 +266,6 @@ contains
 
     ! !USES:
     use shr_file_mod,   only : shr_file_getUnit, shr_file_freeUnit
-    use shr_string_mod, only : shr_string_listIntersect
     use shr_mpi_mod,    only : shr_mpi_bcast
     use glc_elevclass_mod, only : glc_elevclass_init
     use seq_infodata_mod, only : seq_infodata_type, seq_infodata_getdata

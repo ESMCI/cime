@@ -1,5 +1,3 @@
-! $Id$
-!
 ! Earth System Modeling Framework
 ! Copyright 2002-2003, University Corporation for Atmospheric Research,
 ! Massachusetts Institute of Technology, Geophysical Fluid Dynamics
@@ -45,7 +43,6 @@ module ESMF_TimeIntervalMod
   use ESMF_BaseTimeMod
 
   ! associated derived types
-  use ESMF_FractionMod, only : ESMF_Fraction
   use ESMF_CalendarMod
   use ESMF_ShrTimeMod, only : ESMF_Time
 
@@ -751,7 +748,7 @@ contains
     ! locals
     !      integer :: signnormtimeint
     LOGICAL :: negative
-    INTEGER(ESMF_KIND_I8) :: iS, iSn, iSd, H, M, S, MM, D, YY
+      INTEGER(ESMF_KIND_I8) :: iS, H, M, S, MM, D, YY
     character (len=1) :: signstr
 
     ! !DESCRIPTION:
@@ -782,14 +779,14 @@ contains
     negative = ( signnormtimeint( timeInterval ) == -1 )
     IF ( negative ) THEN
        iS = -timeinterval%basetime%S
-       iSn = -timeinterval%basetime%Sn
+!        iSn = -timeinterval%basetime%Sn
        signstr = '-'
     ELSE
        iS = timeinterval%basetime%S
-       iSn = timeinterval%basetime%Sn
+!        iSn = timeinterval%basetime%Sn
        signstr = ''
     ENDIF
-    iSd = timeinterval%basetime%Sd
+!      iSd = timeinterval%basetime%Sd
 
     D = iS / SECONDS_PER_DAY
     H = mod( iS, SECONDS_PER_DAY ) / SECONDS_PER_HOUR
@@ -833,7 +830,6 @@ contains
     ! !ARGUMENTS:
     type(ESMF_TimeInterval), intent(in) :: timeinterval
     ! !LOCAL:
-    integer    :: rc
 
     ! !DESCRIPTION:
     !     Return a {\tt ESMF\_TimeInterval}'s absolute value.
@@ -875,7 +871,6 @@ contains
     ! !ARGUMENTS:
     type(ESMF_TimeInterval), intent(in) :: timeinterval
     ! !LOCAL:
-    integer    :: rc
 
     ! !DESCRIPTION:
     !     Return a {\tt ESMF\_TimeInterval}'s negative absolute value.
@@ -1184,7 +1179,6 @@ contains
     type(ESMF_TimeInterval), intent(in) :: timeinterval1
     type(ESMF_TimeInterval), intent(in) :: timeinterval2
     ! !LOCAL:
-    integer                             :: rc
     ! !DESCRIPTION:
     !     Add two {\tt ESMF\_TimeIntervals}, return sum as a
     !     {\tt ESMF\_TimeInterval}.  Maps overloaded (+) operator interface
@@ -1233,7 +1227,7 @@ contains
     type(ESMF_TimeInterval), intent(in) :: timeinterval1
     type(ESMF_TimeInterval), intent(in) :: timeinterval2
     ! !LOCAL:
-    integer                             :: rc
+
     ! !DESCRIPTION:
     !     Subtract timeinterval2 from timeinterval1, return remainder as a
     !     {\tt ESMF\_TimeInterval}.

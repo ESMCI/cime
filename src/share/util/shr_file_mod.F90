@@ -229,7 +229,6 @@ CONTAINS
     logical                :: async2   ! true <=> asynchronous get
     logical                :: clobber2 ! true <=> clobber existing file
     logical                :: exists   ! true <=> local file a ready exists
-    character(SHR_KIND_CL) :: passwd2  ! password
     character(SHR_KIND_CL) :: rfn      ! rem_fn without the destination prefix
     character(SHR_KIND_CL) :: cmd      ! command sent to system call
     integer(SHR_KIND_IN)   :: prefix   ! remote file prefix type
@@ -246,7 +245,6 @@ CONTAINS
     !   returned.
     !-------------------------------------------------------------------------------
 
-    passwd2  = " "     ; if (PRESENT(passwd )) passwd2  = passwd
     async2   = .false. ; if (PRESENT(async  )) async2   = async
     clobber2 = .false. ; if (PRESENT(clobber)) clobber2 = clobber
     rcode    = 0

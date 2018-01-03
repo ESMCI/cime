@@ -20,7 +20,7 @@ CONTAINS
   !===============================================================================
 
   subroutine shr_mem_init(prt)
-
+    use shr_sys_mod, only : shr_sys_abort
     implicit none
 
     !----- arguments -----
@@ -31,8 +31,6 @@ CONTAINS
 
     ! --- Memory stats ---
     integer :: msize                   ! memory size (high water)
-    integer :: mrss                    ! resident size (current memory use)
-    integer :: msize0,msize1           ! temporary size
     integer :: mrss0,mrss1,mrss2       ! temporary rss
     integer :: mshare,mtext,mdatastack
     logical :: lprt
@@ -50,11 +48,20 @@ CONTAINS
     endif
 
     ierr = GPTLget_memusage (msize, mrss0, mshare, mtext, mdatastack)
+    if (ierr .ne. 0) then
+       call shr_sys_abort('shr_mem_init: error returned from GPTLget_memusage', ierr)
+    endif
     allocate(mem_tmp(1024*1024))    ! 1 MWord, 8 MB
     mem_tmp = -1.0
     ierr = GPTLget_memusage (msize, mrss1, mshare, mtext, mdatastack)
+    if (ierr .ne. 0) then
+       call shr_sys_abort('shr_mem_init: error returned from GPTLget_memusage', ierr)
+    endif
     deallocate(mem_tmp)
     ierr = GPTLget_memusage (msize, mrss2, mshare, mtext, mdatastack)
+    if (ierr .ne. 0) then
+       call shr_sys_abort('shr_mem_init: error returned from GPTLget_memusage', ierr)
+    endif
     mb_blk = 0.0_shr_kind_r8
     if (mrss1 - mrss0 > 0) then
        mb_blk = (8.0_shr_kind_r8)/((mrss1-mrss0)*1.0_shr_kind_r8)
@@ -71,7 +78,7 @@ CONTAINS
   !===============================================================================
 
   subroutine shr_mem_getusage(r_msize,r_mrss,prt)
-
+    use shr_sys_mod, only : shr_sys_abort
     implicit none
 
     !----- arguments ---
@@ -93,6 +100,9 @@ CONTAINS
     if (present(prt)) then
        if (prt) then
           ierr = GPTLprint_memusage(' ')
+          if (ierr .ne. 0) then
+             call shr_sys_abort('shr_mem_getusage: error returned from GPTLprint_memusage', ierr)
+          endif
        endif
     endif
 

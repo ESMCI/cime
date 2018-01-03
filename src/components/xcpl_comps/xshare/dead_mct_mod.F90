@@ -1,8 +1,9 @@
 module dead_mct_mod
 
-  use shr_kind_mod		, only : IN =>SHR_KIND_IN, R8=>SHR_KIND_R8
+  use shr_kind_mod,         only : IN =>SHR_KIND_IN, R8=>SHR_KIND_R8
+  use shr_log_mod,           only: logunit => shr_log_Unit
   use shr_sys_mod		, only : shr_sys_abort, shr_sys_flush
-  use seq_flds_mod		, only : seq_flds_dom_coord, seq_flds_dom_other
+  use seq_flds_mod	, only : seq_flds_dom_coord, seq_flds_dom_other
   use shr_file_mod		, only : shr_file_getlogunit, shr_file_getunit, shr_file_setio, shr_file_getloglevel, &
                                          shr_file_setlogunit, shr_file_freeunit,shr_file_setloglevel
   use esmf                      , only : esmf_clock
@@ -55,11 +56,11 @@ contains
     !---local variables---
     integer(IN)				:: my_task               ! mpi task within communicator
     integer(IN)				:: lsize                 ! temporary
-    integer(IN)				:: n	,j,i                 ! indices
+    integer(IN)				:: n                ! indices
     integer(IN)				:: ier                   ! error status
     real(R8), pointer		        :: data(:)     ! temporary
     integer(IN), pointer		:: idata(:)    ! temporary
-    integer(IN)				:: logunit
+
     !-------------------------------------------------------------------
 
     call shr_file_getlogunit(logunit)
@@ -166,7 +167,7 @@ contains
     integer(IN)				:: my_task
     character(len=16)			:: inst_suffix       ! char string associated with instance
     integer(IN)				:: phase
-    integer(IN)				:: logunit
+
     logical				:: flood=.false.     ! rof flood flag
     real(r8), pointer			:: gbuf(:,:)
 
@@ -425,7 +426,7 @@ contains
     real(R8)				:: lon               ! longitude
     real(r8), pointer			:: gbuf(:,:)
     integer(IN)				:: shrlogunit, shrloglev ! original log unit and level
-    integer				:: nflds_d2x, nflds_x2d
+    integer				:: nflds_d2x
     integer				:: ncomp
     integer				:: compid
     integer				:: mpicom, ierr, my_task
@@ -447,7 +448,7 @@ contains
 
     lsize = mct_avect_lsize(x2d)
     nflds_d2x = mct_avect_nRattr(d2x)
-    nflds_x2d = mct_avect_nRattr(x2d)
+!    nflds_x2d = mct_avect_nRattr(x2d)
 
     ! UNPACK
 

@@ -1041,7 +1041,7 @@ contains
     type(ESMF_Time), intent(in) :: time1
     type(ESMF_Time), intent(in) :: time2
     ! !LOCAL:
-    TYPE(ESMF_BaseTime) :: cmptime, zerotime
+!      TYPE(ESMF_BaseTime) :: cmptime, zerotime
     integer :: yr
     integer :: y1,m1,d1,s1,y2,m2,d2,s2
     integer :: rc
@@ -1466,7 +1466,7 @@ contains
           !  INTEGER(ESMF_KIND_I8) :: nsecondsinyear
           ! locals
           TYPE(ESMF_BaseTime) :: cmptime, zerotime
-          INTEGER :: rc
+!  INTEGER :: rc
           LOGICAL :: done
 
           ! first, normalize basetime

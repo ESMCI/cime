@@ -155,9 +155,8 @@ contains
     character(len=*), intent(in) :: comp_name(:)
     integer, intent(in) ::  comp_comm(:), comp_comm_iam(:)
     integer :: i
-    integer :: ncomps
+!    integer :: ncomps
     character(len=shr_kind_cl) :: nlfilename, cname
-    type(iosystem_desc_t) :: iosys
     integer :: ret
     character(*), parameter :: subName = '(shr_pio_init2) '
 
@@ -259,7 +258,7 @@ contains
   subroutine shr_pio_finalize(  )
     integer :: ierr
     integer :: i
-    logical :: active
+!    logical :: active
     do i=1,total_comps
 !       print *,__FILE__,__LINE__,drank,i,iosystems(i)%iosysid
        call pio_finalize(iosystems(i), ierr)

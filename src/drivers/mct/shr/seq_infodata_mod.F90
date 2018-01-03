@@ -21,8 +21,8 @@ MODULE seq_infodata_mod
   ! !USES:
 
   use shr_kind_mod, only: SHR_KIND_CS, SHR_KIND_CL, SHR_KIND_IN,             &
-       SHR_KIND_R8, SHR_KIND_I8
-  use shr_sys_mod,  only: shr_sys_flush, shr_sys_abort, shr_sys_getenv
+                           SHR_KIND_R8
+   use shr_sys_mod,  only: shr_sys_abort
   use seq_comm_mct, only: logunit, loglevel, CPLID, seq_comm_gloroot
   use seq_comm_mct, only: seq_comm_setptrs, seq_comm_iamroot, seq_comm_iamin
   use seq_comm_mct, only: num_inst_atm, num_inst_lnd, num_inst_rof
@@ -287,7 +287,6 @@ CONTAINS
     ! !USES:
 
     use shr_file_mod,    only : shr_file_getUnit, shr_file_freeUnit
-    use shr_string_mod,  only : shr_string_toUpper, shr_string_listAppend
     use shr_mpi_mod,     only : shr_mpi_bcast
     use seq_timemgr_mod, only : seq_timemgr_pause_active
     use seq_io_read_mod, only : seq_io_read
@@ -2130,7 +2129,6 @@ CONTAINS
     !EOP
 
     !----- local -----
-    integer :: ind
 
     !-------------------------------------------------------------------------------
     ! Notes:
@@ -2639,7 +2637,6 @@ CONTAINS
     ! !USES:
 
     use shr_assert_mod,   only: shr_assert_in_domain
-    use shr_string_mod,   only: shr_string_listIntersect
     use shr_wv_sat_mod,   only: shr_wv_sat_get_scheme_idx, shr_wv_sat_valid_idx
 
     implicit none

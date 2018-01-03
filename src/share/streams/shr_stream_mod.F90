@@ -800,7 +800,6 @@ contains
     !EOP
 
     !----- local -----
-    integer(SHR_KIND_IN) :: n
 
     !----- formats -----
     character(*),parameter :: subName = '(shr_stream_default) '
@@ -997,8 +996,6 @@ contains
     !EOP
 
     !----- local -----
-    character(SHR_KIND_CL) :: fileName      ! string
-    integer  (SHR_KIND_IN) :: nt            ! size of a time-coord dimension
     integer  (SHR_KIND_IN) :: dDateIn       ! model date mapped onto a data date
     integer  (SHR_KIND_IN) :: dDateF        ! first date
     integer  (SHR_KIND_IN) :: dDateL        ! last date
@@ -2602,12 +2599,10 @@ contains
     character(SHR_KIND_CS) :: str         ! generic text string
     integer(SHR_KIND_IN)   :: nUnit       ! a file unit number
     integer(SHR_KIND_IN)   :: inpi        ! input integer
-    real(SHR_KIND_R8)      :: inpr        ! input real
     character(SHR_KIND_CXX):: inpcx       ! input char
-    character(SHR_KIND_CL) :: inpcl       ! input char
     character(SHR_KIND_CS) :: inpcs       ! input char
+   character(SHR_KIND_CL) :: inpcl       ! input char
     integer(SHR_KIND_IN)   :: nt          ! size of time dimension
-    character(SHR_KIND_CS) :: tInterpAlgo ! for backwards compatability
     character(SHR_KIND_CL) :: name                            ! local variables
     integer(SHR_KIND_IN)   :: nFiles                          ! local variables
     integer(SHR_KIND_IN)   :: k_lvd, n_lvd, k_gvd, n_gvd      ! local variables
@@ -2630,9 +2625,7 @@ contains
     !-------------------------------------------------------------------------------
 
     rCode = 0
-    tInterpAlgo = 'unused'
     abort = .false.
-    inpcl = ' '
 
     !----------------------------------------------------------------------------
     ! read the  data
@@ -3086,7 +3079,7 @@ contains
     !EOP
 
     !--- local ---
-    integer(SHR_KIND_IN) :: ier
+
     character(*),parameter :: subName = "(shr_stream_setInit)"
 
     !-------------------------------------------------------------------------------
@@ -3094,7 +3087,7 @@ contains
     !-------------------------------------------------------------------------------
 
     strm%init = .true.
-    deallocate(strm%initarr,stat=ier)
+   deallocate(strm%initarr)
     allocate(strm%initarr(initarr_size))
 
     if (present(rc)) rc = 0
@@ -3126,7 +3119,6 @@ contains
     !EOP
 
     !--- local ---
-    integer(SHR_KIND_IN) :: ier
     character(*),parameter :: subName = "(shr_stream_clearInit)"
 
     !-------------------------------------------------------------------------------
@@ -3134,7 +3126,7 @@ contains
     !-------------------------------------------------------------------------------
 
     strm%init = .true.
-    deallocate(strm%initarr,stat=ier)
+   deallocate(strm%initarr)
     allocate(strm%initarr(initarr_size + 5))
 
     if (present(rc)) rc = 0

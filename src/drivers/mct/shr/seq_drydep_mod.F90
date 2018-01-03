@@ -18,10 +18,8 @@ module seq_drydep_mod
 
   use shr_sys_mod,   only : shr_sys_abort
   use shr_log_mod,   only : s_loglev  => shr_log_Level
-  use shr_kind_mod,  only : r8 => shr_kind_r8, CS => SHR_KIND_CS, CX => SHR_KIND_CX
-  use shr_const_mod, only : SHR_CONST_G, SHR_CONST_RDAIR, &
-       SHR_CONST_CPDAIR, SHR_CONST_MWWV
-
+  use shr_kind_mod,  only : r8 => shr_kind_r8, CS => SHR_KIND_CS
+  use shr_const_mod, only: SHR_CONST_MWWV
   implicit none
   save
 

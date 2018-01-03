@@ -19,7 +19,6 @@ module shr_string_mod
   use shr_kind_mod   ! F90 kinds
   use shr_sys_mod    ! shared system calls
   use shr_timer_mod, only : shr_timer_get, shr_timer_start, shr_timer_stop
-  use shr_log_mod,   only : errMsg    => shr_log_errMsg
   use shr_log_mod,   only : s_loglev  => shr_log_Level
   use shr_log_mod,   only : s_logunit => shr_log_Unit
 
@@ -435,8 +434,6 @@ contains
     !EOP
 
     !----- local ----
-    integer(SHR_KIND_IN) :: index_first_non_blank
-    integer(SHR_KIND_IN) :: rCode ! return code
     integer(SHR_KIND_IN) :: t01 = 0 ! timer
     character, parameter :: tab_char = char(9)
 
@@ -488,8 +485,7 @@ contains
     !EOP
 
     !----- local ----
-    integer(SHR_KIND_IN) :: rCode              ! return code
-    integer(SHR_KIND_IN) :: index, inlength, i ! temporaries
+   integer(SHR_KIND_IN) :: inlength, i ! temporaries
 
     !----- formats -----
     character(*),parameter :: subName =   "(shr_string_remove_tabs) "
@@ -537,7 +533,6 @@ contains
     !EOP
 
     !----- local ----
-    integer(SHR_KIND_IN) :: rCode  ! return code
     integer(SHR_KIND_IN) :: n,icnt ! counters
     integer(SHR_KIND_IN) :: t01 = 0 ! timer
 
@@ -840,7 +835,6 @@ contains
     !EOP
 
     !----- local -----
-    integer(SHR_KIND_IN)   :: n       ! counter
     integer(SHR_KIND_IN)   :: rCode   ! return code
     integer(SHR_KIND_IN) :: t01 = 0 ! timer
 
@@ -959,7 +953,7 @@ contains
     !EOP
 
     !----- local -----
-    integer(SHR_KIND_IN)   :: i,j,n   ! generic indecies
+   integer(SHR_KIND_IN)   :: i,n   ! generic indecies
     integer(SHR_KIND_IN)   :: kFlds   ! number of fields in list
     integer(SHR_KIND_IN)   :: i0,i1   ! name = list(i0:i1)
     integer(SHR_KIND_IN)   :: rCode   ! return code

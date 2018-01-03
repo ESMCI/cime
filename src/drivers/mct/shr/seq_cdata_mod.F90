@@ -1,11 +1,7 @@
 module seq_cdata_mod
-
-  use shr_kind_mod     , only: r8=> shr_kind_r8
-  use shr_sys_mod      , only: shr_sys_flush
-  use shr_sys_mod      , only: shr_sys_abort
   use seq_infodata_mod , only: seq_infodata_type
-  use mct_mod
-  use seq_comm_mct
+  use mct_mod, only: mct_ggrid, mct_gsmap
+  use seq_comm_mct, only: seq_comm_setptrs
 
   implicit none
   save
@@ -33,9 +29,9 @@ module seq_cdata_mod
 
   public seq_cdata
 
-  !==============================================================================
+!==============================================================================
 contains
-  !==============================================================================
+!==============================================================================
 
   subroutine seq_cdata_setptrs(cdata, ID, mpicom, dom, gsMap, infodata, name)
 
@@ -91,9 +87,9 @@ contains
     call seq_comm_setptrs(ID, mpicom=mpicom, iamroot=iamroot)
 
     if (present(name)) then
-       cdata%name   =  name
+      cdata%name   =  name
     else
-       cdata%name   =  'undefined'
+      cdata%name   =  'undefined'
     endif
     cdata%ID       =  ID
     cdata%mpicom   =  mpicom

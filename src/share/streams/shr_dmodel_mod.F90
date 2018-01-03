@@ -6,11 +6,10 @@ module shr_dmodel_mod
   use shr_kind_mod, only: IN=>SHR_KIND_IN, R8=>SHR_KIND_R8, &
        CS=>SHR_KIND_CS, CL=>SHR_KIND_CL, &
        CX=>SHR_KIND_CX, CXX=>SHR_KIND_CXX
-  use shr_log_mod, only: loglev  => shr_log_Level
   use shr_log_mod, only: logunit => shr_log_Unit
   use shr_mpi_mod, only: shr_mpi_bcast
+  use shr_stream_mod
   use mct_mod
-  !  use esmf
   use perf_mod
   use pio
 
@@ -520,7 +519,6 @@ CONTAINS
 
     use shr_file_mod, only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
     use shr_const_mod, only : shr_const_cDay
-    use shr_stream_mod
     implicit none
 
     !----- arguments -----
@@ -542,9 +540,6 @@ CONTAINS
     character(len=*),optional  ,intent(in)    :: istr
 
     !----- local -----
-    integer(IN)   :: n,k,j,i    ! indices
-    integer(IN)   :: lsize      ! lsize
-    integer(IN)   :: gsize      ! gsize
     integer(IN)   :: my_task, master_task
     integer(IN)   :: ierr       ! error code
     integer(IN)   :: rCode      ! return code
@@ -597,9 +592,6 @@ CONTAINS
     if (rDateM < rDateLB .or. rDateM > rDateUB) then
        call t_startf(trim(lstr)//'_fbound')
        if (my_task == master_task) then
-          !       call shr_stream_findBounds(stream,mDate,mSec,                 &
-          !                                  mDateLB,dDateLB,mSecLB,n_lb,fn_lb, &
-          !                                  mDateUB,dDateUB,mSecUB,n_ub,fn_ub  )
           call shr_stream_findBounds(stream,mDate,mSec,                 &
                ivals(1),dDateLB,ivals(2),ivals(5),fn_lb, &
                ivals(3),dDateUB,ivals(4),ivals(6),fn_ub  )
@@ -639,7 +631,7 @@ CONTAINS
                   path, fn_lb, n_lb,istr=trim(lstr)//'_LB', boundstr = 'lb')
           case ('full_file')
              call shr_dmodel_readstrm_fullfile(stream, pio_subsystem, pio_iotype, &
-                  pio_iodesc, gsMap, avLB, avFile, mpicom, &
+                  gsMap, avLB, avFile, mpicom, &
                   path, fn_lb, n_lb,istr=trim(lstr)//'_LB', boundstr = 'lb')
           case default
              write(logunit,F00) "ERROR: Unsupported readmode : ", trim(readMode)
@@ -657,7 +649,7 @@ CONTAINS
                path, fn_ub, n_ub,istr=trim(lstr)//'_UB', boundstr = 'ub')
        case ('full_file')
           call shr_dmodel_readstrm_fullfile(stream, pio_subsystem, pio_iotype, &
-               pio_iodesc, gsMap, avUB, avFile, mpicom, &
+             gsMap, avUB, avFile, mpicom, &
                path, fn_ub, n_ub,istr=trim(lstr)//'_UB', boundstr = 'ub')
        case default
           write(logunit,F00) "ERROR: Unsupported readmode : ", trim(readMode)
@@ -705,7 +697,6 @@ CONTAINS
        path, fn, nt, istr, boundstr)
 
     use shr_file_mod, only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
-    use shr_stream_mod
     use shr_ncread_mod, only: shr_ncread_open, shr_ncread_close, shr_ncread_varDimSizes, &
          shr_ncread_tField
     implicit none
@@ -750,12 +741,6 @@ CONTAINS
     type(file_desc_t) :: pioid
     type(var_desc_t) :: varid
     integer(kind=pio_offset_kind) :: frame
-    type(io_desc_t) :: pio_iodesc_local
-
-    integer :: gsmap_lsize, gsmap_gsize, cnt,m,n
-    real(R8),allocatable :: rattr_local(:)
-    integer, allocatable :: count(:), compDOF(:)
-    integer, pointer,dimension(:) :: gsmOP   ! gsmap ordered points
 
     character(*), parameter :: subname = '(shr_dmodel_readstrm) '
     character(*), parameter :: F00   = "('(shr_dmodel_readstrm) ',8a)"
@@ -913,20 +898,16 @@ CONTAINS
   !===============================================================================
 
   subroutine shr_dmodel_readstrm_fullfile(stream, pio_subsystem, pio_iotype, &
-       pio_iodesc, gsMap, av, avFile, mpicom, &
+     gsMap, av, avFile, mpicom, &
        path, fn, nt, istr, boundstr)
 
     use shr_file_mod, only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
-    use shr_stream_mod
-    use shr_ncread_mod, only: shr_ncread_open, shr_ncread_close, shr_ncread_varDimSizes, &
-         shr_ncread_tField
     implicit none
 
     !----- arguments -----
     type      (shr_stream_streamType) ,intent(inout)         :: stream
     type      (iosystem_desc_t)       ,intent(inout), target :: pio_subsystem
     integer   (IN)                    ,intent(in)            :: pio_iotype
-    type      (io_desc_t)             ,intent(inout)         :: pio_iodesc
     type      (mct_gsMap)             ,intent(in)            :: gsMap
     type      (mct_aVect)             ,intent(inout)         :: av
     type      (mct_aVect)             ,intent(inout)         :: avFile
@@ -942,17 +923,12 @@ CONTAINS
     integer(IN)                   :: master_task
     integer(IN)                   :: ierr
     logical                       :: localCopy,fileexists
-    type(mct_avect)               :: avG
+
     integer(IN)                   :: gsize,nx,ny,nz
     integer(IN)                   :: k
-    integer(IN)                   :: fid
     integer(IN)                   :: rCode   ! return code
-    real(R8),allocatable          :: data2d(:,:)
-    real(R8),allocatable          :: data3d(:,:,:)
-    logical                       :: d3dflag
     character(CL)                 :: fileName
     character(CL)                 :: sfldName
-    type(mct_avect)               :: avtmp
     character(len=32)             :: lstr
     character(len=32)             :: bstr
     logical                       :: fileopen
@@ -1562,7 +1538,7 @@ CONTAINS
     !----- local -----
 
     integer(IN) :: n,i,j
-    integer(IN) :: lsizeS,gsizeS,lsizeD,gsizeD
+    integer(IN) :: lsizeS,gsizeS,lsizeD
     integer(IN) :: nlon,nlat,nmsk
     integer(IN) :: my_task,master_task,ierr
 
@@ -1576,7 +1552,6 @@ CONTAINS
     type(mct_aVect) :: AVl
     type(mct_aVect) :: AVg
 
-    character(len=32) :: lstrategy
     integer(IN) :: nsrc,ndst,nwts
     integer(IN), pointer :: points(:)
     integer(IN), pointer :: isrc(:)
@@ -1639,36 +1614,6 @@ CONTAINS
     call mct_avect_init(AVl,rList='lon:lat:mask',lsize=lsizeD)
     call mct_avect_copy(ggridD%data,AVl,rList='lon:lat:mask')
 
-#if (1 == 0)
-    call mct_avect_gather(AVl,AVg,gsmapD,master_task,mpicom)
-
-    if (my_task == master_task) then
-       gsizeD = mct_aVect_lsize(AVg)
-       if (gsizeD /= nxgD*nygD) then
-          write(logunit,F01) ' ERROR: gsizeD ',gsizeD,nxgD,nygD
-          call shr_sys_abort(subname//' ERROR gsizeD')
-       endif
-       allocate(Xdst(nxgD,nygD),Ydst(nxgD,nygD),Mdst(nxgD,nygD))
-
-       nlon = mct_avect_indexRA(AVg,'lon')
-       nlat = mct_avect_indexRA(AVg,'lat')
-       nmsk = mct_avect_indexRA(AVg,'mask')
-
-       n = 0
-       Mdst = 1
-       do j = 1,nygD
-          do i = 1,nxgD
-             n = n + 1
-             Xdst(i,j) = AVg%rAttr(nlon,n)
-             Ydst(i,j) = AVg%rAttr(nlat,n)
-             if (abs(AVg%rAttr(nmsk,n)) < 0.5_R8) Mdst(i,j) = 0
-          enddo
-       enddo
-    endif
-
-    if (my_task == master_task) call mct_aVect_clean(AVg)
-#endif
-
     allocate(Xdst(lsizeD),Ydst(lsizeD),Mdst(lsizeD))
 
     nlon = mct_avect_indexRA(AVl,'lon')
@@ -1700,11 +1645,6 @@ CONTAINS
     deallocate(Xdst,Ydst,Mdst)
 
     !--- convert map to sMatP ---
-
-    lstrategy = 'Xonly'
-    if (present(strategy)) then
-       lstrategy = trim(strategy)
-    endif
 
     call shr_map_get(shrmap,shr_map_fs_nwts,nwts)
     allocate(isrc(nwts),idst(nwts),wgts(nwts))
@@ -1796,9 +1736,8 @@ CONTAINS
     type(mct_rearr), intent(in),optional :: rearr     ! rearranger for diff decomp
 
     !----- local -----
-    integer(IN)      :: n,k,ka,kb,kc,cnt  ! indices
+  integer(IN)      :: k,ka,kb,kc,cnt  ! indices
     integer(IN)      :: lsize      ! lsize
-    integer(IN)      :: gsize      ! gsize
     integer(IN)      :: nflds      ! number of fields in avi
 
     type(mct_aVect)  :: avtri,avtro ! translated av on input/output grid
@@ -1887,8 +1826,7 @@ CONTAINS
 
 
     !----- local -----
-    integer(IN)      :: n,k,ka,kb,kc ! indices
-    integer(IN)      :: lsize        ! lsize
+  integer(IN)      :: k,ka,kb,kc ! indices
     integer(IN)      :: nflds        ! number of fields in avi
     character(CL)    :: cfld         ! character field name
     type(mct_string) :: sfld         ! string field

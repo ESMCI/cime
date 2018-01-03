@@ -35,7 +35,6 @@ module shr_reprosum_mod
 #else
    use shr_kind_mod,  only: r8 => shr_kind_r8, i8 => shr_kind_i8
 #endif
-   use shr_log_mod,   only: s_loglev  => shr_log_Level
    use shr_log_mod,   only: s_logunit => shr_log_Unit
    use shr_sys_mod,   only: shr_sys_abort
    use shr_infnan_mod,only: shr_infnan_isnan, shr_infnan_isinf
