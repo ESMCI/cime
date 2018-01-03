@@ -356,7 +356,7 @@ contains
     write(shr_log_Unit,*) &
          "ERROR: shr_assert_in_domain: ",trim(varname_to_write), &
          " has invalid value ", &
-         #if ({DIMS} != 0)
+#if ({DIMS} != 0)
     var({REPEAT:loc_vec(#)}), &
          " at location: ",loc_vec
 #else
