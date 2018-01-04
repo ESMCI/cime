@@ -9,8 +9,7 @@
 !================================================================================
 module shr_carma_mod
 
-  use shr_kind_mod,only : r8 => shr_kind_r8
-  use shr_kind_mod,only : CL => SHR_KIND_CL, CX => SHR_KIND_CX, CS => SHR_KIND_CS
+  use shr_kind_mod,only : CX => SHR_KIND_CX
   use shr_sys_mod, only : shr_sys_abort
   use shr_log_mod, only : loglev  => shr_log_Level
   use shr_log_mod, only : logunit => shr_log_Unit

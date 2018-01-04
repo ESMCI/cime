@@ -1,9 +1,3 @@
-!===============================================================================
-! SVN $Id: shr_mct_mod.F90 18548 2009-09-26 23:55:51Z tcraig $
-! SVN $URL: https://svn-ccsm-models.cgd.ucar.edu/csm_share/trunk_tags/share3_091114/shr/shr_mct_mod.F90 $
-!===============================================================================
-!BOP ===========================================================================
-!
 ! !MODULE: shr_mct_mod -- higher level mct type routines
 !     needed to prevent some circular dependencies
 !
@@ -79,11 +73,9 @@ subroutine shr_mct_sMatReadnc(sMat,fileName)
 !EOP
 
    !--- local ---
-   integer(IN)           :: n       ! generic loop indicies
    integer(IN)           :: na      ! size of source domain
    integer(IN)           :: nb      ! size of destination domain
    integer(IN)           :: ns      ! number of non-zero elements in matrix
-   integer(IN)           :: ni,nj   ! number of row and col in the matrix
    integer(IN)           :: igrow   ! aVect index for matrix row
    integer(IN)           :: igcol   ! aVect index for matrix column
    integer(IN)           :: iwgt    ! aVect index for matrix element
@@ -316,7 +308,6 @@ subroutine shr_mct_sMatPInitnc_mapfile(sMatP, gsMapX, gsMapY, &
    type(mct_Avect) :: areadst_map ! area of dst grid from mapping file
 
    integer          :: lsize
-   integer          :: iret
    integer          :: pe_loc
    logical          :: usevector
    character(len=3) :: Smaptype
@@ -449,11 +440,9 @@ subroutine shr_mct_sMatReaddnc(sMat,SgsMap,DgsMap,newdom,areasrc,areadst, &
    integer(IN)           :: na      ! size of source domain
    integer(IN)           :: nb      ! size of destination domain
    integer(IN)           :: ns      ! number of non-zero elements in matrix
-   integer(IN)           :: ni,nj   ! number of row and col in the matrix
    integer(IN)           :: igrow   ! aVect index for matrix row
    integer(IN)           :: igcol   ! aVect index for matrix column
    integer(IN)           :: iwgt    ! aVect index for matrix element
-   integer(IN)           :: iarea   ! aVect index for area
    integer(IN)           :: rsize   ! size of read buffer
    integer(IN)           :: cnt     ! local num of wgts
    integer(IN)           :: cntold  ! local num of wgts, previous read
@@ -464,7 +453,6 @@ subroutine shr_mct_sMatReaddnc(sMat,SgsMap,DgsMap,newdom,areasrc,areadst, &
    logical               :: mywt    ! does this weight belong on my pe
 
    !--- buffers for i/o ---
-   real(R8)   ,allocatable :: rtemp(:) ! real temporary
    real(R8)   ,allocatable :: Sbuf(:)  ! real weights
    integer(IN),allocatable :: Rbuf(:)  ! ints rows
    integer(IN),allocatable :: Cbuf(:)  ! ints cols
@@ -483,8 +471,6 @@ subroutine shr_mct_sMatReaddnc(sMat,SgsMap,DgsMap,newdom,areasrc,areadst, &
    integer(IN),allocatable :: Rnew(:),Rold(:)  ! ints
    integer(IN),allocatable :: Cnew(:),Cold(:)  ! ints
 
-   character,allocatable :: str(:)  ! variable length char string
-   character(CL)         :: attstr  ! netCDF attribute name string
    integer(IN)           :: rcode   ! netCDF routine return code
    integer(IN)           :: fid     ! netCDF file      ID
    integer(IN)           :: vid     ! netCDF variable  ID

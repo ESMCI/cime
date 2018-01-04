@@ -1,5 +1,3 @@
-! $Id$
-!
 ! Earth System Modeling Framework
 ! Copyright 2002-2003, University Corporation for Atmospheric Research,
 ! Massachusetts Institute of Technology, Geophysical Fluid Dynamics
@@ -33,6 +31,7 @@
 !------------------------------------------------------------------------------
 
 ! !USES:
+      use shr_kind_mod, only : shr_kind_I8 
       implicit none
 !
 ! !PRIVATE TYPES:
@@ -72,7 +71,7 @@
 !
       type ESMF_Pointer
       private
-          integer*8 :: ptr
+          integer(kind=shr_kind_i8) :: ptr
       end type
 
       type(ESMF_Pointer), parameter :: ESMF_NULL_POINTER = ESMF_Pointer(0), &
@@ -160,7 +159,7 @@
 !
       type ESMF_BasePointer
       private
-          integer*8 :: base_ptr
+          integer(kind=shr_kind_i8) :: base_ptr
       end type
 
       integer :: global_count = 0
@@ -611,7 +610,7 @@ end function
 !
 !EOP
 ! !REQUIREMENTS:  FLD1.5, FLD1.5.3
-
+      rc = 0
       end subroutine ESMF_AttributeSet
 
 
@@ -635,7 +634,7 @@ end function
 !
 !EOP
 ! !REQUIREMENTS:  FLD1.5.1, FLD1.5.3
-
+      rc = 0
       end subroutine ESMF_AttributeGet
 
 
@@ -950,7 +949,7 @@ end function
 !
 ! !ARGUMENTS:
       type(ESMF_Pointer) :: ptype
-      integer*8, intent(in) :: contents
+      integer(kind=shr_kind_i8), intent(in) :: contents
       integer, intent(out), optional :: rc
 
 !
@@ -985,7 +984,7 @@ end function
 !
 !EOP
 ! !REQUIREMENTS:
-      integer*8, parameter :: nullp = 0
+      integer(kind=shr_kind_i8), parameter :: nullp = 0
 
       ptype%ptr = nullp
       if (present(rc)) rc = ESMF_SUCCESS
@@ -999,7 +998,7 @@ end function
       function ESMF_GetPointer(ptype, rc)
 !
 ! !RETURN VALUE:
-      integer*8 :: ESMF_GetPointer
+      integer(kind=shr_kind_i8) :: ESMF_GetPointer
 
 ! !ARGUMENTS:
       type(ESMF_Pointer), intent(in) :: ptype

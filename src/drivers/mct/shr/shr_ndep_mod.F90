@@ -9,7 +9,6 @@ module shr_ndep_mod
   !USES:
   use shr_sys_mod,   only : shr_sys_abort
   use shr_log_mod,   only : s_loglev  => shr_log_Level
-  use shr_kind_mod,  only : r8 => shr_kind_r8, CS => SHR_KIND_CS, CX => SHR_KIND_CX
 
   implicit none
   save
@@ -47,7 +46,6 @@ CONTAINS
     integer :: unitn            ! namelist unit number
     integer :: ierr             ! error code
     logical :: exists           ! if file exists or not
-    character(len=8) :: token   ! dry dep field name to add
     integer :: mpicom           ! MPI communicator
 
     integer, parameter :: maxspc = 100             ! Maximum number of species

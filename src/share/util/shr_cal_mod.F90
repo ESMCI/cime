@@ -66,7 +66,7 @@ module shr_cal_mod
   end type calParamType
 
   ! Instance of calender parameters as a protected type so can't change outside this module
-  type(calParamType), public, protected :: calParams
+  type(calParamType), public, protected, save :: calParams
 
   ! !PUBLIC MEMBER FUNCTIONS:
 
@@ -435,7 +435,6 @@ contains
 
     !EOP
 
-    integer :: rc
     integer :: k
     character(*),parameter :: subName = "(shr_cal_elapsDaysStrtMonth)"
 
@@ -517,8 +516,8 @@ contains
     tdate = abs(date)
     year =int(     tdate       /10000)
     if (date < 0) year = -year
-    month=int( mod(tdate,10000)/  100)
-    day  =     mod(tdate,  100)
+    month=int( mod(tdate,10000_SHR_KIND_I8)/  100_SHR_KIND_I8)
+    day  =    int( mod(tdate,  100_SHR_KIND_I8) )
 
     if (debug > 1) write(s_logunit,*) trim(subname),'_b ',year,month,day
 

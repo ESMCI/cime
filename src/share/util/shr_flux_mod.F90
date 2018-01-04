@@ -1,9 +1,3 @@
-!===============================================================================
-! SVN $Id: shr_flux_mod.F90 70843 2015-05-26 22:42:14Z tcraig $
-! SVN $URL: https://svn-ccsm-models.cgd.ucar.edu/csm_share/branches/aofluxd/shr/shr_flux_mod.F90 $
-!===============================================================================
-!BOP ===========================================================================
-!
 ! !MODULE: flux_mod -- CCSM shared flux calculations.
 !
 ! !DESCRIPTION:
@@ -70,17 +64,13 @@ module shr_flux_mod
    real(R8) :: loc_latice = shr_const_latice
    real(R8) :: loc_stebol = shr_const_stebol
 
-! These control convergence of the iterative flux calculation
-   real(r8) :: flux_con_tol = 0.0_R8
-   integer(IN) :: flux_con_max_iter = 2
-
 !===============================================================================
 contains
 !===============================================================================
 !===============================================================================
 subroutine shr_flux_adjust_constants( &
    zvir, cpair, cpvir, karman, gravit, &
-   latvap, latice, stebol, flux_convergence_tolerance, flux_convergence_max_iteration)
+       latvap, latice, stebol)
 
    ! Adjust local constants.  Used to support simple models.
 
@@ -92,8 +82,6 @@ subroutine shr_flux_adjust_constants( &
    real(R8), optional, intent(in) :: latvap
    real(R8), optional, intent(in) :: latice
    real(R8), optional, intent(in) :: stebol
-   real(r8), optional, intent(in)  :: flux_convergence_tolerance
-   integer(in), optional, intent(in) :: flux_convergence_max_iteration
    !----------------------------------------------------------------------------
 
    if (present(zvir))   loc_zvir   = zvir
@@ -104,8 +92,6 @@ subroutine shr_flux_adjust_constants( &
    if (present(latvap)) loc_latvap = latvap
    if (present(latice)) loc_latice = latice
    if (present(stebol)) loc_stebol = stebol
-   if (present(flux_convergence_tolerance)) flux_con_tol = flux_convergence_tolerance
-   if (present(flux_convergence_max_iteration)) flux_con_max_iter = flux_convergence_max_iteration
 
 end subroutine shr_flux_adjust_constants
 !===============================================================================
@@ -196,7 +182,6 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
 
    !--- local variables --------------------------------
    integer(IN) :: n      ! vector loop index
-   integer(IN) :: iter
    real(R8)    :: vmag   ! surface wind magnitude   (m/s)
    real(R8)    :: vmag_old   ! surface wind magnitude without gustiness (m/s)
    real(R8)    :: ssq    ! sea surface humidity     (kg/kg)
@@ -210,7 +195,6 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
    real(R8)    :: rh     ! sqrt of exchange coefficient (heat)
    real(R8)    :: re     ! sqrt of exchange coefficient (water)
    real(R8)    :: ustar  ! ustar
-   real(r8)     :: ustar_prev
    real(R8)    :: qstar  ! qstar
    real(R8)    :: tstar  ! tstar
    real(R8)    :: hol    ! H (at zbot) over L
@@ -311,6 +295,7 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
         !------------------------------------------------------------
         ! first estimate of Z/L and ustar, tstar and qstar
         !------------------------------------------------------------
+
         !--- neutral coefficients, z/L = 0.0 ---
         stable = 0.5_R8 + sign(0.5_R8 , delt)
         rdn    = sqrt(cdn(vmag))
@@ -577,7 +562,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
 
    !--- local variables --------------------------------
    integer(IN) :: n       ! vector loop index
-   integer(IN) :: iter       ! iteration loop index
+    integer(IN) :: i       ! iteration loop index
    integer(IN) :: lsecs   ! local seconds elapsed
    integer(IN) :: lonsecs ! incrememnt due to lon offset
    real(R8)    :: vmag    ! surface wind magnitude   (m/s)
@@ -593,7 +578,6 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
    real(R8)    :: rh      ! sqrt of exchange coefficient (heat)
    real(R8)    :: re      ! sqrt of exchange coefficient (water)
    real(R8)    :: ustar   ! ustar
-   real(R8)    :: ustar_prev   ! ustar
    real(R8)    :: qstar   ! qstar
    real(R8)    :: tstar   ! tstar
    real(R8)    :: hol     ! H (at zbot) over L
@@ -638,7 +622,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
    real(R8)    :: rhocn   !
    real(R8)    :: rcpocn  !
    real(R8)    :: Nreset  ! value for multiplicative reset factor
-   real(R8)    :: resec   ! reset offset value in seconds
+!    real(R8)    :: resec   ! reset offset value in seconds
    logical     :: lmidnight
    logical     :: ltwopm
    logical     :: ltwoam
@@ -703,6 +687,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
 
    al2 = log(zref/ztref)
 
+    if (flux_diurnal) then
    ! equations 18 and 19
    AMP = 1.0_R8/F0-1.0_R8
    pexp = log( (1.0_R8/F1-F0) / (1.0_R8-F0) ) / log(R1)
@@ -737,6 +722,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
       tSkin_night(:) = ts(:)
       cSkin_night(:) = 0.0_R8
    endif
+    end if
 
    DO n=1,nMax
 
@@ -751,6 +737,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
          psixh    = 0.0
          rdn      = sqrt(cdn(vmag))
 
+          if (flux_diurnal) then
          tBulk(n) = ts(n)+warm(n)    ! first guess for tBulk from read in ts,warm
          tSkin(n) = tBulk(n)
          Qsol     = swdn(n) + swup(n)
@@ -772,6 +759,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
          ! check elapsed time. reset warm if near lsecs = reset_sec
          !----------------------------------------------------------
          Nreset = 1.0_R8
+!             resec = Nreset*dt
 
          lonsecs   = ceiling(long(n)/360.0_R8*86400.0)
          lsecs     = mod(secs + lonsecs,86400)
@@ -779,6 +767,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
          lmidnight = (lsecs >= 0     .and. lsecs < dt)        ! 0 = midnight
          ltwopm    = (lsecs >= 48600 .and. lsecs < 48600+dt)  ! 48600 = 1:30pm
          ltwoam    = (lsecs >= 5400  .and. lsecs < 5400 +dt)  ! 5400 = 1:30am
+!             lnoon     = (lsecs >= 43200 .and. lsecs < 43200+dt)  ! 43200 = noon
          lfullday  = (lsecs > 86400-dt .and. lsecs <= 86400)
          nsum = nint(nInc(n))
 
@@ -788,6 +777,11 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
             salt(n)    = 0.0_R8
             speed(n)   = 0.0_R8
          endif
+
+          else   ! flux_diurnal
+             tBulk(n) = ts(n)
+             tSkin(n) = tBulk(n)
+          end if
 
          ssq    = 0.98_R8 * qsat(tBulk(n)) / rbot(n)   ! sea surf hum (kg/kg)
          delt   = thbot(n) - tBulk(n)                  ! pot temp diff (K)
@@ -824,6 +818,9 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
             ! iterate to converge on FLUXES  Z/L, ustar, tstar and qstar
             ! and on Rid  in the DIURNAL CYCLE
             !------------------------------------------------------------
+
+             if (flux_diurnal) then
+
             Smult = 0.0_R8
             Sfact = 0.0_R8
             Kdiff = 0.0_R8
@@ -907,6 +904,19 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
             ssq    = 0.98_R8 * qsat(tBulk(n)) / rbot(n)   ! sea surf hum (kg/kg)
             delt   = thbot(n) - tBulk(n)                  ! pot temp diff (K)
             delq   = qbot(n) - ssq                        ! spec hum dif (kg/kg)
+
+             else ! not flux_diurnal
+
+                !--- if control case, regime should be 0
+                regime(n) = 0.0_R8
+                Smult     = 0.0_R8
+                Kdiff     = 0.0_R8
+                Kvisc     = 0.0_R8
+                warm(n)   = 0.0_R8
+                salt(n)   = 0.0_R8
+                speed(n)  = 0.0_R8
+                cSkin(n)  = 0.0_R8
+             endif
 
             !--- UPDATE FLUX ITERATION ---
 

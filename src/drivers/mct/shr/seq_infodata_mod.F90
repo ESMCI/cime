@@ -21,8 +21,8 @@ MODULE seq_infodata_mod
   ! !USES:
 
   use shr_kind_mod, only: SHR_KIND_CS, SHR_KIND_CL, SHR_KIND_IN,             &
-       SHR_KIND_R8, SHR_KIND_I8
-  use shr_sys_mod,  only: shr_sys_flush, shr_sys_abort, shr_sys_getenv
+                           SHR_KIND_R8
+   use shr_sys_mod,  only: shr_sys_abort
   use seq_comm_mct, only: logunit, loglevel, CPLID, seq_comm_gloroot
   use seq_comm_mct, only: seq_comm_setptrs, seq_comm_iamroot, seq_comm_iamin
   use seq_comm_mct, only: num_inst_atm, num_inst_lnd, num_inst_rof
@@ -118,8 +118,6 @@ MODULE seq_infodata_mod
      character(SHR_KIND_CL)  :: flux_epbal      ! selects E,P,R adjustment technique
      logical                 :: flux_albav      ! T => no diurnal cycle in ocn albedos
      logical                 :: flux_diurnal    ! T => diurnal cycle in atm/ocn fluxes
-     real(SHR_KIND_R8)       :: flux_convergence   ! atmocn flux calc convergence value
-     integer                 :: flux_max_iteration ! max number of iterations of atmocn flux loop
      real(SHR_KIND_R8)       :: gust_fac        ! wind gustiness factor
      character(SHR_KIND_CL)  :: glc_renormalize_smb ! Whether to renormalize smb sent from lnd -> glc
      real(SHR_KIND_R8)       :: wall_time_limit ! force stop time limit (hours)
@@ -287,7 +285,6 @@ CONTAINS
     ! !USES:
 
     use shr_file_mod,    only : shr_file_getUnit, shr_file_freeUnit
-    use shr_string_mod,  only : shr_string_toUpper, shr_string_listAppend
     use shr_mpi_mod,     only : shr_mpi_bcast
     use seq_timemgr_mod, only : seq_timemgr_pause_active
     use seq_io_read_mod, only : seq_io_read
@@ -354,8 +351,6 @@ CONTAINS
     character(SHR_KIND_CL) :: flux_epbal         ! selects E,P,R adjustment technique
     logical                :: flux_albav         ! T => no diurnal cycle in ocn albedos
     logical                :: flux_diurnal       ! T => diurnal cycle in atm/ocn fluxes
-    real(SHR_KIND_R8)       :: flux_convergence   ! atmocn flux calc convergence value
-    integer                 :: flux_max_iteration ! max number of iterations of atmocn flux loop
     real(SHR_KIND_R8)      :: gust_fac           ! wind gustiness factor
     character(SHR_KIND_CL) :: glc_renormalize_smb ! Whether to renormalize smb sent from lnd -> glc
     real(SHR_KIND_R8)      :: wall_time_limit    ! force stop time limit (hours)
@@ -421,8 +416,7 @@ CONTAINS
          brnch_retain_casename, info_debug, bfbflag,       &
          restart_pfile, restart_file, run_barriers,        &
          single_column, scmlat, force_stop_at,             &
-         scmlon, logFilePostFix, outPathRoot, flux_diurnal,&
-         flux_convergence, flux_max_iteration, gust_fac   ,&
+         scmlon, logFilePostFix, outPathRoot, flux_diurnal, gust_fac,&
          perpetual, perpetual_ymd, flux_epbal, flux_albav, &
          orb_iyear_align, orb_mode, wall_time_limit,       &
          orb_iyear, orb_obliq, orb_eccen, orb_mvelp,       &
@@ -498,8 +492,6 @@ CONTAINS
        flux_epbal            = 'off'
        flux_albav            = .false.
        flux_diurnal          = .false.
-       flux_convergence      = 0.0_SHR_KIND_R8
-       flux_max_iteration    = 2
        gust_fac              = huge(1.0_SHR_KIND_R8)
        glc_renormalize_smb   = 'on_if_glc_coupled_fluxes'
        wall_time_limit       = -1.0
@@ -620,8 +612,6 @@ CONTAINS
        infodata%flux_epbal            = flux_epbal
        infodata%flux_albav            = flux_albav
        infodata%flux_diurnal          = flux_diurnal
-       infodata%flux_convergence      = flux_convergence
-       infodata%flux_max_iteration    = flux_max_iteration
        infodata%gust_fac              = gust_fac
        infodata%glc_renormalize_smb   = glc_renormalize_smb
        infodata%wall_time_limit       = wall_time_limit
@@ -944,8 +934,7 @@ CONTAINS
        shr_map_dopole, vect_map, aoflux_grid, flux_epbalfact,             &
        nextsw_cday, precip_fact, flux_epbal, flux_albav,                  &
        glc_g2lupdate, atm_aero, run_barriers, esmf_map_flag,              &
-       do_budgets, do_histinit, drv_threading, flux_diurnal,              &
-       flux_convergence, flux_max_iteration, gust_fac,                    &
+       do_budgets, do_histinit, drv_threading, flux_diurnal, gust_fac,    &
        budget_inst, budget_daily, budget_month, wall_time_limit,          &
        budget_ann, budget_ltann, budget_ltend , force_stop_at,            &
        histaux_a2x    , histaux_a2x1hri, histaux_a2x1hr,                  &
@@ -1014,9 +1003,6 @@ CONTAINS
     character(len=*),       optional, intent(OUT) :: flux_epbal              ! selects E,P,R adjustment technique
     logical,                optional, intent(OUT) :: flux_albav              ! T => no diurnal cycle in ocn albedos
     logical,                optional, intent(OUT) :: flux_diurnal            ! T => diurnal cycle in atm/ocn flux
-    real(SHR_KIND_R8), optional, intent(out)      :: flux_convergence   ! atmocn flux calc convergence value
-    integer, optional, intent(OUT)                :: flux_max_iteration ! max number of iterations of atmocn flux loop
-
     real(SHR_KIND_R8),      optional, intent(OUT) :: gust_fac                ! wind gustiness factor
     character(len=*),       optional, intent(OUT) :: glc_renormalize_smb     ! Whether to renormalize smb sent from lnd -> glc
     real(SHR_KIND_R8),      optional, intent(OUT) :: wall_time_limit         ! force stop wall time (hours)
@@ -1188,8 +1174,6 @@ CONTAINS
     if ( present(flux_epbal)     ) flux_epbal     = infodata%flux_epbal
     if ( present(flux_albav)     ) flux_albav     = infodata%flux_albav
     if ( present(flux_diurnal)   ) flux_diurnal   = infodata%flux_diurnal
-    if ( present(flux_convergence)) flux_convergence = infodata%flux_convergence
-    if ( present(flux_max_iteration)) flux_max_iteration = infodata%flux_max_iteration
     if ( present(gust_fac)       ) gust_fac       = infodata%gust_fac
     if ( present(glc_renormalize_smb)) glc_renormalize_smb = infodata%glc_renormalize_smb
     if ( present(wall_time_limit)) wall_time_limit= infodata%wall_time_limit
@@ -1513,8 +1497,7 @@ CONTAINS
        shr_map_dopole, vect_map, aoflux_grid, run_barriers,               &
        nextsw_cday, precip_fact, flux_epbal, flux_albav,                  &
        glc_g2lupdate, atm_aero, esmf_map_flag, wall_time_limit,           &
-       do_budgets, do_histinit, drv_threading, flux_diurnal,              &
-       flux_convergence, flux_max_iteration, gust_fac,                    &
+       do_budgets, do_histinit, drv_threading, flux_diurnal, gust_fac,    &
        budget_inst, budget_daily, budget_month, force_stop_at,            &
        budget_ann, budget_ltann, budget_ltend ,                           &
        histaux_a2x    , histaux_a2x1hri, histaux_a2x1hr,                  &
@@ -1583,8 +1566,6 @@ CONTAINS
     character(len=*),       optional, intent(IN)    :: flux_epbal              ! selects E,P,R adjustment technique
     logical,                optional, intent(IN)    :: flux_albav              ! T => no diurnal cycle in ocn albedos
     logical,                optional, intent(IN)    :: flux_diurnal            ! T => diurnal cycle in atm/ocn flux
-    real(SHR_KIND_R8),      optional, intent(IN)    :: flux_convergence   ! atmocn flux calc convergence value
-    integer,                optional, intent(IN)    :: flux_max_iteration ! max number of iterations of atmocn flux loop
     real(SHR_KIND_R8),      optional, intent(IN)    :: gust_fac                ! wind gustiness factor
     character(len=*),       optional, intent(IN)    :: glc_renormalize_smb     ! Whether to renormalize smb sent from lnd -> glc
     real(SHR_KIND_R8),      optional, intent(IN)    :: wall_time_limit         ! force stop wall time (hours)
@@ -1755,8 +1736,6 @@ CONTAINS
     if ( present(flux_epbal)     ) infodata%flux_epbal     = flux_epbal
     if ( present(flux_albav)     ) infodata%flux_albav     = flux_albav
     if ( present(flux_diurnal)   ) infodata%flux_diurnal   = flux_diurnal
-    if ( present(flux_convergence)) infodata%flux_convergence  = flux_convergence
-    if ( present(flux_max_iteration)) infodata%flux_max_iteration   = flux_max_iteration
     if ( present(gust_fac)       ) infodata%gust_fac       = gust_fac
     if ( present(glc_renormalize_smb)) infodata%glc_renormalize_smb = glc_renormalize_smb
     if ( present(wall_time_limit)) infodata%wall_time_limit= wall_time_limit
@@ -2130,7 +2109,6 @@ CONTAINS
     !EOP
 
     !----- local -----
-    integer :: ind
 
     !-------------------------------------------------------------------------------
     ! Notes:
@@ -2176,8 +2154,6 @@ CONTAINS
     call shr_mpi_bcast(infodata%flux_epbal,              mpicom)
     call shr_mpi_bcast(infodata%flux_albav,              mpicom)
     call shr_mpi_bcast(infodata%flux_diurnal,            mpicom)
-    call shr_mpi_bcast(infodata%flux_convergence,        mpicom)
-    call shr_mpi_bcast(infodata%flux_max_iteration,      mpicom)
     call shr_mpi_bcast(infodata%gust_fac,                mpicom)
     call shr_mpi_bcast(infodata%glc_renormalize_smb,     mpicom)
     call shr_mpi_bcast(infodata%wall_time_limit,         mpicom)
@@ -2639,7 +2615,6 @@ CONTAINS
     ! !USES:
 
     use shr_assert_mod,   only: shr_assert_in_domain
-    use shr_string_mod,   only: shr_string_listIntersect
     use shr_wv_sat_mod,   only: shr_wv_sat_get_scheme_idx, shr_wv_sat_valid_idx
 
     implicit none
@@ -2845,8 +2820,6 @@ CONTAINS
     write(logunit,F0A) subname,'flux_epbal               = ', trim(infodata%flux_epbal)
     write(logunit,F0L) subname,'flux_albav               = ', infodata%flux_albav
     write(logunit,F0L) subname,'flux_diurnal             = ', infodata%flux_diurnal
-    write(logunit,F0L) subname,'flux_convergence         = ', infodata%flux_convergence
-    write(logunit,F0L) subname,'flux_max_iteration       = ', infodata%flux_max_iteration
     write(logunit,F0R) subname,'gust_fac                 = ', infodata%gust_fac
     write(logunit,F0A) subname,'glc_renormalize_smb      = ', trim(infodata%glc_renormalize_smb)
     write(logunit,F0R) subname,'wall_time_limit          = ', infodata%wall_time_limit

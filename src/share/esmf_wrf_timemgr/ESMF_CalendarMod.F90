@@ -54,7 +54,7 @@
       INTEGER, PARAMETER :: mdayleap(MONTHS_PER_YEAR) &
                           = (/31,29,31,30,31,30,31,31,30,31,30,31/)
       INTEGER, DIMENSION(365) :: daym
-      INTEGER, DIMENSION(366) :: daymleap
+!      INTEGER, DIMENSION(366) :: daymleap
       INTEGER :: mdaycum(0:MONTHS_PER_YEAR)
       INTEGER :: mdayleapcum(0:MONTHS_PER_YEAR)
       TYPE(ESMF_BaseTime), TARGET :: monthbdys(0:MONTHS_PER_YEAR)
@@ -312,10 +312,10 @@ SUBROUTINE initdaym
   monthbdysleap(0)%Sn = 0
   monthbdysleap(0)%Sd = 0
   DO i = 1,MONTHS_PER_YEAR
-    DO j = 1,mdayleap(i)
-      daymleap(m) = i
-      m = m + 1
-    ENDDO
+!    DO j = 1,mdayleap(i)
+!      daymleap(m) = i
+!      m = m + 1
+!    ENDDO
     mdayleapcum(i) = mdayleapcum(i-1) + mdayleap(i)
 !$$$ push this down into ESMF_BaseTime constructor
     monthbdysleap(i)%S  = SECONDS_PER_DAY * INT( mdayleapcum(i), ESMF_KIND_I8 )

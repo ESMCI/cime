@@ -20,8 +20,7 @@ module seq_comm_mct
   use shr_sys_mod , only : shr_sys_abort, shr_sys_flush
   use shr_mpi_mod , only : shr_mpi_chkerr, shr_mpi_bcast, shr_mpi_max
   use shr_file_mod, only : shr_file_getUnit, shr_file_freeUnit
-  use esmf        , only : ESMF_LogKind_Flag, ESMF_LOGKIND_NONE
-  use esmf        , only : ESMF_LOGKIND_SINGLE, ESMF_LOGKIND_MULTI
+  use esmf        , only : ESMF_LogKind_Flag
 
   implicit none
 
@@ -88,6 +87,7 @@ module seq_comm_mct
   integer, public :: num_inst_frc    ! for fractions
   integer, public :: num_inst_driver = 1
 
+  type(ESMF_LogKind_Flag), public :: esmf_logfile_kind
 !!! Each component instance needs two communicators: one internal to the
 !!! instance, and one for communicating with the coupler.
 !!! Additionally, one communicator is needed for the coupler's
@@ -143,8 +143,6 @@ module seq_comm_mct
   integer, public :: CPLROFID(num_inst_rof)
   integer, public :: CPLWAVID(num_inst_wav)
   integer, public :: CPLESPID(num_inst_esp)
-
-  type(ESMF_LogKind_Flag), public :: esmf_logfile_kind
 
   integer, parameter, public :: seq_comm_namelen=16
 
@@ -605,8 +603,6 @@ contains
     ! Also calls mct_world_clean, to be symmetric with the mct_world_init call from
     ! seq_comm_init.
 
-    integer :: id
-
     character(*), parameter :: subName =   '(seq_comm_clean) '
     !----------------------------------------------------------
 
@@ -634,7 +630,6 @@ contains
     integer :: mpigrp_world
     integer :: mpigrp
     integer :: mpicom
-    integer :: ntask,ntasks,cnt
     integer :: ierr
     character(len=seq_comm_namelen) :: cname
     logical :: set_suffix
@@ -653,7 +648,7 @@ contains
 
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_create mpigrp')
 
-    ntasks = ((pelist(2,1) - pelist(1,1)) / pelist(3,1)) + 1
+    !    ntasks = ((pelist(2,1) - pelist(1,1)) / pelist(3,1)) + 1
 
     seq_comms(ID)%set = .true.
     seq_comms(ID)%ID = ID
@@ -1129,14 +1124,15 @@ contains
   integer function seq_comm_getnthreads()
 
     implicit none
+#ifdef _OPENMP
     integer :: omp_get_num_threads
-    character(*),parameter :: subName =   '(seq_comm_getnthreads) '
 
     seq_comm_getnthreads = -1
-#ifdef _OPENMP
     !$OMP PARALLEL
     seq_comm_getnthreads = omp_get_num_threads()
     !$OMP END PARALLEL
+#else
+    seq_comm_getnthreads = -1
 #endif
 
   end function seq_comm_getnthreads

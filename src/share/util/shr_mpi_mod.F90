@@ -4,8 +4,7 @@ Module shr_mpi_mod
   ! PURPOSE: general layer on MPI functions
   !-------------------------------------------------------------------------------
 
-  use shr_kind_mod
-  use shr_log_mod, only: s_loglev  => shr_log_Level
+   use shr_kind_mod, only:  shr_kind_in, shr_kind_cl, shr_kind_r8, shr_kind_i8
   use shr_log_mod, only: s_logunit => shr_log_Unit
 
   implicit none

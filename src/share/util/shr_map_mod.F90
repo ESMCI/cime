@@ -1042,8 +1042,8 @@ contains
 
     !--- local ---
     integer(SHR_KIND_IN)   :: nis,njs,nid,njd
-    integer(SHR_KIND_IN)   :: nwts,n,n1,n2,ncnt,i,j,inn,jnn
-    integer(SHR_KIND_IN)   :: irc,lrc
+    integer(SHR_KIND_IN)   :: nwts,n,n1,ncnt,i,j,inn,jnn
+    integer(SHR_KIND_IN)   :: lrc
     real(SHR_KIND_R8) :: rmin,rmax                     ! min/max value
     real(SHR_KIND_R8) :: cang                          ! circle angle, deg or rad
     real(SHR_KIND_R8),allocatable    :: Xdst(:,:)      ! lon of dst grid, wrapped as needed
@@ -1132,10 +1132,6 @@ contains
     map%nsrc = nis*njs
     map%ndst = nid*njd
 
-    ! deallocate(map%xsrc,stat=irc) ! this used to be a safe way to delloc when necessary,
-    ! deallocate(map%ysrc,stat=irc) ! but do nothing when pointers were undefined or
-    ! deallocate(map%xdst,stat=irc) ! un-associated, in Oct 2005, undefined ptrs started
-    ! deallocate(map%ydst,stat=irc) ! causing seg-faults on bluesky (B. Kauffman)
     allocate(map%xsrc(nis*njs))
     allocate(map%ysrc(nis*njs))
     allocate(map%xdst(nid*njd))
@@ -1524,8 +1520,8 @@ contains
 
     !--- local ---
     integer(SHR_KIND_IN)   :: nis,njs,nid,njd
-    integer(SHR_KIND_IN)   :: nwts,n,n1,n2,ncnt,i,j,inn,jnn
-    integer(SHR_KIND_IN)   :: irc,lrc
+    integer(SHR_KIND_IN)   :: nwts,n,n1,ncnt,i,j,inn,jnn
+    integer(SHR_KIND_IN)   :: lrc
     real(SHR_KIND_R8) :: rmin,rmax                     ! min/max value
     real(SHR_KIND_R8) :: cang                          ! circle angle, deg or rad
     real(SHR_KIND_R8),allocatable    :: Xdst(:)        ! lon of dst grid, wrapped as needed
@@ -1902,9 +1898,7 @@ contains
     endif
 
     map%nwts = nwts
-    ! deallocate(map%idst,stat=irc)
-    ! deallocate(map%isrc,stat=irc)
-    ! deallocate(map%wgts,stat=irc)
+
     allocate(map%idst(nwts))
     allocate(map%isrc(nwts))
     allocate(map%wgts(nwts))
@@ -1967,7 +1961,7 @@ contains
     integer(SHR_KIND_IN) :: nfi,nfo         ! number of fields in array, in/out
     integer(SHR_KIND_IN) :: nsi,nso         ! size of grid in array, in/out
     real(SHR_KIND_R8)    :: theta           ! angle difference
-    integer(SHR_KIND_IN),save      :: t0=-1,t1,t2,t3,t4,t5 ! timers
+    integer(SHR_KIND_IN),save      :: t0=-1,t1,t2,t4,t5 ! timers
     integer(SHR_KIND_IN),parameter :: timing=0        ! turn timers off/on (0/1)
     logical,pointer      :: initnew(:)      ! mask for initialization
 
@@ -2885,7 +2879,6 @@ contains
 
     !--- local ---
     integer(SHR_KIND_IN) :: isize,jsize   ! array sizes
-    integer(SHR_KIND_IN) :: i,j           ! indices
     integer(SHR_KIND_IN) :: n             ! do loop counter
     integer(SHR_KIND_IN) :: il,ir         ! index of i left/mid/right
     integer(SHR_KIND_IN) :: jl,ju         ! index of j lower/mid/upper
@@ -2895,7 +2888,6 @@ contains
     real(SHR_KIND_R8)    :: xd,yd         ! value of Xdst,Ydst
     real(SHR_KIND_R8)    :: dx,dy,dx1,dy1 ! some d_lengths for weights calc
     real(SHR_KIND_R8)    :: csize         ! circle angle/radians
-    real(SHR_KIND_R8)    :: rmin,rmax     ! min/max
     real(SHR_KIND_R8)    :: cpole         ! the r8 lat value of the pole
     integer(SHR_KIND_IN) :: pole          ! 0=no, 1=north, 2=south
 

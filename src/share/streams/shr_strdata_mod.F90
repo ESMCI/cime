@@ -17,7 +17,6 @@ module shr_strdata_mod
   use shr_sys_mod, only : shr_sys_abort, shr_sys_flush
   use shr_mpi_mod, only : shr_mpi_bcast
   use shr_file_mod, only : shr_file_getunit, shr_file_freeunit
-  use shr_log_mod, only: loglev  => shr_log_Level
   use shr_log_mod, only: logunit => shr_log_Unit
   use shr_stream_mod  ! stream data type and methods
   use shr_string_mod
@@ -25,7 +24,7 @@ module shr_strdata_mod
   use shr_cal_mod, only: shr_cal_calendarname, shr_cal_timeSet, &
        shr_cal_noleap, shr_cal_gregorian, &
        shr_cal_date2ymd, shr_cal_ymd2date
-  use shr_orb_mod, only: shr_orb_decl, shr_orb_cosz, shr_orb_undef_real
+   use shr_orb_mod, only:  shr_orb_undef_real
   use shr_nl_mod , only: shr_nl_find_group_name
   use shr_tinterp_mod
 
@@ -185,7 +184,6 @@ contains
     integer(IN) :: nu,nv         ! u,v index
     integer(IN) :: my_task,npes  ! my task, total pes
     integer(IN),parameter :: master_task = 0
-    character(CS) :: lname       ! local name
     character(CL) :: filePath    ! generic file path
     character(CL) :: fileName    ! generic file name
     character(CS) :: timeName    ! domain file: time variable name
@@ -278,11 +276,6 @@ contains
              call shr_sys_abort(subname//' ERROR: scmmode1 lon lat')
           endif
        endif
-    endif
-
-    lname = ""
-    if (present(name)) then
-       lname = "_"//trim(name)
     endif
 
     if (present(calendar)) then
@@ -563,10 +556,9 @@ contains
     character(len=*),intent(in),optional :: istr
     logical         ,intent(in),optional :: timers
 
-    integer(IN) :: n,m,i,k,l,kf           ! generic index
+  integer(IN) :: n,m,i,kf           ! generic index
     integer(IN) :: my_task,npes
     integer(IN),parameter :: master_task = 0
-    logical :: mssrmlf
     logical,allocatable :: newData(:)
     integer(IN) :: ierr
     integer(IN) :: nu,nv
@@ -579,10 +571,6 @@ contains
     logical  :: ltimers
     real(R8) :: flb,fub            ! factor for lb and ub
 
-    !--- for cosz method ---
-    real(R8) :: calday             ! julian day of year
-    real(R8) :: declin             ! solar declination (radians)
-    real(R8) :: eccf               ! earth sun distance factor
     real(R8),pointer :: lonr(:)    ! lon radians
     real(R8),pointer :: latr(:)    ! lat radians
     real(R8),pointer :: cosz(:)    ! cosz
@@ -595,7 +583,6 @@ contains
     integer(IN)   :: dday          ! delta days
     real(R8)      :: dtime         ! delta time
     integer(IN)   :: uvar,vvar
-    logical       :: someNewData ! newData test
     character(CS) :: uname       ! u vector field name
     character(CS) :: vname       ! v vector field name
     integer(IN)   :: year,month,day  ! date year month day
@@ -628,8 +615,6 @@ contains
 
     call MPI_COMM_SIZE(mpicom,npes,ierr)
     call MPI_COMM_RANK(mpicom,my_task,ierr)
-
-    mssrmlf = .false.
 
     SDAT%ymd = ymd
     SDAT%tod = tod
@@ -1016,8 +1001,7 @@ contains
     character(len=*)      ,intent(in)    :: str2
 
     !--- local ----
-    type(shr_stream_streamtype),pointer :: streams(:)
-    integer(IN) :: n,my_task,ier
+  integer(IN) :: my_task,ier
 
     !----- formats -----
     character(len=*),parameter :: subname = "(shr_strdata_restWrite) "
@@ -1045,8 +1029,7 @@ contains
     integer(IN)           ,intent(in)    :: mpicom
 
     !--- local ----
-    type(shr_stream_streamtype),pointer :: streams(:)
-    integer(IN) :: n,my_task,ier
+  integer(IN) :: my_task,ier
 
     !----- formats -----
     character(len=*),parameter :: subname = "(shr_strdata_restRead) "
@@ -1142,11 +1125,7 @@ contains
     character(CL) :: mapwrite(nStrMax) ! regrid mapping file to write
     character(CL) :: tintalgo(nStrMax) ! time interpolation algorithm
     character(CL) :: readmode(nStrMax) ! file read mode
-    character(CL) :: io_type
-    integer(IN)   :: num_iotasks
-    integer(IN)   :: io_root
-    integer(IN)   :: io_stride
-    integer(IN)   :: num_agg
+
     character(CL) :: fileName    ! generic file name
     integer(IN)   :: yearFirst   ! first year to use in data stream
     integer(IN)   :: yearLast    ! last  year to use in data stream
@@ -1325,7 +1304,6 @@ contains
   subroutine shr_strdata_pioinit_newway(SDAT, compid )
     use shr_pio_mod, only: shr_pio_getiosys, shr_pio_getiotype, shr_pio_getioformat
     type(shr_strdata_type),intent(inout):: SDAT  ! strdata data data-type
-    type(iosystem_desc_t), pointer :: io_subsystem
     integer, intent(in) :: compid
 
     SDAT%pio_subsystem => shr_pio_getiosys(compid)

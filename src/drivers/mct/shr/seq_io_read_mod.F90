@@ -26,7 +26,7 @@ module seq_io_read_mod
   ! !USES:
 
   use shr_kind_mod, only: r8 => shr_kind_r8, in => shr_kind_in
-  use shr_kind_mod, only: cl => shr_kind_cl, cs => shr_kind_cs
+  use shr_kind_mod, only: cl => shr_kind_cl
   use shr_pio_mod,  only: shr_pio_getiosys, shr_pio_getiotype
   use shr_sys_mod       ! system calls
   use seq_comm_mct
@@ -133,7 +133,6 @@ contains
 
     integer(in)                     :: rcode
     type(var_desc_t)                :: varid
-    logical                         :: exists
     character(CL)                   :: name1
     character(*),parameter          :: subName = '(seq_io_read_int1d) '
     logical :: addprefix
@@ -148,8 +147,13 @@ contains
        name1 = trim(dname)
     endif
     rcode = pio_inq_varid(pioid,trim(name1),varid)
+    if (rcode .ne. PIO_NOERR) then
+       call shr_sys_abort(subname//": variable not found")
+    endif
     rcode = pio_get_var(pioid,varid,idata)
-
+    if (rcode .ne. PIO_NOERR) then
+       call shr_sys_abort(subname//": failed to read "//trim(name1))
+    endif
   end subroutine seq_io_read_int1d
 
   subroutine seq_io_read_openfile(filename,pioid,addprefix)
@@ -176,6 +180,9 @@ contains
        call shr_mpi_bcast(exists,mpicom,'seq_io_read_openfile')
        if (exists) then
           rcode = pio_openfile(cpl_io_subsystem, pioid, cpl_pio_iotype, trim(filename),pio_nowrite)
+          if (rcode .ne. PIO_NOERR) then
+             call shr_sys_abort(subname//": failed to open file "//trim(filename))
+          endif
           call pio_seterrorhandling(pioid,PIO_BCAST_ERROR)
           rcode = pio_get_att(pioid,pio_global,"file_version",lversion)
           call pio_seterrorhandling(pioid,PIO_INTERNAL_ERROR)
@@ -271,7 +278,13 @@ contains
     endif
 
     rcode = pio_inq_varid(pioid,trim(name1),varid)
+    if (rcode .ne. PIO_NOERR) then
+       call shr_sys_abort(subname//": variable not found "//trim(name1))
+    endif
     rcode = pio_get_var(pioid,varid,rdata)
+    if (rcode .ne. PIO_NOERR) then
+       call shr_sys_abort(subname//": failed to read "//trim(name1))
+    endif
 
   end subroutine seq_io_read_r81d
 
@@ -316,7 +329,13 @@ contains
     endif
 
     rcode = pio_inq_varid(pioid,trim(name1),varid)
+    if (rcode .ne. PIO_NOERR) then
+       call shr_sys_abort(subname//": variable not found "//trim(name1))
+    endif
     rcode = pio_get_var(pioid,varid,charvar)
+    if (rcode .ne. PIO_NOERR) then
+       call shr_sys_abort(subname//": failed to read "//trim(name1))
+    endif
     rdata = trim(charvar)
 
   end subroutine seq_io_read_char
