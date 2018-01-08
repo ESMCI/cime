@@ -14,24 +14,26 @@ PIO_TESTS='test_async_mpi test_spmd test_rearr test_intercomm2 test_async_simple
 'test_darray_3d test_decomp_uneven test_decomps test_darray_async_simple '\
 'test_darray_async test_darray_async_many test_darray_2sync test_async_multicomp '
 
+success1=true
+success2=true
 for TEST in $PIO_TESTS
 do
-    success=false
+    success1=false
     echo "running ${TEST}"
-    mpiexec -n 4 ./${TEST} && success=true || break
+    mpiexec -n 4 ./${TEST} && success1=true || break
 done
 
 PIO_TESTS_8='test_async_multi2'
 
 for TEST in $PIO_TESTS_8
 do
-    success=false
+    success2=false
     echo "running ${TEST}"
-    mpiexec -n 8 ./${TEST} && success=true || break
+    mpiexec -n 8 ./${TEST} && success2=true || break
 done
 
 # Did we succeed?
-if test x$success = xtrue; then
+if test x$success1 = xtrue -a x$success2 = xtrue; then
     exit 0
 fi
 exit 1
