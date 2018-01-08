@@ -2028,7 +2028,6 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
     char iocount_present;
     PIO_Offset *iocountp = NULL;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
 
     LOG((1, "initdecomp_dof_handler called"));
     assert(ios);
@@ -2090,10 +2089,10 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
         iocountp = iocount;
 
     /* Call the function. */
-    ret = PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap, &ioid, rearrangerp,
-                          iostartp, iocountp);
+    PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap, &ioid, rearrangerp,
+                    iostartp, iocountp);
 
-    LOG((1, "PIOc_InitDecomp returned %d", ret));
+    LOG((1, "PIOc_InitDecomp returned"));
     return PIO_NOERR;
 }
 
@@ -2428,7 +2427,6 @@ int freedecomp_handler(iosystem_desc_t *ios)
     int iosysid;
     int ioid;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
 
     LOG((1, "freedecomp_handler called"));
     assert(ios);
@@ -2442,9 +2440,9 @@ int freedecomp_handler(iosystem_desc_t *ios)
     LOG((2, "freedecomp_handler iosysid = %d ioid = %d", iosysid, ioid));
 
     /* Call the function. */
-    ret = PIOc_freedecomp(iosysid, ioid);
+    PIOc_freedecomp(iosysid, ioid);
 
-    LOG((1, "PIOc_freedecomp returned %d", ret));
+    LOG((1, "PIOc_freedecomp returned"));
     return PIO_NOERR;
 }
 

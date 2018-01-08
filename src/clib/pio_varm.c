@@ -14,9 +14,10 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
-
+#endif /* _PNETCDF */
     ierr = PIO_NOERR;
 
     /* Get file info. */
@@ -88,8 +89,10 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -158,8 +161,10 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -227,8 +232,10 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -299,8 +306,10 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -371,8 +380,10 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -442,8 +453,10 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -514,8 +527,10 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -585,8 +600,10 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -657,8 +674,10 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -730,8 +749,10 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -801,8 +822,10 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
@@ -873,8 +896,10 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
     int ierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
+#ifdef _PNETCDF
     var_desc_t *vdesc;
     int *request;
+#endif /* _PNETCDF */
 
     ierr = PIO_NOERR;
 
