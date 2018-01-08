@@ -71,4 +71,4 @@ run_tests.sh : tests
 EXTRA_DIST = run_tests.sh
 
 # Clean up files produced during testing.
-CLEANFILES = *.nc *.log
+CLEANFILES = *.nc *.log decomp*.txt
