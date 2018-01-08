@@ -9,7 +9,8 @@ trap exit SIGINT SIGTERM
 
 printf 'running PIO tests...\n'
 
-PIO_TESTS='test_async_mpi test_spmd test_rearr test_intercomm2 test_async_simple '\
+# test_intercomm2
+PIO_TESTS='test_async_mpi test_spmd test_rearr test_async_simple '\
 'test_async_3proc test_async_4proc test_iosystem2_simple test_iosystem2_simple2 '\
 'test_iosystem2 test_iosystem3_simple test_iosystem3_simple2 test_iosystem3 test_pioc '\
 'test_pioc_unlim test_pioc_putget test_pioc_fill test_darray test_darray_multi '\
