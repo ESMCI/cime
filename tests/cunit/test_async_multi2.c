@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     int comp_proc_list2[NUM_COMP_PROCS] = {2};
     int *proc_list[COMPONENT_COUNT] = {comp_proc_list1, comp_proc_list2};
     MPI_Comm test_comm;
-    int verbose = 1;
+    int verbose = 0;
     int ret; /* Return code. */
 
     /* Initialize test. */

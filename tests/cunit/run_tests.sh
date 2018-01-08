@@ -1,3 +1,6 @@
+# This is a test script for PIO.
+# Ed Hartnett
+
 # Stop execution of script if error is returned.
 set -e
 
