@@ -529,8 +529,10 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         if ((ierr = find_var_fillvalue(file, varid, vdesc)))
             return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Check that if the user passed a fill value, it is correct. */
-    if (fillvalue)
+    /* Check that if the user passed a fill value, it is correct. If
+     * use_fill is false, then find_var_fillvalue will not end up
+     * getting a fill value. */
+    if (fillvalue && vdesc->use_fill)
         if (memcmp(fillvalue, vdesc->fillvalue, vdesc->pio_type_size))
             return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 

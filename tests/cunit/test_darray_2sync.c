@@ -189,6 +189,10 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
             if ((ret = PIOc_def_var(ncid, VAR_NAME, test_type[t], NDIM1, &dimid, &varid)))
                 ERR(ret);
 
+            /* Turn on fill mode for this var. */
+            if ((ret = PIOc_def_var_fill(ncid, varid, 0, default_fillvalue)))
+                ERR(ret);
+
             /* End define mode. */
             if ((ret = PIOc_enddef(ncid)))
                 ERR(ret);
