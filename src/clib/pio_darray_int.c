@@ -805,10 +805,16 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
            the mpitype. */
         region = iodesc->firstregion;
 
-        /* ??? */
+        /* There are different numbers of dims in the decomposition
+         * and the file. */
         if (fndims > ndims)
         {
             ndims++;
+
+            /* If the user did not call setframe, use a default frame
+             * of 0. This is required for backward compatibility. */
+            if (vdesc->record < 0)
+                vdesc->record = 0;
         }
 
         /* For each regions, read the data. */
@@ -833,7 +839,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 else
                     bufptr=(void *)((char *)iobuf + iodesc->mpitype_size * region->loffset);
 
-                LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
+                LOG((2, "iodesc->llen - region->loffset %d, iodesc->llen %d, region->loffset  %d vdesc->record %d",
+                     iodesc->llen - region->loffset, iodesc->llen, region->loffset, vdesc->record));
 
                 /* Get the start/count arrays. */
                 if (vdesc->record >= 0 && fndims > 1)
@@ -861,6 +868,11 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                     }
                 }
             }
+
+#ifdef LOGGING
+            for (int i = 1; i < ndims; i++)
+                LOG((3, "start[%d] %d count[%d] %d", i, start[i], i, count[i]));
+#endif /* LOGGING */
 
             /* Do the read. */
             switch (file->iotype)
@@ -1023,6 +1035,11 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
+    /* If setframe was not called, use a default value of 0. This is
+     * required for backward compatibility. */
+    if (fndims == ndims + 1 && vdesc->record < 0)
+        vdesc->record = 0;
+
     /* Confirm that we are being called with the correct ndims. */
     pioassert((fndims == ndims && vdesc->record < 0) ||
               (fndims == ndims + 1 && vdesc->record >= 0),
@@ -1043,6 +1060,12 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
            the mpitype. */
         region = iodesc->firstregion;
 
+        /* If setframe was not set before this call, assume a value of
+         * 0. This is required for backward compatibility. */
+        if (fndims > ndims)		
+            if (vdesc->record < 0)		
+                vdesc->record = 0;
+        
         /* Put together start/count arrays for all regions. */
         for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {

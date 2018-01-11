@@ -1121,7 +1121,7 @@ int inq_var_fill_handler(iosystem_desc_t *ios)
     char fill_mode_present, fill_value_present;
     PIO_Offset type_size;
     int fill_mode, *fill_modep = NULL;
-    PIO_Offset *fill_value, *fill_valuep = NULL;
+    void *fill_value, *fill_valuep = NULL;
     int mpierr;
 
     assert(ios);
@@ -1154,12 +1154,21 @@ int inq_var_fill_handler(iosystem_desc_t *ios)
         fill_valuep = fill_value;
 
     /* Call the inq function to get the values. */
+    LOG((3, "inq_var_fill_handlder about to call inq_var_fill"));
     PIOc_inq_var_fill(ncid, varid, fill_modep, fill_valuep);
+    if (fill_modep)
+        LOG((3, "after inq_var_fill fill_modep %d", *fill_modep));
 
     /* Free fill value storage if we allocated some. */
     if (fill_value_present)
+    {
+        LOG((3, "about to free fill_value"));
         free(fill_value);
+        LOG((3, "freed fill_value"));
+    }
 
+    if (fill_modep)
+        LOG((3, "done with inq_var_fill_handler", *fill_modep));
     return PIO_NOERR;
 }
 

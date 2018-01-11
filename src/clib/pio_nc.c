@@ -2208,8 +2208,8 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
             return check_netcdf(file, ierr, __FILE__, __LINE__);
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_def_var_fill type_size = %d", type_size));
     }
-    LOG((2, "PIOc_def_var_fill type_size = %d", type_size));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async)
@@ -2264,7 +2264,11 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
         {
             LOG((2, "defining fill value attribute for netCDF classic file"));
             if (file->do_io)
-                ierr = nc_put_att(file->fh, varid, _FillValue, xtype, 1, fill_valuep);
+            {
+                ierr = nc_set_fill(file->fh, NC_FILL, NULL);
+                if (!ierr)
+                    ierr = nc_put_att(file->fh, varid, _FillValue, xtype, 1, fill_valuep);
+            }
         }
         else
         {
