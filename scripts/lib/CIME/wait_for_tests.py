@@ -3,7 +3,7 @@ import logging
 import xml.etree.ElementTree as xmlet
 
 import CIME.utils
-from CIME.utils import expect
+from CIME.utils import expect, Timeout
 from CIME.XML.machines import Machines
 from CIME.test_status import *
 
@@ -56,7 +56,7 @@ def create_cdash_test_xml(results, cdash_build_name, cdash_build_group, utc_time
     site_elem = xmlet.Element("Site")
 
     if ("JENKINS_START_TIME" in os.environ):
-        time_info_str = "Total testing time: {:d} seconds".format(current_time - int(os.environ["JENKINS_START_TIME"]))
+        time_info_str = "Total testing time: {:d} seconds".format(int(current_time) - int(os.environ["JENKINS_START_TIME"]))
     else:
         time_info_str = ""
 
@@ -337,13 +337,15 @@ def wait_for_tests(test_paths,
                    ignore_memleak=False,
                    cdash_build_name=None,
                    cdash_project=ACME_MAIN_CDASH,
-                   cdash_build_group=CDASH_DEFAULT_BUILD_GROUP):
+                   cdash_build_group=CDASH_DEFAULT_BUILD_GROUP,
+                   timeout=None):
 ###############################################################################
     # Set up signal handling, we want to print results before the program
     # is terminated
     set_up_signal_handlers()
 
-    test_results = wait_for_tests_impl(test_paths, no_wait, check_throughput, check_memory, ignore_namelists, ignore_memleak)
+    with Timeout(timeout, action=signal_handler):
+        test_results = wait_for_tests_impl(test_paths, no_wait, check_throughput, check_memory, ignore_namelists, ignore_memleak)
 
     all_pass = True
     for test_name, test_data in sorted(test_results.iteritems()):

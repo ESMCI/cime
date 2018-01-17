@@ -3,12 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-
 .. _users-guide1:
 
-#######################################
- CIME User's Guide Part 1: Basic Usage
-#######################################
+#################################################
+CIME User's Guide Part 1: Beginner - Basic Usage
+#################################################
 
 .. toctree::
    :maxdepth: 3
@@ -24,12 +23,11 @@
    cloning-a-case.rst
    troubleshooting.rst
 
-
 .. _users-guide2:
 
-########################################################################
-CIME User's Guide Part 2: CIME internals, Porting, Testing and Use Cases
-########################################################################
+#######################################################################################
+CIME User's Guide Part 2: Intermediate - CIME Internals, Porting, Testing and Use Cases
+#######################################################################################
 
 .. toctree::
    :maxdepth: 3
@@ -43,6 +41,7 @@ CIME User's Guide Part 2: CIME internals, Porting, Testing and Use Cases
    multi-instance.rst
    adding-cases.rst
    use_cases/use-cases.rst
+
 
 Indices and tables
 ==================
