@@ -1,0 +1,30 @@
+Tools package
+=============
+
+Submodules
+----------
+
+Tools.standard_script_setup module
+----------------------------------
+
+.. automodule:: Tools.standard_script_setup
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Tools.testreporter module
+-------------------------
+
+.. automodule:: Tools.testreporter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: Tools
+    :members:
+    :undoc-members:
+    :show-inheritance:

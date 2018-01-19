@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CIME.buildlib &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CIME.buildlib</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">common utilities for buildlib</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">,</span> <span class="n">setup_standard_logging_options</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">argparse</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="parse_input"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildlib.parse_input">[docs]</a><span class="k">def</span> <span class="nf">parse_input</span><span class="p">(</span><span class="n">argv</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="n">setup_standard_logging_options</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;caseroot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Case directory&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;libroot&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;root for creating the library&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;bldroot&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;root for building library&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args_and_handle_standard_logging_options</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span>
+
+    <span class="c1"># Some compilers have trouble with long include paths, setting</span>
+    <span class="c1"># EXEROOT to the relative path from bldroot solves the problem</span>
+    <span class="c1"># doing it in the environment means we don&#39;t need to change all of</span>
+    <span class="c1"># the component buildlib scripts</span>
+    <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">caseroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">bldroot</span><span class="p">)</span>
+
+
+    <span class="k">return</span> <span class="n">args</span><span class="o">.</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">libroot</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">bldroot</span></div>
+
+<div class="viewcode-block" id="build_cime_component_lib"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildlib.build_cime_component_lib">[docs]</a><span class="k">def</span> <span class="nf">build_cime_component_lib</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">):</span>
+    <span class="n">cimeroot</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
+    <span class="n">comp_interface</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
+    <span class="n">compclass</span> <span class="o">=</span> <span class="n">compname</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bldroot</span><span class="p">,</span><span class="s1">&#39;Filepath&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">),</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;src.{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">compname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">):</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;data_comps&quot;</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;data_comps&quot;</span><span class="p">,</span> <span class="n">compname</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">compname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">):</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;xcpl_comps&quot;</span><span class="p">,</span> <span class="s2">&quot;xshare&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;xcpl_comps&quot;</span><span class="p">,</span><span class="n">compname</span><span class="p">,</span> <span class="s2">&quot;cpl&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">compname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">):</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">,</span> <span class="s2">&quot;stub_comps&quot;</span><span class="p">,</span><span class="n">compname</span><span class="p">,</span> <span class="s2">&quot;cpl&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build the component</span>
+    <span class="n">run_gmake</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">compclass</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">)</span></div>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="run_gmake"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.buildlib.run_gmake">[docs]</a><span class="k">def</span> <span class="nf">run_gmake</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">compclass</span><span class="p">,</span> <span class="n">libroot</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">,</span> <span class="n">libname</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">user_cppdefs</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+
+    <span class="n">caseroot</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+    <span class="n">casetools</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASETOOLS&quot;</span><span class="p">)</span>
+    <span class="n">gmake_j</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GMAKE_J&quot;</span><span class="p">)</span>
+    <span class="n">gmake</span>     <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GMAKE&quot;</span><span class="p">)</span>
+    <span class="n">mach</span>      <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
+
+    <span class="n">complib</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">libname</span><span class="p">:</span>
+        <span class="n">complib</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">libroot</span><span class="p">,</span> <span class="s2">&quot;lib{}.a&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">libname</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">complib</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">libroot</span><span class="p">,</span> <span class="s2">&quot;lib{}.a&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">))</span>
+
+    <span class="n">makefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;Makefile&quot;</span><span class="p">)</span>
+    <span class="n">macfile</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;Macros.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach</span><span class="p">))</span>
+
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;{} complib -j {:d} MODEL={} COMPLIB={} -f {} -C {} MACFILE={} &quot;</span> \
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gmake</span><span class="p">,</span> <span class="n">gmake_j</span><span class="p">,</span> <span class="n">compclass</span><span class="p">,</span> <span class="n">complib</span><span class="p">,</span> <span class="n">makefile</span><span class="p">,</span> <span class="n">bldroot</span><span class="p">,</span> <span class="n">macfile</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">user_cppdefs</span><span class="p">:</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="s2">&quot;USER_CPPDEFS=&#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_cppdefs</span> <span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">combine_output</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>
