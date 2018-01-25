@@ -31,15 +31,6 @@ class _Element(object): # private class, don't want users constructing directly 
         return _Element(deepcopy(self.xml_element))
 
 class GenericXML(object):
-
-    _FILEMAP = {}
-    DISABLE_CACHING = False
-
-    @classmethod
-    def invalidate_file(cls, filepath):
-        if filepath in cls._FILEMAP:
-            del cls._FILEMAP[filepath]
-
     def __init__(self, infile=None, schema=None, root_name_override=None, root_attrib_override=None):
         """
         Initialize an object
@@ -78,21 +69,16 @@ class GenericXML(object):
         """
         Read and parse an xml file into the object
         """
-        if infile in self._FILEMAP and not self.DISABLE_CACHING:
-            logger.debug("read (cached): " + infile)
-            self.tree, self.root = self._FILEMAP[infile]
-        else:
-            logger.debug("read: " + infile)
-            file_open = (lambda x: open(x, 'r', encoding='utf-8')) if six.PY3 else (lambda x: open(x, 'r'))
-            with file_open(infile) as fd:
-                self.read_fd(fd)
 
-            if schema is not None and self.get_version() > 1.0:
-                self.validate_xml_file(infile, schema)
+        logger.debug("read: " + infile)
+        file_open = (lambda x: open(x, 'r', encoding='utf-8')) if six.PY3 else (lambda x: open(x, 'r'))
+        with file_open(infile) as fd:
+            self.read_fd(fd)
 
-            logger.debug("File version is {}".format(str(self.get_version())))
+        if schema is not None and self.get_version() > 1.0:
+            self.validate_xml_file(infile, schema)
 
-            self._FILEMAP[infile] = (self.tree, self.root)
+        logger.debug("File version is {}".format(str(self.get_version())))
 
     def read_fd(self, fd):
         if self.tree:

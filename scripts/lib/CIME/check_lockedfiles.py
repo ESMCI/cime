@@ -7,7 +7,6 @@ from CIME.XML.env_build import EnvBuild
 from CIME.XML.env_case import EnvCase
 from CIME.XML.env_mach_pes import EnvMachPes
 from CIME.XML.env_batch import EnvBatch
-from CIME.XML.generic_xml import GenericXML
 from CIME.utils import run_cmd_no_fail
 
 logger = logging.getLogger(__name__)
@@ -25,13 +24,8 @@ def lock_file(filename, caseroot=None, newname=None):
         os.mkdir(fulllockdir)
     logging.debug("Locking file {} to {}".format(filename, newname))
 
-    # JGF: It is extremely dangerous to alter our database (xml files) without
-    # going through the standard API. The copy below invalidates all existing
-    # GenericXML instances that represent this file and all caching that may
-    # have involved this file. We should probably seek a safer way of locking
-    # files.
     shutil.copyfile(os.path.join(caseroot, filename), os.path.join(fulllockdir, newname))
-    GenericXML.invalidate_file(os.path.join(fulllockdir, newname))
+
 
 def unlock_file(filename, caseroot=None):
     expect("/" not in filename, "Please just provide basename of locked file")
