@@ -281,6 +281,23 @@ class J_TestCreateNewcase(unittest.TestCase):
         run_cmd_assert_result(self, "./case.setup", from_dir=testdir)
         run_cmd_assert_result(self, "./case.build", from_dir=testdir)
 
+        with Case(testdir, read_only=False) as case:
+            ntasks = case.get_value("NTASKS_ATM")
+            case.set_value("NTASKS_ATM", ntasks+1)
+        # this should fail with a locked file issue
+        run_cmd_assert_result(self, "./case.build",
+                              from_dir=testdir, expected_stat=1)
+
+        run_cmd_assert_result(self, "./case.setup --reset", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
+        with Case(testdir, read_only=False) as case:
+            case.set_value("CHARGE_ACCOUNT", "fred")
+        # this should fail with a locked file issue
+        run_cmd_assert_result(self, "./case.build",
+                              from_dir=testdir, expected_stat=1)
+        run_cmd_assert_result(self, "./case.setup --reset", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.build", from_dir=testdir)
+
         cls._do_teardown.append(testdir)
 
     def test_aa_no_flush_on_instantiate(self):
@@ -1741,6 +1758,49 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
         self._create_test(["SMS.f19_g16.2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV", "--no-build"])
 
+    ###########################################################################
+    def test_env_loading(self):
+    ###########################################################################
+        self._create_test(["--no-build", "TESTRUNPASS.f19_g16_rx1.A"], test_id=self._baseline_name)
+
+        casedir = os.path.join(self._testroot,
+                               "%s.%s" % (CIME.utils.get_full_test_name("TESTRUNPASS.f19_g16_rx1.A", machine=self._machine, compiler=self._compiler), self._baseline_name))
+        self.assertTrue(os.path.isdir(casedir), msg="Missing casedir '%s'" % casedir)
+
+        with Case(casedir, read_only=True) as case:
+            env_mach = case.get_env("mach_specific")
+            if env_mach.get_module_system_type() == "module":
+                orig_env = dict(os.environ)
+
+                env_mach.load_env(case)
+                module_env = dict(os.environ)
+
+                os.environ.clear()
+                os.environ.update(orig_env)
+
+                env_mach.load_env(case, force_method="generic")
+                generic_env = dict(os.environ)
+
+                os.environ.clear()
+                os.environ.update(orig_env)
+
+                problems = ""
+                for mkey, mval in module_env.items():
+                    if mkey not in generic_env:
+                        if not mkey.startswith("PS") and mkey != "OLDPWD":
+                            problems += "Generic missing key: {}\n".format(mkey)
+                    elif mval != generic_env[mkey] and mkey not in ["_", "SHLVL"] and not mkey.endswith("()"):
+                        problems += "Value mismatch for key {}: {} != {}\n".format(mkey, repr(mval), repr(generic_env[mkey]))
+
+                for gkey in generic_env.keys():
+                    if gkey not in module_env:
+                        problems += "Modules missing key: {}\n".format(gkey)
+
+                self.assertEqual(problems, "", msg=problems)
+
+            else:
+                self.skipTest("Skipping env load test - Only works on machines that support env modules")
+
 ###############################################################################
 class X_TestSingleSubmit(TestCreateTestCommon):
 ###############################################################################
@@ -1785,8 +1845,8 @@ class L_TestSaveTimings(TestCreateTestCommon):
             run_cmd_assert_result(self, "cd %s && %s/save_provenance postrun" % (casedir, TOOLS_DIR))
 
         if CIME.utils.get_model() == "acme":
-            provenance_dir = os.path.join(timing_dir, "performance_archive", getpass.getuser(), casename, lids[0])
-            self.assertTrue(os.path.isdir(provenance_dir), msg="'%s' was missing" % provenance_dir)
+            provenance_dirs = glob.glob(os.path.join(timing_dir, "performance_archive", getpass.getuser(), casename, lids[0] + "*"))
+            self.assertEqual(len(provenance_dirs), 1, msg="provenance dirs were missing")
 
     ###########################################################################
     def test_save_timings(self):
