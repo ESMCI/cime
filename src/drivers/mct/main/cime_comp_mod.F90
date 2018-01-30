@@ -33,7 +33,7 @@ module cime_comp_mod
    use shr_mpi_mod,       only: shr_mpi_bcast, shr_mpi_commrank, shr_mpi_commsize
    use shr_mem_mod,       only: shr_mem_init, shr_mem_getusage
    use shr_cal_mod,       only: shr_cal_date2ymd, shr_cal_ymd2date, shr_cal_advdateInt
-   use shr_orb_mod,       only: shr_orb_params
+   use shr_orb_mod,       only: shr_orb_params, shr_orb_doalbavg !+tht added doalbavg
    use shr_frz_mod,       only: shr_frz_freezetemp_init
    use shr_reprosum_mod,  only: shr_reprosum_setopts
    use mct_mod            ! mct_ wrappers for mct lib
@@ -420,6 +420,9 @@ module cime_comp_mod
    logical  :: reprosum_use_ddpdd     ! setup reprosum, use ddpdd
    real(r8) :: reprosum_diffmax       ! setup reprosum, set rel_diff_max
    logical  :: reprosum_recompute     ! setup reprosum, recompute if tolerance exceeded
+
+   integer  :: shr_flux_scheme        !+tht option for COARE flux computation (=0,1,2)
+   logical  :: shr_alb_cosz_avg       !+tht option for using cosz time-step average in albedos
 
    logical  :: output_perf = .false.  ! require timing data output for this pe
 
@@ -938,6 +941,8 @@ subroutine cime_pre_init2()
         tfreeze_option = tfreeze_option           , &
         cpl_decomp=seq_mctext_decomp              , &
         shr_map_dopole=shr_map_dopole             , &
+        flux_scheme=shr_flux_scheme               , & !+tht option for COARE flux computation
+        alb_cosz_avg=shr_alb_cosz_avg             , & !+tht option for using time-step avg cosz for albedos
         wall_time_limit=wall_time_limit           , &
         force_stop_at=force_stop_at               , &
         reprosum_use_ddpdd=reprosum_use_ddpdd     , &
@@ -954,6 +959,9 @@ subroutine cime_pre_init2()
         repro_sum_use_ddpdd_in    = reprosum_use_ddpdd, &
         repro_sum_rel_diff_max_in = reprosum_diffmax, &
         repro_sum_recompute_in    = reprosum_recompute)
+
+   call shr_flux_docoare(shr_flux_scheme)            !+tht option for COARE flux computation
+   call shr_orb_doalbavg(shr_alb_cosz_avg)           !+tht new control on cosz avg'ing
 
    ! Check cpl_seq_option
 
@@ -1872,14 +1880,21 @@ subroutine cime_init()
 
          endif
 
-         do exi = 1,num_inst_xao
+!+tht albedo cosz option
+         if (shr_alb_cosz_avg) call seq_timemgr_EClockGetData( EClock_d, dtime=dtime)
+          do exi = 1,num_inst_xao
             !tcx is this correct? relation between xao and frc for ifrad and ofrad
             efi = mod((exi-1),num_inst_frc) + 1
             eai = mod((exi-1),num_inst_atm) + 1
             xao_ox => prep_aoflux_get_xao_ox()        ! array over all instances
             a2x_ox => prep_ocn_get_a2x_ox()
-            call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
-         enddo
+            if (shr_alb_cosz_avg) then 
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi),dtime)
+            else
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
+            endif
+          enddo
+!-tht
 
          if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
 
@@ -2352,8 +2367,14 @@ end subroutine cime_init
             eai = mod((exi-1),num_inst_atm) + 1
             xao_ox => prep_aoflux_get_xao_ox()        ! array over all instances
             a2x_ox => prep_ocn_get_a2x_ox()
-            call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
-         enddo
+!+tht albedo cosz option
+            if (shr_alb_cosz_avg) then 
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi),dtime)
+            else
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
+            endif
+!-tht
+          enddo
          call t_drvstopf  ('CPL:atmocnp_ocnalb',hashint=hashint(5))
 
          !----------------------------------------------------------
@@ -2850,8 +2871,12 @@ end subroutine cime_init
             eai = mod((exi-1),num_inst_atm) + 1
             xao_ox => prep_aoflux_get_xao_ox()        ! array over all instances
             a2x_ox => prep_ocn_get_a2x_ox()
-            call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
-         enddo
+            if (shr_alb_cosz_avg) then !+tht cosz option for albedos
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi),dtime)
+            else
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
+            endif
+          enddo
          call t_drvstopf  ('CPL:atmocnp_ocnalb')
 
          !----------------------------------------------------------
@@ -3207,8 +3232,12 @@ end subroutine cime_init
             eai = mod((exi-1),num_inst_atm) + 1
             xao_ox => prep_aoflux_get_xao_ox()        ! array over all instances
             a2x_ox => prep_ocn_get_a2x_ox()
-            call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
-         enddo
+            if (shr_alb_cosz_avg) then !+tht cosz option for albedos
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi),dtime)
+            else
+               call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi))
+           endif
+          enddo
          call t_drvstopf  ('CPL:atmocnp_ocnalb')
 
          !----------------------------------------------------------
