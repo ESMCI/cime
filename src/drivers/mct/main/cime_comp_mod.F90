@@ -1,3 +1,5 @@
+DO NOT USE UNTIL FURTHER NOTICE
+
 module cime_comp_mod
 
 !-------------------------------------------------------------------------------
@@ -36,6 +38,7 @@ module cime_comp_mod
    use shr_orb_mod,       only: shr_orb_params, shr_orb_doalbavg !+tht added doalbavg
    use shr_frz_mod,       only: shr_frz_freezetemp_init
    use shr_reprosum_mod,  only: shr_reprosum_setopts
+   use shr_flux_mod,      only: shr_flux_docoare !+tht option for COARE flux computation
    use mct_mod            ! mct_ wrappers for mct lib
    use perf_mod
    use ESMF
