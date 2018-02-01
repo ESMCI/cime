@@ -1,5 +1,3 @@
-DO NOT USE UNTIL FURTHER NOTICE
-
 module cime_comp_mod
 
 !-------------------------------------------------------------------------------
