@@ -116,7 +116,8 @@ int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
             }
             else if (fndims == ndims)
             {
-                /* ??? */
+                /* In some cases the unlimited dim is not treated as
+		   the pio record dim */
                 start[0] += vdesc->record;
             }
         }
@@ -200,9 +201,15 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         size_t start[fndims];
         size_t count[fndims];
         int ndims = iodesc->ndims;
+#if USE_VARD
+	MPI_Aint displacements[num_regions];
+	int blocklengths[num_regions];
+	MPI_Datatype filetype;
+	filetype = MPI_DATATYPE_NULL;
+#else
         PIO_Offset *startlist[num_regions]; /* Array of start arrays for ncmpi_iput_varn(). */
         PIO_Offset *countlist[num_regions]; /* Array of count  arrays for ncmpi_iput_varn(). */
-
+#endif
         LOG((3, "num_regions = %d", num_regions));
 
         /* Process each region of data to be written. */
@@ -247,11 +254,26 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 for (int i = 0; i < fndims; i++)
                     dsize *= count[i];
                 LOG((3, "dsize = %d", dsize));
-
+#if USE_VARD
+		blocklengths[rrcnt] = 0;
+		displacements[rrcnt] = 0;
+#endif
                 /* For pnetcdf's ncmpi_iput_varn() function, we need
                  * to provide arrays of arrays for start/count. */
                 if (dsize > 0)
                 {
+#if USE_VARD
+		    PIO_Offset lcoord[ndims], gcount[ndims];
+		    for (int i=0; i< ndims; i++)
+		    {
+			gcount[i] = iodesc->dimlen[i];
+			lcoord[i] = start[i];
+			LOG((3, "gcount[%d]=%ld lcoord[%d]=%ld",i,gcount[i],i,lcoord[i]));
+		    }
+		    blocklengths[rrcnt] = dsize;
+		    displacements[rrcnt] = coord_to_lindex(ndims, lcoord, gcount) * iodesc->mpitype_size;
+		    LOG((3, "ndims=%d displacements[%d]=%ld",ndims,rrcnt,displacements[rrcnt]));
+#else
                     /* Allocate storage for start/count arrays for
                      * this region. */
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
@@ -267,12 +289,18 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         LOG((3, "startlist[%d][%d] = %d countlist[%d][%d] = %d", rrcnt, i,
                              startlist[rrcnt][i], rrcnt, i, countlist[rrcnt][i]));
                     }
+#endif
                     rrcnt++;
                 }
 
                 /* Do this when we reach the last region. */
                 if (regioncnt == num_regions - 1)
                 {
+		    /* length in bytes of a single unlimited record on file. */
+		    MPI_Offset offset;
+		    if((ierr = ncmpi_inq_recsize(file->fh, &offset)))
+			return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+
                     /* For each variable to be written. */
                     for (int nv = 0; nv < nvars; nv++)
                     {
@@ -282,10 +310,37 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
+#if USE_VARD
+			if(nv==0 || (nv > 0 && frame[nv] != frame[nv-1])){
+			    MPI_Aint final_displacements[num_regions];
+			    PIO_Offset unlimdimoffset;
+			    int mpierr;
+			    if(filetype != MPI_DATATYPE_NULL)
+				if ((mpierr = MPI_Type_free(&filetype)))
+				    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
+			    if (vdesc->record >= 0 && ndims < fndims){
+				if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
+				    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+			    }
+			    else
+				unlimdimoffset = 1;
+			    for( int rc=0; rc<rrcnt; rc++)
+				final_displacements[rc] = displacements[rc]*unlimdimoffset;
+			    for  (int rc=0; rc < rrcnt; rc++)
+				LOG((3, "rc=%d blocklength=%d displacement=%ld final_displacement=%ld unlimdimoffset=%ld", rc,
+				     blocklengths[rc], displacements[rc], final_displacements[rc], unlimdimoffset));
+
+			    if((mpierr = MPI_Type_create_hindexed(rrcnt, blocklengths, final_displacements, iodesc->mpitype, &filetype)))
+				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+			    if((mpierr = MPI_Type_commit(&filetype)))
+				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+			}
+#else
                         if (vdesc->record >= 0 && ndims < fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
-
+#endif
                         /* Get a pointer to the data. */
                         bufptr = (void *)((char *)iobuf + nv * iodesc->mpitype_size * llen);
 
@@ -302,6 +357,11 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         /* Write, in non-blocking fashion, a list of subarrays. */
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
+#if USE_VARD
+			LOG((3, "call ncmpi_put_vard llen = %d", llen));
+			ierr = ncmpi_put_vard_all(file->fh, varids[nv], filetype, bufptr, llen, iodesc->mpitype);
+			LOG((3, "return ncmpi_put_vard ierr = %d", ierr));
+#else
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
                                                bufptr, llen, iodesc->mpitype, &vdesc->request[vdesc->nreqs]);
 
@@ -310,14 +370,16 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                             vdesc->request[vdesc->nreqs] = PIO_REQ_NULL;
 
                         vdesc->nreqs++;
-                    }
-
+#endif
+		    }
+#if ! USE_VARD
                     /* Free resources. */
                     for (int i = 0; i < rrcnt; i++)
                     {
                         free(startlist[i]);
                         free(countlist[i]);
                     }
+#endif
                 }
                 break;
 #endif
@@ -329,6 +391,14 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
             if (region)
                 region = region->next;
         } /* next regioncnt */
+#if USE_VARD
+	if(filetype != MPI_DATATYPE_NULL)
+	{
+		int mpierr;
+		if((mpierr = MPI_Type_free(&filetype)))
+		    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+	}
+#endif
     } /* endif (ios->ioproc) */
 
     /* Check the return code from the netCDF/pnetcdf call. */
@@ -1062,10 +1132,10 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 
         /* If setframe was not set before this call, assume a value of
          * 0. This is required for backward compatibility. */
-        if (fndims > ndims)		
-            if (vdesc->record < 0)		
+        if (fndims > ndims)
+            if (vdesc->record < 0)
                 vdesc->record = 0;
-        
+
         /* Put together start/count arrays for all regions. */
         for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {
@@ -1368,6 +1438,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 #endif
             for (reqcnt = 0; reqcnt < vdesc->nreqs; reqcnt++)
                 request[rcnt++] = max(vdesc->request[reqcnt], NC_REQ_NULL);
+            LOG((3,"flush_output_buffer rcnt=%d",rcnt));
 
             if (vdesc->request != NULL)
                 free(vdesc->request);
@@ -1540,4 +1611,3 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
 
     return PIO_NOERR;
 }
-
