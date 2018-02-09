@@ -267,12 +267,12 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 		    for (int i=0; i< ndims; i++)
 		    {
 			gcount[i] = iodesc->dimlen[i];
-			lcoord[i] = start[i];
-			LOG((3, "gcount[%d]=%ld lcoord[%d]=%ld",i,gcount[i],i,lcoord[i]));
+			lcoord[i] = start[i+(fndims-ndims)];
+			LOG((3, ": gcount[%d]=%ld lcoord[%d]=%ld",i,gcount[i],i,lcoord[i]));
 		    }
 		    blocklengths[rrcnt] = dsize;
 		    displacements[rrcnt] = coord_to_lindex(ndims, lcoord, gcount) * iodesc->mpitype_size;
-		    LOG((3, "ndims=%d displacements[%d]=%ld",ndims,rrcnt,displacements[rrcnt]));
+		    LOG((3, "%d: ndims=%d displacements[%d]=%ld",ios->union_rank, ndims,rrcnt,displacements[rrcnt]));
 #else
                     /* Allocate storage for start/count arrays for
                      * this region. */
@@ -296,11 +296,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 /* Do this when we reach the last region. */
                 if (regioncnt == num_regions - 1)
                 {
-		    /* length in bytes of a single unlimited record on file. */
-		    MPI_Offset offset;
-		    if((ierr = ncmpi_inq_recsize(file->fh, &offset)))
-			return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-
                     /* For each variable to be written. */
                     for (int nv = 0; nv < nvars; nv++)
                     {
@@ -311,7 +306,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         /* If this is a record var, set the start for
                          * the record dimension. */
 #if USE_VARD
-			if(nv==0 || (nv > 0 && frame[nv] != frame[nv-1])){
+			if(nv==0 || (nv > 0 && frame != NULL && frame[nv] != frame[nv-1])){
 			    MPI_Aint final_displacements[num_regions];
 			    PIO_Offset unlimdimoffset;
 			    int mpierr;
@@ -322,14 +317,16 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 			    if (vdesc->record >= 0 && ndims < fndims){
 				if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
 				    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+				unlimdimoffset *= frame[nv];
 			    }
 			    else
-				unlimdimoffset = 1;
+				unlimdimoffset = 0;
+
 			    for( int rc=0; rc<rrcnt; rc++)
-				final_displacements[rc] = displacements[rc]*unlimdimoffset;
+				final_displacements[rc] = unlimdimoffset + displacements[rc];
 			    for  (int rc=0; rc < rrcnt; rc++)
-				LOG((3, "rc=%d blocklength=%d displacement=%ld final_displacement=%ld unlimdimoffset=%ld", rc,
-				     blocklengths[rc], displacements[rc], final_displacements[rc], unlimdimoffset));
+				LOG((3,"%d: rc=%d blocklength=%d displacement=%ld final_displacement=%ld unlimdimoffset=%ld size=%d llen=%d\n", ios->union_rank,rc,
+				       blocklengths[rc], displacements[rc], final_displacements[rc], unlimdimoffset, iodesc->mpitype_size, llen));
 
 			    if((mpierr = MPI_Type_create_hindexed(rrcnt, blocklengths, final_displacements, iodesc->mpitype, &filetype)))
 				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
