@@ -202,9 +202,13 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         size_t count[fndims];
         int ndims = iodesc->ndims;
 #if USE_VARD
-	MPI_Aint displacements[num_regions];
+	MPI_Aint displacements[num_regions], final_displacements[num_regions];
 	int blocklengths[num_regions];
+	int mpierr;
 	MPI_Datatype filetype;
+	MPI_Datatype subarray[num_regions];
+	int sacount[ndims];
+	int sastart[ndims];
 	filetype = MPI_DATATYPE_NULL;
 #else
         PIO_Offset *startlist[num_regions]; /* Array of start arrays for ncmpi_iput_varn(). */
@@ -254,10 +258,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 for (int i = 0; i < fndims; i++)
                     dsize *= count[i];
                 LOG((3, "dsize = %d", dsize));
-#if USE_VARD
-		blocklengths[rrcnt] = 0;
-		displacements[rrcnt] = 0;
-#endif
                 /* For pnetcdf's ncmpi_iput_varn() function, we need
                  * to provide arrays of arrays for start/count. */
                 if (dsize > 0)
@@ -268,11 +268,20 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 		    {
 			gcount[i] = iodesc->dimlen[i];
 			lcoord[i] = start[i+(fndims-ndims)];
-			LOG((3, ": gcount[%d]=%ld lcoord[%d]=%ld",i,gcount[i],i,lcoord[i]));
+			sacount[i] = (int) count[i+(fndims-ndims)];
+			sastart[i] = (int) start[i+(fndims-ndims)];
+			LOG((3, "vard: sastart[%d]=%d sacount[%d]=%d", i, sastart[i], i, sacount[i]));
 		    }
-		    blocklengths[rrcnt] = dsize;
+		    blocklengths[rrcnt] = 1;
 		    displacements[rrcnt] = coord_to_lindex(ndims, lcoord, gcount) * iodesc->mpitype_size;
-		    LOG((3, "%d: ndims=%d displacements[%d]=%ld",ios->union_rank, ndims,rrcnt,displacements[rrcnt]));
+
+		    if((mpierr = MPI_Type_create_subarray(ndims, iodesc->dimlen,
+							  sacount, sastart,MPI_ORDER_C
+							  ,iodesc->mpitype, subarray+rrcnt)))
+			return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
+		    if((mpierr = MPI_Type_commit(subarray+rrcnt)))
+			return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
                     /* Allocate storage for start/count arrays for
                      * this region. */
@@ -307,7 +316,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                          * the record dimension. */
 #if USE_VARD
 			if(nv==0 || (nv > 0 && frame != NULL && frame[nv] != frame[nv-1])){
-			    MPI_Aint final_displacements[num_regions];
 			    PIO_Offset unlimdimoffset;
 			    int mpierr;
 			    if(filetype != MPI_DATATYPE_NULL)
@@ -322,14 +330,13 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 			    else
 				unlimdimoffset = 0;
 
-			    for( int rc=0; rc<rrcnt; rc++)
-				final_displacements[rc] = unlimdimoffset + displacements[rc];
-			    for  (int rc=0; rc < rrcnt; rc++)
-				LOG((3,"%d: rc=%d blocklength=%d displacement=%ld final_displacement=%ld unlimdimoffset=%ld size=%d llen=%d\n", ios->union_rank,rc,
-				       blocklengths[rc], displacements[rc], final_displacements[rc], unlimdimoffset, iodesc->mpitype_size, llen));
-
-			    if((mpierr = MPI_Type_create_hindexed(rrcnt, blocklengths, final_displacements, iodesc->mpitype, &filetype)))
+			    for( int rc=0; rc<rrcnt; rc++){
+				final_displacements[rc] = unlimdimoffset;
+				LOG((3,"vard: blocklengths[%d]=%d displacement[%d]=%ld",rc,blocklengths[rc], rc, final_displacements[rc]));
+			    }
+			    if((mpierr = MPI_Type_create_struct(rrcnt, blocklengths, final_displacements, subarray, &filetype)))
 				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
 			    if((mpierr = MPI_Type_commit(&filetype)))
 				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 			}
@@ -355,9 +362,9 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
 #if USE_VARD
-			LOG((3, "call ncmpi_put_vard llen = %d", llen));
+			LOG((3, "vard: call ncmpi_put_vard llen = %d ", llen));
 			ierr = ncmpi_put_vard_all(file->fh, varids[nv], filetype, bufptr, llen, iodesc->mpitype);
-			LOG((3, "return ncmpi_put_vard ierr = %d", ierr));
+			LOG((3, "vard: return ncmpi_put_vard ierr = %d", ierr));
 #else
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
                                                bufptr, llen, iodesc->mpitype, &vdesc->request[vdesc->nreqs]);
@@ -392,6 +399,9 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 	if(filetype != MPI_DATATYPE_NULL)
 	{
 		int mpierr;
+		for(int i=0; i<rrcnt; i++)
+		    if((mpierr = MPI_Type_free(subarray+i)))
+			return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 		if((mpierr = MPI_Type_free(&filetype)))
 		    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 	}
