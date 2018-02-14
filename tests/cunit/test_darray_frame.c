@@ -32,7 +32,7 @@
 /* #define LON_LEN 192 */
 
 /* Here's a shorter version for a simpler test. */
-#define TIME_LEN_SHORT 3
+#define TIME_LEN_SHORT 1
 #define LAT_LEN_SHORT 2
 #define LON_LEN_SHORT 2
 
@@ -112,6 +112,7 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
                 ERR(ret);
 
         /* Define a variable. */
+        printf("rank: %d Define a variable\n", my_rank);
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM3, dimids, &varid)))
             ERR(ret);
 
@@ -137,6 +138,7 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
                 ERR(ret);
         }
 
+	printf("rank: %d close file\n", my_rank);
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -144,6 +146,7 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
         {
             int test_data_int_in[elements_per_pe];
 
+	    printf("rank: %d reopen sample file %s\n", my_rank, filename);
             /* Reopen the file. */
             if ((ret = PIOc_openfile(iosysid, &ncid2, &iotype[fmt], filename, PIO_NOWRITE)))
                 ERR(ret);
@@ -155,6 +158,7 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
                 if ((ret = PIOc_setframe(ncid2, varid, r)))
                     ERR(ret);
 
+		printf("rank: %d read darray record %d\n", my_rank, r);
                 /* Read the data. */
                 if ((ret = PIOc_read_darray(ncid2, varid, ioid, elements_per_pe, test_data_int_in)))
                     ERR(ret);
