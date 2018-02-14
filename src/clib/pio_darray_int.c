@@ -336,6 +336,8 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
 			    int mpierr;
 			    MPI_Aint displacements[rrcnt];
+			    for ( int rc=0; rc<rrcnt; rc++)
+				displacements[rc] = 0;
 			    if(filetype != MPI_DATATYPE_NULL)
 			    {
 				for( int rc=0; rc<rrcnt; rc++)
@@ -344,16 +346,24 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				if ((mpierr = MPI_Type_free(&filetype)))
 				    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 			    }
-			    if(fndims > ndims && gdim0 > 0)
+			    if(fndims > ndims)
 			    {
-				gdims[0] = gdim0;
-				sa_ndims = fndims;
-				dim_offset = 0;
+				if ( gdim0 > 0)
+				{
+				    gdims[0] = gdim0;
+				    sa_ndims = fndims;
+				    dim_offset = 0;
+				}
+				else
+				{
+				    sa_ndims = ndims;
+				    dim_offset = 1;
+				}
 			    }
 			    else
 			    {
-				sa_ndims = ndims;
-				dim_offset = 1;
+				sa_ndims = fndims;
+				dim_offset = 0;
 			    }
 			    for (int i=dim_offset; i<fndims; i++)
 				gdims[i] = iodesc->dimlen[i-dim_offset];
@@ -365,10 +375,10 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 			    }
 			    for( int rc=0; rc<rrcnt; rc++)
 			    {
-				if(gdim0 > 0)
+				if(gdim0 > 0 && frame != NULL)
 				    sastart[0] = frame[nv];
 
-				for (int i=0; i< fndims-dim_offset; i++)
+				for (int i=0; i< sa_ndims; i++)
 				    LOG((3, "vard: sastart[%d]=%d sacount[%d]=%d", i,sastart[i], i,sacount[i]));
 				if((mpierr = MPI_Type_create_subarray(sa_ndims, gdims,
 								      sacount, sastart,MPI_ORDER_C
@@ -378,8 +388,8 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				if((mpierr = MPI_Type_commit(subarray + rc)))
 				    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-
-				displacements[rc] = unlimdimoffset;
+				if (frame != NULL)
+				    displacements[rc] = unlimdimoffset*frame[nv];
 				LOG((3,"vard: blocklengths[%d]=%d displacement[%d]=%ld",rc,blocklengths[rc], rc, displacements[rc]));
 
 
