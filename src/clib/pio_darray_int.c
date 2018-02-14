@@ -353,20 +353,24 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				    gdims[0] = gdim0;
 				    sa_ndims = fndims;
 				    dim_offset = 0;
+				    for (int i=1; i < fndims; i++)
+					gdims[i] = iodesc->dimlen[i-1];
 				}
 				else
 				{
 				    sa_ndims = ndims;
 				    dim_offset = 1;
+				    for (int i=0; i < ndims; i++)
+					gdims[i] = iodesc->dimlen[i];
 				}
 			    }
 			    else
 			    {
 				sa_ndims = fndims;
 				dim_offset = 0;
+				for (int i=0; i < fndims; i++)
+				    gdims[i] = iodesc->dimlen[i];
 			    }
-			    for (int i=dim_offset; i<fndims; i++)
-				gdims[i] = iodesc->dimlen[i-dim_offset];
 
 			    for (int i=dim_offset; i< fndims; i++)
 			    {
@@ -379,7 +383,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				    sastart[0] = frame[nv];
 
 				for (int i=0; i< sa_ndims; i++)
-				    LOG((3, "vard: sastart[%d]=%d sacount[%d]=%d", i,sastart[i], i,sacount[i]));
+				    LOG((3, "vard: sastart[%d]=%d sacount[%d]=%d gdims[%d]=%d %ld %ld", i,sastart[i], i,sacount[i], i, gdims[i], start[i], count[i]));
 				if((mpierr = MPI_Type_create_subarray(sa_ndims, gdims,
 								      sacount, sastart,MPI_ORDER_C
 								      ,iodesc->mpitype, subarray + rc)))
@@ -1459,7 +1463,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
     /* If we are not forcing a flush, spread the usage to all IO
      * tasks. */
-    if (!force && file->iosystem->io_comm != MPI_COMM_NULL)
+    if (!force && file->iosystem->ioproc)
     {
         usage += addsize;
         if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &usage, 1,  MPI_OFFSET,  MPI_MAX,
