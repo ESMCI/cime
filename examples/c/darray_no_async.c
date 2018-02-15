@@ -28,7 +28,7 @@
 #define NDIM3 3
 
 /* The number of timesteps of data. */
-#define NUM_TIMESTEPS 1
+#define NUM_TIMESTEPS 2
 
 /* The length of our sample data in X dimension.*/
 #define DIM_LEN_X 4
