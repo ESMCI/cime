@@ -157,7 +157,7 @@
     <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
     <submit_args>
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
-      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--qos" name="$JOB_QUEUE"/>
       <arg flag="--account" name="$PROJECT"/>
     </submit_args>
     <directives>
@@ -387,6 +387,7 @@
    </directives>
     <queues>
       <queue walltimemax="00:59:00" nodemin="1" nodemax="288" default="true">normal</queue>
+      <queue walltimemax="00:59:00" nodemin="1" nodemax="10" default="true">devel</queue>
     </queues>
   </batch_system>
 

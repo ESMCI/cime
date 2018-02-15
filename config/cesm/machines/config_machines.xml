@@ -1907,6 +1907,9 @@
       <env name="I_MPI_EXTRA_FILESYSTEM_LIST">lustre</env>
       <env name="I_MPI_EXTRA_FILESYSTEM">on</env>
     </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
   </machine>
 
 <default_run_suffix>
