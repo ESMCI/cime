@@ -226,17 +226,20 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         size_t start[fndims];
         size_t count[fndims];
         int ndims = iodesc->ndims;
+        PIO_Offset *startlist[num_regions]; /* Array of start arrays for ncmpi_iput_varn(). */
+        PIO_Offset *countlist[num_regions]; /* Array of count  arrays for ncmpi_iput_varn(). */
 #if USE_VARD
 	PIO_Offset unlimdimoffset;
 	int mpierr;
-	int sacount[fndims];
-	int sastart[fndims];
 	MPI_Datatype filetype;
 	MPI_Datatype subarray[num_regions];
 	filetype = MPI_DATATYPE_NULL;
-#else
-        PIO_Offset *startlist[num_regions]; /* Array of start arrays for ncmpi_iput_varn(). */
-        PIO_Offset *countlist[num_regions]; /* Array of count  arrays for ncmpi_iput_varn(). */
+
+	if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
+	{
+	    if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
+		return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+	}
 #endif
         LOG((3, "num_regions = %d", num_regions));
 
@@ -286,15 +289,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                  * to provide arrays of arrays for start/count. */
                 if (dsize > 0)
                 {
-#if USE_VARD
-		    if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
-		    {
-                     	if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
-			    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-                     }
-		     else
-			  sacount[0] = 1;
-#else
                     /* Allocate storage for start/count arrays for
                      * this region. */
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
@@ -310,7 +304,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         LOG((3, "startlist[%d][%d] = %d countlist[%d][%d] = %d", rrcnt, i,
                              startlist[rrcnt][i], rrcnt, i, countlist[rrcnt][i]));
                     }
-#endif
                     rrcnt++;
                 }
 
@@ -328,12 +321,16 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         /* If this is the first variable or the frame has changed between variables (this should be rare) */
 			if(nv==0 || (nv > 0 && frame != NULL && frame[nv] != frame[nv-1])){
 			    int sa_ndims;
+			    int sacount[fndims];
+			    int sastart[fndims];
 			    int gdims[fndims];
 			    int dim_offset;
 			    int mpierr;
 			    MPI_Aint displacements[rrcnt];
 			    int blocklengths[rrcnt];
 
+			    if(gdim0)
+				sacount[0] = 1;
 
 			    for ( int rc=0; rc<rrcnt; rc++)
 			    {
@@ -375,19 +372,30 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				    gdims[i] = iodesc->dimlen[i];
 			    }
 
-			    for (int i=dim_offset; i< fndims; i++)
-			    {
-				sacount[i-dim_offset] = (int) count[i];
-				sastart[i-dim_offset] = (int) start[i];
-			    }
 			    for( int rc=0; rc<rrcnt; rc++)
 			    {
-				if(gdim0 > 0 && frame != NULL)
-				    sastart[0] = frame[nv];
+				for (int i=dim_offset; i< fndims; i++)
+				{
+				    sacount[i-dim_offset] = (int) countlist[rc][i];
+				    sastart[i-dim_offset] = (int) startlist[rc][i];
+				}
+				if(gdim0 > 0)
+				{
+				    if(frame != NULL)
+				    {
+					sastart[0] = frame[nv];
+					displacements[rc]=0;
+				    }
+				}
+				else
+				    if (frame != NULL)
+					displacements[rc] = unlimdimoffset * frame[nv];
+				    else
+					displacements[rc] = 0;
 
 				for (int i=0; i< sa_ndims; i++)
 				    LOG((3, "vard: sastart[%d]=%d sacount[%d]=%d gdims[%d]=%d %ld %ld",
-					 i,sastart[i], i,sacount[i], i, gdims[i], start[i], count[i]));
+					 i,sastart[i], i,sacount[i], i, gdims[i], startlist[rc][i], countlist[rc][i]));
 
 				if((mpierr = MPI_Type_create_subarray(sa_ndims, gdims,
 								      sacount, sastart,MPI_ORDER_C
@@ -397,10 +405,8 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				if((mpierr = MPI_Type_commit(subarray + rc)))
 				    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-				if (frame != NULL)
-				    displacements[rc] = unlimdimoffset*frame[nv];
 
-				LOG((3,"vard: blocklengths[%d]=%d displacement[%d]=%ld",rc,blocklengths[rc], rc, displacements[rc]));
+				LOG((3,"vard: blocklengths[%d]=%d displacement[%d]=%ld unlimdimoffset=%ld",rc,blocklengths[rc], rc, displacements[rc], unlimdimoffset));
 
 
 
@@ -449,14 +455,13 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         vdesc->nreqs++;
 #endif
 		    }
-#if ! USE_VARD
+
                     /* Free resources. */
                     for (int i = 0; i < rrcnt; i++)
                     {
                         free(startlist[i]);
                         free(countlist[i]);
                     }
-#endif
                 }
                 break;
 #endif
