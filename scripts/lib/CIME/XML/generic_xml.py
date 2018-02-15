@@ -5,7 +5,6 @@ be used by other XML interface modules and not directly.
 from CIME.XML.standard_module_setup import *
 from distutils.spawn import find_executable
 from xml.dom import minidom
-
 import getpass
 
 logger = logging.getLogger(__name__)
@@ -216,7 +215,8 @@ class GenericXML(object):
         for m in env_ref_re.finditer(item_data):
             logger.debug("look for {} in env".format(item_data))
             env_var = m.groups()[0]
-            expect(env_var in os.environ, "Undefined env var '{}'".format(env_var))
+            env_var_exists = env_var in os.environ
+            expect(env_var_exists, "Undefined env var '{}'".format(env_var))
             item_data = item_data.replace(m.group(), os.environ[env_var])
 
         for s in shell_ref_re.finditer(item_data):
@@ -283,6 +283,7 @@ class GenericXML(object):
         return None
 
     def get_raw_record(self, root=None):
+        logger.debug("writing file {}".format(self.filename))
         if root is None:
             root = self.root
         try:
