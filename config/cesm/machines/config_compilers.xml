@@ -264,6 +264,20 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
+<compiler MACH="vilje">
+  <NETCDF_PATH>$(NETCDF_ROOT)</NETCDF_PATH>
+  <PNETCDF_PATH>$(NETCDF_ROOT)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <SLIBS>
+    <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="fram">
  <CPPDEFS>
   <append> -D$(OS) </append>
