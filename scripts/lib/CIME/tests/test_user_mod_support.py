@@ -111,7 +111,7 @@ class TestUserModSupport(unittest.TestCase):
         self.createUserMod("foo")
         apply_user_mods(self._caseroot,
                         os.path.join(self._user_mods_parent_dir, "foo"))
-        self.assertResults(expected_user_nl_cpl = "foo\n",
+        self.assertResults(expected_user_nl_cpl = "foobar\n",
                            expected_shell_commands_result = "foo\n",
                            expected_sourcemod = "foo\n",
                            msg = "test_basic")
