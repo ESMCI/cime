@@ -103,6 +103,8 @@ class TestUserModSupport(unittest.TestCase):
     # Begin actual tests
     #
     # Here is a comment
+    #
+    # And here is another comment
     # ========================================================================
 
     def test_basic(self):
