@@ -101,6 +101,8 @@ class TestUserModSupport(unittest.TestCase):
 
     # ========================================================================
     # Begin actual tests
+    #
+    # Here is a comment
     # ========================================================================
 
     def test_basic(self):
