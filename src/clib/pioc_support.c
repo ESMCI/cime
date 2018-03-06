@@ -25,6 +25,8 @@ int my_rank;
 FILE *LOG_FILE = NULL;
 #endif /* PIO_ENABLE_LOGGING */
 
+int mycnt=0;
+
 /**
  * The PIO library maintains its own set of ncids. This is the next
  * ncid number that will be assigned.
@@ -213,6 +215,7 @@ void pio_log(int severity, const char *fmt, ...)
         ptr += strlen(ERROR_PREFIX);
         rem_len -= strlen(ERROR_PREFIX);
     }
+
     for (t = 0; t < severity; t++)
     {
         strncpy(ptr++, "\t", (rem_len > 0) ? rem_len : 0);
@@ -229,6 +232,7 @@ void pio_log(int severity, const char *fmt, ...)
     va_start(argp, fmt);
     vsnprintf(ptr, ((rem_len > 0) ? rem_len : 0), fmt, argp);
     va_end(argp);
+
 
     /* Put on a final linefeed. */
     ptr = msg + strlen(msg);

@@ -57,6 +57,8 @@ elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
   #        PRIVATE -mismatch_all)
 elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Cray")
   set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -ef")
+elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
+  set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -debug minimal")
 endif()
 
 # Look for c_sizeof capability
