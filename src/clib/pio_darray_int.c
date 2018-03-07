@@ -70,10 +70,10 @@ int compute_buffer_init(iosystem_desc_t *ios)
 int get_gdim0(file_desc_t *file,io_desc_t *iodesc, int varid, int fndims, MPI_Offset *gdim0)
 {
     int ierr=PIO_NOERR;
+    *gdim0 = 0;
     if(file->iotype == PIO_IOTYPE_PNETCDF && iodesc->ndims < fndims)
     {
 	int numunlimdims;
-	*gdim0 = 0;
 	/* We need to confirm the file has an unlimited dimension and if it doesn't we need to find
 	   the extent of the first variable dimension */
 	LOG((3,"look for numunlimdims"));
@@ -89,7 +89,7 @@ int get_gdim0(file_desc_t *file,io_desc_t *iodesc, int varid, int fndims, MPI_Of
 		return check_netcdf(file, ierr, __FILE__, __LINE__);
         }
     }
-    LOG((3,"gdim0 = %d",gdim0));
+    LOG((3,"gdim0 = %d",*gdim0));
     return ierr;
 }
 
@@ -346,10 +346,12 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 	MPI_Datatype subarray[num_regions];
 	filetype = MPI_DATATYPE_NULL;
 
-	if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
+	if (file->iotype == PIO_IOTYPE_PNETCDF && gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
 	{
+#ifdef _PNETCDF
 	    if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
 		return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+#endif
 	}
 #endif
         LOG((3, "num_regions = %d", num_regions));
@@ -942,7 +944,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
     int ierr;              /* Return code from netCDF functions. */
-#ifdef USE_VARD
+#ifdef USE_VARD_READ
     MPI_Offset gdim0;
 #endif
 
@@ -968,7 +970,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     /* Get the number of dims for this var in the file. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
-#if USE_VARD
+#if USE_VARD_READ
     ierr = get_gdim0(file, iodesc, vid, fndims, &gdim0);
 #endif
 
@@ -984,7 +986,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
         PIO_Offset *startlist[iodesc->maxregions];
         PIO_Offset *countlist[iodesc->maxregions];
 
-#if USE_VARD
+#if USE_VARD_READ
 	PIO_Offset unlimdimoffset;
 	int mpierr;
 	MPI_Datatype filetype;
@@ -1142,7 +1144,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 /* Is this is the last region to process? */
                 if (regioncnt == iodesc->maxregions - 1)
                 {
-#if USE_VARD
+#if USE_VARD_READ
 		    MPI_Datatype filetype, subarray[rrlen];
 		    filetype = MPI_DATATYPE_NULL;
 		    for(int i=0; i<rrlen; i++)
