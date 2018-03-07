@@ -399,6 +399,7 @@
   <batch_system MACH="fram" type="slurm">
     <batch_submit>sbatch</batch_submit>
     <directives>
+     <directive> --switches=1</directive>
      <directive> --ntasks={{ total_tasks }}</directive>
      <directive> --export=ALL</directive>
    </directives>
