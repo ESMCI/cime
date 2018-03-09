@@ -228,6 +228,12 @@ void pio_log(int severity, const char *fmt, ...)
     ptr += strlen(rank_str);
     rem_len -= strlen(rank_str);
 
+    /* Show the severity. */
+    snprintf(rank_str, MAX_RANK_STR, ":%d ", severity);
+    strncpy(ptr, rank_str, (rem_len > 0) ? rem_len : 0);
+    ptr += strlen(rank_str);
+    rem_len -= strlen(rank_str);
+
     /* Print out the variable list of args with vprintf. */
     va_start(argp, fmt);
     vsnprintf(ptr, ((rem_len > 0) ? rem_len : 0), fmt, argp);

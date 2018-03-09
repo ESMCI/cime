@@ -121,7 +121,7 @@ int PIOc_advanceframe(int ncid, int varid)
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ret;
 
-    LOG((1, "PIOc_advanceframe ncid = %d varid = %d"));
+    LOG((1, "PIOc_advanceframe ncid = %d varid = %d", ncid, varid));
 
     /* Get the file info. */
     if ((ret = pio_get_file(ncid, &file)))
@@ -877,7 +877,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     /* Create a group for the IO tasks. */
     if ((mpierr = MPI_Group_incl(compgroup, ios->num_iotasks, ios->ioranks,
                                  &iogroup)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Create an MPI communicator for the IO tasks. */
     if ((mpierr = MPI_Comm_create(ios->comp_comm, iogroup, &ios->io_comm)))
@@ -1287,7 +1287,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     /* Determine which tasks to use for each computational component. */
     if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp,
                                proc_list, my_proc_list)))
-        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);        
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 
     /* Get rank of this task in world. */
     if ((ret = MPI_Comm_rank(world, &my_rank)))
@@ -1519,7 +1519,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             if ((ret = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
             LOG((3, "my_iosys->union_rank %d", my_iosys->union_rank));
-            
+
             /* Set my_comm to union_comm for async. */
             my_iosys->my_comm = my_iosys->union_comm;
             LOG((3, "intracomm created for union cmp = %d union_rank = %d union_comm = %d",

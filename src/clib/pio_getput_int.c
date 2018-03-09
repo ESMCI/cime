@@ -544,7 +544,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
          * num_elem will remain 1). */
         for (int vd = 0; vd < ndims; vd++)
             num_elem *= count[vd];
-        LOG((2, "PIOc_get_vars_tc num_elem = %d", num_elem));
+        LOG((1, "PIOc_get_vars_tc num_elem = %d", num_elem));
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -583,7 +583,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_get_vars_tc ncid = %d varid = %d ndims = %d start_present = %d "
+            LOG((1, "PIOc_get_vars_tc ncid = %d varid = %d ndims = %d start_present = %d "
                  "count_present = %d stride_present = %d xtype = %d num_elem = %d", ncid, varid,
                  ndims, start_present, count_present, stride_present, xtype, num_elem));
         }
@@ -937,13 +937,17 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 return check_netcdf(file, ierr, __FILE__, __LINE__);
         }
 
-        LOG((2, "ndims = %d typelen = %d", ndims, typelen));
-
         /* How many elements of data? If no count array was passed,
          * this is a scalar. */
         if (count)
             for (int vd = 0; vd < ndims; vd++)
                 num_elem *= count[vd];
+
+        LOG((1, "ndims = %d typelen = %d num_elem %d", ndims, typelen, num_elem));
+        if (count)
+            for (int vd = 0; vd < ndims; vd++)
+		LOG((1, "count[%d] = %d",vd,count[vd]));
+
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
