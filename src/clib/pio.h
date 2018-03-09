@@ -119,7 +119,7 @@ typedef struct var_desc_t
     /** ID of each outstanding pnetcdf request for this variable. */
     int *request;
 
-    /** Number of requests bending with pnetcdf. */
+    /** Number of requests pending with pnetcdf. */
     int nreqs;
 
     /* Holds the fill value of this var. */
@@ -278,7 +278,7 @@ typedef struct io_desc_t
      * dimensions. */
     int ndims;
 
-    /** An array of size ndims with the length of each dimension. */
+    /** An array of size ndims with the global length of each dimension. */
     int *dimlen;
 
     /** The actual number of IO tasks participating. */

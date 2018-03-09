@@ -425,7 +425,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     LOG((2, "check_netcdf2 chose error handler = %d", eh));
 
     /* Decide what to do based on the error handler. */
-    if (eh == PIO_INTERNAL_ERROR)
+    if (eh == PIO_INTERNAL_ERROR && status != PIO_NOERR)
     {
         char errmsg[PIO_MAX_NAME + 1];  /* Error message. */
         PIOc_strerror(status, errmsg);

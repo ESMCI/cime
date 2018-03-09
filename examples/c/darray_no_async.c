@@ -125,8 +125,8 @@ int check_file(int iosysid, int ntasks, char *filename, int iotype,
     for (int d = 0; d < NDIM3; d++)
     {
         char my_dim_name[NC_MAX_NAME];
-        PIO_Offset dimlen; 
-        
+        PIO_Offset dimlen;
+
         if ((ret = PIOc_inq_dim(ncid, d, my_dim_name, &dimlen)))
             return ret;
         if (dimlen != (d ? dim_len[d] : NUM_TIMESTEPS) || strcmp(my_dim_name, dim_name[d]))
@@ -148,7 +148,7 @@ int check_file(int iosysid, int ntasks, char *filename, int iotype,
     for (int t = 0; t < NUM_TIMESTEPS; t++)
     {
         int varid = 0; /* There's only one var in sample file. */
-        
+
         /* This is the data we expect for this timestep. */
         for (int i = 0; i < elements_per_pe; i++)
             buffer[i] = 100 * t + START_DATA_VAL + my_rank;
@@ -208,7 +208,7 @@ data:
 	int ioproc_stride = 1;	    /* Stride in the mpi rank between io tasks. */
 	int ioproc_start = 0; 	    /* Rank of first task to be used for I/O. */
         PIO_Offset elements_per_pe; /* Array elements per processing unit. */
-	int iosysid;  /* The ID for the parallel I/O system. */	
+	int iosysid;  /* The ID for the parallel I/O system. */
 	int ncid;     /* The ncid of the netCDF file. */
 	int dimid[NDIM3];    /* The dimension ID. */
 	int varid;    /* The ID of the netCDF varable. */
@@ -245,7 +245,7 @@ data:
         /* Turn on logging. */
         if ((ret = PIOc_set_log_level(LOG_LEVEL)))
             return ret;
-        
+
 	/* Initialize the PIO IO system. This specifies how many and
 	 * which processors are involved in I/O. */
 	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 1, ioproc_stride,
@@ -310,7 +310,7 @@ data:
                 /* Create some data for this timestep. */
                 for (int i = 0; i < elements_per_pe; i++)
                     buffer[i] = 100 * t + START_DATA_VAL + my_rank;
-                
+
                 /* Write data to the file. */
                 printf("rank: %d Writing sample data...\n", my_rank);
                 if ((ret = PIOc_setframe(ncid, varid, t)))

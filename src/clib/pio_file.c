@@ -450,7 +450,6 @@ int PIOc_sync(int ncid)
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
                 flush_output_buffer(file, true, 0);
-                ierr = ncmpi_sync(file->fh);
                 break;
 #endif
             default:
