@@ -159,6 +159,11 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
     {
 	int sacount[fndims];
 	int sastart[fndims];
+	for (int i=dim_offset; i< fndims; i++)
+	{
+	    sacount[i-dim_offset] = (int) countlist[rc][i];
+	    sastart[i-dim_offset] = (int) startlist[rc][i];
+	}
 	if(gdim0 > 0)
 	{
 	    unlimdimoffset = gdim0;
@@ -166,15 +171,7 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
 	    displacements[rc]=0;
 	}
 	else
-	{
-	    sacount[0] = 1;
 	    displacements[rc] = unlimdimoffset * max(0, frame);
-	}
-	for (int i=dim_offset; i< fndims; i++)
-	{
-	    sacount[i-dim_offset] = (int) countlist[rc][i];
-	    sastart[i-dim_offset] = (int) startlist[rc][i];
-	}
 
 #if PIO_ENABLE_LOGGING
 	for (int i=0; i< sa_ndims; i++)
@@ -460,21 +457,11 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         /* Get a pointer to the data. */
                         bufptr = (void *)((char *)iobuf + nv * iodesc->mpitype_size * llen);
 
-                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
-                        {
-                            if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
-                                                           (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-                                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-
-                            for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
-                                vdesc->request[i] = NC_REQ_NULL;
-                        }
-
 #if USE_VARD_WRITE
 			LOG((3, "vard: call ncmpi_put_vard llen = %d %d", llen, iodesc->mpitype_size ));
 			ierr = ncmpi_put_vard_all(file->fh, varids[nv], filetype, bufptr, llen, iodesc->mpitype);
 			LOG((3, "vard: return ncmpi_put_vard ierr = %d", ierr));
-			if(filetype != MPI_DATATYPE_NULL)
+			if(nv==nvars-1 && filetype != MPI_DATATYPE_NULL)
 			{
 			    int mpierr;
 			    for(int i=0; i<rrcnt; i++)
@@ -485,6 +472,16 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 			}
 #else
+                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
+                        {
+                            if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
+                                                           (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+
+                            for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
+                                vdesc->request[i] = NC_REQ_NULL;
+                        }
+
                         /* Write, in non-blocking fashion, a list of subarrays. */
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
