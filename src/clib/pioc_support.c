@@ -25,8 +25,6 @@ int my_rank;
 FILE *LOG_FILE = NULL;
 #endif /* PIO_ENABLE_LOGGING */
 
-int mycnt=0;
-
 /**
  * The PIO library maintains its own set of ncids. This is the next
  * ncid number that will be assigned.

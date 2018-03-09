@@ -386,7 +386,6 @@ int PIOc_sync(int ncid)
             wmulti_buffer *wmb, *twmb;
 
             LOG((3, "PIOc_sync checking buffers"));
-
             wmb = &file->buffer;
             while (wmb)
             {
@@ -394,7 +393,6 @@ int PIOc_sync(int ncid)
                  * multibuffer, flush it. */
                 if (wmb->num_arrays > 0)
                     flush_buffer(ncid, wmb, true);
-
                 twmb = wmb;
                 wmb = wmb->next;
                 if (twmb == &file->buffer)
@@ -465,7 +463,6 @@ int PIOc_sync(int ncid)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (ierr)
         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
-    PIOc_set_log_level(0);
 
     return ierr;
 }
