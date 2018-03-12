@@ -406,13 +406,17 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
                   const char *fname, int line)
 {
     int eh = default_error_handler; /* Error handler that will be used. */
-
+    int rbuf;
     /* User must provide this. */
     pioassert(fname, "code file name must be provided", __FILE__, __LINE__);
 
     if (file && file->iosystem->ioproc &&
 	(file->iotype == PIO_IOTYPE_PNETCDF || file->iotype == PIO_IOTYPE_NETCDF4P))
+      if (file->iosystem->io_rank == 0)
 	MPI_Reduce(MPI_IN_PLACE, &status, 1, MPI_INT, MPI_MIN, 0, file->iosystem->io_comm);
+      else
+	MPI_Reduce(&status, &rbuf, 1, MPI_INT, MPI_MIN, 0, file->iosystem->io_comm);
+
     LOG((1, "check_netcdf2 status = %d fname = %s line = %d", status, fname, line));
 
     /* Pick an error handler. */
