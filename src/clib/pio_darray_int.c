@@ -102,7 +102,7 @@ int get_gdim0(file_desc_t *file,io_desc_t *iodesc, int varid, int fndims, MPI_Of
 int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdimoffset,
 			 int rrcnt, int ndims, int fndims,
 			 int frame, PIO_Offset **startlist, PIO_Offset **countlist,
-			 MPI_Datatype *subarray, MPI_Datatype *filetype)
+			 MPI_Datatype *filetype)
 {
 
     int sa_ndims;
@@ -111,6 +111,7 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
     int mpierr;
     MPI_Aint displacements[rrcnt];
     int blocklengths[rrcnt];
+    MPI_Datatype subarray[rrcnt];
 
     if(rrcnt == 0)
 	return PIO_NOERR;
@@ -123,9 +124,6 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
     }
     if(*filetype != MPI_DATATYPE_NULL)
     {
-	for( int rc=0; rc<rrcnt; rc++)
-	    if ((mpierr = MPI_Type_free(subarray + rc)))
-		return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 	if ((mpierr = MPI_Type_free(filetype)))
 	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
@@ -198,6 +196,12 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
 
     if((mpierr = MPI_Type_commit(filetype)))
 	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
+    for( int rc=0; rc<rrcnt; rc++)
+      if (subarray[rc] != MPI_DATATYPE_NULL && (mpierr = MPI_Type_free(subarray + rc)))
+	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
+
     return PIO_NOERR;
 }
 
@@ -419,7 +423,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 {
 #ifdef USE_VARD_WRITE
 		    MPI_Datatype filetype = MPI_DATATYPE_NULL;
-		    MPI_Datatype subarray[rrcnt];
 #endif
                     /* For each variable to be written. */
                     for (int nv = 0; nv < nvars; nv++)
@@ -446,8 +449,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 				thisframe = 0;
 			    ierr = get_vard_mpidatatype(iodesc, gdim0, unlimdimoffset,
 							rrcnt, ndims, fndims,
-							thisframe, startlist, countlist,
-							subarray, &filetype);
+							thisframe, startlist, countlist, &filetype);
 			}
 #else
                         if (vdesc->record >= 0 && ndims < fndims)
@@ -464,10 +466,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 			if(nv==nvars-1 && filetype != MPI_DATATYPE_NULL)
 			{
 			    int mpierr;
-			    for(int i=0; i<rrcnt; i++)
-				if (subarray[i] != MPI_DATATYPE_NULL)
-				    if((mpierr = MPI_Type_free(subarray+i)))
-					return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 			    if((mpierr = MPI_Type_free(&filetype)))
 				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 			}
@@ -1137,36 +1135,27 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 if (regioncnt == iodesc->maxregions - 1)
                 {
 #if USE_VARD_READ
-		    MPI_Datatype filetype, subarray[rrlen];
-		    PIO_Offset unlimdimoffset;
-		    int mpierr;
-		    if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
+		  MPI_Datatype filetype;
+		  PIO_Offset unlimdimoffset;
+		  int mpierr;
+		  if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
 		    {
-			if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
-			    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+		      if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
+			return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 		    }
-		    else
-			unlimdimoffset = gdim0;
+		  else
+		    unlimdimoffset = gdim0;
 
-		    filetype = MPI_DATATYPE_NULL;
-		    for(int i=0; i<rrlen; i++)
-			subarray[i] = MPI_DATATYPE_NULL;
+		  filetype = MPI_DATATYPE_NULL;
 
-		    ierr = get_vard_mpidatatype(iodesc, gdim0, unlimdimoffset,
-						rrlen, ndims, fndims,
-						vdesc->record, startlist, countlist,
-						subarray, &filetype);
-		    ierr = ncmpi_get_vard_all(file->fh, vid, filetype, iobuf, iodesc->llen, iodesc->mpitype);
-		    for(int i=0; i<rrlen; i++)
-			if (subarray[i] != MPI_DATATYPE_NULL)
-			    if((mpierr = MPI_Type_free(subarray+i)))
-				return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-		    if((mpierr = MPI_Type_free(&filetype)))
-			return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+		  ierr = get_vard_mpidatatype(iodesc, gdim0, unlimdimoffset,
+					      rrlen, ndims, fndims,
+					      vdesc->record, startlist, countlist, &filetype);
+		  ierr = ncmpi_get_vard_all(file->fh, vid, filetype, iobuf, iodesc->llen, iodesc->mpitype);
+		  if(filetype != MPI_DATATYPE_NULL && (mpierr = MPI_Type_free(&filetype)))
+		    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
 #else
-
-
                     /* Read a list of subarrays. */
                     ierr = ncmpi_get_varn_all(file->fh, vid, rrlen, startlist,
                                               countlist, iobuf, iodesc->llen, iodesc->mpitype);
