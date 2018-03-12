@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>case.submit &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="User Tools" href="index.html" />
+    <link rel="next" title="compare_test_results" href="compare_test_results.html" />
+    <link rel="prev" title="list_e3sm_tests" href="list_e3sm_tests.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="compare_test_results.html" title="compare_test_results"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="list_e3sm_tests.html" title="list_e3sm_tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="case-submit">
+<span id="id1"></span><h1>case.submit<a class="headerlink" href="#case-submit" title="Permalink to this headline">¶</a></h1>
+<p><strong>case.submit</strong> is a script in CIMEROOT/scripts/Tools.</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ ./case.submit --help
+usage: 
+case.submit [&lt;casedir&gt;] [--verbose]
+OR
+case.submit --help
+[1mEXAMPLES:[0m
+    [1;32m# Setup case [0m
+    &gt; case.submit
+
+    [1;32m# Setup case, request mail at job begin and job end [0m
+    &gt; case.submit -m begin,end
+
+case.submit - Submit a cesm workflow to the queueing system or run it if there
+is no queueing system. A cesm workflow may include multiple jobs.
+
+positional arguments:
+  caseroot              Case directory to setup (default:
+                        /Users/aliceb/cesm2_0_alpha08g/cime/scripts/Tools)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug information (very verbose) to file /Users/
+                        aliceb/cesm2_0_alpha08g/cime/scripts/Tools/case.submit
+                        .log (default: False)
+  -v, --verbose         Add additional context (time and file) to log messages
+                        (default: False)
+  -s, --silent          Print only warnings and error messages (default:
+                        False)
+  --job JOB, -j JOB     Name of the job to be submitted, default is case.run
+                        can be any of the jobs listed in env_batch.xml
+                        (default: None)
+  --no-batch            Do not submit jobs to batch system, run locally.
+                        (default: False)
+  --prereq PREREQ       Specify a prerequiset job id, this job will not start
+                        until the job with this id is completed (batch mode
+                        only) (default: None)
+  --resubmit            Used with tests only, to continue rather than restart
+                        a test. (default: False)
+  --skip-preview-namelist
+                        Skip calling preview-namelist during case.run
+                        (default: False)
+  --mail-user MAIL_USER
+                        email to be used for batch notification. (default:
+                        None)
+  -M MAIL_TYPE, --mail-type MAIL_TYPE
+                        when to send user email. Options are: never, all,
+                        begin, end, fail.You can specify multiple types with
+                        either comma-separate args or multiple -M flags
+                        (default: None)
+  -a BATCH_ARGS, --batch-args BATCH_ARGS
+                        Used to pass additional arguments to batch system.
+                        (default: None)
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="list_e3sm_tests.html"
+                        title="previous chapter">list_e3sm_tests</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="compare_test_results.html"
+                        title="next chapter">compare_test_results</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tools_user/case.submit.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="compare_test_results.html" title="compare_test_results"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="list_e3sm_tests.html" title="list_e3sm_tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

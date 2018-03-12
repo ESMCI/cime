@@ -1,0 +1,14 @@
+
+.. _mkSrcfiles:
+
+####################################################
+mkSrcfiles 
+####################################################
+
+**mkSrcfiles** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./mkSrcfiles --help
+   :cwd: ../../../scripts/Tools

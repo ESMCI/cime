@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CIME.check_input_data &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CIME.check_input_data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">API for checking input for testcase</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">SharedArea</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.inputdata</span> <span class="kn">import</span> <span class="n">Inputdata</span>
+<span class="kn">from</span> <span class="nn">CIME.Servers.ftp</span> <span class="kn">import</span> <span class="n">FTP</span>
+<span class="kn">from</span> <span class="nn">CIME.Servers.svn</span> <span class="kn">import</span> <span class="n">SVN</span>
+<span class="kn">from</span> <span class="nn">CIME.Servers.wget</span> <span class="kn">import</span> <span class="n">WGET</span>
+
+<span class="kn">import</span> <span class="nn">fnmatch</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True if successfully downloaded</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">server</span><span class="o">.</span><span class="n">fileexists</span><span class="p">(</span><span class="n">rel_path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Trying to download file: &#39;{}&#39; to path &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+    <span class="c1"># Make sure local path exists, create if it does not</span>
+    <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">full_path</span><span class="p">))):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+
+    <span class="c1"># Use umask to make sure files are group read/writable. As long as parent directories</span>
+    <span class="c1"># have +s, then everything should work.</span>
+    <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">server</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="find_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.find_files">[docs]</a><span class="k">def</span> <span class="nf">find_files</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    recursively find all files matching a pattern</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">rootdir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="check_all_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_all_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_all_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">if</span> <span class="n">protocal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">address</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="n">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="n">protocal</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
+                                   <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">inputdata</span> <span class="o">=</span> <span class="n">Inputdata</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+                <span class="n">protocal</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">inputdata</span><span class="o">.</span><span class="n">get_next_server</span><span class="p">()</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">protocal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;Failed to find input data&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking server {} with protocal {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">protocal</span><span class="p">))</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="n">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="n">protocal</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
+                                       <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">)</span>
+
+    <span class="n">stage_refcase</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="stage_refcase"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.stage_refcase">[docs]</a><span class="k">def</span> <span class="nf">stage_refcase</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+    <span class="n">get_refcase</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span><span class="p">)</span>
+    <span class="n">run_type</span>     <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span>
+    <span class="n">continue_run</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">)</span>
+
+    <span class="c1"># We do not fully populate the inputdata directory on every</span>
+    <span class="c1"># machine and do not expect every user to download the 3TB+ of</span>
+    <span class="c1"># data in our inputdata repository. This code checks for the</span>
+    <span class="c1"># existence of inputdata in the local inputdata directory and</span>
+    <span class="c1"># attempts to download data from the server if it&#39;s needed and</span>
+    <span class="c1"># missing.</span>
+    <span class="k">if</span> <span class="n">get_refcase</span> <span class="ow">and</span> <span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&quot;startup&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">continue_run</span><span class="p">:</span>
+        <span class="n">din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
+        <span class="n">run_refdate</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDATE&quot;</span><span class="p">)</span>
+        <span class="n">run_refcase</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span><span class="p">)</span>
+        <span class="n">run_refdir</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDIR&quot;</span><span class="p">)</span>
+        <span class="n">rundir</span>       <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+
+        <span class="n">refdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">,</span> <span class="n">run_refdir</span><span class="p">,</span> <span class="n">run_refcase</span><span class="p">,</span> <span class="n">run_refdate</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">refdir</span><span class="p">),</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">*****************************************************************</span>
+<span class="sd">prestage ERROR: $refdir is not on local disk</span>
+<span class="sd">obtain this data from the svn input data repository</span>
+<span class="sd">&gt; mkdir -p {}</span>
+<span class="sd">&gt; cd {}</span>
+<span class="sd">&gt; cd ..</span>
+<span class="sd">&gt; svn export --force https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/{}</span>
+<span class="sd">or set GET_REFCASE to FALSE in env_run.xml</span>
+<span class="sd">and prestage the restart data to $RUNDIR manually</span>
+<span class="sd">*****************************************************************</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span> <span class="n">refdir</span><span class="p">,</span> <span class="n">refdir</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; - Prestaging REFCASE ({}) to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">))</span>
+
+        <span class="c1"># prestage the reference case&#39;s files.</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rundir</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating run directory: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">rundir</span><span class="p">)</span>
+
+        <span class="c1"># copy the refcases&#39; rpointer files to the run directory</span>
+        <span class="k">for</span> <span class="n">rpointerfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;{}&quot;</span><span class="p">,</span><span class="s2">&quot;*rpointer*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copy rpointer {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">))</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
+
+        <span class="c1"># link everything else</span>
+
+        <span class="k">for</span> <span class="n">rcfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span><span class="s2">&quot;*&quot;</span><span class="p">)):</span>
+            <span class="n">rcbaseline</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rcfile</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;{}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rcbaseline</span><span class="p">)):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Staging file {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcfile</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">rcfile</span><span class="p">,</span> <span class="s2">&quot;{}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rcbaseline</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">cam2file</span> <span class="ow">in</span>  <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;{}&quot;</span><span class="p">,</span><span class="s2">&quot;*.cam2.*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">)):</span>
+            <span class="n">camfile</span> <span class="o">=</span> <span class="n">cam2file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;cam2&quot;</span><span class="p">,</span> <span class="s2">&quot;cam&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">cam2file</span><span class="p">,</span> <span class="n">camfile</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="s2">&quot;svn&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True if no files missing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Fill in defaults as needed</span>
+    <span class="n">input_data_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">input_data_root</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">input_data_root</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">),</span> <span class="s2">&quot;Invalid input_data_root directory: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">),</span> <span class="s2">&quot;Invalid data_list_dir directory: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
+
+    <span class="n">data_list_files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">,</span> <span class="s2">&quot;*.input_data_list&quot;</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">data_list_files</span><span class="p">,</span> <span class="s2">&quot;No .input_data_list files found in dir &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
+
+    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;svn&quot;</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">SVN</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;ftp&quot;</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">FTP</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;wget&quot;</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">WGET</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;Unsupported inputdata protocal: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocal</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">data_list_file</span> <span class="ow">in</span> <span class="n">data_list_files</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading input file list: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)):</span>
+                <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
+                    <span class="c1"># expand xml variables</span>
+                    <span class="n">full_path</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+                    <span class="n">rel_path</span>  <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">rel_path</span> <span class="ow">and</span> <span class="n">rel_path</span> <span class="o">==</span> <span class="n">full_path</span><span class="p">):</span>
+                        <span class="c1"># User pointing to a file outside of input_data_root, we cannot determine</span>
+                        <span class="c1"># rel_path, and so cannot download the file. If it already exists, we can</span>
+                        <span class="c1"># proceed</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model {} missing file {} = &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+                                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    Cannot download file since it lives outside of the input_data_root &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">))</span>
+                            <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">False</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Found input file: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># There are some special values of rel_path that</span>
+                        <span class="c1"># we need to ignore - some of the component models</span>
+                        <span class="c1"># set things like &#39;NULL&#39; or &#39;same_as_TS&#39; -</span>
+                        <span class="c1"># basically if rel_path does not contain &#39;/&#39; (a</span>
+                        <span class="c1"># directory tree) you can assume it&#39;s a special</span>
+                        <span class="c1"># value and ignore it (perhaps with a warning)</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">rel_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">)):</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model {} missing file {} = &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+
+                            <span class="k">if</span> <span class="p">(</span><span class="n">download</span><span class="p">):</span>
+                                <span class="n">success</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+                                    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">False</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Already had input file: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Model {} no file specified for {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">no_files_missing</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

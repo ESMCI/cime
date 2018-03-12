@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Ensemble Consistency Test &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="Miscellaneous Tools" href="index.html" />
+    <link rel="next" title="2. CIME Load Balancing Tool" href="load-balancing-tool.html" />
+    <link rel="prev" title="Miscellaneous Tools" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="load-balancing-tool.html" title="2. CIME Load Balancing Tool"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Miscellaneous Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Miscellaneous Tools</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ensemble-consistency-test">
+<span id="id1"></span><h1>1. Ensemble Consistency Test<a class="headerlink" href="#ensemble-consistency-test" title="Permalink to this headline">¶</a></h1>
+<p>CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
+The verification tools in the CESM-ECT suite are:</p>
+<ul class="simple">
+<li>CAM-ECT - detects issues in CAM and CTSM (12 month runs)</li>
+<li>UF-CAM-ECT - detects issues in CAM and CTSM (9 time step runs)</li>
+<li>POP-ECT - detects issues in POP and CICE (12 month runs)</li>
+</ul>
+<p>The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine.
+The python ECT tools are located in the pyCECT subdirectory or <a class="reference external" href="https://github.com/NCAR/PyCECT/releases">https://github.com/NCAR/PyCECT/releases</a>.</p>
+<p>Before the test can be run, a summary file is needed of the ensemble runs to which the comparison will be made.
+Ensemble summary files (NetCDF) for existing tags for CAM-ECT, UF-CAM-ECT and POP-ECT that were created by CSEG are located (respectively) in the CESM input data
+directories:</p>
+<p>$CESMDATAROOT/inputdata/validation/ensembles
+$CESMDATAROOT/inputdata/validation/uf_ensembles
+$CESMDATAROOT/inputdata/validation/pop_ensembles</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add more content for ensemble consistency test</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Miscellaneous Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="load-balancing-tool.html"
+                        title="next chapter">2. CIME Load Balancing Tool</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/misc_tools/ect.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="load-balancing-tool.html" title="2. CIME Load Balancing Tool"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Miscellaneous Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Miscellaneous Tools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

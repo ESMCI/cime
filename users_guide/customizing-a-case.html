@@ -1,0 +1,470 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. Customizing a Case &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
+    <link rel="next" title="8. Cloning a Case" href="cloning-a-case.html" />
+    <link rel="prev" title="6. Running a Case" href="running-a-case.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cloning-a-case.html" title="8. Cloning a Case"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="running-a-case.html" title="6. Running a Case"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="customizing-a-case">
+<span id="id1"></span><h1>7. Customizing a Case<a class="headerlink" href="#customizing-a-case" title="Permalink to this headline">¶</a></h1>
+<p>All CIME-compliant components generate their namelist settings using the <strong>cime_config/buildnml</strong> file located in the component&#8217;s directory tree.
+For example, the CIME data atmosphere model (DATM) generates namelists using the script <strong>$CIMEROOT/components/data_comps/datm/cime_config/buildnml</strong>.</p>
+<p>User-specific component namelist changes should be made only by:</p>
+<ul class="simple">
+<li>editing the <strong>$CASEROOT/user_nl_xxx</strong> files.</li>
+<li>using <a class="reference internal" href="#modifying-an-xml-file"><span class="std std-ref">xmlchange</span></a> to modify xml variables in <strong>env_run.xml</strong>, <strong>env_build.xml</strong> or <strong>env_mach_pes.xml</strong>.</li>
+</ul>
+<p>You can preview the component namelists by running <strong>preview_namelists</strong> from <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
+This results in the creation of component namelists (for example, atm_in, lnd_in, and so on) in <strong>$CASEROOT/CaseDocs/</strong>. The namelist files are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time <strong>preview_namelists</strong>  and  <strong>case.submit</strong> are called.</p>
+<p>The following sections summarize how to modify component-specific runtime settings:</p>
+<div class="section" id="modifying-an-xml-file">
+<span id="id2"></span><h2>7.1. Modifying an xml file<a class="headerlink" href="#modifying-an-xml-file" title="Permalink to this headline">¶</a></h2>
+<p>Run the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> script <strong>xmlchange</strong> to modify variables in xml files. The script performs variable error checking.</p>
+<p>Here are two examples of how to invoke <strong>xmlchange</strong>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xmlchange</span> <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="o">--</span> <span class="n">OR</span> <span class="o">--</span>
+<span class="n">xmlchange</span> <span class="o">-</span><span class="nb">id</span> <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">val</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">file</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">-id</span></code> argument identifies the variable to be changed, and <code class="docutils literal"><span class="pre">-val</span></code> is the intended value of that variable. See the <strong>help</strong> text for more usage information:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xmlchange</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="customizing-the-pe-layout">
+<span id="changing-the-pe-layout"></span><h2>7.2. Customizing the PE layout<a class="headerlink" href="#customizing-the-pe-layout" title="Permalink to this headline">¶</a></h2>
+<p>Settings in the <strong>env_mach_pes.xml</strong> file determine:</p>
+<ul class="simple">
+<li>the number of MPI tasks and OpenMP threads for each component.</li>
+<li>the number of instances of each component.</li>
+<li>the layout of the components across the hardware processors.</li>
+</ul>
+<p>Optimizing the throughput and efficiency of a CIME experiment often involves customizing the processor (PE) layout. (See <a class="reference internal" href="optimizing-processor-layout.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>.)
+CIME provides significant flexibility with respect to the layout of components across different hardware processors. In general, the CIME components &#8211; atm, lnd, ocn, and so on &#8211; can run on overlapping or mutually unique processors. While each component is associated with a unique MPI communicator, the CIME driver runs on the union of all processors and controls the sequencing and hardware partitioning.</p>
+<p>The component processor layout is determined by the following settings:</p>
+<ul class="simple">
+<li>the number of MPI tasks.</li>
+<li>the number of OpenMP threads per task.</li>
+<li>the root MPI task number from the global communicator.</li>
+<li>the maximum number of MPI tasks per node.</li>
+</ul>
+<p>The entries in <strong>env_mach_pes.xml</strong> have the following meanings:</p>
+<table border="1" class="colwidths-given docutils" id="id7">
+<caption><span class="caption-text">&#8220;Entries in env_mach_pes.xml&#8221;</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">xml variable</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MAX_TASKS_PER_MODE</td>
+<td>The total number of (MPI tasks) * (OpenMP threads) allowed on a node. This is defined in <strong>config_machines.xml</strong> and therefore given a default setting, but can be user modified.</td>
+</tr>
+<tr class="row-odd"><td>MAX_MPITASKS_PER_NODE</td>
+<td>The maximum number of MPI tasks per node. This is defined in <strong>config_machines.xml</strong> and therefore given a default setting, but can be user modified.</td>
+</tr>
+<tr class="row-even"><td>NTASKS</td>
+<td>Total number of MPI tasks. A negative value indicates nodes rather than tasks, where MAX_MPITASKS_PER_NODE * -NTASKS equals the number of MPI tasks.</td>
+</tr>
+<tr class="row-odd"><td>NTHRDS</td>
+<td>Number of OpenMP threads per MPI task.</td>
+</tr>
+<tr class="row-even"><td>ROOTPE</td>
+<td>The global MPI task of the component root task; if negative, indicates nodes rather than tasks.</td>
+</tr>
+<tr class="row-odd"><td>PSTRID</td>
+<td>The stride of MPI tasks across the global set of pes (for now set to 1).</td>
+</tr>
+<tr class="row-even"><td>NINST</td>
+<td>The number of component instances, which are spread evenly across NTASKS.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="example-1">
+<h3>7.2.1. <strong>Example 1</strong><a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h3>
+<p>If a component has <strong>NTASKS=16</strong>, <strong>NTHRDS=4</strong> and <strong>ROOTPE=32</strong>, it will run on 64 hardware processors using 16 MPI tasks and 4 threads per task starting at global MPI task 32.</p>
+<p>Each CIME component has corresponding entries for <code class="docutils literal"><span class="pre">NTASKS</span></code>, <code class="docutils literal"><span class="pre">NTHRDS</span></code>, <code class="docutils literal"><span class="pre">ROOTPE</span></code> and <code class="docutils literal"><span class="pre">NINST</span></code> in the <strong>env_mach_pes.xml</strong> file.</p>
+<p><strong>Note:</strong></p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">NTASKS</span></code> must be greater or equal to 1 even for inactive (stub) components.</li>
+<li><code class="docutils literal"><span class="pre">NTHRDS</span></code> must be greater or equal to 1.</li>
+<li>If <code class="docutils literal"><span class="pre">NTHRDS</span></code> = 1, this generally means threading parallelization will be off for that component.</li>
+<li><code class="docutils literal"><span class="pre">NTHRDS</span></code> should never be set to zero.</li>
+<li>The total number of hardware processors allocated to a component is <code class="docutils literal"><span class="pre">NTASKS</span></code> * <code class="docutils literal"><span class="pre">NTHRDS</span></code>.</li>
+<li>The coupler processor inputs specify the pes used by coupler computation such as mapping, merging, diagnostics, and flux calculation. This is distinct from the driver, which automatically runs on the union of all processors to manage model concurrency and sequencing.</li>
+<li>The root processor is set relative to the MPI global communicator, not the hardware processors counts. An example of this is below.</li>
+<li>The layout of components on processors has no impact on the science.</li>
+<li>If all components have identical <code class="docutils literal"><span class="pre">NTASKS</span></code>, <code class="docutils literal"><span class="pre">NTHRDS</span></code>, and <code class="docutils literal"><span class="pre">ROOTPE</span></code> settings, all components will run sequentially on the same hardware processors.</li>
+</ul>
+<p>The scientific sequencing is hardwired into the driver. Changing processor layouts does not change intrinsic coupling lags or coupling sequencing.</p>
+<p>For a <strong>fully active configuration</strong>, the atmosphere component is hardwired in the driver to never run concurrently with the land or ice component. Performance improvements associated with processor layout concurrency therefore are constrained in this case such that there is never a performance reason not to overlap the atmosphere component with the land and ice components. Beyond that constraint, the land, ice, coupler and ocean models can run concurrently, and the ocean model can also run concurrently with the atmosphere model.</p>
+<p>An important but often misunderstood point: The root processor for any given component is set relative to the MPI global communicator, not the hardware processor counts. For instance, in the following example, the atmosphere and ocean will run concurrently, each on 64 processors with the atmosphere running on MPI tasks 0-15 and the ocean running on MPI tasks 16-79.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">NTASKS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">6</span>  <span class="n">NTHRRDS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">4</span>  <span class="n">ROOTPE</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">64</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>   <span class="n">ROOTPE</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">16</span>
+</pre></div>
+</div>
+<p>The first 16 tasks are each threaded 4 ways for the atmosphere. CIME ensures that the batch submission script (<strong>$CASE.run</strong>) automatically requests 128 hardware processors, and the first 16 MPI tasks will be laid out on the first 64 hardware processors with a stride of 4. The next 64 MPI tasks are laid out on the second set of 64 hardware processors.</p>
+<p>If you had set <code class="docutils literal"><span class="pre">ROOTPE_OCN</span></code> to 64 in this example, a total of 176 processors would be requested, the atmosphere would be laid out on the first 64 hardware processors in 16x4 fashion, and the ocean model would be laid out on hardware processors 113-176. Hardware processors 65-112 would be allocated but completely idle.</p>
+</div>
+<div class="section" id="example-2">
+<h3>7.2.2. <strong>Example 2</strong><a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h3>
+<p>If a component has <strong>NTASKS=-2</strong>, <strong>NTHRDS=4</strong> and <strong>ROOTPE=0</strong>, <strong>MAX_MPITASKS_PER_NODE=4</strong>, <strong>MAX_TASKS_PER_NODE=4</strong>, it will run on (8 MPI tasks * 4 threads) = 32 hardware processors on 8 nodes.</p>
+<p>If you intended 2 nodes INSTEAD of 8 nodes, then you would change <strong>MAX_MPITASKS_PER_NODE=1</strong> (using <strong>xmlchange</strong>).</p>
+<p><strong>Note</strong>: <strong>env_mach_pes.xml</strong> <em>cannot</em> be modified after <strong>case.setup</strong> has been invoked without first running the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">case</span><span class="o">.</span><span class="n">setup</span> <span class="o">--</span><span class="n">clean</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="customizing-driver-namelists">
+<span id="changing-driver-namelists"></span><h2>7.3. Customizing driver namelists<a class="headerlink" href="#customizing-driver-namelists" title="Permalink to this headline">¶</a></h2>
+<p>Driver namelist variables belong in two groups:</p>
+<ol class="arabic simple">
+<li>Those that are set directly from <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml variables.</li>
+<li>Those that are set by the driver utility <strong>$CIMEROOT/src/drivers/mct/cime_config/buildnml</strong>.</li>
+</ol>
+<p>All driver namelist variables are defined in the file <strong>$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_drv.xml</strong>.
+The variables that can be changed only by modifying xml variables appear with the <em>entry</em> attribute <code class="docutils literal"><span class="pre">modify_via_xml=&quot;xml_variable_name&quot;</span></code>.</p>
+<p>All other variables that appear in the <strong>namelist_definition_drv.xml</strong> file can be modified by adding a keyword value pair at the end of <code class="docutils literal"><span class="pre">user_nl_cpl</span></code>.
+For example, to change the driver namelist value of <code class="docutils literal"><span class="pre">eps_frac</span></code> to <code class="docutils literal"><span class="pre">1.0e-15</span></code>, add the following line to the end of the <code class="docutils literal"><span class="pre">user_nl_cpl</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">eps_frac</span> <span class="o">=</span> <span class="mf">1.0e-15</span>
+</pre></div>
+</div>
+<p>To see the result of change, call <strong>preview_namelists</strong> and verify that the new value appears in <strong>CaseDocs/drv_in</strong>.</p>
+</div>
+<div class="section" id="customizing-data-model-namelists-and-stream-files">
+<span id="changing-data-model-namelists"></span><h2>7.4. Customizing data model namelists and stream files<a class="headerlink" href="#customizing-data-model-namelists-and-stream-files" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="data-atmosphere-datm">
+<h3>7.4.1. Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this headline">¶</a></h3>
+<p>DATM is discussed in detail in <a class="reference internal" href="../data_models/data-atm.html#data-atm"><span class="std std-ref">data atmosphere overview</span></a>.
+DATM can be user-customized by changing either its  <em>namelist input files</em> or its <em>stream files</em>.
+The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</strong> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>datm_in</strong> or <strong>datm_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the <strong>user_nl_datm</strong> file or the <strong>user_nl_datm_NNN</strong> file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DATM stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">datm.streams.txt.[extension]</span> <span class="pre">user_datm.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_datm.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_datm.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>If the stream txt file is <strong>datm.streams.txt.CORE2_NYF.GISS</strong>, the modified copy should be <strong>user_datm.streams.txt.CORE2_NYF.GISS</strong>.
+After calling <strong>preview_namelists</strong> again, your edits should appear in <strong>CaseDocs/datm.streams.txt.CORE2_NYF.GISS</strong>.</p>
+</div>
+<div class="section" id="data-ocean-docn">
+<h3>7.4.2. Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this headline">¶</a></h3>
+<p>DOCN is discussed in detail in <a class="reference internal" href="../data_models/data-ocean.html#data-ocean"><span class="std std-ref">data ocean overview</span></a>.
+DOCN can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</strong> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>docn_in</strong> or <strong>docn_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DOCN stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">docn.streams.txt.[extension]</span> <span class="pre">user_docn.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_docn.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_docn.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>As an example, if the stream text file is <strong>docn.stream.txt.prescribed</strong>, the modified copy should be <strong>user_docn.streams.txt.prescribed</strong>.
+After changing this file and calling <strong>preview_namelists</strong> again, your edits should appear in <strong>CaseDocs/docn.streams.txt.prescribed</strong>.</p>
+</div>
+<div class="section" id="data-sea-ice-dice">
+<h3>7.4.3. Data Sea-ice (DICE)<a class="headerlink" href="#data-sea-ice-dice" title="Permalink to this headline">¶</a></h3>
+<p>DICE is discussed in detail in <a class="reference internal" href="../data_models/data-seaice.html#data-seaice"><span class="std std-ref">data sea-ice overview</span></a>.
+DICE can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DICE is <code class="docutils literal"><span class="pre">dice_in</span></code> (or <code class="docutils literal"><span class="pre">dice_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dice</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dice_NNN</span></code> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>dice_in</strong> or <strong>dice_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DICE stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">dice.streams.txt.[extension]</span> <span class="pre">user_dice.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_dice.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_dice.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="section" id="data-land-dlnd">
+<h3>7.4.4. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h3>
+<p>DLND is discussed in detail in <a class="reference internal" href="../data_models/data-lnd.html#data-lnd"><span class="std std-ref">data land overview</span></a>.
+DLND can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DLND is <code class="docutils literal"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal"><span class="pre">dlnd_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dlnd</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dlnd_NNN</span></code> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>dlnd_in</strong> or <strong>dlnd_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DLND stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">dlnd.streams.txt.[extension]</span> <span class="pre">user_dlnd.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_dlnd.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_dlnd.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="section" id="data-river-drof">
+<h3>7.4.5. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h3>
+<p>DROF is discussed in detail in <a class="reference internal" href="../data_models/data-river.html#data-river"><span class="std std-ref">data river overview</span></a>.
+DROF can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DROF is <code class="docutils literal"><span class="pre">drof_in</span></code> (or <code class="docutils literal"><span class="pre">drof_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_drof</span></code> (or <code class="docutils literal"><span class="pre">user_nl_drof_NNN</span></code> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>drof_in</strong> or <strong>drof_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DROF stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">drof.streams.txt.[extension]</span> <span class="pre">user_drof.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_drof.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_drof.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="customizing-cesm-active-component-specific-namelist-settings">
+<h2>7.5. Customizing CESM active component-specific namelist settings<a class="headerlink" href="#customizing-cesm-active-component-specific-namelist-settings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cam">
+<h3>7.5.1. CAM<a class="headerlink" href="#cam" title="Permalink to this headline">¶</a></h3>
+<p>CAM&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <code class="docutils literal"><span class="pre">Buildconf/cam.buildnml.csh</span></code>. The folllowing are used to set compset variables (for example, &#8220;-phys cam5&#8221; for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>`CAM_CONFIG_OPTS &lt;http://www.cesm.ucar.edu/models/cesm2.0/external-link-here&gt;`_
+`CAM_NAMELIST_OPTS &lt;http://www.cesm.ucar.edu/models/cesm2.0/external-link-here&gt;`_
+`CAM_NML_USECASE &lt;http://www.cesm.ucar.edu/models/cesm2.0/external-link-here&gt;`_
+</pre></div>
+</div>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM namelist variables</a>.</p>
+<p>To modify CAM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cam</strong> file. (See the documentation for each file at the top of that file.)</p>
+<p>For example, to change the solar constant to 1363.27, modify <strong>user_nl_cam</strong> file to contain the following line at the end:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">solar_const</span><span class="o">=</span><span class="mf">1363.27</span>
+</pre></div>
+</div>
+<p>To see the result, call <strong>preview_namelists</strong> and verify that the new value appears in <strong>CaseDocs/atm_in</strong>.</p>
+</div>
+<div class="section" id="clm">
+<h3>7.5.2. CLM<a class="headerlink" href="#clm" title="Permalink to this headline">¶</a></h3>
+<p>CIME calls <strong>$SRCROOT/components/clm/cime_config/buildnml</strong> to generate the CLM namelist variables.
+CLM-specific CIME xml variables are set in <strong>$SRCROOT/components/clm/cime_config/config_component.xml</strong> and are used by CLM&#8217;s <strong>buildnml</strong> script to generate the namelist.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM namelist variables</a>.</p>
+<p>To modify CLM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_clm</strong> file. To see the result, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/lnd_in</strong>.</p>
+</div>
+<div class="section" id="rtm">
+<h3>7.5.3. RTM<a class="headerlink" href="#rtm" title="Permalink to this headline">¶</a></h3>
+<p>CIME calls <strong>$SRCROOT/components/rtm/cime_config/buildnml</strong> to generate the RTM namelist variables.</p>
+<p>For complete documentation of namelist settings, see RTM namelist variables. //SHOULD THERE BE A LINK HERE?//</p>
+<p>To modify RTM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_rtm</strong> file. To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/rof_in</strong>.</p>
+<p>&#8212;
+CICE
+&#8212;</p>
+<p>The CICE <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <strong>Buildconf/cice.buildnml.csh</strong>. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_CONFIG_OPTS</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_NAMELIST_OPTS</a> are used to set compset-specific variables and in general should not be modified for supported compsets.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>.</p>
+<p>To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cice</strong> file. (See the documentation for each file at the top of that file.) To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/ice_in</strong>.</p>
+<p>In addition, <strong>case.setup</strong> creates CICE&#8217;s compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <strong>env_build.xml</strong> as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>./case.setup
+  ?
+Buildconf/cice.buildnml.csh and $NTASKS_ICE and $NTHRDS_ICE
+  ?
+env_build.xml variables CICE_BLCKX, CICE_BLCKY, CICE_MXBLCKS, CICE_DECOMPTYPE
+CPP variables in cice.buildexe.csh
+</pre></div>
+</div>
+</div>
+<div class="section" id="pop2">
+<h3>7.5.4. POP2<a class="headerlink" href="#pop2" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">POP2 namelist variables</a> for complete description of the POP2 runtime namelist variables. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">OCN_COUPLING, OCN_ICE_FORCING andOCN_TRANSIENT</a> are normally used ONLY to set compset-specific variables and should not be edited. For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>.</p>
+<p>To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_pop2</strong> file. (See the documentation for each file at the top of that file.) To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/ocn_in</strong>.</p>
+<p>In addition, <strong>cesm_setup</strong> generates POP2&#8217;s compile-time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <strong>env_build.xml</strong> as shown here:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>./cesm_setup
+    ?
+Buildconf/pop2.buildnml.csh and $NTASKS_OCN and $NTHRDS_OCN
+    ?
+env_build.xml variables POP2_BLCKX, POP2_BLCKY, POP2_MXBLCKS, POP2_DECOMPTYPE
+CPP variables in pop2.buildexe.csh
+</pre></div>
+</div>
+<div class="section" id="cism">
+<h4>7.5.4.1. CISM<a class="headerlink" href="#cism" title="Permalink to this headline">¶</a></h4>
+<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM namelist variables</a> for a complete description of the CISM runtime namelist variables. This includes variables that appear both in <strong>cism_in</strong> and in <strong>cism.config</strong>.</p>
+<p>To modify any of these settings, add the appropriate keyword/value pair at the end of the <strong>user_nl_cism</strong> file. (See the documentation for each file at the top of that file.) To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/cism_in</strong> and <strong>CaseDocs/cism.config</strong>.</p>
+<p>Some CISM runtime settings are sets via <strong>env_run.xml</strong>, as documented in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM runtime variables</a>. The model resolution, for example, is set via <code class="docutils literal"><span class="pre">CISM_GRID</span></code>. The value of <code class="docutils literal"><span class="pre">CISM_GRID</span></code> determines the default value of a number of other namelist parameters.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. Customizing a Case</a><ul>
+<li><a class="reference internal" href="#modifying-an-xml-file">7.1. Modifying an xml file</a></li>
+<li><a class="reference internal" href="#customizing-the-pe-layout">7.2. Customizing the PE layout</a><ul>
+<li><a class="reference internal" href="#example-1">7.2.1. <strong>Example 1</strong></a></li>
+<li><a class="reference internal" href="#example-2">7.2.2. <strong>Example 2</strong></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customizing-driver-namelists">7.3. Customizing driver namelists</a></li>
+<li><a class="reference internal" href="#customizing-data-model-namelists-and-stream-files">7.4. Customizing data model namelists and stream files</a><ul>
+<li><a class="reference internal" href="#data-atmosphere-datm">7.4.1. Data Atmosphere (DATM)</a></li>
+<li><a class="reference internal" href="#data-ocean-docn">7.4.2. Data Ocean (DOCN)</a></li>
+<li><a class="reference internal" href="#data-sea-ice-dice">7.4.3. Data Sea-ice (DICE)</a></li>
+<li><a class="reference internal" href="#data-land-dlnd">7.4.4. Data Land (DLND)</a></li>
+<li><a class="reference internal" href="#data-river-drof">7.4.5. Data River (DROF)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customizing-cesm-active-component-specific-namelist-settings">7.5. Customizing CESM active component-specific namelist settings</a><ul>
+<li><a class="reference internal" href="#cam">7.5.1. CAM</a></li>
+<li><a class="reference internal" href="#clm">7.5.2. CLM</a></li>
+<li><a class="reference internal" href="#rtm">7.5.3. RTM</a></li>
+<li><a class="reference internal" href="#pop2">7.5.4. POP2</a><ul>
+<li><a class="reference internal" href="#cism">7.5.4.1. CISM</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="running-a-case.html"
+                        title="previous chapter">6. Running a Case</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cloning-a-case.html"
+                        title="next chapter">8. Cloning a Case</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/customizing-a-case.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cloning-a-case.html" title="8. Cloning a Case"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="running-a-case.html" title="6. Running a Case"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

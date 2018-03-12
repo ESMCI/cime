@@ -1,0 +1,14 @@
+
+.. _simple-py-prof:
+
+####################################################
+simple-py-prof 
+####################################################
+
+**simple-py-prof** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./simple-py-prof --help
+   :cwd: ../../../scripts/Tools

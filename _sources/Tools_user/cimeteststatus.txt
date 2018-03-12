@@ -1,0 +1,14 @@
+
+.. _cimeteststatus:
+
+####################################################
+cimeteststatus 
+####################################################
+
+**cimeteststatus** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./cimeteststatus --help
+   :cwd: ../../../scripts/Tools

@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jenkins_generic_job &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="User Tools" href="index.html" />
+    <link rel="next" title="xmlquery" href="xmlquery.html" />
+    <link rel="prev" title="compare_namelists" href="compare_namelists.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xmlquery.html" title="xmlquery"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="compare_namelists.html" title="compare_namelists"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="jenkins-generic-job">
+<span id="id1"></span><h1>jenkins_generic_job<a class="headerlink" href="#jenkins-generic-job" title="Permalink to this headline">¶</a></h1>
+<p><strong>jenkins_generic_job</strong> is a script in CIMEROOT/scripts/Tools.</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ ./jenkins_generic_job --help
+usage: 
+jenkins_generic_job [-g] [-d] [--verbose]
+OR
+jenkins_generic_job --help
+
+[1mEXAMPLES:[0m
+    [1;32m# Run the tests and compare baselines [0m
+    &gt; jenkins_generic_job
+    [1;32m# Run the tests, compare baselines, and update dashboard [0m
+    &gt; jenkins_generic_job -d
+    [1;32m# Run the tests, generating a full set of baselines (useful for first run on a machine) [0m
+    &gt; jenkins_generic_job -g
+
+Jenkins runs this script to perform a test of an e3sm test suite. Essentially,
+a wrapper around create_test and wait_for_tests that handles cleanup of old
+test results and ensures that the batch system is left in a clean state.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug information (very verbose) to file /Users/
+                        aliceb/cesm2_0_alpha08g/cime/scripts/Tools/jenkins_gen
+                        eric_job.log (default: False)
+  -v, --verbose         Add additional context (time and file) to log messages
+                        (default: False)
+  -s, --silent          Print only warnings and error messages (default:
+                        False)
+  -g, --generate-baselines
+                        Generate baselines (default: False)
+  --baseline-compare BASELINE_COMPARE
+                        Do baseline comparisons (yes/no) (default: None)
+  --submit-to-cdash     Send results to CDash (default: False)
+  --no-batch            Do not use batch system even if on batch machine
+                        (default: False)
+  -c CDASH_BUILD_NAME, --cdash-build-name CDASH_BUILD_NAME
+                        Build name to use for CDash submission. Default will
+                        be &lt;TEST_SUITE&gt;_&lt;BRANCH&gt;_&lt;COMPILER&gt; (default: None)
+  -p CDASH_PROJECT, --cdash-project CDASH_PROJECT
+                        The name of the CDash project where results should be
+                        uploaded (default: ACME_Climate)
+  -b BASELINE_NAME, --baseline-name BASELINE_NAME
+                        Baseline name for baselines to use. Also impacts
+                        dashboard job name. Useful for testing a branch other
+                        than next or master (default: master)
+  -O OVERRIDE_BASELINE_NAME, --override-baseline-name OVERRIDE_BASELINE_NAME
+                        Force comparison with these baseines without impacting
+                        dashboard or test-id. (default: None)
+  -t TEST_SUITE, --test-suite TEST_SUITE
+                        Override default e3sm test suite that will be run
+                        (default: None)
+  -r SCRATCH_ROOT, --scratch-root SCRATCH_ROOT
+                        Override default e3sm scratch root. Use this to avoid
+                        conflicting with other jenkins jobs (default: None)
+  --cdash-build-group CDASH_BUILD_GROUP
+                        The build group to be used to display results on the
+                        CDash dashboard. (default: ACME_Latest)
+  -j PARALLEL_JOBS, --parallel-jobs PARALLEL_JOBS
+                        Number of tasks create_test should perform
+                        simultaneously. Default will be min(num_cores,
+                        num_tests). (default: None)
+  --walltime WALLTIME   Force a specific walltime for all tests. (default:
+                        None)
+  -m MACHINE, --machine MACHINE
+                        The machine for which to build tests, this machine
+                        must be defined in the config_machines.xml file for
+                        the given model. Default is to match the name of the
+                        machine in the test name or the name of the machine
+                        this script is run on to the NODENAME_REGEX field in
+                        config_machines.xml. This option is highly unsafe and
+                        should only be used if you know what you&#39;re doing.
+                        (default: None)
+  --compiler COMPILER   Compiler to use to build cime. Default will be the
+                        default defined for the machine. (default: None)
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="compare_namelists.html"
+                        title="previous chapter">compare_namelists</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="xmlquery.html"
+                        title="next chapter">xmlquery</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tools_user/jenkins_generic_job.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="xmlquery.html" title="xmlquery"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="compare_namelists.html" title="compare_namelists"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

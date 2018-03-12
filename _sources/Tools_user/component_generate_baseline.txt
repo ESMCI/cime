@@ -1,0 +1,14 @@
+
+.. _component_generate_baseline:
+
+####################################################
+component_generate_baseline 
+####################################################
+
+**component_generate_baseline** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./component_generate_baseline --help
+   :cwd: ../../../scripts/Tools

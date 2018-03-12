@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>xmlchange &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="User Tools" href="index.html" />
+    <link rel="next" title="code_checker" href="code_checker.html" />
+    <link rel="prev" title="case.build" href="case.build.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code_checker.html" title="code_checker"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="case.build.html" title="case.build"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="xmlchange">
+<span id="id1"></span><h1>xmlchange<a class="headerlink" href="#xmlchange" title="Permalink to this headline">¶</a></h1>
+<p><strong>xmlchange</strong> is a script in CIMEROOT/scripts/Tools.</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ ./xmlchange --help
+usage: 
+xmlchange [&lt;changeargs&gt;] [--verbose][--file file][--id id][--val value][--noecho][--append][--force]
+OR
+xmlchange --help
+
+[1mEXAMPLES:[0m
+    [1;32m# xmlchange REST_OPT=ndays,REST_N=4 [0m
+    &gt; xmlchange
+
+This utility allows the user to change a env_*xml file via a commandline
+interface. The command is echoed to the CaseStatus file, unless -noecho is
+given. The purpose of this echoing is to provide a &quot;paper trail&quot; of changes
+made by the user, so calls to xmlchange by the cime scripts that are part of
+the normal case setup/build process should generally use -noecho.
+
+positional arguments:
+  listofsettings        Comma seperated list of settings in the form:
+                        var1=value,var2=value,... (default: )
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug information (very verbose) to file /Users/
+                        aliceb/cesm2_0_alpha08g/cime/scripts/Tools/xmlchange.l
+                        og (default: False)
+  -v, --verbose         Add additional context (time and file) to log messages
+                        (default: False)
+  -s, --silent          Print only warnings and error messages (default:
+                        False)
+  --caseroot CASEROOT   Case directory to change (default:
+                        /Users/aliceb/cesm2_0_alpha08g/cime/scripts/Tools)
+  -loglevel LOGLEVEL    ignored, backward compatibility only (default: None)
+  -file FILE, --file FILE
+                        xml file to edit (default: None)
+  -id ID, --id ID       the xml entry id (default: None)
+  -val VAL, --val VAL   the value to set (default: None)
+  -delimiter DELIMITER, --delimiter DELIMITER
+                        set delimiter string, default is , (default: ,)
+  -dryrun DRYRUN, --dryrun DRYRUN
+                        parse settings and print key value pairs only
+                        (default: False)
+  -noecho, --noecho     do not update CaseStatus with this change (default:
+                        False)
+  -append, --append     append to the existing value (default: False)
+  -subgroup SUBGROUP, --subgroup SUBGROUP
+                        apply to this subgroup only (default: None)
+  -f, --force           ignore typing checks and store value (default: False)
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="case.build.html"
+                        title="previous chapter">case.build</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="code_checker.html"
+                        title="next chapter">code_checker</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tools_user/xmlchange.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="code_checker.html" title="code_checker"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="case.build.html" title="case.build"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>
