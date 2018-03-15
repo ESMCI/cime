@@ -262,11 +262,10 @@ class EnvBatch(EnvBase):
                         directive = transform_vars(directive, case=case, subgroup=job, default=default, overrides=overrides)
                     else:
                         directive = transform_vars(directive, default=default)
-                    result.append("{} {}".format("" if directive_prefix is None else directive_prefix, directive))
-
-        if "fram" in case.get_value("MACH") and job == "case.st_archive":
-            directive = "--qos=preproc"
-            result.append("{} {}".format("" if directive_prefix is None else directive_prefix, directive))
+                    result.append("{} {}".format(directive_prefix, directive))
+                if "fram" in case.get_value("MACH") and job == "case.st_archive":
+                    directive = "--qos=preproc"
+                    result.append("{} {}".format(directive_prefix, directive))
 
         return "\n".join(result)
 
