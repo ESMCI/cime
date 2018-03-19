@@ -310,6 +310,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     int ierr = PIO_NOERR;
 #if USE_VARD_WRITE
     PIO_Offset gdim0;  /* global size of first dimension if no unlimited dimension and ndims<fndims */
+    bool use_vard=true;
     gdim0 = 0;
 #endif
     /* Check inputs. */
@@ -340,7 +341,11 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
 #if USE_VARD_WRITE
     if (!ios->async || !ios->ioproc)
-	ierr = get_gdim0(file, iodesc, varids[0], fndims, &gdim0);
+    {
+      if ((ierr = get_gdim0(file, iodesc, varids[0], fndims, &gdim0)))
+        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+
+    }
 #endif
 
     /* If this is an IO task write the data. */
@@ -424,14 +429,24 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 #ifdef USE_VARD_WRITE
 		    MPI_Datatype filetype = MPI_DATATYPE_NULL;
 #endif
+		    int fvartype;
                     /* For each variable to be written. */
                     for (int nv = 0; nv < nvars; nv++)
                     {
+		      
                         /* Get the var info. */
                         if ((ierr = get_var_desc(varids[nv], &file->varlist, &vdesc)))
                             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
 #if USE_VARD_WRITE
+			/* vard does not support type conversion fail over to varn if var is not the same type as defined in file */
+			if ((ierr = ncmpi_inq_vartype(file->fh, varids[nv], &fvartype)))
+                            return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+			    if (fvartype != vdesc->pio_type){
+			      LOG((0, "ERROR: pnetcdf vard does not support type conversion varid %d filetype %d piotype %d"
+				   ,varids[nv],fvartype, vdesc->pio_type));
+			    }			      
+
                         /* If this is the first variable or the frame has changed between variables (this should be rare) */
 			if(nv==0 || (nv > 0 && frame != NULL && frame[nv] != frame[nv-1])){
 			    int thisframe;
