@@ -213,6 +213,7 @@ void pio_log(int severity, const char *fmt, ...)
         ptr += strlen(ERROR_PREFIX);
         rem_len -= strlen(ERROR_PREFIX);
     }
+
     for (t = 0; t < severity; t++)
     {
         strncpy(ptr++, "\t", (rem_len > 0) ? rem_len : 0);
@@ -225,10 +226,17 @@ void pio_log(int severity, const char *fmt, ...)
     ptr += strlen(rank_str);
     rem_len -= strlen(rank_str);
 
+    /* Show the severity. */
+    snprintf(rank_str, MAX_RANK_STR, ":%d ", severity);
+    strncpy(ptr, rank_str, (rem_len > 0) ? rem_len : 0);
+    ptr += strlen(rank_str);
+    rem_len -= strlen(rank_str);
+
     /* Print out the variable list of args with vprintf. */
     va_start(argp, fmt);
     vsnprintf(ptr, ((rem_len > 0) ? rem_len : 0), fmt, argp);
     va_end(argp);
+
 
     /* Put on a final linefeed. */
     ptr = msg + strlen(msg);
