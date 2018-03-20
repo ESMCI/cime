@@ -319,6 +319,12 @@ or they can be in the compset definition, or both.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="CIME.case.Case.case_setup">
+<code class="descname">case_setup</code><span class="sig-paren">(</span><em>clean=False</em>, <em>test_mode=False</em>, <em>reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.case_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.case_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>in case_setup</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="CIME.case.Case.check_if_comp_var">
 <code class="descname">check_if_comp_var</code><span class="sig-paren">(</span><em>vid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.check_if_comp_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.check_if_comp_var" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -628,7 +634,7 @@ files that are associated with these restart files.)</p>
 <dl class="function">
 <dt id="CIME.case_st_archive.get_file_date">
 <code class="descclassname">CIME.case_st_archive.</code><code class="descname">get_file_date</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#get_file_date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.get_file_date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the date associated with the filename as a datetime object representing the correct date
+<dd><p>Returns the date associated with the filename as a date object representing the correct date
 Formats supported:
 &#8220;%Y-%m-%d_%h.%M.%s
 &#8220;%Y-%m-%d_%05s&#8221;
@@ -637,19 +643,19 @@ Formats supported:
 &#8220;%Y-%m&#8221;
 &#8220;%Y.%m&#8221;</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0001-01-06-00435.nc&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(1, 1, 6, 0, 7, 15)</span>
+<span class="go">date(1, 1, 6, 0, 7, 15)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0010-1-06_00435.nc&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(10, 1, 6, 0, 7, 15)</span>
+<span class="go">date(10, 1, 6, 0, 7, 15)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0010-10.nc&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(10, 10, 1, 0, 0)</span>
+<span class="go">date(10, 10, 1, 0, 0, 0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0064-3-8_10.20.30.nc&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(64, 3, 8, 10, 20, 30)</span>
+<span class="go">date(64, 3, 8, 10, 20, 30)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140-3-5&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(140, 3, 5, 0, 0)</span>
+<span class="go">date(140, 3, 5, 0, 0, 0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140-3&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(140, 3, 1, 0, 0)</span>
+<span class="go">date(140, 3, 1, 0, 0, 0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140.3&quot;</span><span class="p">)</span>
-<span class="go">datetime.datetime(140, 3, 1, 0, 0)</span>
+<span class="go">date(140, 3, 1, 0, 0, 0)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -694,7 +700,7 @@ jobs.</p>
 <p>Run a testcase.</p>
 <dl class="function">
 <dt id="CIME.case_test.case_test">
-<code class="descclassname">CIME.case_test.</code><code class="descname">case_test</code><span class="sig-paren">(</span><em>case</em>, <em>testname=None</em>, <em>reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_test.html#case_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_test.case_test" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_test.</code><code class="descname">case_test</code><span class="sig-paren">(</span><em>case</em>, <em>testname=None</em>, <em>reset=False</em>, <em>skip_pnl=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_test.html#case_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_test.case_test" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -821,6 +827,168 @@ test directory, which contain more detailed output. Also creates
 <a href="#id1"><span class="problematic" id="id2">*</span></a>.cprnc.out.BASELINE_NAME.TIMESTAMP files in each run directory.</p>
 <p>Returns True if all tests generated either PASS or SKIP results, False if
 there was at least one FAIL result.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.date">
+<span id="cime-date-module"></span><h2>CIME.date module<a class="headerlink" href="#module-CIME.date" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CIME.date.date">
+<em class="property">class </em><code class="descclassname">CIME.date.</code><code class="descname">date</code><span class="sig-paren">(</span><em>year=1</em>, <em>month=1</em>, <em>day=1</em>, <em>hour=0</em>, <em>minute=0</em>, <em>second=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple struct for holding dates and the time of day and performing comparisons</p>
+<p>Difference in Hour, Minute, or Second
+&gt;&gt;&gt; date(4, 5, 6, 9) == date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 5, 6, 9) != date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(4, 5, 6, 9) &lt; date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 5, 6, 9) &lt;= date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 5, 6, 9) &gt;= date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(4, 5, 6, 9) &gt; date(4, 5, 6, 8)
+True</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">!=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Difference in Day
+&gt;&gt;&gt; date(4, 5, 8, 8) == date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 5, 8, 8) != date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(4, 5, 8, 8) &lt; date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 5, 8, 8) &lt;= date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 5, 8, 8) &gt;= date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(4, 5, 8, 8) &gt; date(4, 5, 6, 8)
+True</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">==</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">!=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Difference in Month
+&gt;&gt;&gt; date(4, 6, 6, 8) == date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 6, 6, 8) != date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(4, 6, 6, 8) &lt; date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 6, 6, 8) &lt;= date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(4, 6, 6, 8) &gt;= date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(4, 6, 6, 8) &gt; date(4, 5, 6, 8)
+True</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">==</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">!=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Difference in Year
+&gt;&gt;&gt; date(5, 5, 6, 8) == date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(5, 5, 6, 8) != date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(5, 5, 6, 8) &lt; date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(5, 5, 6, 8) &lt;= date(4, 5, 6, 8)
+False
+&gt;&gt;&gt; date(5, 5, 6, 8) &gt;= date(4, 5, 6, 8)
+True
+&gt;&gt;&gt; date(5, 5, 6, 8) &gt; date(4, 5, 6, 8)
+True</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">==</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">!=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">date</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="CIME.date.date.day">
+<code class="descname">day</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.day" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="CIME.date.date.hms_to_second">
+<em class="property">static </em><code class="descname">hms_to_second</code><span class="sig-paren">(</span><em>hour</em>, <em>minute</em>, <em>second</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.hms_to_second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.hms_to_second" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.date.date.hour">
+<code class="descname">hour</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.hour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.hour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.date.date.minute">
+<code class="descname">minute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.minute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.minute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.date.date.month">
+<code class="descname">month</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.month" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.date.date.second">
+<code class="descname">second</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.second" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.date.date.second_of_day">
+<code class="descname">second_of_day</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.second_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.second_of_day" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="CIME.date.date.second_to_hms">
+<em class="property">static </em><code class="descname">second_to_hms</code><span class="sig-paren">(</span><em>second</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.second_to_hms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.second_to_hms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.date.date.year">
+<code class="descname">year</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.year"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1950,7 +2118,7 @@ file, which will have the input data files added to it.</p>
 <p>Library for saving build/run provenance.</p>
 <dl class="function">
 <dt id="CIME.provenance.get_recommended_test_time_based_on_past">
-<code class="descclassname">CIME.provenance.</code><code class="descname">get_recommended_test_time_based_on_past</code><span class="sig-paren">(</span><em>baseline_root</em>, <em>test</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/provenance.html#get_recommended_test_time_based_on_past"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.provenance.get_recommended_test_time_based_on_past" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.provenance.</code><code class="descname">get_recommended_test_time_based_on_past</code><span class="sig-paren">(</span><em>baseline_root</em>, <em>test</em>, <em>raw=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/provenance.html#get_recommended_test_time_based_on_past"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.provenance.get_recommended_test_time_based_on_past" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -3019,6 +3187,7 @@ recursively.</p>
 <li><a class="reference internal" href="#module-CIME.code_checker">CIME.code_checker module</a></li>
 <li><a class="reference internal" href="#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
 <li><a class="reference internal" href="#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
+<li><a class="reference internal" href="#module-CIME.date">CIME.date module</a></li>
 <li><a class="reference internal" href="#module-CIME.get_timing">CIME.get_timing module</a></li>
 <li><a class="reference internal" href="#module-CIME.hist_utils">CIME.hist_utils module</a></li>
 <li><a class="reference internal" href="#module-CIME.namelist">CIME.namelist module</a></li>

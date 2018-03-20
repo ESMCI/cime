@@ -295,7 +295,6 @@
         <span class="n">cmds</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">last_action</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">last_cmd</span>    <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">actions_that_cannot_be_batched</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;swap&quot;</span><span class="p">]</span>
 
         <span class="c1"># Normally, we will try to combine or batch module commands together...</span>
         <span class="c1">#</span>
@@ -312,7 +311,7 @@
         <span class="c1">#</span>
         <span class="c1"># Not all module commands support batching though and we enurmerate those</span>
         <span class="c1"># here.</span>
-        <span class="n">actions_that_cannot_be_batched</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;swap&quot;</span><span class="p">]</span>
+        <span class="n">actions_that_cannot_be_batched</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;swap&quot;</span><span class="p">,</span> <span class="s2">&quot;switch&quot;</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">modules_to_load</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>

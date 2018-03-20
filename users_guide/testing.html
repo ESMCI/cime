@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
+    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
     <link rel="next" title="6. Fortran Unit Testing" href="unit_testing.html" />
     <link rel="prev" title="4. Optimizing Processor Layout" href="optimizing-processor-layout.html" /> 
   </head>
@@ -45,7 +45,7 @@
           <a href="optimizing-processor-layout.html" title="4. Optimizing Processor Layout"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -319,18 +319,18 @@ current status of all your tests.</p>
 </pre></div>
 </div>
 <p>To run a test suite:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">acme_developer</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span>
 </pre></div>
 </div>
 <p>To run a test suite excluding a specific test:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">acme_developer</span> <span class="o">^</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span> <span class="o">^</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
 <p>See create_test -h for the full list of options</p>
 <p>Interpreting test output is pretty easy, looking at an example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
 
-<span class="n">Creating</span> <span class="n">test</span> <span class="n">directory</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
+<span class="n">Creating</span> <span class="n">test</span> <span class="n">directory</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
 <span class="n">RUNNING</span> <span class="n">TESTS</span><span class="p">:</span>
   <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span>
 <span class="n">Starting</span> <span class="n">CREATE_NEWCASE</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">1</span> <span class="n">procs</span>
@@ -347,7 +347,7 @@ current status of all your tests.</p>
 <span class="n">Finished</span> <span class="n">RUN</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">35.068546</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span><span class="o">.</span> <span class="p">[</span><span class="n">COMPLETED</span> <span class="mi">1</span> <span class="n">of</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">At</span> <span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">close</span><span class="p">,</span> <span class="n">state</span> <span class="ow">is</span><span class="p">:</span>
 <span class="n">PASS</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="n">RUN</span>
-  <span class="n">Case</span> <span class="nb">dir</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
+  <span class="n">Case</span> <span class="nb">dir</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
 <span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">took</span> <span class="mf">154.780044079</span> <span class="n">seconds</span>
 </pre></div>
 </div>
@@ -364,12 +364,12 @@ results to a baseline area.</p>
 results to a baseline area.</p>
 <p>Take a batch of results for the jenkins user for the testid &#8216;mytest&#8217; and copy the results to
 baselines for &#8216;master&#8217;:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
 <p>Take a batch of results for the jenkins user for the testid &#8216;mytest&#8217; and compare the results to
 baselines for &#8216;master&#8217;:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
 </div>
@@ -378,7 +378,7 @@ baselines for &#8216;master&#8217;:</p>
 </div>
 <div class="section" id="adding-tests">
 <h2>5.4. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
-<p>Open the update_acme_tests.py file, you&#8217;ll see a python dict at the top
+<p>Open the update_e3sm_tests.py file, you&#8217;ll see a python dict at the top
 of the file called TEST_SUITES, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
 comment at the top of this file indicating that you add a test with
@@ -471,7 +471,7 @@ examine.</p>
           <a href="optimizing-processor-layout.html" title="4. Optimizing Processor Layout"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

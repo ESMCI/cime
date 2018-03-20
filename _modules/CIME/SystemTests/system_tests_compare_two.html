@@ -504,6 +504,9 @@
         <span class="c1"># note that we print a warning to the log file if that happens, in the</span>
         <span class="c1"># caller of this method).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="c1"># This assures that case one namelists are populated</span>
+        <span class="c1"># and creates the case.test script</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
         <span class="c1"># Set up case 2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
@@ -512,6 +515,9 @@
         <span class="c1"># Flush the case so that, if errors occur later, then at least case2 is</span>
         <span class="c1"># in a correct, post-setup state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># This assures that case two namelists are populated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
         <span class="c1"># Go back to case 1 to ensure that&#39;s where we are for any following code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>

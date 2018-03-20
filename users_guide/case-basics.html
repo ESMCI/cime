@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
+    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
     <link rel="next" title="3. Creating a Case" href="create-a-case.html" />
     <link rel="prev" title="1. Introduction" href="introduction-and-overview.html" /> 
   </head>
@@ -45,7 +45,7 @@
           <a href="introduction-and-overview.html" title="1. Introduction"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -139,70 +139,6 @@ The alias for this grid is ne30_g16.</p>
 <li>&#8220;oEC[x]to[y]&#8221; is an MPAS grid with grid spacing from x to y kilometers.</li>
 </ul>
 </div>
-<div class="section" id="querying-cime-calling-query-config">
-<h2>2.3. Querying CIME - calling <strong>query_config</strong><a class="headerlink" href="#querying-cime-calling-query-config" title="Permalink to this headline">¶</a></h2>
-<p>Use the utility <strong>$CIMEROOT/scripts/query_config</strong> to see which out-of-the-box compsets, components, grids and machines are available for a model.</p>
-<p>Optional arguments include the following:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">compsets</span>
-<span class="o">--</span><span class="n">components</span>
-<span class="o">--</span><span class="n">grids</span>
-<span class="o">--</span><span class="n">machines</span>
-</pre></div>
-</div>
-<p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of CIME-driven model, <strong>query_config</strong> will allow you to query all prognostic component compsets.</p>
-<p>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<p><strong>Usage examples</strong></p>
-<p>To run <strong>query_config</strong> for compset information, follow this example, where <strong>drv</strong> is the component name:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
-</pre></div>
-</div>
-<p>The output will be similar to this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
-  <span class="n">Compset</span> <span class="n">Short</span> <span class="n">Name</span><span class="p">:</span> <span class="n">Compset</span> <span class="n">Long</span> <span class="n">Name</span>
-  <span class="o">--------------------------------------</span>
-<span class="n">A</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV</span>
-<span class="n">ADWAV</span>                <span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_DWAV</span><span class="o">%</span><span class="n">CLIMO</span>
-<span class="n">S</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP</span>
-<span class="n">ADLND</span>                <span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_DLND</span><span class="o">%</span><span class="n">SCPL_SICE_SOCN_SROF_SGLC_SWAV</span>
-<span class="n">ADESP_TEST</span>           <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV_DESP</span><span class="o">%</span><span class="n">TEST</span>
-<span class="n">X</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV</span>
-<span class="n">ADESP</span>                <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV_DESP</span>
-<span class="n">AIAF</span>                 <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">IAF_SLND_DICE</span><span class="o">%</span><span class="n">IAF_DOCN</span><span class="o">%</span><span class="n">IAF_DROF</span><span class="o">%</span><span class="n">IAF_SGLC_SWAV</span>
-</pre></div>
-</div>
-<p>Each model component specifies its own definitions of what can appear after the <code class="docutils literal"><span class="pre">%</span></code> modifier in the compset longname (for example, <code class="docutils literal"><span class="pre">DOM</span></code> in <code class="docutils literal"><span class="pre">DOCN%DOM</span></code>).</p>
-<p>To see what supported modifiers are for <code class="docutils literal"><span class="pre">DOCN</span></code>, run <strong>query_config</strong> as in this example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
-</pre></div>
-</div>
-<p>The output will be similar to this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
- <span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
- <span class="o">=========================================</span>
-
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP1</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">1</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP10</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">10</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP2</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">2</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP3</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">3</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP4</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">4</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP5</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">5</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP6</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">6</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP7</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">7</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP8</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">8</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP9</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">9</span>
-      <span class="n">_DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">ocean</span> <span class="n">mode</span>
-      <span class="n">_DOCN</span><span class="o">%</span><span class="n">IAF</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">interannual</span> <span class="n">mode</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">NULL</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">null</span> <span class="n">mode</span>
-      <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
-   <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOMAQP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
-<span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
-</pre></div>
-</div>
-<p>For more details on how CIME determines the output for <strong>query_config</strong>, see <a class="reference internal" href="cime-internals.html#cime-internals"><span class="std std-ref">CIME internals</span></a>.</p>
-</div>
 </div>
 
 
@@ -216,7 +152,6 @@ The alias for this grid is ne30_g16.</p>
 <li><a class="reference internal" href="#">2. The basics of CIME cases</a><ul>
 <li><a class="reference internal" href="#component-sets">2.1. Component sets</a></li>
 <li><a class="reference internal" href="#model-grids">2.2. Model Grids</a></li>
-<li><a class="reference internal" href="#querying-cime-calling-query-config">2.3. Querying CIME - calling <strong>query_config</strong></a></li>
 </ul>
 </li>
 </ul>
@@ -264,7 +199,7 @@ The alias for this grid is ne30_g16.</p>
           <a href="introduction-and-overview.html" title="1. Introduction"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

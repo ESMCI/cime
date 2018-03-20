@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="up" title="Data Models" href="index.html" />
     <link rel="next" title="10. Data River (DROF)" href="data-river.html" />
     <link rel="prev" title="8. Data Ice (DICE)" href="data-seaice.html" /> 
   </head>
@@ -45,7 +45,7 @@
           <a href="data-seaice.html" title="8. Data Ice (DICE)"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Data Models</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -345,6 +345,44 @@ CIME will generate a value of <code class="docutils literal"><span class="pre">D
 <p class="first admonition-title">Note</p>
 <p class="last">In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">docn_fld</span></code> names below for use within the data ocn model.</p>
 </div>
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">&#8220;DOCN internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">docn_fld (avifld)</th>
+<th class="head">driver_fld (avofld)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>t</td>
+<td>So_t</td>
+</tr>
+<tr class="row-odd"><td>u</td>
+<td>So_u</td>
+</tr>
+<tr class="row-even"><td>v</td>
+<td>So_v</td>
+</tr>
+<tr class="row-odd"><td>dhdx</td>
+<td>So_dhdx</td>
+</tr>
+<tr class="row-even"><td>dhdy</td>
+<td>So_dhdy</td>
+</tr>
+<tr class="row-odd"><td>s</td>
+<td>So_s</td>
+</tr>
+<tr class="row-even"><td>h</td>
+<td>strm_h (internal to docn_comp_mod only)</td>
+</tr>
+<tr class="row-odd"><td>qbot</td>
+<td>strm_qbot (internal to docn_comp_mod only)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">
 <span id="creating-sstdata-input-from-prognostic-run"></span><h2>9.7. Creating SSTDATA mode input from a fully prognostic run (CESM only)<a class="headerlink" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only" title="Permalink to this headline">¶</a></h2>
@@ -505,7 +543,7 @@ To do this, invoke <code class="docutils literal"><span class="pre">$SRCROOT/com
           <a href="data-seaice.html" title="8. Data Ice (DICE)"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >Data Models</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

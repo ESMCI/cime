@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CIME.date &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CIME.date</h1><div class="highlight"><pre>
+<span></span>
+<div class="viewcode-block" id="date"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date">[docs]</a><span class="k">class</span> <span class="nc">date</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple struct for holding dates and the time of day and performing comparisons</span>
+
+<span class="sd">    Difference in Hour, Minute, or Second</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 9) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 9) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 9) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 9) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 9) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 9) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 4) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 4) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 4) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 4) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 4) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 6, 4) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Difference in Day</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 8, 8) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 8, 8) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 8, 8) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 8, 8) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 8, 8) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 8, 8) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 5, 8) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 5, 8) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 5, 8) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 5, 8) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 5, 8) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 5, 5, 8) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Difference in Month</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 6, 6, 8) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 6, 6, 8) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 6, 6, 8) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 6, 6, 8) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 6, 6, 8) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 6, 6, 8) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &gt;&gt;&gt; date(4, 4, 6, 8) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 4, 6, 8) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 4, 6, 8) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 4, 6, 8) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 4, 6, 8) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(4, 4, 6, 8) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    Difference in Year</span>
+<span class="sd">    &gt;&gt;&gt; date(5, 5, 6, 8) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(5, 5, 6, 8) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(5, 5, 6, 8) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(5, 5, 6, 8) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(5, 5, 6, 8) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(5, 5, 6, 8) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &gt;&gt;&gt; date(3, 5, 6, 8) == date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(3, 5, 6, 8) != date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(3, 5, 6, 8) &lt; date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(3, 5, 6, 8) &lt;= date(4, 5, 6, 8)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; date(3, 5, 6, 8) &gt;= date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; date(3, 5, 6, 8) &gt; date(4, 5, 6, 8)</span>
+<span class="sd">    False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="date.hms_to_second"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.hms_to_second">[docs]</a>    <span class="k">def</span> <span class="nf">hms_to_second</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+        <span class="n">_SECONDS_PER_HOUR</span> <span class="o">=</span> <span class="mi">3600</span>
+        <span class="n">_SECONDS_PER_MINUTE</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">hour</span> <span class="o">*</span> <span class="n">_SECONDS_PER_HOUR</span> <span class="o">+</span> <span class="n">minute</span> <span class="o">*</span> <span class="n">_SECONDS_PER_MINUTE</span>
+                <span class="o">+</span> <span class="n">second</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="date.second_to_hms"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.second_to_hms">[docs]</a>    <span class="k">def</span> <span class="nf">second_to_hms</span><span class="p">(</span><span class="n">second</span><span class="p">):</span>
+        <span class="n">_SECONDS_PER_HOUR</span> <span class="o">=</span> <span class="mi">3600</span>
+        <span class="n">_SECONDS_PER_MINUTE</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="k">return</span> <span class="p">{</span> <span class="s1">&#39;hour&#39;</span><span class="p">:</span> <span class="n">second</span> <span class="o">//</span> <span class="n">_SECONDS_PER_HOUR</span><span class="p">,</span>
+                 <span class="s1">&#39;minute&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">second</span> <span class="o">%</span> <span class="n">_SECONDS_PER_HOUR</span><span class="p">)</span> <span class="o">//</span> <span class="n">_SECONDS_PER_MINUTE</span><span class="p">,</span>
+                 <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span> <span class="o">%</span> <span class="n">_SECONDS_PER_MINUTE</span>
+        <span class="p">}</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">year</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">month</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_second</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hms_to_second</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &gt;&gt;&gt; str(date(4, 5, 7, second=64))</span>
+<span class="sd">        &#39;date(4, 5, 7, 0, 1, 4)&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fmt_str</span> <span class="o">=</span> <span class="s2">&quot;date({year:d}, {month:d}, {day:d}, {hour:d}, {minute:d}, {second:d})&quot;</span>
+        <span class="k">return</span> <span class="n">fmt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">(),</span>
+                              <span class="n">month</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">(),</span>
+                              <span class="n">day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">(),</span>
+                              <span class="n">hour</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hour</span><span class="p">(),</span>
+                              <span class="n">minute</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minute</span><span class="p">(),</span>
+                              <span class="n">second</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">second</span><span class="p">())</span>
+
+<div class="viewcode-block" id="date.year"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.year">[docs]</a>    <span class="k">def</span> <span class="nf">year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_year</span></div>
+
+<div class="viewcode-block" id="date.month"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.month">[docs]</a>    <span class="k">def</span> <span class="nf">month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_month</span></div>
+
+<div class="viewcode-block" id="date.day"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.day">[docs]</a>    <span class="k">def</span> <span class="nf">day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day</span></div>
+
+<div class="viewcode-block" id="date.hour"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.hour">[docs]</a>    <span class="k">def</span> <span class="nf">hour</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_to_hms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="p">)[</span><span class="s1">&#39;hour&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date.minute"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.minute">[docs]</a>    <span class="k">def</span> <span class="nf">minute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_to_hms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="p">)[</span><span class="s1">&#39;minute&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date.second"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.second">[docs]</a>    <span class="k">def</span> <span class="nf">second</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_to_hms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="p">)[</span><span class="s1">&#39;second&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="date.second_of_day"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.second_of_day">[docs]</a>    <span class="k">def</span> <span class="nf">second_of_day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_second</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">year</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">month</span><span class="p">())</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">day</span><span class="p">())</span>
+                <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_of_day</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">second_of_day</span><span class="p">()))</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">year</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">year</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="c1"># self.year == other.year</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">month</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">month</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="c1"># self.month = other.month</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">day</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">day</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="c1"># self.day = other.day</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_of_day</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">second_of_day</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># the dates are equal</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="bp">self</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">&lt;=</span> <span class="n">other</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

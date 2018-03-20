@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="next" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="../users_guide/index.html" />
+    <link rel="next" title="Case Control System Part 1: Basic Usage" href="../users_guide/index.html" />
     <link rel="prev" title="CIME documentation" href="../index.html" /> 
   </head>
   <body role="document">
@@ -38,7 +38,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../users_guide/index.html" title="CIME User’s Guide Part 1: Beginner - Basic Usage"
+          <a href="../users_guide/index.html" title="Case Control System Part 1: Basic Usage"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="CIME documentation"
@@ -70,11 +70,19 @@ capability (such as atmosphere physics-dynamics coupling).</p>
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>CIME is comprised of:</p>
 <ol class="arabic">
+<li><p class="first">A Case Control System to support configuration, compilation, execution, system testing and unit testing of a earth system model:</p>
+<blockquote>
+<div><ol class="lowerroman simple">
+<li>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</li>
+<li>Testing utilities to run defined system tests and report results for different configurations of the coupled system.</li>
+</ol>
+</div></blockquote>
+</li>
 <li><p class="first">A default coupled model architecture:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
 <li>A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.</li>
-<li>An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.</li>
+<li>An implementation of a &#8220;hub&#8221; that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.</li>
 <li>The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.</li>
 </ol>
 </div></blockquote>
@@ -88,7 +96,7 @@ capability (such as atmosphere physics-dynamics coupling).</p>
 </div></blockquote>
 </li>
 <li><dl class="first docutils">
-<dt>Additional libraries useful in scientific applications in general and climate models in particular.</dt>
+<dt>Source code for externall libraries useful in scientific applications in general and climate models in particular.</dt>
 <dd><ol class="first last lowerroman simple">
 <li>Parallel I/O library.</li>
 <li>The Model Coupling Toolkit.</li>
@@ -96,14 +104,6 @@ capability (such as atmosphere physics-dynamics coupling).</p>
 </ol>
 </dd>
 </dl>
-</li>
-<li><p class="first">A system of scripts (python) to support case configuration, executable compilation, workflow, system testing and unit testing infrastructure:</p>
-<blockquote>
-<div><ol class="lowerroman simple">
-<li>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</li>
-<li>Testing utilities to run defined system tests and report results for different configurations of the coupled system.</li>
-</ol>
-</div></blockquote>
 </li>
 <li><p class="first">Additional stand-alone tools:</p>
 <blockquote>
@@ -117,9 +117,9 @@ capability (such as atmosphere physics-dynamics coupling).</p>
 </li>
 </ol>
 </div>
-<div class="section" id="where-is-cime-developed">
-<h2>Where is CIME developed?<a class="headerlink" href="#where-is-cime-developed" title="Permalink to this headline">¶</a></h2>
-<p>CIME is an open-source, public repository hosted under the Earth
+<div class="section" id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
+<p>CIME is developed in an open-source, public repository hosted under the Earth
 System Model Computational Infrastructure (ESMCI) organization on
 Github at <a class="reference external" href="http://github.com/ESMCI/cime">http://github.com/ESMCI/cime</a>.</p>
 </div>
@@ -135,7 +135,7 @@ Github at <a class="reference external" href="http://github.com/ESMCI/cime">http
   <ul>
 <li><a class="reference internal" href="#">What is CIME?</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
-<li><a class="reference internal" href="#where-is-cime-developed">Where is CIME developed?</a></li>
+<li><a class="reference internal" href="#development">Development</a></li>
 </ul>
 </li>
 </ul>
@@ -145,7 +145,7 @@ Github at <a class="reference external" href="http://github.com/ESMCI/cime">http
                         title="previous chapter">CIME documentation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../users_guide/index.html"
-                        title="next chapter">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a></p>
+                        title="next chapter">Case Control System Part 1: Basic Usage</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -177,7 +177,7 @@ Github at <a class="reference external" href="http://github.com/ESMCI/cime">http
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../users_guide/index.html" title="CIME User’s Guide Part 1: Beginner - Basic Usage"
+          <a href="../users_guide/index.html" title="Case Control System Part 1: Basic Usage"
              >next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="CIME documentation"

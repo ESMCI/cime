@@ -91,7 +91,7 @@
         <span class="n">signum</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">signame</span><span class="p">)</span>
         <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">_signal_handler</span><span class="p">)</span>
 
-<div class="viewcode-block" id="case_test"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_test.case_test">[docs]</a><span class="k">def</span> <span class="nf">case_test</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">testname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="case_test"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_test.case_test">[docs]</a><span class="k">def</span> <span class="nf">case_test</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">testname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">testname</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">testname</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;TESTCASE&#39;</span><span class="p">)</span>
 
@@ -118,7 +118,7 @@
         <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">test</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">True</span>
-    <span class="n">success</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">skip_pnl</span><span class="o">=</span><span class="n">skip_pnl</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">success</span></div>
 </pre></div>

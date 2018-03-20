@@ -29,7 +29,6 @@ and **case.setup**.
    mkSrcfiles
    preview_run
    concat_daily_hist.csh
-   Makefile
    cimeteststatus
    case.setup
    case.cmpgen_namelists

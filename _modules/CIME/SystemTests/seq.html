@@ -52,7 +52,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
-<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
 <span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
@@ -97,8 +96,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">rootpe</span><span class="p">)</span>
                     <span class="n">rootpe</span> <span class="o">+=</span> <span class="n">newntasks</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 </pre></div>
 
           </div>
