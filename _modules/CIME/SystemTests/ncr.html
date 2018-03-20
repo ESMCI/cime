@@ -58,7 +58,6 @@
 <span class="sd">NOTE: This is currently untested, and may not be working properly</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
 <span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="kn">import</span> <span class="o">*</span>
 
@@ -109,13 +108,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ntasks</span><span class="p">)</span>
         <span class="c1"># test_mode must be False here so the case.test file is updated</span>
         <span class="c1"># This ensures that the correct number of nodes are used in case it&#39;s larger than in case 2</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NINST_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">reset</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

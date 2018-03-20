@@ -58,7 +58,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.restart_tests</span> <span class="kn">import</span> <span class="n">RestartTest</span>
 <span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="kn">import</span> <span class="o">*</span>
 
@@ -92,7 +91,6 @@
         <span class="c1"># Note, some components, like CESM-CICE, have</span>
         <span class="c1"># decomposition information in env_build.xml that</span>
         <span class="c1"># needs to be regenerated for the above new tasks and thread counts</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_one_custom_postrun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">copy_case1_restarts_to_case2</span><span class="p">()</span></div>

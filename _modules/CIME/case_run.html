@@ -114,7 +114,9 @@
     <span class="c1"># This needs to be done everytime the LID changes in order for log files to be set up correctly</span>
     <span class="c1"># The following also needs to be called in case a user changes a user_nl_xxx file OR an env_run.xml</span>
     <span class="c1"># variable while the job is in the queue</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_pnl</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">skip_pnl</span><span class="p">:</span>
+        <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="s1">&#39;cpl&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------------------------------------&quot;</span><span class="p">)</span>
@@ -173,10 +175,11 @@
 
                         <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>
                                        <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT_SETS_CONTINUE_RUN&quot;</span><span class="p">))</span>
-                        <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
                         <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
                         <span class="n">loop</span> <span class="o">=</span> <span class="bp">True</span>
+
+                        <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
                         <span class="n">case</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">-=</span> <span class="n">num_fails</span>
 

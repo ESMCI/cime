@@ -159,6 +159,14 @@ CIME.compare_test_results module
     :undoc-members:
     :show-inheritance:
 
+CIME.date module
+----------------
+
+.. automodule:: CIME.date
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.get_timing module
 ----------------------
 

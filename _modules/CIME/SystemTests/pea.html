@@ -57,7 +57,6 @@
 
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -78,7 +77,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mach_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
@@ -91,8 +90,7 @@
                            <span class="s2">&quot;therefore very little is being tested&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach_name</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;Macros&quot;</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Macros&quot;</span><span class="p">)</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></div>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;Macros&quot;</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

@@ -64,7 +64,7 @@
 <span class="kn">import</span> <span class="nn">CIME.utils</span>
 <span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">from</span> <span class="nn">update_e3sm_tests</span> <span class="kn">import</span> <span class="n">get_recommended_test_time</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">TESTS_FAILED_ERR_CODE</span><span class="p">,</span> <span class="n">parse_test_name</span><span class="p">,</span> <span class="n">get_full_test_name</span><span class="p">,</span> <span class="n">get_model</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">append_testlog</span><span class="p">,</span> <span class="n">TESTS_FAILED_ERR_CODE</span><span class="p">,</span> <span class="n">parse_test_name</span><span class="p">,</span> <span class="n">get_full_test_name</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">convert_to_seconds</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="kn">import</span> <span class="n">Machines</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="kn">import</span> <span class="n">GenericXML</span>
@@ -123,6 +123,34 @@
         <span class="n">new_test_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_test_name</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">new_test_names</span>
+
+<span class="n">_TIME_CACHE</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_get_time_est</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">as_int</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="k">if</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">_TIME_CACHE</span> <span class="ow">and</span> <span class="n">use_cache</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_TIME_CACHE</span><span class="p">[</span><span class="n">test</span><span class="p">]</span>
+
+    <span class="n">recommended_time</span> <span class="o">=</span> <span class="n">get_recommended_test_time_based_on_past</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">recommended_time</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">recommended_time</span> <span class="o">=</span> <span class="n">get_recommended_test_time</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">as_int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">recommended_time</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">recommended_time</span> <span class="o">=</span> <span class="mi">9999999999</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">recommended_time</span> <span class="o">=</span> <span class="n">convert_to_seconds</span><span class="p">(</span><span class="n">recommended_time</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">use_cache</span><span class="p">:</span>
+        <span class="n">_TIME_CACHE</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">=</span> <span class="n">recommended_time</span>
+
+    <span class="k">return</span> <span class="n">recommended_time</span>
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_order_tests_by_runtime</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="n">tests</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_get_time_est</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">baseline_root</span><span class="p">,</span> <span class="n">as_int</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="TestScheduler"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler">[docs]</a><span class="k">class</span> <span class="nc">TestScheduler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -235,9 +263,13 @@
                     <span class="n">test_baseline</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_baseline_dir</span><span class="p">,</span> <span class="n">test_name</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">test_baseline</span><span class="p">):</span>
                         <span class="n">existing_baselines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test_baseline</span><span class="p">)</span>
+
                 <span class="n">expect</span><span class="p">(</span><span class="n">allow_baseline_overwrite</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">existing_baselines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
                        <span class="s2">&quot;Baseline directories already exists {}</span><span class="se">\n</span><span class="s2">&quot;</span> \
                        <span class="s2">&quot;Use -o to avoid this error&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">existing_baselines</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="n">_order_tests_by_runtime</span><span class="p">(</span><span class="n">test_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span><span class="p">)</span>
 
         <span class="c1"># This is the only data that multiple threads will simultaneously access</span>
         <span class="c1"># Each test has it&#39;s own value and setting/retrieving items from a dict</span>
@@ -304,6 +336,7 @@
 
     <span class="c1">###########################################################################</span>
 <div class="viewcode-block" id="TestScheduler.get_testnames"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_scheduler.TestScheduler.get_testnames">[docs]</a>    <span class="k">def</span> <span class="nf">get_testnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1">###########################################################################</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
     <span class="c1">###########################################################################</span>
@@ -442,7 +475,7 @@
 
         <span class="k">if</span> <span class="n">test_mods</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
                 <span class="n">component</span> <span class="o">=</span> <span class="s2">&quot;allactive&quot;</span>
                 <span class="n">modspath</span> <span class="o">=</span> <span class="n">test_mods</span>
             <span class="k">else</span><span class="p">:</span>
@@ -495,11 +528,8 @@
             <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --walltime {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_walltime</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># model specific ways of setting time</span>
-            <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
-                <span class="n">recommended_time</span> <span class="o">=</span> <span class="n">get_recommended_test_time_based_on_past</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">recommended_time</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="n">recommended_time</span> <span class="o">=</span> <span class="n">get_recommended_test_time</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+                <span class="n">recommended_time</span> <span class="o">=</span> <span class="n">_get_time_est</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">recommended_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --walltime {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">recommended_time</span><span class="p">)</span>
@@ -622,7 +652,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_root</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_output_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">)</span>
             <span class="c1"># if we are running a single test we don&#39;t need sharedlibroot</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
                 <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">,</span>
                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_root</span><span class="p">,</span>
                                             <span class="s2">&quot;sharedlibroot.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_id</span><span class="p">)))</span>
@@ -707,7 +737,7 @@
             <span class="k">return</span> <span class="n">max_cores</span>
 
         <span class="k">elif</span> <span class="p">(</span><span class="n">phase</span> <span class="o">==</span> <span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
                 <span class="c1"># Will force serialization of sharedlib builds</span>
                 <span class="c1"># TODO - instead of serializing, compute all library configs needed and build</span>
                 <span class="c1"># them all in parallel</span>
@@ -892,7 +922,7 @@
                 <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">cs_submit_file</span><span class="p">,</span>
                          <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">cs_submit_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXUSR</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IXGRP</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
                 <span class="n">template_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">python_libs_root</span><span class="p">,</span> <span class="s2">&quot;testreporter.template&quot;</span><span class="p">)</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">template_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;PATH&gt;&quot;</span><span class="p">,</span>

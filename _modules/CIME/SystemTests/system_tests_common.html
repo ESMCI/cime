@@ -84,6 +84,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span> <span class="o">=</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_casebaseid</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_environment</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_locked_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">_init_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -179,13 +180,14 @@
             <span class="n">comps</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)]</span>
         <span class="n">build</span><span class="o">.</span><span class="n">clean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">cleanlist</span><span class="o">=</span><span class="n">comps</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SystemTestsCommon.run"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCommon.run"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do NOT override this method, this method is the framework that controls</span>
 <span class="sd">        the run phase. run_phase is the extension point that subclasses should use.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">success</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="n">skip_pnl</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">)</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
@@ -272,7 +274,7 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">infostr</span><span class="p">)</span>
 
-        <span class="n">case_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+        <span class="n">case_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupler_log_indicates_run_complete</span><span class="p">():</span>
             <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;Coupler did not indicate run passed&quot;</span><span class="p">)</span>

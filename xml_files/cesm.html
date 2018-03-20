@@ -26,7 +26,7 @@
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="Common XML Files" href="common.html" />
-    <link rel="prev" title="E3SM Coupled Model XML Files" href="acme.html" /> 
+    <link rel="prev" title="E3SM Coupled Model XML Files" href="e3sm.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -42,7 +42,7 @@
           <a href="common.html" title="Common XML Files"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="acme.html" title="E3SM Coupled Model XML Files"
+          <a href="e3sm.html" title="E3SM Coupled Model XML Files"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
@@ -3000,7 +3000,7 @@
     &lt;batch_redirect&gt;&lt;/batch_redirect&gt;
     &lt;batch_directive&gt;&lt;/batch_directive&gt;
     &lt;directives&gt;
-      &lt;directive name=&quot;&quot;&gt;&lt;/directive&gt;
+      &lt;directive&gt;&lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
 
@@ -3010,7 +3010,7 @@
     &lt;batch_redirect&gt;&lt;/batch_redirect&gt;
     &lt;batch_directive&gt;&lt;/batch_directive&gt;
     &lt;directives&gt;
-      &lt;directive name=&quot;&quot;&gt;&lt;/directive&gt;
+      &lt;directive&gt;&lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
 
@@ -3422,6 +3422,32 @@
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
+  &lt;batch_system MACH=&quot;lawrencium-lr3&quot; type=&quot;slurm&quot;&gt;
+    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;directives&gt;
+      &lt;directive&gt;--qos=lr_normal&lt;/directive&gt;
+      &lt;directive&gt;--partition=lr3&lt;/directive&gt;
+      &lt;directive&gt;--account={{ project }}&lt;/directive&gt;
+      &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemin=&quot;00:00:00&quot; walltimemax=&quot;72:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+  
+  &lt;batch_system MACH=&quot;lawrencium-lr2&quot; type=&quot;slurm&quot;&gt;
+    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;directives&gt;
+       &lt;directive&gt;--qos=lr_normal&lt;/directive&gt;
+       &lt;directive&gt;--partition=lr2&lt;/directive&gt;
+       &lt;directive&gt;--account={{ project }}&lt;/directive&gt;
+       &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemin=&quot;00:00:00&quot; walltimemax=&quot;72:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;64&quot; default=&quot;true&quot;&gt;lr2&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+  
   &lt;batch_system MACH=&quot;stampede&quot; type=&quot;slurm&quot; &gt;
     &lt;batch_submit&gt;ssh stampede.tacc.utexas.edu cd $CASEROOT ; sbatch&lt;/batch_submit&gt;
     &lt;submit_args&gt;
@@ -4575,6 +4601,40 @@ using a fortran linker.
   &lt;/CMAKE_OPTS&gt;
 &lt;/compiler&gt;
 
+&lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;lawrencium-lr3&quot;&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -lnetcdff -lnetcdf -mkl &lt;/append&gt;
+  &lt;/SLIBS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;NETCDF_PATH&gt;$ENV{NETCDF_DIR}&lt;/NETCDF_PATH&gt;
+  &lt;LAPACK_LIBDIR&gt;/global/software/sl-6.x86_64/modules/intel/2016.1.150/lapack/3.6.0-intel/lib&lt;/LAPACK_LIBDIR&gt;
+&lt;/compiler&gt;
+
+&lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;lawrencium-lr2&quot;&gt;
+  &lt;CPPDEFS&gt;
+    &lt;append MODEL=&quot;gptl&quot;&gt; -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/append&gt;
+  &lt;/CPPDEFS&gt;
+  &lt;SLIBS&gt;
+    &lt;append&gt; -lnetcdff -lnetcdf -mkl &lt;/append&gt;
+  &lt;/SLIBS&gt;
+  &lt;FFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/FFLAGS&gt;
+  &lt;CFLAGS&gt;
+    &lt;append DEBUG=&quot;TRUE&quot;&gt; -ftrapuv &lt;/append&gt;
+  &lt;/CFLAGS&gt;
+  &lt;NETCDF_PATH&gt;$ENV{NETCDF_DIR}&lt;/NETCDF_PATH&gt;
+  &lt;LAPACK_LIBDIR&gt;/global/software/sl-6.x86_64/modules/intel/2016.1.150/lapack/3.6.0-intel/lib&lt;/LAPACK_LIBDIR&gt;
+&lt;/compiler&gt;
+
 &lt;compiler MACH=&quot;yellowstone&quot; COMPILER=&quot;gnu&quot;&gt;
   &lt;LAPACK_LIBDIR&gt; /glade/apps/opt/lib &lt;/LAPACK_LIBDIR&gt;
   &lt;SCC MPILIB=&quot;mpi-serial&quot;&gt;gcc&lt;/SCC&gt;
@@ -5575,7 +5635,7 @@ using a fortran linker.
 
   &lt;machine MACH=&quot;hobart&quot;&gt;
     &lt;DESC&gt;NCAR CGD Linux Cluster 48 pes/node, batch system is PBS&lt;/DESC&gt;
-    &lt;NODENAME_REGEX&gt;^hob.*&lt;/NODENAME_REGEX&gt;
+    &lt;NODENAME_REGEX&gt;^h.*\.cgd\.ucar\.edu&lt;/NODENAME_REGEX&gt;
     &lt;OS&gt;LINUX&lt;/OS&gt;
     &lt;COMPILERS&gt;intel,pgi,nag,gnu&lt;/COMPILERS&gt;
     &lt;MPILIBS&gt;mvapich2,openmpi&lt;/MPILIBS&gt;
@@ -5584,7 +5644,7 @@ using a fortran linker.
     &lt;DIN_LOC_ROOT_CLMFORC&gt;/project/tss&lt;/DIN_LOC_ROOT_CLMFORC&gt;
     &lt;DOUT_S_ROOT&gt;/scratch/cluster/$USER/archive/$CASE&lt;/DOUT_S_ROOT&gt;
     &lt;BASELINE_ROOT&gt;/fs/cgd/csm/ccsm_baselines&lt;/BASELINE_ROOT&gt;
-    &lt;CCSM_CPRNC&gt;/fs/cgd/csm/tools/cprnc_hobart/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;CCSM_CPRNC&gt;/fs/cgd/csm/tools/cime/tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
     &lt;GMAKE&gt;gmake --output-sync&lt;/GMAKE&gt;
     &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
@@ -5639,6 +5699,9 @@ using a fortran linker.
     &lt;environment_variables&gt;
       &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;64M&lt;/env&gt;
     &lt;/environment_variables&gt;
+    &lt;resource_limits&gt;
+      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
+    &lt;/resource_limits&gt;
   &lt;/machine&gt;
 
   &lt;machine MACH=&quot;homebrew&quot;&gt;
@@ -5761,6 +5824,110 @@ using a fortran linker.
       &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
       &lt;env name=&quot;MPI_TYPE_DEPTH&quot;&gt;16&lt;/env&gt;
     &lt;/environment_variables&gt;
+  &lt;/machine&gt;
+
+  &lt;machine MACH=&quot;lawrencium-lr3&quot;&gt;
+    &lt;DESC&gt;Lawrencium LR3 cluster at LBL, OS is Linux (intel), batch system is SLURM&lt;/DESC&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/global/scratch/$ENV{USER}&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;rgknox at lbl dot gov&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;num_tasks&quot;&gt;-np $TOTALPES&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE &lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/etc/profile.d/modules.sh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/etc/profile.d/modules.csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/Modules/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/Modules/python.py&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/Modules/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/Modules/bin/modulecmd python&lt;/cmd_path&gt;
+      &lt;modules&gt;
+        &lt;command name=&quot;purge&quot;/&gt;
+        &lt;command name=&quot;load&quot;&gt;cmake&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;perl xml-libxml switch python/2.7&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel/2016.4.072&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mkl&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1-intel-s&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1-intel-p&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+  &lt;/machine&gt;
+  
+  &lt;machine MACH=&quot;lawrencium-lr2&quot;&gt;
+    &lt;DESC&gt;Lawrencium LR2 cluster at LBL, OS is Linux (intel), batch system is SLURM&lt;/DESC&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;COMPILERS&gt;intel&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;openmpi&lt;/MPILIBS&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;/global/scratch/$ENV{USER}&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;/global/scratch/$ENV{USER}/cesm_input_datasets/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;$CIME_OUTPUT_ROOT/cesm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;rgknox and gbisht at lbl dot gov&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;12&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;12&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt;mpirun&lt;/executable&gt;
+      &lt;arguments&gt;
+        &lt;arg name=&quot;num_tasks&quot;&gt; -np $TOTALPES&lt;/arg&gt;
+        &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/etc/profile.d/modules.sh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/etc/profile.d/modules.csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/Modules/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/Modules/python.py&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/Modules/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/Modules/bin/modulecmd python&lt;/cmd_path&gt;
+      &lt;modules&gt;
+        &lt;command name=&quot;purge&quot;/&gt;
+        &lt;command name=&quot;load&quot;&gt;cmake&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;perl xml-libxml switch python/2.7&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;intel/2016.4.072&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;mkl&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1-intel-s&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;intel&quot; mpilib=&quot;!mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;openmpi&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1.1-intel-p&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
   &lt;/machine&gt;
 
   &lt;machine MACH=&quot;melvin&quot;&gt;
@@ -9868,7 +10035,7 @@ the following XML files.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="acme.html"
+  <p class="topless"><a href="e3sm.html"
                         title="previous chapter">E3SM Coupled Model XML Files</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="common.html"
@@ -9907,7 +10074,7 @@ the following XML files.</p>
           <a href="common.html" title="Common XML Files"
              >next</a> |</li>
         <li class="right" >
-          <a href="acme.html" title="E3SM Coupled Model XML Files"
+          <a href="e3sm.html" title="E3SM Coupled Model XML Files"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
