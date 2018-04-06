@@ -269,7 +269,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">expected_log_file</span><span class="p">)</span> <span class="ow">and</span> <span class="n">filecmp</span><span class="o">.</span><span class="n">cmp</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">expected_log_file</span><span class="p">)):</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">casedir</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not copy {} to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cprnc_log_file</span><span class="p">,</span> <span class="n">casedir</span><span class="p">))</span>
 
                 <span class="n">all_success</span> <span class="o">=</span> <span class="bp">False</span>
@@ -305,7 +305,8 @@
 <span class="sd">    case - the case containing the files</span>
 <span class="sd">    rundir - the rundir for the case</span>
 <span class="sd">    outfile_suffix - if non-blank, then the output file name ends with this</span>
-<span class="sd">        suffix (with a &#39;.&#39; added before the given suffix)</span>
+<span class="sd">        suffix (with a &#39;.&#39; added before the given suffix).</span>
+<span class="sd">        Use None to avoid permissions issues in the case dir.</span>
 
 <span class="sd">    returns (True if the files matched, log_name)</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -6,38 +6,38 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.case_st_archive &mdash; CIME 5.4.0 documentation</title>
+    <title>CIME.case.case_st_archive &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
+        URL_ROOT:    '../../../',
         VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -46,17 +46,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for CIME.case_st_archive</h1><div class="highlight"><pre>
+  <h1>Source code for CIME.case.case_st_archive</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">short term archiving</span>
+<span class="sd">case_st_archive, restore_from_archive, archive_last_restarts</span>
+<span class="sd">are members of class Case from file case.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.case_submit</span>               <span class="kn">import</span> <span class="n">submit</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span><span class="p">,</span> <span class="n">symlink_force</span>
-<span class="kn">from</span> <span class="nn">CIME.date</span>                      <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">CIME.date</span>                      <span class="kn">import</span> <span class="n">get_file_date</span>
 <span class="kn">from</span> <span class="nn">os.path</span>                        <span class="kn">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">join</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -101,71 +102,6 @@
         <span class="n">file_date</span> <span class="o">=</span> <span class="n">get_file_date</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">datenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_date</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">datenames</span>
-
-<span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_file_date"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.get_file_date">[docs]</a><span class="k">def</span> <span class="nf">get_file_date</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-<span class="c1">###############################################################################</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the date associated with the filename as a date object representing the correct date</span>
-<span class="sd">    Formats supported:</span>
-<span class="sd">    &quot;%Y-%m-%d_%h.%M.%s</span>
-<span class="sd">    &quot;%Y-%m-%d_%05s&quot;</span>
-<span class="sd">    &quot;%Y-%m-%d-%05s&quot;</span>
-<span class="sd">    &quot;%Y-%m-%d&quot;</span>
-<span class="sd">    &quot;%Y-%m&quot;</span>
-<span class="sd">    &quot;%Y.%m&quot;</span>
-
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;./ne4np4_oQU240.cam.r.0001-01-06-00435.nc&quot;)</span>
-<span class="sd">    date(1, 1, 6, 0, 7, 15)</span>
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;./ne4np4_oQU240.cam.r.0010-1-06_00435.nc&quot;)</span>
-<span class="sd">    date(10, 1, 6, 0, 7, 15)</span>
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;./ne4np4_oQU240.cam.r.0010-10.nc&quot;)</span>
-<span class="sd">    date(10, 10, 1, 0, 0, 0)</span>
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;0064-3-8_10.20.30.nc&quot;)</span>
-<span class="sd">    date(64, 3, 8, 10, 20, 30)</span>
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;0140-3-5&quot;)</span>
-<span class="sd">    date(140, 3, 5, 0, 0, 0)</span>
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;0140-3&quot;)</span>
-<span class="sd">    date(140, 3, 1, 0, 0, 0)</span>
-<span class="sd">    &gt;&gt;&gt; get_file_date(&quot;0140.3&quot;)</span>
-<span class="sd">    date(140, 3, 1, 0, 0, 0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1">#</span>
-    <span class="c1"># TODO: Add these to config_archive.xml, instead of here</span>
-    <span class="c1"># Note these must be in order of most specific to least</span>
-    <span class="c1"># so that lesser specificities aren&#39;t used to parse greater ones</span>
-    <span class="n">re_formats</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}_[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}&quot;</span><span class="p">,</span> <span class="c1"># [yy...]yyyy-mm-dd_hh.MM.ss</span>
-                  <span class="sa">r</span><span class="s2">&quot;[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}[\-_][0-9]{1,5}&quot;</span><span class="p">,</span>                     <span class="c1"># [yy...]yyyy-mm-dd_sssss</span>
-                  <span class="sa">r</span><span class="s2">&quot;[0-9]*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}&quot;</span><span class="p">,</span>                                    <span class="c1"># [yy...]yyyy-mm-dd</span>
-                  <span class="sa">r</span><span class="s2">&quot;[0-9]*[0-9]{4}[\-\.][0-9]{1,2}&quot;</span><span class="p">,</span>                                          <span class="c1"># [yy...]yyyy-mm</span>
-    <span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">re_str</span> <span class="ow">in</span> <span class="n">re_formats</span><span class="p">:</span>
-        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">re_str</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">date_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
-        <span class="n">date_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span> <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;-|_|\.&quot;</span><span class="p">,</span> <span class="n">date_str</span><span class="p">)]</span>
-        <span class="n">year</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">month</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">day</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">second</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_tuple</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">day</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_tuple</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-                <span class="n">second</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_tuple</span><span class="p">)</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
-                <span class="c1"># Create a date object with arbitrary year, month, day, but the correct time of day</span>
-                <span class="c1"># Then use _get_day_second to get the time of day in seconds</span>
-                <span class="n">second</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">hms_to_second</span><span class="p">(</span><span class="n">hour</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-                                            <span class="n">minute</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-                                            <span class="n">second</span> <span class="o">=</span> <span class="n">date_tuple</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
-
-    <span class="c1"># Not a valid filename date format</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;{} is a filename without a supported date!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-    <span class="k">return</span> <span class="bp">None</span></div>
 
 <span class="k">def</span> <span class="nf">_datetime_str</span><span class="p">(</span><span class="n">_date</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -348,14 +284,18 @@
             <span class="k">if</span> <span class="n">ninst_string</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">compname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;mpas&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Not correct, but MPAS&#39; multi-instance name format is unknown.</span>
-                    <span class="n">newsuffix</span> <span class="o">=</span>                    <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span>                   <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span>
+                    <span class="n">newsuffix</span> <span class="o">=</span>                    <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">newsuffix</span> <span class="o">=</span> <span class="n">casename</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span> <span class="o">+</span> <span class="n">ninst_string</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span>
+                    <span class="n">newsuffix</span> <span class="o">=</span> <span class="n">casename</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span> <span class="o">+</span> <span class="n">ninst_string</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">compname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;mpas&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">newsuffix</span> <span class="o">=</span>                    <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span>                   <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span>
+                    <span class="n">newsuffix</span> <span class="o">=</span>                    <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">newsuffix</span> <span class="o">=</span> <span class="n">casename</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span>                   <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span>
+                    <span class="n">newsuffix</span> <span class="o">=</span> <span class="n">casename</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\d*&#39;</span>
+            <span class="n">newsuffix</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">suffix</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">):</span>
+                <span class="n">newsuffix</span> <span class="o">+=</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span>
+
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;short term archiving suffix is {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newsuffix</span><span class="p">))</span>
 
             <span class="n">pfile</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">newsuffix</span><span class="p">)</span>
@@ -378,7 +318,7 @@
                             <span class="n">archive_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="get_histfiles_for_restarts"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.get_histfiles_for_restarts">[docs]</a><span class="k">def</span> <span class="nf">get_histfiles_for_restarts</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span> <span class="n">restfile</span><span class="p">):</span>
+<div class="viewcode-block" id="get_histfiles_for_restarts"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.get_histfiles_for_restarts">[docs]</a><span class="k">def</span> <span class="nf">get_histfiles_for_restarts</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span> <span class="n">restfile</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    query restart files to determine history files that are needed for restarts</span>
@@ -393,24 +333,27 @@
         <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;ncdump -v {} {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_hist_varname</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">restfile</span><span class="p">))</span>
         <span class="n">rc</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; WARNING: {} failed rc={:d}</span><span class="se">\n</span><span class="s2">out={}</span><span class="se">\n</span><span class="s2">err={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; WARNING: {} failed rc={:d}</span><span class="se">\n</span><span class="s2">    out={}</span><span class="se">\n</span><span class="s2">    err={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; get_histfiles_for_restarts: </span><span class="se">\n</span><span class="s2">    out={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
 
         <span class="n">searchname</span> <span class="o">=</span> <span class="s2">&quot;{} =&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_hist_varname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">searchname</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">searchname</span><span class="p">)</span>
             <span class="n">items</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="n">offset</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                <span class="c1"># the following match has an option of having a &#39;./&#39; at the beginning of</span>
-                <span class="c1"># the history filename</span>
-                <span class="n">matchobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">(\.*\/*\w.*)\s?</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                <span class="c1"># the following match has an option of having any number of &#39;.&#39;s and &#39;/&#39;s</span>
+                <span class="c1"># at the beginning of the history filename</span>
+                <span class="n">matchobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">\S+\s*</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">matchobj</span><span class="p">:</span>
-                    <span class="n">histfile</span> <span class="o">=</span> <span class="n">matchobj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">histfile</span> <span class="o">=</span> <span class="n">matchobj</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot; &#39;</span><span class="p">)</span>
                     <span class="n">histfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">histfile</span><span class="p">)</span>
                     <span class="c1"># append histfile to the list ONLY if it exists in rundir before the archiving</span>
                     <span class="k">if</span> <span class="n">histfile</span> <span class="ow">in</span> <span class="n">histfiles</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING, tried to add a duplicate file to histfiles&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span><span class="n">histfile</span><span class="p">)):</span>
                         <span class="n">histfiles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">histfile</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; get_histfiles_for_restarts: histfile {} does not exist &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">histfile</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">histfiles</span></div>
 
 <span class="c1">###############################################################################</span>
@@ -497,7 +440,7 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ninst</span><span class="p">):</span>
             <span class="n">restfiles</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="n">compname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;mpas&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">pattern</span> <span class="o">=</span> <span class="n">compname</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datename_str</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">compname</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="n">suffix</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datename_str</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="n">pfile</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
                 <span class="n">restfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">)</span> <span class="k">if</span> <span class="n">pfile</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -621,13 +564,14 @@
                                <span class="n">last_date</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="restore_from_archive"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.restore_from_archive">[docs]</a><span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="restore_from_archive"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.restore_from_archive">[docs]</a><span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent</span>
+<span class="sd">    restore_from_archive is a member of Class Case</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dout_sr</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
-    <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+    <span class="n">dout_sr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
+    <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">rest_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">rest_dir</span><span class="p">):</span>
             <span class="n">rest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="n">rest_dir</span><span class="p">)</span>
@@ -644,7 +588,7 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span></div>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="archive_last_restarts"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.archive_last_restarts">[docs]</a><span class="k">def</span> <span class="nf">archive_last_restarts</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">last_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">link_to_restart_files</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="archive_last_restarts"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.archive_last_restarts">[docs]</a><span class="k">def</span> <span class="nf">archive_last_restarts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">last_date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">link_to_restart_files</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience function for archiving just the last set of restart</span>
@@ -659,8 +603,8 @@
 <span class="sd">    are done for the restart files. (This has no effect on the history</span>
 <span class="sd">    files that are associated with these restart files.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">archive</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
-    <span class="n">datenames</span> <span class="o">=</span> <span class="n">_get_datenames</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
+    <span class="n">datenames</span> <span class="o">=</span> <span class="n">_get_datenames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">datenames</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;No restart dates found&quot;</span><span class="p">)</span>
     <span class="n">last_datename</span> <span class="o">=</span> <span class="n">datenames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -668,7 +612,7 @@
     <span class="c1"># set of restart files, but needed to satisfy the following interface</span>
     <span class="n">archive_file_fn</span> <span class="o">=</span> <span class="n">_get_archive_file_fn</span><span class="p">(</span><span class="n">copy_only</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
-    <span class="n">_</span> <span class="o">=</span> <span class="n">_archive_restarts_date</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">_archive_restarts_date</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                                <span class="n">archive</span><span class="o">=</span><span class="n">archive</span><span class="p">,</span>
                                <span class="n">datename</span><span class="o">=</span><span class="n">last_datename</span><span class="p">,</span>
                                <span class="n">datename_is_last</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -678,13 +622,13 @@
                                <span class="n">link_to_last_restart_files</span><span class="o">=</span><span class="n">link_to_restart_files</span><span class="p">)</span></div>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="case_st_archive"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.case_st_archive">[docs]</a><span class="k">def</span> <span class="nf">case_st_archive</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">last_date_str</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">copy_only</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">no_resubmit</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="case_st_archive"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.case_st_archive">[docs]</a><span class="k">def</span> <span class="nf">case_st_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">last_date_str</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">copy_only</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">no_resubmit</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create archive object and perform short term archiving</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-    <span class="n">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="s2">&quot;case.st_archive&quot;</span><span class="p">)</span>
+    <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="s2">&quot;case.st_archive&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">last_date_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">last_date</span> <span class="o">=</span> <span class="n">get_file_date</span><span class="p">(</span><span class="n">last_date_str</span><span class="p">)</span>
@@ -693,41 +637,41 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">last_date</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="n">dout_s_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DOUT_S_ROOT&#39;</span><span class="p">)</span>
+    <span class="n">dout_s_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DOUT_S_ROOT&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dout_s_root</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">dout_s_root</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span><span class="p">:</span>
         <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span>
                <span class="s1">&#39;XML variable DOUT_S_ROOT is required for short-term achiver&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">isdir</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">)</span>
 
-    <span class="n">dout_s_save_interim</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DOUT_S_SAVE_INTERIM_RESTART_FILES&#39;</span><span class="p">)</span>
+    <span class="n">dout_s_save_interim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DOUT_S_SAVE_INTERIM_RESTART_FILES&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dout_s_save_interim</span> <span class="o">==</span> <span class="s1">&#39;FALSE&#39;</span> <span class="ow">or</span> <span class="n">dout_s_save_interim</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span><span class="p">:</span>
-        <span class="n">rest_n</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;REST_N&#39;</span><span class="p">)</span>
-        <span class="n">stop_n</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;STOP_N&#39;</span><span class="p">)</span>
+        <span class="n">rest_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;REST_N&#39;</span><span class="p">)</span>
+        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;STOP_N&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rest_n</span> <span class="o">&lt;</span> <span class="n">stop_n</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Restart files from end of run will be saved&#39;</span>
                         <span class="s1">&#39;interim restart files will be deleted&#39;</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;st_archive starting&quot;</span><span class="p">)</span>
 
-    <span class="n">archive</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
-    <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_archive_process</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">last_date</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="p">,</span> <span class="n">copy_only</span><span class="p">)</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
+    <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_archive_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">last_date</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="p">,</span> <span class="n">copy_only</span><span class="p">)</span>
     <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;st_archive&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;st_archive completed&quot;</span><span class="p">)</span>
 
     <span class="c1"># resubmit case if appropriate</span>
-    <span class="n">resubmit</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span>
+    <span class="n">resubmit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">resubmit</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_resubmit</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;resubmitting from st_archive, resubmit={:d}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resubmit</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;mira&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;mira&quot;</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;.original_host&quot;</span><span class="p">),</span> <span class="s2">&quot;ERROR alcf host file not found&quot;</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;.original_host&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="n">sshhost</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;ssh cooleylogin1 ssh {} &#39;{}/case.submit {} --resubmit&#39; &quot;</span>\
                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sshhost</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">submit</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">resubmit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="bp">True</span></div>
 </pre></div>
@@ -739,7 +683,7 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
+    <form class="search" action="../../../search.html" method="get">
       <div><input type="text" name="q" /></div>
       <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
@@ -755,13 +699,13 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

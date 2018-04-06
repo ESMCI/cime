@@ -50,12 +50,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">functions for building CIME models</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span>  <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                 <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">analyze_build_log</span><span class="p">,</span> <span class="n">stringify_bool</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">run_cmd</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span>
 <span class="kn">from</span> <span class="nn">CIME.provenance</span>            <span class="kn">import</span> <span class="n">save_build_provenance</span>
-<span class="kn">from</span> <span class="nn">CIME.preview_namelists</span>     <span class="kn">import</span> <span class="n">create_namelists</span><span class="p">,</span> <span class="n">create_dirs</span>
-<span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span>     <span class="kn">import</span> <span class="n">check_lockedfiles</span><span class="p">,</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">unlock_file</span>
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">CIME.locked_files</span>          <span class="kn">import</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">unlock_file</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -246,12 +245,12 @@
     <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
 
     <span class="c1"># User may have rm -rf their build directory</span>
-    <span class="n">create_dirs</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="n">case</span><span class="o">.</span><span class="n">create_dirs</span><span class="p">()</span>
 
     <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">model_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">buildlist</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating component namelists as part of build&quot;</span><span class="p">)</span>
-        <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">sharedpath</span>
 
@@ -289,11 +288,10 @@
         <span class="n">my_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;build_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;buildlib.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lib</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building {} with output to file {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span><span class="n">file_build</span><span class="p">))</span>
 
-        <span class="n">stat</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">my_file</span><span class="p">,</span> <span class="p">[</span><span class="n">full_lib_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">],</span> <span class="s1">&#39;buildlib&#39;</span><span class="p">,</span>
-                                  <span class="p">[</span><span class="n">full_lib_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">],</span> <span class="n">logfile</span><span class="o">=</span><span class="n">file_build</span><span class="p">)</span>
+        <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">my_file</span><span class="p">,</span> <span class="p">[</span><span class="n">full_lib_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">],</span> <span class="s1">&#39;buildlib&#39;</span><span class="p">,</span>
+                       <span class="p">[</span><span class="n">full_lib_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">sharedpath</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">],</span> <span class="n">logfile</span><span class="o">=</span><span class="n">file_build</span><span class="p">)</span>
 
         <span class="n">analyze_build_log</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span> <span class="n">file_build</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">stat</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;BUILD FAIL: buildlib.{} failed, cat {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span> <span class="n">file_build</span><span class="p">))</span>
         <span class="n">logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_build</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">lib</span> <span class="o">==</span> <span class="s2">&quot;pio&quot;</span><span class="p">:</span>
             <span class="n">bldlog</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_build</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
@@ -429,14 +427,14 @@
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">),</span> <span class="s2">&quot;&#39;{}&#39; is not a valid directory&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">))</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
 
-    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">)),</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">())),</span>
            <span class="s2">&quot;ERROR: must invoke case.setup script before calling build script &quot;</span><span class="p">)</span>
 
     <span class="n">cimeroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
 
     <span class="n">comp_classes</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
 
-    <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">()</span>
 
     <span class="c1"># Retrieve relevant case data</span>
     <span class="c1"># This environment variable gets set for cesm Make and</span>

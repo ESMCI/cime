@@ -86,8 +86,6 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
-<span class="kn">from</span> <span class="nn">CIME.case_submit</span> <span class="kn">import</span> <span class="n">check_case</span>
-<span class="kn">from</span> <span class="nn">CIME.case_st_archive</span> <span class="kn">import</span> <span class="n">archive_last_restarts</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">get_model</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
@@ -280,9 +278,11 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Doing second run: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_description</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
+                <span class="c1"># This assures that case two namelists are populated</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
                 <span class="c1"># we need to make sure run2 is properly staged.</span>
                 <span class="k">if</span> <span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&quot;startup&quot;</span><span class="p">:</span>
-                    <span class="n">check_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">check_case</span><span class="p">()</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_custom_prerun_action</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">)</span>
@@ -303,9 +303,8 @@
 <span class="sd">        files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
-        <span class="n">archive_last_restarts</span><span class="p">(</span><span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="p">,</span>
-                              <span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">rundir2</span><span class="p">,</span>
-                              <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">archive_last_restarts</span><span class="p">(</span><span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">rundir2</span><span class="p">,</span>
+                                          <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span></div>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Private methods</span>
@@ -515,9 +514,6 @@
         <span class="c1"># Flush the case so that, if errors occur later, then at least case2 is</span>
         <span class="c1"># in a correct, post-setup state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-
-        <span class="c1"># This assures that case two namelists are populated</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
         <span class="c1"># Go back to case 1 to ensure that&#39;s where we are for any following code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>

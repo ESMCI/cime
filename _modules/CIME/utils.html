@@ -51,7 +51,7 @@
 <span class="sd">Common functions used by cime python scripts</span>
 <span class="sd">Warning: you cannot use CIME Classes in this module as it causes circular dependencies</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">imp</span>
+<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">imp</span><span class="o">,</span> <span class="nn">fnmatch</span>
 <span class="kn">import</span> <span class="nn">errno</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">warnings</span><span class="o">,</span> <span class="nn">filecmp</span>
 <span class="kn">import</span> <span class="nn">stat</span> <span class="kn">as</span> <span class="nn">statlib</span>
 <span class="kn">import</span> <span class="nn">six</span>
@@ -70,7 +70,6 @@
         <span class="k">yield</span> <span class="n">new_target</span> <span class="c1"># run some code with the replaced stdout</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_target</span> <span class="c1"># restore to the previous value</span></div>
-
 
 <span class="nd">@contextmanager</span>
 <div class="viewcode-block" id="redirect_stderr"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.redirect_stderr">[docs]</a><span class="k">def</span> <span class="nf">redirect_stderr</span><span class="p">(</span><span class="n">new_target</span><span class="p">):</span>
@@ -317,52 +316,76 @@
 <span class="n">_hack</span><span class="o">=</span><span class="nb">object</span><span class="p">()</span>
 
 <div class="viewcode-block" id="run_sub_or_cmd"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_sub_or_cmd">[docs]</a><span class="k">def</span> <span class="nf">run_sub_or_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdargs</span><span class="p">,</span> <span class="n">subname</span><span class="p">,</span> <span class="n">subargs</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This code will try to import and run each cmd as a subroutine</span>
+<span class="sd">    if that fails it will run it as a program in a seperate shell</span>
 
-    <span class="c1"># This code will try to import and run each buildnml as a subroutine</span>
-    <span class="c1"># if that fails it will run it as a program in a seperate shell</span>
-    <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="bp">False</span>
-    <span class="n">stat</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">errput</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">load_source</span><span class="p">(</span><span class="n">subname</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   Calling {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">redirect_logger</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">),</span> <span class="n">subname</span><span class="p">):</span>
+<span class="sd">    Raises exception on failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c1"># Before attempting to load the script make sure it contains the subroutine</span>
+    <span class="c1"># we are expecting</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^def {}\(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subname</span><span class="p">),</span> <span class="n">line</span><span class="p">):</span>
+                <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">break</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">do_run_cmd</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mod</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">load_source</span><span class="p">(</span><span class="n">subname</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   Calling {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_fd</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">redirect_logger</span><span class="p">(</span><span class="n">log_fd</span><span class="p">,</span> <span class="n">subname</span><span class="p">):</span>
+                        <span class="k">with</span> <span class="n">redirect_stdout_stderr</span><span class="p">(</span><span class="n">log_fd</span><span class="p">):</span>
+                            <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">subname</span><span class="p">)(</span><span class="o">*</span><span class="n">subargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">subname</span><span class="p">)(</span><span class="o">*</span><span class="n">subargs</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">SyntaxError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">_</span><span class="p">:</span>
+            <span class="k">pass</span> <span class="c1"># Need to try to run as shell command</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_fd</span><span class="p">:</span>
+                    <span class="n">log_fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
+
+                <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;{} FAILED, cat {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">logfile</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">subname</span><span class="p">)(</span><span class="o">*</span><span class="n">subargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="c1"># Running as python function worked, we&#39;re done</span>
 
-    <span class="k">except</span> <span class="ne">SyntaxError</span><span class="p">:</span>
-        <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   Running {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="n">do_run_cmd</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">fullcmd</span> <span class="o">=</span> <span class="n">cmd</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">cmdargs</span><span class="p">:</span>
+            <span class="n">fullcmd</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fullcmd</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">cmdargs</span>
 
-    <span class="k">if</span> <span class="n">do_run_cmd</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;   Running {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
+        <span class="n">fullcmd</span> <span class="o">+=</span> <span class="s2">&quot; &gt;&amp; {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
 
-        <span class="n">fullcmd</span> <span class="o">=</span> <span class="n">cmd</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmdargs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">cmdargs</span><span class="p">:</span>
-                <span class="n">fullcmd</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">fullcmd</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">cmdargs</span>
-
-        <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
-            <span class="n">fullcmd</span> <span class="o">+=</span> <span class="s2">&quot; &gt; {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
-
-        <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fullcmd</span><span class="p">),</span>
-                                 <span class="n">combine_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
-                                 <span class="n">from_dir</span><span class="o">=</span><span class="n">from_dir</span><span class="p">)</span>
+    <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fullcmd</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">from_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span><span class="p">:</span> <span class="c1"># Will be empty if logfile</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-        <span class="c1"># refresh case xml object from file</span>
-        <span class="k">if</span> <span class="n">case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span></div>
+    <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;{} FAILED, cat {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fullcmd</span><span class="p">,</span> <span class="n">logfile</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;{} FAILED, see above&quot;</span><span class="p">)</span>
+
+    <span class="c1"># refresh case xml object from file</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="run_cmd"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_cmd">[docs]</a><span class="k">def</span> <span class="nf">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">input_str</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
             <span class="n">arg_stdout</span><span class="o">=</span><span class="n">_hack</span><span class="p">,</span> <span class="n">arg_stderr</span><span class="o">=</span><span class="n">_hack</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">combine_output</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
@@ -664,10 +687,8 @@
         <span class="n">rc</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;git describe --tags $(git log -n1 --pretty=&#39;%h&#39;)&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">repo</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rc</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;git rev-parse {} HEAD&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;--short&quot;</span> <span class="k">if</span> <span class="n">short</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">repo</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">output</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;unknown&#39;</span></div>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span></div>
 
 <div class="viewcode-block" id="get_scripts_location_within_cime"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_scripts_location_within_cime">[docs]</a><span class="k">def</span> <span class="nf">get_scripts_location_within_cime</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -902,6 +923,18 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No charge_account info available, using value from PROJECT&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">get_project</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="find_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.find_files">[docs]</a><span class="k">def</span> <span class="nf">find_files</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    recursively find all files matching a pattern</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">rootdir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="setup_standard_logging_options"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.setup_standard_logging_options">[docs]</a><span class="k">def</span> <span class="nf">setup_standard_logging_options</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>8. CIME user config directory &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
+    <link rel="next" title="9. Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="7.6. Customizing CESM active component-specific namelist settings" href="use_cases/cesm-nml.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="9. Troubleshooting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="use_cases/cesm-nml.html" title="7.6. Customizing CESM active component-specific namelist settings"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cime-user-config-directory">
+<span id="customizing-cime"></span><h1>8. CIME user config directory<a class="headerlink" href="#cime-user-config-directory" title="Permalink to this headline">¶</a></h1>
+<p>CIME recognizes a user-created custom configuration directory, <code class="docutils literal"><span class="pre">$HOME/.cime</span></code>. The contents of this directory may include any one of the following list of files:</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">config</span></code></p>
+<blockquote>
+<div><p>This file must have a format which follows the python config format. See <a class="reference external" href="https://wiki.python.org/moin/ConfigParserExamples">Python Config Parser Examples</a></p>
+<p>In the [main] block you can set the following variables:</p>
+<ul>
+<li><p class="first"><code class="docutils literal"><span class="pre">CIME_MODEL=[e3sm,</span> <span class="pre">cesm]</span></code></p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">PROJECT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
+<p>This is your project account code for batch submission and/or directory priveleges</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">CHARGE_ACCOUNT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
+<p>An alternative to PROJECT for batch charging&gt;</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">MAIL_USER=&lt;email</span> <span class="pre">address&gt;</span></code></p>
+<p>Used request a non-default email for batch summary output</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">MAIL_TYPE=[never,all,begin,fail,end]</span></code></p>
+</li>
+</ul>
+<blockquote>
+<div><p>Any <strong>or</strong> all the above valid values can be set to list the batch events that emails will be sent for.</p>
+</div></blockquote>
+<ul>
+<li><p class="first"><strong>create_test</strong> input arguments</p>
+<p>Any argument to the <strong>create_test</strong> script can have its default changed by listing it here with the new default.</p>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">config_machines.xml</span></code></p>
+<p>This file must the same format as <code class="docutils literal"><span class="pre">$CIMEROOT/config/$model/machines/config_machines.xml</span></code> with the appropriate definitions for your machine.</p>
+<p>If you have a customized version of this file in <code class="docutils literal"><span class="pre">$HOME/.cime</span></code>, it will <strong>append</strong> to the file in <code class="docutils literal"><span class="pre">$CIMEROOT/config/$model/machines/config_machines.xml</span></code>.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">config_compilers.xml</span></code></p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add content for config_compilers.xml</p>
+</div>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">config_batch.xml</span></code></p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Add content for config_batch.xml</p>
+</div>
+</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="use_cases/cesm-nml.html"
+                        title="previous chapter">7.6. Customizing CESM active component-specific namelist settings</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="troubleshooting.html"
+                        title="next chapter">9. Troubleshooting</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/cime-config.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="9. Troubleshooting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="use_cases/cesm-nml.html" title="7.6. Customizing CESM active component-specific namelist settings"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

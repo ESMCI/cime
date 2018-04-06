@@ -70,7 +70,8 @@
     &lt;rest_file_extension&gt;[ri]&lt;/rest_file_extension&gt;
     &lt;rest_file_extension&gt;rh\d*&lt;/rest_file_extension&gt;
     &lt;rest_file_extension&gt;rs&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;[eh]&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;e&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;nhfil&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.atm$NINST_STRING&lt;/rpointer_file&gt;
@@ -90,7 +91,7 @@
   &lt;comp_archive_spec compname=&quot;clm&quot; compclass=&quot;lnd&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
     &lt;rest_file_extension&gt;rh\d?&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;locfnh&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.lnd$NINST_STRING&lt;/rpointer_file&gt;
@@ -109,7 +110,8 @@
 
   &lt;comp_archive_spec compname=&quot;rtm&quot; compclass=&quot;rof&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*&lt;/hist_file_extension&gt;
+    &lt;rest_file_extension&gt;rh\d*&lt;/rest_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;locfnh&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.rof$NINST_STRING&lt;/rpointer_file&gt;
@@ -119,7 +121,8 @@
 
   &lt;comp_archive_spec compname=&quot;mosart&quot; compclass=&quot;rof&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*&lt;/hist_file_extension&gt;
+    &lt;rest_file_extension&gt;rh\d*&lt;/rest_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;locfnh&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.rof$NINST_STRING&lt;/rpointer_file&gt;
@@ -130,7 +133,7 @@
 
   &lt;comp_archive_spec compname=&quot;cice&quot; compclass=&quot;ice&quot;&gt;
     &lt;rest_file_extension&gt;[ri]&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.ice$NINST_STRING&lt;/rpointer_file&gt;
@@ -141,7 +144,9 @@
 
   &lt;comp_archive_spec compname=&quot;pop&quot; compclass=&quot;ocn&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*|d[dovt]\.&lt;/hist_file_extension&gt;
+    &lt;rest_file_extension&gt;r[ho]&lt;/rest_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;d[dovt]&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.ocn$NINST_STRING.restart&lt;/rpointer_file&gt;
@@ -159,7 +164,7 @@
 
   &lt;comp_archive_spec compname=&quot;cism&quot; compclass=&quot;glc&quot;&gt;
     &lt;rest_file_extension&gt;[ri]&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;h\d*.*\.nc$&lt;/hist_file_extension&gt;
     &lt;hist_file_extension&gt;initial_hist&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
@@ -170,7 +175,7 @@
 
   &lt;comp_archive_spec compname=&quot;ww3&quot; compclass=&quot;wav&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;hi&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;hi.*\.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.wav$NINST_STRING&lt;/rpointer_file&gt;
@@ -178,9 +183,9 @@
     &lt;/rpointer&gt;
     &lt;/comp_archive_spec&gt;
     &lt;comp_archive_spec compclass=&quot;esp&quot; compname=&quot;dart&quot;&gt;
-      &lt;rest_file_extension&gt;e\.\w+inf\w+&lt;/rest_file_extension&gt;
+      &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
       &lt;hist_file_extension&gt;[ei]&lt;/hist_file_extension&gt;
-      &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
+      &lt;rest_history_varname&gt;restart_hist&lt;/rest_history_varname&gt;
       &lt;rpointer&gt;
         &lt;rpointer_file&gt;rpointer.unset&lt;/rpointer_file&gt;
         &lt;rpointer_content&gt;unset&lt;/rpointer_content&gt;
@@ -3219,11 +3224,12 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;4&quot; &gt;short&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;06:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;4&quot; default=&quot;true&quot;&gt;medium&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;40:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;3&quot; &gt;long&lt;/queue&gt;
-      &lt;queue nodemax=&quot;16&quot; nodemin=&quot;1&quot; walltimemax=&quot;12:00:00&quot;&gt;overnight&lt;/queue&gt;
-      &lt;queue nodemax=&quot;32&quot; nodemin=&quot;1&quot; walltimemax=&quot;3000:00:&quot;&gt;monster&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;02:00:00&quot;   strict=&quot;true&quot; nodemin=&quot;1&quot;  nodemax=&quot;8&quot;&gt;short&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;08:00:00&quot;   strict=&quot;true&quot; nodemin=&quot;1&quot;  nodemax=&quot;6&quot; default=&quot;true&quot;&gt;medium&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;40:00:00&quot;   strict=&quot;true&quot; nodemin=&quot;1&quot;  nodemax=&quot;8&quot;&gt;long&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;80:00:00&quot;   strict=&quot;true&quot; nodemin=&quot;1&quot;  nodemax=&quot;8&quot;&gt;verylong&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;32:00:00&quot;   strict=&quot;true&quot; nodemax=&quot;16&quot; nodemin=&quot;1&quot;&gt;overnight&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;3000:00:00&quot; strict=&quot;true&quot; nodemax=&quot;32&quot; nodemin=&quot;1&quot;&gt;monster&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 

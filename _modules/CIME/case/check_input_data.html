@@ -6,38 +6,38 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.check_input_data &mdash; CIME 5.4.0 documentation</title>
+    <title>CIME.case.check_input_data &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
+        URL_ROOT:    '../../../',
         VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -46,18 +46,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for CIME.check_input_data</h1><div class="highlight"><pre>
+  <h1>Source code for CIME.case.check_input_data</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">API for checking input for testcase</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">SharedArea</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">SharedArea</span><span class="p">,</span> <span class="n">find_files</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.inputdata</span> <span class="kn">import</span> <span class="n">Inputdata</span>
 <span class="kn">from</span> <span class="nn">CIME.Servers.ftp</span> <span class="kn">import</span> <span class="n">FTP</span>
 <span class="kn">from</span> <span class="nn">CIME.Servers.svn</span> <span class="kn">import</span> <span class="n">SVN</span>
 <span class="kn">from</span> <span class="nn">CIME.Servers.wget</span> <span class="kn">import</span> <span class="n">WGET</span>
 
-<span class="kn">import</span> <span class="nn">fnmatch</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -79,24 +79,12 @@
     <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">server</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">)</span>
 
-<div class="viewcode-block" id="find_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.find_files">[docs]</a><span class="k">def</span> <span class="nf">find_files</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    recursively find all files matching a pattern</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">rootdir</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)):</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
-
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="check_all_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_all_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_all_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="check_all_input_data"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_all_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_all_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="n">success</span> <span class="o">=</span> <span class="bp">False</span>
     <span class="k">if</span> <span class="n">protocal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">address</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">success</span> <span class="o">=</span> <span class="n">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="n">protocal</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_input_data</span><span class="p">(</span><span class="n">protocal</span><span class="o">=</span><span class="n">protocal</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
                                    <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">inputdata</span> <span class="o">=</span> <span class="n">Inputdata</span><span class="p">()</span>
@@ -106,15 +94,15 @@
                 <span class="n">protocal</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">inputdata</span><span class="o">.</span><span class="n">get_next_server</span><span class="p">()</span>
                 <span class="n">expect</span><span class="p">(</span><span class="n">protocal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;Failed to find input data&quot;</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking server {} with protocal {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">protocal</span><span class="p">))</span>
-            <span class="n">success</span> <span class="o">=</span> <span class="n">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="n">protocal</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_input_data</span><span class="p">(</span><span class="n">protocal</span><span class="o">=</span><span class="n">protocal</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="n">download</span><span class="p">,</span>
                                        <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">)</span>
 
-    <span class="n">stage_refcase</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
+    <span class="bp">self</span><span class="o">.</span><span class="n">stage_refcase</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="stage_refcase"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.stage_refcase">[docs]</a><span class="k">def</span> <span class="nf">stage_refcase</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
-    <span class="n">get_refcase</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span><span class="p">)</span>
-    <span class="n">run_type</span>     <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span>
-    <span class="n">continue_run</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="stage_refcase"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.stage_refcase">[docs]</a><span class="k">def</span> <span class="nf">stage_refcase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">get_refcase</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span><span class="p">)</span>
+    <span class="n">run_type</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">)</span>
+    <span class="n">continue_run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">)</span>
 
     <span class="c1"># We do not fully populate the inputdata directory on every</span>
     <span class="c1"># machine and do not expect every user to download the 3TB+ of</span>
@@ -123,11 +111,11 @@
     <span class="c1"># attempts to download data from the server if it&#39;s needed and</span>
     <span class="c1"># missing.</span>
     <span class="k">if</span> <span class="n">get_refcase</span> <span class="ow">and</span> <span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&quot;startup&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">continue_run</span><span class="p">:</span>
-        <span class="n">din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
-        <span class="n">run_refdate</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDATE&quot;</span><span class="p">)</span>
-        <span class="n">run_refcase</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span><span class="p">)</span>
-        <span class="n">run_refdir</span>   <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDIR&quot;</span><span class="p">)</span>
-        <span class="n">rundir</span>       <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+        <span class="n">din_loc_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
+        <span class="n">run_refdate</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDATE&quot;</span><span class="p">)</span>
+        <span class="n">run_refcase</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span><span class="p">)</span>
+        <span class="n">run_refdir</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDIR&quot;</span><span class="p">)</span>
+        <span class="n">rundir</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
 
         <span class="n">refdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">,</span> <span class="n">run_refdir</span><span class="p">,</span> <span class="n">run_refcase</span><span class="p">,</span> <span class="n">run_refdate</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">refdir</span><span class="p">),</span>
@@ -169,7 +157,7 @@
             <span class="n">camfile</span> <span class="o">=</span> <span class="n">cam2file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;cam2&quot;</span><span class="p">,</span> <span class="s2">&quot;cam&quot;</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">cam2file</span><span class="p">,</span> <span class="n">camfile</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="s2">&quot;svn&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">protocal</span><span class="o">=</span><span class="s2">&quot;svn&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if no files missing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -252,7 +240,7 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
+    <form class="search" action="../../../search.html" method="get">
       <div><input type="text" name="q" /></div>
       <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
@@ -268,13 +256,13 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

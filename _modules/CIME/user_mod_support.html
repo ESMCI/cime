@@ -142,7 +142,7 @@
     <span class="k">for</span> <span class="n">shell_command_file</span> <span class="ow">in</span> <span class="n">case_shell_command_files</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">,</span> <span class="mi">0</span><span class="n">o777</span><span class="p">)</span>
-            <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">)</span></div>
+            <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">shell_command_file</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="build_include_dirs_list"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.user_mod_support.build_include_dirs_list">[docs]</a><span class="k">def</span> <span class="nf">build_include_dirs_list</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">,</span> <span class="n">include_dirs</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>

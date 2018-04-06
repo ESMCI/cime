@@ -61,7 +61,6 @@
 
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.restart_tests</span> <span class="kn">import</span> <span class="n">RestartTest</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.case_st_archive</span> <span class="kn">import</span> <span class="n">case_st_archive</span><span class="p">,</span> <span class="n">restore_from_archive</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">ls_sorted_by_mtime</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -75,18 +74,18 @@
                              <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
                              <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;restart&#39;</span><span class="p">,</span>
                              <span class="n">multisubmit</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">_case_one_custom_postrun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">case_st_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_st_archive</span><span class="p">()</span>
         <span class="c1"># Since preview namelist is run before _case_two_prerun_action, we need to do this here.</span>
         <span class="n">dout_s_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
         <span class="n">restart_list</span> <span class="o">=</span> <span class="n">ls_sorted_by_mtime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span><span class="s2">&quot;rest&quot;</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restart directory list is {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">restart_list</span><span class="p">))</span>
         <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_list</span><span class="p">)</span> <span class="o">&gt;=</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;Expected at least two restart directories&quot;</span><span class="p">)</span>
         <span class="c1"># Get the older of the two restart directories</span>
-        <span class="n">restore_from_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">,</span>
-                             <span class="n">rest_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-                                 <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="n">restart_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">restore_from_archive</span><span class="p">(</span><span class="n">rest_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="n">restart_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span></div>
 </pre></div>
 
           </div>

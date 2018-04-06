@@ -6,38 +6,38 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.case_test &mdash; CIME 5.4.0 documentation</title>
+    <title>CIME.case.case_test &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
+        URL_ROOT:    '../../../',
         VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -46,9 +46,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for CIME.case_test</h1><div class="highlight"><pre>
+  <h1>Source code for CIME.case.case_test</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Run a testcase.</span>
+<span class="sd">case_test is a member of class Case from case.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
@@ -91,9 +92,9 @@
         <span class="n">signum</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">signame</span><span class="p">)</span>
         <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">_signal_handler</span><span class="p">)</span>
 
-<div class="viewcode-block" id="case_test"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_test.case_test">[docs]</a><span class="k">def</span> <span class="nf">case_test</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">testname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="case_test"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.case_test">[docs]</a><span class="k">def</span> <span class="nf">case_test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">testname</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">testname</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="n">testname</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;TESTCASE&#39;</span><span class="p">)</span>
+        <span class="n">testname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;TESTCASE&#39;</span><span class="p">)</span>
 
     <span class="n">expect</span><span class="p">(</span><span class="n">testname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;testname argument not resolved&quot;</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Running test for {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testname</span><span class="p">))</span>
@@ -105,9 +106,9 @@
         <span class="c1"># not found or the test constructor throws. We need to be</span>
         <span class="c1"># sure to leave TestStatus in the appropriate state if that</span>
         <span class="c1"># happens.</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="n">find_system_test</span><span class="p">(</span><span class="n">testname</span><span class="p">,</span> <span class="n">case</span><span class="p">)(</span><span class="n">case</span><span class="p">)</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">find_system_test</span><span class="p">(</span><span class="n">testname</span><span class="p">,</span> <span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+        <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;failed to initialize&quot;</span><span class="p">)</span>
         <span class="n">append_testlog</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
@@ -130,7 +131,7 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
+    <form class="search" action="../../../search.html" method="get">
       <div><input type="text" name="q" /></div>
       <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
@@ -146,13 +147,13 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

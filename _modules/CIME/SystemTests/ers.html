@@ -87,6 +87,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing an {} {} restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stop_new</span><span class="p">),</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span><span class="o">=</span><span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
 
         <span class="c1"># Compare restart file</span>

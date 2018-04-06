@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>9. Use cases &mdash; CIME 5.4.0 documentation</title>
+    <title>7. Modifying a Case &mdash; CIME 5.4.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
     <link rel="up" title="Case Control System Part 1: Basic Usage" href="../index.html" />
-    <link rel="next" title="9.1. MPI example" href="basics-mpi-example.html" />
-    <link rel="prev" title="8. Adding new cases" href="../adding-cases.html" /> 
+    <link rel="next" title="7.1. Changing namelist values" href="namelist-gen.html" />
+    <link rel="prev" title="6. Cloning a Case" href="../cloning-a-case.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="basics-mpi-example.html" title="9.1. MPI example"
+          <a href="namelist-gen.html" title="7.1. Changing namelist values"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../adding-cases.html" title="8. Adding new cases"
+          <a href="../cloning-a-case.html" title="6. Cloning a Case"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
@@ -54,14 +54,32 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="use-cases">
-<h1>9. Use cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h1>
-<p>This section contains examples in a variety of use cases.</p>
+  <div class="section" id="modifying-a-case">
+<h1>7. Modifying a Case<a class="headerlink" href="#modifying-a-case" title="Permalink to this headline">¶</a></h1>
+<p>Examples of how to use CIME to modify and customize a created case for your
+needs.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="basics-mpi-example.html">9.1. MPI example</a></li>
-<li class="toctree-l1"><a class="reference internal" href="basics-a-basic-example.html">9.2. A basic example</a></li>
-<li class="toctree-l1"><a class="reference internal" href="basics-setting-up-a-branch-or-hybrid-run.html">9.3. Setting up a branch or hybrid run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namelist-gen.html">7.1. Changing namelist values</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics-a-basic-example.html">7.2. Setting up a multi-year run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="driver-nml.html">7.3. Modifying driver namelists</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics-setting-up-a-branch-or-hybrid-run.html">7.4. Setting up a branch or hybrid run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datamod-nml.html">7.5. Customizing data model namelists and stream files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datamod-nml.html#data-atmosphere-datm">7.5.1. Data Atmosphere (DATM)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamod-nml.html#data-ocean-docn">7.5.2. Data Ocean (DOCN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamod-nml.html#data-sea-ice-dice">7.5.3. Data Sea-ice (DICE)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamod-nml.html#data-land-dlnd">7.5.4. Data Land (DLND)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datamod-nml.html#data-river-drof">7.5.5. Data River (DROF)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cesm-nml.html">7.6. Customizing CESM active component-specific namelist settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cesm-nml.html#cam">7.6.1. CAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm-nml.html#clm">7.6.2. CLM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm-nml.html#rtm">7.6.3. RTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm-nml.html#pop2">7.6.4. POP2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm-nml.html#cism">7.6.5. CISM</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -73,11 +91,11 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../adding-cases.html"
-                        title="previous chapter">8. Adding new cases</a></p>
+  <p class="topless"><a href="../cloning-a-case.html"
+                        title="previous chapter">6. Cloning a Case</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="basics-mpi-example.html"
-                        title="next chapter">9.1. MPI example</a></p>
+  <p class="topless"><a href="namelist-gen.html"
+                        title="next chapter">7.1. Changing namelist values</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -109,10 +127,10 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="basics-mpi-example.html" title="9.1. MPI example"
+          <a href="namelist-gen.html" title="7.1. Changing namelist values"
              >next</a> |</li>
         <li class="right" >
-          <a href="../adding-cases.html" title="8. Adding new cases"
+          <a href="../cloning-a-case.html" title="6. Cloning a Case"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 

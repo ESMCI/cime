@@ -51,7 +51,6 @@
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">EnvironmentContext</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.hist_utils</span> <span class="kn">import</span> <span class="n">compare_baseline</span>
-<span class="kn">from</span> <span class="nn">CIME.case_cmpgen_namelists</span> <span class="kn">import</span> <span class="n">case_cmpgen_namelists</span>
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">logging</span>
@@ -69,7 +68,7 @@
 <span class="c1">###############################################################################</span>
     <span class="n">log_lvl</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
-    <span class="n">success</span> <span class="o">=</span> <span class="n">case_cmpgen_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">compare_name</span><span class="o">=</span><span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="o">=</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">logfile_name</span><span class="o">=</span><span class="n">logfile_name</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">case_cmpgen_namelists</span><span class="p">(</span><span class="n">compare</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">compare_name</span><span class="o">=</span><span class="n">baseline_name</span><span class="p">,</span> <span class="n">baseline_root</span><span class="o">=</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">logfile_name</span><span class="o">=</span><span class="n">logfile_name</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_lvl</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">success</span></div>
 

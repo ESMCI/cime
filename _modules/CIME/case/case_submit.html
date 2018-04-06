@@ -6,38 +6,38 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CIME.case_submit &mdash; CIME 5.4.0 documentation</title>
+    <title>CIME.case.case_submit &mdash; CIME 5.4.0 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
+        URL_ROOT:    '../../../',
         VERSION:     '5.4.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -46,20 +46,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for CIME.case_submit</h1><div class="highlight"><pre>
+  <h1>Source code for CIME.case.case_submit</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">case.submit - Submit a cesm workflow to the queueing system or run it</span>
 <span class="sd">if there is no queueing system.  A cesm workflow may include multiple</span>
 <span class="sd">jobs.</span>
+<span class="sd">submit, check_case and check_da_settings are members of class Case in file case.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">verbatim_success_msg</span>
-<span class="kn">from</span> <span class="nn">CIME.preview_namelists</span>         <span class="kn">import</span> <span class="n">create_namelists</span>
-<span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span>         <span class="kn">import</span> <span class="n">check_lockedfiles</span><span class="p">,</span> <span class="n">check_lockedfile</span><span class="p">,</span> <span class="n">unlock_file</span><span class="p">,</span> <span class="n">lock_file</span>
-<span class="kn">from</span> <span class="nn">CIME.check_input_data</span>          <span class="kn">import</span> <span class="n">check_all_input_data</span>
+<span class="kn">from</span> <span class="nn">CIME.locked_files</span>              <span class="kn">import</span> <span class="n">unlock_file</span><span class="p">,</span> <span class="n">lock_file</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span>               <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -67,10 +66,7 @@
 <span class="k">def</span> <span class="nf">_submit</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
             <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
-            <span class="n">job</span> <span class="o">=</span> <span class="s2">&quot;case.test&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">job</span> <span class="o">=</span> <span class="s2">&quot;case.run&quot;</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">()</span>
 
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">continue_run</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">)</span>
@@ -107,7 +103,7 @@
 
         <span class="n">env_batch_has_changed</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">check_lockedfile</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
             <span class="n">env_batch_has_changed</span> <span class="o">=</span> <span class="bp">True</span>
 
@@ -123,9 +119,9 @@
         <span class="n">unlock_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
         <span class="n">lock_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">job</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;case.test&quot;</span><span class="p">,</span><span class="s2">&quot;case.run&quot;</span><span class="p">):</span>
-            <span class="n">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-            <span class="n">check_DA_settings</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">job</span> <span class="o">==</span> <span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">():</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">check_case</span><span class="p">()</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">check_DA_settings</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;mira&quot;</span><span class="p">:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;.original_host&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                     <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">())</span>
@@ -152,11 +148,11 @@
 
     <span class="k">return</span> <span class="n">xml_jobid_text</span>
 
-<div class="viewcode-block" id="submit"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_submit.submit">[docs]</a><span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<div class="viewcode-block" id="submit"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.submit">[docs]</a><span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
            <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
-        <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-        <span class="n">casebaseid</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
+        <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+        <span class="n">casebaseid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
         <span class="c1"># This should take care of the race condition where the submitted job</span>
         <span class="c1"># begins immediately and tries to set RUN phase. We proactively assume</span>
         <span class="c1"># a passed SUBMIT phase. If this state is already PASS, don&#39;t set it again</span>
@@ -168,34 +164,34 @@
                 <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_submit</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="n">no_batch</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="n">prereq</span><span class="p">,</span>
+        <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="n">no_batch</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="n">prereq</span><span class="p">,</span>
                                   <span class="n">resubmit</span><span class="o">=</span><span class="n">resubmit</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="n">skip_pnl</span><span class="p">,</span>
                                   <span class="n">mail_user</span><span class="o">=</span><span class="n">mail_user</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="n">mail_type</span><span class="p">,</span>
                                   <span class="n">batch_args</span><span class="o">=</span><span class="n">batch_args</span><span class="p">)</span>
-        <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;case.submit&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span>
+        <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;case.submit&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span>
                                 <span class="n">custom_success_msg_functor</span><span class="o">=</span><span class="n">verbatim_success_msg</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="c1"># If something failed in the batch system, make sure to mark</span>
         <span class="c1"># the test as failed if we are running a test.</span>
-        <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="n">casebaseid</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
 
         <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="check_case"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_submit.check_case">[docs]</a><span class="k">def</span> <span class="nf">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
-    <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-    <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span> <span class="c1"># Must be called before check_all_input_data</span>
+<div class="viewcode-block" id="check_case"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_case">[docs]</a><span class="k">def</span> <span class="nf">check_case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">()</span> <span class="c1"># Must be called before check_all_input_data</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking that inputdata is available as part of case submission&quot;</span><span class="p">)</span>
-    <span class="n">check_all_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">check_all_input_data</span><span class="p">()</span>
 
-    <span class="n">expect</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">),</span> <span class="s2">&quot;Build complete is &quot;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">),</span> <span class="s2">&quot;Build complete is &quot;</span>
            <span class="s2">&quot;not True please rebuild the model by calling case.build&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Check case OK&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="check_DA_settings"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_submit.check_DA_settings">[docs]</a><span class="k">def</span> <span class="nf">check_DA_settings</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
-    <span class="n">script</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_SCRIPT&quot;</span><span class="p">)</span>
-    <span class="n">cycles</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_CYCLES&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="check_DA_settings"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_DA_settings">[docs]</a><span class="k">def</span> <span class="nf">check_DA_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_SCRIPT&quot;</span><span class="p">)</span>
+    <span class="n">cycles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_CYCLES&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">script</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">script</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cycles</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Data Assimilation enabled using script {} with {:d} cycles&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">script</span><span class="p">,</span><span class="n">cycles</span><span class="p">))</span></div>
 </pre></div>
@@ -207,7 +203,7 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
+    <form class="search" action="../../../search.html" method="get">
       <div><input type="text" name="q" /></div>
       <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
@@ -223,13 +219,13 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../../genindex.html" title="General Index"
+          <a href="../../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
+          <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

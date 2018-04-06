@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Creating a Case &mdash; CIME 5.4.0 documentation</title>
+    <title>2. Creating a Case &mdash; CIME 5.4.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
-    <link rel="next" title="4. Setting up a Case" href="setting-up-a-case.html" />
-    <link rel="prev" title="2. The basics of CIME cases" href="case-basics.html" /> 
+    <link rel="next" title="3. Setting up a Case" href="setting-up-a-case.html" />
+    <link rel="prev" title="1. Introduction" href="introduction-and-overview.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="setting-up-a-case.html" title="4. Setting up a Case"
+          <a href="setting-up-a-case.html" title="3. Setting up a Case"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="case-basics.html" title="2. The basics of CIME cases"
+          <a href="introduction-and-overview.html" title="1. Introduction"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
@@ -55,9 +55,10 @@
           <div class="body" role="main">
             
   <div class="section" id="creating-a-case">
-<span id="id1"></span><h1>3. Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>2. Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this headline">¶</a></h1>
+<p>Creating a CIME experiment or <em>case</em> requires, at a minimum, specifying a compset and a model grid and a case directory.</p>
 <div class="section" id="calling-create-newcase">
-<h2>3.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
+<h2>2.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>The first step in creating a CIME-based experiment is to use <strong>create_newcase</strong>.</p>
 <p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
 <p>Review the input options for <strong>create_newcase</strong> in the  <strong>help</strong> text.:</p>
@@ -68,10 +69,10 @@
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em>. Compsets and grids were discussed in the <a class="reference internal" href="case-basics.html#case-basics"><span class="std std-ref">previous section</span></a>.</p>
+<p>CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em> (machines).</p>
 </div>
 <div class="section" id="results-of-calling-create-newcase">
-<h2>3.2. Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this headline">¶</a></h2>
+<h2>2.2. Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>Following is a simple example of using <strong>create_newcase</strong> with aliases for both compset and grid names.
 The complete example appears in the <a class="reference internal" href="use_cases/basics-a-basic-example.html#use-cases-basic-example"><span class="std std-ref">basic example</span></a>.</p>
 <p>Here, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution:</p>
@@ -162,8 +163,8 @@ You must run the case.build command after changing this file.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>env_mach_pes.xml</td>
-<td><p class="first">Sets component machine-specific processor layout (see <a class="reference internal" href="customizing-a-case.html#changing-the-pe-layout"><span class="std std-ref">changing pe layout</span></a> ).</p>
-<p class="last">The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="optimizing-processor-layout.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).</p>
+<td><p class="first">Sets component machine-specific processor layout (see <span class="xref std std-ref">changing pe layout</span> ).</p>
+<p class="last">The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="pes-threads.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).</p>
 </td>
 </tr>
 <tr class="row-even"><td>env_run.xml</td>
@@ -263,19 +264,19 @@ buildnml and buildlib scripts here.</td>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">3. Creating a Case</a><ul>
-<li><a class="reference internal" href="#calling-create-newcase">3.1. Calling <strong>create_newcase</strong></a></li>
-<li><a class="reference internal" href="#results-of-calling-create-newcase">3.2. Results of calling <strong>create_newcase</strong></a></li>
+<li><a class="reference internal" href="#">2. Creating a Case</a><ul>
+<li><a class="reference internal" href="#calling-create-newcase">2.1. Calling <strong>create_newcase</strong></a></li>
+<li><a class="reference internal" href="#results-of-calling-create-newcase">2.2. Results of calling <strong>create_newcase</strong></a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="case-basics.html"
-                        title="previous chapter">2. The basics of CIME cases</a></p>
+  <p class="topless"><a href="introduction-and-overview.html"
+                        title="previous chapter">1. Introduction</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="setting-up-a-case.html"
-                        title="next chapter">4. Setting up a Case</a></p>
+                        title="next chapter">3. Setting up a Case</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -307,10 +308,10 @@ buildnml and buildlib scripts here.</td>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="setting-up-a-case.html" title="4. Setting up a Case"
+          <a href="setting-up-a-case.html" title="3. Setting up a Case"
              >next</a> |</li>
         <li class="right" >
-          <a href="case-basics.html" title="2. The basics of CIME cases"
+          <a href="introduction-and-overview.html" title="1. Introduction"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 

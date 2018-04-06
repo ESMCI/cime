@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7.5. Customizing data model namelists and stream files &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
+    <link rel="up" title="7. Modifying a Case" href="use-cases.html" />
+    <link rel="next" title="7.6. Customizing CESM active component-specific namelist settings" href="cesm-nml.html" />
+    <link rel="prev" title="7.4. Setting up a branch or hybrid run" href="basics-setting-up-a-branch-or-hybrid-run.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cesm-nml.html" title="7.6. Customizing CESM active component-specific namelist settings"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="basics-setting-up-a-branch-or-hybrid-run.html" title="7.4. Setting up a branch or hybrid run"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="use-cases.html" accesskey="U">7. Modifying a Case</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="customizing-data-model-namelists-and-stream-files">
+<span id="changing-data-model-namelists"></span><h1>7.5. Customizing data model namelists and stream files<a class="headerlink" href="#customizing-data-model-namelists-and-stream-files" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-atmosphere-datm">
+<h2>7.5.1. Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this headline">¶</a></h2>
+<p>DATM is discussed in detail in <a class="reference internal" href="../../data_models/data-atm.html#data-atm"><span class="std std-ref">data atmosphere overview</span></a>.
+DATM can be user-customized by changing either its  <em>namelist input files</em> or its <em>stream files</em>.
+The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</strong> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>datm_in</strong> or <strong>datm_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the <strong>user_nl_datm</strong> file or the <strong>user_nl_datm_NNN</strong> file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DATM stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">datm.streams.txt.[extension]</span> <span class="pre">user_datm.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_datm.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_datm.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>If the stream txt file is <strong>datm.streams.txt.CORE2_NYF.GISS</strong>, the modified copy should be <strong>user_datm.streams.txt.CORE2_NYF.GISS</strong>.
+After calling <strong>preview_namelists</strong> again, your edits should appear in <strong>CaseDocs/datm.streams.txt.CORE2_NYF.GISS</strong>.</p>
+</div>
+<div class="section" id="data-ocean-docn">
+<h2>7.5.2. Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this headline">¶</a></h2>
+<p>DOCN is discussed in detail in <a class="reference internal" href="../../data_models/data-ocean.html#data-ocean"><span class="std std-ref">data ocean overview</span></a>.
+DOCN can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</strong> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>docn_in</strong> or <strong>docn_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DOCN stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">docn.streams.txt.[extension]</span> <span class="pre">user_docn.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_docn.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_docn.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>As an example, if the stream text file is <strong>docn.stream.txt.prescribed</strong>, the modified copy should be <strong>user_docn.streams.txt.prescribed</strong>.
+After changing this file and calling <strong>preview_namelists</strong> again, your edits should appear in <strong>CaseDocs/docn.streams.txt.prescribed</strong>.</p>
+</div>
+<div class="section" id="data-sea-ice-dice">
+<h2>7.5.3. Data Sea-ice (DICE)<a class="headerlink" href="#data-sea-ice-dice" title="Permalink to this headline">¶</a></h2>
+<p>DICE is discussed in detail in <a class="reference internal" href="../../data_models/data-seaice.html#data-seaice"><span class="std std-ref">data sea-ice overview</span></a>.
+DICE can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DICE is <code class="docutils literal"><span class="pre">dice_in</span></code> (or <code class="docutils literal"><span class="pre">dice_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dice</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dice_NNN</span></code> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>dice_in</strong> or <strong>dice_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DICE stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">dice.streams.txt.[extension]</span> <span class="pre">user_dice.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_dice.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_dice.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="section" id="data-land-dlnd">
+<h2>7.5.4. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h2>
+<p>DLND is discussed in detail in <a class="reference internal" href="../../data_models/data-lnd.html#data-lnd"><span class="std std-ref">data land overview</span></a>.
+DLND can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DLND is <code class="docutils literal"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal"><span class="pre">dlnd_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dlnd</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dlnd_NNN</span></code> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>dlnd_in</strong> or <strong>dlnd_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DLND stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">dlnd.streams.txt.[extension]</span> <span class="pre">user_dlnd.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_dlnd.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_dlnd.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+</div>
+<div class="section" id="data-river-drof">
+<h2>7.5.5. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h2>
+<p>DROF is discussed in detail in <a class="reference internal" href="../../data_models/data-river.html#data-river"><span class="std std-ref">data river overview</span></a>.
+DROF can be user-customized by changing either its namelist input or its stream files.
+The namelist file for DROF is <code class="docutils literal"><span class="pre">drof_in</span></code> (or <code class="docutils literal"><span class="pre">drof_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_drof</span></code> (or <code class="docutils literal"><span class="pre">user_nl_drof_NNN</span></code> for multiple instances).</p>
+<ul class="simple">
+<li>To modify <strong>drof_in</strong> or <strong>drof_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
+<li>To modify the contents of a DROF stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">drof.streams.txt.[extension]</span> <span class="pre">user_drof.streams.txt[extension.</span></code></dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_drof.streams.txt[extension</span></code></dd>
+</dl>
+</li>
+<li>Edit the <strong>user_drof.streams.txt.*</strong> file.</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7.5. Customizing data model namelists and stream files</a><ul>
+<li><a class="reference internal" href="#data-atmosphere-datm">7.5.1. Data Atmosphere (DATM)</a></li>
+<li><a class="reference internal" href="#data-ocean-docn">7.5.2. Data Ocean (DOCN)</a></li>
+<li><a class="reference internal" href="#data-sea-ice-dice">7.5.3. Data Sea-ice (DICE)</a></li>
+<li><a class="reference internal" href="#data-land-dlnd">7.5.4. Data Land (DLND)</a></li>
+<li><a class="reference internal" href="#data-river-drof">7.5.5. Data River (DROF)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="basics-setting-up-a-branch-or-hybrid-run.html"
+                        title="previous chapter">7.4. Setting up a branch or hybrid run</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cesm-nml.html"
+                        title="next chapter">7.6. Customizing CESM active component-specific namelist settings</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/users_guide/use_cases/datamod-nml.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cesm-nml.html" title="7.6. Customizing CESM active component-specific namelist settings"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="basics-setting-up-a-branch-or-hybrid-run.html" title="7.4. Setting up a branch or hybrid run"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="use-cases.html" >7. Modifying a Case</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

@@ -10,6 +10,7 @@ Subpackages
     CIME.Servers
     CIME.SystemTests
     CIME.XML
+    CIME.case
     CIME.tests
 
 Submodules
@@ -51,86 +52,6 @@ CIME.buildnml module
 --------------------
 
 .. automodule:: CIME.buildnml
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case module
-----------------
-
-.. automodule:: CIME.case
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_clone module
-----------------------
-
-.. automodule:: CIME.case_clone
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_cmpgen_namelists module
----------------------------------
-
-.. automodule:: CIME.case_cmpgen_namelists
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_run module
---------------------
-
-.. automodule:: CIME.case_run
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_setup module
-----------------------
-
-.. automodule:: CIME.case_setup
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_st_archive module
----------------------------
-
-.. automodule:: CIME.case_st_archive
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_submit module
------------------------
-
-.. automodule:: CIME.case_submit
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.case_test module
----------------------
-
-.. automodule:: CIME.case_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.check_input_data module
-----------------------------
-
-.. automodule:: CIME.check_input_data
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.check_lockedfiles module
------------------------------
-
-.. automodule:: CIME.check_lockedfiles
     :members:
     :undoc-members:
     :show-inheritance:
@@ -183,6 +104,14 @@ CIME.hist_utils module
     :undoc-members:
     :show-inheritance:
 
+CIME.locked_files module
+------------------------
+
+.. automodule:: CIME.locked_files
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.namelist module
 --------------------
 
@@ -195,14 +124,6 @@ CIME.nmlgen module
 ------------------
 
 .. automodule:: CIME.nmlgen
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.preview_namelists module
------------------------------
-
-.. automodule:: CIME.preview_namelists
     :members:
     :undoc-members:
     :show-inheritance:

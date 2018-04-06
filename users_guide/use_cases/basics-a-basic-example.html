@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>9.2. A basic example &mdash; CIME 5.4.0 documentation</title>
+    <title>7.2. Setting up a multi-year run &mdash; CIME 5.4.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../../index.html" />
-    <link rel="up" title="9. Use cases" href="use-cases.html" />
-    <link rel="next" title="9.3. Setting up a branch or hybrid run" href="basics-setting-up-a-branch-or-hybrid-run.html" />
-    <link rel="prev" title="9.1. MPI example" href="basics-mpi-example.html" /> 
+    <link rel="up" title="7. Modifying a Case" href="use-cases.html" />
+    <link rel="next" title="7.3. Modifying driver namelists" href="driver-nml.html" />
+    <link rel="prev" title="7.1. Changing namelist values" href="namelist-gen.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,14 +39,14 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="basics-setting-up-a-branch-or-hybrid-run.html" title="9.3. Setting up a branch or hybrid run"
+          <a href="driver-nml.html" title="7.3. Modifying driver namelists"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="basics-mpi-example.html" title="9.1. MPI example"
+          <a href="namelist-gen.html" title="7.1. Changing namelist values"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="use-cases.html" accesskey="U">9. Use cases</a> &raquo;</li> 
+          <li class="nav-item nav-item-2"><a href="use-cases.html" accesskey="U">7. Modifying a Case</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -55,11 +55,11 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="a-basic-example">
-<span id="use-cases-basic-example"></span><h1>9.2. A basic example<a class="headerlink" href="#a-basic-example" title="Permalink to this headline">¶</a></h1>
-<p>This shows all of the steps necessary to create, set up, build, and run a case. It assumes that <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the CIME root directory and that the machine is Yellowstone.</p>
+  <div class="section" id="setting-up-a-multi-year-run">
+<span id="use-cases-basic-example"></span><h1>7.2. Setting up a multi-year run<a class="headerlink" href="#setting-up-a-multi-year-run" title="Permalink to this headline">¶</a></h1>
+<p>This shows all of the steps necessary to do a multi-year simulation.</p>
 <ol class="arabic">
-<li><p class="first">Create a new case named EXAMPLE_CASE in the <strong>~/cesm</strong> directory. Use an 1850 control compset at 1-degree resolution.</p>
+<li><p class="first">Create a new case named EXAMPLE_CASE in your <strong>$HOME</strong> directory. Use an 1850 control compset at 1-degree resolution (CESM components/resolution).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIME/scripts
 &gt; ./create_newcase --case ~/EXAMPLE_CASE --compset B1850_CN --res f09_g16
 </pre></div>
@@ -86,7 +86,7 @@
 </pre></div>
 </div>
 </li>
-<li><p class="first">Set the case to resubmit itself 10 times so it will run a total of 11 years (including the initial year), and resubmit the case. (Note that a resubmit will automatically change the run to be a continuation run).</p>
+<li><p class="first">In the same case directory, Set the case to resubmit itself 10 times so it will run a total of 11 years (including the initial year), and resubmit the case. (Note that a resubmit will automatically change the run to be a continuation run).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">xmlchange</span> <span class="n">RESUBMIT</span><span class="o">=</span><span class="mi">10</span>
 <span class="o">&gt;</span> <span class="n">case</span><span class="o">.</span><span class="n">submit</span>
 </pre></div>
@@ -102,11 +102,11 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="basics-mpi-example.html"
-                        title="previous chapter">9.1. MPI example</a></p>
+  <p class="topless"><a href="namelist-gen.html"
+                        title="previous chapter">7.1. Changing namelist values</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="basics-setting-up-a-branch-or-hybrid-run.html"
-                        title="next chapter">9.3. Setting up a branch or hybrid run</a></p>
+  <p class="topless"><a href="driver-nml.html"
+                        title="next chapter">7.3. Modifying driver namelists</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -138,14 +138,14 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="basics-setting-up-a-branch-or-hybrid-run.html" title="9.3. Setting up a branch or hybrid run"
+          <a href="driver-nml.html" title="7.3. Modifying driver namelists"
              >next</a> |</li>
         <li class="right" >
-          <a href="basics-mpi-example.html" title="9.1. MPI example"
+          <a href="namelist-gen.html" title="7.1. Changing namelist values"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="use-cases.html" >9. Use cases</a> &raquo;</li> 
+          <li class="nav-item nav-item-2"><a href="use-cases.html" >7. Modifying a Case</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="CIME package" href="CIME.html" />
-    <link rel="next" title="CIME.tests package" href="CIME.tests.html" />
+    <link rel="next" title="CIME.case package" href="CIME.case.html" />
     <link rel="prev" title="CIME.SystemTests.test_utils package" href="CIME.SystemTests.test_utils.html" /> 
   </head>
   <body role="document">
@@ -39,7 +39,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="CIME.tests.html" title="CIME.tests package"
+          <a href="CIME.case.html" title="CIME.case package"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="CIME.SystemTests.test_utils.html" title="CIME.SystemTests.test_utils package"
@@ -595,7 +595,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.create_job_groups">
-<code class="descname">create_job_groups</code><span class="sig-paren">(</span><em>batch_jobs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.create_job_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.create_job_groups" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_job_groups</code><span class="sig-paren">(</span><em>batch_jobs</em>, <em>is_test</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.create_job_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.create_job_groups" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -663,18 +663,18 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_value">
-<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup='case.run'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_value" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup='PRIMARY'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Must default subgroup to something in order to provide single return value</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.make_all_batch_files">
-<code class="descname">make_all_batch_files</code><span class="sig-paren">(</span><em>case</em>, <em>test_mode=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.make_all_batch_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.make_all_batch_files" title="Permalink to this definition">¶</a></dt>
+<code class="descname">make_all_batch_files</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.make_all_batch_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.make_all_batch_files" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.make_batch_script">
-<code class="descname">make_batch_script</code><span class="sig-paren">(</span><em>input_template</em>, <em>job</em>, <em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.make_batch_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.make_batch_script" title="Permalink to this definition">¶</a></dt>
+<code class="descname">make_batch_script</code><span class="sig-paren">(</span><em>input_template</em>, <em>job</em>, <em>case</em>, <em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.make_batch_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.make_batch_script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -825,7 +825,7 @@ stderr output even when things are working fine.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun">
-<code class="descname">get_mpirun</code><span class="sig-paren">(</span><em>case</em>, <em>attribs</em>, <em>job='case.run'</em>, <em>exe_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_mpirun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_mpirun</code><span class="sig-paren">(</span><em>case</em>, <em>attribs</em>, <em>job</em>, <em>exe_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_mpirun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find best match, return (executable, {arg_name : text})</p>
 </dd></dl>
 
@@ -1048,7 +1048,7 @@ with the key attribute but you don&#8217;t care what its value is.</p>
 
 <dl class="method">
 <dt id="CIME.XML.generic_xml.GenericXML.get_resolved_value">
-<code class="descname">get_resolved_value</code><span class="sig-paren">(</span><em>raw_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.get_resolved_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.get_resolved_value" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_resolved_value</code><span class="sig-paren">(</span><em>raw_value</em>, <em>allow_unresolved_envvars=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.get_resolved_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.get_resolved_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>A value in the xml file may contain references to other xml
 variables or to environment variables. These are refered to in
 the perl style with $name and $ENV{name}.</p>
@@ -1738,8 +1738,8 @@ INFRASTRUCTURE_TEST=&#8221;TRUE&#8221;.</p>
   <p class="topless"><a href="CIME.SystemTests.test_utils.html"
                         title="previous chapter">CIME.SystemTests.test_utils package</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="CIME.tests.html"
-                        title="next chapter">CIME.tests package</a></p>
+  <p class="topless"><a href="CIME.case.html"
+                        title="next chapter">CIME.case package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1771,7 +1771,7 @@ INFRASTRUCTURE_TEST=&#8221;TRUE&#8221;.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="CIME.tests.html" title="CIME.tests package"
+          <a href="CIME.case.html" title="CIME.case package"
              >next</a> |</li>
         <li class="right" >
           <a href="CIME.SystemTests.test_utils.html" title="CIME.SystemTests.test_utils package"

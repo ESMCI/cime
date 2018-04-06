@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Testing with create_test &mdash; CIME 5.4.0 documentation</title>
+    <title>8. Testing with create_test &mdash; CIME 5.4.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
-    <link rel="next" title="6. Fortran Unit Testing" href="unit_testing.html" />
-    <link rel="prev" title="4. Optimizing Processor Layout" href="optimizing-processor-layout.html" /> 
+    <link rel="next" title="9. Fortran Unit Testing" href="unit_testing.html" />
+    <link rel="prev" title="7. Timers and timing" href="timers.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="unit_testing.html" title="6. Fortran Unit Testing"
+          <a href="unit_testing.html" title="9. Fortran Unit Testing"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="optimizing-processor-layout.html" title="4. Optimizing Processor Layout"
+          <a href="timers.html" title="7. Timers and timing"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
@@ -55,7 +55,7 @@
           <div class="body" role="main">
             
   <div class="section" id="testing-with-create-test">
-<span id="testing"></span><h1>5. Testing with create_test<a class="headerlink" href="#testing-with-create-test" title="Permalink to this headline">¶</a></h1>
+<span id="testing"></span><h1>8. Testing with create_test<a class="headerlink" href="#testing-with-create-test" title="Permalink to this headline">¶</a></h1>
 <p><strong>create_test</strong> is the tool we use to test cime-driven models. It can be used as an easy way to
 run a single basic test or an entire suite of tests.  create_test runs a test suite in parallel
 for improved performance.  create_test is the driver behind the automated nightly testing of
@@ -275,7 +275,7 @@ a test.</p>
 <p>A cs.status.$testid script will be put in the test root. This script will allow you to see the
 current status of all your tests.</p>
 <div class="section" id="using-create-test-e3sm">
-<h2>5.1. Using create_test (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h2>
+<h2>8.1. Using create_test (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h2>
 <p>Usage will differ slightly depending on if you&#8217;re using E3SM or CESM.</p>
 <p>Using examples to illustrate common use cases</p>
 <p>To run a test:</p>
@@ -355,7 +355,7 @@ current status of all your tests.</p>
 of the various test phases.</p>
 </div>
 <div class="section" id="managing-baselines">
-<h2>5.2. Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this headline">¶</a></h2>
+<h2>8.2. Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this headline">¶</a></h2>
 <p>A big part of testing is managing your baselines (sometimes called gold results). We have provided
 tools to help the user do this without having to repeat full runs of test cases with create_test.</p>
 <p>bless_test_results: Takes a batch of cases of tests that have already been run and copy their
@@ -374,10 +374,10 @@ baselines for &#8216;master&#8217;:</p>
 </div>
 </div>
 <div class="section" id="manage-testlists">
-<h2>5.3. manage_testlists<a class="headerlink" href="#manage-testlists" title="Permalink to this headline">¶</a></h2>
+<h2>8.3. manage_testlists<a class="headerlink" href="#manage-testlists" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="adding-tests">
-<h2>5.4. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
+<h2>8.4. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
 <p>Open the update_e3sm_tests.py file, you&#8217;ll see a python dict at the top
 of the file called TEST_SUITES, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
@@ -386,7 +386,7 @@ this format: test&gt;.&lt;grid&gt;.&lt;compset&gt;, and then there is a second
 argument for mods.</p>
 </div>
 <div class="section" id="scripts-regression-tests">
-<h2>5.5. Scripts regression tests<a class="headerlink" href="#scripts-regression-tests" title="Permalink to this headline">¶</a></h2>
+<h2>8.5. Scripts regression tests<a class="headerlink" href="#scripts-regression-tests" title="Permalink to this headline">¶</a></h2>
 <p>cime/scripts/tests/scripts_regression_tests.py is the suite of internal tests we run
 for CIME. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.</p>
@@ -418,22 +418,22 @@ examine.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Testing with create_test</a><ul>
-<li><a class="reference internal" href="#using-create-test-e3sm">5.1. Using create_test (E3SM)</a></li>
-<li><a class="reference internal" href="#managing-baselines">5.2. Managing baselines</a></li>
-<li><a class="reference internal" href="#manage-testlists">5.3. manage_testlists</a></li>
-<li><a class="reference internal" href="#adding-tests">5.4. Adding tests</a></li>
-<li><a class="reference internal" href="#scripts-regression-tests">5.5. Scripts regression tests</a></li>
+<li><a class="reference internal" href="#">8. Testing with create_test</a><ul>
+<li><a class="reference internal" href="#using-create-test-e3sm">8.1. Using create_test (E3SM)</a></li>
+<li><a class="reference internal" href="#managing-baselines">8.2. Managing baselines</a></li>
+<li><a class="reference internal" href="#manage-testlists">8.3. manage_testlists</a></li>
+<li><a class="reference internal" href="#adding-tests">8.4. Adding tests</a></li>
+<li><a class="reference internal" href="#scripts-regression-tests">8.5. Scripts regression tests</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="optimizing-processor-layout.html"
-                        title="previous chapter">4. Optimizing Processor Layout</a></p>
+  <p class="topless"><a href="timers.html"
+                        title="previous chapter">7. Timers and timing</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="unit_testing.html"
-                        title="next chapter">6. Fortran Unit Testing</a></p>
+                        title="next chapter">9. Fortran Unit Testing</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -465,10 +465,10 @@ examine.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="unit_testing.html" title="6. Fortran Unit Testing"
+          <a href="unit_testing.html" title="9. Fortran Unit Testing"
              >next</a> |</li>
         <li class="right" >
-          <a href="optimizing-processor-layout.html" title="4. Optimizing Processor Layout"
+          <a href="timers.html" title="7. Timers and timing"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
