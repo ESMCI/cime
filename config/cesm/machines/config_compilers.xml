@@ -292,6 +292,7 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
     <append MODEL="micom"> -r8 </append>
+    <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
   <MPICC> mpiicc </MPICC>
   <MPICXX> mpiicpc </MPICXX>
