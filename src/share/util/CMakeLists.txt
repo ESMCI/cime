@@ -28,7 +28,8 @@ list(APPEND share_sources
   shr_string_mod.F90
   shr_timer_mod.F90
   shr_vmath_mod.F90
-  shr_wv_sat_mod.F90)
+  shr_wv_sat_mod.F90
+  shr_infnan_mod.F90.in)
 
 # Build a separate list containing the mct wrapper and its dependencies. That
 # way, this list can be easily included in unit test builds that link to mct,

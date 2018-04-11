@@ -10,6 +10,8 @@ INCLUDE_DIRECTORIES (
       ${GPTL_BINARY_DIR}  #perf.mod
       ${SEQ_BINARY_DIR}  #seq_flds_mod
       ${ESMF_BINARY_DIR} # esmf.mod
+      ${MCT_BINARY_DIR}
+      ${MPEU_BINARY_DIR}
       )
 ADD_LIBRARY (streams ${STREAMS_SOURCE})
 ADD_DEPENDENCIES(streams shrsys shrcal seq gptl PIO)

@@ -12,7 +12,7 @@ INCLUDE(ExternalProject)
 
 
 message("Hardwiring include path -- must automate")
-include(/home/agsalin/CIME/src/CMake/CIME_initial_setup.cmake)
+include(/home/asteyer/cime/src/CMake/CIME_initial_setup.cmake)
 
 #include(/home/agsalin/buildmacrocime/Macros.cmake)
 
@@ -218,22 +218,26 @@ IF (HAVE_ACME)
 ENDIF()
 
 MESSAGE("\nAdding executables:")
-MESSAGE("   + acme_A.exe: A-Compset")
-ADD_EXECUTABLE(acme_A.exe ${DRIVER_DIR}/cime_driver.F90)
+#MESSAGE("   + acme_A.exe: A-Compset")
+MESSAGE("A-Compset")
+ADD_EXECUTABLE(acme.exe ${DRIVER_DIR}/cime_driver.F90)
 
-MESSAGE("   + acme_S.exe: S-Compset")
-ADD_EXECUTABLE(acme_S.exe ${DRIVER_DIR}/cime_driver.F90)
+#MESSAGE("   + acme_S.exe: S-Compset")
+MESSAGE("S-Compset)
+ADD_EXECUTABLE(acme.exe ${DRIVER_DIR}/cime_driver.F90)
 
 IF (HAVE_ACME) 
-  MESSAGE("   + acme_I.exe: I-Compset")
-  ADD_EXECUTABLE(acme_I.exe ${DRIVER_DIR}/cime_driver.F90)
+#  MESSAGE("   + acme_I.exe: I-Compset")
+  MESSAGE("I-Compset")
+  ADD_EXECUTABLE(acme.exe ${DRIVER_DIR}/cime_driver.F90)
   #MESSAGE("   + acme_MPASLI_ONLY.exe: MPASLI_ONLY-Compset")
   #ADD_EXECUTABLE(acme_MPASLI_ONLY.exe ${DRIVER_DIR}/cime_driver.F90)
 ENDIF()
 
 IF (HAVE_ACME) 
-  MESSAGE("   + acme_F.exe: F-Compset")
-  ADD_EXECUTABLE(acme_F.exe ${DRIVER_DIR}/cime_driver.F90)
+#  MESSAGE("   + acme_F.exe: F-Compset")
+  MESSAGE("F-Compset")
+  ADD_EXECUTABLE(acme.exe ${DRIVER_DIR}/cime_driver.F90)
 ENDIF()
 
 MESSAGE("\nAGS: HHEELLPP  what include dirs to add: data, stub, active?
@@ -254,6 +258,8 @@ INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${WAV_S_BINARY_DIR}
                      ${ESP_S_BINARY_DIR}
                      ${ACME_PIO_LIBRARY_DIR}
+                     ${MCT_BINARY_DIR}
+                     ${MPEU_BINARY_DIR}
                      )
 
 MESSAGE("   + CompMod:")

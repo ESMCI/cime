@@ -67,7 +67,7 @@ SUBROUTINE shr_sys_system(str,rcode)
    integer(SHR_KIND_IN),intent(out) :: rcode  ! function return error code
 
    !----- functions -----
-#if (defined LINUX && !defined CPRGNU)
+#if (defined LINUX && defined CPRGNU)
    integer(SHR_KIND_IN),external    :: system ! function to envoke shell command
 #endif
 
@@ -86,7 +86,7 @@ SUBROUTINE shr_sys_system(str,rcode)
 
    call system(str,rcode)
 
-#elif (defined CPRGNU || defined LINUX)
+#elif (defined CPRGNU && defined LINUX)
 
    rcode = system(str)
 
@@ -130,7 +130,7 @@ SUBROUTINE shr_sys_chdir(path, rcode)
 
    rcode = chdir(%ref(path(1:lenpath)//'\0'))
 
-#elif (defined Darwin || (defined LINUX && !defined CPRNAG))
+#elif (defined Darwin || (defined LINUX ||defined CPRNAG))
 
    rcode=chdir(path(1:lenpath))
 

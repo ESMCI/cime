@@ -1,5 +1,5 @@
-MESSAGE("   + SWAV:")
-FILE(GLOB SWAV_SOURCE *F90)
+MESSAGE("   + SOCN:")
+FILE(GLOB SOCN_SOURCE *F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -8,5 +8,5 @@ INCLUDE_DIRECTORIES (
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
 )
-ADD_LIBRARY (swav ${SWAV_SOURCE})
-ADD_DEPENDENCIES(swav  shrsys shr seq esmf gptl)
+ADD_LIBRARY (socn ${SOCN_SOURCE})
+ADD_DEPENDENCIES(socn  shrsys shr seq esmf gptl)

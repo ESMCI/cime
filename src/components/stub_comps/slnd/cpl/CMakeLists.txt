@@ -5,6 +5,8 @@ INCLUDE_DIRECTORIES (
           ${ESMF_BINARY_DIR}
           ${GPTL_BINARY_DIR}
           ${SEQ_BINARY_DIR}
+          ${MCT_BINARY_DIR}
+          ${MPEU_BINARY_DIR}
 )
 ADD_LIBRARY (slnd ${SLND_SOURCE})
 ADD_DEPENDENCIES(slnd  shrsys shr seq esmf gptl)

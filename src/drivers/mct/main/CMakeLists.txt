@@ -35,6 +35,8 @@ INCLUDE_DIRECTORIES (
      ${ESMF_BINARY_DIR} #esmf.mod
      ${MPI_Fortran_INCLUDE_PATH} #mpif.h
      ${ACME_PIO_LIBRARY_DIR} #pio.mod
+     ${MCT_BINARY_DIR}
+     ${MPEU_BINARY_DIR}
 )
 
 ADD_LIBRARY (driver ${DRIVER_SOURCE})

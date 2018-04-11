@@ -20,7 +20,9 @@ INCLUDE_DIRECTORIES (
      ${ACME_SHR_DIR} #shr_assert.h
      ${ACME_PIO_LIBRARY_DIR}  #pio.mod
      ${ESMF_BINARY_DIR} #esmf.mod
-     ${MPI_Fortran_INCLUDE_PATH}) #mpif.h
+     ${MPI_Fortran_INCLUDE_PATH} #mpif.h
+     ${MCT_BINARY_DIR}
+     ${MPEU_BINARY_DIR})
 ADD_LIBRARY (seq ${SEQ_SOURCE})
 ADD_DEPENDENCIES(seq  shrsys shrcal esmf)
 ADD_DEFINITIONS(" -DNUM_COMP_INST_ATM=1 -DNUM_COMP_INST_LND=1

@@ -7,6 +7,8 @@ INCLUDE_DIRECTORIES (
           ${SEQ_BINARY_DIR}
           ${STREAMS_BINARY_DIR}  #shr_strdata_mod
           ${ACME_PIO_LIBRARY_DIR}
+          ${MCT_BINARY_DIR}
+          ${MPEU_BINARY_DIR}
 )
 ADD_LIBRARY (drof ${DROF_SOURCE})
 ADD_DEPENDENCIES(drof  shrsys shr seq esmf gptl streams)
