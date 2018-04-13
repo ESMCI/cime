@@ -50,9 +50,9 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">functions for building CIME models</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span>  <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                 <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">analyze_build_log</span><span class="p">,</span> <span class="n">stringify_bool</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">run_cmd</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                 <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">analyze_build_log</span><span class="p">,</span> <span class="n">stringify_bool</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">run_cmd</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span><span class="p">,</span> <span class="n">gzip_existing_file</span>
 <span class="kn">from</span> <span class="nn">CIME.provenance</span>            <span class="kn">import</span> <span class="n">save_build_provenance</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span>          <span class="kn">import</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">unlock_file</span>
 
@@ -591,23 +591,8 @@
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="post_build"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.build.post_build">[docs]</a><span class="k">def</span> <span class="nf">post_build</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">build_complete</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
-
-    <span class="n">logdir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LOGDIR&quot;</span><span class="p">)</span>
-
-    <span class="c1">#zip build logs to CASEROOT/logs</span>
-    <span class="k">if</span> <span class="n">logdir</span><span class="p">:</span>
-        <span class="n">bldlogdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="s2">&quot;bld&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bldlogdir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">bldlogdir</span><span class="p">)</span>
-
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copying build log {} to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">bldlogdir</span><span class="p">))</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_in</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;{}.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_out</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">f_in</span><span class="p">,</span> <span class="n">f_out</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;sharedlibroot&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">log</span><span class="p">:</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;{}.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bldlogdir</span><span class="p">,</span> <span class="s2">&quot;{}.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">log</span><span class="p">))))</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+        <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">build_complete</span><span class="p">:</span>
 

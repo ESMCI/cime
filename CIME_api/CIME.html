@@ -76,6 +76,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.ftp">CIME.Servers.ftp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.generic_server">CIME.Servers.generic_server module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.gftp">CIME.Servers.gftp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.svn">CIME.Servers.svn module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.wget">CIME.Servers.wget module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers">Module contents</a></li>
@@ -2046,6 +2047,12 @@ writable</p>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;/some/file/path/case.name&quot;</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase+mods&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase?mods&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase*mods&quot;</span><span class="p">)</span>
+<span class="go">False</span>
 </pre></div>
 </div>
 </dd></dl>

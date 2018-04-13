@@ -378,8 +378,8 @@ baselines for &#8216;master&#8217;:</p>
 </div>
 <div class="section" id="adding-tests">
 <h2>8.4. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
-<p>Open the update_e3sm_tests.py file, you&#8217;ll see a python dict at the top
-of the file called TEST_SUITES, find the test category you want to
+<p>Open the config/$model/tests.py file, you&#8217;ll see a python dict at the top
+of the file called _TESTS, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
 comment at the top of this file indicating that you add a test with
 this format: test&gt;.&lt;grid&gt;.&lt;compset&gt;, and then there is a second

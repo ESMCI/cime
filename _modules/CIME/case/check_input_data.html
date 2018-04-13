@@ -53,9 +53,7 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">SharedArea</span><span class="p">,</span> <span class="n">find_files</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.inputdata</span> <span class="kn">import</span> <span class="n">Inputdata</span>
-<span class="kn">from</span> <span class="nn">CIME.Servers.ftp</span> <span class="kn">import</span> <span class="n">FTP</span>
-<span class="kn">from</span> <span class="nn">CIME.Servers.svn</span> <span class="kn">import</span> <span class="n">SVN</span>
-<span class="kn">from</span> <span class="nn">CIME.Servers.wget</span> <span class="kn">import</span> <span class="n">WGET</span>
+<span class="kn">import</span> <span class="nn">CIME.Servers</span>
 
 <span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 
@@ -171,13 +169,20 @@
     <span class="n">expect</span><span class="p">(</span><span class="n">data_list_files</span><span class="p">,</span> <span class="s2">&quot;No .input_data_list files found in dir &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
 
     <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">True</span>
+
     <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">protocal</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">CIME</span><span class="o">.</span><span class="n">Servers</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Client protocal {} not enabled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocal</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
         <span class="k">if</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;svn&quot;</span><span class="p">:</span>
-            <span class="n">server</span> <span class="o">=</span> <span class="n">SVN</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">Servers</span><span class="o">.</span><span class="n">SVN</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;gftp&quot;</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">Servers</span><span class="o">.</span><span class="n">GridFTP</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;ftp&quot;</span><span class="p">:</span>
-            <span class="n">server</span> <span class="o">=</span> <span class="n">FTP</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">Servers</span><span class="o">.</span><span class="n">FTP</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">protocal</span> <span class="o">==</span> <span class="s2">&quot;wget&quot;</span><span class="p">:</span>
-            <span class="n">server</span> <span class="o">=</span> <span class="n">WGET</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">Servers</span><span class="o">.</span><span class="n">WGET</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;Unsupported inputdata protocal: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocal</span><span class="p">))</span>
 

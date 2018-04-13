@@ -98,6 +98,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">_get_modules_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">module_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;modules&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;module_system&quot;</span><span class="p">))</span>
         <span class="n">modules_to_load</span> <span class="o">=</span> <span class="bp">None</span>
@@ -130,7 +131,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_envs</span><span class="p">(</span><span class="n">envs_to_set</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_resources_for_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
-
 
     <span class="k">def</span> <span class="nf">_get_resources_for_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">resource_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;resource_limits&quot;</span><span class="p">)</span>
@@ -194,7 +194,8 @@
         <span class="n">sh_init_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_init_path</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
         <span class="n">sh_mod_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module_system_cmd_path</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
 
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;source {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sh_init_cmd</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">sh_init_cmd</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;source {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sh_init_cmd</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="s2">&quot;SOFTENV_ALIASES&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;source $SOFTENV_ALIASES&quot;</span><span class="p">)</span>

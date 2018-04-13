@@ -107,16 +107,6 @@
     &lt;/rpointer&gt;
   &lt;/comp_archive_spec&gt;
 
-  &lt;comp_archive_spec compname=&quot;rtm&quot; compclass=&quot;rof&quot;&gt;
-    &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;h\d*&lt;/hist_file_extension&gt;
-    &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
-    &lt;rpointer&gt;
-      &lt;rpointer_file&gt;rpointer.rof$NINST_STRING&lt;/rpointer_file&gt;
-      &lt;rpointer_content&gt;$CASE.rtm$NINST_STRING.r.$DATENAME.nc&lt;/rpointer_content&gt;
-    &lt;/rpointer&gt;
-  &lt;/comp_archive_spec&gt;
-
   &lt;comp_archive_spec compname=&quot;mosart&quot; compclass=&quot;rof&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
     &lt;rest_file_extension&gt;rh\d*&lt;/rest_file_extension&gt;
@@ -451,14 +441,11 @@
     &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;values&gt;
       &lt;value component=&quot;allactive&quot;&gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cam&quot;      &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;clm&quot;      &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cice&quot;     &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;rtm&quot;      &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;mosart&quot;   &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$CIMEROOT/config/$MODEL/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/testdefs/testmods_dirs&lt;/value&gt;
+      &lt;value component=&quot;mosart&quot;   &gt;$SRCROOT/components/mosart/cime_config/testdefs/testmods_dirs&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -472,12 +459,9 @@
       &lt;value component=&quot;allactive&quot;&gt;$CIMEROOT/config/$MODEL/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;drv&quot;      &gt;$CIMEROOT/src/drivers/mct/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;cam&quot;      &gt;$SRCROOT/components/cam/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;cism&quot;     &gt;$SRCROOT/components/cism/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;clm&quot;      &gt;$SRCROOT/components/clm/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;cice&quot;     &gt;$SRCROOT/components/cice/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;rtm&quot;      &gt;$SRCROOT/components/rtm/cime_config/usermods_dirs&lt;/value&gt;
       &lt;value component=&quot;mosart&quot;   &gt;$SRCROOT/components/mosart/cime_config/usermods_dirs&lt;/value&gt;
-      &lt;value component=&quot;pop&quot;      &gt;$SRCROOT/components/pop/cime_config/usermods_dirs&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;case_last&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
@@ -3104,9 +3088,9 @@
     LND  = [CLM40, CLM45, CLM50, SLND]
     ICE  = [MPASCICE, CICE, DICE, SICE]
     OCN  = [MPASO, DOCN, ,AQUAP, SOCN]
-    ROF  = [RTM, MOSART, SROF]
-    GLC  = [MPASLISIA, MPASLIALB, CISM1, CISM2, SGLC]
-    WAV  = [WW3, DWAV, XWAV, SWAV]
+    ROF  = [MOSART, SROF]
+    GLC  = [MPASLISIA, MPASLIALB, SGLC]
+    WAV  = [DWAV, XWAV, SWAV]
     ESP  = [SESP]
     BGC  = optional BGC scenario
 
@@ -3184,7 +3168,7 @@
 
 &lt;compset&gt;
   &lt;alias&gt;A_CRYO&lt;/alias&gt;
-  &lt;lname&gt;2000_CAM5%AV1C-L_CLM45%SPBC_MPASCICE_MPASO_RTM_MPASLIALB_SWAV&lt;/lname&gt;
+  &lt;lname&gt;2000_CAM5%AV1C-L_CLM45%SPBC_MPASCICE_MPASO_MOSART_MPASLIALB_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;!-- ACME v1 science compsets (hires) --&gt;
@@ -3299,7 +3283,7 @@
 
 &lt;compset&gt;
   &lt;alias&gt;A_BG1850CN&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM45%CN_MPASCICE_MPASO_RTM_MPASLI_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM45%CN_MPASCICE_MPASO_MOSART_MPASLI_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;!-- OCN + CICE + GLC Only Compsets --&gt;
@@ -3310,57 +3294,57 @@
 
 &lt;compset&gt;
   &lt;alias&gt;ETEST&lt;/alias&gt;
-  &lt;lname&gt;2000_CAM4_CLM40%SP_CICE_DOCN%SOM_RTM_SGLC_SWAV_TEST&lt;/lname&gt;
+  &lt;lname&gt;2000_CAM4_CLM40%SP_CICE_DOCN%SOM_MOSART_SGLC_SWAV_TEST&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM40%SP_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM40%SP_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5TEST&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM40%SP_CICE_DOCN%SOM_RTM_SGLC_SWAV_TEST&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM40%SP_CICE_DOCN%SOM_MOSART_SGLC_SWAV_TEST&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850CN&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM4_CLM40%CN_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM4_CLM40%CN_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5CN&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM40%CN_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM40%CN_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5CNTEST&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM40%CN_CICE_DOCN%SOM_RTM_SGLC_SWAV_TEST &lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM40%CN_CICE_DOCN%SOM_MOSART_SGLC_SWAV_TEST &lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5CLM45&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM45%SP_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM45%SP_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5CLM45CN&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM45%CN_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM45%CN_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5CLM45BGC&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM45%BGC_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM45%BGC_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E1850C5CNECACTCBC&lt;/alias&gt;
-  &lt;lname&gt;1850_CAM5_CLM45%CNECACTCBC_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;1850_CAM5_CLM45%CNECACTCBC_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;compset&gt;
   &lt;alias&gt;E20TRC5CNECACTCBC&lt;/alias&gt;
-  &lt;lname&gt;20TR_CAM5_CLM45%CNECACTCBC_CICE_DOCN%SOM_RTM_SGLC_SWAV&lt;/lname&gt;
+  &lt;lname&gt;20TR_CAM5_CLM45%CNECACTCBC_CICE_DOCN%SOM_MOSART_SGLC_SWAV&lt;/lname&gt;
 &lt;/compset&gt;
 
 &lt;entries&gt;
@@ -11902,6 +11886,150 @@
         &lt;/rootpe&gt;
       &lt;/pes&gt;
     &lt;/mach&gt;
+    &lt;mach name=&quot;cori-knl&quot;&gt;
+      &lt;pes compset=&quot;.*MPASCICE.+MPASO.+&quot; pesize=&quot;any&quot;&gt;
+        &lt;comment&gt;cori-knl G 30to10 on 52 nodes, 64x2&lt;/comment&gt;
+        &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
+        &lt;MAX_TASKS_PER_NODE&gt;128&lt;/MAX_TASKS_PER_NODE&gt;
+        &lt;ntasks&gt;
+          &lt;ntasks_atm&gt;1280&lt;/ntasks_atm&gt;
+          &lt;ntasks_lnd&gt;1280&lt;/ntasks_lnd&gt;
+          &lt;ntasks_rof&gt;1280&lt;/ntasks_rof&gt;
+          &lt;ntasks_ice&gt;1280&lt;/ntasks_ice&gt;
+          &lt;ntasks_ocn&gt;2048&lt;/ntasks_ocn&gt;
+          &lt;ntasks_cpl&gt;1280&lt;/ntasks_cpl&gt;
+          &lt;ntasks_glc&gt;1&lt;/ntasks_glc&gt;
+          &lt;ntasks_wav&gt;1&lt;/ntasks_wav&gt;
+        &lt;/ntasks&gt;
+        &lt;nthrds&gt;
+          &lt;nthrds_atm&gt;1&lt;/nthrds_atm&gt;
+          &lt;nthrds_lnd&gt;1&lt;/nthrds_lnd&gt;
+          &lt;nthrds_rof&gt;1&lt;/nthrds_rof&gt;
+          &lt;nthrds_ice&gt;2&lt;/nthrds_ice&gt;
+          &lt;nthrds_ocn&gt;2&lt;/nthrds_ocn&gt;
+          &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
+          &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
+          &lt;nthrds_cpl&gt;2&lt;/nthrds_cpl&gt;
+        &lt;/nthrds&gt;
+        &lt;rootpe&gt;
+          &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
+          &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
+          &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
+          &lt;rootpe_ice&gt;0&lt;/rootpe_ice&gt;
+          &lt;rootpe_ocn&gt;1280&lt;/rootpe_ocn&gt;
+          &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
+          &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
+          &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
+        &lt;/rootpe&gt;
+      &lt;/pes&gt;
+    &lt;/mach&gt;
+    &lt;mach name=&quot;cori-haswell&quot;&gt;
+      &lt;pes compset=&quot;.*MPASCICE.+MPASO.+&quot; pesize=&quot;any&quot;&gt;
+        &lt;comment&gt;cori-haswell G 30to10 on 48 nodes&lt;/comment&gt;
+        &lt;ntasks&gt;
+          &lt;ntasks_atm&gt;512&lt;/ntasks_atm&gt;
+          &lt;ntasks_lnd&gt;512&lt;/ntasks_lnd&gt;
+          &lt;ntasks_rof&gt;512&lt;/ntasks_rof&gt;
+          &lt;ntasks_ice&gt;512&lt;/ntasks_ice&gt;
+          &lt;ntasks_ocn&gt;1024&lt;/ntasks_ocn&gt;
+          &lt;ntasks_cpl&gt;512&lt;/ntasks_cpl&gt;
+          &lt;ntasks_glc&gt;1&lt;/ntasks_glc&gt;
+          &lt;ntasks_wav&gt;1&lt;/ntasks_wav&gt;
+        &lt;/ntasks&gt;
+        &lt;nthrds&gt;
+          &lt;nthrds_atm&gt;1&lt;/nthrds_atm&gt;
+          &lt;nthrds_lnd&gt;1&lt;/nthrds_lnd&gt;
+          &lt;nthrds_rof&gt;1&lt;/nthrds_rof&gt;
+          &lt;nthrds_ice&gt;1&lt;/nthrds_ice&gt;
+          &lt;nthrds_ocn&gt;1&lt;/nthrds_ocn&gt;
+          &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
+          &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
+          &lt;nthrds_cpl&gt;1&lt;/nthrds_cpl&gt;
+        &lt;/nthrds&gt;
+        &lt;rootpe&gt;
+          &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
+          &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
+          &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
+          &lt;rootpe_ice&gt;0&lt;/rootpe_ice&gt;
+          &lt;rootpe_ocn&gt;512&lt;/rootpe_ocn&gt;
+          &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
+          &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
+          &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
+        &lt;/rootpe&gt;
+      &lt;/pes&gt;
+    &lt;/mach&gt;
+    &lt;mach name=&quot;edison&quot;&gt;
+      &lt;pes compset=&quot;.*MPASCICE.+MPASO.+&quot; pesize=&quot;any&quot;&gt;
+        &lt;comment&gt;cori-knl G 30to10 on 128 nodes&lt;/comment&gt;
+        &lt;ntasks&gt;
+          &lt;ntasks_atm&gt;1024&lt;/ntasks_atm&gt;
+          &lt;ntasks_lnd&gt;1024&lt;/ntasks_lnd&gt;
+          &lt;ntasks_rof&gt;1024&lt;/ntasks_rof&gt;
+          &lt;ntasks_ice&gt;1024&lt;/ntasks_ice&gt;
+          &lt;ntasks_ocn&gt;2048&lt;/ntasks_ocn&gt;
+          &lt;ntasks_cpl&gt;1024&lt;/ntasks_cpl&gt;
+          &lt;ntasks_glc&gt;1&lt;/ntasks_glc&gt;
+          &lt;ntasks_wav&gt;1&lt;/ntasks_wav&gt;
+        &lt;/ntasks&gt;
+        &lt;nthrds&gt;
+          &lt;nthrds_atm&gt;1&lt;/nthrds_atm&gt;
+          &lt;nthrds_lnd&gt;1&lt;/nthrds_lnd&gt;
+          &lt;nthrds_rof&gt;1&lt;/nthrds_rof&gt;
+          &lt;nthrds_ice&gt;1&lt;/nthrds_ice&gt;
+          &lt;nthrds_ocn&gt;1&lt;/nthrds_ocn&gt;
+          &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
+          &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
+          &lt;nthrds_cpl&gt;1&lt;/nthrds_cpl&gt;
+        &lt;/nthrds&gt;
+        &lt;rootpe&gt;
+          &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
+          &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
+          &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
+          &lt;rootpe_ice&gt;0&lt;/rootpe_ice&gt;
+          &lt;rootpe_ocn&gt;1024&lt;/rootpe_ocn&gt;
+          &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
+          &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
+          &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
+        &lt;/rootpe&gt;
+      &lt;/pes&gt;
+    &lt;/mach&gt;
+    &lt;mach name=&quot;titan&quot;&gt;
+      &lt;pes compset=&quot;.*MPASCICE.+MPASO.+&quot; pesize=&quot;any&quot;&gt;
+        &lt;comment&gt;30to10-gmpas on 32 nodes&lt;/comment&gt;
+        &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
+        &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
+        &lt;ntasks&gt;
+          &lt;ntasks_atm&gt;512&lt;/ntasks_atm&gt;
+          &lt;ntasks_lnd&gt;512&lt;/ntasks_lnd&gt;
+          &lt;ntasks_rof&gt;512&lt;/ntasks_rof&gt;
+          &lt;ntasks_ice&gt;512&lt;/ntasks_ice&gt;
+          &lt;ntasks_ocn&gt;512&lt;/ntasks_ocn&gt;
+          &lt;ntasks_cpl&gt;512&lt;/ntasks_cpl&gt;
+          &lt;ntasks_glc&gt;1&lt;/ntasks_glc&gt;
+          &lt;ntasks_wav&gt;1&lt;/ntasks_wav&gt;
+        &lt;/ntasks&gt;
+        &lt;nthrds&gt;
+          &lt;nthrds_atm&gt;1&lt;/nthrds_atm&gt;
+          &lt;nthrds_lnd&gt;1&lt;/nthrds_lnd&gt;
+          &lt;nthrds_rof&gt;1&lt;/nthrds_rof&gt;
+          &lt;nthrds_ice&gt;1&lt;/nthrds_ice&gt;
+          &lt;nthrds_ocn&gt;1&lt;/nthrds_ocn&gt;
+          &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
+          &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
+          &lt;nthrds_cpl&gt;1&lt;/nthrds_cpl&gt;
+        &lt;/nthrds&gt;
+        &lt;rootpe&gt;
+          &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
+          &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
+          &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
+          &lt;rootpe_ice&gt;0&lt;/rootpe_ice&gt;
+          &lt;rootpe_ocn&gt;0&lt;/rootpe_ocn&gt;
+          &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
+          &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
+          &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
+        &lt;/rootpe&gt;
+      &lt;/pes&gt;
+    &lt;/mach&gt;
   &lt;/grid&gt;
   &lt;grid name=&quot;a%ne0np4.*&quot;&gt;
     &lt;mach name=&quot;any&quot;&gt;
@@ -12094,8 +12222,8 @@
     &lt;depend_separator&gt;&amp;amp;&amp;amp;&lt;/depend_separator&gt;
     &lt;walltime_format&gt;%H:%M&lt;/walltime_format&gt;
     &lt;batch_mail_flag&gt;-u&lt;/batch_mail_flag&gt;
-    &lt;batch_mail_type_flag&gt;&lt;/batch_mail_type_flag&gt;
-    &lt;batch_mail_type&gt;&lt;/batch_mail_type&gt;
+    &lt;batch_mail_type_flag&gt; &lt;/batch_mail_type_flag&gt;
+    &lt;batch_mail_type&gt;, -B -N, -B,-N,-N&lt;/batch_mail_type&gt;
     &lt;submit_args&gt;
       &lt;arg flag=&quot;-q&quot; name=&quot;$JOB_QUEUE&quot;/&gt;
       &lt;arg flag=&quot;-W&quot; name=&quot;$JOB_WALLCLOCK_TIME&quot;/&gt;
@@ -12103,7 +12231,6 @@
     &lt;/submit_args&gt;
     &lt;directives&gt;
       &lt;directive                       &gt; -nnodes {{ num_nodes }} &lt;/directive&gt;
-      &lt;directive                       &gt; -N  &lt;/directive&gt;
       &lt;directive default=&quot;e3sm.stdout&quot; &gt; -o {{ output_error_path }}.%J  &lt;/directive&gt;
       &lt;directive default=&quot;e3sm.stderr&quot; &gt; -e {{ output_error_path }}.%J  &lt;/directive&gt;
       &lt;directive                       &gt; -J {{ job_id }} &lt;/directive&gt;
@@ -12307,6 +12434,17 @@
     &lt;queues&gt;
       &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;512&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
       &lt;queue walltimemax=&quot;01:15:00&quot; nodemin=&quot;1&quot; nodemax=&quot;12896&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
+    &lt;/queues&gt;
+  &lt;/batch_system&gt;
+
+  &lt;batch_system MACH=&quot;stampede2&quot; type=&quot;slurm&quot;&gt;
+    &lt;directives&gt;
+      &lt;directive&gt;-n {{ total_tasks }}&lt;/directive&gt;
+    &lt;/directives&gt;
+    &lt;queues&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;4&quot; strict=&quot;true&quot;&gt;skx-dev&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;868&quot; strict=&quot;true&quot;&gt;skx-large&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;128&quot; default=&quot;true&quot;&gt;skx-normal&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -12663,10 +12801,10 @@ for mct, etc.
   &lt;FC_AUTO_R8&gt; -qrealsize=8 &lt;/FC_AUTO_R8&gt;
   &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -qstrict -Q &lt;/ADD_FFLAGS&gt;
   &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot;&gt; -O3  &lt;/ADD_CFLAGS&gt;
-  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par -qsuppress=1520-045 &lt;/ADD_FFLAGS&gt;
-  &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par -qsuppress=1520-045 &lt;/ADD_CFLAGS&gt;
-  &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot;  compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par:noopt -qsuppress=1520-045 &lt;/ADD_FFLAGS&gt;
-  &lt;ADD_CFLAGS DEBUG=&quot;TRUE&quot;  compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par:noopt -qsuppress=1520-045 &lt;/ADD_CFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp -qsuppress=1520-045 &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp -qsuppress=1520-045 &lt;/ADD_CFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot;  compile_threaded=&quot;true&quot;&gt; -qsmp=omp:noopt -qsuppress=1520-045 &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;TRUE&quot;  compile_threaded=&quot;true&quot;&gt; -qsmp=omp:noopt -qsuppress=1520-045 &lt;/ADD_CFLAGS&gt;
   &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot;&gt; -qinitauto=7FF7FFFF -qflttrap=ov:zero:inv:en &lt;/ADD_FFLAGS&gt;
   &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot; MODEL=&quot;pop&quot;&gt; -C &lt;/ADD_FFLAGS&gt;
   &lt;HAS_F2008_CONTIGUOUS&gt;TRUE&lt;/HAS_F2008_CONTIGUOUS&gt;
@@ -12978,6 +13116,36 @@ for mct, etc.
   &lt;HAS_F2008_CONTIGUOUS&gt;FALSE&lt;/HAS_F2008_CONTIGUOUS&gt;
 &lt;/compiler&gt;
 
+&lt;compiler COMPILER=&quot;gnu7&quot;&gt;
+  &lt;!-- http://gcc.gnu.org/onlinedocs/gfortran/ --&gt;
+  &lt;ADD_CPPDEFS&gt; -DFORTRANUNDERSCORE -DNO_R16 -DCPRGNU&lt;/ADD_CPPDEFS&gt;
+  &lt;ADD_CFLAGS compile_threaded=&quot;true&quot;&gt; -fopenmp &lt;/ADD_CFLAGS&gt;
+  &lt;ADD_FFLAGS compile_threaded=&quot;true&quot;&gt; -fopenmp &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_LDFLAGS compile_threaded=&quot;true&quot;&gt; -fopenmp &lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_CMAKE_OPTS MODEL=&quot;cism&quot;&gt; -D CISM_GNU=ON &lt;/ADD_CMAKE_OPTS&gt;
+  &lt;FIXEDFLAGS&gt;  -ffixed-form &lt;/FIXEDFLAGS&gt;
+  &lt;FREEFLAGS&gt; -ffree-form &lt;/FREEFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot;&gt; -g -Wall -Og -fbacktrace -fcheck=bounds -ffpe-trap=invalid,zero,overflow&lt;/ADD_FFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;TRUE&quot;&gt; -g -Wall -Og -fbacktrace -fcheck=bounds -ffpe-trap=invalid,zero,overflow&lt;/ADD_CFLAGS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot;&gt; -O &lt;/ADD_CFLAGS&gt;
+  &lt;!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
+       so that these are passed to cmake builds (cmake builds don&#39;t use FIXEDFLAGS and FREEFLAGS). --&gt;
+  &lt;FFLAGS&gt; -mcmodel=medium -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none &lt;/FFLAGS&gt;
+  &lt;CFLAGS&gt; -mcmodel=medium &lt;/CFLAGS&gt;
+  &lt;FFLAGS_NOOPT&gt; -O0 &lt;/FFLAGS_NOOPT&gt;
+  &lt;FC_AUTO_R8&gt; -fdefault-real-8 &lt;/FC_AUTO_R8&gt;
+  &lt;SFC&gt; gfortran &lt;/SFC&gt;
+  &lt;SCC&gt; gcc &lt;/SCC&gt;
+  &lt;SCXX&gt; g++ &lt;/SCXX&gt;
+  &lt;MPIFC&gt; mpif90 &lt;/MPIFC&gt;
+  &lt;MPICC&gt; mpicc  &lt;/MPICC&gt;
+  &lt;MPICXX&gt; mpicxx &lt;/MPICXX&gt;
+  &lt;CXX_LINKER&gt;FORTRAN&lt;/CXX_LINKER&gt;
+  &lt;SUPPORTS_CXX&gt;TRUE&lt;/SUPPORTS_CXX&gt;
+  &lt;HAS_F2008_CONTIGUOUS&gt;FALSE&lt;/HAS_F2008_CONTIGUOUS&gt;
+&lt;/compiler&gt;
+
 &lt;compiler COMPILER=&quot;pathscale&quot;&gt;
   &lt;!-- http://www.pathscale.com/node/70 --&gt;
   &lt;ADD_CPPDEFS&gt; -DFORTRANUNDERSCORE -DNO_R16 -DCPRPATHSCALE &lt;/ADD_CPPDEFS&gt;
@@ -13151,7 +13319,7 @@ for mct, etc.
 &lt;!-- Intel v18 is default on cori-knl and cori-haswell --&gt;
 &lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;cori-knl&quot;&gt;
   &lt;FFLAGS&gt; -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model consistent -fimf-use-svml &lt;/FFLAGS&gt;
-  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -debug minimal -qno-opt-dynamic-align &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -debug minimal -qno-opt-dynamic-align -fpe0&lt;/ADD_FFLAGS&gt;
   &lt;ADD_CFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_CFLAGS&gt;
   &lt;ADD_FFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_FFLAGS&gt;
   &lt;ADD_FFLAGS_NOOPT compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_FFLAGS_NOOPT&gt;
@@ -13191,6 +13359,47 @@ for mct, etc.
   &lt;MPICXX&gt; mpiicpc &lt;/MPICXX&gt;
   &lt;ADD_FFLAGS&gt; -xMIC-AVX512 &lt;/ADD_FFLAGS&gt;
   &lt;ADD_CFLAGS&gt; -axMIC-AVX512 -xCORE-AVX2 &lt;/ADD_CFLAGS&gt;
+&lt;/compiler&gt;
+
+&lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;stampede2&quot;&gt;
+  &lt;FFLAGS&gt; -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model consistent -fimf-use-svml &lt;/FFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -debug minimal -qno-opt-dynamic-align&lt;/ADD_FFLAGS&gt;
+  &lt;!--ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -debug minimal -qno-opt-dynamic-align -qopt-zmm-usage=high&lt;/ADD_FFLAGS--&gt;
+  &lt;ADD_CFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_CFLAGS&gt;
+  &lt;ADD_FFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_FFLAGS_NOOPT compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_FFLAGS_NOOPT&gt;
+  &lt;ADD_LDFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_LDFLAGS&gt;
+  &lt;CONFIG_ARGS&gt; --host=Linux &lt;/CONFIG_ARGS&gt;
+
+  &lt;MPI_LIB_NAME&gt;impi&lt;/MPI_LIB_NAME&gt;
+  &lt;MPIFC&gt; mpif90 &lt;/MPIFC&gt;
+  &lt;MPICC&gt; mpicc &lt;/MPICC&gt;
+  &lt;MPICXX&gt; mpicxx &lt;/MPICXX&gt;
+  &lt;SFC&gt; ifort &lt;/SFC&gt;
+  &lt;SCC&gt; icc &lt;/SCC&gt;
+  &lt;SCXX&gt; icpc &lt;/SCXX&gt;
+
+  &lt;!--ADD_FFLAGS&gt; -xCORE-AVX512 &lt;/ADD_FFLAGS--&gt;
+  &lt;!--ADD_CFLAGS&gt; -xCORE-AVX512 &lt;/ADD_CFLAGS--&gt;
+  &lt;ADD_FFLAGS&gt; -xCORE-AVX2 &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CFLAGS&gt; -xCORE-AVX2 &lt;/ADD_CFLAGS&gt;
+
+  &lt;ADD_CPPDEFS&gt; -DLINUX &lt;/ADD_CPPDEFS&gt;
+  &lt;GPTL_CPPDEFS&gt; -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY &lt;/GPTL_CPPDEFS&gt;
+
+  &lt;HDF5_PATH&gt;$(TACC_HDF5_DIR)&lt;/HDF5_PATH&gt;
+
+  &lt;PNETCDF_PATH MPILIB=&quot;impi&quot;&gt;$(TACC_PNETCDF_DIR)&lt;/PNETCDF_PATH&gt;
+  &lt;NETCDF_PATH MPILIB=&quot;impi&quot;&gt;$(TACC_NETCDF_DIR)&lt;/NETCDF_PATH&gt;
+  &lt;ADD_SLIBS MPILIB=&quot;impi&quot;&gt; -L$(NETCDF_PATH) -lnetcdff -Wl,--as-needed,-L$(NETCDF_PATH)/lib -lnetcdff -lnetcdf &lt;/ADD_SLIBS&gt;
+
+  &lt;NETCDF_PATH MPILIB=&quot;mpi-serial&quot;&gt;$(TACC_NETCDF_DIR)&lt;/NETCDF_PATH&gt;
+  &lt;ADD_SLIBS MPILIB=&quot;mpi-serial&quot;&gt; -L$(NETCDF_PATH) -lnetcdff -Wl,--as-needed,-L$(NETCDF_PATH)/lib -lnetcdff -lnetcdf &lt;/ADD_SLIBS&gt;
+
+  &lt;ADD_SLIBS&gt; -mkl -lpthread &lt;/ADD_SLIBS&gt;
+  &lt;ADD_CPPDEFS&gt; -DARCH_MIC_KNL &lt;/ADD_CPPDEFS&gt;
+
+  &lt;PETSC_PATH&gt;$(PETSC_DIR)&lt;/PETSC_PATH&gt;
 &lt;/compiler&gt;
 
 &lt;compiler COMPILER=&quot;intel&quot; MACH=&quot;eos&quot;&gt;
@@ -13503,6 +13712,10 @@ for mct, etc.
   &lt;ADD_CPPDEFS&gt; -DLINUX  &lt;/ADD_CPPDEFS&gt;
   &lt;CONFIG_ARGS&gt; --build=powerpc-bgp-linux --host=powerpc64-suse-linux &lt;/CONFIG_ARGS&gt;
   &lt;LDFLAGS&gt;  -Wl,--relax -Wl,--allow-multiple-definition &lt;/LDFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par -qsuppress=1520-045 &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par -qsuppress=1520-045 &lt;/ADD_CFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot;  compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par:noopt -qsuppress=1520-045 &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;TRUE&quot;  compile_threaded=&quot;true&quot;&gt; -qsmp=omp:nested_par:noopt -qsuppress=1520-045 &lt;/ADD_CFLAGS&gt;
 &lt;/compiler&gt;
 
 
@@ -13536,10 +13749,14 @@ for mct, etc.
   &lt;MPICC&gt; mpixlc &lt;/MPICC&gt;
   &lt;MPICXX&gt; mpixlC &lt;/MPICXX&gt;
   &lt;CONFIG_ARGS&gt; --host=Linux &lt;/CONFIG_ARGS&gt;
-  &lt;PIO_FILESYSTEM_HINTS&gt;lustre&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;gpfs&lt;/PIO_FILESYSTEM_HINTS&gt;
   &lt;ADD_FFLAGS&gt; -qzerosize -qfree=f90 -qxlf2003=polymorphic&lt;/ADD_FFLAGS&gt;
   &lt;ADD_FFLAGS_NOOPT&gt; -O0 -g -qfree=f90  &lt;/ADD_FFLAGS_NOOPT&gt;
-  &lt;ADD_LDFLAGS&gt;-L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib64 -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS&gt;-lxlfmath -lxlf90_r -lxlopt -lxl -lxlsmp -L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS MPILIB=&quot;!mpi-serial&quot;&gt; -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 &lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_FFLAGS&gt; -qspillsize=2500 -qextname=flush &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_CPPDEFS&gt; -DLINUX  &lt;/ADD_CPPDEFS&gt;
+  &lt;ADD_LDFLAGS&gt;  -Wl,--relax -Wl,--allow-multiple-definition &lt;/ADD_LDFLAGS&gt;
 &lt;/compiler&gt;
 
 &lt;compiler COMPILER=&quot;pgi&quot; MACH=&quot;summit&quot;&gt;
@@ -13549,10 +13766,11 @@ for mct, etc.
   &lt;MPICC&gt; mpicc &lt;/MPICC&gt;
   &lt;MPICXX&gt; mpiCC &lt;/MPICXX&gt;
   &lt;CONFIG_ARGS&gt; --host=Linux &lt;/CONFIG_ARGS&gt;
-  &lt;PIO_FILESYSTEM_HINTS&gt;lustre&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;gpfs&lt;/PIO_FILESYSTEM_HINTS&gt;
   &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/ADD_CFLAGS&gt;
   &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -DSUMMITDEV_PGI &lt;/ADD_FFLAGS&gt;
-  &lt;ADD_LDFLAGS&gt;-L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS&gt;-L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS MPILIB=&quot;!mpi-serial&quot;&gt; -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 &lt;/ADD_LDFLAGS&gt;
 &lt;/compiler&gt;
 
 &lt;compiler COMPILER=&quot;pgiacc&quot; MACH=&quot;summit&quot;&gt;
@@ -13562,13 +13780,22 @@ for mct, etc.
   &lt;MPICC&gt; mpicc &lt;/MPICC&gt;
   &lt;MPICXX&gt; mpiCC &lt;/MPICXX&gt;
   &lt;CONFIG_ARGS&gt; --host=Linux &lt;/CONFIG_ARGS&gt;
-  &lt;PIO_FILESYSTEM_HINTS&gt;lustre&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;gpfs&lt;/PIO_FILESYSTEM_HINTS&gt;
   &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 &lt;/ADD_CFLAGS&gt;
   &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -DSUMMITDEV_PGI &lt;/ADD_FFLAGS&gt;
   &lt;ADD_LDFLAGS&gt;-ta=tesla:cc70,pinned&lt;/ADD_LDFLAGS&gt;
-  &lt;ADD_LDFLAGS&gt;-L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS&gt;-L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS MPILIB=&quot;!mpi-serial&quot;&gt; -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 &lt;/ADD_LDFLAGS&gt;
 &lt;/compiler&gt;
 
+&lt;compiler COMPILER=&quot;gnu&quot; MACH=&quot;summit&quot;&gt;
+  &lt;CONFIG_ARGS&gt; --host=Linux &lt;/CONFIG_ARGS&gt;
+  &lt;PIO_FILESYSTEM_HINTS&gt;gpfs&lt;/PIO_FILESYSTEM_HINTS&gt;
+  &lt;ADD_CFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2  &lt;/ADD_CFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2  &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_LDFLAGS&gt;-L$(NETCDF_C_PATH)/lib -lnetcdf -L$(NETCDF_FORTRAN_PATH)/lib -lnetcdff -L$(ESSL_PATH)/lib64 -lessl -L$(NETLIB_LAPACK_PATH)/lib -llapack&lt;/ADD_LDFLAGS&gt;
+  &lt;ADD_LDFLAGS MPILIB=&quot;!mpi-serial&quot;&gt; -L$(PNETCDF_PATH)/lib -lpnetcdf -L$(HDF5_PATH)/lib -lhdf5_hl -lhdf5 &lt;/ADD_LDFLAGS&gt;
+&lt;/compiler&gt;
 
 &lt;compiler COMPILER=&quot;ibm&quot; MACH=&quot;summitdev&quot;&gt;
   &lt;SFC&gt; xlf_r &lt;/SFC&gt;
@@ -13637,7 +13864,7 @@ for mct, etc.
   &lt;SCC&gt; icc &lt;/SCC&gt;
   &lt;SCXX&gt; icpc &lt;/SCXX&gt;
   &lt;FFLAGS&gt;-convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model consistent -fimf-use-svml&lt;/FFLAGS&gt;
-  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -debug minimal -qno-opt-dynamic-align &lt;/ADD_FFLAGS&gt;
+  &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O2 -debug minimal -qno-opt-dynamic-align -fpe0&lt;/ADD_FFLAGS&gt;
   &lt;ADD_CFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_CFLAGS&gt;
   &lt;ADD_FFLAGS compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_FFLAGS&gt;
   &lt;ADD_FFLAGS_NOOPT compile_threaded=&quot;true&quot;&gt; -qopenmp &lt;/ADD_FFLAGS_NOOPT&gt;
@@ -14103,7 +14330,7 @@ lude &lt;/CFLAGS&gt;
   &lt;DESC&gt;NERSC XC30, os is CNL, 24 pes/node, batch system is SLURM&lt;/DESC&gt;
   &lt;NODENAME_REGEX&gt;edison&lt;/NODENAME_REGEX&gt;
   &lt;TESTS&gt;e3sm_developer&lt;/TESTS&gt;
-  &lt;COMPILERS&gt;intel,intel18,gnu&lt;/COMPILERS&gt;
+  &lt;COMPILERS&gt;intel,intel18,gnu,gnu7&lt;/COMPILERS&gt;
   &lt;MPILIBS&gt;mpt&lt;/MPILIBS&gt;
   &lt;CIME_OUTPUT_ROOT&gt;$ENV{CSCRATCH}/acme_scratch/edison&lt;/CIME_OUTPUT_ROOT&gt;
   &lt;RUNDIR&gt;$CIME_OUTPUT_ROOT/$CASE/run&lt;/RUNDIR&gt;
@@ -14198,6 +14425,15 @@ lude &lt;/CFLAGS&gt;
       &lt;command name=&quot;load&quot;&gt;gcc/6.3.0&lt;/command&gt;
       &lt;command name=&quot;rm&quot;&gt;cray-libsci&lt;/command&gt;
       &lt;command name=&quot;load&quot;&gt;cray-libsci/17.06.1&lt;/command&gt;
+    &lt;/modules&gt;
+
+    &lt;modules compiler=&quot;gnu7&quot;&gt;
+      &lt;command name=&quot;rm&quot;&gt;PrgEnv-intel&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;PrgEnv-gnu&lt;/command&gt;
+      &lt;command name=&quot;rm&quot;&gt;gcc&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;gcc/7.2.0&lt;/command&gt;
+      &lt;command name=&quot;rm&quot;&gt;cray-libsci&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;cray-libsci/17.12.1&lt;/command&gt;
     &lt;/modules&gt;
 
     &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
@@ -14377,7 +14613,7 @@ lude &lt;/CFLAGS&gt;
   &lt;DESC&gt;Cori. XC40 Cray system at NERSC. KNL partition. os is CNL, 68 pes/node (for now only use 64), batch system is SLURM&lt;/DESC&gt;
   &lt;NODENAME_REGEX&gt;cori&lt;/NODENAME_REGEX&gt;
   &lt;TESTS&gt;e3sm_developer&lt;/TESTS&gt;
-  &lt;COMPILERS&gt;intel,gnu&lt;/COMPILERS&gt;
+  &lt;COMPILERS&gt;intel,gnu,gnu7&lt;/COMPILERS&gt;
   &lt;MPILIBS&gt;mpt,impi&lt;/MPILIBS&gt;
   &lt;CIME_OUTPUT_ROOT&gt;$ENV{SCRATCH}/acme_scratch/cori-knl&lt;/CIME_OUTPUT_ROOT&gt;
   &lt;RUNDIR&gt;$CIME_OUTPUT_ROOT/$CASE/run&lt;/RUNDIR&gt;
@@ -14473,6 +14709,15 @@ lude &lt;/CFLAGS&gt;
       &lt;command name=&quot;load&quot;&gt;cray-libsci/17.09.1&lt;/command&gt;
     &lt;/modules&gt;
 
+    &lt;modules compiler=&quot;gnu7&quot;&gt;
+      &lt;command name=&quot;rm&quot;&gt;PrgEnv-intel&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;PrgEnv-gnu&lt;/command&gt;
+      &lt;command name=&quot;rm&quot;&gt;gcc&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;gcc/7.2.0&lt;/command&gt;
+      &lt;command name=&quot;rm&quot;&gt;cray-libsci&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;cray-libsci/17.12.1&lt;/command&gt;
+    &lt;/modules&gt;
+
     &lt;modules&gt;
       &lt;command name=&quot;swap&quot;&gt;craype craype/2.5.13&lt;/command&gt;
       &lt;command name=&quot;rm&quot;&gt;pmi&lt;/command&gt;
@@ -14531,6 +14776,94 @@ lude &lt;/CFLAGS&gt;
     &lt;env name=&quot;FORT_BUFFERED&quot;&gt;yes&lt;/env&gt;
     &lt;env name=&quot;MPICH_MEMORY_REPORT&quot;&gt;1&lt;/env&gt;
   &lt;/environment_variables&gt;
+&lt;/machine&gt;
+
+&lt;!-- Skylake nodes of Stampede2 at TACC --&gt;
+&lt;machine MACH=&quot;stampede2&quot;&gt;
+  &lt;DESC&gt;Stampede2. Intel skylake nodes at TACC.  48 cores per node, batch system is SLURM&lt;/DESC&gt;
+  &lt;NODENAME_REGEX&gt;.*stampede2.*&lt;/NODENAME_REGEX&gt;
+  &lt;TESTS&gt;e3sm_developer&lt;/TESTS&gt;
+  &lt;COMPILERS&gt;intel,gnu&lt;/COMPILERS&gt;
+  &lt;MPILIBS&gt;impi&lt;/MPILIBS&gt;
+  &lt;CIME_OUTPUT_ROOT&gt;$ENV{SCRATCH}/acme_scratch/stampede2&lt;/CIME_OUTPUT_ROOT&gt;
+  &lt;RUNDIR&gt;$CIME_OUTPUT_ROOT/$CASE/run&lt;/RUNDIR&gt;
+  &lt;EXEROOT&gt;$CIME_OUTPUT_ROOT/$CASE/bld&lt;/EXEROOT&gt;
+  &lt;DIN_LOC_ROOT&gt;$ENV{SCRATCH}/inputdata&lt;/DIN_LOC_ROOT&gt;
+  &lt;DIN_LOC_ROOT_CLMFORC&gt;$ENV{SCRATCH}/inputdata/atm/datm7&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+  &lt;DOUT_S_ROOT&gt;$CIME_OUTPUT_ROOT/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+  &lt;DOUT_L_MSROOT&gt;csm/$CASE&lt;/DOUT_L_MSROOT&gt;
+  &lt;BASELINE_ROOT&gt;$ENV{SCRATCH}/baselines/$COMPILER&lt;/BASELINE_ROOT&gt;
+  &lt;CCSM_CPRNC&gt;$ENV{SCRATCH}/tools/cprnc.cori/cprnc&lt;/CCSM_CPRNC&gt;
+  &lt;SAVE_TIMING_DIR&gt;$ENV{SCRATCH}&lt;/SAVE_TIMING_DIR&gt;
+  &lt;SAVE_TIMING_DIR_PROJECTS&gt;acme&lt;/SAVE_TIMING_DIR_PROJECTS&gt;
+  &lt;OS&gt;LINUX&lt;/OS&gt;
+  &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
+  &lt;SUPPORTED_BY&gt;e3sm&lt;/SUPPORTED_BY&gt;
+  &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
+  &lt;MAX_TASKS_PER_NODE&gt;96&lt;/MAX_TASKS_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;48&lt;/MAX_MPITASKS_PER_NODE&gt;
+  &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
+  &lt;TEST_TPUT_TOLERANCE&gt;0.1&lt;/TEST_TPUT_TOLERANCE&gt;
+  &lt;mpirun mpilib=&quot;default&quot;&gt;
+    &lt;executable&gt;ibrun&lt;/executable&gt;
+  &lt;/mpirun&gt;
+  &lt;module_system type=&quot;module&quot;&gt;
+    &lt;init_path lang=&quot;perl&quot;&gt;/opt/apps/lmod/lmod/init/perl&lt;/init_path&gt;
+    &lt;init_path lang=&quot;python&quot;&gt;/opt/apps/lmod/lmod/init/python&lt;/init_path&gt;
+    &lt;init_path lang=&quot;sh&quot;&gt;/opt/apps/lmod/lmod/init/sh&lt;/init_path&gt;
+    &lt;init_path lang=&quot;csh&quot;&gt;/opt/apps/lmod/lmod/init/csh&lt;/init_path&gt;
+    &lt;cmd_path lang=&quot;perl&quot;&gt;/opt/apps/lmod/lmod/libexec/lmod perl&lt;/cmd_path&gt;
+    &lt;cmd_path lang=&quot;python&quot;&gt;/opt/apps/lmod/lmod/libexec/lmod python&lt;/cmd_path&gt;
+    &lt;cmd_path lang=&quot;sh&quot;&gt;module -q&lt;/cmd_path&gt;
+    &lt;cmd_path lang=&quot;csh&quot;&gt;module -q&lt;/cmd_path&gt;
+
+    &lt;modules&gt;
+      &lt;command name=&quot;purge&quot;&gt;&lt;/command&gt;
+    &lt;/modules&gt;
+
+    &lt;modules compiler=&quot;intel&quot;&gt;
+      &lt;command name=&quot;load&quot;&gt;intel/18.0.0&lt;/command&gt;
+    &lt;/modules&gt;
+
+    &lt;modules compiler=&quot;gnu&quot;&gt;
+      &lt;command name=&quot;load&quot;&gt;gcc/6.3.0&lt;/command&gt;
+    &lt;/modules&gt;
+
+    &lt;modules mpilib=&quot;impi&quot;&gt;
+      &lt;command name=&quot;load&quot;&gt;impi/18.0.0&lt;/command&gt;
+    &lt;/modules&gt;
+
+    &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
+      &lt;command name=&quot;load&quot;&gt;hdf5/1.8.16&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;netcdf/4.3.3.1&lt;/command&gt;
+    &lt;/modules&gt;
+    &lt;modules mpilib=&quot;!mpi-serial&quot;&gt;
+      &lt;command name=&quot;load&quot;&gt;phdf5/1.8.16&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;parallel-netcdf/4.3.3.1&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;pnetcdf/1.8.1&lt;/command&gt;
+    &lt;/modules&gt;
+    &lt;modules&gt;
+      &lt;command name=&quot;load&quot;&gt;git&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;cmake&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;autotools&lt;/command&gt;
+      &lt;command name=&quot;load&quot;&gt;xalt&lt;/command&gt;
+      &lt;!--command name=&quot;load&quot;&gt;TACC&lt;/command--&gt;
+      &lt;!--command name=&quot;load&quot;&gt;python/2.7.13&lt;/command--&gt;
+    &lt;/modules&gt;
+
+  &lt;/module_system&gt;
+
+  &lt;environment_variables&gt;
+    &lt;env name=&quot;MPICH_ENV_DISPLAY&quot;&gt;1&lt;/env&gt;
+    &lt;env name=&quot;MPICH_VERSION_DISPLAY&quot;&gt;1&lt;/env&gt;
+
+    &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;128M&lt;/env&gt;
+    &lt;env name=&quot;OMP_PROC_BIND&quot;&gt;spread&lt;/env&gt;
+    &lt;env name=&quot;OMP_PLACES&quot;&gt;threads&lt;/env&gt;
+    &lt;env name=&quot;I_MPI_PIN&quot;&gt;1&lt;/env&gt;
+    &lt;env name=&quot;MY_MPIRUN_OPTIONS&quot;&gt;-l&lt;/env&gt;
+  &lt;/environment_variables&gt;
+
 &lt;/machine&gt;
 
 
@@ -16890,10 +17223,10 @@ lude &lt;/CFLAGS&gt;
 	 &lt;DESC&gt;ORNL Summit. Node: 2x POWER9 + 6x Volta V100, 22 cores/socket, 4 HW threads/core.&lt;/DESC&gt;
 	 &lt;NODENAME_REGEX&gt;.*summit.*&lt;/NODENAME_REGEX&gt;
 	 &lt;TESTS&gt;e3sm_developer&lt;/TESTS&gt;
-	 &lt;COMPILERS&gt;ibm,pgi,pgiacc&lt;/COMPILERS&gt;
+	 &lt;COMPILERS&gt;ibm,pgi,pgiacc,gnu&lt;/COMPILERS&gt;
 	 &lt;MPILIBS&gt;spectrum-mpi,mpi-serial&lt;/MPILIBS&gt;
-	 &lt;CIME_OUTPUT_ROOT&gt;$ENV{HOME}/e3sm_scratch/$PROJECT&lt;/CIME_OUTPUT_ROOT&gt;
-	 &lt;!-- &lt;CIME_OUTPUT_ROOT&gt;/gpfs/alpinetds/scratch/$ENV{USER}/$PROJECT/e3sm/scratch&lt;/CIME_OUTPUT_ROOT&gt; --&gt;
+	 &lt;!-- &lt;CIME_OUTPUT_ROOT&gt;$ENV{HOME}/e3sm_scratch/$PROJECT&lt;/CIME_OUTPUT_ROOT&gt; --&gt;
+	 &lt;CIME_OUTPUT_ROOT&gt;/gpfs/alpinetds/scratch/$ENV{USER}/$PROJECT/e3sm_scratch&lt;/CIME_OUTPUT_ROOT&gt;
 	 &lt;RUNDIR&gt;/gpfs/alpinetds/scratch/$ENV{USER}/$PROJECT/e3sm/$CASE/run&lt;/RUNDIR&gt;
 	 &lt;EXEROOT&gt;$CIME_OUTPUT_ROOT/$CASE/bld&lt;/EXEROOT&gt;
 	 &lt;DIN_LOC_ROOT&gt;/gpfs/alpinetds/world-shared/csc190/e3sm/cesm/inputdata&lt;/DIN_LOC_ROOT&gt;
@@ -16910,7 +17243,7 @@ lude &lt;/CFLAGS&gt;
 	 &lt;GMAKE_J&gt;32&lt;/GMAKE_J&gt;
 	 &lt;!-- 1 core/socket not available for application, so 168 = 42cores*4 in smt4 mode  --&gt;
 	 &lt;MAX_MPITASKS_PER_NODE&gt;84&lt;/MAX_MPITASKS_PER_NODE&gt;
-	 &lt;MAX_TASKS_PER_NODE&gt;168&lt;/MAX_TASKS_PER_NODE&gt;
+	 &lt;MAX_TASKS_PER_NODE&gt;84&lt;/MAX_TASKS_PER_NODE&gt;
 	 &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
 	 &lt;PROJECT&gt;csc190&lt;/PROJECT&gt;
 	 &lt;CHARGE_ACCOUNT&gt;CSC190ACME&lt;/CHARGE_ACCOUNT&gt;
@@ -16922,13 +17255,6 @@ lude &lt;/CFLAGS&gt;
 	 &lt;!-- &lt;executable&gt;jsrun&lt;/executable&gt; --&gt;
 	 &lt;arguments&gt;
 	     &lt;arg name=&quot;num_tasks&quot; &gt; -n $TOTALPES -N $MAX_MPITASKS_PER_NODE &lt;/arg&gt;
-		 &lt;!-- By default &#39;jsrun&#39; does not exit (i.e. hung) if any process / thread fails. --&gt;
-		 &lt;!-- To avoid this, pass the option &#39;-X 1&#39; to exit on error --&gt;
-	     &lt;!-- &lt;arg name=&quot;num_tasks&quot; &gt; -X 1 - -nrs $SHELL{echo $NUM_NODES * 6 | bc} - -rs_per_host 6 - -tasks_per_rs 28 - -gpu_per_rs 1 - -cpu_per_rs 7 &lt;/arg&gt; --&gt;
-		 &lt;!-- plane binding is number of tasks per socket --&gt;
-		 &lt;!-- &lt;arg name=&quot;binding&quot;&gt;- -latency_priority=cpu-cpu - -bind=proportional-packed:1 -d plane:84 &lt;/arg&gt; --&gt;
-		 &lt;!-- The expression below calculates number of nodes (ceil of TOTALPES/MAX_MPITASKS_PER_NODE) --&gt;
-		 &lt;!-- $SHELL{echo &quot;(($TOTALPES + $MAX_MPITASKS_PER_NODE - 1)/$MAX_MPITASKS_PER_NODE)&quot; | bc} --&gt;
 	 &lt;/arguments&gt;
 	 &lt;/mpirun&gt;
 		&lt;!-- Useful jsrun options:
@@ -16953,7 +17279,6 @@ lude &lt;/CFLAGS&gt;
 
       &lt;!-- Always execute --&gt;
       &lt;modules&gt;
-		&lt;command name=&quot;ls&quot;/&gt;
 		&lt;command name=&quot;purge&quot;/&gt;
 		&lt;command name=&quot;ls&quot;/&gt;
 		&lt;command name=&quot;load&quot;&gt;DefApps&lt;/command&gt;
@@ -16966,33 +17291,33 @@ lude &lt;/CFLAGS&gt;
       &lt;/modules&gt;
       &lt;!-- List of modules elements, executing commands if compiler and mpilib condition applies --&gt;
       &lt;modules compiler=&quot;pgi&quot;&gt;
-        &lt;command name=&quot;rm&quot;&gt;xl&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;pgi/18.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;spectrum-mpi/10.2.0.0-20180110&lt;/command&gt;
-        &lt;command name=&quot;ls&quot;/&gt;
       &lt;/modules&gt;
       &lt;modules compiler=&quot;ibm&quot;&gt;
-        &lt;command name=&quot;rm&quot;&gt;pgi&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;xl/20180223-beta&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;spectrum-mpi/10.2.0.0-20180110&lt;/command&gt;
-        &lt;command name=&quot;ls&quot;/&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;gcc/6.4.0&lt;/command&gt;
       &lt;/modules&gt;
 
-      &lt;!-- mpi lib settings --&gt;
-      &lt;modules mpilib=&quot;mpi-serial&quot;&gt;
+      &lt;modules&gt;
         &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;netcdf-fortran/4.4.4&lt;/command&gt;
       &lt;/modules&gt;
+      &lt;!-- mpi lib settings --&gt;
 	  &lt;!-- Sometimes,same versions of libraries are not available for different compilers, hence the split below --&gt;
       &lt;modules compiler=&quot;ibm&quot; mpilib=&quot;!mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf-fortran/4.4.4&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;spectrum-mpi/10.2.0.0-20180110&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;parallel-netcdf/1.8.0&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf5/1.10.0-patch1&lt;/command&gt;
       &lt;/modules&gt;
-      &lt;modules compiler=&quot;pgi&quot; mpilib=&quot;!mpi-serial&quot;&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf/4.4.1&lt;/command&gt;
-        &lt;command name=&quot;load&quot;&gt;netcdf-fortran/4.4.4&lt;/command&gt;
+      &lt;modules compiler=&quot;pgi*&quot; mpilib=&quot;!mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;spectrum-mpi/10.2.0.0-20180110&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;parallel-netcdf/1.8.0&lt;/command&gt;
+        &lt;command name=&quot;load&quot;&gt;hdf5/1.10.0-patch1&lt;/command&gt;
+      &lt;/modules&gt;
+      &lt;modules compiler=&quot;gnu&quot; mpilib=&quot;!mpi-serial&quot;&gt;
+        &lt;command name=&quot;load&quot;&gt;spectrum-mpi/10.2.0.0-20180110&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;parallel-netcdf/1.8.0&lt;/command&gt;
         &lt;command name=&quot;load&quot;&gt;hdf5/1.10.0-patch1&lt;/command&gt;
       &lt;/modules&gt;
@@ -17004,11 +17329,14 @@ lude &lt;/CFLAGS&gt;
 		  &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;128M&lt;/env&gt;
 		  &lt;env name=&quot;NETCDF_C_PATH&quot;&gt;$ENV{OLCF_NETCDF_ROOT}&lt;/env&gt;
 		  &lt;env name=&quot;NETCDF_FORTRAN_PATH&quot;&gt;$ENV{OLCF_NETCDF_FORTRAN_ROOT}&lt;/env&gt;
-		  &lt;env name=&quot;HDF5_PATH&quot;&gt;$ENV{OLCF_HDF5_ROOT}&lt;/env&gt;
 		  &lt;env name=&quot;ESSL_PATH&quot;&gt;$ENV{OLCF_ESSL_ROOT}&lt;/env&gt;
 		  &lt;env name=&quot;NETLIB_LAPACK_PATH&quot;&gt;$ENV{OLCF_NETLIB_LAPACK_ROOT}&lt;/env&gt;
       &lt;/environment_variables&gt;
+      &lt;environment_variables SMP_PRESENT=&quot;TRUE&quot;&gt;
+		  &lt;env name=&quot;OMP_NUM_THREADS&quot;&gt;$ENV{OMP_NUM_THREADS}&lt;/env&gt;
+      &lt;/environment_variables&gt;
       &lt;environment_variables mpilib=&quot;!mpi-serial&quot;&gt;
+		&lt;env name=&quot;HDF5_PATH&quot;&gt;$ENV{OLCF_HDF5_ROOT}&lt;/env&gt;
         &lt;env name=&quot;PNETCDF_PATH&quot;&gt;$ENV{OLCF_PARALLEL_NETCDF_ROOT}&lt;/env&gt;
       &lt;/environment_variables&gt;
 &lt;/machine&gt;

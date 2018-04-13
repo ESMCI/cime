@@ -52,7 +52,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">check_name</span>
 <span class="kn">from</span> <span class="nn">CIME.user_mod_support</span> <span class="kn">import</span> <span class="n">apply_user_mods</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span>         <span class="kn">import</span> <span class="n">lock_file</span>
 <span class="kn">from</span> <span class="nn">CIME.simple_compare</span>            <span class="kn">import</span> <span class="n">compare_files</span>
@@ -77,6 +77,8 @@
     <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">),</span>
            <span class="s2">&quot;New caseroot directory {} already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">))</span>
     <span class="n">newcasename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">check_name</span><span class="p">(</span><span class="n">newcasename</span><span class="p">),</span>
+           <span class="s2">&quot;New case name invalid {} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newcasename</span><span class="p">))</span>
     <span class="n">newcase_cimeroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">())</span>
 
     <span class="c1"># create clone from case to case</span>

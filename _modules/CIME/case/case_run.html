@@ -231,21 +231,13 @@
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_save_logs</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
-    <span class="n">logdir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LOGDIR&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">logdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
+    <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+    <span class="n">logfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;*.log.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">logfile</span> <span class="ow">in</span> <span class="n">logfiles</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+            <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
 
-        <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-        <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
-        <span class="n">logfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;*.log.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
-        <span class="k">for</span> <span class="n">logfile</span> <span class="ow">in</span> <span class="n">logfiles</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
-                <span class="n">logfile_gz</span> <span class="o">=</span> <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">logfile_gz</span><span class="p">,</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">logdir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">logfile_gz</span><span class="p">)))</span>
-
-<span class="c1">###############################################################################</span>
+<span class="c1">######################################################################################</span>
 <span class="k">def</span> <span class="nf">_resubmit_check</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
 
@@ -330,9 +322,7 @@
             <span class="n">_do_data_assimilation</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span>
                                  <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
-
-        <span class="n">_save_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>       <span class="c1"># Copy log files back to caseroot</span>
-
+        <span class="n">_save_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
         <span class="n">save_postrun_provenance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">postrun_script</span><span class="p">:</span>
@@ -340,8 +330,7 @@
         <span class="n">_do_external</span><span class="p">(</span><span class="n">postrun_script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
                     <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;postrun&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
-
-    <span class="n">_save_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>       <span class="c1"># Copy log files back to caseroot</span>
+        <span class="n">_save_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;check for resubmit&quot;</span><span class="p">)</span>
     <span class="n">_resubmit_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>

@@ -18,7 +18,6 @@ and **case.setup**.
    jenkins_generic_job
    xmlquery
    component_compare_test
-   update_e3sm_tests
    list_e3sm_tests
    case.submit
    compare_test_results

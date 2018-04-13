@@ -20,6 +20,14 @@ CIME.Servers.generic_server module
     :undoc-members:
     :show-inheritance:
 
+CIME.Servers.gftp module
+------------------------
+
+.. automodule:: CIME.Servers.gftp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.Servers.svn module
 -----------------------
 
