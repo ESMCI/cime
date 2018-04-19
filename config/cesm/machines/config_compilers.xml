@@ -894,7 +894,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="stampede2-skx">
+<compiler MACH="stampede">
   <CPPDEFS>
     <append> -DHAVE_NANOTIME </append>
   </CPPDEFS>
@@ -903,49 +903,21 @@ using a fortran linker.
   <PNETCDF_PATH>$ENV{TACC_PNETCDF_DIR}</PNETCDF_PATH>
 </compiler>
 
-<compiler MACH="stampede2-skx" COMPILER="intel">
+<compiler MACH="stampede" COMPILER="intel">
   <CFLAGS>
-    <append> -xCOMMON-AVX512 -no-fma </append>
+    <append> -xHost </append>
   </CFLAGS>
   <FFLAGS>
-    <append> -xCOMMON-AVS512 -no-fma </append>
+    <append> -xHost </append>
     <append MPILIB="mpi-serial"> -mcmodel medium </append>
   </FFLAGS>
   <LDFLAGS>
-    <append>-L$ENV{TACC_HDF5_LIB} -lhdf5 $(MKL) -zmuldefs -xCOMMON-AVX512</append>
+    <append>-L$ENV{TACC_HDF5_LIB} -lhdf5</append>
   </LDFLAGS>
   <SLIBS>
     <append>$SHELL{${NETCDF_PATH}/bin/nf-config --flibs} -L$ENV{TACC_HDF5_LIB} -lhdf5</append>
   </SLIBS>
   <TRILINOS_PATH>$ENV{TRILINOS_PATH}</TRILINOS_PATH>
-  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
-</compiler>
-
-<compiler MACH="stampede2-knl">
-  <CPPDEFS>
-    <append> -DHAVE_NANOTIME </append>
-  </CPPDEFS>
-  <NETCDF_PATH>$ENV{TACC_NETCDF_DIR}</NETCDF_PATH>
-  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
-  <PNETCDF_PATH>$ENV{TACC_PNETCDF_DIR}</PNETCDF_PATH>
-</compiler>
-
-<compiler MACH="stampede2-knl" COMPILER="intel">
-  <CFLAGS>
-    <append> -xCOMMON-AVX512 -no-fma </append>
-  </CFLAGS>
-  <FFLAGS>
-    <append> -xCOMMON-AVX512 -no-fma </append>
-    <append MPILIB="mpi-serial"> -mcmodel medium </append>
-  </FFLAGS>
-  <LDFLAGS>
-    <append>-L$ENV{TACC_HDF5_LIB} -lhdf5 $(MKL) -zmuldefs -xCOMMON-AVX512</append>
-  </LDFLAGS>
-  <SLIBS>
-    <append>$SHELL{${NETCDF_PATH}/bin/nf-config --flibs} -L$ENV{TACC_HDF5_LIB} -lhdf5</append>
-  </SLIBS>
-  <TRILINOS_PATH>$ENV{TRILINOS_PATH}</TRILINOS_PATH>
-  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="theta">
@@ -1060,40 +1032,6 @@ using a fortran linker.
   </CMAKE_OPTS>
 </compiler>
 
-<compiler COMPILER="intel" MACH="lawrencium-lr3">
-  <CPPDEFS>
-    <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
-  </CPPDEFS>
-  <SLIBS>
-    <append> -lnetcdff -lnetcdf -mkl </append>
-  </SLIBS>
-  <FFLAGS>
-    <append DEBUG="TRUE"> -ftrapuv </append>
-  </FFLAGS>
-  <CFLAGS>
-    <append DEBUG="TRUE"> -ftrapuv </append>
-  </CFLAGS>
-  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
-  <LAPACK_LIBDIR>/global/software/sl-6.x86_64/modules/intel/2016.1.150/lapack/3.6.0-intel/lib</LAPACK_LIBDIR>
-</compiler>
-
-<compiler COMPILER="intel" MACH="lawrencium-lr2">
-  <CPPDEFS>
-    <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
-  </CPPDEFS>
-  <SLIBS>
-    <append> -lnetcdff -lnetcdf -mkl </append>
-  </SLIBS>
-  <FFLAGS>
-    <append DEBUG="TRUE"> -ftrapuv </append>
-  </FFLAGS>
-  <CFLAGS>
-    <append DEBUG="TRUE"> -ftrapuv </append>
-  </CFLAGS>
-  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
-  <LAPACK_LIBDIR>/global/software/sl-6.x86_64/modules/intel/2016.1.150/lapack/3.6.0-intel/lib</LAPACK_LIBDIR>
-</compiler>
-
 <compiler MACH="yellowstone" COMPILER="gnu">
   <LAPACK_LIBDIR> /glade/apps/opt/lib </LAPACK_LIBDIR>
   <SCC MPILIB="mpi-serial">gcc</SCC>
@@ -1180,6 +1118,86 @@ using a fortran linker.
   <CPPDEFS>
      <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_GETTIMEOFDAY -DHAVE_BACKTRACE </append>
   </CPPDEFS>
+</compiler>
+
+<compiler MACH="ada" COMPILER="intel">
+  <CPPDEFS>
+    <append> -DHAVE_NANOTIME -DNO_R16 </append>
+  </CPPDEFS>
+  <CFLAGS>
+    <append></append>
+  </CFLAGS>
+  <FFLAGS>
+    <append></append>
+  </FFLAGS>
+  <MPIFC>mpiifort</MPIFC>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <SFC>ifort</SFC>
+  <SCC>icc</SCC>
+  <SCXX>icpc</SCXX>
+  <NETCDF_PATH>/software/tamusc/WRF/netcdf/4.3.3.1-intel-2015B</NETCDF_PATH>
+  <NETCDF_C_PATH>/software/tamusc/WRF/netcdf/4.3.3.1-intel-2015B</NETCDF_C_PATH>
+  <NETCDF_FORTRAN_PATH>/software/tamusc/WRF/netcdf-fortran/4.4.2-intel-2015B</NETCDF_FORTRAN_PATH>
+  <PNETCDF_PATH>/software/tamusc/pnetcdf/1.6.1-intel-2015B</PNETCDF_PATH>
+  <SLIBS>
+    <append>-L${NETCDF_C_PATH}/lib -lnetcdf</append>
+    <append>-L${NETCDF_FORTRAN_PATH}/lib -lnetcdff</append>
+    <append>-L${PNETCDF_PATH}/lib -lpnetcdf</append>
+  </SLIBS>
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <!-- Bug in the intel/17.0.1 compiler requires this, remove this line when compiler is updated -->
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+</compiler>
+
+<compiler MACH="terra" COMPILER="intel">
+  <CPPDEFS>
+    <append> -DHAVE_NANOTIME -DNO_R16 </append>
+  </CPPDEFS>
+  <CFLAGS>
+    <append></append>
+  </CFLAGS>
+  <FFLAGS>
+    <append></append>
+  </FFLAGS>
+  <MPIFC>mpiifort</MPIFC>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <SFC>ifort</SFC>
+  <SCC>icc</SCC>
+  <SCXX>icpc</SCXX>
+  <NETCDF_C_PATH>/sw/eb/sw/netCDF/4.4.1.1-iimpi-2017A</NETCDF_C_PATH>
+  <NETCDF_FORTRAN_PATH>/sw/eb/sw/netCDF-Fortran/4.4.4-iimpi-2017A</NETCDF_FORTRAN_PATH>
+  <PNETCDF_PATH>/sw/eb/sw/PnetCDF/1.8.1-intel-2017A</PNETCDF_PATH>
+  <SLIBS>
+    <append>-L${NETCDF_C_PATH}/lib64 -lnetcdf</append>
+    <append>-L${NETCDF_FORTRAN_PATH}/lib -lnetcdff</append>
+    <append>-L${PNETCDF_PATH}/lib -lpnetcdf</append>
+  </SLIBS>
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <!-- Bug in the intel/17.0.1 compiler requires this, remove this line when compiler is updated -->
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+</compiler>
+
+<compiler MACH="stampede2" COMPILER="intel">
+  <CPPDEFS>
+    <append> -DHAVE_NANOTIME -DNO_R16 </append>
+  </CPPDEFS>
+  <MPIFC>mpiifort</MPIFC>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <SFC>ifort</SFC>
+  <SCC>icc</SCC>
+  <SCXX>icpc</SCXX>
+  <NETCDF_PATH>$ENV{TACC_NETCDF_DIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{TACC_PNETCDF_DIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append>-L$ENV{TACC_NETCDF_DIR}/lib -lnetcdf -lnetcdff</append>
+    <append>-L$ENV{TACC_PNETCDF_DIR}/lib -lpnetcdf</append>
+  </SLIBS>
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <!-- Bug in the intel/17.0.1 compiler requires this, remove this line when compiler is updated -->
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 </config_compilers>
