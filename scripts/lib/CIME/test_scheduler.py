@@ -123,6 +123,7 @@ class TestScheduler(object):
     ###########################################################################
         self._cime_root       = CIME.utils.get_cime_root()
         self._cime_model      = get_model()
+        self._cime_driver     = "mct"
         self._save_timing     = save_timing
         self._queue           = queue
         self._test_data       = {} if test_data is None else test_data # Format:  {test_name -> {data_name -> data}}
@@ -418,6 +419,9 @@ class TestScheduler(object):
             create_newcase_cmd += " --machine {}".format(machine)
         if compiler is not None:
             create_newcase_cmd += " --compiler {}".format(compiler)
+        if "Vnuopc" in case_opts:
+            create_newcase_cmd += " --driver nuopc "
+            self._cime_driver = "nuopc"
         if self._project is not None:
             create_newcase_cmd += " --project {} ".format(self._project)
         if self._output_root is not None:
@@ -432,7 +436,12 @@ class TestScheduler(object):
             files = Files()
             (component, modspath) = test_mods.split('/',1)
 
-            testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
+            # TODO: to get the right attributes of COMP_ROOT_DIR_CPL in evaluating definition_file - need
+            # to do the following first - this needs to be changed so that the following two lines are not needed!
+            comp_root_dir_cpl = files.get_value( "COMP_ROOT_DIR_CPL",{"component":"drv-nuopc"}, resolved=False)
+            files.set_value("COMP_ROOT_DIR_CPL", comp_root_dir_cpl)
+
+            testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component}, comp_interface=self._cime_driver)
             test_mod_file = os.path.join(testmods_dir, component, modspath)
             if not os.path.exists(test_mod_file):
                 error = "Missing testmod file '{}'".format(test_mod_file)
@@ -513,7 +522,7 @@ class TestScheduler(object):
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
         files = Files()
-        drv_config_file = files.get_value("CONFIG_CPL_FILE")
+        drv_config_file = files.get_value("CONFIG_CPL_FILE", comp_interface=self._cime_driver)
         drv_comp = Component(drv_config_file, "CPL")
         envtest.add_elements_by_group(files, {}, "env_test.xml")
         envtest.add_elements_by_group(drv_comp, {}, "env_test.xml")

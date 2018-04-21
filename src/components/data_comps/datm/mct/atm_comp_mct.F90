@@ -17,6 +17,7 @@ module atm_comp_mct
   use datm_shr_mod    , only: datm_shr_read_namelists
   use datm_shr_mod    , only: presaero
   use seq_flds_mod    , only: seq_flds_a2x_fields, seq_flds_x2a_fields
+  use seq_timemgr_mod , only: seq_timemgr_EClockGetData, seq_timemgr_RestartAlarmIsOn
 
   ! !PUBLIC TYPES:
   implicit none
@@ -34,6 +35,7 @@ module atm_comp_mct
   ! Private module data
   !--------------------------------------------------------------------------
   type(shr_strdata_type) :: SDATM
+  character(CS)          :: myModelName = 'atm' ! user defined model name
   integer(IN)            :: mpicom              ! mpi communicator
   integer(IN)            :: my_task             ! my task in mpi communicator mpicom
   integer                :: inst_index          ! number of current instance (ie. 1)
@@ -42,10 +44,11 @@ module atm_comp_mct
   integer(IN)            :: logunit             ! logging unit number
   integer(IN)            :: compid              ! mct comp id
   integer(IN),parameter  :: master_task=0       ! task number of master task
+  integer    ,parameter  :: dbug = 10
 
-  !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CONTAINS
-  !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   !===============================================================================
   subroutine atm_init_mct( EClock, cdata, x2a, a2x, NLFilename )
@@ -64,7 +67,6 @@ CONTAINS
     type(seq_infodata_type), pointer :: infodata
     type(mct_gsMap)        , pointer :: gsMap
     type(mct_gGrid)        , pointer :: ggrid
-    integer           :: phase                     ! phase of method
     logical           :: atm_present               ! flag
     logical           :: atm_prognostic            ! flag
     integer(IN)       :: shrlogunit                ! original log unit
@@ -79,12 +81,18 @@ CONTAINS
     real(R8)          :: orbLambm0                 ! orb mean long of perhelion (radians)
     real(R8)          :: orbObliqr                 ! orb obliquity (radians)
     real(R8)          :: nextsw_cday               ! calendar of next atm sw
+    integer           :: first_time = .true.
 
     !--- formats ---
     character(*), parameter :: F00   = "('(datm_comp_init) ',8a)"
     integer(IN) , parameter :: master_task=0 ! task number of master task
     character(*), parameter :: subName = "(atm_init_mct) "
     !-------------------------------------------------------------------------------
+
+    ! Only call the datm atmosphere initialization once
+    if (.not. first_time) then
+       RETURN
+    end if
 
     ! Set cdata pointers to derived types (in coupler)
     call seq_cdata_setptrs(cdata, &
@@ -96,7 +104,6 @@ CONTAINS
 
     ! Obtain infodata variables
     call seq_infodata_getData(infodata,&
-         atm_phase=phase, &
          single_column=scmMode, &
          scmlat=scmlat, &
          scmlon=scmLon, &
@@ -111,17 +118,15 @@ CONTAINS
     inst_index  = seq_comm_inst(compid)
     inst_suffix = seq_comm_suffix(compid)
 
-    if (phase == 1) then
-       ! Determine communicator group
-       call mpi_comm_rank(mpicom, my_task, ierr)
+    ! Determine communicator group
+    call mpi_comm_rank(mpicom, my_task, ierr)
 
-       !--- open log file ---
-       if (my_task == master_task) then
-          logUnit = shr_file_getUnit()
-          call shr_file_setIO('atm_modelio.nml'//trim(inst_suffix),logUnit)
-       else
-          logUnit = 6
-       endif
+    !--- open log file ---
+    if (my_task == master_task) then
+       logUnit = shr_file_getUnit()
+       call shr_file_setIO('atm_modelio.nml'//trim(inst_suffix),logUnit)
+    else
+       logUnit = 6
     endif
 
     !----------------------------------------------------------------------------
@@ -130,32 +135,31 @@ CONTAINS
 
     call shr_file_getLogUnit (shrlogunit)
     call shr_file_getLogLevel(shrloglev)
+    call shr_file_setLogLevel(max(shrloglev,1))
     call shr_file_setLogUnit (logUnit)
 
     !----------------------------------------------------------------------------
     ! Read input namelists and set present and prognostic flags
     !----------------------------------------------------------------------------
 
-    if (phase == 1) then
-       call t_startf('datm_readnml')
-       call datm_shr_read_namelists(mpicom, my_task, master_task, &
-            inst_index, inst_suffix, inst_name, &
-            logunit, shrlogunit, SDATM, atm_present, atm_prognostic)
+    call t_startf('datm_readnml')
 
-       call seq_infodata_PutData(infodata, &
-            atm_present=atm_present, &
-            atm_prognostic=atm_prognostic)
-       call t_stopf('datm_readnml')
-    end if
+    call datm_shr_read_namelists(mpicom, my_task, master_task, &
+         inst_index, inst_suffix, inst_name, &
+         logunit, shrlogunit, SDATM, atm_present, atm_prognostic)
+
+    call seq_infodata_PutData(infodata, &
+         atm_present=atm_present, &
+         atm_prognostic=atm_prognostic)
+
+    call t_stopf('datm_readnml')
 
     !----------------------------------------------------------------------------
     ! RETURN if present flag is false
     !----------------------------------------------------------------------------
 
-    if (phase == 1) then
-       if (.not. atm_present) then
-          RETURN
-       end if
+    if (.not. atm_present) then
+       RETURN
     end if
 
     ! NOTE: the following will never be called if atm_present is .false.
@@ -169,22 +173,27 @@ CONTAINS
          SDATM, gsmap, ggrid, mpicom, compid, my_task, master_task, &
          inst_suffix, inst_name, logunit, read_restart, &
          scmMode, scmlat, scmlon, &
-         orbEccen, orbMvelpp, orbLambm0, orbObliqr, phase, nextsw_cday)
+         orbEccen, orbMvelpp, orbLambm0, orbObliqr, nextsw_cday)
 
     !----------------------------------------------------------------------------
     ! Fill infodata that needs to be returned from datm
     !----------------------------------------------------------------------------
 
-    if (phase == 1) then
-       call seq_infodata_PutData(infodata, &
-            atm_nx=SDATM%nxg, &
-            atm_ny=SDATM%nyg, &
-            atm_aero=presaero, &
-            nextsw_cday=nextsw_cday )
-    else
-       call seq_infodata_PutData(infodata, &
-            nextsw_cday=nextsw_cday )
-    end if
+    call seq_infodata_PutData(infodata, &
+         atm_nx=SDATM%nxg, &
+         atm_ny=SDATM%nyg, &
+         atm_aero=presaero, &
+         nextsw_cday=nextsw_cday )
+
+    !----------------------------------------------------------------------------
+    ! diagnostics
+    !----------------------------------------------------------------------------
+
+    if (dbug > 1) then
+       if (my_task == master_task) then
+          call mct_aVect_info(2, a2x, istr="initial diag"//':AV')
+       end if
+    endif
 
     !----------------------------------------------------------------------------
     ! Reset shr logging to original values
@@ -192,11 +201,11 @@ CONTAINS
 
     if (my_task == master_task) write(logunit,F00) 'datm_comp_init done'
     call shr_sys_flush(logunit)
-    call shr_sys_flush(shrlogunit)
 
     call shr_file_setLogUnit (shrlogunit)
     call shr_file_setLogLevel(shrloglev)
-    call shr_sys_flush(logunit)
+
+    first_time = .false.
 
   end subroutine atm_init_mct
 
@@ -220,12 +229,16 @@ CONTAINS
     integer(IN)                      :: shrloglev      ! original log level
     character(CL)                    :: case_name      ! case name
     real(R8)                         :: nextsw_cday    ! calendar of next atm sw
+    logical                          :: write_restart  ! restart now
+    integer(IN)                      :: currentYMD    ! model date
+    integer(IN)                      :: currentTOD    ! model sec into model date
     character(*), parameter :: subName = "(atm_run_mct) "
     !-------------------------------------------------------------------------------
 
     ! Reset shr logging to my log file
     call shr_file_getLogUnit (shrlogunit)
     call shr_file_getLogLevel(shrloglev)
+    call shr_file_setLogLevel(max(shrloglev,1))
     call shr_file_setLogUnit (logUnit)
 
     call seq_cdata_setptrs(cdata, &
@@ -235,15 +248,26 @@ CONTAINS
 
     call seq_infodata_GetData(infodata, case_name=case_name)
 
+    write_restart = seq_timemgr_RestartAlarmIsOn(EClock)
+
+    ! For mct - the component clock is advance at the beginning of the time interval
+    call seq_timemgr_EClockGetData( EClock, curr_ymd=CurrentYMD, curr_tod=CurrentTOD)
+
     call datm_comp_run(EClock, x2a, a2x, &
-         SDATM, gsmap, ggrid, mpicom, compid, my_task, master_task, &
-         inst_suffix, logunit, nextsw_cday, case_name)
+       SDATM, gsmap, ggrid, mpicom, compid, my_task, master_task, &
+       inst_suffix, logunit, nextsw_cday, write_restart, &
+       currentYMD, currentTOD, case_name=case_name)
+
+    if (dbug > 1) then
+       if (my_task == master_task) then
+          call mct_aVect_info(2, a2x, istr='run diag'//':AV')
+       end if
+    end if
 
     call seq_infodata_PutData(infodata, nextsw_cday=nextsw_cday )
 
     call shr_file_setLogUnit (shrlogunit)
     call shr_file_setLogLevel(shrloglev)
-    call shr_sys_flush(logunit)
 
   end subroutine atm_run_mct
 
