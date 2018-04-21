@@ -1,7 +1,6 @@
 #ifdef AIX
 @PROCESS ALIAS_SIZE(805306368)
 #endif
-
 module dlnd_comp_mod
 
   ! !USES:
@@ -20,7 +19,7 @@ module dlnd_comp_mod
   use shr_dmodel_mod    , only: shr_dmodel_gsmapcreate, shr_dmodel_rearrGGrid
   use shr_dmodel_mod    , only: shr_dmodel_translate_list, shr_dmodel_translateAV_list, shr_dmodel_translateAV
   use shr_cal_mod       , only: shr_cal_ymdtod2string
-  use seq_timemgr_mod   , only: seq_timemgr_EClockGetData
+  use seq_timemgr_mod   , only: seq_timemgr_EClockGetData, seq_timemgr_RestartAlarmIsOn
   use glc_elevclass_mod , only: glc_get_num_elevation_classes, glc_elevclass_as_string
 
   use dlnd_shr_mod   , only: datamode       ! namelist input
@@ -48,9 +47,8 @@ module dlnd_comp_mod
   !--- other ---
   character(CS) :: myModelName = 'lnd'   ! user defined model name
   character(len=*),parameter :: rpfile = 'rpointer.lnd'
-  type(mct_rearr)  :: rearr
-  integer          :: kf                 ! index for frac in AV
-  real(R8),pointer :: lfrac(:)           ! land frac
+  type(mct_rearr) :: rearr
+
   !--------------------------------------------------------------------------
   !--- names of fields ---
   integer(IN),parameter :: fld_len = 12       ! max character length of fields in avofld & avifld
@@ -58,14 +56,14 @@ module dlnd_comp_mod
 
   ! fields other than snow fields:
   character(fld_len),parameter  :: avofld_nosnow(1:nflds_nosnow) = &
-    (/ "Sl_t        ","Sl_tref     ","Sl_qref     ","Sl_avsdr    ","Sl_anidr    ", &
+       (/ "Sl_t        ","Sl_tref     ","Sl_qref     ","Sl_avsdr    ","Sl_anidr    ", &
        "Sl_avsdf    ","Sl_anidf    ","Sl_snowh    ","Fall_taux   ","Fall_tauy   ", &
        "Fall_lat    ","Fall_sen    ","Fall_lwup   ","Fall_evap   ","Fall_swnet  ", &
        "Sl_landfrac ","Sl_fv       ","Sl_ram1     ",                               &
        "Fall_flxdst1","Fall_flxdst2","Fall_flxdst3","Fall_flxdst4"                 /)
 
   character(fld_len),parameter  :: avifld_nosnow(1:nflds_nosnow) = &
-    (/ "t           ","tref        ","qref        ","avsdr       ","anidr       ", &
+       (/ "t           ","tref        ","qref        ","avsdr       ","anidr       ", &
        "avsdf       ","anidf       ","snowh       ","taux        ","tauy        ", &
        "lat         ","sen         ","lwup        ","evap        ","swnet       ", &
        "lfrac       ","fv          ","ram1        ",                               &
@@ -122,19 +120,15 @@ CONTAINS
     real(R8)               , intent(in)    :: scmLon              ! single column lon
 
     !--- local variables ---
-    integer(IN)        :: n,k        ! generic counters
-    integer(IN)        :: ierr       ! error code
-    integer(IN)        :: lsize      ! local size
-    logical            :: exists     ! file existance
-    integer(IN)        :: nu         ! unit number
-    character(CL)      :: calendar   ! model calendar
-    integer(IN)        :: glc_nec    ! number of elevation classes
-    integer(IN)        :: field_num  ! field number
-    character(nec_len) :: nec_str    ! elevation class, as character string
-    integer(IN)        :: kfrac      ! AV index
-    integer(IN)        :: currentYMD ! model date
-    integer(IN)        :: currentTOD ! model sec into model date
-    logical            :: write_restart
+    integer(IN)        :: n,k       ! generic counters
+    integer(IN)        :: ierr      ! error code
+    integer(IN)        :: lsize     ! local size
+    logical            :: exists    ! file existance
+    integer(IN)        :: nu        ! unit number
+    character(CL)      :: calendar  ! model calendar
+    integer(IN)        :: glc_nec   ! number of elevation classes
+    integer(IN)        :: field_num ! field number
+    character(nec_len) :: nec_str   ! elevation class, as character string
 
     !--- formats ---
     character(*), parameter :: F00   = "('(dlnd_comp_init) ',8a)"
@@ -222,7 +216,7 @@ CONTAINS
     call shr_dmodel_gsmapcreate(gsmap,SDLND%nxg*SDLND%nyg,compid,mpicom,decomp)
     lsize = mct_gsmap_lsize(gsmap,mpicom)
 
-    ! create a rearranger from the data model SDLND%gsmap to gsmap
+    ! create a rearranger from the data model DLND%gsmap to gsmap
     call mct_rearr_init(SDLND%gsmap, gsmap, mpicom, rearr)
 
     call t_stopf('dlnd_initgsmaps')
@@ -236,9 +230,6 @@ CONTAINS
     call shr_sys_flush(logunit)
 
     call shr_dmodel_rearrGGrid(SDLND%grid, ggrid, gsmap, rearr, mpicom)
-    kfrac = mct_aVect_indexRA(ggrid%data,'frac')
-    allocate(lfrac(lsize))
-    lfrac(:) = ggrid%data%rAttr(kfrac,:)
 
     call t_stopf('dlnd_initmctdom')
 
@@ -256,7 +247,6 @@ CONTAINS
     call mct_aVect_init(x2l, rList=seq_flds_x2l_fields, lsize=lsize)
     call mct_aVect_zero(x2l)
 
-    kf = mct_aVect_indexRA(l2x, 'Sl_lfrin', perrwith='quiet')
     call t_stopf('dlnd_initmctavs')
 
     !----------------------------------------------------------------------------
@@ -308,15 +298,9 @@ CONTAINS
     !----------------------------------------------------------------------------
 
     call t_adj_detailf(+2)
-
-    call seq_timemgr_EClockGetData( EClock, curr_ymd=CurrentYMD, curr_tod=CurrentTOD)
-
-    write_restart = .false.
     call dlnd_comp_run(EClock, x2l, l2x, &
          SDLND, gsmap, ggrid, mpicom, compid, my_task, master_task, &
-         inst_suffix, logunit, read_restart, write_restart, &
-         currentYMD, currentTOD)
-
+         inst_suffix, logunit)
     call t_adj_detailf(-2)
 
     if (my_task == master_task) write(logunit,F00) 'dlnd_comp_init done'
@@ -327,11 +311,9 @@ CONTAINS
   end subroutine dlnd_comp_init
 
   !===============================================================================
-
   subroutine dlnd_comp_run(EClock, x2l, l2x, &
        SDLND, gsmap, ggrid, mpicom, compid, my_task, master_task, &
-       inst_suffix, logunit, read_restart, write_restart, &
-       currentYMD, currentTOD, case_name)
+       inst_suffix, logunit, case_name)
 
     ! !DESCRIPTION:  run method for dlnd model
     implicit none
@@ -349,19 +331,17 @@ CONTAINS
     integer(IN)            , intent(in)    :: master_task      ! task number of master task
     character(len=*)       , intent(in)    :: inst_suffix      ! char string associated with instance
     integer(IN)            , intent(in)    :: logunit          ! logging unit number
-    logical                , intent(in)    :: read_restart     ! start from restart
-    logical                , intent(in)    :: write_restart    ! write restart
-    integer(IN)            , intent(in)    :: currentYMD       ! model date
-    integer(IN)            , intent(in)    :: currentTOD       ! model sec into model date
     character(CL)          , intent(in), optional :: case_name ! case name
 
     !--- local ---
-    integer(IN)   :: yy,mm,dd,tod          ! year month day time-of-day
+    integer(IN)   :: CurrentYMD            ! model date
+    integer(IN)   :: CurrentTOD            ! model sec into model date
+    integer(IN)   :: yy,mm,dd              ! year month day
     integer(IN)   :: n                     ! indices
     integer(IN)   :: idt                   ! integer timestep
     real(R8)      :: dt                    ! timestep
     integer(IN)   :: nu                    ! unit number
-    integer(IN)   :: lsize                 ! local size
+    logical       :: write_restart         ! restart now
     character(len=18) :: date_str
 
     character(*), parameter :: F00   = "('(dlnd_comp_run) ',8a)"
@@ -370,6 +350,12 @@ CONTAINS
     !-------------------------------------------------------------------------------
 
     call t_startf('DLND_RUN')
+
+    call t_startf('dlnd_run1')
+    call seq_timemgr_EClockGetData( EClock, curr_ymd=CurrentYMD, curr_tod=CurrentTOD)
+    call seq_timemgr_EClockGetData( EClock, curr_yr=yy, curr_mon=mm, curr_day=dd)
+    write_restart = seq_timemgr_RestartAlarmIsOn(EClock)
+    call t_stopf('dlnd_run1')
 
     !--------------------
     ! UNPACK
@@ -387,12 +373,6 @@ CONTAINS
     call t_startf('dlnd')
 
     call t_startf('dlnd_strdata_advance')
-    if (kf /= 0) then
-       lsize = mct_avect_lsize(l2x)
-       do n = 1,lsize
-          l2x%rAttr(kf,n) = lfrac(n)
-       enddo
-    end if
     call shr_strdata_advance(SDLND,currentYMD,currentTOD,mpicom,'dlnd')
     call t_stopf('dlnd_strdata_advance')
 
@@ -424,7 +404,6 @@ CONTAINS
 
     if (write_restart) then
        call t_startf('dlnd_restart')
-       call seq_timemgr_EClockGetData( EClock, curr_yr=yy, curr_mon=mm, curr_day=dd)
        call shr_cal_ymdtod2string(date_str, yy,mm,dd,currentTOD)
        write(rest_file,"(6a)") &
             trim(case_name), '.dlnd',trim(inst_suffix),'.r.', &

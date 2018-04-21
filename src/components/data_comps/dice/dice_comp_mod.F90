@@ -1,7 +1,6 @@
 #ifdef AIX
 @PROCESS ALIAS_SIZE(805306368)
 #endif
-
 module dice_comp_mod
 
   ! !USES:
@@ -16,25 +15,24 @@ module dice_comp_mod
   use shr_cal_mod     , only: shr_cal_date2julian
   use shr_mpi_mod     , only: shr_mpi_bcast
   use shr_frz_mod     , only: shr_frz_freezetemp
+  use shr_flux_mod    , only: shr_flux_atmIce
   use shr_cal_mod     , only: shr_cal_ymd2julian
   use shr_strdata_mod , only: shr_strdata_type, shr_strdata_pioinit, shr_strdata_init
   use shr_strdata_mod , only: shr_strdata_print, shr_strdata_restRead
   use shr_strdata_mod , only: shr_strdata_advance, shr_strdata_restWrite
   use shr_dmodel_mod  , only: shr_dmodel_gsmapcreate, shr_dmodel_rearrGGrid
   use shr_dmodel_mod  , only: shr_dmodel_translate_list, shr_dmodel_translateAV_list, shr_dmodel_translateAV
-  use shr_cal_mod     , only: shr_cal_ymdtod2string
-  use seq_timemgr_mod , only: seq_timemgr_EClockGetData
+  use seq_timemgr_mod , only: seq_timemgr_EClockGetData, seq_timemgr_RestartAlarmIsOn
 
-  use dice_shr_mod    , only: datamode       ! namelist input
-  use dice_shr_mod    , only: decomp         ! namelist input
-  use dice_shr_mod    , only: rest_file      ! namelist input
-  use dice_shr_mod    , only: rest_file_strm ! namelist input
-  use dice_shr_mod    , only: flux_swpf      ! namelist input -short-wave penatration factor
-  use dice_shr_mod    , only: flux_Qmin      ! namelist input -bound on melt rate
-  use dice_shr_mod    , only: flux_Qacc      ! namelist input -activates water accumulation/melt wrt Q
-  use dice_shr_mod    , only: flux_Qacc0     ! namelist input -initial water accumulation value
-  use dice_shr_mod    , only: nullstr
-  use dice_flux_atmice_mod, only: dice_flux_atmice
+  use dice_shr_mod   , only: datamode       ! namelist input
+  use dice_shr_mod   , only: decomp         ! namelist input
+  use dice_shr_mod   , only: rest_file      ! namelist input
+  use dice_shr_mod   , only: rest_file_strm ! namelist input
+  use dice_shr_mod   , only: flux_swpf      ! namelist input -short-wave penatration factor
+  use dice_shr_mod   , only: flux_Qmin      ! namelist input -bound on melt rate
+  use dice_shr_mod   , only: flux_Qacc      ! namelist input -activates water accumulation/melt wrt Q
+  use dice_shr_mod   , only: flux_Qacc0     ! namelist input -initial water accumulation value
+  use dice_shr_mod   , only: nullstr
 
   ! !PUBLIC TYPES:
   implicit none
@@ -55,7 +53,6 @@ module dice_comp_mod
   character(CS) :: myModelName = 'ice'   ! user defined model name
   logical       :: firstcall = .true.    ! first call logical
   character(len=*),parameter :: rpfile = 'rpointer.ice'
-  integer(IN)   :: dbug = 2              ! debug level (higher is more)
 
   real(R8),parameter  :: pi     = shr_const_pi      ! pi
   real(R8),parameter  :: spval  = shr_const_spval   ! flags invalid data
@@ -79,7 +76,6 @@ module dice_comp_mod
   real(R8),parameter  :: ax_nidr = ai_nidr*(1.0_R8-snwfrac) + as_nidr*snwfrac
   real(R8),parameter  :: ax_vsdr = ai_vsdr*(1.0_R8-snwfrac) + as_vsdr*snwfrac
 
-  integer(IN) :: km
   integer(IN) :: kswvdr,kswndr,kswvdf,kswndf,kq,kz,kua,kva,kptem,kshum,kdens,ktbot
   integer(IN) :: kiFrac,kt,kavsdr,kanidr,kavsdf,kanidf,kswnet,kmelth,kmeltw
   integer(IN) :: ksen,klat,klwup,kevap,ktauxa,ktauya,ktref,kqref,kswpen,ktauxo,ktauyo,ksalt
@@ -100,17 +96,15 @@ module dice_comp_mod
   !  real(R8)    , pointer :: ifrac0(:)
 
   !--------------------------------------------------------------------------
-  integer(IN)  , parameter :: ktrans = 1
+  integer(IN),parameter :: ktrans = 1
   character(16),parameter  :: avofld(1:ktrans) = (/"Si_ifrac        "/)
   character(16),parameter  :: avifld(1:ktrans) = (/"ifrac           "/)
-  !--------------------------------------------------------------------------
 
   !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CONTAINS
   !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   !===============================================================================
-
   subroutine dice_comp_init(Eclock, x2i, i2x, &
        seq_flds_x2i_fields, seq_flds_i2x_fields, seq_flds_i2o_per_cat, &
        SDICE, gsmap, ggrid, mpicom, compid, my_task, master_task, &
@@ -142,16 +136,11 @@ CONTAINS
     real(R8)               , intent(in)    :: scmLon               ! single column lon
 
     !--- local variables ---
-    integer(IN)   :: n,k         ! generic counters
-    integer(IN)   :: ierr        ! error code
     integer(IN)   :: lsize       ! local size
     integer(IN)   :: kfld        ! field reference
     logical       :: exists      ! file existance logical
     integer(IN)   :: nu          ! unit number
     character(CL) :: calendar    ! calendar type
-    logical       :: write_restart
-    integer(IN)   :: currentYMD    ! model date
-    integer(IN)   :: currentTOD    ! model sec into model date
 
     !--- formats ---
     character(*), parameter :: F00   = "('(dice_comp_init) ',8a)"
@@ -241,7 +230,6 @@ CONTAINS
     call mct_aVect_init(i2x, rList=seq_flds_i2x_fields, lsize=lsize)
     call mct_aVect_zero(i2x)
 
-    km     = mct_aVect_indexRA(i2x,'Si_imask', perrwith='quiet')
     kiFrac = mct_aVect_indexRA(i2x,'Si_ifrac')
     kt     = mct_aVect_indexRA(i2x,'Si_t')
     ktref  = mct_aVect_indexRA(i2x,'Si_tref')
@@ -268,7 +256,6 @@ CONTAINS
     kflxdst= mct_aVect_indexRA(i2x,'Fioi_flxdst')
 
     ! optional per thickness category fields
-
     if (seq_flds_i2o_per_cat) then
        kiFrac_01       = mct_aVect_indexRA(i2x,'Si_ifrac_01')
        kswpen_iFrac_01 = mct_aVect_indexRA(i2x,'PFioi_swpen_ifrac_01')
@@ -314,15 +301,10 @@ CONTAINS
     allocate(tfreeze(lsize))
     ! allocate(iFrac0(lsize))
 
-    ! Note that the module array, imask, does not change after initialization
     kfld = mct_aVect_indexRA(ggrid%data,'mask')
     imask(:) = nint(ggrid%data%rAttr(kfld,:))
     kfld = mct_aVect_indexRA(ggrid%data,'lat')
     yc(:) = ggrid%data%rAttr(kfld,:)
-
-    if (km /= 0) then
-       i2x%rAttr(km, :) = imask(:)
-    end if
 
     call t_stopf('dice_initmctavs')
 
@@ -389,16 +371,10 @@ CONTAINS
     !----------------------------------------------------------------------------
 
     call t_adj_detailf(+2)
-
-    call seq_timemgr_EClockGetData( EClock, curr_ymd=CurrentYMD, curr_tod=CurrentTOD)
-
-    write_restart = .false.
     call dice_comp_run(EClock, x2i, i2x, &
          seq_flds_i2o_per_cat, &
          SDICE, gsmap, ggrid, mpicom, compid, my_task, master_task, &
-         inst_suffix, logunit, read_restart, write_restart, &
-         currentYMD, currentTOD)
-
+         inst_suffix, logunit, read_restart)
     call t_adj_detailf(-2)
 
     call t_stopf('DICE_INIT')
@@ -406,13 +382,11 @@ CONTAINS
   end subroutine dice_comp_init
 
   !===============================================================================
-
   subroutine dice_comp_run(EClock, x2i, i2x, &
        seq_flds_i2o_per_cat, &
        SDICE, gsmap, ggrid, mpicom, compid, my_task, master_task, &
-       inst_suffix, logunit, read_restart, write_restart, &
-       currentYMD, currentTOD, case_name)
-
+       inst_suffix, logunit, read_restart, case_name)
+    use shr_cal_mod, only : shr_cal_ymdtod2string
     ! !DESCRIPTION: run method for dice model
     implicit none
 
@@ -431,13 +405,12 @@ CONTAINS
     character(len=*)       , intent(in)    :: inst_suffix          ! char string associated with instance
     integer(IN)            , intent(in)    :: logunit              ! logging unit number
     logical                , intent(in)    :: read_restart         ! start from restart
-    logical                , intent(in)    :: write_restart        ! restart now
-    integer(IN)            , intent(in)    :: currentYMD       ! model date
-    integer(IN)            , intent(in)    :: currentTOD       ! model sec into model date
     character(CL)          , intent(in), optional :: case_name     ! case name
 
     !--- local ---
-    integer(IN)   :: yy,mm,dd,tod      ! year month day time-of-day
+    integer(IN)   :: CurrentYMD        ! model date
+    integer(IN)   :: CurrentTOD        ! model sec into model date
+    integer(IN)   :: yy,mm,dd          ! year month day
     integer(IN)   :: n                 ! indices
     integer(IN)   :: lsize             ! size of attr vect
     integer(IN)   :: idt               ! integer timestep
@@ -447,10 +420,10 @@ CONTAINS
     real(R8)      :: cosarg            ! for setting ice temp pattern
     real(R8)      :: jday, jday0       ! elapsed day counters
     character(CS) :: calendar          ! calendar type
+    logical       :: write_restart     ! restart now
     character(len=18) :: date_str
 
     character(*), parameter :: F00   = "('(dice_comp_run) ',8a)"
-    character(*), parameter :: F01   = "('(datm_comp_run) ',a, i7,2x,i5,2x,i5,2x,d21.14)"
     character(*), parameter :: F04   = "('(dice_comp_run) ',2a,2i8,'s')"
     character(*), parameter :: subName = "(dice_comp_run) "
     !-------------------------------------------------------------------------------
@@ -458,8 +431,13 @@ CONTAINS
     call t_startf('DICE_RUN')
 
     call t_startf('dice_run1')
+
+    call seq_timemgr_EClockGetData( EClock, curr_ymd=CurrentYMD, curr_tod=CurrentTOD)
+    call seq_timemgr_EClockGetData( EClock, curr_yr=yy, curr_mon=mm, curr_day=dd)
     call seq_timemgr_EClockGetData( EClock, dtime=idt, calendar=calendar)
     dt = idt * 1.0_r8
+    write_restart = seq_timemgr_RestartAlarmIsOn(EClock)
+
     call t_stopf('dice_run1')
 
     !--------------------
@@ -489,8 +467,6 @@ CONTAINS
     ! Determine data model behavior based on the mode
     !-------------------------------------------------
 
-    call seq_timemgr_EClockGetData( EClock, curr_yr=yy, curr_mon=mm, curr_day=dd, curr_tod=tod)
-
     call t_startf('dice_datamode')
     select case (trim(datamode))
 
@@ -509,10 +485,8 @@ CONTAINS
        !      call shr_cal_ymd2eday(0,mm,dd,eDay ,calendar)    ! model date
        !      call shr_cal_ymd2eday(0,09,01,eDay0,calendar)    ! sept 1st
        !      cosArg = 2.0_R8*pi*(real(eDay,R8) + real(currentTOD,R8)/cDay - real(eDay0,R8))/365.0_R8
-
-       call shr_cal_ymd2julian(0, mm, dd, currentTOD, jDay , calendar)    ! julian day for model
-       call shr_cal_ymd2julian(0,  9,  1,          0, jDay0, calendar)    ! julian day for Sept 1
-
+       call shr_cal_ymd2julian(0,mm,dd,currentTOD,jDay ,calendar)    ! julian day for model
+       call shr_cal_ymd2julian(0, 9, 1,0         ,jDay0,calendar)    ! julian day for Sept 1
        cosArg = 2.0_R8*pi*(jday - jday0)/365.0_R8
 
        lsize = mct_avect_lsize(i2x)
@@ -607,12 +581,12 @@ CONTAINS
        end do
 
        ! compute atm/ice surface fluxes
-       call dice_flux_atmice( &
+       call shr_flux_atmIce(&
             iMask              ,x2i%rAttr(kz,:)     ,x2i%rAttr(kua,:)    ,x2i%rAttr(kva,:)  , &
             x2i%rAttr(kptem,:) ,x2i%rAttr(kshum,:)  ,x2i%rAttr(kdens,:)  ,x2i%rAttr(ktbot,:), &
             i2x%rAttr(kt,:)    ,i2x%rAttr(ksen,:)   ,i2x%rAttr(klat,:)   ,i2x%rAttr(klwup,:), &
             i2x%rAttr(kevap,:) ,i2x%rAttr(ktauxa,:) ,i2x%rAttr(ktauya,:) ,i2x%rAttr(ktref,:), &
-            i2x%rAttr(kqref,:) ,logunit )
+            i2x%rAttr(kqref,:) )
 
        ! compute ice/oce surface fluxes (except melth & meltw, see above)
        do n=1,lsize
@@ -635,11 +609,9 @@ CONTAINS
              !--- salt flux ---
              i2x%rAttr(ksalt ,n) = 0.0_R8
           end if
-          if (km /= 0) then
-             i2x%rAttr(km, n) = imask(n)
-          end if
-          ! !--- save ifrac for next timestep
-          ! iFrac0(n) = i2x%rAttr(kiFrac,n)
+
+          !         !--- save ifrac for next timestep
+          !         iFrac0(n) = i2x%rAttr(kiFrac,n)
        end do
 
        ! Compute outgoing aerosol fluxes
@@ -666,67 +638,6 @@ CONTAINS
     end if
 
     call t_stopf('dice_datamode')
-
-    !----------------------------------------------------------
-    ! Debug output
-    !----------------------------------------------------------
-
-    if (dbug > 1 .and. my_task == master_task) then
-       do n = 1,lsize
-          write(logunit,F01)'import: ymd,tod,n,Faxa_swvdr    = ', currentYMD, currentTOD, n, x2i%rattr(kswvdr,n)    
-          write(logunit,F01)'import: ymd,tod,n,Faxa_swndr    = ', currentYMD, currentTOD, n, x2i%rattr(kswndr,n)        
-          write(logunit,F01)'import: ymd,tod,n,Faxa_swvdf    = ', currentYMD, currentTOD, n, x2i%rattr(kswvdf,n)        
-          write(logunit,F01)'import: ymd,tod,n,Faxa_swndf    = ', currentYMD, currentTOD, n, x2i%rattr(kswndf,n)        
-          write(logunit,F01)'import: ymd,tod,n,Fioo_q        = ', currentYMD, currentTOD, n, x2i%rattr(kq,n)            
-          write(logunit,F01)'import: ymd,tod,n,Sa_z          = ', currentYMD, currentTOD, n, x2i%rattr(kz,n)            
-          write(logunit,F01)'import: ymd,tod,n,Sa_u          = ', currentYMD, currentTOD, n, x2i%rattr(kua,n)           
-          write(logunit,F01)'import: ymd,tod,n,Sa_v          = ', currentYMD, currentTOD, n, x2i%rattr(kva,n)           
-          write(logunit,F01)'import: ymd,tod,n,Sa_ptem       = ', currentYMD, currentTOD, n, x2i%rattr(kptem,n)         
-          write(logunit,F01)'import: ymd,tod,n,Sa_shum       = ', currentYMD, currentTOD, n, x2i%rattr(kshum,n)         
-          write(logunit,F01)'import: ymd,tod,n,Sa_dens       = ', currentYMD, currentTOD, n, x2i%rattr(kdens,n)         
-          write(logunit,F01)'import: ymd,tod,n,Sa_tbot       = ', currentYMD, currentTOD, n, x2i%rattr(ktbot,n)         
-          write(logunit,F01)'import: ymd,tod,n,So_s          = ', currentYMD, currentTOD, n, x2i%rattr(ksalinity,n)     
-          write(logunit,F01)'import: ymd,tod,n,Faxa_bcphidry = ', currentYMD, currentTOD, n, x2i%rattr(kbcphidry,n)     
-          write(logunit,F01)'import: ymd,tod,n,Faxa_bcphodry = ', currentYMD, currentTOD, n, x2i%rattr(kbcphodry,n)     
-          write(logunit,F01)'import: ymd,tod,n,Faxa_bcphiwet = ', currentYMD, currentTOD, n, x2i%rattr(kbcphiwet,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_ocphidry = ', currentYMD, currentTOD, n, x2i%rattr(kocphidry,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_ocphodry = ', currentYMD, currentTOD, n, x2i%rattr(kocphodry,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_ocphiwet = ', currentYMD, currentTOD, n, x2i%rattr(kocphiwet,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstdry1  = ', currentYMD, currentTOD, n, x2i%rattr(kdstdry1,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstdry2  = ', currentYMD, currentTOD, n, x2i%rattr(kdstdry2,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstdry3  = ', currentYMD, currentTOD, n, x2i%rattr(kdstdry3,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstdry4  = ', currentYMD, currentTOD, n, x2i%rattr(kdstdry4,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstwet1  = ', currentYMD, currentTOD, n, x2i%rattr(kdstwet1,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstwet2  = ', currentYMD, currentTOD, n, x2i%rattr(kdstwet2,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstwet3  = ', currentYMD, currentTOD, n, x2i%rattr(kdstwet3,n)
-          write(logunit,F01)'import: ymd,tod,n,Faxa_dstwet4  = ', currentYMD, currentTOD, n, x2i%rattr(kdstwet4,n)
-
-          write(logunit,F01)'export: ymd,tod,n,Si_ifrac      = ', currentYMD, currentTOD, n, i2x%rattr(kiFrac ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_t          = ', currentYMD, currentTOD, n, i2x%rattr(kt     ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_tref       = ', currentYMD, currentTOD, n, i2x%rattr(ktref  ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_qref       = ', currentYMD, currentTOD, n, i2x%rattr(kqref  ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_avsdr      = ', currentYMD, currentTOD, n, i2x%rattr(kavsdr ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_anidr      = ', currentYMD, currentTOD, n, i2x%rattr(kanidr ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_avsdf      = ', currentYMD, currentTOD, n, i2x%rattr(kavsdf ,n)
-          write(logunit,F01)'export: ymd,tod,n,Si_anidf      = ', currentYMD, currentTOD, n, i2x%rattr(kanidf ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_swnet    = ', currentYMD, currentTOD, n, i2x%rattr(kswnet ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_sen      = ', currentYMD, currentTOD, n, i2x%rattr(ksen   ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_lat      = ', currentYMD, currentTOD, n, i2x%rattr(klat   ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_lwup     = ', currentYMD, currentTOD, n, i2x%rattr(klwup  ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_evap     = ', currentYMD, currentTOD, n, i2x%rattr(kevap  ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_taux     = ', currentYMD, currentTOD, n, i2x%rattr(ktauxa ,n)
-          write(logunit,F01)'export: ymd,tod,n,Faii_tauy     = ', currentYMD, currentTOD, n, i2x%rattr(ktauya ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_melth    = ', currentYMD, currentTOD, n, i2x%rattr(kmelth ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_meltw    = ', currentYMD, currentTOD, n, i2x%rattr(kmeltw ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_swpen    = ', currentYMD, currentTOD, n, i2x%rattr(kswpen ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_taux     = ', currentYMD, currentTOD, n, i2x%rattr(ktauxo ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_tauy     = ', currentYMD, currentTOD, n, i2x%rattr(ktauyo ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_salt     = ', currentYMD, currentTOD, n, i2x%rattr(ksalt  ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_bcpho    = ', currentYMD, currentTOD, n, i2x%rattr(kbcpho ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_bcphi    = ', currentYMD, currentTOD, n, i2x%rattr(kbcphi ,n)
-          write(logunit,F01)'export: ymd,tod,n,Fioi_flxdst   = ', currentYMD, currentTOD, n, i2x%rattr(kflxdst,n)
-       end do
-    end if
 
     !--------------------
     ! Write restart
