@@ -39,7 +39,7 @@
     <batch_redirect></batch_redirect>
     <batch_directive></batch_directive>
     <directives>
-      <directive></directive>
+      <directive name=""></directive>
     </directives>
   </batch_system>
 
@@ -49,7 +49,7 @@
     <batch_redirect></batch_redirect>
     <batch_directive></batch_directive>
     <directives>
-      <directive></directive>
+      <directive name=""></directive>
     </directives>
   </batch_system>
 
@@ -258,12 +258,11 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemax="02:00:00"   strict="true" nodemin="1"  nodemax="8">short</queue>
-      <queue walltimemax="08:00:00"   strict="true" nodemin="1"  nodemax="6" default="true">medium</queue>
-      <queue walltimemax="40:00:00"   strict="true" nodemin="1"  nodemax="8">long</queue>
-      <queue walltimemax="80:00:00"   strict="true" nodemin="1"  nodemax="8">verylong</queue>
-      <queue walltimemax="32:00:00"   strict="true" nodemax="16" nodemin="1">overnight</queue>
-      <queue walltimemax="3000:00:00" strict="true" nodemax="32" nodemin="1">monster</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="4" >short</queue>
+      <queue walltimemax="06:00:00" nodemin="1" nodemax="4" default="true">medium</queue>
+      <queue walltimemax="40:00:00" nodemin="1" nodemax="3" >long</queue>
+      <queue nodemax="16" nodemin="1" walltimemax="12:00:00">overnight</queue>
+      <queue nodemax="32" nodemin="1" walltimemax="3000:00:">monster</queue>
     </queues>
   </batch_system>
 
@@ -293,30 +292,13 @@
   </batch_system>
 
   <batch_system MACH="cheyenne" type="pbs">
-    <directives queue="regular">
+    <directives>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
       <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
-    </directives>
-
-    <directives queue="premium">
-      <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
-    </directives>
-
-    <directives queue="economy">
-      <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
-    </directives>
-
-    <directives queue="share">
-      <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select=1:mpiprocs={{ total_tasks }}:ompthreads={{ thread_count }}</directive>
     </directives>
     <queues>
-      <queue walltimemax="12:00" nodemin="1" nodemax="4032">regular</queue>
-      <queue walltimemax="12:00" nodemin="1" nodemax="4032">premium</queue>
-      <queue default="true" walltimemax="06:00" jobmin="1" jobmax="18">share</queue>
-      <queue walltimemax="12:00" nodemin="1" nodemax="4032">economy</queue>
+      <queue default="true" walltimemax="12:00" nodemin="1" nodemax="32">regular</queue>
+      <queue walltimemax="12:00" nodemin="1" nodemax="32">economy</queue>
     </queues>
   </batch_system>
 
@@ -468,47 +450,8 @@
     </queues>
   </batch_system>
 
-  <batch_system MACH="lawrencium-lr3" type="slurm">
-    <batch_submit>sbatch</batch_submit>
-    <directives>
-      <directive>--qos=lr_normal</directive>
-      <directive>--partition=lr3</directive>
-      <directive>--account={{ project }}</directive>
-      <directive>--ntasks-per-node={{ tasks_per_node }}</directive>
-    </directives>
-    <queues>
-      <queue walltimemin="00:00:00" walltimemax="72:00:00" nodemin="1" nodemax="64" default="true">lr3</queue>
-    </queues>
-  </batch_system>
-
-  <batch_system MACH="lawrencium-lr2" type="slurm">
-    <batch_submit>sbatch</batch_submit>
-    <directives>
-       <directive>--qos=lr_normal</directive>
-       <directive>--partition=lr2</directive>
-       <directive>--account={{ project }}</directive>
-       <directive>--ntasks-per-node={{ tasks_per_node }}</directive>
-    </directives>
-    <queues>
-      <queue walltimemin="00:00:00" walltimemax="72:00:00" nodemin="1" nodemax="64" default="true">lr2</queue>
-    </queues>
-  </batch_system>
-
-  <batch_system MACH="stampede2-skx" type="slurm" >
-    <batch_submit>ssh stampede2.tacc.utexas.edu cd $CASEROOT ; sbatch</batch_submit>
-    <submit_args>
-      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
-      <arg flag="-p" name="$JOB_QUEUE"/>
-      <arg flag="--account" name="$PROJECT"/>
-    </submit_args>
-    <queues>
-      <queue walltimemax="48:00:00" nodemin="1" nodemax="256" >skx-normal</queue>
-      <queue walltimemax="02:00:00" nodemin="1" nodemax="4" default="true">skx-dev</queue>
-    </queues>
-  </batch_system>
-
-  <batch_system MACH="stampede2-knl" type="slurm" >
-    <batch_submit>ssh stampede2.tacc.utexas.edu cd $CASEROOT ; sbatch</batch_submit>
+  <batch_system MACH="stampede" type="slurm" >
+    <batch_submit>ssh stampede.tacc.utexas.edu cd $CASEROOT ; sbatch</batch_submit>
     <submit_args>
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
       <arg flag="-p" name="$JOB_QUEUE"/>
@@ -516,7 +459,7 @@
     </submit_args>
     <queues>
       <queue walltimemax="48:00:00" nodemin="1" nodemax="256" >normal</queue>
-      <queue walltimemax="02:00:00" nodemin="1" nodemax="8" default="true">development</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="16" default="true">development</queue>
     </queues>
   </batch_system>
 
@@ -546,6 +489,15 @@
       <arg flag="-p" name="$JOB_QUEUE"/>
       <arg flag="--account" name="$PROJECT"/>
     </submit_args>
+  </batch_system>
+
+  <batch_system MACH="yellowstone" type="lsf" version="9.1">
+    <queues>
+      <queue walltimemax="24:00" nodemin="1" nodemax="1" >caldera</queue>
+      <queue walltimemax="12:00" nodemin="9" nodemax="546" default="true">regular</queue>
+      <queue walltimemax="12:00" nodemin="16385" nodemax="2184">capability</queue>
+      <queue walltimemax="12:00" nodemin="1" nodemax="546">premium</queue>
+    </queues>
   </batch_system>
 
   <batch_system MACH="lbl-lr3" type="slurm">
@@ -590,6 +542,44 @@
     </directives>
     <queues>
       <queue walltimemax="36:00:00" default="true">batch</queue>
+    </queues>
+  </batch_system>
+
+  <batch_system MACH="ada" type="lsf" version="9.1">
+    <queues>
+      <queue walltimemax="02:30" nodemin="1" nodemax="120">mn_small</queue>
+      <queue walltimemax="02:30" nodemin="121" nodemax="600" default="true">mn_medium</queue>
+      <queue walltimemax="02:30" nodemin="601" nodemax="2000">mn_large</queue>
+      <queue walltimemax="02:30" nodemin="2001" nodemax="17040">special</queue>
+    </queues>
+  </batch_system>
+
+  <batch_system MACH="terra" type="slurm" >
+    <batch_submit>ssh terra.tamu.edu cd $CASEROOT ; sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+    <queues>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="448" >short</queue>
+      <queue walltimemax="24:00:00" nodemin="449" nodemax="1792" default="true">medium</queue>
+      <queue walltimemax="168:00:00" nodemin="1" nodemax="896" >long</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="16">development</queue>
+    </queues>
+  </batch_system>
+
+  <batch_system MACH="stampede2" type="slurm" >
+    <batch_submit>ssh stampede2.tacc.utexas.edu cd $CASEROOT ; sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+    <queues>
+      <queue walltimemax="02:00:00" nodemin="129" nodemax="868">skx-large</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="128" default="true">skx-normal</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="16">development</queue>
     </queues>
   </batch_system>
 
