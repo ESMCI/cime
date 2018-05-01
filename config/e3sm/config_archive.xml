@@ -113,7 +113,7 @@
   <comp_archive_spec compname="mali" compclass="glc">
     <rest_file_extension>rst</rest_file_extension>
     <rest_file_extension>rst.am.timeSeriesStatsMonthly</rest_file_extension>
-    <hist_file_extension>hist</hist_file_extension>
+    <hist_file_extension>hist.am</hist_file_extension>
     <rest_history_varname>unset</rest_history_varname>
     <rpointer>
       <rpointer_file>rpointer.glc$NINST_STRING</rpointer_file>

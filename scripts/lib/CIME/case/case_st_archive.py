@@ -227,7 +227,7 @@ def _archive_history_files(archive, archive_entry,
     # run directory are those that are needed for restarts
 
     for suffix in archive.get_hist_file_extensions(archive_entry):
-        if compname.find('mpas') == 0:
+        if compname.find("mpas") == 0 or compname.find('mali') == 0:
             newsuffix =                    compname + r'\d*'
         else:
             newsuffix = casename + r'\.' + compname + r'_?' + r'\d*'
@@ -383,9 +383,8 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):
-#        logger.debug("suffix is {} ninst {}".format(suffix, ninst))
         restfiles = ""
-        if compname.find("mpas") == 0:
+        if compname.find("mpas") == 0 or compname.find('mali') == 0:
             pattern = compname + r'\.' + suffix + r'\.' + '_'.join(datename_str.rsplit('-', 1))
             pfile = re.compile(pattern)
             restfiles = [f for f in os.listdir(rundir) if pfile.search(f)]
