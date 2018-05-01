@@ -407,7 +407,7 @@ class EnvBatch(EnvBase):
 
     def submit_jobs(self, case, no_batch=False, job=None, user_prereq=None,
                     skip_pnl=False, mail_user=None, mail_type=None,
-                    batch_args=None, dry_run=False):
+                    batch_args=None, dry_run=False, resubmit=0):
         alljobs = self.get_jobs()
         startindex = 0
         jobs = []
@@ -416,53 +416,61 @@ class EnvBatch(EnvBase):
             expect(job in alljobs, "Do not know about batch job {}".format(job))
             startindex = alljobs.index(job)
 
-        for index, job in enumerate(alljobs):
-            logger.debug( "Index {:d} job {} startindex {:d}".format(index, job, startindex))
-            if index < startindex:
-                continue
-            try:
-                prereq = self.get_value('prereq', subgroup=job, resolved=False)
-                if prereq is None or job == firstjob or (dry_run and prereq == "$BUILD_COMPLETE"):
-                    prereq = True
-                else:
-                    prereq = case.get_resolved_value(prereq)
-                    prereq = eval(prereq)
-            except:
-                expect(False,"Unable to evaluate prereq expression '{}' for job '{}'".format(self.get_value('prereq',subgroup=job), job))
+        for i, value in enumerate(resubmit):
+            for index, job in enumerate(alljobs):
+                logger.debug( "Index {:d} job {} startindex {:d}".format(index, job, startindex))
+                if index < startindex:
+                    continue
+                try:
+                    prereq = self.get_value('prereq', subgroup=job, resolved=False)
+                    if prereq is None or job == firstjob or (dry_run and prereq == "$BUILD_COMPLETE"):
+                        prereq = True
+                    else:
+                        prereq = case.get_resolved_value(prereq)
+                        prereq = eval(prereq)
+                except:
+                    expect(False,"Unable to evaluate prereq expression '{}' for job '{}'".format(self.get_value('prereq',subgroup=job), job))
 
-            if prereq:
-                jobs.append((job, self.get_value('dependency', subgroup=job)))
+                if prereq:
+                    dependency =  self.get_value('dependency', subgroup=job)
+                    if dependency is None and i > 0:
+                        jobs.append((job, 'Prevjob'))
+                    else:
+                        jobs.append((job, dependency))
 
             if self._batchtype == "cobalt":
                 break
 
-        depid = OrderedDict()
-        jobcmds = []
+            depid = OrderedDict()
+            jobcmds = []
 
-        for job, dependency in jobs:
-            if dependency is not None:
-                deps = dependency.split()
-            else:
-                deps = []
-            dep_jobs = []
-            if user_prereq is not None:
-                dep_jobs.append(user_prereq)
-            for dep in deps:
-                if dep in depid.keys() and depid[dep] is not None:
-                    dep_jobs.append(str(depid[dep]))
+            for job, dependency in jobs:
+                dep_jobs = []
+                if dependency == 'Prevjob':
+                    deps = []
+                    dep_jobs.append(str(batch_job_id))
+                elif dependency is not None:
+                    deps = dependency.split()
+                else:
+                    deps = []
+                if user_prereq is not None:
+                    dep_jobs.append(user_prereq)
+                for dep in deps:
+                    if dep in depid.keys() and depid[dep] is not None:
+                        dep_jobs.append(str(depid[dep]))
 
-            logger.info("job {} depends on {}".format(job, dep_jobs))
-            result = self._submit_single_job(case, job,
-                                             dep_jobs=dep_jobs,
-                                             no_batch=no_batch,
-                                             skip_pnl=skip_pnl,
-                                             mail_user=mail_user,
-                                             mail_type=mail_type,
-                                             batch_args=batch_args,
-                                             dry_run=dry_run)
-            batch_job_id = str(alljobs.index(job)) if dry_run else result
-            depid[job] = batch_job_id
-            jobcmds.append( (job, result) )
+                logger.info("job {} depends on {}".format(job, dep_jobs))
+                result = self._submit_single_job(case, job,
+                                                 dep_jobs=dep_jobs,
+                                                 no_batch=no_batch,
+                                                 skip_pnl=skip_pnl,
+                                                 mail_user=mail_user,
+                                                 mail_type=mail_type,
+                                                 batch_args=batch_args,
+                                                 dry_run=dry_run)
+                batch_job_id = str(alljobs.index(job)) if dry_run else result
+                depid[job] = batch_job_id
+                jobcmds.append( (job, result) )
             if self._batchtype == "cobalt":
                 break
 
