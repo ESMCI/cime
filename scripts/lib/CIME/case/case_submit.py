@@ -15,8 +15,8 @@ from CIME.test_status               import *
 
 logger = logging.getLogger(__name__)
 
-def _submit(case, job=None, no_batch=False, prereq=None, resubmit=False,
-            skip_pnl=False, mail_user=None, mail_type=None, batch_args=None):
+def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resubmit=False,
+            resubmit_immediate=False, skip_pnl=False, mail_user=None, mail_type=None, batch_args=None):
     if job is None:
         job = case.get_primary_job()
 
