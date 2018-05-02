@@ -1,7 +1,7 @@
 # AGS: CMake logic already existed -- preserving that functionalituy
-#       within !ACME_BUILD.
-if (NOT ACME_BUILD)
-#### CMake File for unit testing -- independent from ACME build####
+#       within !E3SM_BUILD.
+if (NOT E3SM_BUILD)
+#### CMake File for unit testing -- independent from E3SM build####
 
 cmake_minimum_required(VERSION 2.8)
 include(ExternalProject)
@@ -100,9 +100,9 @@ include_directories(${SHARE_ROOT}/esmf_wrf_timemgr)
 add_subdirectory(${CIME_ROOT}/src/drivers/mct/unit_test)
 add_subdirectory(${SHARE_ROOT}/test/unit)
 
-ELSE()  #ACME_BUILD
+ELSE()  #E3SM_BUILD
 
-# CMakeLists.txt file for ACME build is stash in cmake-scripts dir
+# CMakeLists.txt file for E3SM build is stash in cmake-scripts dir
 INCLUDE (scripts/cmake/includedCMakeLists.txt)
 
 ENDIF()

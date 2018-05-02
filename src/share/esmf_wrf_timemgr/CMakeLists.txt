@@ -1,6 +1,6 @@
 # AGS: CMake logic already existed -- preserving that functionalituy
-#       within !ACME_BUILD.
-if (NOT ACME_BUILD)
+#       within !E3SM_BUILD.
+if (NOT E3SM_BUILD)
 
 list(APPEND esmf_wrf_timemgr_sources
   ESMF.F90
@@ -22,7 +22,7 @@ list(APPEND esmf_wrf_timemgr_sources
 
 sourcelist_to_parent(esmf_wrf_timemgr_sources)
 
-ELSE() #ACME_BUILD
+ELSE() #E3SM_BUILD
 
 MESSAGE("   + ESMF:")
 FILE(GLOB ESMF_SOURCE  *F90 *c)

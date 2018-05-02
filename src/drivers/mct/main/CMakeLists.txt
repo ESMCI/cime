@@ -1,6 +1,6 @@
 # AGS: CMake logic already existed -- preserving that functionalituy
-#       within !ACME_BUILD.
-if (NOT ACME_BUILD)
+#       within !E3SM_BUILD.
+if (NOT E3SM_BUILD)
 
 list(APPEND drv_sources
   component_type_mod.F90
@@ -15,7 +15,7 @@ list(APPEND drv_sources
 
 sourcelist_to_parent(drv_sources)
 
-ELSE () # Code for ACME build system
+ELSE () # Code for E3SM build system
 
 MESSAGE("   + Driver:")
 FILE(GLOB DRIVER_SOURCE  *F90)
@@ -29,12 +29,12 @@ LIST(REMOVE_ITEM DRIVER_SOURCE ${MAIN_SOURCE})
 
 INCLUDE_DIRECTORIES (
      ${SHR_BINARY_DIR}  #sys_shr_mod, mct_mod. shr_cal
-     ${ACME_SHR_DIR} #shr_assert.h
+     ${E3SM_SHR_DIR} #shr_assert.h
      ${SEQ_BINARY_DIR}  #seq_comm_mct
      ${GPTL_BINARY_DIR} #Need perf_mod.mod
      ${ESMF_BINARY_DIR} #esmf.mod
      ${MPI_Fortran_INCLUDE_PATH} #mpif.h
-     ${ACME_PIO_LIBRARY_DIR} #pio.mod
+     ${E3SM_PIO_LIBRARY_DIR} #pio.mod
      ${MCT_BINARY_DIR}
      ${MPEU_BINARY_DIR}
 )

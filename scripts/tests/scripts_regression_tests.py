@@ -168,7 +168,7 @@ def assert_dashboard_has_build(tester, build_name, expected_count=1):
 
         wget_file = tempfile.mktemp()
 
-        run_cmd_no_fail("wget https://my.cdash.org/index.php?project=ACME_test --no-check-certificate -O %s" % wget_file)
+        run_cmd_no_fail("wget https://my.cdash.org/index.php?project=E3SM_test --no-check-certificate -O %s" % wget_file)
 
         raw_text = open(wget_file, "r").read()
         os.remove(wget_file)
@@ -695,7 +695,7 @@ class M_TestWaitForTests(unittest.TestCase):
             extra_args += " -b %s" % build_name
 
         expected_stat = 0 if expected_results == ["PASS"]*len(expected_results) else CIME.utils.TESTS_FAILED_ERR_CODE
-        output = run_cmd_assert_result(self, "%s/wait_for_tests -p ACME_test */TestStatus %s" % (TOOLS_DIR, extra_args),
+        output = run_cmd_assert_result(self, "%s/wait_for_tests -p E3SM_test */TestStatus %s" % (TOOLS_DIR, extra_args),
                                        from_dir=testdir, expected_stat=expected_stat)
 
         lines = [line for line in output.splitlines() if line.startswith("Test '")]
@@ -1213,7 +1213,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
 
         # Need these flags to test dashboard if e3sm
         if CIME.utils.get_model() == "e3sm" and build_name is not None:
-            extra_args += " -p ACME_test --submit-to-cdash --cdash-build-group=Nightly -c %s" % build_name
+            extra_args += " -p E3SM_test --submit-to-cdash --cdash-build-group=Nightly -c %s" % build_name
 
         run_cmd_assert_result(self, "%s/jenkins_generic_job -r %s %s" % (TOOLS_DIR, self._testdir, extra_args),
                               from_dir=self._testdir, expected_stat=(0 if expect_works else CIME.utils.TESTS_FAILED_ERR_CODE))

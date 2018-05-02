@@ -1,6 +1,6 @@
 # AGS: CMake logic already existed -- preserving that functionalituy
-#       within !ACME_BUILD.
-if (NOT ACME_BUILD)
+#       within !E3SM_BUILD.
+if (NOT E3SM_BUILD)
 
 INCLUDE(FortranCInterface)
 FortranCInterface_HEADER(cmake_fortran_c_interface.h
@@ -28,7 +28,7 @@ SET(SRCS_F90  perf_mod.F90
 ADD_LIBRARY(timing ${SRCS_F90} ${SRCS_C})
 
 ELSE ()
-# Code for ACME build system
+# Code for E3SM build system
 MESSAGE("   + GPTL:")
   SET(SRCS_C  GPTLget_memusage.c
               GPTLprint_memusage.c

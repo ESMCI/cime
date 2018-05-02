@@ -290,7 +290,7 @@ def _build_model_cmake(case, build_threaded, exeroot, clm_config_opts, incroot, 
     cc = os.path.join(exeroot, "caseInfo.cmake")
     f = open(cc, "w")
     f.write("#Set some needed variables\n")
-    f.write("SET(ACME_BUILD ON CACHE BOOL \"Switch in CMake logic to build the model, as opposed to unit tests\")\n")
+    f.write("SET(E3SM_BUILD ON CACHE BOOL \"Switch in CMake logic to build the model, as opposed to unit tests\")\n")
     f.write("SET(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL \"Switch for verbose makefile info\")\n")
 
     f.write("\n#Set info needed by Macros.cmake\n")

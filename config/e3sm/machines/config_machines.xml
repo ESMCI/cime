@@ -625,7 +625,7 @@
 
 <machine MACH="sandia-srn-sems">
     <DESC>Linux workstation at Sandia on SRN with SEMS TPL modules</DESC>
-    <NODENAME_REGEX>(s999964|climate|penn)</NODENAME_REGEX>
+    <NODENAME_REGEX>(s999964|s960051|climate|penn)</NODENAME_REGEX>
     <PROXY>wwwproxy.sandia.gov:80</PROXY>
     <TESTS>acme_developer</TESTS>
     <OS>LINUX</OS>
@@ -634,8 +634,8 @@
     <CIME_OUTPUT_ROOT>$ENV{HOME}/acme/scratch</CIME_OUTPUT_ROOT>
     <RUNDIR>$CIME_OUTPUT_ROOT/$CASE/run</RUNDIR>
     <EXEROOT>$CIME_OUTPUT_ROOT/$CASE/bld</EXEROOT>
-    <DIN_LOC_ROOT>/sems-data-store/ACME/inputdata</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>/sems-data-store/ACME/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DIN_LOC_ROOT>/home/asteyer/cimework/sems-data-store/ACME/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/home/asteyer/cimework/sems-data-store/ACME/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
     <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>
     <BASELINE_ROOT>/sems-data-store/ACME/baselines/$COMPILER</BASELINE_ROOT>

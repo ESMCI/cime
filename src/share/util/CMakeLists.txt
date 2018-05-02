@@ -1,8 +1,8 @@
 # AGS: This file already existed for unit test build -- 
-#      Leaving that logic alone under NOT ACME_BUILD
+#      Leaving that logic alone under NOT E3SM_BUILD
 #
 
-IF (NOT ACME_BUILD)
+IF (NOT E3SM_BUILD)
 # CMake for Unit Test build
 
 set(genf90_files shr_infnan_mod.F90.in shr_assert_mod.F90.in)
@@ -30,7 +30,8 @@ list(APPEND share_sources
   shr_timer_mod.F90
   shr_vmath_mod.F90
   shr_wv_sat_mod.F90
-  shr_infnan_mod.F90.in)
+  shr_flds_mod.F90
+  shr_infnan_mod.F90)
 
 # Build a separate list containing the mct wrapper and its dependencies. That
 # way, this list can be easily included in unit test builds that link to mct,
@@ -51,7 +52,7 @@ sourcelist_to_parent(share_sources)
 sourcelist_to_parent(share_mct_sources)
 sourcelist_to_parent(share_pio_sources)
 ELSE()
-# CMake for ACME build
+# CMake for E3SM build
   MESSAGE("   + SHRSYS, SHRCAL, SHR:")
 
   # Section to use genf90.pl to generate shr_infnan and shr_assert
@@ -60,7 +61,7 @@ ELSE()
   IF (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90)
   #IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90)
     # Do genf90 on input files
-    SET (GENF90 ${ACME_SOURCE_DIR}/${CIME_REL_DIR}/src/externals/genf90/genf90.pl)
+    SET (GENF90 ${E3SM_SOURCE_DIR}/${CIME_REL_DIR}/src/externals/genf90/genf90.pl)
     MESSAGE("     - Generating shr_infnan_mod, shr_assert_mod, and shr_frz_mod with ${GENF90}")
 
     execute_process (COMMAND ${GENF90}
@@ -95,14 +96,14 @@ ELSE()
                            shr_file_mod.F90 shr_string_mod.F90 shr_timer_mod.F90
                            shr_const_mod.F90 shr_orb_mod.F90
                            shr_nl_mod.F90 shr_strconvert_mod.F90
-                           shr_wv_sat_mod.F90 
+                           shr_wv_sat_mod.F90 shr_flds_mod.F90
                            shr_abort_mod.F90 shr_ncread_mod.F90 shr_map_mod.F90
                            shr_infnan_mod.F90 shr_frz_mod.F90 shr_assert_mod.F90)
                            #${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90
                            #${CMAKE_CURRENT_BINARY_DIR}/shr_assert_mod.F90)
 
   # infnan required  -DCPRGNU to compile on gnu)
-  INCLUDE_DIRECTORIES (${ACME_SHR_DIR}) #shr_assert.h
+  INCLUDE_DIRECTORIES (${E3SM_SHR_DIR}) #shr_assert.h
   ADD_LIBRARY (shrsys ${SHR_SYS_SOURCE})
   ADD_DEPENDENCIES(shrsys  PIO)
 
@@ -124,7 +125,7 @@ ELSE()
                        ${ESMF_BINARY_DIR} # esmf.mod
                        ${SEQ_BINARY_DIR}  #seq_flds_mod
                        ${STREAMS_BINARY_DIR}  #shr_dmodel_mod
-                       ${ACME_PIO_LIBRARY_DIR} #Need pio.mod
+                       ${E3SM_PIO_LIBRARY_DIR} #Need pio.mod
                        ${MPI_Fortran_INCLUDE_PATH})
   ADD_LIBRARY (shr ${SHR_SOURCE})
   ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq streams)

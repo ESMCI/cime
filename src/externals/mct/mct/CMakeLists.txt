@@ -1,6 +1,6 @@
 # AGS: CMake logic already existed -- preserving that functionalituy
-#       within !ACME_BUILD.
-if (NOT ACME_BUILD)
+#       within !E3SM_BUILD.
+if (NOT E3SM_BUILD)
 
 set(genf90_files shr_infnan_mod.F90.in shr_assert_mod.F90.in)
 
@@ -16,7 +16,7 @@ list(APPEND share_sources shr_kind_mod.F90 shr_const_mod.F90
 
 sourcelist_to_parent(share_sources)
 
-ELSE() #ACME_BUILD
+ELSE() #E3SM_BUILD
 
 MESSAGE("   + MCT:")
 FILE(GLOB MCT_SOURCE *F90)

@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES (
           ${GPTL_BINARY_DIR}
           ${SEQ_BINARY_DIR}
           ${STREAMS_BINARY_DIR}  #shr_strdata_mod
-          ${ACME_PIO_LIBRARY_DIR}
+          ${E3SM_PIO_LIBRARY_DIR}
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
 )

@@ -1,12 +1,12 @@
 #
 # This main CMakeLists.txt is written to be included from either
-# the top level of CIME or the top level of ACME. The required
-# CIME_REL_DIR variable is set in CIME to be "." and in ACME
+# the top level of CIME or the top level of E3SM. The required
+# CIME_REL_DIR variable is set in CIME to be "." and in E3SM
 # to be "cime".  Except for this misdirection, this is meant
 # to be the full-functioning top-level CMakeLists.txt file 
 # [Andy, 10/4/16]
-#  
-
+#
+#
 cmake_minimum_required(VERSION 2.7)
 INCLUDE(ExternalProject)
 
@@ -217,8 +217,7 @@ IF (HAVE_E3SM)
   ADD_SUBDIRECTORY(${ATM_CAM_DIR})
 ENDIF()
 
-MESSAGE("\nAdding executables:")
-MESSAGE("   + e3sm.exe")
+MESSAGE("\nAdding executable:")
 ADD_EXECUTABLE(e3sm.exe ${DRIVER_DIR}/cime_driver.F90)
 
 MESSAGE("\nAGS: HHEELLPP  what include dirs to add: data, stub, active?
@@ -255,27 +254,19 @@ set (NETCDF_LIB netcdff
 
 message ("\nAGS: these are pio netcdf Libs : ${PIO_LIB} ${NETCDF_LIB}")
 
+
 IF (HAVE_E3SM)
 TARGET_LINK_LIBRARIES(e3sm.exe  compmod
- #                     clm socn sice sglc datm rtm swav sesp
-                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
-                      ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
+                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC} ${CIME_ATM}
+                      ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
                       driver shr seq shrcal gptl esmf streams mct mpeu shrsys 
                       ${PIO_LIB} ${NETCDF_LIB} -llapack)
 ELSE()
-TARGET_LINK_LIBRARIES(e3sm.exe  compmod
- #                     slnd docn dice sglc
- #                     datm drof swav sesp  
-                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
-                      ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
-                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys 
+TARGET_LINK_LIBRARIES(e3sm.exe compmod
+                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC} ${CIME_ATM}
+                      ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
+                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys
                       ${PIO_LIB} ${NETCDF_LIB})
 ENDIF()
-#TARGET_LINK_LIBRARIES(e3sm_MPASLI_ONLY.exe  
-#                      slnd socn sice 
-#                        mpasglcdriver mpasglc mpasoperators mpasframework mpasezxml
-#                      satm srof swav sesp
-#                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys 
-#      
-
+ 
 MESSAGE("\nAnd CMake says...:")
