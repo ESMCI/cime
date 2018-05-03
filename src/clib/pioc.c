@@ -496,7 +496,10 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     if (!(iodesc->map = malloc(sizeof(PIO_Offset) * maplen)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int m = 0; m < maplen; m++)
+    {
         iodesc->map[m] = compmap[m];
+        LOG((4, "compmap[%d] = %d", m, compmap[m]));
+    }
 
     /* Remember the dim sizes. */
     if (!(iodesc->dimlen = malloc(sizeof(int) * ndims)))
