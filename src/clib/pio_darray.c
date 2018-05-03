@@ -372,6 +372,86 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     return PIO_NOERR;
 }
 
+static int
+pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_size,
+                          void *fillvalue)
+{
+    signed char byte_fill_value = NC_FILL_BYTE;
+    char char_fill_value = NC_FILL_CHAR;
+    short short_fill_value = NC_FILL_SHORT;
+    int int_fill_value = NC_FILL_INT;
+    float float_fill_value = NC_FILL_FLOAT;
+    double double_fill_value = NC_FILL_DOUBLE;
+    unsigned char ubyte_fill_value = NC_FILL_UBYTE;
+    unsigned short ushort_fill_value = NC_FILL_USHORT;
+    unsigned int uint_fill_value = NC_FILL_UINT;
+    long long int64_fill_value = NC_FILL_INT64;
+    unsigned long long uint64_fill_value = NC_FILL_UINT64;
+    char *string_fill_value = "";
+    int ret;
+    
+    /* Check inputs. */
+    assert(fillvalue);
+
+    LOG((2, "pio_inq_var_fill_expected ncid %d varid %d pio_type %d type_size %d",
+         ncid, varid, pio_type, type_size));
+
+    /* Is there a _FillValue attribute? */
+    ret = PIOc_get_att(ncid, varid, "_FillValue", fillvalue);
+    LOG((3, "pio_inq_var_fill_expected ret %d", ret));
+
+    /* If no _FillValue at was found we still have work to do. */
+    if (ret)
+    {
+        /* Did we get some other error? */
+        if (ret != PIO_ENOTATT)
+            return ret;
+
+        /* What is the default fill value for this type? */
+        switch (pio_type)
+        {
+        case PIO_BYTE:
+            memcpy(fillvalue, &byte_fill_value, type_size);
+            break;
+        case PIO_CHAR:
+            memcpy(fillvalue, &char_fill_value, type_size);
+            break;
+        case PIO_SHORT:
+            memcpy(fillvalue, &short_fill_value, type_size);
+            break;
+        case PIO_INT:
+            memcpy(fillvalue, &int_fill_value, type_size);
+            break;
+        case PIO_FLOAT:
+            memcpy(fillvalue, &float_fill_value, type_size);
+            break;
+        case PIO_DOUBLE:
+            memcpy(fillvalue, &double_fill_value, type_size);
+            break;
+        case PIO_UBYTE:
+            memcpy(fillvalue, &ubyte_fill_value, type_size);
+            break;
+        case PIO_USHORT:
+            memcpy(fillvalue, &ushort_fill_value, type_size);
+            break;
+        case PIO_UINT:
+            memcpy(fillvalue, &uint_fill_value, type_size);
+            break;
+        case PIO_INT64:
+            memcpy(fillvalue, &int64_fill_value, type_size);
+            break;
+        case PIO_UINT64:
+            memcpy(fillvalue, &uint64_fill_value, type_size);
+            break;
+        case PIO_STRING:
+            memcpy(fillvalue, string_fill_value, type_size);
+            break;
+        }
+    }
+    
+    return PIO_NOERR;
+}
+
 /**
  * Find the fillvalue that should be used for a variable.
  *
@@ -410,11 +490,19 @@ int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
     if (!(vdesc->fillvalue = malloc(type_size)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    /* Get the fill value. */
+    /* Get the fill mode and value, if fill mode is on (which is will
+     * not be, because it is turned off at open/create). */
     if ((ierr = PIOc_inq_var_fill(file->pio_ncid, varid, &no_fill, vdesc->fillvalue)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     vdesc->use_fill = no_fill ? 0 : 1;
     LOG((3, "vdesc->use_fill = %d", vdesc->use_fill));
+
+    /* Get the fill value one would expect, if NOFILL were not turned
+     * on. */
+    if (!vdesc->use_fill)
+        if ((ierr = pio_inq_var_fill_expected(file->pio_ncid, varid, pio_type, type_size,
+                                              vdesc->fillvalue)))
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }

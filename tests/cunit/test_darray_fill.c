@@ -108,47 +108,51 @@ int main(int argc, char **argv)
                return ret;
 
             int ncid, dimid, varid;
-            int iotype = PIO_IOTYPE_NETCDF4C;
             char filename[NC_MAX_NAME + 1];
 
-            /* Put together filename. */
-            sprintf(filename, "%s_%d.nc", TEST_NAME, iotype);
-            
-            /* Create file. */
-            if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER)))
-                return ret;
-
-            /* Define metadata. */
-            if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len[0], &dimid)))
-                return ret;
-            if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM1, &dimid, &varid)))
-                return ret;
-            if ((ret = PIOc_put_att_int(ncid, varid, FILL_VALUE_NAME, PIO_INT, 1, &fill_value_int)))
-                return ret;
-            if ((ret = PIOc_enddef(ncid)))
-                return ret;
-
-            /* Write some data. */
-            if ((ret = PIOc_write_darray(ncid, varid, wioid, MAPLEN, data, &fill_value_int)))
-                return ret;
-            if ((ret = PIOc_sync(ncid)))
-                return ret;
-
-            /* Read the data. */
-            if ((ret = PIOc_read_darray(ncid, varid, rioid, MAPLEN, data_in)))
-                return ret;
-
-            /* Check results. */
-            for (int j = 0; j < MAPLEN; j++)
+            /* Use PIO to create the example file in each of the four
+             * available ways. */
+            for (int fmt = 0; fmt < num_flavors; fmt++)
             {
-                /* if (data_in[j] != expected[j]) */
-                /*     return ERR_AWFUL; */
-                printf("data_in[%d] = %d\n", j, data_in[j]);
-            }
+                /* Put together filename. */
+                sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]);
             
-            /* Close file. */
-            if ((ret = PIOc_closefile(ncid)))
-                return ret;
+                /* Create file. */
+                if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, NC_CLOBBER)))
+                    return ret;
+
+                /* Define metadata. */
+                if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len[0], &dimid)))
+                    return ret;
+                if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM1, &dimid, &varid)))
+                    return ret;
+                if ((ret = PIOc_put_att_int(ncid, varid, FILL_VALUE_NAME, PIO_INT, 1, &fill_value_int)))
+                    return ret;
+                if ((ret = PIOc_enddef(ncid)))
+                    return ret;
+
+                /* Write some data. */
+                if ((ret = PIOc_write_darray(ncid, varid, wioid, MAPLEN, data, &fill_value_int)))
+                    return ret;
+                if ((ret = PIOc_sync(ncid)))
+                    return ret;
+
+                /* Read the data. */
+                if ((ret = PIOc_read_darray(ncid, varid, rioid, MAPLEN, data_in)))
+                    return ret;
+
+                /* Check results. */
+                for (int j = 0; j < MAPLEN; j++)
+                {
+                    if (data_in[j] != expected[j])
+                        return ERR_AWFUL;
+                    printf("data_in[%d] = %d\n", j, data_in[j]);
+                }
+            
+                /* Close file. */
+                if ((ret = PIOc_closefile(ncid)))
+                    return ret;
+            } /* next iotype */
             
             /* Free decompositions. */
             if ((ret = PIOc_freedecomp(iosysid, wioid)))
