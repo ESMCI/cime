@@ -71,8 +71,7 @@ int main(int argc, char **argv)
         MPI_Offset wcompmap[MAPLEN];
         MPI_Offset rcompmap[MAPLEN];
         int data[MAPLEN];
-        int data_in[MAPLEN];
-        int expected[MAPLEN];
+        int expected_int[MAPLEN];
 
         /* Custom fill value for each type. */
         signed char byte_fill = NC_FILL_BYTE;
@@ -113,6 +112,7 @@ int main(int argc, char **argv)
             wcompmap[i] = i % 2 ? my_rank * MAPLEN + i + 1 : 0; /* Even values missing. */
             rcompmap[i] = my_rank * MAPLEN + i + 1;
             data[i] = wcompmap[i];
+            expected_int[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
         }
 
         /* Figure out iotypes. */
@@ -125,10 +125,8 @@ int main(int argc, char **argv)
             int test_type[NUM_TYPES] = {PIO_INT};
             for (int t = 0; t < NUM_TYPES; t++)
             {
-                /* Determine what result we should expect. */
-                for (int i = 0; i < MAPLEN; i++)
-                    expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
-            
+                void *expected;
+                expected = expected_int;
                 for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
                 {
                     /* Initialize the PIO IO system. This specifies how
@@ -153,6 +151,8 @@ int main(int argc, char **argv)
                     for (int fmt = 0; fmt < num_flavors; fmt++)
                     {
                         PIO_Offset type_size;
+                        /* int data_in[MAPLEN]; */
+                        void *data_in;
                         
                         /* Put together filename. */
                         sprintf(filename, "%s_%d_%d.nc", TEST_NAME, flavor[fmt], rearranger[r]);
@@ -182,17 +182,26 @@ int main(int argc, char **argv)
                         if ((ret = PIOc_inq_type(ncid, test_type[t], NULL, &type_size)))
                             return ret;
 
+                        /* Allocate space to read data into. */
+                        if (!(data_in = malloc(type_size * MAPLEN)))
+                            return PIO_ENOMEM;
+
                         /* Read the data. */
                         if ((ret = PIOc_read_darray(ncid, varid, rioid, MAPLEN, data_in)))
                             return ret;
 
                         /* Check results. */
-                        for (int j = 0; j < MAPLEN; j++)
-                        {
-                            if (data_in[j] != expected[j])
-                                return ERR_AWFUL;
-                            printf("data_in[%d] = %d\n", j, data_in[j]);
-                        }
+                        if (memcmp(data_in, expected, type_size * MAPLEN))
+                            return ERR_AWFUL;
+                        /* for (int j = 0; j < MAPLEN; j++) */
+                        /* { */
+                        /*     if (data_in[j] != expected[j]) */
+                        /*         return ERR_AWFUL; */
+                        /*     printf("data_in[%d] = %d\n", j, data_in[j]); */
+                        /* } */
+
+                        /* Release storage. */
+                        free(data_in);
             
                         /* Close file. */
                         if ((ret = PIOc_closefile(ncid)))
