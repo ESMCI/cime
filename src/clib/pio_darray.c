@@ -372,6 +372,20 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     return PIO_NOERR;
 }
 
+/**
+ * Find the fill value that would be used for a variable, if fill mode
+ * was turned on.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param pio_type Type of the variable.
+ * @param type_size Size of one element of this type.
+ * @param fillvalue Pointer that will get the fill value.
+ *
+ * @return 0 for success, error code otherwise.
+ * @ingroup PIO_write_darray
+ * @author Ed Hartnett
+ */
 static int
 pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_size,
                           void *fillvalue)
