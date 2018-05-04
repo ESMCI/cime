@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         long long int64_expected[MAPLEN];
         unsigned long long uint64_expected[MAPLEN];
 #endif /* _NETCDF4 */
-        
+
         /* Custom fill value for each type. */
         signed char byte_fill = NC_FILL_BYTE;
         char char_fill = NC_FILL_CHAR;
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         long long int64_fill = NC_FILL_INT64;
         unsigned long long uint64_fill = NC_FILL_UINT64;
 #endif /* _NETCDF4 */
-        
+
         /* Default fill value for each type. */
         signed char byte_default_fill = NC_FILL_BYTE;
         char char_default_fill = NC_FILL_CHAR;
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
         long long int64_default_fill = NC_FILL_INT64;
         unsigned long long uint64_default_fill = NC_FILL_UINT64;
 #endif /* _NETCDF4 */
-    
+
         int ret;      /* Return code. */
 
         /* Set up the compmaps. Don't forget these are 1-based
@@ -147,21 +147,23 @@ int main(int argc, char **argv)
 #define NUM_TYPES 1
                 int test_type[NUM_TYPES] = {PIO_INT};
 
-                /* Determine what data to expect from the test. */
+                /* Determine what data to expect from the test. For
+                 * even i, the fill value will be used, and it may be
+                 * custom or default fill value. */
                 for (int i = 0; i < MAPLEN; i++)
                 {
-                    byte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : byte_fill; 
-                    char_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : char_fill; 
-                    short_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : short_fill; 
-                    int_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
-                    float_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : float_fill; 
-                    double_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : double_fill; 
+                    byte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? byte_default_fill : byte_fill);
+                    char_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? char_default_fill : char_fill);
+                    short_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? short_default_fill : short_fill);
+                    int_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? int_default_fill : int_fill);
+                    float_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? float_default_fill : float_fill);
+                    double_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? double_default_fill : double_fill);
 #ifdef _NETCDF4
-                    ubyte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : ubyte_fill; 
-                    ushort_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : ushort_fill; 
-                    uint_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : uint_fill; 
-                    int64_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int64_fill; 
-                    uint64_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : uint64_fill; 
+                    ubyte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? ubyte_default_fill : ubyte_fill);
+                    ushort_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? ushort_default_fill : ushort_fill);
+                    uint_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? uint_default_fill : uint_fill);
+                    int64_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? int64_default_fill : int64_fill);
+                    uint64_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? uint64_default_fill : uint64_fill);
 #endif /* _NETCDF4 */
                 }
 
@@ -177,54 +179,54 @@ int main(int argc, char **argv)
                     {
                     case PIO_BYTE:
                         expected = byte_expected;
-                        fill = &byte_fill;
+                        fill = fv ? &byte_default_fill : &byte_fill;
                         break;
                     case PIO_CHAR:
                         expected = char_expected;
-                        fill = &char_fill;
+                        fill = fv ? &char_default_fill : &char_fill;
                         break;
                     case PIO_SHORT:
                         expected = short_expected;
-                        fill = &short_fill;
+                        fill = fv ? &short_default_fill : &short_fill;
                         break;
                     case PIO_INT:
                         expected = int_expected;
-                        fill = &int_fill;
+                        fill = fv ? &int_default_fill : &int_fill;
                         break;
                     case PIO_FLOAT:
                         expected = float_expected;
-                        fill = &float_fill;
+                        fill = fv ? &float_default_fill : &float_fill;
                         break;
                     case PIO_DOUBLE:
                         expected = double_expected;
-                        fill = &double_fill;
+                        fill = fv ? &double_default_fill : &double_fill;
                         break;
 #ifdef _NETCDF4
                     case PIO_UBYTE:
                         expected = ubyte_expected;
-                        fill = &ubyte_fill;
+                        fill = fv ? &ubyte_default_fill : &ubyte_fill;
                         break;
                     case PIO_USHORT:
                         expected = ushort_expected;
-                        fill = &ushort_fill;
+                        fill = fv ? &ushort_default_fill : &ushort_fill;
                         break;
                     case PIO_UINT:
                         expected = uint_expected;
-                        fill = &uint_fill;
+                        fill = fv ? &uint_default_fill : &uint_fill;
                         break;
                     case PIO_INT64:
                         expected = int64_expected;
-                        fill = &int64_fill;
+                        fill = fv ? &int64_default_fill : &int64_fill;
                         break;
                     case PIO_UINT64:
                         expected = uint64int_expected;
-                        fill = &uint64_fill;
+                        fill = fv ? &uint64_default_fill : &uint64_fill;
                         break;
-#endif /* _NETCDF4 */                        
+#endif /* _NETCDF4 */
                     default:
                         return ERR_AWFUL;
                     }
-                
+
                     /* Initialize decompositions. */
                     if ((ret = PIOc_InitDecomp(iosysid, test_type[t], NDIM1, dim_len, maplen, wcompmap,
                                                &wioid, &rearranger[r], NULL, NULL)))
@@ -238,10 +240,10 @@ int main(int argc, char **argv)
                     {
                         PIO_Offset type_size;
                         void *data_in;
-                        
+
                         /* Put together filename. */
                         sprintf(filename, "%s_%d_%d.nc", TEST_NAME, flavor[fmt], rearranger[r]);
-            
+
                         /* Create file. */
                         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, NC_CLOBBER)))
                             return ret;
@@ -281,12 +283,12 @@ int main(int argc, char **argv)
 
                         /* Release storage. */
                         free(data_in);
-            
+
                         /* Close file. */
                         if ((ret = PIOc_closefile(ncid)))
                             return ret;
                     } /* next iotype */
-            
+
                     /* Free decompositions. */
                     if ((ret = PIOc_freedecomp(iosysid, wioid)))
                         return ret;
