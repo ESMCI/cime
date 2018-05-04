@@ -125,7 +125,6 @@ int main(int argc, char **argv)
             int test_type[NUM_TYPES] = {PIO_INT};
             for (int t = 0; t < NUM_TYPES; t++)
             {
-
                 /* Determine what result we should expect. */
                 for (int i = 0; i < MAPLEN; i++)
                     expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
@@ -153,6 +152,8 @@ int main(int argc, char **argv)
                      * available ways. */
                     for (int fmt = 0; fmt < num_flavors; fmt++)
                     {
+                        PIO_Offset type_size;
+                        
                         /* Put together filename. */
                         sprintf(filename, "%s_%d_%d.nc", TEST_NAME, flavor[fmt], rearranger[r]);
             
@@ -175,6 +176,10 @@ int main(int argc, char **argv)
                         if ((ret = PIOc_write_darray(ncid, varid, wioid, MAPLEN, data, &int_fill)))
                             return ret;
                         if ((ret = PIOc_sync(ncid)))
+                            return ret;
+
+                        /* What is size of type? */
+                        if ((ret = PIOc_inq_type(ncid, test_type[t], NULL, &type_size)))
                             return ret;
 
                         /* Read the data. */
