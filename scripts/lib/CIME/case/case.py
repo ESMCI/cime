@@ -1488,3 +1488,7 @@ directory, NOT in this subdirectory."""
 
     def get_primary_job(self):
         return "case.test" if self.get_value("TEST") else "case.run"
+
+    def is_submission_job(self):
+        env_batch = self.get_env("batch")
+        return env_batch.is_submission_job()

@@ -7,7 +7,7 @@ from CIME.XML.env_base import EnvBase
 from CIME.utils import transform_vars, get_cime_root, convert_to_seconds, format_time, get_cime_config, get_batch_script_for_job
 
 from collections import OrderedDict
-import stat, re, math
+import stat, re, math, os
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,14 @@ class EnvBatch(EnvBase):
         self._default_walltime = "00:20:00"
         schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_batch.xsd")
         super(EnvBatch,self).__init__(case_root, infile, schema=schema)
+
+    def is_submission_job(self):
+        jobid = self.get_value("batch_jobid_env_var", subgroup=None)
+        if jobid is None:
+            logger.warning("Could not determine if this is being run by a batch system, set batch_jobid_env_var to enable this")
+            return None
+        else:
+            return jobid in os.environ
 
     # pylint: disable=arguments-differ
     def set_value(self, item, value, subgroup=None, ignore_type=False):
