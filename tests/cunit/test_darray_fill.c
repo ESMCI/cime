@@ -126,7 +126,6 @@ int main(int argc, char **argv)
             wcompmap[i] = i % 2 ? my_rank * MAPLEN + i + 1 : 0; /* Even values missing. */
             rcompmap[i] = my_rank * MAPLEN + i + 1;
             data[i] = wcompmap[i];
-            int_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
         }
 
         /* Figure out iotypes. */
@@ -148,10 +147,17 @@ int main(int argc, char **argv)
 #define NUM_TYPES 1
                 int test_type[NUM_TYPES] = {PIO_INT};
 
+                /* Determine what data to expect from the test. */
+                for (int i = 0; i < MAPLEN; i++)
+                {
+                    int_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
+                }
+
                 /* Test for each available type. */
                 for (int t = 0; t < NUM_TYPES; t++)
                 {
                     void *expected;
+                    void *fill;
                     int ncid, dimid, varid;
                     char filename[NC_MAX_NAME + 1];
 
@@ -159,6 +165,7 @@ int main(int argc, char **argv)
                     {
                     case PIO_INT:
                         expected = int_expected;
+                        fill = &int_fill;
                         break;
                     default:
                         return ERR_AWFUL;
@@ -190,8 +197,8 @@ int main(int argc, char **argv)
                             return ret;
                         if ((ret = PIOc_def_var(ncid, VAR_NAME, test_type[t], NDIM1, &dimid, &varid)))
                             return ret;
-                        if ((ret = PIOc_put_att_int(ncid, varid, FILL_VALUE_NAME, test_type[t],
-                                                    1, &int_fill)))
+                        if ((ret = PIOc_put_att(ncid, varid, FILL_VALUE_NAME, test_type[t],
+                                                1, fill)))
                             return ret;
                         if ((ret = PIOc_enddef(ncid)))
                             return ret;
