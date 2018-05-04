@@ -39,7 +39,8 @@
 int dim_len[NDIM1] = {28};
 
 /* Run test for each of the rearrangers. */
-#define NUM_REARRANGERS_TO_TEST 2
+/* #define NUM_REARRANGERS_TO_TEST 2 */
+#define NUM_REARRANGERS_TO_TEST 1
 
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
@@ -69,8 +70,23 @@ int main(int argc, char **argv)
         int maplen = MAPLEN;
         MPI_Offset wcompmap[MAPLEN];
         MPI_Offset rcompmap[MAPLEN];
-        int data[MAPLEN];
-        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+        /* int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET}; */
+        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_SUBSET};
+
+        /* Data we will write for each type. */
+        signed char byte_data[MAPLEN];
+        char char_data[MAPLEN];
+        short short_data[MAPLEN];
+        int int_data[MAPLEN];
+        float float_data[MAPLEN];
+        double double_data[MAPLEN];
+#ifdef _NETCDF4
+        unsigned char ubyte_data[MAPLEN];
+        unsigned short ushort_data[MAPLEN];
+        unsigned int uint_data[MAPLEN];
+        long long int64_data[MAPLEN];
+        unsigned long long uint64_data[MAPLEN];
+#endif /* _NETCDF4 */
 
         /* Expected results for each type. */
         signed char byte_expected[MAPLEN];
@@ -125,7 +141,7 @@ int main(int argc, char **argv)
         {
             wcompmap[i] = i % 2 ? my_rank * MAPLEN + i + 1 : 0; /* Even values missing. */
             rcompmap[i] = my_rank * MAPLEN + i + 1;
-            data[i] = wcompmap[i];
+            int_data[i] = wcompmap[i];
         }
 
         /* Figure out iotypes. */
@@ -172,6 +188,7 @@ int main(int argc, char **argv)
                 {
                     void *expected;
                     void *fill;
+                    void *data;
                     int ncid, dimid, varid;
                     char filename[NC_MAX_NAME + 1];
 
@@ -192,6 +209,7 @@ int main(int argc, char **argv)
                     case PIO_INT:
                         expected = int_expected;
                         fill = fv ? &int_default_fill : &int_fill;
+                        data = int_data;
                         break;
                     case PIO_FLOAT:
                         expected = float_expected;
@@ -260,7 +278,7 @@ int main(int argc, char **argv)
                             return ret;
 
                         /* Write some data. */
-                        if ((ret = PIOc_write_darray(ncid, varid, wioid, MAPLEN, data, &int_fill)))
+                        if ((ret = PIOc_write_darray(ncid, varid, wioid, MAPLEN, data, fill)))
                             return ret;
                         if ((ret = PIOc_sync(ncid)))
                             return ret;
@@ -280,6 +298,14 @@ int main(int argc, char **argv)
                         /* Check results. */
                         if (memcmp(data_in, expected, type_size * MAPLEN))
                             return ERR_AWFUL;
+
+                        if (test_type[t] == PIO_SHORT)
+                        {
+                            short *s1 = data_in;
+                            short *s2 = expected;
+                            for (int i = 0; i < MAPLEN; i++)
+                                printf("got %d expected %d\n", *s1++, *s2++);
+                        }
 
                         /* Release storage. */
                         free(data_in);
