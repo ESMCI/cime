@@ -104,18 +104,18 @@ int main(int argc, char **argv)
 #endif /* _NETCDF4 */
 
         /* Custom fill value for each type. */
-        signed char byte_fill = NC_FILL_BYTE;
-        char char_fill = NC_FILL_CHAR;
-        short short_fill = NC_FILL_SHORT;
+        signed char byte_fill = -2;
+        char char_fill = 2;
+        short short_fill = -2;
         int int_fill = -2;
-        float float_fill = NC_FILL_FLOAT;
-        double double_fill = NC_FILL_DOUBLE;
+        float float_fill = -2;
+        double double_fill = -2;
 #ifdef _NETCDF4
-        unsigned char ubyte_fill = NC_FILL_UBYTE;
-        unsigned short ushort_fill = NC_FILL_USHORT;
-        unsigned int uint_fill = NC_FILL_UINT;
-        long long int64_fill = NC_FILL_INT64;
-        unsigned long long uint64_fill = NC_FILL_UINT64;
+        unsigned char ubyte_fill = 2;
+        unsigned short ushort_fill = 2;
+        unsigned int uint_fill = 2;
+        long long int64_fill = 2;
+        unsigned long long uint64_fill = 2;
 #endif /* _NETCDF4 */
 
         /* Default fill value for each type. */
@@ -159,8 +159,8 @@ int main(int argc, char **argv)
             /* Test with and without custom fill values. */
             for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
             {
-#define NUM_TYPES 1
-                int test_type[NUM_TYPES] = {PIO_SHORT};
+#define NUM_TYPES 5
+                int test_type[NUM_TYPES] = {PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
 
                 /* Determine what data to write. Put value of 42 into
                  * array elements that will not get written. Due to
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
                         data = int64_data;
                         break;
                     case PIO_UINT64:
-                        expected = uint64int_expected;
+                        expected = uint64_expected;
                         fill = fv ? &uint64_default_fill : &uint64_fill;
                         data = uint64_data;
                         break;
@@ -290,7 +290,8 @@ int main(int argc, char **argv)
                         void *data_in;
 
                         /* Put together filename. */
-                        sprintf(filename, "%s_%d_%d.nc", TEST_NAME, flavor[fmt], rearranger[r]);
+                        sprintf(filename, "%s_iotype_%d_rearr_%d_type_%d.nc", TEST_NAME, flavor[fmt],
+                                rearranger[r], test_type[t]);
 
                         /* Create file. */
                         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, NC_CLOBBER)))
