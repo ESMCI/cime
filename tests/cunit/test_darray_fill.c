@@ -150,7 +150,19 @@ int main(int argc, char **argv)
                 /* Determine what data to expect from the test. */
                 for (int i = 0; i < MAPLEN; i++)
                 {
+                    byte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : byte_fill; 
+                    char_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : char_fill; 
+                    short_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : short_fill; 
                     int_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
+                    float_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : float_fill; 
+                    double_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : double_fill; 
+#ifdef _NETCDF4
+                    ubyte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : ubyte_fill; 
+                    ushort_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : ushort_fill; 
+                    uint_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : uint_fill; 
+                    int64_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int64_fill; 
+                    uint64_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : uint64_fill; 
+#endif /* _NETCDF4 */
                 }
 
                 /* Test for each available type. */
@@ -163,10 +175,52 @@ int main(int argc, char **argv)
 
                     switch (test_type[t])
                     {
+                    case PIO_BYTE:
+                        expected = byte_expected;
+                        fill = &byte_fill;
+                        break;
+                    case PIO_CHAR:
+                        expected = char_expected;
+                        fill = &char_fill;
+                        break;
+                    case PIO_SHORT:
+                        expected = short_expected;
+                        fill = &short_fill;
+                        break;
                     case PIO_INT:
                         expected = int_expected;
                         fill = &int_fill;
                         break;
+                    case PIO_FLOAT:
+                        expected = float_expected;
+                        fill = &float_fill;
+                        break;
+                    case PIO_DOUBLE:
+                        expected = double_expected;
+                        fill = &double_fill;
+                        break;
+#ifdef _NETCDF4
+                    case PIO_UBYTE:
+                        expected = ubyte_expected;
+                        fill = &ubyte_fill;
+                        break;
+                    case PIO_USHORT:
+                        expected = ushort_expected;
+                        fill = &ushort_fill;
+                        break;
+                    case PIO_UINT:
+                        expected = uint_expected;
+                        fill = &uint_fill;
+                        break;
+                    case PIO_INT64:
+                        expected = int64_expected;
+                        fill = &int64_fill;
+                        break;
+                    case PIO_UINT64:
+                        expected = uint64int_expected;
+                        fill = &uint64_fill;
+                        break;
+#endif /* _NETCDF4 */                        
                     default:
                         return ERR_AWFUL;
                     }
