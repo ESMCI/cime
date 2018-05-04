@@ -70,9 +70,23 @@ int main(int argc, char **argv)
         MPI_Offset wcompmap[MAPLEN];
         MPI_Offset rcompmap[MAPLEN];
         int data[MAPLEN];
-        int expected_int[MAPLEN];
         int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
 
+        /* Expected results for each type. */
+        signed char byte_expected[MAPLEN];
+        char char_expected[MAPLEN];
+        short short_expected[MAPLEN];
+        int int_expected[MAPLEN];
+        float float_expected[MAPLEN];
+        double double_expected[MAPLEN];
+#ifdef _NETCDF4
+        unsigned char ubyte_expected[MAPLEN];
+        unsigned short ushort_expected[MAPLEN];
+        unsigned int uint_expected[MAPLEN];
+        long long int64_expected[MAPLEN];
+        unsigned long long uint64_expected[MAPLEN];
+#endif /* _NETCDF4 */
+        
         /* Custom fill value for each type. */
         signed char byte_fill = NC_FILL_BYTE;
         char char_fill = NC_FILL_CHAR;
@@ -112,7 +126,7 @@ int main(int argc, char **argv)
             wcompmap[i] = i % 2 ? my_rank * MAPLEN + i + 1 : 0; /* Even values missing. */
             rcompmap[i] = my_rank * MAPLEN + i + 1;
             data[i] = wcompmap[i];
-            expected_int[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
+            int_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : int_fill; 
         }
 
         /* Figure out iotypes. */
@@ -144,7 +158,7 @@ int main(int argc, char **argv)
                     switch (test_type[t])
                     {
                     case PIO_INT:
-                        expected = expected_int;
+                        expected = int_expected;
                         break;
                     default:
                         return ERR_AWFUL;
