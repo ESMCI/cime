@@ -1919,8 +1919,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
             free(myusegrid);
 
         iodesc->holegridsize = thisgridsize[ios->io_rank] - cnt;
-        LOG((3, "iodesc->holegridsize %d thisgridsize[%d] %d cnt %d", iodesc->holegridsize, ios->io_rank,
-             thisgridsize[ios->io_rank], cnt));
+        LOG((3, "iodesc->holegridsize %d thisgridsize[%d] %d cnt %d", iodesc->holegridsize,
+             ios->io_rank, thisgridsize[ios->io_rank], cnt));
         if (iodesc->holegridsize > 0)
         {
             /* Allocate space for the fillgrid. */
