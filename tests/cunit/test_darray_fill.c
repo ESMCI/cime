@@ -160,7 +160,7 @@ int main(int argc, char **argv)
             for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
             {
 #define NUM_TYPES 1
-                int test_type[NUM_TYPES] = {PIO_INT};
+                int test_type[NUM_TYPES] = {PIO_SHORT};
 
                 /* Determine what data to write. Put value of 42 into
                  * array elements that will not get written. Due to
