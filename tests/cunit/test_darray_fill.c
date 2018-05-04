@@ -141,7 +141,6 @@ int main(int argc, char **argv)
         {
             wcompmap[i] = i % 2 ? my_rank * MAPLEN + i + 1 : 0; /* Even values missing. */
             rcompmap[i] = my_rank * MAPLEN + i + 1;
-            int_data[i] = wcompmap[i];
         }
 
         /* Figure out iotypes. */
@@ -163,9 +162,30 @@ int main(int argc, char **argv)
 #define NUM_TYPES 1
                 int test_type[NUM_TYPES] = {PIO_INT};
 
+                /* Determine what data to write. Put value of 42 into
+                 * array elements that will not get written. Due to
+                 * the decomposition, these will be replaced by fill
+                 * values. */
+                for (int i = 0; i < MAPLEN; i++)
+                {
+                    byte_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    char_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    short_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    int_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    float_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    double_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+#ifdef _NETCDF4
+                    ubyte_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    ushort_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    uint_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    int64_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+                    uint64_data[i] = i % 2 ? my_rank * MAPLEN + i + 1 : TEST_VAL_42;
+#endif /* _NETCDF4 */
+                }
+
                 /* Determine what data to expect from the test. For
-                 * even i, the fill value will be used, and it may be
-                 * custom or default fill value. */
+                 * even values of i, the fill value will be used, and
+                 * it may be custom or default fill value. */
                 for (int i = 0; i < MAPLEN; i++)
                 {
                     byte_expected[i] = i % 2 ? my_rank * MAPLEN + i + 1 : (fv ? byte_default_fill : byte_fill);
