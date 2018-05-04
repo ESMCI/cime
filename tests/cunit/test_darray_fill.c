@@ -197,14 +197,17 @@ int main(int argc, char **argv)
                     case PIO_BYTE:
                         expected = byte_expected;
                         fill = fv ? &byte_default_fill : &byte_fill;
+                        data = byte_data;
                         break;
                     case PIO_CHAR:
                         expected = char_expected;
                         fill = fv ? &char_default_fill : &char_fill;
+                        data = char_data;
                         break;
                     case PIO_SHORT:
                         expected = short_expected;
                         fill = fv ? &short_default_fill : &short_fill;
+                        data = short_data;
                         break;
                     case PIO_INT:
                         expected = int_expected;
@@ -214,31 +217,38 @@ int main(int argc, char **argv)
                     case PIO_FLOAT:
                         expected = float_expected;
                         fill = fv ? &float_default_fill : &float_fill;
+                        data = float_data;
                         break;
                     case PIO_DOUBLE:
                         expected = double_expected;
                         fill = fv ? &double_default_fill : &double_fill;
+                        data = double_data;
                         break;
 #ifdef _NETCDF4
                     case PIO_UBYTE:
                         expected = ubyte_expected;
                         fill = fv ? &ubyte_default_fill : &ubyte_fill;
+                        data = ubyte_data;
                         break;
                     case PIO_USHORT:
                         expected = ushort_expected;
                         fill = fv ? &ushort_default_fill : &ushort_fill;
+                        data = ushort_data;
                         break;
                     case PIO_UINT:
                         expected = uint_expected;
                         fill = fv ? &uint_default_fill : &uint_fill;
+                        data = uint_data;
                         break;
                     case PIO_INT64:
                         expected = int64_expected;
                         fill = fv ? &int64_default_fill : &int64_fill;
+                        data = int64_data;
                         break;
                     case PIO_UINT64:
                         expected = uint64int_expected;
                         fill = fv ? &uint64_default_fill : &uint64_fill;
+                        data = uint64_data;
                         break;
 #endif /* _NETCDF4 */
                     default:
