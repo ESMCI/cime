@@ -39,8 +39,7 @@
 int dim_len[NDIM1] = {28};
 
 /* Run test for each of the rearrangers. */
-/* #define NUM_REARRANGERS_TO_TEST 2 */
-#define NUM_REARRANGERS_TO_TEST 1
+#define NUM_REARRANGERS_TO_TEST 2
 
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
@@ -54,7 +53,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, 4, &test_comm)))
+                              MIN_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -70,8 +69,7 @@ int main(int argc, char **argv)
         int maplen = MAPLEN;
         MPI_Offset wcompmap[MAPLEN];
         MPI_Offset rcompmap[MAPLEN];
-        /* int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET}; */
-        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_SUBSET};
+        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
 
         /* Data we will write for each type. */
         signed char byte_data[MAPLEN];
@@ -159,8 +157,15 @@ int main(int argc, char **argv)
             /* Test with and without custom fill values. */
             for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
             {
+#ifndef _NETCDF4
 #define NUM_TYPES 6
                 int test_type[NUM_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#else
+#define NUM_TYPES 11
+                int test_type[NUM_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                            PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+                
+#endif /* _NETCDF4 */
 
                 /* Determine what data to write. Put value of 42 into
                  * array elements that will not get written. Due to
@@ -293,6 +298,11 @@ int main(int argc, char **argv)
                         if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (test_type[t] == PIO_BYTE || test_type[t] == PIO_CHAR))
                             continue;
 
+                        /* NetCDF-4 types only work with netCDF-4 formats. */
+                        if (test_type[t] > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
+                            flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+                            continue;
+
                         /* Put together filename. */
                         sprintf(filename, "%s_iotype_%d_rearr_%d_type_%d.nc", TEST_NAME, flavor[fmt],
                                 rearranger[r], test_type[t]);
@@ -333,14 +343,6 @@ int main(int argc, char **argv)
                         /* Check results. */
                         if (memcmp(data_in, expected, type_size * MAPLEN))
                             return ERR_AWFUL;
-
-                        if (test_type[t] == PIO_SHORT)
-                        {
-                            short *s1 = data_in;
-                            short *s2 = expected;
-                            for (int i = 0; i < MAPLEN; i++)
-                                printf("got %d expected %d\n", *s1++, *s2++);
-                        }
 
                         /* Release storage. */
                         free(data_in);
