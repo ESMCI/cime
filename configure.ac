@@ -107,4 +107,3 @@ AC_OUTPUT(Makefile
           src/clib/Makefile
           tests/Makefile
           tests/cunit/Makefile)
-
