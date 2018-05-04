@@ -630,7 +630,7 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
 
     # resubmit case if appropriate
     resubmit = self.get_value("RESUBMIT")
-    if resubmit > 0 and not no_resubmit and self.is_submission_job():
+    if resubmit > 0 and not no_resubmit and self.is_submission_job() in (True, None):
         logger.info("resubmitting from st_archive, resubmit={:d}".format(resubmit))
         if self.get_value("MACH") == "mira":
             expect(os.path.isfile(".original_host"), "ERROR alcf host file not found")
