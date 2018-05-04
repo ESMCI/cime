@@ -62,7 +62,6 @@ int main(int argc, char **argv)
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
     {
-        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
@@ -72,6 +71,7 @@ int main(int argc, char **argv)
         MPI_Offset rcompmap[MAPLEN];
         int data[MAPLEN];
         int expected_int[MAPLEN];
+        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
 
         /* Custom fill value for each type. */
         signed char byte_fill = NC_FILL_BYTE;
@@ -119,24 +119,38 @@ int main(int argc, char **argv)
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
+        /* Test for each rearranger. */
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
+            /* Initialize the PIO IO system. This specifies how
+             * many and which processors are involved in I/O. */
+            if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride, ioproc_start,
+                                           rearranger[r], &iosysid)))
+                return ret;
+
+            /* Test with and without custom fill values. */
             for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
             {
 #define NUM_TYPES 1
                 int test_type[NUM_TYPES] = {PIO_INT};
+
+                /* Test for each available type. */
                 for (int t = 0; t < NUM_TYPES; t++)
                 {
                     void *expected;
-                    expected = expected_int;
-                
-                    /* Initialize the PIO IO system. This specifies how
-                     * many and which processors are involved in I/O. */
-                    if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride, ioproc_start,
-                                                   rearranger[r], &iosysid)))
-                        return ret;
+                    int ncid, dimid, varid;
+                    char filename[NC_MAX_NAME + 1];
 
-                    /* /\* Initialize decompositions. *\/ */
+                    switch (test_type[t])
+                    {
+                    case PIO_INT:
+                        expected = expected_int;
+                        break;
+                    default:
+                        return ERR_AWFUL;
+                    }
+                
+                    /* Initialize decompositions. */
                     if ((ret = PIOc_InitDecomp(iosysid, test_type[t], NDIM1, dim_len, maplen, wcompmap,
                                                &wioid, &rearranger[r], NULL, NULL)))
                         return ret;
@@ -144,15 +158,10 @@ int main(int argc, char **argv)
                                                &rioid, &rearranger[r], NULL, NULL)))
                         return ret;
 
-                    int ncid, dimid, varid;
-                    char filename[NC_MAX_NAME + 1];
-
-                    /* Use PIO to create the example file in each of the four
-                     * available ways. */
+                    /* Create the test file in each of the available iotypes. */
                     for (int fmt = 0; fmt < num_flavors; fmt++)
                     {
                         PIO_Offset type_size;
-                        /* int data_in[MAPLEN]; */
                         void *data_in;
                         
                         /* Put together filename. */
@@ -194,12 +203,6 @@ int main(int argc, char **argv)
                         /* Check results. */
                         if (memcmp(data_in, expected, type_size * MAPLEN))
                             return ERR_AWFUL;
-                        /* for (int j = 0; j < MAPLEN; j++) */
-                        /* { */
-                        /*     if (data_in[j] != expected[j]) */
-                        /*         return ERR_AWFUL; */
-                        /*     printf("data_in[%d] = %d\n", j, data_in[j]); */
-                        /* } */
 
                         /* Release storage. */
                         free(data_in);
@@ -215,13 +218,14 @@ int main(int argc, char **argv)
                     if ((ret = PIOc_freedecomp(iosysid, rioid)))
                         return ret;
 
-                    /* Finalize PIO system. */
-                    if ((ret = PIOc_finalize(iosysid)))
-                        return ret;
-
                 } /* next type */
             } /* next fill value test case */
         } /* next rearranger */
+
+        /* Finalize PIO system. */
+        if ((ret = PIOc_finalize(iosysid)))
+            return ret;
+
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
