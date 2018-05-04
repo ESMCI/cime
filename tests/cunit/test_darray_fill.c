@@ -159,8 +159,8 @@ int main(int argc, char **argv)
             /* Test with and without custom fill values. */
             for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
             {
-#define NUM_TYPES 5
-                int test_type[NUM_TYPES] = {PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#define NUM_TYPES 6
+                int test_type[NUM_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
 
                 /* Determine what data to write. Put value of 42 into
                  * array elements that will not get written. Due to
@@ -288,6 +288,10 @@ int main(int argc, char **argv)
                     {
                         PIO_Offset type_size;
                         void *data_in;
+
+                        /* Byte type doesn't work with pnetcdf. */
+                        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (test_type[t] == PIO_BYTE || test_type[t] == PIO_CHAR))
+                            continue;
 
                         /* Put together filename. */
                         sprintf(filename, "%s_iotype_%d_rearr_%d_type_%d.nc", TEST_NAME, flavor[fmt],
