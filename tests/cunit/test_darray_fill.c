@@ -119,22 +119,23 @@ int main(int argc, char **argv)
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
-        for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
+        for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
-#define NUM_TYPES 1
-            int test_type[NUM_TYPES] = {PIO_INT};
-            for (int t = 0; t < NUM_TYPES; t++)
-            {
-                void *expected;
-                expected = expected_int;
-                for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
-                {
-                    /* Initialize the PIO IO system. This specifies how
-                     * many and which processors are involved in I/O. */
-                    if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride, ioproc_start,
-                                                   rearranger[r], &iosysid)))
-                        return ret;
+            /* Initialize the PIO IO system. This specifies how
+             * many and which processors are involved in I/O. */
+            if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride, ioproc_start,
+                                           rearranger[r], &iosysid)))
+                return ret;
 
+            for (int fv = 0; fv < NUM_TEST_CASES_FILLVALUE; fv++)
+            {
+#define NUM_TYPES 1
+                int test_type[NUM_TYPES] = {PIO_INT};
+                for (int t = 0; t < NUM_TYPES; t++)
+                {
+                    void *expected;
+                    expected = expected_int;
+                
                     /* /\* Initialize decompositions. *\/ */
                     if ((ret = PIOc_InitDecomp(iosysid, test_type[t], NDIM1, dim_len, maplen, wcompmap,
                                                &wioid, &rearranger[r], NULL, NULL)))
@@ -218,9 +219,9 @@ int main(int argc, char **argv)
                     if ((ret = PIOc_finalize(iosysid)))
                         return ret;
 
-                } /* next rearranger */
-            } /* next type */
-        } /* next fill value test case */
+                } /* next type */
+            } /* next fill value test case */
+        } /* next rearranger */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
