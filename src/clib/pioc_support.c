@@ -226,17 +226,16 @@ void pio_log(int severity, const char *fmt, ...)
     ptr += strlen(rank_str);
     rem_len -= strlen(rank_str);
 
-    /* Show the severity. */
-    snprintf(rank_str, MAX_RANK_STR, ":%d ", severity);
-    strncpy(ptr, rank_str, (rem_len > 0) ? rem_len : 0);
-    ptr += strlen(rank_str);
-    rem_len -= strlen(rank_str);
+    /* /\* Show the severity. *\/ */
+    /* snprintf(rank_str, MAX_RANK_STR, ":%d ", severity); */
+    /* strncpy(ptr, rank_str, (rem_len > 0) ? rem_len : 0); */
+    /* ptr += strlen(rank_str); */
+    /* rem_len -= strlen(rank_str); */
 
     /* Print out the variable list of args with vprintf. */
     va_start(argp, fmt);
     vsnprintf(ptr, ((rem_len > 0) ? rem_len : 0), fmt, argp);
     va_end(argp);
-
 
     /* Put on a final linefeed. */
     ptr = msg + strlen(msg);
@@ -420,10 +419,12 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
 
     if (file && file->iosystem->ioproc &&
 	(file->iotype == PIO_IOTYPE_PNETCDF || file->iotype == PIO_IOTYPE_NETCDF4P))
-      if (file->iosystem->io_rank == 0)
-	MPI_Reduce(MPI_IN_PLACE, &status, 1, MPI_INT, MPI_MIN, 0, file->iosystem->io_comm);
-      else
-	MPI_Reduce(&status, &rbuf, 1, MPI_INT, MPI_MIN, 0, file->iosystem->io_comm);
+    {
+        if (file->iosystem->io_rank == 0)
+            MPI_Reduce(MPI_IN_PLACE, &status, 1, MPI_INT, MPI_MIN, 0, file->iosystem->io_comm);
+        else
+            MPI_Reduce(&status, &rbuf, 1, MPI_INT, MPI_MIN, 0, file->iosystem->io_comm);
+    }
 
     LOG((1, "check_netcdf2 status = %d fname = %s line = %d", status, fname, line));
 
