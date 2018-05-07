@@ -62,6 +62,7 @@
     <jobid_pattern>(\d+)</jobid_pattern>
     <depend_string> --dependencies</depend_string>
     <walltime_format>%H:%M:%s</walltime_format>
+    <batch_jobid_env_var>COBALT_JOBID</batch_jobid_env_var>
     <batch_mail_flag>-M</batch_mail_flag>
     <batch_mail_type_flag></batch_mail_type_flag>
     <batch_mail_type></batch_mail_type>
@@ -84,6 +85,7 @@
     <batch_directive>#COBALT</batch_directive>
     <jobid_pattern>(\d+)</jobid_pattern>
     <depend_string> --dependencies</depend_string>
+    <batch_jobid_env_var>COBALT_JOBID</batch_jobid_env_var>
     <batch_mail_flag>-M</batch_mail_flag>
     <batch_mail_type_flag></batch_mail_type_flag>
     <batch_mail_type></batch_mail_type>
@@ -106,6 +108,7 @@
     <depend_string> -w 'done(jobid)'</depend_string>
     <depend_separator>&amp;&amp;</depend_separator>
     <walltime_format>%H:%M</walltime_format>
+    <batch_jobid_env_var>LSB_JOBID</batch_jobid_env_var>
     <batch_mail_flag>-u</batch_mail_flag>
     <batch_mail_type_flag></batch_mail_type_flag>
     <batch_mail_type></batch_mail_type>
@@ -135,6 +138,7 @@
     <depend_string> -W depend=afterok:jobid</depend_string>
     <depend_separator>:</depend_separator>
     <walltime_format>%H:%M:%S</walltime_format>
+    <batch_jobid_env_var>PBS_JOBID</batch_jobid_env_var>
     <batch_mail_flag>-M</batch_mail_flag>
     <batch_mail_type_flag>-m</batch_mail_type_flag>
     <batch_mail_type>, bea, b, e, a</batch_mail_type>
@@ -160,6 +164,7 @@
     <depend_string> --dependency=afterok:jobid</depend_string>
     <depend_separator>,</depend_separator>
     <walltime_format>%H:%M:%S</walltime_format>
+    <batch_jobid_env_var>SLURM_JOB_ID</batch_jobid_env_var>
     <batch_mail_flag>--mail-user</batch_mail_flag>
     <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
     <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
