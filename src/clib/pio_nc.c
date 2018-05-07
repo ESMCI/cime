@@ -2509,7 +2509,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
 
     /* Get the type of the attribute. */
     if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, NULL)))
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return ierr;
     LOG((2, "atttype = %d", atttype));
 
     return PIOc_get_att_tc(ncid, varid, name, atttype, ip);

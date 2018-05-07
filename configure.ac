@@ -106,4 +106,6 @@ AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
           tests/Makefile
-          tests/cunit/Makefile)
+          tests/cunit/Makefile
+          examples/Makefile
+          examples/c/Makefile)
