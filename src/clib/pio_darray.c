@@ -411,7 +411,7 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
          ncid, varid, pio_type, type_size));
 
     /* Is there a _FillValue attribute? */
-    ret = PIOc_inq_att(ncid, varid, "_FillValue", NULL, NULL);
+    ret = PIOc_inq_att_eh(ncid, varid, "_FillValue", 0, NULL, NULL);
     
     LOG((3, "pio_inq_var_fill_expected ret %d", ret));
 

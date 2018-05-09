@@ -1091,8 +1091,8 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
  * @return PIO_NOERR for success, error code otherwise.
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
-                 PIO_Offset *lenp)
+int PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
+                    nc_type *xtypep, PIO_Offset *lenp)
 {
     int msg = PIO_MSG_INQ_ATT;
     iosystem_desc_t *ios;
@@ -1160,18 +1160,44 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
-    if (ierr)
+    if (eh && ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-    /* Broadcast results. */
-    if (xtypep)
-        if ((mpierr = MPI_Bcast(xtypep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            check_mpi(file, mpierr, __FILE__, __LINE__);
-    if (lenp)
-        if ((mpierr = MPI_Bcast(lenp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-            check_mpi(file, mpierr, __FILE__, __LINE__);
+    /* Broadcast results if call succeeded. */
+    if (!ierr)
+    {
+        if (xtypep)
+            if ((mpierr = MPI_Bcast(xtypep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+                check_mpi(file, mpierr, __FILE__, __LINE__);
+        if (lenp)
+            if ((mpierr = MPI_Bcast(lenp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+                check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
-    return PIO_NOERR;
+    return ierr;
+}
+
+/**
+ * @ingroup PIO_inq_att
+ * The PIO-C interface for the NetCDF function nc_inq_att.
+ *
+ * This routine is called collectively by all tasks in the communicator
+ * ios.union_comm. For more information on the underlying NetCDF commmand
+ * please read about this function in the NetCDF documentation at:
+ * http://www.unidata.ucar.edu/software/netcdf/docs/group__attributes.html
+ *
+ * @param ncid the ncid of the open file, obtained from
+ * PIOc_openfile() or PIOc_createfile().
+ * @param varid the variable ID.
+ * @param xtypep a pointer that will get the type of the attribute.
+ * @param lenp a pointer that will get the number of values
+ * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
+ */
+int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
+                 PIO_Offset *lenp)
+{
+    return PIOc_inq_att_eh(ncid, varid, name, 1, xtypep, lenp);
 }
 
 /**
