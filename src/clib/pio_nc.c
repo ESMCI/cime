@@ -1085,7 +1085,10 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
+ * @param varid the variable ID or NC_GLOBAL.
+ * @param name name of the attribute.
+ * @param eh non-zero to handle errors in the function. This will
+ * cause program to halt if PIO error handler is set to INTERNAL.
  * @param xtypep a pointer that will get the type of the attribute.
  * @param lenp a pointer that will get the number of values
  * @return PIO_NOERR for success, error code otherwise.
@@ -1189,6 +1192,8 @@ int PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
+ * @param varid the variable ID or NC_GLOBAL.
+ * @param name name of the attribute.
  * @param xtypep a pointer that will get the type of the attribute.
  * @param lenp a pointer that will get the number of values
  * @return PIO_NOERR for success, error code otherwise.
