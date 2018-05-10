@@ -247,9 +247,9 @@ int main(int argc, char* argv[])
     if ((ret = PIOc_set_log_level(LOG_LEVEL)))
         return ret;
 
-    /* Change error handling so we can test inval parameters. */
-    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
-        return ret;
+    /* /\* Change error handling so we can test inval parameters. *\/ */
+    /* if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL))) */
+    /*     return ret; */
 
     /* Initialize the PIO IO system. This specifies how many and
      * which processors are involved in I/O. */

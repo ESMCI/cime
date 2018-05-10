@@ -584,7 +584,6 @@ int main(int argc, char* argv[])
     
 #ifdef TIMING    
     /* Initialize the GPTL timing library. */
-    int ret;
     if ((ret = GPTLinitialize ()))
       return ret;
 #endif    

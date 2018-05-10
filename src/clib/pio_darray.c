@@ -411,11 +411,17 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
          ncid, varid, pio_type, type_size));
 
     /* Is there a _FillValue attribute? */
-    ret = PIOc_get_att(ncid, varid, "_FillValue", fillvalue);
+    ret = PIOc_inq_att_eh(ncid, varid, "_FillValue", 0, NULL, NULL);
+    
     LOG((3, "pio_inq_var_fill_expected ret %d", ret));
 
-    /* If no _FillValue at was found we still have work to do. */
-    if (ret)
+    /* If there is a fill value, get it. */
+    if (!ret)
+    {
+        if ((ret = PIOc_get_att(ncid, varid, "_FillValue", fillvalue)))
+            return ret;
+    }
+    else /* If no _FillValue at was found we still have work to do. */
     {
         /* Did we get some other error? */
         if (ret != PIO_ENOTATT)
