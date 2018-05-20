@@ -64,9 +64,8 @@
 <span class="sd">COMPILER, MPILIB, and DEBUG, respectively.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.compilers</span> <span class="kn">import</span> <span class="n">Compilers</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_mach_specific</span> <span class="kn">import</span> <span class="n">EnvMachSpecific</span>
 
@@ -107,13 +106,13 @@
     <span class="n">outputdfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;Depends.{}.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span><span class="n">compiler</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dfile</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">outputdfile</span><span class="p">):</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
             <span class="n">dfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;Depends.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dep</span><span class="p">))</span>
             <span class="n">outputdfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;Depends.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dep</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">outputdfile</span><span class="p">):</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
+                <span class="n">safe_copy</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FakeCase"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase">[docs]</a><span class="k">class</span> <span class="nc">FakeCase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 

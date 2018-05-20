@@ -48,7 +48,7 @@
             
   <h1>Source code for CIME.Servers.gftp</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">GridFTP Server class.  Interact with a server using GridFTP protocal</span>
+<span class="sd">GridFTP Server class.  Interact with a server using GridFTP protocol</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># pylint: disable=super-init-not-called</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
@@ -68,7 +68,6 @@
         <span class="k">if</span> <span class="n">stat</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: File {} not found.</span><span class="se">\n</span><span class="s2">stat={} error={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">stat</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
             <span class="k">return</span> <span class="bp">False</span>
-
         <span class="k">return</span> <span class="bp">True</span></div>
 
 <div class="viewcode-block" id="GridFTP.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.gftp.GridFTP.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
@@ -76,6 +75,15 @@
 
         <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: GridFTP repo &#39;{}&#39; does not have file &#39;{}&#39; error={}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span>
+                            <span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_address</span><span class="p">,</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="GridFTP.getdirectory"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.gftp.GridFTP.getdirectory">[docs]</a>    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+        <span class="n">stat</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span><span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;globus-url-copy -v -r {}{} file://{}{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_address</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="n">full_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: GridFTP repo &#39;{}&#39; does not have directory &#39;{}&#39; error={}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span>
                             <span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_address</span><span class="p">,</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
             <span class="k">return</span> <span class="bp">False</span>
         <span class="k">return</span> <span class="bp">True</span></div></div>

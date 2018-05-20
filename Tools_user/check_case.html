@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="component_generate_baseline" href="component_generate_baseline.html" />
-    <link rel="prev" title="bless_test_results" href="bless_test_results.html" /> 
+    <link rel="next" title="check_input_data" href="check_input_data.html" />
+    <link rel="prev" title="case_diff" href="case_diff.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="component_generate_baseline.html" title="component_generate_baseline"
+          <a href="check_input_data.html" title="check_input_data"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="bless_test_results.html" title="bless_test_results"
+          <a href="case_diff.html" title="case_diff"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,25 +62,28 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./check_case --help
-usage: 
-check_case [--verbose]
-OR
-check_case --help
+usage: check_case [-h] [-d] [-v] [-s]
 
-[1mEXAMPLES:[0m
-    [1;32m# Run [0m
-    &gt; check_case
+Script to verify that the case is ready for submission.
 
-check_case verifies that the case is set up correctly
+Typical usage is simply:
+   ./check_case
+
+You can run this before running case.submit to:
+  - Ensure that all of the env xml files are in sync with the locked files
+  - Create namelists (thus verifying that there will be no problems with
+    namelist generation)
+  - Ensure that the build is complete
+
+Running this is completely optional: these checks will be done
+automatically when running case.submit. However, you can run this if you
+want to perform these checks without actually submitting the case.
 
 optional arguments:
   -h, --help     show this help message and exit
-  -d, --debug    Print debug information (very verbose) to file
-                 /Users/aliceb/cime/scripts/Tools/check_case.log (default:
-                 False)
+  -d, --debug    Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/check_case.log
   -v, --verbose  Add additional context (time and file) to log messages
-                 (default: False)
-  -s, --silent   Print only warnings and error messages (default: False)
+  -s, --silent   Print only warnings and error messages
 </pre></div>
 </div>
 </div>
@@ -92,11 +95,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="bless_test_results.html"
-                        title="previous chapter">bless_test_results</a></p>
+  <p class="topless"><a href="case_diff.html"
+                        title="previous chapter">case_diff</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="component_generate_baseline.html"
-                        title="next chapter">component_generate_baseline</a></p>
+  <p class="topless"><a href="check_input_data.html"
+                        title="next chapter">check_input_data</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -128,10 +131,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="component_generate_baseline.html" title="component_generate_baseline"
+          <a href="check_input_data.html" title="check_input_data"
              >next</a> |</li>
         <li class="right" >
-          <a href="bless_test_results.html" title="bless_test_results"
+          <a href="case_diff.html" title="case_diff"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

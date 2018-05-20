@@ -53,8 +53,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">run_sub_or_cmd</span>
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">import</span> <span class="nn">glob</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="create_dirs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.create_dirs">[docs]</a><span class="k">def</span> <span class="nf">create_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -151,12 +151,12 @@
                    <span class="s2">&quot;*streams*txt*&quot;</span><span class="p">,</span> <span class="s2">&quot;*stxt&quot;</span><span class="p">,</span> <span class="s2">&quot;*maps.rc&quot;</span><span class="p">,</span> <span class="s2">&quot;*cism.config*&quot;</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">cpglob</span><span class="p">)):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Copy file from &#39;{}&#39; to &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">))</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span>
 
     <span class="c1"># Copy over chemistry mechanism docs if they exist</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="s2">&quot;camconf&quot;</span><span class="p">))):</span>
         <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="s2">&quot;camconf&quot;</span><span class="p">,</span> <span class="s2">&quot;*chem_mech*&quot;</span><span class="p">)):</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span></div>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>query_config &mdash; CIME 5.4.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
+    <link rel="up" title="User Tools" href="index.html" />
+    <link rel="next" title="query_testlists" href="query_testlists.html" />
+    <link rel="prev" title="preview_run" href="preview_run.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="query_testlists.html" title="query_testlists"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="preview_run.html" title="preview_run"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="query-config">
+<span id="id1"></span><h1>query_config<a class="headerlink" href="#query-config" title="Permalink to this headline">¶</a></h1>
+<p><strong>query_config</strong> is a script in CIMEROOT/scripts.</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>$ ./query_config --help
+usage: query_config [-h] [-d] [-v] [-s]
+                    [--compsets [{all,allactive,drv,cam,cism,clm,cice,pop}]]
+                    [--components [{all,mct,drv,datm,satm,xatm,cam,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,desp,sesp}]]
+                    [--grids]
+                    [--machines [{all,current,bluewaters,brutus,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,eastwind,edison,gaea,hobart,homebrew,laramie,lawrencium-lr3,lawrencium-lr2,melvin,mira,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,rosa,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,lbl-lr3,lbl-lr2,theta,yellowstone,modex}]]
+                    [--long]
+
+Displays information about available compsets, component settings, grids and/or
+machines. Typically run with one of the arguments --compsets, --settings,
+--grids or --machines; if you specify more than one of these arguments,
+information will be listed for each.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/query_config.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
+  --compsets [{all,allactive,drv,cam,cism,clm,cice,pop}]
+                        Query compsets corresponding to the target component for the cesm model. If no component is given, lists compsets defined by all components
+  --components [{all,mct,drv,datm,satm,xatm,cam,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,desp,sesp}]
+                        Query component settings corresponding to the target component for cesm model.
+                        If the option is empty, then the lists settings defined by all components is output
+  --grids               Query supported model grids for cesm model.
+  --machines [{all,current,bluewaters,brutus,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,eastwind,edison,gaea,hobart,homebrew,laramie,lawrencium-lr3,lawrencium-lr2,melvin,mira,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,rosa,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,lbl-lr3,lbl-lr2,theta,yellowstone,modex}]
+                        Query supported machines for cesm model.
+                        If option is left empty then all machines are listed,
+                        If the option is &#39;current&#39; then only the current machine details are listed.
+  --long                Provide long output for queries
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="preview_run.html"
+                        title="previous chapter">preview_run</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="query_testlists.html"
+                        title="next chapter">query_testlists</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Tools_user/query_config.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="query_testlists.html" title="query_testlists"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="preview_run.html" title="preview_run"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+    </div>
+  </body>
+</html>

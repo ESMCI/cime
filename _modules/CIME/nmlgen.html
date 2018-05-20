@@ -350,7 +350,7 @@
 
 <span class="sd">        Replace any instance of the following substring indicators with the</span>
 <span class="sd">        appropriate values:</span>
-<span class="sd">            %glc = two-digit GLC elevation class from 01 through glc_nec</span>
+<span class="sd">            %glc = two-digit GLC elevation class from 00 through glc_nec</span>
 
 <span class="sd">        The difference between this function and `_sub_paths` is that this</span>
 <span class="sd">        function is intended to be used for variable names (especially from the</span>
@@ -365,6 +365,7 @@
 <span class="sd">             s2x_Ss_tsrf%glc   tsrf%glc</span>
 <span class="sd">         then the returned array will be:</span>
 <span class="sd">             foo               bar</span>
+<span class="sd">             s2x_Ss_tsrf00     tsrf00</span>
 <span class="sd">             s2x_Ss_tsrf01     tsrf01</span>
 <span class="sd">             s2x_Ss_tsrf02     tsrf02</span>
 <span class="sd">             s2x_Ss_tsrf03     tsrf03</span>
@@ -376,11 +377,9 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="s2">&quot;</span><span class="si">%g</span><span class="s2">lc&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;GLC_NEC&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;GLC_NEC&#39;</span><span class="p">)))</span>
-                <span class="n">glc_nec_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">glc_nec_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">glc_nec_indices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">glc_nec_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;GLC_NEC&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">glc_nec_indices</span><span class="p">:</span>
                     <span class="n">new_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%g</span><span class="s2">lc&quot;</span><span class="p">,</span> <span class="s2">&quot;{:02d}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
             <span class="k">else</span><span class="p">:</span>

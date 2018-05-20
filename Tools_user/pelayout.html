@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="e3sm_cime_merge" href="e3sm_cime_merge.html" />
-    <link rel="prev" title="simple-py-prof" href="simple-py-prof.html" /> 
+    <link rel="next" title="preview_namelists" href="preview_namelists.html" />
+    <link rel="prev" title="normalize_cases" href="normalize_cases.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="e3sm_cime_merge.html" title="e3sm_cime_merge"
+          <a href="preview_namelists.html" title="preview_namelists"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="simple-py-prof.html" title="simple-py-prof"
+          <a href="normalize_cases.html" title="normalize_cases"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,35 +62,33 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./pelayout --help
-usage: pelayout [-h] [-d] [-v] [-s] [-format FORMAT] [-set-nasks SET_NTASKS]
-                [-set-nthrds SET_NTHRDS] [-header HEADER] [-no-header]
-                [-caseroot CASEROOT]
-
-Display and/or change the case&#39;s PE layout.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/aliceb/cime/scripts/Tools/pelayout.log
-  -v, --verbose         Add additional context (time and file) to log messages
-  -s, --silent          Print only warnings and error messages
-  -format FORMAT, --format FORMAT
-                        Format the PE layout items for each component (see
-                        below)
-  -set-nasks SET_NTASKS, --set-ntasks SET_NTASKS
-                        Total number of tasks to set for the case
-  -set-nthrds SET_NTHRDS, --set-nthrds SET_NTHRDS, -set-nthreads SET_NTHRDS, --set-nthreads SET_NTHRDS
-                        Number of threads to set for all components
-  -header HEADER, --header HEADER
-                        Custom header for PE layout display
-  -no-header, --no-header
-                        Do not print any PE layout header
-  -caseroot CASEROOT, --caseroot CASEROOT
-                        Case directory to reference
+usage: pelayout [-h] [-d] [-v] [-s] [--set-ntasks SET_NTASKS]
+                [--set-nthrds SET_NTHRDS] [--format FORMAT] [--header HEADER]
+                [--no-header] [--caseroot CASEROOT]
 
 This utility allows the CIME user to view and modify a case&#39;s PE layout.
+With this script, a user can:
 
-Interpreted format sequences are:&quot;
+1) View the PE layout of a case
+   ./pelayout
+   ./pelayout --format &quot;%C:  %06T/%+H&quot; --header &quot;Comp: Tasks /Th&quot;
+2) Attempt to scale the number of tasks used by a case
+   ./pelayout --set-ntasks 144
+3) Set the number of threads used by a case
+   ./pelayout --set-nthrds 2
+
+The --set-ntasks option attempts to scale all components so that the
+job will run in the provided number of tasks. For a component using the
+maximum number of tasks, this will merely set that component to the new
+number. However, for components running in parallel using a portion of
+the maximum tasks, --set-ntasks will attempt to scale the tasks
+proportionally, changing the value of ROOTPE to maintain the same level
+of parallel behavior. If the --set-ntasks algorithm is unable to
+automatically find a new layout, it will print an error message
+indicating the component(s) it was unable to reset and no changes will
+be made to the case.
+
+Interpreted FORMAT sequences are:
 %%  a literal %
 %C  the component name
 %T  the task count for the component
@@ -98,21 +96,27 @@ Interpreted format sequences are:&quot;
 %R  the PE root for the component
 
 Standard format extensions, such as a field length and padding are supported.
-Example:
-  For NTASKS_ATM=480, NTHREADS_ATM=2 and ROOTPE_ATM, &quot;%C: %06T/%+H&quot; will show
-ATM: 000480/+2
-Note that since %R was omitted, the root PE was not shown.
 Python dictionary-format strings are also supported. For instance,
 --format &quot;{C:4}&quot;, will print the component name padded to 4 spaces.
-=======================
-If this tool is missing any feature that you need, please go to github and
-create an issue (https://github.com/ESMCI/cime/issues). Detailed
-information is available at https://github.com/ESMCI/cime.
 
-    COPYRIGHT AND LICENSE
+If  you encounter problems with this tool or find it is missing any
+feature that you need, please open an issue on https://github.com/ESMCI/cime
 
-        This library is free software; you can redistribute it and/or modify
-        it under the same terms as Python itself.
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug information (very verbose) to file
+                        /Users/aliceb/cesm/cime/scripts/Tools/pelayout.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
+  --set-ntasks SET_NTASKS
+                        Total number of tasks to set for the case
+  --set-nthrds SET_NTHRDS, --set-nthreads SET_NTHRDS
+                        Number of threads to set for all components
+  --format FORMAT       Format the PE layout items for each component (see
+                        below)
+  --header HEADER       Custom header for PE layout display
+  --no-header           Do not print any PE layout header
+  --caseroot CASEROOT   Case directory to reference
 </pre></div>
 </div>
 </div>
@@ -124,11 +128,11 @@ information is available at https://github.com/ESMCI/cime.
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="simple-py-prof.html"
-                        title="previous chapter">simple-py-prof</a></p>
+  <p class="topless"><a href="normalize_cases.html"
+                        title="previous chapter">normalize_cases</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="e3sm_cime_merge.html"
-                        title="next chapter">e3sm_cime_merge</a></p>
+  <p class="topless"><a href="preview_namelists.html"
+                        title="next chapter">preview_namelists</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -160,10 +164,10 @@ information is available at https://github.com/ESMCI/cime.
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="e3sm_cime_merge.html" title="e3sm_cime_merge"
+          <a href="preview_namelists.html" title="preview_namelists"
              >next</a> |</li>
         <li class="right" >
-          <a href="simple-py-prof.html" title="simple-py-prof"
+          <a href="normalize_cases.html" title="normalize_cases"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

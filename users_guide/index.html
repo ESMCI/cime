@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="create-a-case.html">2. Creating a Case</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="create-a-case.html#calling-create-newcase">2.1. Calling <strong>create_newcase</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="create-a-case.html#results-of-calling-create-newcase">2.2. Results of calling <strong>create_newcase</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-a-case.html#locked-files-in-your-case-directory">2.3. Locked files in your case directory</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="setting-up-a-case.html">3. Setting up a Case</a><ul>
@@ -83,7 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="running-a-case.html">5. Running a Case</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html#calling-case-submit">5.1. Calling <strong>case.submit</strong></a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html#input-data">5.2. Input data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running-a-case.html#controlling-starting-stopping-and-restarting-a-run">5.3. Controlling starting, stopping and restarting a run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running-a-case.html#starting-stopping-and-restarting-a-run">5.3. Starting, Stopping and Restarting a Run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html#controlling-output-data">5.4. Controlling output data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html#restarting-a-run">5.5. Restarting a run</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html#archiving-model-output-data">5.6. Archiving model output data</a></li>
@@ -91,13 +92,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cloning-a-case.html">6. Cloning a Case</a></li>
-<li class="toctree-l1"><a class="reference internal" href="use_cases/use-cases.html">7. Modifying a Case</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="use_cases/namelist-gen.html">7.1. Changing namelist values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="use_cases/basics-a-basic-example.html">7.2. Setting up a multi-year run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="use_cases/driver-nml.html">7.3. Modifying driver namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="use_cases/basics-setting-up-a-branch-or-hybrid-run.html">7.4. Setting up a branch or hybrid run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="use_cases/datamod-nml.html">7.5. Customizing data model namelists and stream files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="use_cases/cesm-nml.html">7.6. Customizing CESM active component-specific namelist settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cime-change-namelist.html">7. Customizing your input variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html#customizing-driver-input-variables">7.1. Customizing driver input variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html#customizing-data-model-input-variable-and-stream-files">7.2. Customizing data model input variable and stream files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html#customizing-cesm-active-component-specific-namelist-settings">7.3. Customizing CESM active component-specific namelist settings</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cime-config.html">8. CIME user config directory</a></li>
@@ -136,17 +134,18 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pes-threads.html#pe-settings-for-a-case">5.1. pe-settings for a case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#changing-default-pe-layout">5.2. Changing default PE layout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#threading-control">5.3. Threading control</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#smt">5.4. SMT</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#id1">5.5. Optimizing processor layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#setting-the-pe-layout">5.2. Setting the PE layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#case-resource-allocation">5.3. Case Resource Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html#optimizing-processor-layout">5.4. Optimizing processor layout</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="porting-cime.html#required-libraries-packages">6.1. Required libraries/packages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porting-cime.html#an-mpi-example">6.2. An MPI example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#steps-for-porting">6.3. Steps for porting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#validating-your-port">6.4. Validating your port</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#cesm-linux-and-mac-support">6.3. CESM Linux and Mac Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#steps-for-porting">6.4. Steps for porting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#validating-a-cesm-port-with-prognostic-components">6.5. Validating a CESM port with prognostic components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html#performance-tuning-of-a-cesm-port">6.6. Performance tuning of a CESM port</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="timers.html">7. Timers and timing</a><ul>
@@ -155,12 +154,9 @@
 <li class="toctree-l2"><a class="reference internal" href="timers.html#setting-the-time-limits">7.3. Setting the time limits</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="testing.html">8. Testing with create_test</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#using-create-test-e3sm">8.1. Using create_test (E3SM)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#managing-baselines">8.2. Managing baselines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#manage-testlists">8.3. manage_testlists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#adding-tests">8.4. Adding tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html#scripts-regression-tests">8.5. Scripts regression tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">8. Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#testname-syntax">8.1. Testname syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#test-types">8.2. Test Types</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="unit_testing.html">9. Fortran Unit Testing</a><ul>
@@ -174,6 +170,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="multi-instance.html">10. Multi-instance component functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">11. Workflows</a></li>
 </ul>
 </div>
 <div class="section" id="indices-and-tables">

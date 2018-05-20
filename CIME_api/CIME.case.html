@@ -99,7 +99,7 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.archive_last_restarts">
-<code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>archive_restdir</em>, <em>last_date=None</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
+<code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>archive_restdir</em>, <em>rundir</em>, <em>last_date=None</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function for archiving just the last set of restart
 files to a given directory. This also saves files attached to the
 restart set, such as rpointer files and necessary history
@@ -123,7 +123,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.case_run">
-<code class="descname">case_run</code><span class="sig-paren">(</span><em>skip_pnl=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.case_run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">case_run</code><span class="sig-paren">(</span><em>skip_pnl=False</em>, <em>set_continue_run=False</em>, <em>submit_resubmits=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.case_run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -133,7 +133,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.case_st_archive">
-<code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>last_date_str=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>no_resubmit=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.case_st_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>last_date_str=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>resubmit=True</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.case_st_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create archive object and perform short term archiving</p>
 </dd></dl>
 
@@ -149,7 +149,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_all_input_data">
-<code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>protocal=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_all_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>protocol=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_all_input_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -164,7 +164,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_input_data">
-<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocal='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if no files missing</p>
 </dd></dl>
 
@@ -175,7 +175,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_lockedfiles">
-<code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
+<code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>skip=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all lockedfiles match what&#8217;s in case</p>
 <p>If caseroot is not specified, it is set to the current working directory</p>
 </dd></dl>
@@ -355,15 +355,10 @@ specified for the current machine</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.restore_from_archive">
-<code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>rest_dir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.restore_from_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>rest_dir=None</em>, <em>dout_s_root=None</em>, <em>rundir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.restore_from_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent
 restore_from_archive is a member of Class Case</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="CIME.case.case.Case.schedule_rewrite">
-<code class="descname">schedule_rewrite</code><span class="sig-paren">(</span><em>env_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.schedule_rewrite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.schedule_rewrite" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.set_comp_classes">
@@ -407,17 +402,22 @@ name is returned</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.stage_refcase">
-<code class="descname">stage_refcase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.stage_refcase" title="Permalink to this definition">¶</a></dt>
+<code class="descname">stage_refcase</code><span class="sig-paren">(</span><em>input_data_root=None</em>, <em>data_list_dir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.stage_refcase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.submit">
-<code class="descname">submit</code><span class="sig-paren">(</span><em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>resubmit=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.submit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">submit</code><span class="sig-paren">(</span><em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit=False</em>, <em>resubmit_immediate=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.submit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.submit_jobs">
-<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>prereq=None</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>skip_pnl=None</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.case.case.Case.test_st_archive">
+<code class="descname">test_st_archive</code><span class="sig-paren">(</span><em>testdir='st_archive_test'</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.test_st_archive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -458,7 +458,7 @@ case_cmpgen_namelists is a member of Class case from file case.py</p>
 &#8216;</p>
 <dl class="function">
 <dt id="CIME.case.case_run.case_run">
-<code class="descclassname">CIME.case.case_run.</code><code class="descname">case_run</code><span class="sig-paren">(</span><em>self</em>, <em>skip_pnl=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_run.html#case_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_run.case_run" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_run.</code><code class="descname">case_run</code><span class="sig-paren">(</span><em>self</em>, <em>skip_pnl=False</em>, <em>set_continue_run=False</em>, <em>submit_resubmits=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_run.html#case_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_run.case_run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -479,7 +479,7 @@ case_st_archive, restore_from_archive, archive_last_restarts
 are members of class Case from file case.py</p>
 <dl class="function">
 <dt id="CIME.case.case_st_archive.archive_last_restarts">
-<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>self</em>, <em>archive_restdir</em>, <em>last_date=None</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#archive_last_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>self</em>, <em>archive_restdir</em>, <em>rundir</em>, <em>last_date=None</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#archive_last_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function for archiving just the last set of restart
 files to a given directory. This also saves files attached to the
 restart set, such as rpointer files and necessary history
@@ -493,23 +493,28 @@ files that are associated with these restart files.)</p>
 
 <dl class="function">
 <dt id="CIME.case.case_st_archive.case_st_archive">
-<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>self</em>, <em>last_date_str=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>no_resubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#case_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.case_st_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>self</em>, <em>last_date_str=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>resubmit=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#case_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.case_st_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create archive object and perform short term archiving</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="CIME.case.case_st_archive.get_histfiles_for_restarts">
-<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">get_histfiles_for_restarts</code><span class="sig-paren">(</span><em>rundir</em>, <em>archive</em>, <em>archive_entry</em>, <em>restfile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#get_histfiles_for_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.get_histfiles_for_restarts" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">get_histfiles_for_restarts</code><span class="sig-paren">(</span><em>rundir</em>, <em>archive</em>, <em>archive_entry</em>, <em>restfile</em>, <em>testonly=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#get_histfiles_for_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.get_histfiles_for_restarts" title="Permalink to this definition">¶</a></dt>
 <dd><p>query restart files to determine history files that are needed for restarts</p>
 <p>Not doc-testable due to filesystem dependence</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="CIME.case.case_st_archive.restore_from_archive">
-<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>self</em>, <em>rest_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#restore_from_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.restore_from_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>self</em>, <em>rest_dir=None</em>, <em>dout_s_root=None</em>, <em>rundir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#restore_from_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.restore_from_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent
 restore_from_archive is a member of Class Case</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="CIME.case.case_st_archive.test_st_archive">
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">test_st_archive</code><span class="sig-paren">(</span><em>self</em>, <em>testdir='st_archive_test'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#test_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.test_st_archive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-CIME.case.case_submit">
@@ -530,7 +535,7 @@ submit, check_case and check_da_settings are members of class Case in file case.
 
 <dl class="function">
 <dt id="CIME.case.case_submit.submit">
-<code class="descclassname">CIME.case.case_submit.</code><code class="descname">submit</code><span class="sig-paren">(</span><em>self</em>, <em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>resubmit=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_submit.html#submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_submit.submit" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_submit.</code><code class="descname">submit</code><span class="sig-paren">(</span><em>self</em>, <em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit=False</em>, <em>resubmit_immediate=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_submit.html#submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_submit.submit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -549,18 +554,18 @@ case_test is a member of class Case from case.py</p>
 <p>API for checking input for testcase</p>
 <dl class="function">
 <dt id="CIME.case.check_input_data.check_all_input_data">
-<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>self</em>, <em>protocal=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_all_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_all_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>self</em>, <em>protocol=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_all_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_all_input_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.case.check_input_data.check_input_data">
-<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocal='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_input_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if no files missing</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="CIME.case.check_input_data.stage_refcase">
-<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">stage_refcase</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#stage_refcase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.stage_refcase" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">stage_refcase</code><span class="sig-paren">(</span><em>self</em>, <em>input_data_root=None</em>, <em>data_list_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#stage_refcase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.stage_refcase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -576,7 +581,7 @@ of Class case.py from file case.py</p>
 
 <dl class="function">
 <dt id="CIME.case.check_lockedfiles.check_lockedfiles">
-<code class="descclassname">CIME.case.check_lockedfiles.</code><code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_lockedfiles.html#check_lockedfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_lockedfiles.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.check_lockedfiles.</code><code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>self</em>, <em>skip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_lockedfiles.html#check_lockedfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_lockedfiles.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all lockedfiles match what&#8217;s in case</p>
 <p>If caseroot is not specified, it is set to the current working directory</p>
 </dd></dl>

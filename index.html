@@ -70,7 +70,7 @@ and libraries.</p>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/building-a-case.html">4. Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/running-a-case.html">5. Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/cloning-a-case.html">6. Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/use_cases/use-cases.html">7. Modifying a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/cime-change-namelist.html">7. Customizing your input variables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/cime-config.html">8. CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/troubleshooting.html">9. Troubleshooting</a></li>
 </ul>
@@ -83,9 +83,10 @@ and libraries.</p>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/pes-threads.html">5. Controlling processors and threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/timers.html">7. Timers and timing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/testing.html">8. Testing with create_test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/testing.html">8. Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/unit_testing.html">9. Fortran Unit Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/multi-instance.html">10. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/workflows.html">11. Workflows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_guide/index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -141,48 +142,56 @@ and libraries.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Tools_user/index.html">User Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Tools_user/advanced-py-prof.html">advanced-py-prof</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/compare_namelists.html">compare_namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/jenkins_generic_job.html">jenkins_generic_job</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmlquery.html">xmlquery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_test.html">component_compare_test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/list_e3sm_tests.html">list_e3sm_tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.submit.html">case.submit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/compare_test_results.html">compare_test_results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/normalize_cases.html">normalize_cases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/save_provenance.html">save_provenance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_lockedfiles.html">check_lockedfiles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/mkSrcfiles.html">mkSrcfiles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/preview_run.html">preview_run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/concat_daily_hist.csh.html">concat_daily_hist.csh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/cimeteststatus.html">cimeteststatus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.setup.html">case.setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/cs.status.html">cs.status</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/preview_namelists.html">preview_namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_baseline.html">component_compare_baseline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.qstatus.html">case.qstatus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/mkDepends.html">mkDepends</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/cime_bisect.html">cime_bisect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/testreporter.py.html">testreporter.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/simple_compare.html">simple_compare</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case_diff.html">case_diff</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/jenkins_script.html">jenkins_script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmltestentry.html">xmltestentry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/e3sm_check_env.html">e3sm_check_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/wait_for_tests.html">wait_for_tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tools_user/bless_test_results.html">bless_test_results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_case.html">check_case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_generate_baseline.html">component_generate_baseline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tools_user/case.build.html">case.build</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmlchange.html">xmlchange</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/code_checker.html">code_checker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_copy.html">component_compare_copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.qstatus.html">case.qstatus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.run.html">case.run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.setup.html">case.setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.st_archive.html">case.st_archive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.submit.html">case.submit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.test.html">case.test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/case_diff.html">case_diff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_case.html">check_case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tools_user/check_input_data.html">check_input_data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/simple-py-prof.html">simple-py-prof</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/pelayout.html">pelayout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_lockedfiles.html">check_lockedfiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/cime_bisect.html">cime_bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/cimeteststatus.html">cimeteststatus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/code_checker.html">code_checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/compare_namelists.html">compare_namelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/compare_test_results.html">compare_test_results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_baseline.html">component_compare_baseline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_copy.html">component_compare_copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_test.html">component_compare_test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_generate_baseline.html">component_generate_baseline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/concat_daily_hist.csh.html">concat_daily_hist.csh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/create_clone.html">create_clone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/create_newcase.html">create_newcase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/create_test.html">create_test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/cs.status.html">cs.status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/e3sm_check_env.html">e3sm_check_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Tools_user/e3sm_cime_merge.html">e3sm_cime_merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/e3sm_cime_split.html">e3sm_cime_split</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/getTiming.html">getTiming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/jenkins_generic_job.html">jenkins_generic_job</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/jenkins_script.html">jenkins_script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/list_e3sm_tests.html">list_e3sm_tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/mkDepends.html">mkDepends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/mkSrcfiles.html">mkSrcfiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/normalize_cases.html">normalize_cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/pelayout.html">pelayout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/preview_namelists.html">preview_namelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/preview_run.html">preview_run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/query_config.html">query_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/query_testlists.html">query_testlists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/save_provenance.html">save_provenance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/simple-py-prof.html">simple-py-prof</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/simple_compare.html">simple_compare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/testreporter.py.html">testreporter.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/wait_for_tests.html">wait_for_tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmlchange.html">xmlchange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmlquery.html">xmlquery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmltestentry.html">xmltestentry</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="xml_files/index.html">XML Files</a><ul>

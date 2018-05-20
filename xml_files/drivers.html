@@ -76,6 +76,13 @@ to define behavior.</p>
       &lt;rpointer_file&gt;rpointer$NINST_STRING.drv&lt;/rpointer_file&gt;
       &lt;rpointer_content &gt;$CASE.cpl$NINST_STRING.r.$DATENAME.nc&lt;/rpointer_content&gt;
     &lt;/rpointer&gt;
+    &lt;test_file_names&gt;
+      &lt;tfile disposition=&quot;move&quot;&gt;cpl_0001.log.5548574.chadmin1.180228-124723.gz&lt;/tfile&gt;
+      &lt;tfile disposition=&quot;copy&quot;&gt;casename.cpl.r.1976-01-01-00000.nc&lt;/tfile&gt;
+      &lt;tfile disposition=&quot;copy&quot;&gt;rpointer.drv_0001&lt;/tfile&gt;
+      &lt;tfile disposition=&quot;copy&quot;&gt;rpointer.drv&lt;/tfile&gt;
+      &lt;tfile disposition=&quot;ignore&quot;&gt;casenamenot.cpl.r.1976-01-01-00000.nc&lt;/tfile&gt;
+    &lt;/test_file_names&gt;
   &lt;/comp_archive_spec&gt;
 
 &lt;/components&gt;
@@ -772,7 +779,7 @@ to define behavior.</p>
       runs (i.e., non-DEBUG), due to performance penalties associated with turning on these flags.&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;BUILD_THREADED&quot;&gt;
+  &lt;entry id=&quot;FORCE_BUILD_SMP&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
@@ -814,9 +821,9 @@ to define behavior.</p>
     &lt;desc&gt;TRUE implies linking to the Albany library - set
     automatically by XXX_USE_ALBANY options (do not edit). Flag to
     turn on linking to the Albany library. Currently this is used by
-    MPASLI. Note that Albany is a C++ library, so setting this
+    MALI. Note that Albany is a C++ library, so setting this
     variable to TRUE will involve the inclusion of C++ code in the
-    MPASLI executable. This is currently only supported for certain
+    MALI executable. This is currently only supported for certain
     machines.&lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -1882,8 +1889,29 @@ to define behavior.</p>
     &lt;group&gt;run_din&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;
-      A regular expression to search for an indication that a run failure was caused by a node failure
-      and should therefore be re-attempted.
+      A regular expression to search for an indication that a run failure
+       was caused by a node failure and should therefore be re-attempted.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;MPIRUN_RETRY_REGEX&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;group&gt;run_din&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;
+      A regular expression to search for an indication that a run failure
+      was caused by a known event such as a timeout and should therefore
+      be re-attempted.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;MPIRUN_RETRY_COUNT&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;0&lt;/default_value&gt;
+    &lt;group&gt;run_din&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;The number of times to reattempt the mpirun command if
+    MPIRUN_RETRY_REGEX is matched but ALLOCATE_SPARE_NODES is False
     &lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -2115,7 +2143,7 @@ to define behavior.</p>
     &lt;default_value&gt;0&lt;/default_value&gt;
     &lt;group&gt;mach_pes_last&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
-    &lt;desc&gt;total number of MPI tasks (setup automatically - DO NOT EDIT)&lt;/desc&gt;
+    &lt;desc&gt;total number of physical cores used (setup automatically - DO NOT EDIT)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;MAX_TASKS_PER_NODE&quot;&gt;
@@ -2766,6 +2794,14 @@ to define behavior.</p>
 
 &lt;entry_id version=&quot;2.0&quot;&gt;
 
+  &lt;entry id=&quot;MODEL_DOI_URL&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
+    &lt;group&gt;run_metadata&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;run DOI&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;DRV_THREADING&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
@@ -2904,7 +2940,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;CESM1_MOD&lt;/value&gt;
       &lt;value compset=&quot;_SOCN&quot;                     &gt;CESM1_MOD&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot;                    &gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_MPASCICE.*_MPASO&quot;         &gt;RASM_OPTION1&lt;/value&gt;
+      &lt;value compset=&quot;_MPASCICE.*_MPASO&quot;           &gt;RASM_OPTION1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -2995,10 +3031,10 @@ to define behavior.</p>
     &lt;default_value&gt;day&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;year&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;year&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;day&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;year&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;day&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot;       &gt;day&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;day&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;day&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;day&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;day&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;day&lt;/value&gt;
@@ -3028,9 +3064,9 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_CICE.*_DOCN&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DOCN%US20&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU240&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU240wLI&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU120&quot;&gt;24&lt;/value&gt;
@@ -3079,9 +3115,9 @@ to define behavior.</p>
     &lt;default_value&gt;$ATM_NCPL&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
@@ -3099,9 +3135,9 @@ to define behavior.</p>
     &lt;default_value&gt;$ATM_NCPL&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;$ATM_NCPL&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
@@ -3125,9 +3161,9 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_CLM4.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SATM.*_SLND.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU240&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU240wLI&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU120&quot;&gt;24&lt;/value&gt;
@@ -3152,9 +3188,9 @@ to define behavior.</p>
     &lt;default_value&gt;1&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;1&lt;/value&gt;
@@ -3194,10 +3230,12 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_DLND.*_DICE.*_DOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*_DICE.*_DOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_SROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_XROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DLND.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SLND.*SOCN.*_MPASLI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MPASLI&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;8&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;6&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;4&lt;/value&gt;
@@ -3361,6 +3399,7 @@ to define behavior.</p>
       &lt;value compset=&quot;^2000.+AV1C-L&quot;				&gt;368.865&lt;/value&gt;
       &lt;value compset=&quot;^2000.+AV1C-H01A&quot;				&gt;368.865&lt;/value&gt;
       &lt;value compset=&quot;^2000.+AV1C-H01B&quot;				&gt;368.865&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+AV1C-H01C&quot;				&gt;368.865&lt;/value&gt;
       &lt;value compset=&quot;^1850.+CMIP6&quot;                             &gt;284.317&lt;/value&gt;
       &lt;value compset=&quot;^1950.+CMIP6&quot;                             &gt;312.821&lt;/value&gt;
       &lt;!-- Override values based on CAM (WACCM) chemistry --&gt;
@@ -3411,7 +3450,7 @@ to define behavior.</p>
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_CLM45.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;_CLM45.*_MPASLI&quot;&gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;_CLM45.*_MALI&quot;&gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;_CLM50.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
       &lt;!-- Turn on two-way coupling for TG compsets - even though there are no
 	   feedbacks for a TG compset, this will give us additional diagnostics --&gt;
@@ -3594,6 +3633,14 @@ to define behavior.</p>
     &lt;desc option=&quot;BDRD&quot;&gt; with diagnostic CO2&lt;/desc&gt;
     &lt;desc option=&quot;BPRP&quot;&gt; with prognostic CO2 &lt;/desc&gt;
   &lt;/description&gt;
+
+  &lt;entry id=&quot;MODEL_DOI_URL&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;https://doi.org/10.5065/D67H1H0V&lt;/default_value&gt;
+    &lt;group&gt;run_metadata&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;run DOI&lt;/desc&gt;
+  &lt;/entry&gt;
 
   &lt;entry id=&quot;DRV_THREADING&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
@@ -3837,10 +3884,9 @@ to define behavior.</p>
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v7&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM%NYF.*_SLND.*_DICE.*_DOCN.*_SWAV&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM%NYF.*_DLND.*_DICE.*_DOCN.*_DWAV&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_CLM.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_SATM.*_SLND.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_XOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_SOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3854,6 +3900,8 @@ to define behavior.</p>
     &lt;default_value&gt;1&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SGLC&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_XGLC&quot;&gt;$ATM_NCPL&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3891,6 +3939,8 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;8&lt;/value&gt;
       &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_SROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_XROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4188,8 +4238,8 @@ to define behavior.</p>
   &lt;/compset&gt;
 
   &lt;compset&gt;
-    &lt;alias&gt;ADLND&lt;/alias&gt;
-    &lt;lname&gt;2000_SATM_DLND%SCPL_SICE_SOCN_SROF_SGLC_SWAV&lt;/lname&gt;
+    &lt;alias&gt;A1850DLND&lt;/alias&gt;
+    &lt;lname&gt;1850_SATM_DLND%SCPL_SICE_SOCN_SROF_SGLC_SWAV&lt;/lname&gt;
   &lt;/compset&gt;
 
   &lt;compset&gt;
@@ -4743,7 +4793,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-&lt;!--      CURRENTLY DOES NOT EXIST
   &lt;entry id=&quot;model_version&quot; modify_via_xml=&quot;CCSM_REPOTAG&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;expdef&lt;/category&gt;
@@ -4752,10 +4801,21 @@ to define behavior.</p>
       model version documentation,
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;unset&lt;/value&gt;
+      &lt;value&gt;$MODEL_VERSION&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
---&gt;
+
+  &lt;entry id=&quot;model_doi_url&quot; modify_via_xml=&quot;MODEL_DOI_URL&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;expdef&lt;/category&gt;
+    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      model doi url
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$MODEL_DOI_URL&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
 
   &lt;entry id=&quot;username&quot; modify_via_xml=&quot;USER&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
@@ -4881,6 +4941,7 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;fixed_year&lt;/value&gt;
+      &lt;value iyear=&#39;HIST&#39; cime_model=&#39;cesm&#39;&gt;variable_year&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -4894,6 +4955,8 @@ to define behavior.</p>
     &lt;values&gt;
       &lt;value&gt;1990&lt;/value&gt;
       &lt;value iyear=&quot;1850&quot; cime_model=&quot;cesm&quot;&gt;1850&lt;/value&gt;
+      &lt;value iyear=&quot;2000&quot; cime_model=&quot;cesm&quot;&gt;2000&lt;/value&gt;
+      &lt;value iyear=&#39;HIST&#39; cime_model=&#39;cesm&#39;&gt;1850&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -4907,6 +4970,8 @@ to define behavior.</p>
     &lt;values&gt;
       &lt;value&gt;1990&lt;/value&gt;
       &lt;value iyear=&quot;1850&quot; cime_model=&quot;cesm&quot;&gt;1850&lt;/value&gt;
+      &lt;value iyear=&quot;2000&quot; cime_model=&quot;cesm&quot;&gt;2000&lt;/value&gt;
+      &lt;value iyear=&#39;HIST&#39; cime_model=&#39;cesm&#39;&gt;1850&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -5605,12 +5670,26 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;histaux_l2x1yr&quot;&gt;
+  &lt;entry id=&quot;histaux_l2x1yrg&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;category&gt;history&lt;/category&gt;
     &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
     &lt;desc&gt;
-      turns on coupler history stream for annual sno to coupler fields.
+      turns on coupler history stream for annual lnd to coupler glc forcing fields.
+      default: false
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;.false.&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;histaux_double_precision&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;history&lt;/category&gt;
+    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      if true, use double-precision rather than single-precision for
+      coupler auxiliary history files
       default: false
     &lt;/desc&gt;
     &lt;values&gt;
@@ -6229,7 +6308,7 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;stop_ymd&quot; modify_via_xml=&quot;STOP_YMD&quot;&gt;
+  &lt;entry id=&quot;stop_ymd&quot; modify_via_xml=&quot;STOP_DATE&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;category&gt;time&lt;/category&gt;
     &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;

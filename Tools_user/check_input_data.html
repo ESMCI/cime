@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="simple-py-prof" href="simple-py-prof.html" />
-    <link rel="prev" title="component_compare_copy" href="component_compare_copy.html" /> 
+    <link rel="next" title="check_lockedfiles" href="check_lockedfiles.html" />
+    <link rel="prev" title="check_case" href="check_case.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="simple-py-prof.html" title="simple-py-prof"
+          <a href="check_lockedfiles.html" title="check_lockedfiles"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="component_compare_copy.html" title="component_compare_copy"
+          <a href="check_case.html" title="check_case"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,37 +62,40 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./check_input_data --help
-usage: 
-check_input_data [--download] [--verbose]
-OR
-check_input_data --help
+usage: check_input_data [-h] [-d] [-v] [-s] [--protocol PROTOCOL]
+                        [--server SERVER] [-i INPUT_DATA_ROOT]
+                        [--data-list-dir DATA_LIST_DIR] [--download]
 
-[1mEXAMPLES:[0m
-    [1;32m# Download input data [0m
-    &gt; check_input_data --download
+This script determines if the required data files for your case exist on local disk in the appropriate subdirectory of
+$DIN_LOC_ROOT. It automatically downloads missing data required for your simulation.
 
-Check (and optionally download) input data files. Should be run from case.
+It is recommended that users on a given system share a common $DIN_LOC_ROOT directory to avoid duplication on
+disk of large amounts of input data. You may need to talk to your system administrator in order to set this up.
+
+This script should be run from $CASEROOT.
+
+To verify the presence of required data use:
+   ./check_input_data
+
+To obtain missing datasets from the input data server(s) use:
+   ./check_input_data --download
+
+This script is automatically called by the case control system, when the case is built and submitted.
+So manual usage of this script is optional.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/aliceb/cime/scripts/Tools/check_input_data.log
-                        (default: False)
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/check_input_data.log
   -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
-  --protocal PROTOCAL   The input data protocal to download data. (default:
-                        None)
+  -s, --silent          Print only warnings and error messages
+  --protocol PROTOCOL   The input data protocol to download data.
   --server SERVER       The input data repository from which to download data.
-                        (default: None)
   -i INPUT_DATA_ROOT, --input-data-root INPUT_DATA_ROOT
-                        The root directory where input data goes, use xmlquery
-                        DIN_LOC_ROOT to see default value. (default: None)
+                        The root directory where input data goes,
+                        use xmlquery DIN_LOC_ROOT to see default value.
   --data-list-dir DATA_LIST_DIR
-                        Where to find list of input files (default: Buildconf)
-  --download            Attempt to download missing input files (default:
-                        False)
+                        Where to find list of input files
+  --download            Attempt to download missing input files
 </pre></div>
 </div>
 </div>
@@ -104,11 +107,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="component_compare_copy.html"
-                        title="previous chapter">component_compare_copy</a></p>
+  <p class="topless"><a href="check_case.html"
+                        title="previous chapter">check_case</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="simple-py-prof.html"
-                        title="next chapter">simple-py-prof</a></p>
+  <p class="topless"><a href="check_lockedfiles.html"
+                        title="next chapter">check_lockedfiles</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -140,10 +143,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="simple-py-prof.html" title="simple-py-prof"
+          <a href="check_lockedfiles.html" title="check_lockedfiles"
              >next</a> |</li>
         <li class="right" >
-          <a href="component_compare_copy.html" title="component_compare_copy"
+          <a href="check_case.html" title="check_case"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

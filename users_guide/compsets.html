@@ -58,7 +58,7 @@
 <span id="compsets"></span><h1>2. Component sets<a class="headerlink" href="#component-sets" title="Permalink to this headline">¶</a></h1>
 <p>In CIME, multiple components can define compsets that are targeted to their model development needs.</p>
 <p>Each component supports a set of compset longnames that are used in testing and supported in out of the box configurations.</p>
-<p>To determine if the compset name to <strong>create_newcase</strong> is a supported component, CIME looks in the <strong>config_files.xml</strong> file and parses the
+<p>To determine if the compset name to <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> is a supported component, CIME looks in the <strong>config_files.xml</strong> file and parses the
 the xml element <code class="docutils literal"><span class="pre">COMPSETS_SPEC_FILE</span></code> in order to determine which component is defining the compset.</p>
 <p>In the case of CESM, this xml element has the contents shown here, where <code class="docutils literal"><span class="pre">$SRCROOT</span></code> is the root of your CESM sandbox and contains <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> as a subdirectory:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;entry id=&quot;COMPSETS_SPEC_FILE&quot;&gt;
@@ -102,12 +102,11 @@ the xml element <code class="docutils literal"><span class="pre">COMPSETS_SPEC_F
 <span class="n">ESP</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SESP</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>A CIME-driven model may have other options available.  Use <strong>query_config</strong> to determine the available options.</p>
+<p>A CIME-driven model may have other options available.  Use <a class="reference external" href="../Tools_user/query_config.html">query_config</a> to determine the available options.</p>
 <p>The OPTIONAL %phys attributes specify sub-modes of the given system.
 For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
-ALL the possible %phys choices for each component are listed by
-calling <strong>query_case</strong> with the &#8211;compsets all argument.  ALL data models have
-a %phys option that corresponds to the data model mode.</p>
+<strong>All</strong> the possible %phys choices for each component are listed by calling <a class="reference external" href="../Tools_user/query_config.html">query_config &#8211;compsets</a>.
+<strong>All</strong> data models have a %phys option that corresponds to the data model mode.</p>
 </div>
 <div class="section" id="component-specific-settings-in-a-compset">
 <span id="defining-component-specific-compset-settings"></span><h2>2.2. Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Permalink to this headline">¶</a></h2>
@@ -157,10 +156,8 @@ a %phys option that corresponds to the data model mode.</p>
 </pre></div>
 </div>
 <p>If the compset&#8217;s atm component attribute is <code class="docutils literal"><span class="pre">datm</span></code>, the file <code class="docutils literal"><span class="pre">$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml</span></code> specifies all possible component settings for <code class="docutils literal"><span class="pre">DATM</span></code>.</p>
-<p>The schema for every <strong>config_component.xml</strong> file has a <code class="docutils literal"><span class="pre">&lt;description&gt;</span></code> node that specifies all possible values that can follow the <code class="docutils literal"><span class="pre">%</span></code> character in the compset name. To list the possible values, use the <strong>query_case</strong> command with <code class="docutils literal"><span class="pre">--components</span></code> as shown in this example for CAM:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">query_case</span> <span class="o">--</span><span class="n">components</span> <span class="n">cam</span>
-</pre></div>
-</div>
+<p>The schema for every <strong>config_component.xml</strong> file has a <code class="docutils literal"><span class="pre">&lt;description&gt;</span></code> node that specifies all possible values that can follow the <code class="docutils literal"><span class="pre">%</span></code> character in the compset name.</p>
+<p>To list the possible values, use the <a class="reference external" href="../Tools_user/query_config.html">query_config &#8211;component datm</a> command.</p>
 </div>
 <div class="section" id="creating-new-compsets">
 <span id="id1"></span><h2>2.3. Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Permalink to this headline">¶</a></h2>

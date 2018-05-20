@@ -92,7 +92,7 @@
     <span class="k">return</span> <span class="n">idx</span>
 
 <span class="c1">###############################################################################</span>
-<span class="k">def</span> <span class="nf">_compare_data</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">,</span> <span class="n">comp_lines</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_compare_data</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">,</span> <span class="n">comp_lines</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">offset_method</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;</span>
@@ -104,7 +104,7 @@
 <span class="sd">    ... data7 data8 data9 data10</span>
 <span class="sd">    ... &#39;&#39;&#39;</span>
 <span class="sd">    &gt;&gt;&gt; _compare_data(teststr.splitlines(), teststr.splitlines(), None)</span>
-<span class="sd">    &#39;&#39;</span>
+<span class="sd">    (&#39;&#39;, 0)</span>
 
 <span class="sd">    &gt;&gt;&gt; teststr2 = &#39;&#39;&#39;</span>
 <span class="sd">    ... data1</span>
@@ -113,15 +113,27 @@
 <span class="sd">    ... data7 data8 data9 data10</span>
 <span class="sd">    ... data00</span>
 <span class="sd">    ... &#39;&#39;&#39;</span>
-<span class="sd">    &gt;&gt;&gt; results = _compare_data(teststr.splitlines(), teststr2.splitlines(), None)</span>
+<span class="sd">    &gt;&gt;&gt; results,_ = _compare_data(teststr.splitlines(), teststr2.splitlines(), None)</span>
 <span class="sd">    &gt;&gt;&gt; print(results)</span>
 <span class="sd">    Inequivalent lines data2 data3 != data2 data30</span>
 <span class="sd">      NORMALIZED: data2 data3 != data2 data30</span>
 <span class="sd">    Found extra lines</span>
 <span class="sd">    data00</span>
 <span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    &gt;&gt;&gt; teststr3 = &#39;&#39;&#39;</span>
+<span class="sd">    ... data1</span>
+<span class="sd">    ... data4 data5 data6</span>
+<span class="sd">    ... data7 data8 data9 data10</span>
+<span class="sd">    ... data00</span>
+<span class="sd">    ... &#39;&#39;&#39;</span>
+<span class="sd">    &gt;&gt;&gt; results,_ = _compare_data(teststr3.splitlines(), teststr2.splitlines(), None, offset_method=True)</span>
+<span class="sd">    &gt;&gt;&gt; print(results)</span>
+<span class="sd">    Inequivalent lines data4 data5 data6 != data2 data30</span>
+<span class="sd">      NORMALIZED: data4 data5 data6 != data2 data30</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">gidx</span><span class="p">,</span> <span class="n">cidx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
     <span class="n">gnum</span><span class="p">,</span> <span class="n">cnum</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">comp_lines</span><span class="p">)</span>
     <span class="k">while</span> <span class="p">(</span><span class="n">gidx</span> <span class="o">&lt;</span> <span class="n">gnum</span> <span class="ow">or</span> <span class="n">cidx</span> <span class="o">&lt;</span> <span class="n">cnum</span><span class="p">):</span>
@@ -130,15 +142,15 @@
 
         <span class="k">if</span> <span class="p">(</span><span class="n">gidx</span> <span class="o">==</span> <span class="n">gnum</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">cidx</span> <span class="o">==</span> <span class="n">cnum</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">comments</span>
+                <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Found extra lines</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">comp_lines</span><span class="p">[</span><span class="n">cidx</span><span class="p">:])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="k">return</span> <span class="n">comments</span>
+                <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
         <span class="k">elif</span> <span class="p">(</span><span class="n">cidx</span> <span class="o">==</span> <span class="n">cnum</span><span class="p">):</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Missing lines</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">gold_lines</span><span class="p">[</span><span class="n">gidx</span><span class="p">:</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="k">return</span> <span class="n">comments</span>
+            <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
 
         <span class="n">gold_value</span> <span class="o">=</span> <span class="n">gold_lines</span><span class="p">[</span><span class="n">gidx</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">gold_value</span> <span class="o">=</span> <span class="n">gold_value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
@@ -151,11 +163,17 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">norm_gold_value</span> <span class="o">!=</span> <span class="n">norm_comp_value</span><span class="p">):</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;Inequivalent lines {} != {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gold_value</span><span class="p">,</span> <span class="n">comp_value</span><span class="p">)</span>
             <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  NORMALIZED: {} != {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">norm_gold_value</span><span class="p">,</span> <span class="n">norm_comp_value</span><span class="p">)</span>
+            <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">offset_method</span> <span class="ow">and</span> <span class="p">(</span><span class="n">norm_gold_value</span> <span class="o">!=</span> <span class="n">norm_comp_value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gnum</span> <span class="o">&gt;</span> <span class="n">cnum</span><span class="p">:</span>
+                <span class="n">gidx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cidx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gidx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">cidx</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">gidx</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">cidx</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">return</span> <span class="n">comments</span>
+    <span class="k">return</span> <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="compare_files"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.simple_compare.compare_files">[docs]</a><span class="k">def</span> <span class="nf">compare_files</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="n">compare_file</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -167,9 +185,16 @@
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gold_file</span><span class="p">),</span> <span class="s2">&quot;File not found: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gold_file</span><span class="p">))</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">compare_file</span><span class="p">),</span> <span class="s2">&quot;File not found: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compare_file</span><span class="p">))</span>
 
-    <span class="n">comments</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
-                             <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
-                             <span class="n">case</span><span class="p">)</span>
+    <span class="n">comments</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
+                             <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span> <span class="n">case</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cnt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">comments2</span><span class="p">,</span> <span class="n">cnt2</span> <span class="o">=</span> <span class="n">_compare_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">gold_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
+                                        <span class="nb">open</span><span class="p">(</span><span class="n">compare_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span>
+                                        <span class="n">case</span><span class="p">,</span> <span class="n">offset_method</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cnt2</span> <span class="o">&lt;</span> <span class="n">cnt</span><span class="p">:</span>
+            <span class="n">comments</span> <span class="o">=</span> <span class="n">comments2</span>
+
     <span class="k">return</span> <span class="n">comments</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">comments</span></div>
 </pre></div>
 

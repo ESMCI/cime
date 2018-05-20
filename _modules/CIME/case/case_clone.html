@@ -52,7 +52,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">check_name</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">check_name</span><span class="p">,</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.user_mod_support</span> <span class="kn">import</span> <span class="n">apply_user_mods</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span>         <span class="kn">import</span> <span class="n">lock_file</span>
 <span class="kn">from</span> <span class="nn">CIME.simple_compare</span>            <span class="kn">import</span> <span class="n">compare_files</span>
@@ -157,7 +157,7 @@
     <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">cloneroot</span> <span class="o">+</span> <span class="s1">&#39;/user_*&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">)</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">)</span>
 
     <span class="c1"># copy SourceMod and Buildconf files</span>
     <span class="c1"># if symlinks exist, copy rather than follow links</span>
@@ -175,8 +175,8 @@
         <span class="k">if</span> <span class="n">keepexe</span><span class="p">:</span>
             <span class="c1"># If keepexe CANNOT change any env_build.xml variables - so make a temporary copy of</span>
             <span class="c1"># env_build.xml and verify that it has not been modified</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">),</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;LockedFiles&quot;</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">))</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">),</span>
+                      <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;LockedFiles&quot;</span><span class="p">,</span> <span class="s2">&quot;env_build.xml&quot;</span><span class="p">))</span>
 
         <span class="c1"># Now apply contents of user_mods directory</span>
         <span class="n">apply_user_mods</span><span class="p">(</span><span class="n">newcase_root</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="n">keepexe</span><span class="p">)</span>

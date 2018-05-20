@@ -12,6 +12,14 @@ CIME.XML.archive module
     :undoc-members:
     :show-inheritance:
 
+CIME.XML.archive_base module
+----------------------------
+
+.. automodule:: CIME.XML.archive_base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.XML.batch module
 ---------------------
 

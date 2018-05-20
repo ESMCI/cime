@@ -51,12 +51,12 @@
 <span class="sd">Interface to the env_archive.xml file.  This class inherits from EnvBase</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-
+<span class="kn">from</span> <span class="nn">CIME.XML.archive_base</span> <span class="kn">import</span> <span class="n">ArchiveBase</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="kn">import</span> <span class="n">EnvBase</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-<div class="viewcode-block" id="EnvArchive"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive">[docs]</a><span class="k">class</span> <span class="nc">EnvArchive</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
+<span class="c1"># pylint: disable=super-init-not-called</span>
+<div class="viewcode-block" id="EnvArchive"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive">[docs]</a><span class="k">class</span> <span class="nc">EnvArchive</span><span class="p">(</span><span class="n">ArchiveBase</span><span class="p">,</span><span class="n">EnvBase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_archive.xml&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -68,34 +68,10 @@
 <div class="viewcode-block" id="EnvArchive.get_entries"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_entries">[docs]</a>    <span class="k">def</span> <span class="nf">get_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s1">&#39;comp_archive_spec&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="EnvArchive.get_entry"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_entry">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="p">):</span>
-        <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s1">&#39;components&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s1">&#39;comp_archive_spec&#39;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;compname&quot;</span><span class="p">:</span><span class="n">compname</span><span class="p">},</span> <span class="n">root</span><span class="o">=</span><span class="n">components</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="EnvArchive.get_entry_info"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_entry_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
         <span class="n">compname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="s1">&#39;compname&#39;</span><span class="p">)</span>
         <span class="n">compclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="s1">&#39;compclass&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">compname</span><span class="p">,</span><span class="n">compclass</span></div>
-
-<div class="viewcode-block" id="EnvArchive.get_entry_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_entry_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_entry_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">archive_entry</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">None</span></div>
-
-<div class="viewcode-block" id="EnvArchive.get_rest_file_extensions"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_rest_file_extensions">[docs]</a>    <span class="k">def</span> <span class="nf">get_rest_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
-        <span class="n">file_extensions</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s1">&#39;rest_file_extension&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">archive_entry</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="n">file_extensions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">file_extensions</span></div>
-
-<div class="viewcode-block" id="EnvArchive.get_hist_file_extensions"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_hist_file_extensions">[docs]</a>    <span class="k">def</span> <span class="nf">get_hist_file_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
-        <span class="n">file_extensions</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s1">&#39;hist_file_extension&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">archive_entry</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="n">file_extensions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">file_extensions</span></div>
 
 <div class="viewcode-block" id="EnvArchive.get_rpointer_contents"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_archive.EnvArchive.get_rpointer_contents">[docs]</a>    <span class="k">def</span> <span class="nf">get_rpointer_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">):</span>
         <span class="n">rpointer_items</span> <span class="o">=</span> <span class="p">[]</span>

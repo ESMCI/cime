@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
-    <link rel="next" title="7. Modifying a Case" href="use_cases/use-cases.html" />
+    <link rel="next" title="7. Customizing your input variables" href="cime-change-namelist.html" />
     <link rel="prev" title="5. Running a Case" href="running-a-case.html" /> 
   </head>
   <body role="document">
@@ -39,7 +39,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="use_cases/use-cases.html" title="7. Modifying a Case"
+          <a href="cime-change-namelist.html" title="7. Customizing your input variables"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="running-a-case.html" title="5. Running a Case"
@@ -57,7 +57,7 @@
   <div class="section" id="cloning-a-case">
 <span id="id1"></span><h1>6. Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h1>
 <p>If you have access to a run that you want to clone, the
-<strong>create_clone</strong> command will create a new case and run <strong>case.setup</strong>
+<a class="reference external" href="../Tools_user/create_clone.html">create_clone</a> command will create a new case and run <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>
 while preserving local modifications to the case.</p>
 <p>Here is a simple example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
@@ -67,16 +67,16 @@ while preserving local modifications to the case.</p>
 &gt; case.submit
 </pre></div>
 </div>
-<p>The <strong>create_clone</strong> script preserves any local namelist modifications
+<p>The <a class="reference external" href="../Tools_user/create_clone.html">create_clone</a> script preserves any local namelist modifications
 made in the <strong>user_nl_xxxx</strong> files as well as any source code
-modifications in the <strong>SourceMods</strong> tree. Otherwise, <strong>$CASEROOT/</strong>
-directory will appear as if <strong>create_newcase</strong> had just been run.</p>
+modifications in the <strong>SourceMods/</strong> directory tree. Otherwise, your <strong>$CASEROOT</strong> directory
+directory will appear as if <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> had just been run.</p>
 <p><strong>Important</strong>: Do not change anything in the <strong>env_case.xml</strong> file.</p>
 <p>See the <strong>help</strong> text for more usage information.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p><strong>create_clone</strong> has several useful optional arguments. To point to
+<p><a class="reference external" href="../Tools_user/create_clone.html">create_clone</a> has several useful optional arguments. To point to
 the executable of the original case you are cloning from.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; create_clone --case $CASEROOT --clone $CLONEROOT --keepexe
 &gt; cd $CLONEROOT
@@ -92,7 +92,7 @@ to the original case SourceMods directory.</p>
 <p class="last">No changes should be made to <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> in the cloned directory.</p>
 </div>
 <dl class="docutils">
-<dt><strong>create_clone</strong> also permits you to invoked the <code class="docutils literal"><span class="pre">shell_commands</span></code></dt>
+<dt><a class="reference external" href="../Tools_user/create_clone.html">create_clone</a> also permits you to invoke the <code class="docutils literal"><span class="pre">shell_commands</span></code></dt>
 <dd>and <code class="docutils literal"><span class="pre">user_nl_xxx</span></code> files in a user_mods directory by calling:</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; create_clone --case $CASEROOT --clone $CLONEROOT --user-mods-dir USER_MODS_DIR [--keepexe]
@@ -101,13 +101,11 @@ to the original case SourceMods directory.</p>
 <p>Note that an optional <code class="docutils literal"><span class="pre">--keepexe</span></code> flag can also be used in this case.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">If there is a <code class="docutils literal"><span class="pre">shell_commands</span></code> file, it should not have</p>
+<p class="last">If there is a <code class="docutils literal"><span class="pre">shell_commands</span></code> file, it should not have any changes to xml variables in either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>.</p>
 </div>
-<p>any changes to xml variables in either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or
-<code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>.</p>
 <p>Another approach to duplicating a case is to use the information in
 the case&#8217;s <strong>README.case</strong> and <strong>CaseStatus</strong> files to create a new
-case and duplicate the relevant <strong>xlmchange</strong> commands that were
+case and duplicate the relevant <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a> commands that were
 issued in the original case. This alternative will <em>not</em> preserve any
 local modifications that were made to the original case, such as
 source-code or build-script revisions; you will need to import those
@@ -124,8 +122,8 @@ changes manually.</p>
   <p class="topless"><a href="running-a-case.html"
                         title="previous chapter">5. Running a Case</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="use_cases/use-cases.html"
-                        title="next chapter">7. Modifying a Case</a></p>
+  <p class="topless"><a href="cime-change-namelist.html"
+                        title="next chapter">7. Customizing your input variables</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -157,7 +155,7 @@ changes manually.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="use_cases/use-cases.html" title="7. Modifying a Case"
+          <a href="cime-change-namelist.html" title="7. Customizing your input variables"
              >next</a> |</li>
         <li class="right" >
           <a href="running-a-case.html" title="5. Running a Case"

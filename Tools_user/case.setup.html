@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="case.cmpgen_namelists" href="case.cmpgen_namelists.html" />
-    <link rel="prev" title="cimeteststatus" href="cimeteststatus.html" /> 
+    <link rel="next" title="case.st_archive" href="case.st_archive.html" />
+    <link rel="prev" title="case.run" href="case.run.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="case.cmpgen_namelists.html" title="case.cmpgen_namelists"
+          <a href="case.st_archive.html" title="case.st_archive"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="cimeteststatus.html" title="cimeteststatus"
+          <a href="case.run.html" title="case.run"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,38 +62,40 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./case.setup --help
-usage: 
-case.setup [&lt;casedir&gt;] [--verbose] [--clean] [--reset]
-OR
-case.setup --help
+usage: case.setup [-h] [-d] [-v] [-s] [-c] [-t] [-r] [caseroot]
 
-[1mEXAMPLES:[0m
-    [1;32m# Setup case [0m
-    &gt; case.setup
+Creates various files and directories needed in order to build the case,
+create namelists and run the case.
 
-case.setup - create the $caseroot/case.run script and user_nl_xxx component
-namelist mod files
+Any changes to env_mach_pes.xml and env_mach_specific.xml must be made
+before running this.
+
+This must be run before running case.build.
+
+To run this initially for the case, simply run:
+   ./case.setup
+
+To rerun after making changes to env_mach_pes.xml or env_mach_specific.xml, run:
+   ./case.setup --reset
 
 positional arguments:
-  caseroot         Case directory to setup (default:
-                   /Users/aliceb/cime/scripts/Tools)
+  caseroot         Case directory to setup.
+                   Default is current directory.
 
 optional arguments:
   -h, --help       show this help message and exit
-  -d, --debug      Print debug information (very verbose) to file
-                   /Users/aliceb/cime/scripts/Tools/case.setup.log (default:
-                   False)
+  -d, --debug      Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/case.setup.log
   -v, --verbose    Add additional context (time and file) to log messages
-                   (default: False)
-  -s, --silent     Print only warnings and error messages (default: False)
-  -c, --clean      Removes the batch run script for target machine.If the
-                   testmode argument is present then keep the test script if
-                   it is present - otherwise remove it. The user_nl_xxx and
-                   Macros files are never removed by case.setup - you must
-                   remove them manually (default: False)
-  -t, --test-mode  Keeps the test script when the --clean argument is used
-                   (default: False)
-  -r, --reset      Does a clean followed by setup (default: False)
+  -s, --silent     Print only warnings and error messages
+  -c, --clean      Removes the batch run script for target machine.
+                   If the testmode argument is present then keep the test
+                   script if it is present - otherwise remove it.
+                   The user_nl_xxx and Macros files are never removed by case.setup -
+                   you must remove them manually.
+  -t, --test-mode  Keeps the test script when the --clean argument is used.
+  -r, --reset      Does a clean followed by setup.
+                   This flag should be used when rerunning case.setup after it
+                   has already been run for this case.
 </pre></div>
 </div>
 </div>
@@ -105,11 +107,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="cimeteststatus.html"
-                        title="previous chapter">cimeteststatus</a></p>
+  <p class="topless"><a href="case.run.html"
+                        title="previous chapter">case.run</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="case.cmpgen_namelists.html"
-                        title="next chapter">case.cmpgen_namelists</a></p>
+  <p class="topless"><a href="case.st_archive.html"
+                        title="next chapter">case.st_archive</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -141,10 +143,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="case.cmpgen_namelists.html" title="case.cmpgen_namelists"
+          <a href="case.st_archive.html" title="case.st_archive"
              >next</a> |</li>
         <li class="right" >
-          <a href="cimeteststatus.html" title="cimeteststatus"
+          <a href="case.run.html" title="case.run"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

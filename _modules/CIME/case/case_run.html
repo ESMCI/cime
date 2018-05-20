@@ -52,7 +52,7 @@
 <span class="sd">&#39;&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">new_lid</span><span class="p">,</span> <span class="n">run_and_log_case_status</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">append_status</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.get_timing</span>                <span class="kn">import</span> <span class="n">get_timing</span>
 <span class="kn">from</span> <span class="nn">CIME.provenance</span>                <span class="kn">import</span> <span class="n">save_prerun_provenance</span><span class="p">,</span> <span class="n">save_postrun_provenance</span>
 
@@ -77,7 +77,7 @@
 
     <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;PFS&quot;</span><span class="p">:</span>
         <span class="n">env_mach_pes</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span><span class="s2">&quot;{}.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span><span class="s2">&quot;{}.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
 
     <span class="c1"># check for locked files.</span>
     <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">()</span>
@@ -143,43 +143,61 @@
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="bp">True</span>
 
+    <span class="c1"># MPIRUN_RETRY_REGEX allows the mpi command to be reattempted if the</span>
+    <span class="c1"># failure described by that regular expression is matched in the model log</span>
+    <span class="c1"># case.spare_nodes is overloaded and may also represent the number of</span>
+    <span class="c1"># retries to attempt if ALLOCATE_SPARE_NODES is False</span>
+    <span class="n">retry_run_re</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPIRUN_RETRY_REGEX&quot;</span><span class="p">)</span>
+    <span class="n">node_fail_re</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NODE_FAIL_REGEX&quot;</span><span class="p">)</span>
+    <span class="n">retry_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">retry_run_re</span><span class="p">:</span>
+        <span class="n">retry_run_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">retry_run_re</span><span class="p">))</span>
+        <span class="n">retry_count</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPIRUN_RETRY_COUNT&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node_fail_re</span><span class="p">:</span>
+        <span class="n">node_fail_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">node_fail_re</span><span class="p">))</span>
+
     <span class="k">while</span> <span class="n">loop</span><span class="p">:</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="n">save_prerun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
         <span class="n">run_func</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">stat</span> <span class="o">=</span> <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">run_func</span><span class="p">,</span> <span class="s2">&quot;model execution&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
-
         <span class="n">model_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">model</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
         <span class="c1"># Determine if failure was due to a failed node, if so, try to restart</span>
-        <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">node_fail_re</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NODE_FAIL_REGEX&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">node_fail_re</span><span class="p">:</span>
-                <span class="n">node_fail_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">node_fail_re</span><span class="p">)</span>
-                <span class="n">model_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">model</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">):</span>
-                    <span class="n">num_fails</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_fail_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
-                    <span class="k">if</span> <span class="n">num_fails</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">&gt;=</span> <span class="n">num_fails</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">retry_run_re</span> <span class="ow">or</span> <span class="n">node_fail_re</span><span class="p">:</span>
+            <span class="n">model_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">model</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">):</span>
+                <span class="n">num_node_fails</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">num_retry_fails</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">if</span> <span class="n">node_fail_re</span><span class="p">:</span>
+                    <span class="n">num_node_fails</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_fail_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+                <span class="k">if</span> <span class="n">retry_run_re</span><span class="p">:</span>
+                    <span class="n">num_retry_fails</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">retry_run_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot;RETRY: num_retry_fails {} spare_nodes {} retry_count {}&quot;</span><span class="o">.</span>
+                              <span class="n">format</span><span class="p">(</span><span class="n">num_retry_fails</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">spare_nodes</span><span class="p">,</span> <span class="n">retry_count</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">num_node_fails</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">&gt;=</span> <span class="n">num_node_fails</span><span class="p">:</span>
                         <span class="c1"># We failed due to node failure!</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Detected model run failed due to node failure, restarting&quot;</span><span class="p">)</span>
-
-                        <span class="c1"># Archive the last consistent set of restart files and restore them</span>
-                        <span class="n">case</span><span class="o">.</span><span class="n">case_st_archive</span><span class="p">(</span><span class="n">no_resubmit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Detected model run failed due to node failure, restarting&quot;</span><span class="p">)</span>
+                    <span class="n">case</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">-=</span> <span class="n">num_node_fails</span>
+                    <span class="n">loop</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>
+                                   <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT_SETS_CONTINUE_RUN&quot;</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">num_retry_fails</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">retry_count</span> <span class="o">&gt;=</span> <span class="n">num_retry_fails</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Detected model run failed, restarting&quot;</span><span class="p">)</span>
+                    <span class="n">retry_count</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">loop</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="n">loop</span><span class="p">:</span>
+                    <span class="c1"># Archive the last consistent set of restart files and restore them</span>
+                    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">):</span>
+                        <span class="n">case</span><span class="o">.</span><span class="n">case_st_archive</span><span class="p">(</span><span class="n">resubmit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
                         <span class="n">case</span><span class="o">.</span><span class="n">restore_from_archive</span><span class="p">()</span>
 
-                        <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>
-                                       <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT_SETS_CONTINUE_RUN&quot;</span><span class="p">))</span>
+                    <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
+                    <span class="n">case</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">()</span>
 
-                        <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
-                        <span class="n">loop</span> <span class="o">=</span> <span class="bp">True</span>
-
-                        <span class="n">case</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">()</span>
-
-                        <span class="n">case</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">-=</span> <span class="n">num_fails</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">loop</span><span class="p">:</span>
-                <span class="c1"># We failed and we&#39;re not restarting</span>
-                <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;RUN FAIL: Command &#39;{}&#39; failed</span><span class="se">\n</span><span class="s2">See log file for details: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">model_logfile</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">loop</span><span class="p">:</span>
+            <span class="c1"># We failed and we&#39;re not restarting</span>
+            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;RUN FAIL: Command &#39;{}&#39; failed</span><span class="se">\n</span><span class="s2">See log file for details: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">model_logfile</span><span class="p">))</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;{} MODEL EXECUTION HAS FINISHED&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
 
@@ -285,7 +303,7 @@
     <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">da_script</span><span class="p">,</span> <span class="p">[</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cycle</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">da_script</span><span class="p">),</span> <span class="p">[</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cycle</span><span class="p">],</span> <span class="n">logfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="case_run"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.case_run">[docs]</a><span class="k">def</span> <span class="nf">case_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="case_run"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.case_run">[docs]</a><span class="k">def</span> <span class="nf">case_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">set_continue_run</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">submit_resubmits</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="c1"># Set up the run, run the model, do the postrun steps</span>
     <span class="n">prerun_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PRERUN_SCRIPT&quot;</span><span class="p">)</span>
@@ -332,8 +350,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
         <span class="n">_save_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">set_continue_run</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT_SETS_CONTINUE_RUN&quot;</span><span class="p">))</span>
+
     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;check for resubmit&quot;</span><span class="p">)</span>
-    <span class="n">_resubmit_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">submit_resubmits</span><span class="p">:</span>
+        <span class="n">_resubmit_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="bp">True</span></div>
 </pre></div>

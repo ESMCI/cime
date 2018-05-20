@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="cs.status" href="cs.status.html" />
-    <link rel="prev" title="case.setup" href="case.setup.html" /> 
+    <link rel="next" title="case.qstatus" href="case.qstatus.html" />
+    <link rel="prev" title="case.build" href="case.build.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="cs.status.html" title="cs.status"
+          <a href="case.qstatus.html" title="case.qstatus"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="case.setup.html" title="case.setup"
+          <a href="case.build.html" title="case.build"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,47 +62,37 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./case.cmpgen_namelists --help
-usage: 
-case.cmpgen_namelists [&lt;casedir&gt;] [--verbose]
-OR
-case.cmpgen_namelists --help
-
-[1mEXAMPLES:[0m
-    [1;32m# Setup case [0m
-    &gt; case.cmpgen_namelists
+usage: case.cmpgen_namelists [-h] [-d] [-v] [-s] [-c] [-g]
+                             [--compare-name COMPARE_NAME]
+                             [--generate-name GENERATE_NAME]
+                             [--baseline-root BASELINE_ROOT]
+                             [caseroot]
 
 case.cmpgen_namelists - perform namelist baseline operations (compare,
 generate, or both) for this case.
 
 positional arguments:
-  caseroot              Case directory to setup (default:
-                        /Users/aliceb/cime/scripts/Tools)
+  caseroot              Case directory for which namelists are compared/generated. 
+                        Default is current directory.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/
-                        aliceb/cime/scripts/Tools/case.cmpgen_namelists.log
-                        (default: False)
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/case.cmpgen_namelists.log
   -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
-  -c, --compare         Force a namelist comparison against baselines. Default
-                        will be to follow the case specification (default:
-                        False)
-  -g, --generate        Force a generation of namelist baselines. Default will
-                        be to follow the case specification (default: False)
+  -s, --silent          Print only warnings and error messages
+  -c, --compare         Force a namelist comparison against baselines. 
+                        Default is to follow the case specification.
+  -g, --generate        Force a generation of namelist baselines. 
+                        Default is to follow the case specification.
   --compare-name COMPARE_NAME
-                        Force comparison to use baselines with this name.
-                        Default will be to follow the case specification
-                        (default: None)
+                        Force comparison to use baselines with this name. 
+                        Default is to follow the case specification.
   --generate-name GENERATE_NAME
-                        Force generation to use baselines with this name.
-                        Default will be to follow the case specification
-                        (default: None)
+                        Force generation to use baselines with this name. 
+                        Default is to follow the case specification.
   --baseline-root BASELINE_ROOT
-                        Root of baselines. Default will be BASELINE_ROOT.
-                        (default: None)
+                        Root of baselines. 
+                        Default is the case&#39;s BASELINE_ROOT.
 </pre></div>
 </div>
 </div>
@@ -114,11 +104,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="case.setup.html"
-                        title="previous chapter">case.setup</a></p>
+  <p class="topless"><a href="case.build.html"
+                        title="previous chapter">case.build</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="cs.status.html"
-                        title="next chapter">cs.status</a></p>
+  <p class="topless"><a href="case.qstatus.html"
+                        title="next chapter">case.qstatus</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -150,10 +140,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="cs.status.html" title="cs.status"
+          <a href="case.qstatus.html" title="case.qstatus"
              >next</a> |</li>
         <li class="right" >
-          <a href="case.setup.html" title="case.setup"
+          <a href="case.build.html" title="case.build"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

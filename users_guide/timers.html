@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
-    <link rel="next" title="8. Testing with create_test" href="testing.html" />
+    <link rel="next" title="8. Testing" href="testing.html" />
     <link rel="prev" title="6. Porting and validating CIME on a new platform" href="porting-cime.html" /> 
   </head>
   <body role="document">
@@ -39,7 +39,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="testing.html" title="8. Testing with create_test"
+          <a href="testing.html" title="8. Testing"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="porting-cime.html" title="6. Porting and validating CIME on a new platform"
@@ -61,12 +61,12 @@ also have GPTL timers in their code and very detailed timing information can be 
 <div class="section" id="model-timing-data">
 <span id="id1"></span><h2>7.1. Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h2>
 <p>Every model run produces a summary timing output file. The file is placed in
-<strong>$CASEROOT/timing/ccsm_timing.$CASE.$date</strong>, where $date is a datestamp that CIME sets at runtime.
+<strong>$CASEROOT/timing/$model_timing.$CASE.$date</strong>, where $date is a datestamp that CIME sets at runtime.
 The following describes the most important parts of a timing file:</p>
 <ul class="simple">
-<li>CCSM TIMING PROFILE is the first section in the timing output. It summarizes general timing information for the run. The total run time and cost are given in several metrics to facilitate analysis and comparisons with other runs. These metrics includ pe-hrs per simulated year (cost), simulated years per wall day (thoughput), seconds, and seconds per model day. The total run time for each component and the time for initialization of the model also are provided. These times are the aggregate over the total run and do not take into account any temporal or processor load imbalances.</li>
+<li>TIMING PROFILE is the first section in the timing output. It summarizes general timing information for the run. The total run time and cost are given in several metrics to facilitate analysis and comparisons with other runs. These metrics includ pe-hrs per simulated year (cost), simulated years per wall day (thoughput), seconds, and seconds per model day. The total run time for each component and the time for initialization of the model also are provided. These times are the aggregate over the total run and do not take into account any temporal or processor load imbalances.</li>
 <li>DRIVER TIMING FLOWCHART is the second section in the timing output. It provides timing information for the driver in sequential order and indicates which processors are involved in the cost. Finally, the timings for the coupler are broken out at the bottom of the timing output file.</li>
-<li>Another file in the timing directory, <strong>ccsm_timing_stats.$date</strong>, summarizes the minimum and maximum of all the model timers.</li>
+<li>Another file in the timing directory, <strong>$model_timing_stats.$date</strong>, summarizes the minimum and maximum of all the model timers.</li>
 <li>Another stream of useful timing information is the <strong>cpl.log.$date</strong> file that every run produces. It contains the run time for each model day during the run and is output during the run. You can search for <code class="docutils literal"><span class="pre">tStamp</span></code> in the cpl.log file to see the information, which is useful for tracking down temporal variability in cost due to inherent model variability or to hardware. The model daily cost generally is pretty constant unless I/O is written intermittently, such as at the end of the month.</li>
 </ul>
 </div>
@@ -80,7 +80,7 @@ The following describes the most important parts of a timing file:</p>
 <div class="section" id="setting-the-time-limits">
 <h2>7.3. Setting the time limits<a class="headerlink" href="#setting-the-time-limits" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt>When you look at the <strong>ccsm_timing.$CASE.$datestamp</strong> file for &#8220;Model Throughput&#8221;, you will find output like this:</dt>
+<dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for &#8220;Model Throughput&#8221;, you will find output like this:</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>
 <span class="n">Model</span> <span class="n">Throughput</span><span class="p">:</span> <span class="mf">4.70</span> <span class="n">simulated_years</span><span class="o">/</span><span class="n">day</span>
@@ -88,17 +88,24 @@ The following describes the most important parts of a timing file:</p>
 </div>
 </dd>
 </dl>
-<p>The model throughput is the estimated number of model years that you can run in a wallclock day. Based on this, you can maximize your <strong>$CASE.run</strong> queue limit and change <code class="docutils literal"><span class="pre">$STOP_OPTION</span></code> and <code class="docutils literal"><span class="pre">$STOP_N</span></code> in <strong>env_run.xml</strong>.</p>
+<p>The model throughput is the estimated number of model years that you can run in a wallclock day. Based on this, you can maximize your queue limit and change <code class="docutils literal"><span class="pre">$STOP_OPTION</span></code> and <code class="docutils literal"><span class="pre">$STOP_N</span></code>.</p>
 <dl class="docutils">
-<dt>For example, say a model&#8217;s throughput is 4.7 simulated_years/day, and the maximum runtime limit on your machine is 12 hours. 4.7 model years/24 hours * 12 hours = 2.35 years. On the massively parallel computers, there is always some variability in how long it will take a job to run. On some machines, you may need to leave as much as 20% buffer time in your run to guarantee that jobs finish reliably before the time limit. For that reason, set your model to run only one model year/job. In this example, set your wallclock at 12 hours and invoke <strong>xmlchange</strong> in <code class="docutils literal"><span class="pre">CASEROOT</span></code> as shown here:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nyears</span>
+<dt>For example, say a model&#8217;s throughput is 4.7 simulated_years/day, and</dt>
+<dd>the maximum runtime limit on your machine is 12 hours. 4.7 model
+years/24 hours * 12 hours = 2.35 years. On the massively parallel
+computers, there is always some variability in how long it will take
+a job to run. On some machines, you may need to leave as much as 20%
+buffer time in your run to guarantee that jobs finish reliably before
+the time limit. For that reason, set your model to run only one model
+year/job. In this example, set your wallclock at 12 hours and invoke</dd>
+</dl>
+<p><a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  in <code class="docutils literal"><span class="pre">CASEROOT</span></code> as shown here:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nyears</span>
 <span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">STOP_N</span><span class="o">=</span><span class="mi">1</span>
 <span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">REST_OPTION</span><span class="o">=</span><span class="n">nyears</span>
 <span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">REST_N</span><span class="o">=</span><span class="mi">1</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 </div>
 </div>
 
@@ -123,7 +130,7 @@ The following describes the most important parts of a timing file:</p>
                         title="previous chapter">6. Porting and validating CIME on a new platform</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="testing.html"
-                        title="next chapter">8. Testing with create_test</a></p>
+                        title="next chapter">8. Testing</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -155,7 +162,7 @@ The following describes the most important parts of a timing file:</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="testing.html" title="8. Testing with create_test"
+          <a href="testing.html" title="8. Testing"
              >next</a> |</li>
         <li class="right" >
           <a href="porting-cime.html" title="6. Porting and validating CIME on a new platform"

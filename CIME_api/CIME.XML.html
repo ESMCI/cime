@@ -66,10 +66,46 @@
 <dl class="class">
 <dt id="CIME.XML.archive.Archive">
 <em class="property">class </em><code class="descclassname">CIME.XML.archive.</code><code class="descname">Archive</code><span class="sig-paren">(</span><em>infile=None</em>, <em>files=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive.html#Archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive.Archive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.XML.archive_base.ArchiveBase" title="CIME.XML.archive_base.ArchiveBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.archive_base.ArchiveBase</span></code></a></p>
+<dl class="method">
+<dt id="CIME.XML.archive.Archive.get_all_config_archive_files">
+<code class="descname">get_all_config_archive_files</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive.html#Archive.get_all_config_archive_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive.Archive.get_all_config_archive_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of ARCHIVE_SPEC_FILES that exist on disk as defined in config_files.xml</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="CIME.XML.archive.Archive.setup">
 <code class="descname">setup</code><span class="sig-paren">(</span><em>env_archive</em>, <em>components</em>, <em>files=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive.html#Archive.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive.Archive.setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.XML.archive_base">
+<span id="cime-xml-archive-base-module"></span><h2>CIME.XML.archive_base module<a class="headerlink" href="#module-CIME.XML.archive_base" title="Permalink to this headline">¶</a></h2>
+<p>Base class for archive files.  This class inherits from generic_xml.py</p>
+<dl class="class">
+<dt id="CIME.XML.archive_base.ArchiveBase">
+<em class="property">class </em><code class="descclassname">CIME.XML.archive_base.</code><code class="descname">ArchiveBase</code><span class="sig-paren">(</span><em>infile=None</em>, <em>schema=None</em>, <em>root_name_override=None</em>, <em>root_attrib_override=None</em>, <em>read_only=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
+<dl class="method">
+<dt id="CIME.XML.archive_base.ArchiveBase.get_entry">
+<code class="descname">get_entry</code><span class="sig-paren">(</span><em>compname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.archive_base.ArchiveBase.get_entry_value">
+<code class="descname">get_entry_value</code><span class="sig-paren">(</span><em>name</em>, <em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_entry_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_entry_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.archive_base.ArchiveBase.get_hist_file_extensions">
+<code class="descname">get_hist_file_extensions</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_hist_file_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_hist_file_extensions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.archive_base.ArchiveBase.get_rest_file_extensions">
+<code class="descname">get_rest_file_extensions</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_rest_file_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_rest_file_extensions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -465,35 +501,15 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <dl class="class">
 <dt id="CIME.XML.env_archive.EnvArchive">
 <em class="property">class </em><code class="descclassname">CIME.XML.env_archive.</code><code class="descname">EnvArchive</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_archive.xml'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.XML.archive_base.ArchiveBase" title="CIME.XML.archive_base.ArchiveBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.archive_base.ArchiveBase</span></code></a>, <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_archive.EnvArchive.get_entries">
 <code class="descname">get_entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive.get_entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive.get_entries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CIME.XML.env_archive.EnvArchive.get_entry">
-<code class="descname">get_entry</code><span class="sig-paren">(</span><em>compname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive.get_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive.get_entry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="CIME.XML.env_archive.EnvArchive.get_entry_info">
 <code class="descname">get_entry_info</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive.get_entry_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive.get_entry_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="CIME.XML.env_archive.EnvArchive.get_entry_value">
-<code class="descname">get_entry_value</code><span class="sig-paren">(</span><em>name</em>, <em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive.get_entry_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive.get_entry_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="CIME.XML.env_archive.EnvArchive.get_hist_file_extensions">
-<code class="descname">get_hist_file_extensions</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive.get_hist_file_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive.get_hist_file_extensions" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="CIME.XML.env_archive.EnvArchive.get_rest_file_extensions">
-<code class="descname">get_rest_file_extensions</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive.get_rest_file_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive.get_rest_file_extensions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -710,7 +726,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.submit_jobs">
-<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>case</em>, <em>no_batch=False</em>, <em>job=None</em>, <em>user_prereq=None</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>case</em>, <em>no_batch=False</em>, <em>job=None</em>, <em>user_prereq=None</em>, <em>skip_pnl=False</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.submit_jobs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1195,7 +1211,7 @@ in order to avoid invalidating cache.</p>
 
 <dl class="method">
 <dt id="CIME.XML.generic_xml.GenericXML.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>outfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.write" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write</code><span class="sig-paren">(</span><em>outfile=None</em>, <em>force_write=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write an xml file from data in self</p>
 </dd></dl>
 
@@ -1700,6 +1716,7 @@ INFRASTRUCTURE_TEST=&#8221;TRUE&#8221;.</p>
 <li><a class="reference internal" href="#">CIME.XML package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.archive">CIME.XML.archive module</a></li>
+<li><a class="reference internal" href="#module-CIME.XML.archive_base">CIME.XML.archive_base module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.batch">CIME.XML.batch module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.compilerblock">CIME.XML.compilerblock module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.compilers">CIME.XML.compilers module</a></li>

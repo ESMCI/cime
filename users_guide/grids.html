@@ -56,7 +56,8 @@
             
   <div class="section" id="model-grids">
 <span id="grids"></span><h1>3. Model grids<a class="headerlink" href="#model-grids" title="Permalink to this headline">¶</a></h1>
-<p>CIME looks at the xml node <code class="docutils literal"><span class="pre">GRIDS_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box model grids for the target model. The node has the following contents:</p>
+<p>CIME looks at the xml node <code class="docutils literal"><span class="pre">GRIDS_SPEC_FILE</span></code> in  <strong>$CIMEROOT/config/$models/config_files.xml</strong> file to identify supported out-of-the-box model grids for the target model.</p>
+<p>The node has the following contents:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;entry id=&quot;GRIDS_SPEC_FILE&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
   &lt;default_value&gt;$CIMEROOT/cime_config/$MODEL/config_grids.xml&lt;/default_value&gt;
@@ -69,6 +70,7 @@
 </div>
 <div class="section" id="grid-longname">
 <h2>3.1. Grid longname<a class="headerlink" href="#grid-longname" title="Permalink to this headline">¶</a></h2>
+<p>CIME model grids generally are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids uses only atmosphere, land, and ocean/ice grid specifications.</p>
 <p>A model grid longname has the form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">name_l</span><span class="o">%</span><span class="n">name_oi</span><span class="o">%</span><span class="n">name_r</span><span class="o">%</span><span class="n">name_m</span><span class="o">%</span><span class="n">mask_g</span><span class="o">%</span><span class="n">name_w</span><span class="o">%</span><span class="n">name</span>
 </pre></div>
@@ -112,17 +114,16 @@ The alias for this grid is ne30_g16.</p>
 <div class="section" id="adding-grids">
 <span id="adding-cases"></span><h2>3.2. Adding grids<a class="headerlink" href="#adding-grids" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils" id="adding-a-grid">
-<dt>CIME supports numerous out-of-the box model resolutions. To see the grids that are supported, call <strong>manage_case</strong> as shown here:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">manage_case</span> <span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">grids</span>
+<dt>CIME supports numerous out-of-the box model resolutions. To see the grids that are supported, call <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as shown below.</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">grids</span>
 </pre></div>
 </div>
 </dd>
 </dl>
-<p>CIME model grids generally are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids uses only atmosphere, land, and ocean/ice grid specifications.</p>
 <p>The most common resolutions have the atmosphere and land components on one grid and the ocean and ice on a second grid. The following overview assumes that this is the case.
-The naming convention looks like <em>f19_g16</em>, where the f19 indicates that the atmosphere and land are on the 1.9x2.5 (finite volume dycore) grid while the g16 means the ocean and ice are on the gx1v6 one-degree displaced pole grid.</p>
+The naming convention looks like <em>f19_g17</em>, where the f19 indicates that the atmosphere and land are on the 1.9x2.5 (finite volume dycore) grid while the g17 means the ocean and ice are on the gx1v6 one-degree displaced pole grid.</p>
 <p>CIME enables users to add their own component grid combinations.
-The steps for adding a new component grid to the model system follow. gain, this process can be simplified if the atmosphere and land are running on the same grid.</p>
+The steps for adding a new component grid to the model system follow. This process can be simplified if the atmosphere and land are running on the same grid.</p>
 <ol class="arabic">
 <li><p class="first">The first step is to generate SCRIP grid files for the atmosphere, land, ocean, land-ice, river and wave component grids that will comprise your model grid.
 If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.

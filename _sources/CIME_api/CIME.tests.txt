@@ -35,6 +35,14 @@ CIME.tests.test_user_mod_support module
     :undoc-members:
     :show-inheritance:
 
+CIME.tests.test_utils module
+----------------------------
+
+.. automodule:: CIME.tests.test_utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

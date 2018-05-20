@@ -113,19 +113,19 @@
 <span class="sd">                             option is always printed, if present)</span>
 
 <span class="sd">    Basic functionality:</span>
-<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.yellowstone_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {}}</span>
+<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.cheyenne_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {}}</span>
 <span class="sd">    &gt;&gt;&gt; test_to_string(mytest, 10)</span>
-<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.yellowstone_intel&#39;</span>
+<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.cheyenne_intel&#39;</span>
 
 <span class="sd">    Printing comments:</span>
-<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.yellowstone_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {&#39;comment&#39;: &#39;my remarks&#39;}}</span>
+<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.cheyenne_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {&#39;comment&#39;: &#39;my remarks&#39;}}</span>
 <span class="sd">    &gt;&gt;&gt; test_to_string(mytest, 10)</span>
-<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks&#39;</span>
+<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks&#39;</span>
 
 <span class="sd">    Printing other options, too:</span>
-<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.yellowstone_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {&#39;comment&#39;: &#39;my remarks&#39;, &#39;wallclock&#39;: &#39;0:20&#39;, &#39;memleak_tolerance&#39;: 0.2}}</span>
+<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.cheyenne_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {&#39;comment&#39;: &#39;my remarks&#39;, &#39;wallclock&#39;: &#39;0:20&#39;, &#39;memleak_tolerance&#39;: 0.2}}</span>
 <span class="sd">    &gt;&gt;&gt; test_to_string(mytest, 10, show_options=True)</span>
-<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks  # memleak_tolerance: 0.2  # wallclock: 0:20&#39;</span>
+<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks  # memleak_tolerance: 0.2  # wallclock: 0:20&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">mystr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%-*s</span><span class="s2">: </span><span class="si">%-*s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">category_field_width</span><span class="p">,</span> <span class="n">test</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">],</span> <span class="n">test_field_width</span><span class="p">,</span> <span class="n">test</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>

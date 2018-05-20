@@ -74,7 +74,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span> <span class="o">=</span> <span class="bp">None</span>
 
 <div class="viewcode-block" id="Inputdata.get_next_server"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.inputdata.Inputdata.get_next_server">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">protocal</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">address</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">servernodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
@@ -89,10 +89,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">protocal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;protocal&quot;</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span><span class="p">))</span>
+            <span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;protocol&quot;</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span><span class="p">))</span>
             <span class="n">address</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">protocal</span><span class="p">,</span> <span class="n">address</span></div></div>
+        <span class="k">return</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span></div></div>
 </pre></div>
 
           </div>

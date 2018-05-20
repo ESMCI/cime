@@ -61,8 +61,8 @@
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">append_status</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">convert_to_type</span><span class="p">,</span> <span class="n">get_model</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_project</span><span class="p">,</span> <span class="n">get_charge_account</span><span class="p">,</span> <span class="n">check_name</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_current_commit</span>
-<span class="kn">from</span> <span class="nn">CIME.locked_files</span>         <span class="kn">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.locked_files</span>              <span class="kn">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span>              <span class="kn">import</span> <span class="n">Machines</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.pes</span>                   <span class="kn">import</span> <span class="n">Pes</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.files</span>                 <span class="kn">import</span> <span class="n">Files</span>
@@ -120,7 +120,7 @@
     <span class="kn">from</span> <span class="nn">CIME.case.case_test</span>  <span class="kn">import</span> <span class="n">case_test</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_submit</span> <span class="kn">import</span> <span class="n">check_DA_settings</span><span class="p">,</span> <span class="n">check_case</span><span class="p">,</span> <span class="n">submit</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_st_archive</span> <span class="kn">import</span> <span class="n">case_st_archive</span><span class="p">,</span> <span class="n">restore_from_archive</span><span class="p">,</span> \
-        <span class="n">archive_last_restarts</span>
+        <span class="n">archive_last_restarts</span><span class="p">,</span> <span class="n">test_st_archive</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_run</span> <span class="kn">import</span> <span class="n">case_run</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_cmpgen_namelists</span> <span class="kn">import</span> <span class="n">case_cmpgen_namelists</span>
     <span class="kn">from</span> <span class="nn">CIME.case.check_lockedfiles</span> <span class="kn">import</span> <span class="n">check_lockedfile</span><span class="p">,</span> <span class="n">check_lockedfiles</span><span class="p">,</span> <span class="n">check_pelayouts_require_rebuild</span>
@@ -133,7 +133,6 @@
             <span class="n">case_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">case_root</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing Case.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span> <span class="o">=</span> <span class="n">read_only</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_primary_component</span> <span class="o">=</span> <span class="bp">None</span>
@@ -240,16 +239,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">return</span> <span class="bp">False</span>
 
-<div class="viewcode-block" id="Case.schedule_rewrite"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.schedule_rewrite">[docs]</a>    <span class="k">def</span> <span class="nf">schedule_rewrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_file</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span><span class="p">,</span> \
-            <span class="s2">&quot;case.py scripts error: attempted to modify an env file while in &quot;</span> \
-            <span class="s2">&quot;read-only mode&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">env_file</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="Case.read_xml"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.read_xml">[docs]</a>    <span class="k">def</span> <span class="nf">read_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;Object(s) {} seem to have newer data than the corresponding case file&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">env_file</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="p">])))</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvCase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="bp">None</span><span class="p">))</span>
         <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
@@ -300,12 +290,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">):</span>
             <span class="c1"># do not flush if caseroot wasnt created</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="n">flushall</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">env_file</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="p">:</span>
-            <span class="n">env_file</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
+            <span class="n">env_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">force_write</span><span class="o">=</span><span class="n">flushall</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Case.get_values"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
@@ -412,12 +398,12 @@
         <span class="n">recurse_limit</span> <span class="o">=</span> <span class="mi">10</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">num_unresolved</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recurse</span> <span class="o">&lt;</span> <span class="n">recurse_limit</span> <span class="p">):</span>
             <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
-                <span class="n">item</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> 
+                <span class="n">item</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span>
                                                    <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="n">allow_unresolved_envvars</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;$&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">item</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="n">recurse</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> 
+                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="n">recurse</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
                                                <span class="n">allow_unresolved_envvars</span><span class="o">=</span><span class="n">allow_unresolved_envvars</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">item</span></div>
@@ -436,7 +422,6 @@
             <span class="n">result</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Will rewrite file {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">env_file</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">result</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -455,7 +440,6 @@
             <span class="n">result</span> <span class="o">=</span> <span class="n">env_file</span><span class="o">.</span><span class="n">set_valid_values</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">valid_values</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Will rewrite file {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">env_file</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Case.set_lookup_value"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.set_lookup_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_lookup_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -548,7 +532,7 @@
             <span class="c1"># this is a &quot;J&quot; compset</span>
             <span class="n">primary_component</span> <span class="o">=</span> <span class="s2">&quot;allactive&quot;</span>
         <span class="k">elif</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;ATM&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="s2">&quot;DOCN%SOM&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;DOCN%SOM&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;LND&quot;</span><span class="p">]:</span>
                 <span class="c1"># This is an &quot;E&quot; compset</span>
                 <span class="n">primary_component</span> <span class="o">=</span> <span class="s2">&quot;allactive&quot;</span>
             <span class="k">else</span><span class="p">:</span>
@@ -587,7 +571,6 @@
                                             <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">component</span><span class="p">},</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;COMPSETS_SPEC_FILE&quot;</span> <span class="p">,</span><span class="n">compset_spec_file</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">pesfile</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PES_SPEC_FILE&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">component</span><span class="p">})</span>
             <span class="n">pesfile_unresolved</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PES_SPEC_FILE&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">component</span><span class="p">},</span> <span class="n">resolved</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
@@ -913,7 +896,6 @@
         <span class="c1"># Create env_mach_specific settings from machine info.</span>
         <span class="n">env_mach_specific_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
         <span class="n">env_mach_specific_obj</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">env_mach_specific_obj</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_mach_pes</span><span class="p">(</span><span class="n">pecount</span><span class="p">,</span> <span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
 
@@ -930,7 +912,6 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;archive defaults located in {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span>
         <span class="n">archive</span> <span class="o">=</span> <span class="n">Archive</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">infile</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
         <span class="n">archive</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">env_archive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">env_archive</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMPSET&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">)</span>
 
@@ -1017,7 +998,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;USER_REQUESTED_QUEUE&quot;</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">())</span>
 
         <span class="n">env_batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">(</span><span class="n">bjobs</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">env_batch</span><span class="p">)</span>
 
         <span class="c1"># Make sure that parallel IO is not specified if total_tasks==1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1106,9 +1086,9 @@
 
         <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine</span><span class="p">))):</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine</span><span class="p">)),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">))</span>
+                <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine</span><span class="p">)),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.noop&quot;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">))</span>
+                <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.noop&quot;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_create_caseroot_sourcemods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
@@ -1246,14 +1226,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">comp_user_mods</span>
 
-<div class="viewcode-block" id="Case.submit_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.submit_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                    <span class="n">mail_user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+<div class="viewcode-block" id="Case.submit_jobs"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.submit_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">prereq</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                    <span class="n">resubmit_immediate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                     <span class="n">dry_run</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;batch&#39;</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span>  <span class="n">env_batch</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="n">no_batch</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">user_prereq</span><span class="o">=</span><span class="n">prereq</span><span class="p">,</span>
-                                     <span class="n">skip_pnl</span><span class="o">=</span><span class="n">skip_pnl</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="n">mail_user</span><span class="p">,</span>
-                                     <span class="n">mail_type</span><span class="o">=</span><span class="n">mail_type</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="n">batch_args</span><span class="p">,</span>
-                                     <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span>  <span class="n">env_batch</span><span class="o">.</span><span class="n">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="n">no_batch</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="n">skip_pnl</span><span class="p">,</span>
+                                        <span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">user_prereq</span><span class="o">=</span><span class="n">prereq</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="n">allow_fail</span><span class="p">,</span>
+                                        <span class="n">resubmit_immediate</span><span class="o">=</span><span class="n">resubmit_immediate</span><span class="p">,</span>
+                                        <span class="n">mail_user</span><span class="o">=</span><span class="n">mail_user</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="n">mail_type</span><span class="p">,</span>
+                                        <span class="n">batch_args</span><span class="o">=</span><span class="n">batch_args</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Case.get_job_info"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_job_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_job_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1355,7 +1336,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns True if current settings require a threaded build/run.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">force_threaded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BUILD_THREADED&quot;</span><span class="p">)</span>
+        <span class="n">force_threaded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;FORCE_BUILD_SMP&quot;</span><span class="p">)</span>
         <span class="n">smp_present</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">force_threaded</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">&gt;</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">smp_present</span></div>
 
@@ -1455,11 +1436,8 @@
         <span class="k">elif</span> <span class="n">old_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_object</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">old_object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_env_files_that_need_rewrite</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_object</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Case.get_latest_cpl_log"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.get_latest_cpl_log">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_cpl_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupler_log_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

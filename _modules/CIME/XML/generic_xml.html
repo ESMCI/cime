@@ -52,10 +52,12 @@
 <span class="sd">be used by other XML interface modules and not directly.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">safe_copy</span>
+
 <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">ET</span>
 <span class="c1">#pylint: disable=import-error</span>
 <span class="kn">from</span> <span class="nn">distutils.spawn</span> <span class="kn">import</span> <span class="n">find_executable</span>
-<span class="kn">import</span> <span class="nn">getpass</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">getpass</span>
 <span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
@@ -95,6 +97,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span> <span class="o">=</span> <span class="n">read_only</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">infile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -123,6 +126,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">DISABLE_CACHING</span> <span class="ow">and</span> <span class="n">infile</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FILEMAP</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;read (cached): &quot;</span> <span class="o">+</span> <span class="n">infile</span><span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_only</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span> <span class="s2">&quot;Reading into object marked for rewrite, file {}&quot;</span>
+                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_FILEMAP</span><span class="p">[</span><span class="n">infile</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;read: &quot;</span> <span class="o">+</span> <span class="n">infile</span><span class="p">)</span>
@@ -138,6 +143,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_FILEMAP</span><span class="p">[</span><span class="n">infile</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericXML.read_fd"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.read_fd">[docs]</a>    <span class="k">def</span> <span class="nf">read_fd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span>
+        <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_only</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span><span class="p">,</span> <span class="s2">&quot;Reading into object marked for rewrite, file {}&quot;</span>               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">:</span>
             <span class="n">addroot</span> <span class="o">=</span> <span class="n">_Element</span><span class="p">(</span><span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">())</span>
             <span class="n">read_only</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span>
@@ -170,7 +176,7 @@
             <span class="n">new_case</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">newfile</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_case</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">new_case</span><span class="p">)</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">newfile</span><span class="p">)</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">newfile</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">newfile</span>
@@ -190,12 +196,15 @@
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attrib_name</span> <span class="o">==</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">attrib_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">)</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">attrib_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericXML.pop"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">attrib_name</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attrib_name</span> <span class="o">==</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">attrib_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericXML.attrib"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.attrib">[docs]</a>    <span class="k">def</span> <span class="nf">attrib</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
@@ -204,11 +213,15 @@
 
 <div class="viewcode-block" id="GenericXML.set_name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
-        <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">name</span></div>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tag</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">name</span></div>
 
 <div class="viewcode-block" id="GenericXML.set_text"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.set_text">[docs]</a>    <span class="k">def</span> <span class="nf">set_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
-        <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span></div>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">text</span> <span class="o">!=</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span></div>
 
 <div class="viewcode-block" id="GenericXML.name"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tag</span></div>
@@ -221,6 +234,7 @@
 <span class="sd">        Add element node to self at root</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">root</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
         <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">root</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="p">)</span>
@@ -232,12 +246,14 @@
 
 <div class="viewcode-block" id="GenericXML.remove_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.remove_child">[docs]</a>    <span class="k">def</span> <span class="nf">remove_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">root</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
         <span class="n">root</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">xml_element</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericXML.make_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.make_child">[docs]</a>    <span class="k">def</span> <span class="nf">make_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locked</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_only</span><span class="p">,</span> <span class="s2">&quot;locked&quot;</span><span class="p">)</span>
         <span class="n">root</span> <span class="o">=</span> <span class="n">root</span> <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="n">_Element</span><span class="p">(</span><span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">xml_element</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -318,24 +334,32 @@
         <span class="n">version</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">version</span></div>
 
-<div class="viewcode-block" id="GenericXML.write"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="GenericXML.write"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">force_write</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write an xml file from data in self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="ow">or</span> <span class="n">force_write</span><span class="p">):</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">outfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;write: &quot;</span> <span class="o">+</span> <span class="n">outfile</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;write: &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="n">outfile</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">outfile</span><span class="p">)))</span>
 
         <span class="n">xmlstr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_record</span><span class="p">()</span>
 
         <span class="c1"># xmllint provides a better format option for the output file</span>
         <span class="n">xmllint</span> <span class="o">=</span> <span class="n">find_executable</span><span class="p">(</span><span class="s2">&quot;xmllint&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">xmllint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;{} --format --output {} -&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmllint</span><span class="p">,</span> <span class="n">outfile</span><span class="p">),</span> <span class="n">input_str</span><span class="o">=</span><span class="n">xmlstr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+                <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;{} --format --output {} -&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmllint</span><span class="p">,</span> <span class="n">outfile</span><span class="p">),</span> <span class="n">input_str</span><span class="o">=</span><span class="n">xmlstr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;{} --format -&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">xmllint</span><span class="p">),</span> <span class="n">input_str</span><span class="o">=</span><span class="n">xmlstr</span><span class="p">))</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">xmlout</span><span class="p">:</span>
-                <span class="n">xmlout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xmlstr</span><span class="p">)</span></div>
+                <span class="n">xmlout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xmlstr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needsrewrite</span> <span class="o">=</span> <span class="bp">False</span></div>
 
 <div class="viewcode-block" id="GenericXML.scan_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.scan_child">[docs]</a>    <span class="k">def</span> <span class="nf">scan_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

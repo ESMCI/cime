@@ -479,7 +479,12 @@
 
         <span class="k">if</span> <span class="n">test_mods</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
-            <span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">modspath</span><span class="p">)</span> <span class="o">=</span> <span class="n">test_mods</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">test_mods</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">modspath</span><span class="p">)</span> <span class="o">=</span> <span class="n">test_mods</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;Missing testmod component. Testmods are specified as &#39;${component}-${testmod}&#39;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_output</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">False</span><span class="p">,</span> <span class="n">error</span>
 
             <span class="n">testmods_dir</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTS_MODS_DIR&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">component</span><span class="p">})</span>
             <span class="n">test_mod_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">testmods_dir</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">modspath</span><span class="p">)</span>
@@ -523,6 +528,14 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --queue={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># We need to hard code the queue for this test on cheyenne</span>
+            <span class="c1"># otherwise it runs in share and fails intermittently</span>
+            <span class="n">test_case</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">parse_test_name</span><span class="p">(</span><span class="n">test</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">test_case</span> <span class="o">==</span> <span class="s2">&quot;NODEFAIL&quot;</span><span class="p">:</span>
+                <span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span> <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">machine</span> <span class="o">==</span> <span class="s2">&quot;cheyenne&quot;</span><span class="p">:</span>
+                    <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --queue=regular&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_walltime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --walltime {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_walltime</span><span class="p">)</span>
@@ -725,16 +738,7 @@
         <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">RUN_PHASE</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_no_batch</span> <span class="ow">or</span> <span class="n">no_batch</span><span class="p">):</span>
             <span class="n">test_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
             <span class="n">total_pes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;./xmlquery TOTALPES --value&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">test_dir</span><span class="p">))</span>
-            <span class="n">threads</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;./xmlquery NTHRDS --value&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">test_dir</span><span class="p">))</span>
-            <span class="n">max_threads</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">comp_threads</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-                <span class="n">comp_threads</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">comp_threads</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">comp_threads</span> <span class="o">&gt;</span> <span class="n">max_threads</span><span class="p">:</span>
-                    <span class="n">max_threads</span> <span class="o">=</span> <span class="n">comp_threads</span>
-
-            <span class="n">max_cores</span> <span class="o">=</span> <span class="n">total_pes</span> <span class="o">*</span> <span class="n">max_threads</span>
-            <span class="k">return</span> <span class="n">max_cores</span>
+            <span class="k">return</span> <span class="n">total_pes</span>
 
         <span class="k">elif</span> <span class="p">(</span><span class="n">phase</span> <span class="o">==</span> <span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
@@ -801,7 +805,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
             <span class="n">status_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    Case dir: {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
-            <span class="n">status_str</span> <span class="o">+=</span> <span class="s2">&quot;    Errors were:</span><span class="se">\n</span><span class="s2">        {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">        &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()))</span>
+            <span class="n">status_str</span> <span class="o">+=</span> <span class="s2">&quot;    Errors were:</span><span class="se">\n</span><span class="s2">        {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">        &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()))</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">status_str</span><span class="p">)</span>
 

@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="code_checker" href="code_checker.html" />
-    <link rel="prev" title="case.build" href="case.build.html" /> 
+    <link rel="next" title="xmlquery" href="xmlquery.html" />
+    <link rel="prev" title="wait_for_tests" href="wait_for_tests.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="code_checker.html" title="code_checker"
+          <a href="xmlquery.html" title="xmlquery"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="case.build.html" title="case.build"
+          <a href="wait_for_tests.html" title="wait_for_tests"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,52 +62,90 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./xmlchange --help
-usage: 
-xmlchange [&lt;changeargs&gt;] [--verbose][--file file][--id id][--val value][--noecho][--append][--force]
-OR
-xmlchange --help
+usage: xmlchange [-h] [-d] [-v] [-s] [--caseroot CASEROOT] [--append]
+                 [--subgroup SUBGROUP] [--id ID] [--val VAL] [--file FILE]
+                 [--delimiter DELIMITER] [--dryrun] [--noecho] [-f]
+                 [-loglevel LOGLEVEL]
+                 [listofsettings]
 
-[1mEXAMPLES:[0m
-    [1;32m# xmlchange REST_OPT=ndays,REST_N=4 [0m
-    &gt; xmlchange
+Allows changing variables in env_*xml files via a command-line interface.
 
-This utility allows the user to change a env_*xml file via a commandline
-interface. The command is echoed to the CaseStatus file, unless -noecho is
-given. The purpose of this echoing is to provide a &quot;paper trail&quot; of changes
-made by the user, so calls to xmlchange by the cime scripts that are part of
-the normal case setup/build process should generally use -noecho.
+This provides two main benefits over editing the xml files by hand:
+  - Settings are checked immediately for validity
+  - Settings are echoed to the CaseStatus file, providing a &quot;paper trail&quot; of
+    changes made by the user.
+
+Examples:
+
+   To set a single variable:
+      ./xmlchange REST_N=4
+
+   To set multiple variables at once:
+      ./xmlchange REST_OPTION=ndays,REST_N=4
+
+   Alternative syntax (no longer recommended, but supported for backwards
+   compatibility; only works for a single variable at a time):
+      ./xmlchange --id REST_N --val 4
+
+   Several xml variables that have settings for each component have somewhat special treatment.
+   The variables that this currently applies to are:
+    NTASKS, NTHRDS, ROOTPE, PIO_TYPENAME, PIO_STRIDE, PIO_NUMTASKS
+   For example, to set the number of tasks for all components to 16, use:
+      ./xmlchange NTASKS=16
+   To set just the number of tasks for the atm component, use:
+      ./xmlchange NTASKS_ATM=16
+
+   The CIME case xml variables are grouped together in xml elements &lt;group&gt;&lt;/group&gt;.
+   This is done to associate together xml variables with common features.
+   Most variables are only associated with one group. However, in env_batch.xml,
+   there are also xml variables that are associated with each potential batch job.
+   For these variables, the &#39;--subgroup&#39; option may be used to specify a particular
+   group for which the variable&#39;s value will be adjusted.
+
+   As an example, in env_batch.xml, the xml variables JOB_QUEUE and JOB_WALLCLOCK_TIME
+   appear in each of the batch job groups (defined in config_batch.xml):
+    &lt;group id=&quot;case.run&quot;&gt;
+    &lt;group id=&quot;case.st_archive&quot;&gt;
+    &lt;group id=&quot;case.test&quot;&gt;
+   To set the variable JOB_WALLCLOCK_TIME only for case.run:
+      ./xmlchange JOB_WALLCLOCK_TIME=0:30 --subgroup case.run
+   To set the variable JOB_WALLCLOCK_TIME for all jobs:
+      ./xmlchange JOB_WALLCLOCK_TIME=0:30
 
 positional arguments:
-  listofsettings        Comma seperated list of settings in the form:
-                        var1=value,var2=value,... (default: )
+  listofsettings        Comma-separated list of settings in the form: var1=value,var2=value,...
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/aliceb/cime/scripts/Tools/xmlchange.log
-                        (default: False)
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/xmlchange.log
   -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
-  --caseroot CASEROOT   Case directory to change (default:
-                        /Users/aliceb/cime/scripts/Tools)
-  -loglevel LOGLEVEL    ignored, backward compatibility only (default: None)
-  -file FILE, --file FILE
-                        xml file to edit (default: None)
-  -id ID, --id ID       the xml entry id (default: None)
-  -val VAL, --val VAL   the value to set (default: None)
-  -delimiter DELIMITER, --delimiter DELIMITER
-                        set delimiter string, default is , (default: ,)
-  -dryrun DRYRUN, --dryrun DRYRUN
-                        parse settings and print key value pairs only
-                        (default: False)
-  -noecho, --noecho     do not update CaseStatus with this change (default:
-                        False)
-  -append, --append     append to the existing value (default: False)
-  -subgroup SUBGROUP, --subgroup SUBGROUP
-                        apply to this subgroup only (default: None)
-  -f, --force           ignore typing checks and store value (default: False)
+  -s, --silent          Print only warnings and error messages
+  --caseroot CASEROOT   Case directory to change.
+                        Default is current directory.
+  --append, -append     Append to the existing value rather than overwriting it.
+  --subgroup SUBGROUP, -subgroup SUBGROUP
+                        Apply to this subgroup only.
+  --id ID, -id ID       The variable to set.
+                        (Used in the alternative --id var --val value form, rather than
+                        the recommended var=value form.)
+  --val VAL, -val VAL   The value to set.
+                        (Used in the alternative --id var --val value form, rather than
+                        the recommended var=value form.)
+  --file FILE, -file FILE
+                        XML file to edit.
+                        Generally not needed, but can be specified to ensure that only the
+                        expected file is being changed. (If a variable is not found in this file,
+                        an error will be generated.)
+  --delimiter DELIMITER, -delimiter DELIMITER
+                        Delimiter string in listofvalues.
+                        Default is &#39;,&#39;.
+  --dryrun, -dryrun     Parse settings and print key-value pairs, but don&#39;t actually change anything.
+  --noecho, -noecho     Do not update CaseStatus with this change.
+                        This option is mainly meant to be used by cime scripts: the &#39;paper trail&#39; in
+                        CaseStatus is meant to show changes made by the user, so we generally don&#39;t
+                        want this to be contaminated by changes made automatically by cime scripts.
+  -f, --force           Ignore typing checks and store value.
+  -loglevel LOGLEVEL    Ignored, only for backwards compatibility.
 </pre></div>
 </div>
 </div>
@@ -119,11 +157,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="case.build.html"
-                        title="previous chapter">case.build</a></p>
+  <p class="topless"><a href="wait_for_tests.html"
+                        title="previous chapter">wait_for_tests</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="code_checker.html"
-                        title="next chapter">code_checker</a></p>
+  <p class="topless"><a href="xmlquery.html"
+                        title="next chapter">xmlquery</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -155,10 +193,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="code_checker.html" title="code_checker"
+          <a href="xmlquery.html" title="xmlquery"
              >next</a> |</li>
         <li class="right" >
-          <a href="case.build.html" title="case.build"
+          <a href="wait_for_tests.html" title="wait_for_tests"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

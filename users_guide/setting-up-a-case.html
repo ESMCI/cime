@@ -58,7 +58,8 @@
 <span id="id1"></span><h1>3. Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="calling-case-setup">
 <h2>3.1. Calling <strong>case.setup</strong><a class="headerlink" href="#calling-case-setup" title="Permalink to this headline">¶</a></h2>
-<p>After creating a case or changing aspects of a case, such as the pe-layout, call the <strong>case.setup</strong> command from <code class="docutils literal"><span class="pre">$CASEROOT</span></code>. This creates additional files and directories in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>. They are described below.</p>
+<p>After creating a case or changing aspects of a case, such as the pe-layout, call the <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> command from <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
+This creates the following additional files and directories in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>:</p>
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
@@ -66,16 +67,17 @@
 <col width="81%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>case.run</td>
+<tr class="row-odd"><td>.case.run</td>
 <td>Run script containing the batch directives. The directives are generated using the contents
-of <strong>env_mach_pes.xml</strong>. Running <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will remove this file.</td>
+of <strong>env_mach_pes.xml</strong>. Running <a class="reference external" href="../Tools_user/case.setup.html">case.setup &#8211;clean</a>  will remove this file. You should
+<strong>never</strong> run this script.</td>
 </tr>
 <tr class="row-even"><td>Macros.make</td>
 <td><p class="first">File containing machine-specific makefile directives for your target platform/compiler.
 This file is created if it does not already exist.</p>
 <p class="last">The user can modify the file to change certain aspects of the build, such as compiler flags.
-Running <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will not remove the file once it has been created.
-However. if you remove or rename the Macros.make file, running <strong>case.setup</strong> recreates it.</p>
+Running <a class="reference external" href="../Tools_user/case.setup.html">case.setup &#8211;clean</a>  will not remove the file once it has been created.
+However. if you remove or rename the Macros.make file, running <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> recreates it.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>user_nl_xxx[_NNNN] files</td>
@@ -87,7 +89,7 @@ For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm or
 <p>For a case with 1 instance of each component (default), NNNN will not appear
 in the user_nl file names.</p>
 <p>A user_nl file of a given name is created only once.</p>
-<p>Calling <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will <em>not remove</em> any user_nl files.</p>
+<p>Calling <a class="reference external" href="../Tools_user/case.setup.html">case.setup &#8211;clean</a> will <em>not remove</em> any user_nl files.</p>
 <p class="last">Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only
 new user_nl files to be added to <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</p>
 </td>

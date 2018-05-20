@@ -127,6 +127,7 @@
 <li class="toctree-l1"><a class="reference internal" href="CIME.XML.html">CIME.XML package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.archive">CIME.XML.archive module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.archive_base">CIME.XML.archive_base module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.batch">CIME.XML.batch module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.compilerblock">CIME.XML.compilerblock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.compilers">CIME.XML.compilers module</a></li>
@@ -199,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.case_fake">CIME.tests.case_fake module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_case_fake">CIME.tests.test_case_fake module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_user_mod_support">CIME.tests.test_user_mod_support module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_utils">CIME.tests.test_utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.tests.html#module-CIME.tests">Module contents</a></li>
 </ul>
 </li>
@@ -242,7 +244,7 @@ code to compute and assemble aprun commands.</p>
 <p>functions for building CIME models</p>
 <dl class="function">
 <dt id="CIME.build.case_build">
-<code class="descclassname">CIME.build.</code><code class="descname">case_build</code><span class="sig-paren">(</span><em>caseroot</em>, <em>case</em>, <em>sharedlib_only=False</em>, <em>model_only=False</em>, <em>buildlist=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#case_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.case_build" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.build.</code><code class="descname">case_build</code><span class="sig-paren">(</span><em>caseroot</em>, <em>case</em>, <em>sharedlib_only=False</em>, <em>model_only=False</em>, <em>buildlist=None</em>, <em>save_build_provenance=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#case_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.case_build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -252,7 +254,7 @@ code to compute and assemble aprun commands.</p>
 
 <dl class="function">
 <dt id="CIME.build.post_build">
-<code class="descclassname">CIME.build.</code><code class="descname">post_build</code><span class="sig-paren">(</span><em>case</em>, <em>logs</em>, <em>build_complete=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#post_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.post_build" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.build.</code><code class="descname">post_build</code><span class="sig-paren">(</span><em>case</em>, <em>logs</em>, <em>build_complete=False</em>, <em>save_build_provenance=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#post_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.post_build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -638,7 +640,7 @@ filepath - The path of the hist file</p>
 <span class="go">&#39;h&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_extension</span><span class="p">(</span><span class="s2">&quot;clm&quot;</span><span class="p">,</span><span class="s2">&quot;clm2_0002.h0.1850-01-06-00000.nc&quot;</span><span class="p">)</span>
 <span class="go">&#39;0002.h0&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_extension</span><span class="p">(</span><span class="s2">&quot;pop&quot;</span><span class="p">,</span><span class="s2">&quot;PFS.f09_g16.B1850.yellowstone_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_extension</span><span class="p">(</span><span class="s2">&quot;pop&quot;</span><span class="p">,</span><span class="s2">&quot;PFS.f09_g16.B1850.cheyenne_intel.allactive-default.GC.c2_0_b1f2_int.pop.h.ecosys.nday1.0001-01-02.nc&quot;</span><span class="p">)</span>
 <span class="go">&#39;h&#39;</span>
 </pre></div>
 </div>
@@ -1913,17 +1915,17 @@ show_options (bool): if True, print test options, too (note that the &#8216;comm
 </dd>
 </dl>
 <p>Basic functionality:
-&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.yellowstone_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {}}
+&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.cheyenne_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {}}
 &gt;&gt;&gt; test_to_string(mytest, 10)
-&#8216;prealpha  : SMS.f19_g16.A.yellowstone_intel&#8217;</p>
+&#8216;prealpha  : SMS.f19_g16.A.cheyenne_intel&#8217;</p>
 <p>Printing comments:
-&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.yellowstone_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {&#8216;comment&#8217;: &#8216;my remarks&#8217;}}
+&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.cheyenne_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {&#8216;comment&#8217;: &#8216;my remarks&#8217;}}
 &gt;&gt;&gt; test_to_string(mytest, 10)
-&#8216;prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks&#8217;</p>
+&#8216;prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks&#8217;</p>
 <p>Printing other options, too:
-&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.yellowstone_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {&#8216;comment&#8217;: &#8216;my remarks&#8217;, &#8216;wallclock&#8217;: &#8216;0:20&#8217;, &#8216;memleak_tolerance&#8217;: 0.2}}
+&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.cheyenne_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {&#8216;comment&#8217;: &#8216;my remarks&#8217;, &#8216;wallclock&#8217;: &#8216;0:20&#8217;, &#8216;memleak_tolerance&#8217;: 0.2}}
 &gt;&gt;&gt; test_to_string(mytest, 10, show_options=True)
-&#8216;prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks  # memleak_tolerance: 0.2  # wallclock: 0:20&#8217;</p>
+&#8216;prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks  # memleak_tolerance: 0.2  # wallclock: 0:20&#8217;</p>
 </dd></dl>
 
 </div>
@@ -1972,6 +1974,17 @@ print os.getenv(&#8216;MYVAR2&#8217;)    # Should print myvalue2.</div></blockqu
 print os.getenv(&#8216;MYVAR2&#8217;)        # Should print None.</p>
 </div></blockquote>
 <p>CREDIT: <a class="reference external" href="https://github.com/sakurai-youhei/envcontext">https://github.com/sakurai-youhei/envcontext</a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="CIME.utils.IndentFormatter">
+<em class="property">class </em><code class="descclassname">CIME.utils.</code><code class="descname">IndentFormatter</code><span class="sig-paren">(</span><em>indent</em>, <em>fmt=None</em>, <em>datefmt=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#IndentFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.IndentFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">logging.Formatter</span></code></p>
+<dl class="method">
+<dt id="CIME.utils.IndentFormatter.format">
+<code class="descname">format</code><span class="sig-paren">(</span><em>record</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#IndentFormatter.format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.IndentFormatter.format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -2437,6 +2450,20 @@ the zipped file.</p>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="CIME.utils.indent_string">
+<code class="descclassname">CIME.utils.</code><code class="descname">indent_string</code><span class="sig-paren">(</span><em>the_string</em>, <em>indent_level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#indent_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.indent_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indents the given string by a given number of spaces</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>the_string: str
+indent_level: int</dd>
+</dl>
+<p>Returns a new string that is the same as the_string, except that
+each line is indented by &#8216;indent_level&#8217; spaces.</p>
+<p>In python3, this can be done with textwrap.indent.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="CIME.utils.is_python_executable">
 <code class="descclassname">CIME.utils.</code><code class="descname">is_python_executable</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#is_python_executable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.is_python_executable" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2601,11 +2628,27 @@ if that fails it will run it as a program in a seperate shell</p>
 
 <dl class="function">
 <dt id="CIME.utils.safe_copy">
-<code class="descclassname">CIME.utils.</code><code class="descname">safe_copy</code><span class="sig-paren">(</span><em>src_dir</em>, <em>tgt_dir</em>, <em>file_map</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#safe_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.safe_copy" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">safe_copy</code><span class="sig-paren">(</span><em>src_path</em>, <em>tgt_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#safe_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.safe_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>A flexbile and safe copy routine. Will try to copy file and metadata, but this
+can fail if the current user doesn&#8217;t own the tgt file. A fallback data-only copy is
+attempted in this case. Works even if overwriting a read-only file.</p>
+<p>tgt_path can be a directory, src_path must be a file</p>
+<p>most of the complexity here is handling the case where the tgt_path file already
+exists. This problem does not exist for the tree operations so we don&#8217;t need to wrap those.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.safe_recursive_copy">
+<code class="descclassname">CIME.utils.</code><code class="descname">safe_recursive_copy</code><span class="sig-paren">(</span><em>src_dir</em>, <em>tgt_dir</em>, <em>file_map</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#safe_recursive_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.safe_recursive_copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies a set of files from one dir to another. Works even if overwriting a
 read-only file. Files can be relative paths and the relative path will be
 matched on the tgt side.</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.set_logger_indent">
+<code class="descclassname">CIME.utils.</code><code class="descname">set_logger_indent</code><span class="sig-paren">(</span><em>indent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#set_logger_indent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.set_logger_indent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.set_model">
@@ -2684,12 +2727,12 @@ recursively.</p>
 
 <dl class="function">
 <dt id="CIME.wait_for_tests.create_cdash_upload_xml">
-<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">create_cdash_upload_xml</code><span class="sig-paren">(</span><em>results</em>, <em>cdash_build_name</em>, <em>cdash_build_group</em>, <em>utc_time</em>, <em>hostname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#create_cdash_upload_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.create_cdash_upload_xml" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">create_cdash_upload_xml</code><span class="sig-paren">(</span><em>results</em>, <em>cdash_build_name</em>, <em>cdash_build_group</em>, <em>utc_time</em>, <em>hostname</em>, <em>force_log_upload</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#create_cdash_upload_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.create_cdash_upload_xml" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.wait_for_tests.create_cdash_xml">
-<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">create_cdash_xml</code><span class="sig-paren">(</span><em>results</em>, <em>cdash_build_name</em>, <em>cdash_project</em>, <em>cdash_build_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#create_cdash_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.create_cdash_xml" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">create_cdash_xml</code><span class="sig-paren">(</span><em>results</em>, <em>cdash_build_name</em>, <em>cdash_project</em>, <em>cdash_build_group</em>, <em>force_log_upload=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#create_cdash_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.create_cdash_xml" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -2719,7 +2762,7 @@ recursively.</p>
 
 <dl class="function">
 <dt id="CIME.wait_for_tests.wait_for_tests">
-<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">wait_for_tests</code><span class="sig-paren">(</span><em>test_paths</em>, <em>no_wait=False</em>, <em>check_throughput=False</em>, <em>check_memory=False</em>, <em>ignore_namelists=False</em>, <em>ignore_memleak=False</em>, <em>cdash_build_name=None</em>, <em>cdash_project='ACME_Climate'</em>, <em>cdash_build_group='ACME_Latest'</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#wait_for_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.wait_for_tests" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">wait_for_tests</code><span class="sig-paren">(</span><em>test_paths</em>, <em>no_wait=False</em>, <em>check_throughput=False</em>, <em>check_memory=False</em>, <em>ignore_namelists=False</em>, <em>ignore_memleak=False</em>, <em>cdash_build_name=None</em>, <em>cdash_project='ACME_Climate'</em>, <em>cdash_build_group='ACME_Latest'</em>, <em>timeout=None</em>, <em>force_log_upload=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#wait_for_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.wait_for_tests" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

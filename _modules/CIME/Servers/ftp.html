@@ -48,7 +48,7 @@
             
   <h1>Source code for CIME.Servers.ftp</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">FTP Server class.  Interact with a server using FTP protocal</span>
+<span class="sd">FTP Server class.  Interact with a server using FTP protocol</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># pylint: disable=super-init-not-called</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
@@ -77,21 +77,39 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_server</span> <span class="o">=</span> <span class="n">address</span>
 
 <div class="viewcode-block" id="FTP.fileexists"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.fileexists">[docs]</a>    <span class="k">def</span> <span class="nf">fileexists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">):</span>
-        <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">nlst</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span>
-
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">nlst</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ERROR from ftp server, trying next server&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
         <span class="k">if</span> <span class="n">rel_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: File {} not found.</span><span class="se">\n</span><span class="s2">error {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">None</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">stat</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">stat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rel_path</span><span class="p">):</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: File {} not found.</span><span class="se">\n</span><span class="s2">error {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span></div>
 
 <div class="viewcode-block" id="FTP.getfile"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getfile">[docs]</a>    <span class="k">def</span> <span class="nf">getfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
-        <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">retrbinary</span><span class="p">(</span><span class="s1">&#39;RETR {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">retrbinary</span><span class="p">(</span><span class="s1">&#39;RETR {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">),</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ERROR from ftp server, trying next server&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="s1">&#39;226 Transfer complete.&#39;</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: Failed to retreve file &#39;{}&#39; from FTP repo &#39;{}&#39; stat={}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span>
                             <span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ftp_server</span><span class="p">,</span> <span class="n">stat</span><span class="p">))</span>
             <span class="k">return</span> <span class="bp">False</span>
-        <span class="k">return</span> <span class="bp">True</span></div></div>
+        <span class="k">return</span> <span class="bp">True</span></div>
+
+<div class="viewcode-block" id="FTP.getdirectory"><a class="viewcode-back" href="../../../CIME_api/CIME.Servers.html#CIME.Servers.ftp.FTP.getdirectory">[docs]</a>    <span class="k">def</span> <span class="nf">getdirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ftp</span><span class="o">.</span><span class="n">nlst</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ERROR from ftp server, trying next server&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">for</span> <span class="n">_file</span> <span class="ow">in</span> <span class="n">stat</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">_file</span><span class="p">,</span> <span class="n">full_path</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">_file</span><span class="p">))</span></div></div>
 </pre></div>
 
           </div>

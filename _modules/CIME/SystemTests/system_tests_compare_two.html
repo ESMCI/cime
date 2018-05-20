@@ -270,6 +270,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_postrun_action</span><span class="p">()</span>
 
         <span class="c1"># Second run</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_multisubmit {} first phase {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">first_phase</span><span class="p">:</span>
             <span class="c1"># Subtle issue: case1 is already in a writeable state since it tends to be opened</span>
             <span class="c1"># with a with statement in all the API entrances in CIME. case2 was created via clone,</span>
@@ -304,6 +305,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">archive_last_restarts</span><span class="p">(</span><span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">rundir2</span><span class="p">,</span>
+                                          <span class="n">rundir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
                                           <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span></div>
 
     <span class="c1"># ========================================================================</span>

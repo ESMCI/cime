@@ -51,6 +51,7 @@
 <span class="sd">CIME ERI test  This class inherits from SystemTestsCommon</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">safe_copy</span>
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span>
 
@@ -66,7 +67,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;{}/*rpointer*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_path</span><span class="p">)):</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
+        <span class="n">safe_copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ERI"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.eri.ERI">[docs]</a><span class="k">class</span> <span class="nc">ERI</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 

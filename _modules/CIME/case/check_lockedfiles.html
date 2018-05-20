@@ -62,7 +62,7 @@
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="kn">import</span> <span class="n">unlock_file</span><span class="p">,</span> <span class="n">LOCKED_DIR</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">six</span>
 
 <div class="viewcode-block" id="check_pelayouts_require_rebuild"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_pelayouts_require_rebuild">[docs]</a><span class="k">def</span> <span class="nf">check_pelayouts_require_rebuild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -147,7 +147,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;&#39;{}&#39; diff was not handled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">objname</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="check_lockedfiles"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfiles">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="check_lockedfiles"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_lockedfiles">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check that all lockedfiles match what&#39;s in case</span>
 
@@ -155,13 +155,22 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="n">lockedfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;LockedFiles&quot;</span><span class="p">,</span> <span class="s2">&quot;*.xml&quot;</span><span class="p">))</span>
+    <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">skip</span>
+    <span class="n">skip</span> <span class="o">=</span> <span class="p">[</span><span class="n">skip</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">skip</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span> <span class="k">else</span> <span class="n">skip</span>
     <span class="k">for</span> <span class="n">lfile</span> <span class="ow">in</span> <span class="n">lockedfiles</span><span class="p">:</span>
         <span class="n">fpart</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lfile</span><span class="p">)</span>
         <span class="c1"># ignore files used for tests such as env_mach_pes.ERP1.xml by looking for extra dots in the name</span>
         <span class="k">if</span> <span class="n">fpart</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">continue</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">fpart</span><span class="p">)</span></div>
+        <span class="n">do_skip</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">skip</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fpart</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="n">do_skip</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">do_skip</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">fpart</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

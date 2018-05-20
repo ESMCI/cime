@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="component_compare_baseline" href="component_compare_baseline.html" />
-    <link rel="prev" title="cs.status" href="cs.status.html" /> 
+    <link rel="next" title="preview_run" href="preview_run.html" />
+    <link rel="prev" title="pelayout" href="pelayout.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="component_compare_baseline.html" title="component_compare_baseline"
+          <a href="preview_run.html" title="preview_run"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="cs.status.html" title="cs.status"
+          <a href="pelayout.html" title="pelayout"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -65,21 +65,31 @@
 usage: preview_namelists [-h] [-d] [-v] [-s] [--component COMPONENT]
                          [caseroot]
 
-preview_namelists runs the buildnml script for each case component which
-creates the namelist and other model input files, it then copies those files
-to the CaseDocs subdirectory for inspection
+Creates namelist and other model input files for each component (by running each
+component&#39;s buildnml script). Then copies the generated files to the CaseDocs
+subdirectory for inspection.
+
+It is not required to run this manually: namelists will be generated
+automatically when the run starts. However, this can be useful in order to
+review the namelists before submitting the case.
+
+case.setup must be run before this.
+
+Typical usage is simply:
+   ./preview_namelists
 
 positional arguments:
-  caseroot              Case directory to build
+  caseroot              Case directory for which namelists are generated.
+                        Default is current directory.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/aliceb/cime/scripts/Tools/preview_namelists.log
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/preview_namelists.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --component COMPONENT
                         Specify component&#39;s namelist to build.
+                        If not specified, generates namelists for all components.
 </pre></div>
 </div>
 </div>
@@ -91,11 +101,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="cs.status.html"
-                        title="previous chapter">cs.status</a></p>
+  <p class="topless"><a href="pelayout.html"
+                        title="previous chapter">pelayout</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="component_compare_baseline.html"
-                        title="next chapter">component_compare_baseline</a></p>
+  <p class="topless"><a href="preview_run.html"
+                        title="next chapter">preview_run</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -127,10 +137,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="component_compare_baseline.html" title="component_compare_baseline"
+          <a href="preview_run.html" title="preview_run"
              >next</a> |</li>
         <li class="right" >
-          <a href="cs.status.html" title="cs.status"
+          <a href="pelayout.html" title="pelayout"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 

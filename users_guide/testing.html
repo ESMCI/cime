@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Testing with create_test &mdash; CIME 5.4.0 documentation</title>
+    <title>8. Testing &mdash; CIME 5.4.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -54,197 +54,295 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="testing-with-create-test">
-<span id="testing"></span><h1>8. Testing with create_test<a class="headerlink" href="#testing-with-create-test" title="Permalink to this headline">¶</a></h1>
-<p><strong>create_test</strong> is the tool we use to test cime-driven models. It can be used as an easy way to
-run a single basic test or an entire suite of tests.  create_test runs a test suite in parallel
-for improved performance.  create_test is the driver behind the automated nightly testing of
-cime-driven models.</p>
-<p>Tests come in form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">[</span><span class="o">.</span><span class="n">TESTMODS</span><span class="p">]]</span>
+  <div class="section" id="testing">
+<span id="id1"></span><h1>8. Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="../Tools_user/create_test.html">create_test</a> is the tool we use to test both CIME and CIME-driven models. It can be used as an easy way to
+run a single basic test or an entire suite of tests that are run in parallel for improved performance.
+<a class="reference external" href="../Tools_user/create_test.html">create_test</a>  is the driver behind the automated nightly testing of CIME-driven models.</p>
+<div class="section" id="testname-syntax">
+<h2>8.1. Testname syntax<a class="headerlink" href="#testname-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Tests come in the forms:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">[</span><span class="o">.</span><span class="n">TESTMODS</span><span class="p">]]</span>
 </pre></div>
 </div>
-<p>Where TESTTYPE is how you want to do the test. Options for this value are listed in config_tests.xml.
+<p>Where</p>
+<ul>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">TESTTYPE</span></code></dt>
+<dd><p class="first last">How you want to do the test. Options for this value are listed in config_tests.xml.
 A common test type would be ERS which stands for exact restart, which means you want to test the
 grid and compset to see if they reproduce the same result upon restart as they would if no restart
-took place. GRID and COMPSET are self-explanatory. MACHINE_COMPILER is optional; create_test will probe
+took place.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">MODIFIERS</span></code></dt>
+<dd><p class="first">These are changes to the default settings for the test.</p>
+<p>The currently accepted modifiers are:</p>
+<div class="last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">_LdN</span></code>, <code class="docutils literal"><span class="pre">_LnN</span></code>, <code class="docutils literal"><span class="pre">_LyN</span></code> - this changes the default length of the test.
+<code class="docutils literal"><span class="pre">N</span></code> is an integer, <code class="docutils literal"><span class="pre">d</span></code> is day, <code class="docutils literal"><span class="pre">n</span></code> is timestep and <code class="docutils literal"><span class="pre">y</span></code> is year.  <code class="docutils literal"><span class="pre">_Ld3</span></code> would specify that the test is modified to be a 3 day test.</div>
+<div class="line"><code class="docutils literal"><span class="pre">_D</span></code> - this sets the xml variable <code class="docutils literal"><span class="pre">DEBUG</span></code> to TRUE.</div>
+<div class="line"><code class="docutils literal"><span class="pre">_IOP</span></code> - this turns on pnetcdf for the PIO backend.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">GRID</span></code></dt>
+<dd><p class="first last">The model grid (can be an alias)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">COMPSET</span></code></dt>
+<dd><p class="first last">The compset name (can be an alias)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">MACHINE_COMPILER</span></code></dt>
+<dd><p class="first last">This is optional; <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  will probe
 the underlying machine and use the default compiler for that machine if this value is not
-supplied. TESTMODS are optional and can be used to make some env XML changes prior to running
-a test.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="16%" />
-<col width="84%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">TESTTYPE</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>ERS</td>
-<td><dl class="first last docutils">
-<dt>Exact restart from startup (default 6 days + 5 days)</dt>
-<dd><p class="first">Do an 11 day initial test - write a restart at day 6.    (file suffix: base)</p>
-<p>Do a 5 day restart test, starting from restart at day 6. (file suffix: rest)</p>
-<p class="last">Compare component history files &#8216;.base&#8217; and &#8216;.rest&#8217; at day 11.</p>
+supplied.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-odd"><td>ERS2</td>
-<td><dl class="first last docutils">
-<dt>Exact restart from startup  (default 6 days + 5 days).</dt>
-<dd><p class="first">Do an 11 day initial test without making restarts.     (file suffix: base)</p>
-<p>Do an 11 day restart test stopping at day 6 with a restart, then resuming from restart at day 6. (file suffix: rest)</p>
-<p class="last">Compare component history files &#8221;.base&#8221; and &#8221;.rest&#8221; at day 11.</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="row-even"><td>ERT</td>
-<td>Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).</td>
-</tr>
-<tr class="row-odd"><td>IRT</td>
-<td>Exact restart from startup, (default 4 days + 7 days) with restart from interim file.</td>
-</tr>
-<tr class="row-even"><td>ERIO</td>
-<td>Exact restart from startup with different PIO methods, (default 6 days + 5 days).</td>
-</tr>
-<tr class="row-odd"><td>ERR</td>
-<td>Exact restart from startup with resubmit, (default 4 days + 3 days).</td>
-</tr>
-<tr class="row-even"><td>ERRI</td>
-<td>Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</td>
-</tr>
-<tr class="row-odd"><td>ERI</td>
-<td><p class="first">hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</p>
-<ol class="last arabic">
-<li><p class="first">ref1case</p>
-<p>Do an initial run for 3 days writing restarts at day 3.</p>
-<p>ref1case is a clone of the main case.</p>
-<p>Short term archiving is on.</p>
 </li>
-<li><p class="first">ref2case (Suffix hybrid)</p>
-<p>Do a hybrid run for default 19 days running with ref1 restarts from day 3,</p>
-<p>and writing restarts at day 10.</p>
-<p>ref2case is a clone of the main case.</p>
-<p>Short term archiving is on.</p>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">TESTMODS</span></code></dt>
+<dd><p class="first last">This is optional. This points to a directory with  <code class="docutils literal"><span class="pre">user_nl_xxx</span></code> files or a <code class="docutils literal"><span class="pre">shell_commands</span></code> that can be used to provide test specific case modifications for the test.</p>
+</dd>
+</dl>
 </li>
-<li><p class="first">case</p>
-<p>Do a branch run, starting from restarts written in ref2case,</p>
-<p>for 9 days and writing restarts at day 5.</p>
-<p>Short term archiving is off.</p>
+</ul>
+<p>To see the available tests for your model, call <a class="reference external" href="../Tools_user/query_tests.html">query_tests</a>.</p>
+</div>
+<div class="section" id="test-types">
+<h2>8.2. Test Types<a class="headerlink" href="#test-types" title="Permalink to this headline">¶</a></h2>
+<p>The following are the type of tests that are supported by CIME:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERS</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup (default 6 days + 5 days).</div>
+<div class="line">Do an 11 day initial test - write a restart at day 6.    (file suffix: base)</div>
+<div class="line">Do a 5 day restart test, starting from restart at day 6. (file suffix: rest)</div>
+<div class="line">Compare component history files &#8216;.base&#8217; and &#8216;.rest&#8217; at day 11.</div>
+</div>
+</dd>
+</dl>
 </li>
-<li><p class="first">case (Suffix base)</p>
-<p>Do a restart run from the branch run restarts for 4 days.</p>
-<p>Compare component history files &#8216;.base&#8217; and &#8216;.hybrid&#8217; at day 19.</p>
-<p>Short term archiving is off.</p>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERS2</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup  (default 6 days + 5 days).</div>
+<div class="line">Do an 11 day initial test without making restarts.     (file suffix: base)</div>
+<div class="line">Do an 11 day restart test stopping at day 6 with a restart, then resuming from restart at day 6. (file suffix: rest)</div>
+<div class="line">Compare component history files &#8221;.base&#8221; and &#8221;.rest&#8221; at day 11.</div>
+</div>
+</dd>
+</dl>
 </li>
-</ol>
-</td>
-</tr>
-<tr class="row-even"><td>ERP</td>
-<td><dl class="first last docutils">
-<dt>PES counts hybrid (OPENMP/MPI) restart bit for bit test from startup, (default 6 days + 5 days).</dt>
-<dd><p class="first">Initial PES set up out of the box</p>
-<p>Do an 11 day initial test - write a restart at day 6.     (file suffix base)</p>
-<p>Half the number of tasks and threads for each component.</p>
-<p>Do a 5 day restart test starting from restart at day 6. (file suffix rest)</p>
-<p>Compare component history files &#8216;.base&#8217; and &#8216;.rest&#8217; at day 11.</p>
-<p class="last">This is just like an ERS test but the tasks/threading counts are modified on restart</p>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERT</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).</div>
+</div>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-odd"><td>PEA</td>
-<td><dl class="first last docutils">
-<dt>Single PE bit for bit test (default 5 days)</dt>
-<dd><p class="first">Do an initial run on 1 PE with mpi library.     (file suffix: base)</p>
-<p>Do the same run on 1 PE with mpiserial library. (file suffix: mpiserial)</p>
-<p class="last">Compare base and mpiserial.</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">IRT</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup, (default 4 days + 7 days) with restart from interim file.</div>
+</div>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-even"><td>PEM</td>
-<td><dl class="first last docutils">
-<dt>Modified PE counts for MPI(NTASKS) bit for bit test (default 5 days)</dt>
-<dd><p class="first">Do an initial run with default PE layout                               (file suffix: base)</p>
-<p>Do another initial run with modified PE layout (NTASKS_XXX =&gt; NTASKS_XXX/2)  (file suffix: modpes)</p>
-<p class="last">Compare base and modpes</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERIO</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup with different PIO methods, (default 6 days + 5 days).</div>
+</div>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-odd"><td>PET</td>
-<td><dl class="first last docutils">
-<dt>Modified threading OPENMP bit for bit test (default 5 days)</dt>
-<dd><p class="first">Do an initial run where all components are threaded by default. (file suffix: base)</p>
-<p>Do another initial run with NTHRDS=1 for all components.        (file suffix: single_thread)</p>
-<p class="last">Compare base and single_thread.</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERR</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup with resubmit, (default 4 days + 3 days).</div>
+</div>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-even"><td>PFS</td>
-<td>Performance test setup. (default 20 days)</td>
-</tr>
-<tr class="row-odd"><td>ICP</td>
-<td>CICE performance test.</td>
-</tr>
-<tr class="row-even"><td>OCP</td>
-<td>POP performance test. (default 10 days)</td>
-</tr>
-<tr class="row-odd"><td>MCC</td>
-<td>Multi-driver validation vs single-instance. (default 5 days)</td>
-</tr>
-<tr class="row-even"><td>NCK</td>
-<td><dl class="first last docutils">
-<dt>Multi-instance validation vs single instance - sequential PE for instances (default length)</dt>
-<dd><p class="first">Do an initial run test with NINST 1. (file suffix: base)</p>
-<p>Do an initial run test with NINST 2. (file suffix: multiinst for both _0001 and _0002)</p>
-<p class="last">Compare base and _0001 and _0002.</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERRI</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</div>
+</div>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-odd"><td>REP</td>
-<td>Reproducibility: Two identical runs are bit for bit. (default 5 days)</td>
-</tr>
-<tr class="row-even"><td>SBN</td>
-<td>Smoke build-namelist test (just run preview_namelist and check_input_data).</td>
-</tr>
-<tr class="row-odd"><td>SMS</td>
-<td><dl class="first last docutils">
-<dt>Smoke startup test (default 5 days)</dt>
-<dd>Do a 5 day initial test. (file suffix: base)</dd>
-</dl>
-</td>
-</tr>
-<tr class="row-even"><td>SEQ</td>
-<td><dl class="first last docutils">
-<dt>Different sequencing bit for bit test. (default 10 days)</dt>
-<dd><p class="first">Do an initial run test with out-of-box PE-layout. (file suffix: base)</p>
-<p>Do a second run where all root pes are at pe-0.   (file suffix: seq)</p>
-<p class="last">Compare base and seq.</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERI</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</div>
+<div class="line">ref1case: Do an initial run for 3 days writing restarts at day 3. ref1case is a clone of the main case. Short term archiving is on.</div>
+<div class="line">ref2case (Suffix hybrid): Do a hybrid run for default 19 days running with ref1 restarts from day 3, and writing restarts at day 10.
+ref2case is a clone of the main case. Short term archiving is on.</div>
+<div class="line">case: Do a branch run, starting from restarts written in ref2case, for 9 days and writing restarts at day 5. Short term archiving is off.</div>
+<div class="line">case (Suffix base): Do a restart run from the branch run restarts for 4 days. Then ompare component history files &#8216;.base&#8217; and &#8216;.hybrid&#8217; at day 19.
+Short term archiving is off.</div>
+</div>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="row-odd"><td>DAE</td>
-<td>Data assimilation test, default 1 day, two DA cycles, no data modification.</td>
-</tr>
-<tr class="row-even"><td>PRE</td>
-<td><dl class="first last docutils">
-<dt>Pause-resume test: by default a bit for bit test of pause-resume cycling.</dt>
-<dd>Default 5 hours, five pause/resume cycles, no data modification.</dd>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ERP</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">PES counts hybrid (OPENMP/MPI) restart bit for bit test from startup, (default 6 days + 5 days).</div>
+<div class="line">Initial PES set up out of the box.</div>
+<div class="line">Do an 11 day initial test - write a restart at day 6.     (file suffix base)</div>
+<div class="line">Half the number of tasks and threads for each component.</div>
+<div class="line">Do a 5 day restart test starting from restart at day 6. (file suffix rest)</div>
+<div class="line">Compare component history files &#8216;.base&#8217; and &#8216;.rest&#8217; at day 11.</div>
+<div class="line">This is just like an ERS test but the tasks/threading counts are modified on restart.</div>
+</div>
+</dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
-<p>Each test run by create_test includes the following mandatory steps:</p>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">PEA</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Single PE bit for bit test (default 5 days)</div>
+<div class="line">Do an initial run on 1 PE with mpi library.     (file suffix: base)</div>
+<div class="line">Do the same run on 1 PE with mpiserial library. (file suffix: mpiserial)</div>
+<div class="line">Compare base and mpiserial.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">PEM</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Modified PE counts for MPI(NTASKS) bit for bit test (default 5 days)</div>
+<div class="line">Do an initial run with default PE layout                               (file suffix: base)</div>
+<div class="line">Do another initial run with modified PE layout (NTASKS_XXX =&gt; NTASKS_XXX/2)  (file suffix: modpes)</div>
+<div class="line">Compare base and modpes</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">PET</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Modified threading OPENMP bit for bit test (default 5 days)</div>
+<div class="line">Do an initial run where all components are threaded by default. (file suffix: base)</div>
+<div class="line">Do another initial run with NTHRDS=1 for all components.        (file suffix: single_thread)</div>
+<div class="line">Compare base and single_thread.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">PFS</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Performance test setup. History and restart output is turned off. (default 20 days)</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">ICP</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">CICE performance test.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">OCP</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">POP performance test. (default 10 days)</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">MCC</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Multi-driver validation vs single-instance. (default 5 days)</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">NCK</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Multi-instance validation vs single instance - sequential PE for instances (default length)</div>
+<div class="line">Do an initial run test with NINST 1. (file suffix: base)</div>
+<div class="line">Do an initial run test with NINST 2. (file suffix: multiinst for both _0001 and _0002)</div>
+<div class="line">Compare base and _0001 and _0002.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">REP</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Reproducibility: Two identical runs are bit for bit. (default 5 days)</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">SBN</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Smoke build-namelist test (just run preview_namelist and check_input_data).</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">SMS</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Smoke startup test (default 5 days)</div>
+<div class="line">Do a 5 day initial test. (file suffix: base)</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">SEQ</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Different sequencing bit for bit test. (default 10 days)</div>
+<div class="line">Do an initial run test with out-of-box PE-layout. (file suffix: base)</div>
+<div class="line">Do a second run where all root pes are at pe-0.   (file suffix: seq)</div>
+<div class="line">Compare base and seq.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">DAE</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Data assimilation test, default 1 day, two DA cycles, no data modification.</div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><code class="docutils literal"><span class="pre">PRE</span></code></dt>
+<dd><div class="first last line-block">
+<div class="line">Pause-resume test: by default a bit for bit test of pause-resume cycling.</div>
+<div class="line">Default 5 hours, five pause/resume cycles, no data modification.</div>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Each test run by <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  includes the following mandatory steps:</p>
 <ul class="simple">
 <li>CREATE_NEWCASE: creating the create</li>
 <li>XML: xml changes to case based on test settings</li>
@@ -275,7 +373,7 @@ a test.</p>
 <p>A cs.status.$testid script will be put in the test root. This script will allow you to see the
 current status of all your tests.</p>
 <div class="section" id="using-create-test-e3sm">
-<h2>8.1. Using create_test (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h2>
+<h3>8.2.1. Using <strong>create_test</strong> (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h3>
 <p>Usage will differ slightly depending on if you&#8217;re using E3SM or CESM.</p>
 <p>Using examples to illustrate common use cases</p>
 <p>To run a test:</p>
@@ -351,13 +449,13 @@ current status of all your tests.</p>
 <span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">took</span> <span class="mf">154.780044079</span> <span class="n">seconds</span>
 </pre></div>
 </div>
-<p>You can see that create_test informs the user of the case directory and of the progress and duration
+<p>You can see that <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  informs the user of the case directory and of the progress and duration
 of the various test phases.</p>
 </div>
 <div class="section" id="managing-baselines">
-<h2>8.2. Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this headline">¶</a></h2>
+<h3>8.2.2. Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this headline">¶</a></h3>
 <p>A big part of testing is managing your baselines (sometimes called gold results). We have provided
-tools to help the user do this without having to repeat full runs of test cases with create_test.</p>
+tools to help the user do this without having to repeat full runs of test cases with <a class="reference external" href="../Tools_user/create_test.html">create_test</a> .</p>
 <p>bless_test_results: Takes a batch of cases of tests that have already been run and copy their
 results to a baseline area.</p>
 <p>compare_test_results: Takes a batch of cases of tests that have already been run and compare their
@@ -373,11 +471,8 @@ baselines for &#8216;master&#8217;:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="manage-testlists">
-<h2>8.3. manage_testlists<a class="headerlink" href="#manage-testlists" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="adding-tests">
-<h2>8.4. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
+<h3>8.2.3. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h3>
 <p>Open the config/$model/tests.py file, you&#8217;ll see a python dict at the top
 of the file called _TESTS, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
@@ -386,9 +481,9 @@ this format: test&gt;.&lt;grid&gt;.&lt;compset&gt;, and then there is a second
 argument for mods.</p>
 </div>
 <div class="section" id="scripts-regression-tests">
-<h2>8.5. Scripts regression tests<a class="headerlink" href="#scripts-regression-tests" title="Permalink to this headline">¶</a></h2>
-<p>cime/scripts/tests/scripts_regression_tests.py is the suite of internal tests we run
-for CIME. With no arguments, it will run the full suite. You can limit testing to a specific
+<span id="id7"></span><h3>8.2.4. Scripts regression tests<a class="headerlink" href="#scripts-regression-tests" title="Permalink to this headline">¶</a></h3>
+<p><strong>$CIMEROOT/scripts/tests/scripts_regression_tests.py</strong> is the suite of internal tests we run
+for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.</p>
 <p>Run full suite:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span>
@@ -409,6 +504,7 @@ analysis. The user will be notified of the specific directories that will be lef
 examine.</p>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -418,12 +514,15 @@ examine.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">8. Testing with create_test</a><ul>
-<li><a class="reference internal" href="#using-create-test-e3sm">8.1. Using create_test (E3SM)</a></li>
-<li><a class="reference internal" href="#managing-baselines">8.2. Managing baselines</a></li>
-<li><a class="reference internal" href="#manage-testlists">8.3. manage_testlists</a></li>
-<li><a class="reference internal" href="#adding-tests">8.4. Adding tests</a></li>
-<li><a class="reference internal" href="#scripts-regression-tests">8.5. Scripts regression tests</a></li>
+<li><a class="reference internal" href="#">8. Testing</a><ul>
+<li><a class="reference internal" href="#testname-syntax">8.1. Testname syntax</a></li>
+<li><a class="reference internal" href="#test-types">8.2. Test Types</a><ul>
+<li><a class="reference internal" href="#using-create-test-e3sm">8.2.1. Using <strong>create_test</strong> (E3SM)</a></li>
+<li><a class="reference internal" href="#managing-baselines">8.2.2. Managing baselines</a></li>
+<li><a class="reference internal" href="#adding-tests">8.2.3. Adding tests</a></li>
+<li><a class="reference internal" href="#scripts-regression-tests">8.2.4. Scripts regression tests</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

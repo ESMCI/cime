@@ -25,8 +25,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
     <link rel="up" title="User Tools" href="index.html" />
-    <link rel="next" title="xmlchange" href="xmlchange.html" />
-    <link rel="prev" title="e3sm_cime_split" href="e3sm_cime_split.html" /> 
+    <link rel="next" title="case.cmpgen_namelists" href="case.cmpgen_namelists.html" />
+    <link rel="prev" title="bless_test_results" href="bless_test_results.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,10 +39,10 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="xmlchange.html" title="xmlchange"
+          <a href="case.cmpgen_namelists.html" title="case.cmpgen_namelists"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="e3sm_cime_split.html" title="e3sm_cime_split"
+          <a href="bless_test_results.html" title="bless_test_results"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &raquo;</li> 
@@ -62,44 +62,79 @@
 </ul>
 </div>
 <div class="highlight-text"><div class="highlight"><pre><span></span>$ ./case.build --help
-usage: 
-case.build [--verbose] [--clean [atm lnd pio ...]] [--clean-all]
-OR
-case.build --help
+usage: case.build [-h] [-d] [-v] [-s]
+                  [--sharedlib-only | -m | -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]
+                  | --skip-provenance-check | --clean-all | --clean
+                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]]
+                  | --clean-depends
+                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} ...]]]
+                  [caseroot]
 
-[1mEXAMPLES:[0m
-    [1;32m# Build case [0m
-    &gt; case.build
+Builds the case.
 
-Script to build a case.
+case.setup must be run before this. In addition, any changes to env_build.xml
+must be made before running this.
+
+This must be run before running case.submit.
+
+There are two usage modes; both modes accept the --caseroot option, but
+other options are specific to one mode or the other:
+
+1) To build the model:
+
+   Typical usage is simply:
+      ./case.build
+
+   This can be used for the initial build as well as for incrementally
+   rebuilding after changing some source files.
+
+   Optionally, you can specify one of the following options, although this is
+   not common:
+      --sharedlib-only
+      --model-only
+      --build ...
+
+   In addition, if you&#39;d like to skip saving build provenance (typically because
+   there was some error in doing so), you can add:
+      --skip-provenance-check
+
+2) To clean part or all of the build:
+
+   To clean the whole build; this should be done after modifying either
+   env_build.xml or Macros.make:
+      ./case.build --clean-all
+
+   To clean select portions of the build, for example, after adding new source
+   files for one component:
+      ./case.build --clean ...
+   or:
+      ./case.build --clean-depends ...
 
 positional arguments:
-  caseroot              Case directory to build (default:
-                        /Users/aliceb/cime/scripts/Tools)
+  caseroot              Case directory to build.
+                        Default is current directory.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/aliceb/cime/scripts/Tools/case.build.log
-                        (default: False)
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/Tools/case.build.log
   -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
-  --sharedlib-only      Only build sharedlibs (default: False)
-  -m, --model-only      Assume shared libs already built (default: False)
-  --clean [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]]
-                        objects to cleanif no arguments then clean all objects
-                        other than sharedlib objects (default: None)
+  -s, --silent          Print only warnings and error messages
+  --sharedlib-only      Only build shared libraries.
+  -m, --model-only      Assume shared libraries are already built.
   -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...], --build {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]
-                        libs to build. Will cause namelist generation to be
-                        skipped. (default: None)
-  --clean-all           clean all objects including sharedlibobjects that may
-                        be used by other builds (default: False)
+                        Libraries to build.
+                        Will cause namelist generation to be skipped.
+  --skip-provenance-check
+                        Do not check and save build provenance
+  --clean-all           Clean all objects (including sharedlib objects that may be
+                        used by other builds).
+  --clean [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]]
+                        Clean objects associated with specific libraries.
+                        With no arguments, clean all objects other than sharedlib objects.
   --clean-depends [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} ...]]
-                        clean Depends and Srcfiles only - this allows you to
-                        rebuild after adding new files in the source tree or
-                        in SourceMods (default: None)
+                        Clean Depends and Srcfiles only.
+                        This allows you to rebuild after adding new
+                        files in the source tree or in SourceMods.
 </pre></div>
 </div>
 </div>
@@ -111,11 +146,11 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="e3sm_cime_split.html"
-                        title="previous chapter">e3sm_cime_split</a></p>
+  <p class="topless"><a href="bless_test_results.html"
+                        title="previous chapter">bless_test_results</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="xmlchange.html"
-                        title="next chapter">xmlchange</a></p>
+  <p class="topless"><a href="case.cmpgen_namelists.html"
+                        title="next chapter">case.cmpgen_namelists</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -147,10 +182,10 @@ optional arguments:
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="xmlchange.html" title="xmlchange"
+          <a href="case.cmpgen_namelists.html" title="case.cmpgen_namelists"
              >next</a> |</li>
         <li class="right" >
-          <a href="e3sm_cime_split.html" title="e3sm_cime_split"
+          <a href="bless_test_results.html" title="bless_test_results"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &raquo;</li> 
