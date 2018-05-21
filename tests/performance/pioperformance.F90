@@ -510,6 +510,8 @@ contains
        deallocate(rfld_in)
     endif
 
+    call MPI_Comm_free(comm, ierr)
+
   end subroutine pioperformancetest
 
   subroutine init_ideal_dof(doftype, mype, npe, ndims, gdims, compmap, varsize)
