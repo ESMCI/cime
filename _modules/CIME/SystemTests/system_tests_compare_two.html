@@ -1,32 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.SystemTests.system_tests_compare_two &mdash; CIME 5.4.0 documentation</title>
-    
+    <title>CIME.SystemTests.system_tests_compare_two &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../../',
-        VERSION:     '5.4.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" /> 
-  </head>
-  <body role="document">
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -36,8 +25,8 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -83,10 +72,10 @@
 <span class="sd">    Use this to do arbitrary actions immediately after running case two</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
-<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">get_model</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="k">import</span> <span class="n">SystemTestsCommon</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="k">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">get_model</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
 
@@ -94,13 +83,13 @@
 
 <div class="viewcode-block" id="SystemTestsCompareTwo"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareTwo</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">case</span><span class="p">,</span>
-                 <span class="n">separate_builds</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span>
+                 <span class="n">separate_builds</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
                  <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                 <span class="n">multisubmit</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+                 <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a SystemTestsCompareTwo object. Individual test cases that</span>
 <span class="sd">        inherit from SystemTestsCompareTwo MUST call this __init__ method.</span>
@@ -152,7 +141,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_caseroot2</span><span class="p">()</span>
         <span class="c1"># Initialize self._case2; it will get set to its true value in</span>
         <span class="c1"># _setup_cases_if_not_yet_done</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
 
@@ -224,7 +213,7 @@
     <span class="c1"># Main public methods</span>
     <span class="c1"># ========================================================================</span>
 
-<div class="viewcode-block" id="SystemTestsCompareTwo.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCompareTwo.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
@@ -245,15 +234,15 @@
             <span class="c1"># pio_typename may be changed during the build if the default is not a</span>
             <span class="c1"># valid value for this build, update case2 to reflect this change</span>
             <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
-                <span class="n">comp_pio_typename</span> <span class="o">=</span> <span class="s2">&quot;{}_PIO_TYPENAME&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+                <span class="n">comp_pio_typename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_PIO_TYPENAME&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">))</span>
 
             <span class="c1"># The following is needed when _case_two_setup has a case_setup call</span>
             <span class="c1"># despite sharing the build (e.g., to change NTHRDS)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SystemTestsCompareTwo.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+<div class="viewcode-block" id="SystemTestsCompareTwo.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs both phases of the two-phase test and compares their results</span>
 <span class="sd">        If success_change is True, success requires some files to be different</span>
@@ -270,7 +259,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_postrun_action</span><span class="p">()</span>
 
         <span class="c1"># Second run</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_multisubmit {} first phase {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_multisubmit </span><span class="si">{}</span><span class="s2"> first phase </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span><span class="p">,</span> <span class="n">first_phase</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">first_phase</span><span class="p">:</span>
             <span class="c1"># Subtle issue: case1 is already in a writeable state since it tends to be opened</span>
             <span class="c1"># with a with statement in all the API entrances in CIME. case2 was created via clone,</span>
@@ -280,7 +269,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Doing second run: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_description</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
                 <span class="c1"># This assures that case two namelists are populated</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="c1"># we need to make sure run2 is properly staged.</span>
                 <span class="k">if</span> <span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&quot;startup&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">check_case</span><span class="p">()</span>
@@ -306,7 +295,7 @@
         <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">archive_last_restarts</span><span class="p">(</span><span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">rundir2</span><span class="p">,</span>
                                           <span class="n">rundir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">),</span>
-                                          <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span></div>
+                                          <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Private methods</span>
@@ -357,7 +346,7 @@
             <span class="n">case2_exeroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case1_exeroot</span><span class="p">,</span> <span class="s2">&quot;case2bld&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Use default exeroot</span>
-            <span class="n">case2_exeroot</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">case2_exeroot</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">case2_exeroot</span>
 
     <span class="k">def</span> <span class="nf">_get_case2_rundir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -434,7 +423,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            caseroot (str): path to existing caseroot</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Case</span><span class="p">(</span><span class="n">case_root</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Case</span><span class="p">(</span><span class="n">case_root</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_activate_case1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -470,9 +459,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;This directory is typically empty.</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;case2&#39;s run dir is here: {}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;case2&#39;s run dir is here: </span><span class="si">{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)))</span>
-                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;case2&#39;s bld dir is here: {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;case2&#39;s bld dir is here: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)))</span>
         <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
             <span class="c1"># It&#39;s not a big deal if we can&#39;t write the README file</span>
@@ -507,7 +496,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="c1"># This assures that case one namelists are populated</span>
         <span class="c1"># and creates the case.test script</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Set up case 2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
@@ -545,7 +534,7 @@
         <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="n">run2suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span>
 
-        <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;{}*.nc.{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename2</span><span class="p">,</span> <span class="n">run2suffix</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">*.nc.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename2</span><span class="p">,</span> <span class="n">run2suffix</span><span class="p">)</span>
         <span class="n">case2_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir2</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">one_file</span> <span class="ow">in</span> <span class="n">case2_files</span><span class="p">:</span>
             <span class="n">file_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">one_file</span><span class="p">)</span>
@@ -568,12 +557,14 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -589,13 +580,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

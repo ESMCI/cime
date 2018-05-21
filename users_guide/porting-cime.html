@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>6. Porting and validating CIME on a new platform &mdash; CIME 5.4.0 documentation</title>
-    
+    <title>6. Porting and validating CIME on a new platform &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.4.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="7. Timers and timing" href="timers.html" />
     <link rel="prev" title="5. Controlling processors and threads" href="pes-threads.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,8 +33,8 @@
         <li class="right" >
           <a href="pes-threads.html" title="5. Controlling processors and threads"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -73,7 +62,7 @@ This section describes that process.</p>
 <span id="mpi-example"></span><h2>6.2. An MPI example<a class="headerlink" href="#an-mpi-example" title="Permalink to this headline">¶</a></h2>
 <p>It is usually very helpful to assure that you can run a basic mpi parallel program on your machine prior to attempting a CIME port.
 Understanding how to compile and run the program fhello_world_mpi.F90 shown here could potentially save many hours of frustration.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">program</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">program</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span>
   <span class="n">use</span> <span class="n">mpi</span>
   <span class="n">implicit</span> <span class="n">none</span>
   <span class="n">integer</span> <span class="p">(</span> <span class="n">kind</span> <span class="o">=</span> <span class="mi">4</span> <span class="p">)</span> <span class="n">error</span>
@@ -108,7 +97,7 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 </pre></div>
 </div>
 <p>As an example, on a MAC with 2 cores that has mpich with gnu fortran you would issue the following two commands:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">mpif90</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello_world</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">mpif90</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello_world</span>
 <span class="o">&gt;</span> <span class="n">mpirun</span> <span class="o">-</span><span class="n">np</span> <span class="mi">2</span> <span class="o">./</span><span class="n">hello_world</span>
 </pre></div>
 </div>
@@ -128,7 +117,7 @@ Please see the instructions in the file to create the directory structure and us
 In particular, you can create a <strong>$HOME/.cime/config_machines.xml</strong> file with the definition for your machine.
 A template to create this definition is provided in <strong>$CIMEROOT/config/xml_schemas/config_machines_template.xml</strong>. More details are provided in the template file.
 In addition, if you have a batch system, you will also need to add a <strong>config_batch.xml</strong> file to your <strong>$HOME/.cime</strong> directory.
-All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the <strong>$CIME/config/$model</strong>, where <strong>$model</strong> is either <code class="docutils literal"><span class="pre">e3sm</span></code> or <code class="docutils literal"><span class="pre">cesm</span></code>.</p>
+All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the <strong>$CIME/config/$model</strong>, where <strong>$model</strong> is either <code class="docutils literal notranslate"><span class="pre">e3sm</span></code> or <code class="docutils literal notranslate"><span class="pre">cesm</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you use method (2), you can download CIME updates without affecting your machine definitions in <strong>$HOME/.cime</strong>.</p>
@@ -145,7 +134,7 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 <p>This file contains all the information you must set in order to configure a new machine to be CIME-compliant.</p>
 <p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <a class="reference internal" href="machine.html#machinefile"><span class="std std-ref">the config_machines.xml file</span></a>.</p>
 <p>Check to ensure that your <strong>config_machines.xml</strong> file conforms to the CIME schema definition by doing the following:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 </pre></div>
 </div>
 </li>
@@ -178,13 +167,13 @@ possible.</p>
 especially with respect to science validation.</p>
 <p>These are the recommended steps for validating a port for the CESM model:</p>
 <ol class="arabic">
-<li><p class="first">Verify basic functionality of your port by performing the cheyenne &#8220;prealpha&#8221; tests on your machine. This can be done by issuing the following command:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">prealpha</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span> <span class="n">cheyenne</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">intel</span> <span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">your_machine_name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">your_compiler_name</span><span class="o">&gt;</span>
+<li><p class="first">Verify basic functionality of your port by performing the cheyenne “prealpha” tests on your machine. This can be done by issuing the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">prealpha</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span> <span class="n">cheyenne</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">intel</span> <span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">your_machine_name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">your_compiler_name</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>This command will run the prealpha tests <em>defined</em> for cheyenne with the intel compiler, but will run them on <em>your</em> machine with <em>your</em> compiler.
 These tests will be run in the <strong>$CIME_OUTPUT_ROOT</strong>. To see the results of tests, you need to do the following:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; $CIME_OUTPUT_ROOT/cs.status.[testid]
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; $CIME_OUTPUT_ROOT/cs.status.[testid]
 </pre></div>
 </div>
 <p>where testid was indicated in the output when calling <a class="reference external" href="../Tools_user/create_test.html">create_test</a></p>
@@ -195,9 +184,9 @@ The CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulatio
 The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine (currently cheyenne).
 The python ECT tools are located in the pyCECT subdirectory <a href="#id1"><span class="problematic" id="id2">**</span></a>$CIMEROOT/tools/statistical_ensemble_test/pyCECT.</p>
 <p>The verification tools in the CESM-ECT suite are:</p>
-<p><code class="docutils literal"><span class="pre">CAM-ECT</span></code>: detects issues in CAM and CLM (12 month runs)</p>
-<p><code class="docutils literal"><span class="pre">UF-CAM-ECT</span></code>: detects issues in CAM and CLM (9 time step runs)</p>
-<p><code class="docutils literal"><span class="pre">POP-ECT</span></code>: detects issues in POP and CICE (12 month runs)</p>
+<p><code class="docutils literal notranslate"><span class="pre">CAM-ECT</span></code>: detects issues in CAM and CLM (12 month runs)</p>
+<p><code class="docutils literal notranslate"><span class="pre">UF-CAM-ECT</span></code>: detects issues in CAM and CLM (9 time step runs)</p>
+<p><code class="docutils literal notranslate"><span class="pre">POP-ECT</span></code>: detects issues in POP and CICE (12 month runs)</p>
 <p>Follow the instructions in the <strong>README</strong> file to generate three ensemble runs for any of the above tests that are most relevant to your port.
 Then please go to the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/verification">CESM2 ensemble verification website</a>, where you can upload your files and subsequently obtain a quick response as to the success or failure of your verification.</p>
 </li>
@@ -215,12 +204,12 @@ you provide or from runs done by the tool.</p>
 <p>Once you are happy with the PE-layout for your target configuration,
 you can it to the relevant <strong>config_pes.xml</strong> file for the component
 that is responsible for generating the PE-layout for the target
-configuration (this is normally referred to as the &#8220;primary&#8221;
+configuration (this is normally referred to as the “primary”
 component).</p>
 <p>Timing summaries for every successful case run, are located in the
 case subdirectory <strong>$CASEROOT/timing</strong>. In addition, every
 <strong>cpl.log.timestamp</strong> output file contains diagnostic timing
-information. Search for <code class="docutils literal"><span class="pre">tStamp</span></code> in this file to see this
+information. Search for <code class="docutils literal notranslate"><span class="pre">tStamp</span></code> in this file to see this
 information. The timing information is useful for tracking down
 temporal variability in model cost due to either inherent model
 variability cost (I/O, spin-up, seasonal, and so on) or hardware.  The
@@ -257,18 +246,20 @@ intermittently, such as at the end of the month.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/porting-cime.txt"
+      <li><a href="../_sources/users_guide/porting-cime.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -290,13 +281,13 @@ intermittently, such as at the end of the month.</p>
         <li class="right" >
           <a href="pes-threads.html" title="5. Controlling processors and threads"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

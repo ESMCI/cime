@@ -1,32 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.SystemTests.eri &mdash; CIME 5.4.0 documentation</title>
-    
+    <title>CIME.SystemTests.eri &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../../',
-        VERSION:     '5.4.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" /> 
-  </head>
-  <body role="document">
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -36,8 +25,8 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -50,28 +39,28 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">CIME ERI test  This class inherits from SystemTestsCommon</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">safe_copy</span>
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="k">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_helper</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">,</span> <span class="n">refdate</span><span class="p">,</span> <span class="n">refsec</span><span class="p">,</span> <span class="n">rundir</span><span class="p">):</span>
-    <span class="n">rest_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="s2">&quot;{}-{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdate</span><span class="p">,</span> <span class="n">refsec</span><span class="p">))</span>
+    <span class="n">rest_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdate</span><span class="p">,</span> <span class="n">refsec</span><span class="p">))</span>
 
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;{}/*{}*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_path</span><span class="p">,</span> <span class="n">refdate</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/*</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_path</span><span class="p">,</span> <span class="n">refdate</span><span class="p">)):</span>
         <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;{}/*rpointer*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_path</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/*rpointer*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_path</span><span class="p">)):</span>
         <span class="n">safe_copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ERI"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.eri.ERI">[docs]</a><span class="k">class</span> <span class="nc">ERI</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the ERI system test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -80,8 +69,8 @@
 
 <div class="viewcode-block" id="ERI.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.eri.ERI.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-        <span class="n">clone1_path</span> <span class="o">=</span> <span class="s2">&quot;{}.ref1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
-        <span class="n">clone2_path</span> <span class="o">=</span> <span class="s2">&quot;{}.ref2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
+        <span class="n">clone1_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ref1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
+        <span class="n">clone2_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ref2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="c1">#self._case.set_value(&quot;CHECK_TIMING&quot;, False)</span>
 
         <span class="c1">#</span>
@@ -91,7 +80,7 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">clone_path</span><span class="p">):</span>
                 <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">clone_path</span><span class="p">)</span>
 
-        <span class="n">clone1</span><span class="p">,</span> <span class="n">clone2</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span><span class="n">clone_path</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">clone_path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">clone1_path</span><span class="p">,</span> <span class="n">clone2_path</span><span class="p">]]</span>
+        <span class="n">clone1</span><span class="p">,</span> <span class="n">clone2</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span><span class="n">clone_path</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">clone_path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">clone1_path</span><span class="p">,</span> <span class="n">clone2_path</span><span class="p">]]</span>
         <span class="n">orig_case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span>
         <span class="n">orig_casevar</span> <span class="o">=</span> <span class="n">orig_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
         <span class="c1">#</span>
@@ -111,7 +100,7 @@
 
         <span class="n">start_1_year</span><span class="p">,</span> <span class="n">start_1_month</span><span class="p">,</span> <span class="n">start_1_day</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">start_1</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)]</span>
         <span class="n">start_2_year</span> <span class="o">=</span> <span class="n">start_1_year</span> <span class="o">+</span> <span class="mi">2</span>
-        <span class="n">start_2</span> <span class="o">=</span> <span class="s2">&quot;{:04d}-{:02d}-{:02d}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_2_year</span><span class="p">,</span> <span class="n">start_1_month</span><span class="p">,</span> <span class="n">start_1_day</span><span class="p">)</span>
+        <span class="n">start_2</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:04d}</span><span class="s2">-</span><span class="si">{:02d}</span><span class="s2">-</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_2_year</span><span class="p">,</span> <span class="n">start_1_month</span><span class="p">,</span> <span class="n">start_1_day</span><span class="p">)</span>
 
         <span class="n">stop_n3</span> <span class="o">=</span> <span class="n">stop_n2</span> <span class="o">-</span> <span class="n">rest_n2</span>
         <span class="n">rest_n3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop_n3</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -130,11 +119,11 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">clone1_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_active_case</span><span class="p">(</span><span class="n">clone1</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ref1 startup: doing a {} {} startup run from {} and 00000 seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n1</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">,</span> <span class="n">start_1</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  writing restarts at {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_n1</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ref1 startup: doing a </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> startup run from </span><span class="si">{}</span><span class="s2"> and 00000 seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n1</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">,</span> <span class="n">start_1</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  writing restarts at </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_n1</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  short term archiving is on &quot;</span><span class="p">)</span>
 
-        <span class="n">clone1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">clone1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">clone1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_STARTDATE&quot;</span><span class="p">,</span> <span class="n">start_1</span><span class="p">)</span>
         <span class="n">clone1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">stop_n1</span><span class="p">)</span>
         <span class="n">clone1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
@@ -149,12 +138,12 @@
             <span class="k">if</span> <span class="s2">&quot;inithist&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;user_nl_cam&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;user_nl_cam&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                     <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;inithist = &#39;ENDOFRUN&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">clone1</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">clone1</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># if the initial case is hybrid this will put the reference data in the correct location</span>
         <span class="n">clone1</span><span class="o">.</span><span class="n">check_all_input_data</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">st_archive</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">st_archive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="c1">#</span>
         <span class="c1"># (2) Test run:</span>
@@ -167,22 +156,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_active_case</span><span class="p">(</span><span class="n">clone2</span><span class="p">)</span>
 
         <span class="c1"># Set startdate to start2, set ref date based on ref1 restart</span>
-        <span class="n">refdate_2</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ls -1dt {}/rest/*-00000* | head -1 | sed &quot;s/-00000.*//&quot; | sed &quot;s/^.*rest\///&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dout_sr1</span><span class="p">))</span>
+        <span class="n">refdate_2</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ls -1dt </span><span class="si">{}</span><span class="s1">/rest/*-00000* | head -1 | sed &quot;s/-00000.*//&quot; | sed &quot;s/^.*rest\///&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dout_sr1</span><span class="p">))</span>
         <span class="n">refsec_2</span> <span class="o">=</span> <span class="s2">&quot;00000&quot;</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ref2 hybrid: doing a {} {} startup hybrid run&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n2</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  starting from {} and using ref1 {} and {} seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_2</span><span class="p">,</span> <span class="n">refdate_2</span><span class="p">,</span> <span class="n">refsec_2</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  writing restarts at {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_n2</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ref2 hybrid: doing a </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> startup hybrid run&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n2</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  starting from </span><span class="si">{}</span><span class="s2"> and using ref1 </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_2</span><span class="p">,</span> <span class="n">refdate_2</span><span class="p">,</span> <span class="n">refsec_2</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  writing restarts at </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_n2</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  short term archiving is on &quot;</span><span class="p">)</span>
 
         <span class="c1"># setup ref2 case</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span><span class="p">,</span>      <span class="s2">&quot;hybrid&quot;</span><span class="p">)</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_STARTDATE&quot;</span><span class="p">,</span> <span class="n">start_2</span><span class="p">)</span>
-        <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span><span class="p">,</span>   <span class="s2">&quot;{}.ref1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orig_casevar</span><span class="p">))</span>
+        <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span><span class="p">,</span>   <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ref1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orig_casevar</span><span class="p">))</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDATE&quot;</span><span class="p">,</span>   <span class="n">refdate_2</span><span class="p">)</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFTOD&quot;</span><span class="p">,</span>    <span class="n">refsec_2</span><span class="p">)</span>
-        <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span><span class="p">,</span>   <span class="bp">False</span><span class="p">)</span>
-        <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>  <span class="bp">False</span><span class="p">)</span>
+        <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span><span class="p">,</span>   <span class="kc">False</span><span class="p">)</span>
+        <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>  <span class="kc">False</span><span class="p">)</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span>        <span class="n">stop_n2</span><span class="p">)</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span>   <span class="n">stop_option</span><span class="p">)</span>
         <span class="n">clone2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span><span class="p">,</span>        <span class="n">rest_n2</span><span class="p">)</span>
@@ -196,10 +185,10 @@
         <span class="n">_helper</span><span class="p">(</span><span class="n">dout_sr1</span><span class="p">,</span> <span class="n">refdate_2</span><span class="p">,</span> <span class="n">refsec_2</span><span class="p">,</span> <span class="n">rundir2</span><span class="p">)</span>
 
         <span class="c1"># run ref2 case (all component history files will go to short term archiving)</span>
-        <span class="n">clone2</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">clone2</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;hybrid&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;hybrid&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1">#</span>
         <span class="c1"># (3a) Test run:</span>
@@ -209,26 +198,26 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_active_case</span><span class="p">(</span><span class="n">orig_case</span><span class="p">)</span>
 
-        <span class="n">refdate_3</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ls -1dt {}/rest/*-00000* | head -1 | sed &quot;s/-00000.*//&quot; | sed &quot;s/^.*rest\///&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dout_sr2</span><span class="p">))</span>
+        <span class="n">refdate_3</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;ls -1dt </span><span class="si">{}</span><span class="s1">/rest/*-00000* | head -1 | sed &quot;s/-00000.*//&quot; | sed &quot;s/^.*rest\///&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dout_sr2</span><span class="p">))</span>
         <span class="n">refsec_3</span> <span class="o">=</span> <span class="s2">&quot;00000&quot;</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;branch: doing a {} {} branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n3</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  starting from ref2 {} and {} seconds restarts&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdate_3</span><span class="p">,</span> <span class="n">refsec_3</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  writing restarts at {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_n3</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;branch: doing a </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> branch&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n3</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  starting from ref2 </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> seconds restarts&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdate_3</span><span class="p">,</span> <span class="n">refsec_3</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  writing restarts at </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_n3</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  short term archiving is off&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_TYPE&quot;</span>      <span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span>   <span class="p">,</span> <span class="s2">&quot;{}.ref2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFCASE&quot;</span>   <span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ref2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFDATE&quot;</span>   <span class="p">,</span> <span class="n">refdate_3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;RUN_REFTOD&quot;</span>    <span class="p">,</span> <span class="n">refsec_3</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span>   <span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span>  <span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;GET_REFCASE&quot;</span>   <span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span>  <span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span>        <span class="p">,</span> <span class="n">stop_n3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span>   <span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span>        <span class="p">,</span> <span class="n">rest_n3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span>   <span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_N&quot;</span>        <span class="p">,</span> <span class="n">stop_n2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span>        <span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span>        <span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
         <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
@@ -239,14 +228,14 @@
 
         <span class="c1"># link the hybrid history files from ref2 to the run dir for comparison</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/*.hybrid&quot;</span><span class="o">%</span><span class="n">rundir2</span><span class="p">):</span>
-            <span class="n">newfile</span> <span class="o">=</span> <span class="s2">&quot;{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.ref2&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">newfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.ref2&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
             <span class="n">newfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">newfile</span><span class="p">)</span>
             <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">newfile</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># run branch case (short term archiving is off)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span>
 
@@ -255,12 +244,12 @@
         <span class="c1"># do a restart continue from (3a) (short term archiving off)</span>
         <span class="c1">#</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;branch restart: doing a {} {} continue restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n4</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;branch restart: doing a </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> continue restart test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n4</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>  <span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>  <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span>        <span class="n">stop_n4</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span>   <span class="s2">&quot;never&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">,</span>        <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">,</span>        <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span><span class="p">,</span>   <span class="n">stop_option</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_N&quot;</span><span class="p">,</span>        <span class="n">hist_n</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -279,12 +268,14 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -300,13 +291,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

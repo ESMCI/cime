@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>1. Introduction &mdash; CIME 5.4.0 documentation</title>
-    
+    <title>1. Introduction &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.4.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="2. Creating a Case" href="create-a-case.html" />
     <link rel="prev" title="Case Control System Part 1: Basic Usage" href="index.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,8 +33,8 @@
         <li class="right" >
           <a href="index.html" title="Case Control System Part 1: Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -68,11 +57,11 @@ have been installed on the computer you are using. If that is not the case, see 
 <li>Familiarity with UNIX command line terminals and the UNIX development environment.</li>
 <li>A correct version of the Python interpreter.</li>
 </ul>
-<p>CIME&#8217;s commands are Python scripts and require a correct version of
+<p>CIME’s commands are Python scripts and require a correct version of
 the Python interpreter to be installed. The Python version must be
 greater than 2.7.  Determine which version you have
 like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
 <p>Consult your local documentation if you need to update your python version.</p>
@@ -87,14 +76,14 @@ See the <a class="reference internal" href="../glossary/index.html#glossary"><sp
 <p>In the current version of CIME, there are 7 physical components allowed.  They are:</p>
 <blockquote>
 <div>atmosphere, ocean, sea-ice, land surface, river, ice sheet, ocean waves</div></blockquote>
-<p>Components are also referred to as &#8220;models&#8221;.  The choice of 7 is partly historical and partly determined by the physics of the
+<p>Components are also referred to as “models”.  The choice of 7 is partly historical and partly determined by the physics of the
 Earth system: these 7 components
 occupy physically distinct domains in the Earth system and/or require different numerical grids for solving.</p>
 </div></blockquote>
 <p><strong>component types</strong></p>
 <blockquote>
 <div><p>For each of the 7 physical components (models), there can be three different implementations in a CIME-driven coupled model.</p>
-<p><em>active</em>: Solve a complex set of equations to describe the model&#8217;s behavior. Also called <em>prognostic</em> or <em>full</em> models.
+<p><em>active</em>: Solve a complex set of equations to describe the model’s behavior. Also called <em>prognostic</em> or <em>full</em> models.
 Multiple active models might be available (for example POP and MPAS-ocean to represent the global ocean) but only one at a time
 can be used in a component set.</p>
 <p><em>data</em>: For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
@@ -117,23 +106,23 @@ of grids.</dd>
 <dt><strong>machine and compilers</strong>:</dt>
 <dd>The <em>machine</em> is the computer you are using to run CIME and build and run the climate model. It could be a workstation
 or a national supercomputer. The exact name of  <em>machine</em> is typically the UNIX hostname but it could be any string.  A machine
-may have one more more versions of Fortran, C and C++ <em>compilers</em> that are needed to compile the model&#8217;s source code and CIME</dd>
+may have one more more versions of Fortran, C and C++ <em>compilers</em> that are needed to compile the model’s source code and CIME</dd>
 <dt><strong>case</strong>:</dt>
 <dd>To build and execute a CIME-enabled climate model, you have to make choices of compset, model grid,
 machine and compiler. The collection of these choices, and any additional
 customizations you may make, is called the <em>case</em>.</dd>
 <dt><strong>out-of-the-box</strong>:</dt>
-<dd>Any case that can be defined by the coupled model&#8217;s CIME configuration files and built with only basic commands in the
-CIME Case Control System is an &#8220;out-of-the-box&#8221; case.  Since CIME and its configuration files are kept with
+<dd>Any case that can be defined by the coupled model’s CIME configuration files and built with only basic commands in the
+CIME Case Control System is an “out-of-the-box” case.  Since CIME and its configuration files are kept with
 the model source code and version-controlled together, its possible to match supported out-of-the-box cases with specific
 versions of the model source code, promoting reproducibility and provenance.  An out-of-the-box case is also called a <em>base case</em></dd>
 </dl>
 </div>
 <div class="section" id="cime-and-your-environment">
 <h2>1.3. CIME and your environment<a class="headerlink" href="#cime-and-your-environment" title="Permalink to this headline">¶</a></h2>
-<p>Before using any CIME commands, set the <code class="docutils literal"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
-<strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are &#8220;e3sm&#8221; or &#8220;cesm.&#8221;</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span><span class="o">&gt;</span>
+<p>Before using any CIME commands, set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
+<strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm” or “cesm.”</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>There are a number of possible ways to set CIME variables.
@@ -141,8 +130,8 @@ For variables that can be set in more than one way, the order of precedence is:<
 <ul class="simple">
 <li>variable appears in a command line argument to a CIME command</li>
 <li>variable is set as an environment variable</li>
-<li>variable is set in <code class="docutils literal"><span class="pre">$HOME/.cime/config</span></code></li>
-<li>variable is set in a <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml file</li>
+<li>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code></li>
+<li>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</li>
 </ul>
 </div>
 <div class="section" id="directory-content">
@@ -164,12 +153,12 @@ For variables that can be set in more than one way, the order of precedence is:<
 <td>source code for active models</td>
 </tr>
 <tr class="row-odd"><td>cime</td>
-<td>All of CIME code&#8221;</td>
+<td>All of CIME code”</td>
 </tr>
 </tbody>
 </table>
 </div></blockquote>
-<p>CIME&#8217;s content is split into several subdirectories. Users should start in the <strong>scripts/</strong> subdirectory.</p>
+<p>CIME’s content is split into several subdirectories. Users should start in the <strong>scripts/</strong> subdirectory.</p>
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
@@ -250,16 +239,16 @@ For variables that can be set in more than one way, the order of precedence is:<
 <p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried.</p>
 <p>If CIME is part of a CIME-driven model, <a class="reference external" href="../Tools_user/query_config.html">query_config</a> will allow you to query all prognostic component compsets.</p>
 <p>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
 <p><strong>Usage examples</strong></p>
 <p>To run <a class="reference external" href="../Tools_user/query_config.html">query_config</a> for compset information, follow this example, where <strong>drv</strong> is the component name:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
 </pre></div>
 </div>
 <p>The output will be similar to this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
   <span class="n">Compset</span> <span class="n">Short</span> <span class="n">Name</span><span class="p">:</span> <span class="n">Compset</span> <span class="n">Long</span> <span class="n">Name</span>
   <span class="o">--------------------------------------</span>
 <span class="n">A</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV</span>
@@ -272,13 +261,13 @@ For variables that can be set in more than one way, the order of precedence is:<
 <span class="n">AIAF</span>                 <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">IAF_SLND_DICE</span><span class="o">%</span><span class="n">IAF_DOCN</span><span class="o">%</span><span class="n">IAF_DROF</span><span class="o">%</span><span class="n">IAF_SGLC_SWAV</span>
 </pre></div>
 </div>
-<p>Each model component specifies its own definitions of what can appear after the <code class="docutils literal"><span class="pre">%</span></code> modifier in the compset longname (for example, <code class="docutils literal"><span class="pre">DOM</span></code> in <code class="docutils literal"><span class="pre">DOCN%DOM</span></code>).</p>
-<p>To see what supported modifiers are for <code class="docutils literal"><span class="pre">DOCN</span></code>, run <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as in this example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
+<p>Each model component specifies its own definitions of what can appear after the <code class="docutils literal notranslate"><span class="pre">%</span></code> modifier in the compset longname (for example, <code class="docutils literal notranslate"><span class="pre">DOM</span></code> in <code class="docutils literal notranslate"><span class="pre">DOCN%DOM</span></code>).</p>
+<p>To see what supported modifiers are for <code class="docutils literal notranslate"><span class="pre">DOCN</span></code>, run <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as in this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
 </pre></div>
 </div>
 <p>The output will be similar to this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
  <span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
  <span class="o">=========================================</span>
 
@@ -304,7 +293,7 @@ For variables that can be set in more than one way, the order of precedence is:<
 <div class="section" id="quick-start">
 <h2>1.6. Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands for an example. (This assumes that CIME has been ported to your current machine).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
 <span class="o">&gt;</span> <span class="n">cd</span> <span class="n">mycase</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
@@ -313,18 +302,18 @@ For variables that can be set in more than one way, the order of precedence is:<
 </pre></div>
 </div>
 <p>The output from each command is explained in the following sections.</p>
-<p>After you submit the case, you can follow the progress of your run by monitoring the <code class="docutils literal"><span class="pre">CaseStatus</span></code> file.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
+<p>After you submit the case, you can follow the progress of your run by monitoring the <code class="docutils literal notranslate"><span class="pre">CaseStatus</span></code> file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
 </pre></div>
 </div>
-<p>Repeat the command until you see the message <code class="docutils literal"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
+<p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
 <p>The following are two more detailed examples for how to setup and carry out basic runs.</p>
 <div class="section" id="setting-up-a-multi-year-run">
 <span id="basic-examples"></span><h3>1.6.1. Setting up a multi-year run<a class="headerlink" href="#setting-up-a-multi-year-run" title="Permalink to this headline">¶</a></h3>
-<p>This shows all of the steps necessary to do a CESM multi-year pre-industrial simulation starting from a &#8220;cold start&#8221; for all components.</p>
+<p>This shows all of the steps necessary to do a CESM multi-year pre-industrial simulation starting from a “cold start” for all components.</p>
 <ol class="arabic">
 <li><p class="first">Create a new case named EXAMPLE_CASE in your <strong>$HOME</strong> directory. Use an 1850 control compset at 1-degree resolution (CESM components/resolution).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIME/scripts
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIME/scripts
 &gt; ./create_newcase --case ~/EXAMPLE_CASE --compset B1850 --res f09_g17
 </pre></div>
 </div>
@@ -332,7 +321,7 @@ For variables that can be set in more than one way, the order of precedence is:<
 <li><p class="first">Check the pe-layout by running <strong>./pelayout</strong>. Make sure it is suitable for your machine.
 If it is not use <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a> or  <a class="reference external" href="../Tools_user/pelayout.html">pelayout</a> to modify your pe-layout.
 Then setup your case and build your executable.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/</span><span class="n">EXAMPLE_CASE</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/</span><span class="n">EXAMPLE_CASE</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
 </pre></div>
@@ -340,11 +329,11 @@ Then setup your case and build your executable.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">The CESM2 case.build script is compute intensive and may not be suitable to run on a login node. As an alternative you would submit this job to an interactive queue.
-For example, on the NCAR cheyenne platform, you would use <strong>qcmd &#8211; ./case.build</strong> to do this.</p>
+For example, on the NCAR cheyenne platform, you would use <strong>qcmd – ./case.build</strong> to do this.</p>
 </div>
 </li>
 <li><p class="first">In your case directory, set the job to run 12 model months, set the wallclock time, and submit the job.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nmonths</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nmonths</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_N</span><span class="o">=</span><span class="mi">12</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="mi">06</span><span class="p">:</span><span class="mi">00</span> <span class="o">--</span><span class="n">subgroup</span> <span class="n">case</span><span class="o">.</span><span class="n">run</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
@@ -352,23 +341,23 @@ For example, on the NCAR cheyenne platform, you would use <strong>qcmd &#8211; .
 </div>
 </li>
 <li><p class="first">Make sure the run succeeded.</p>
-<p>For cesm compsets, you should see the following line at the end of the <strong>cpl.log</strong> file in your run directory or your short term archiving directory, set by <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">seq_mct_drv</span><span class="p">):</span> <span class="o">===============</span>       <span class="n">SUCCESSFUL</span> <span class="n">TERMINATION</span> <span class="n">OF</span> <span class="n">CPL7</span><span class="o">-</span><span class="n">cesm</span> <span class="o">===============</span>
+<p>For cesm compsets, you should see the following line at the end of the <strong>cpl.log</strong> file in your run directory or your short term archiving directory, set by <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">seq_mct_drv</span><span class="p">):</span> <span class="o">===============</span>       <span class="n">SUCCESSFUL</span> <span class="n">TERMINATION</span> <span class="n">OF</span> <span class="n">CPL7</span><span class="o">-</span><span class="n">cesm</span> <span class="o">===============</span>
 </pre></div>
 </div>
-<p>For e3sm compsets, you should see the following line at the end of the <strong>cpl.log</strong> file in your run directory or your short term archiving directory, set by <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">seq_mct_drv</span><span class="p">):</span> <span class="o">===============</span>       <span class="n">SUCCESSFUL</span> <span class="n">TERMINATION</span> <span class="n">OF</span> <span class="n">CPL7</span><span class="o">-</span><span class="n">e3sm</span> <span class="o">===============</span>
+<p>For e3sm compsets, you should see the following line at the end of the <strong>cpl.log</strong> file in your run directory or your short term archiving directory, set by <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">seq_mct_drv</span><span class="p">):</span> <span class="o">===============</span>       <span class="n">SUCCESSFUL</span> <span class="n">TERMINATION</span> <span class="n">OF</span> <span class="n">CPL7</span><span class="o">-</span><span class="n">e3sm</span> <span class="o">===============</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">In the same case directory, Set the case to resubmit itself 10 times so it will run a total of 11 years (including the initial year), and resubmit the case. (Note that a resubmit will automatically change the run to be a continuation run).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RESUBMIT</span><span class="o">=</span><span class="mi">10</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RESUBMIT</span><span class="o">=</span><span class="mi">10</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
 </pre></div>
 </div>
 <p>By default resubmitted runs are not submitted until the previous run is completed.
 To change this behavior, and submit all jobs at once (with batch dependencies such that only one job is run at a time), use the command:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span> <span class="o">--</span><span class="n">resubmit</span><span class="o">-</span><span class="n">immediate</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span> <span class="o">--</span><span class="n">resubmit</span><span class="o">-</span><span class="n">immediate</span>
 </pre></div>
 </div>
 </li>
@@ -379,42 +368,42 @@ To change this behavior, and submit all jobs at once (with batch dependencies su
 <p>A branch or hybrid run uses initialization data from a previous run. Here is an example in which a valid load-balanced scenario is assumed.</p>
 <ol class="arabic">
 <li><p class="first">The first step in setting up a branch or hybrid run is to create a new case. A CESM compset and resolution is assumed below.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
 &gt; create_newcase --case ~/EXAMPLE_CASEp --compset B1850 --res f09_g17
 &gt; cd ~/EXAMPLE_CASEp
 </pre></div>
 </div>
 </li>
 <li><p class="first">For a branch run, use the following <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  commands to branch <strong>EXAMPLE_CASE</strong> at year 0001-02-01.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_TYPE</span><span class="o">=</span><span class="n">branch</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_TYPE</span><span class="o">=</span><span class="n">branch</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFCASE</span><span class="o">=</span><span class="n">EXAMPLE_CASE</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFDATE</span><span class="o">=</span><span class="mi">0001</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">For a hybrid run, use the following <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  command to start up from <strong>EXAMPLE_CASE</strong> at year 0001-02-01.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_TYPE</span><span class="o">=</span><span class="n">hybrid</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_TYPE</span><span class="o">=</span><span class="n">hybrid</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFCASE</span><span class="o">=</span><span class="n">EXAMPLE_CASE</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFDATE</span><span class="o">=</span><span class="mi">0001</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span>
 </pre></div>
 </div>
-<p>For a branch run, your <strong>env_run.xml</strong> file for <strong>EXAMPLE_CASEp</strong> should be identical to the file for <strong>EXAMPLE_CASE</strong> except for the <code class="docutils literal"><span class="pre">$RUN_TYPE</span></code> setting.</p>
+<p>For a branch run, your <strong>env_run.xml</strong> file for <strong>EXAMPLE_CASEp</strong> should be identical to the file for <strong>EXAMPLE_CASE</strong> except for the <code class="docutils literal notranslate"><span class="pre">$RUN_TYPE</span></code> setting.</p>
 <p>Also, modifications introduced into <strong>user_nl_</strong> files in <strong>EXAMPLE_CASE</strong> should be reintroduced in <strong>EXAMPLE_CASEp</strong>.</p>
 </li>
 <li><p class="first">Next, set up and build your case executable.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first">Pre-stage the necessary restart/initial data in <code class="docutils literal"><span class="pre">$RUNDIR</span></code>. Assume for this example that it was created in the <strong>/rest/0001-02-01-00000</strong> directory shown here:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $RUNDIR
+<li><p class="first">Pre-stage the necessary restart/initial data in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>. Assume for this example that it was created in the <strong>/rest/0001-02-01-00000</strong> directory shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $RUNDIR
 &gt; cp /user/archive/EXAMPLE_CASE/rest/0001-02-01-00000/* .
 </pre></div>
 </div>
 <p>It is assumed that you already have a valid load-balanced scenario.
 Go back to the case directory, set the job to run 12 model months, and submit the job.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/</span><span class="n">EXAMPLE_CASEp</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/</span><span class="n">EXAMPLE_CASEp</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nmonths</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_N</span><span class="o">=</span><span class="mi">12</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="mi">06</span><span class="p">:</span><span class="mi">00</span>
@@ -426,7 +415,7 @@ Go back to the case directory, set the job to run 12 model months, and submit th
 the run to a continuation run. Set it to resubmit itself 10 times
 so it will run a total of 11 years (including the initial year),
 then resubmit the case.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">CONTINUE_RUN</span><span class="o">=</span><span class="n">TRUE</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">CONTINUE_RUN</span><span class="o">=</span><span class="n">TRUE</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RESUMIT</span><span class="o">=</span><span class="mi">10</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
 </pre></div>
@@ -469,18 +458,20 @@ then resubmit the case.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/introduction-and-overview.txt"
+      <li><a href="../_sources/users_guide/introduction-and-overview.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -502,13 +493,13 @@ then resubmit the case.</p>
         <li class="right" >
           <a href="index.html" title="Case Control System Part 1: Basic Usage"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

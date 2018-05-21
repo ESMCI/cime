@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.SystemTests.test_utils package &mdash; CIME 5.4.0 documentation</title>
-    
+    <title>CIME.SystemTests.test_utils package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.4.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.4.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME.SystemTests package" href="CIME.SystemTests.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.XML package" href="CIME.XML.html" />
     <link rel="prev" title="CIME.SystemTests package" href="CIME.SystemTests.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,10 +33,10 @@
         <li class="right" >
           <a href="CIME.SystemTests.html" title="CIME.SystemTests package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li>
-          <li class="nav-item nav-item-3"><a href="CIME.SystemTests.html" accesskey="U">CIME.SystemTests package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="CIME.SystemTests.html" accesskey="U">CIME.SystemTests package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -67,20 +56,20 @@
 <dl class="function">
 <dt id="CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">
 <code class="descclassname">CIME.SystemTests.test_utils.user_nl_utils.</code><code class="descname">append_to_user_nl_files</code><span class="sig-paren">(</span><em>caseroot</em>, <em>component</em>, <em>contents</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/test_utils/user_nl_utils.html#append_to_user_nl_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append the string given by &#8216;contents&#8217; to the end of each user_nl file for
+<dd><p>Append the string given by ‘contents’ to the end of each user_nl file for
 the given component (there may be multiple such user_nl files in the case of
 a multi-instance test).</p>
-<p>Also puts new lines before and after the appended text - so &#8216;contents&#8217;
-does not need to contain a trailing new line (but it&#8217;s also okay if it
+<p>Also puts new lines before and after the appended text - so ‘contents’
+does not need to contain a trailing new line (but it’s also okay if it
 does).</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><p class="first">caseroot (str): Full path to the case directory</p>
 <dl class="docutils">
-<dt>component (str): Name of component (e.g., &#8216;clm&#8217;). This is used to</dt>
+<dt>component (str): Name of component (e.g., ‘clm’). This is used to</dt>
 <dd>determine which user_nl files are appended to. For example, for
-component=&#8217;clm&#8217;, this function will operate on all user_nl files
-matching the pattern &#8216;user_nl_clm*&#8217;. (We do a wildcard match to
+component=’clm’, this function will operate on all user_nl files
+matching the pattern ‘user_nl_clm*’. (We do a wildcard match to
 handle multi-instance tests.)</dd>
 </dl>
 <p class="last">contents (str): Contents to append to the end of each user_nl file</p>
@@ -119,18 +108,20 @@ handle multi-instance tests.)</dd>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.SystemTests.test_utils.txt"
+      <li><a href="../_sources/CIME_api/CIME.SystemTests.test_utils.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -152,15 +143,15 @@ handle multi-instance tests.)</dd>
         <li class="right" >
           <a href="CIME.SystemTests.html" title="CIME.SystemTests package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.4.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li>
-          <li class="nav-item nav-item-3"><a href="CIME.SystemTests.html" >CIME.SystemTests package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="CIME.SystemTests.html" >CIME.SystemTests package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

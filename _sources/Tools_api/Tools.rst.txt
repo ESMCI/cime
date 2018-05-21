@@ -4,8 +4,8 @@ Tools package
 Submodules
 ----------
 
-Tools.standard_script_setup module
-----------------------------------
+Tools.standard\_script\_setup module
+------------------------------------
 
 .. automodule:: Tools.standard_script_setup
     :members:
