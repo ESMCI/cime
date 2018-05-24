@@ -3,17 +3,14 @@ Base class for CIME system tests
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
-from CIME.utils import append_testlog
-from CIME.case_setup import case_setup
-from CIME.case_run import case_run
-from CIME.case_st_archive import case_st_archive
+from CIME.utils import append_testlog, get_model, safe_copy
 from CIME.test_status import *
-from CIME.check_lockedfiles import *
 from CIME.hist_utils import *
-
+from CIME.provenance import save_test_time
+from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
-import shutil, glob, gzip, time, traceback
+import glob, gzip, time, traceback, six
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +31,7 @@ class SystemTestsCommon(object):
         self._test_status = TestStatus(test_dir=caseroot, test_name=self._casebaseid)
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
-
-    def __del__(self):
-        self._case.set_value("RUN_WITH_SUBMIT", False)
+        self._skip_pnl = False
 
     def _init_environment(self, caseroot):
         """
@@ -68,7 +63,7 @@ class SystemTestsCommon(object):
             logging.warning("Resetting case due to detected re-run of phase {}".format(phase))
             self._case.set_initial_test_values()
 
-            case_setup(self._case, reset=True, test_mode=True)
+            self._case.case_setup(reset=True, test_mode=True)
 
     def build(self, sharedlib_only=False, model_only=False):
         """
@@ -88,16 +83,15 @@ class SystemTestsCommon(object):
                 try:
                     self.build_phase(sharedlib_only=(phase_name==SHAREDLIB_BUILD_PHASE),
                                      model_only=(phase_name==MODEL_BUILD_PHASE))
-                except:
+                except BaseException as e:
                     success = False
-                    msg = sys.exc_info()[1].message
-
-                    if "BUILD FAIL" in msg:
-                        # Don't want to print stacktrace for a model failure since that
+                    msg = e.__str__()
+                    if "FAILED, cat" in msg or "BUILD FAIL" in msg:
+                        # Don't want to print stacktrace for a build failure since that
                         # is not a CIME/infrastructure problem.
                         excmsg = msg
                     else:
-                        excmsg = "Exception during build:\n{}\n{}".format(sys.exc_info()[1], traceback.format_exc())
+                        excmsg = "Exception during build:\n{}\n{}".format(msg, traceback.format_exc())
 
                     logger.warning(excmsg)
                     append_testlog(excmsg)
@@ -125,21 +119,24 @@ class SystemTestsCommon(object):
         """
         Perform an individual build
         """
+        model = self._case.get_value('MODEL')
         build.case_build(self._caseroot, case=self._case,
-                         sharedlib_only=sharedlib_only, model_only=model_only)
+                         sharedlib_only=sharedlib_only, model_only=model_only,
+                         save_build_provenance=not model=='cesm')
 
     def clean_build(self, comps=None):
         if comps is None:
             comps = [x.lower() for x in self._case.get_values("COMP_CLASSES")]
         build.clean(self._case, cleanlist=comps)
 
-    def run(self):
+    def run(self, skip_pnl=False):
         """
         Do NOT override this method, this method is the framework that controls
         the run phase. run_phase is the extension point that subclasses should use.
         """
         success = True
         start_time = time.time()
+        self._skip_pnl = skip_pnl
         try:
             self._resetup_case(RUN_PHASE)
             with self._test_status:
@@ -155,15 +152,15 @@ class SystemTestsCommon(object):
 
             self._check_for_memleak()
 
-        except:
+        except BaseException as e:
             success = False
-            msg = sys.exc_info()[1].message
+            msg = e.__str__()
             if "RUN FAIL" in msg:
                 # Don't want to print stacktrace for a model failure since that
                 # is not a CIME/infrastructure problem.
                 excmsg = msg
             else:
-                excmsg = "Exception during run:\n{}\n{}".format(sys.exc_info()[1], traceback.format_exc())
+                excmsg = "Exception during run:\n{}\n{}".format(msg, traceback.format_exc())
             logger.warning(excmsg)
             append_testlog(excmsg)
 
@@ -172,6 +169,9 @@ class SystemTestsCommon(object):
         status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         with self._test_status:
             self._test_status.set_status(RUN_PHASE, status, comments=("time={:d}".format(int(time_taken))))
+
+        if success and get_model() == "e3sm":
+            save_test_time(self._case.get_value("BASELINE_ROOT"), self._casebaseid, time_taken)
 
         # We return success if the run phase worked; memleaks, diffs will not be taken into account
         # with this return value.
@@ -197,6 +197,7 @@ class SystemTestsCommon(object):
         Use for tests that have multiple cases
         """
         self._case = case
+        self._case.load_env(reset=True)
         self._caseroot = case.get_value("CASEROOT")
 
     def run_indv(self, suffix="base", st_archive=False):
@@ -222,7 +223,7 @@ class SystemTestsCommon(object):
 
         logger.info(infostr)
 
-        case_run(self._case)
+        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=True)
 
         if not self._coupler_log_indicates_run_complete():
             expect(False, "Coupler did not indicate run passed")
@@ -231,7 +232,7 @@ class SystemTestsCommon(object):
             self._component_compare_copy(suffix)
 
         if st_archive:
-            case_st_archive(self._case)
+            self._case.case_st_archive(resubmit=True)
 
     def _coupler_log_indicates_run_complete(self):
         newestcpllogfiles = self._get_latest_cpl_logs()
@@ -240,10 +241,12 @@ class SystemTestsCommon(object):
         allgood = len(newestcpllogfiles)
         for cpllog in newestcpllogfiles:
             try:
-                if "SUCCESSFUL TERMINATION" in gzip.open(cpllog, 'rb').read():
+                if six.b("SUCCESSFUL TERMINATION") in gzip.open(cpllog, 'rb').read():
                     allgood = allgood - 1
-            except:
-                logger.info("{} is not compressed, assuming run failed".format(cpllog))
+            except BaseException as e:
+                msg = e.__str__()
+
+                logger.info("{} is not compressed, assuming run failed {}".format(cpllog, msg))
 
         return allgood==0
 
@@ -257,7 +260,7 @@ class SystemTestsCommon(object):
         run case needs indirection based on success.
         If success_change is True, success requires some files to be different
         """
-        success, comments = compare_test(self._case, suffix1, suffix2)
+        success, comments = self._do_compare_test(suffix1, suffix2)
         if success_change:
             success = not success
 
@@ -266,6 +269,13 @@ class SystemTestsCommon(object):
         with self._test_status:
             self._test_status.set_status("{}_{}_{}".format(COMPARE_PHASE, suffix1, suffix2), status)
         return success
+
+    def _do_compare_test(self, suffix1, suffix2):
+        """
+        Wraps the call to compare_test to facilitate replacement in unit
+        tests
+        """
+        return compare_test(self._case, suffix1, suffix2)
 
     def _get_mem_usage(self, cpllog):
         """
@@ -281,7 +291,7 @@ class SystemTestsCommon(object):
                 fopen = open
             with fopen(cpllog, "rb") as f:
                 for line in f:
-                    m = meminfo.match(line)
+                    m = meminfo.match(line.decode('utf-8'))
                     if m:
                         memlist.append((float(m.group(1)), float(m.group(2))))
         # Remove the last mem record, it's sometimes artificially high
@@ -296,7 +306,7 @@ class SystemTestsCommon(object):
         """
         if cpllog is not None and os.path.isfile(cpllog):
             with gzip.open(cpllog, "rb") as f:
-                cpltext = f.read()
+                cpltext = f.read().decode('utf-8')
                 m = re.search(r"# simulated years / cmp-day =\s+(\d+\.\d+)\s",cpltext)
                 if m:
                     return float(m.group(1))
@@ -340,12 +350,12 @@ class SystemTestsCommon(object):
         Compare env_run file to original and warn about differences
         """
         components = self._case.get_values("COMP_CLASSES")
-        f1obj = EnvRun(self._caseroot, "env_run.xml", components=components)
+        f1obj = self._case.get_env("run")
         f2obj = EnvRun(self._caseroot, os.path.join(LOCKED_DIR, "env_run.orig.xml"), components=components)
         diffs = f1obj.compare_xml(f2obj)
         for key in diffs.keys():
             if expected is not None and key in expected:
-                logging.warn("  Resetting {} for test".format(key))
+                logging.warning("  Resetting {} for test".format(key))
                 f1obj.set_value(key, f2obj.get_value(key, resolved=False))
             else:
                 print("WARNING: Found difference in test {}: case: {} original value {}".format(key, diffs[key][0], diffs[key][1]))
@@ -398,25 +408,31 @@ class SystemTestsCommon(object):
                     # for backward compatibility
                     baselog = os.path.join(basecmp_dir, "cpl.log")
                 if os.path.isfile(baselog) and len(memlist) > 3:
-                    blmem = self._get_mem_usage(baselog)[-1][1]
+                    blmem = self._get_mem_usage(baselog)
+                    blmem = 0 if blmem == [] else blmem[-1][1]
                     curmem = memlist[-1][1]
                     diff = (curmem-blmem)/blmem
-                    if(diff < 0.1):
+                    if diff < 0.1 and self._test_status.get_status(MEMCOMP_PHASE) is None:
                         self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
-                    else:
+                    elif self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS:
                         comment = "Error: Memory usage increase > 10% from baseline"
                         self._test_status.set_status(MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment)
                         append_testlog(comment)
+
                     # compare throughput to baseline
                     current = self._get_throughput(cpllog)
                     baseline = self._get_throughput(baselog)
                     #comparing ypd so bigger is better
                     if baseline is not None and current is not None:
                         diff = (baseline - current)/baseline
-                        if(diff < 0.25):
+                        tolerance = self._case.get_value("TEST_TPUT_TOLERANCE")
+                        if tolerance is None:
+                            tolerance = 0.25
+                        expect(tolerance > 0.0, "Bad value for throughput tolerance in test")
+                        if diff < tolerance and self._test_status.get_status(THROUGHPUT_PHASE) is None:
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
-                        else:
-                            comment = "Error: Computation time increase > 25% from baseline"
+                        elif self._test_status.get_status(THROUGHPUT_PHASE) != TEST_FAIL_STATUS:
+                            comment = "Error: Computation time increase > {:d} pct from baseline".format(int(tolerance*100))
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment)
                             append_testlog(comment)
 
@@ -439,8 +455,8 @@ class SystemTestsCommon(object):
                 m = re.search(r"/(cpl.*.log).*.gz",cpllog)
                 if m is not None:
                     baselog = os.path.join(basegen_dir, m.group(1))+".gz"
-                    shutil.copyfile(cpllog,
-                                    os.path.join(basegen_dir,baselog))
+                    safe_copy(cpllog,
+                              os.path.join(basegen_dir,baselog))
 
 class FakeTest(SystemTestsCommon):
     """
@@ -463,9 +479,9 @@ class FakeTest(SystemTestsCommon):
                 f.write("#!/bin/bash\n")
                 f.write(self._script)
 
-            os.chmod(modelexe, 0755)
+            os.chmod(modelexe, 0o755)
 
-            build.post_build(self._case, [])
+            build.post_build(self._case, [], build_complete=True)
 
     def run_indv(self, suffix='base', st_archive=False):
         mpilib = self._case.get_value("MPILIB")
@@ -488,7 +504,7 @@ cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc
 """.format(rundir, cimeroot, rundir, case)
         self._set_script(script)
         FakeTest.build_phase(self,
-                       sharedlib_only=sharedlib_only, model_only=model_only)
+                             sharedlib_only=sharedlib_only, model_only=model_only)
 
 class TESTRUNDIFF(FakeTest):
     """

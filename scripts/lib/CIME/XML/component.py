@@ -39,7 +39,7 @@ class Component(EntryID):
         from the entries in the model CONFIG_CPL_FILE
         """
         components = []
-        comps_node = self.get_node("entry", {"id":"COMP_CLASSES"})
+        comps_node = self.get_child("entry", {"id":"COMP_CLASSES"})
         comps = self.get_default_value(comps_node)
         components = comps.split(',')
         return components
@@ -56,26 +56,26 @@ class Component(EntryID):
         match_values = []
         expect(not exact_match, " exact_match not implemented in this method")
         expect(node is not None," Empty node in _get_value_match")
-        values = self.get_optional_node("values", root=node)
+        values = self.get_optional_child("values", root=node)
         if values is None:
             return
 
         # determine match_type if there is a tie
         # ASSUME a default of "last" if "match" attribute is not there
-        match_type = values.get("match", default="last")
+        match_type = self.get(values, "match", default="last")
 
         # use the default_value if present
-        val_node = self.get_optional_node("default_value", root=node)
+        val_node = self.get_optional_child("default_value", root=node)
         if val_node is None:
-            logger.debug("No default_value for {}".format(node.get("id")))
+            logger.debug("No default_value for {}".format(self.get(node, "id")))
             return val_node
-        value = val_node.text
+        value = self.text(val_node)
         if value is not None and len(value) > 0 and value != "UNSET":
             match_values.append(value)
 
-        for valnode in self.get_nodes("value", root=node):
+        for valnode in self.get_children("value", root=values):
             # loop through all the keys in valnode (value nodes) attributes
-            for key,value in valnode.attrib.iteritems():
+            for key,value in self.attrib(valnode).items():
                 # determine if key is in attributes dictionary
                 match_count = 0
                 if attributes is not None and key in attributes:
@@ -89,15 +89,15 @@ class Component(EntryID):
             # a match is found
             if match_count > 0:
                 # append the current result
-                if values.get("modifier") == "additive":
-                    match_values.append(valnode.text)
+                if self.get(values, "modifier") == "additive":
+                    match_values.append(self.text(valnode))
 
                 # replace the current result if it already contains the new value
                 # otherwise append the current result
-                elif values.get("modifier") == "merge":
-                    if valnode.text in match_values:
+                elif self.get(values, "modifier") == "merge":
+                    if self.text(valnode) in match_values:
                         del match_values[:]
-                    match_values.append(valnode.text)
+                    match_values.append(self.text(valnode))
 
                 else:
                     if match_type == "last":
@@ -105,13 +105,13 @@ class Component(EntryID):
                         if match_count >= match_max:
                             del match_values[:]
                             match_max = match_count
-                            match_value = valnode.text
+                            match_value = self.text(valnode)
                     elif match_type == "first":
                         # take the *first* best match
                         if match_count > match_max:
                             del match_values[:]
                             match_max = match_count
-                            match_value = valnode.text
+                            match_value = self.text(valnode)
                     else:
                         expect(False, "match attribute can only have a value of 'last' or 'first'")
 
@@ -133,7 +133,6 @@ class Component(EntryID):
         else:
             return ""
 
-
     def _get_description_v3(self, compsetname, comp_class):
         """
         version 3 of the config_component.xml file has the description section at the top of the file
@@ -153,53 +152,58 @@ class Component(EntryID):
         """
         expect(comp_class is not None,"comp_class argument required for version3 files")
         comp_class = comp_class.lower()
-        rootnode = self.get_node("description")
+        rootnode = self.get_child("description")
         desc = ""
-        desc_nodes = self.get_nodes("desc", root=rootnode)
+        desc_nodes = self.get_children("desc", root=rootnode)
 
-        modifier_mode = rootnode.get('modifier_mode')
+        modifier_mode = self.get(rootnode, 'modifier_mode')
         if modifier_mode is None:
             modifier_mode = '*'
         expect(modifier_mode in ('*','1','?','+'),
                "Invalid modifier_mode {} in file {}".format(modifier_mode, self.filename))
-
         optiondesc = {}
         if comp_class == "forcing":
             for node in desc_nodes:
-                forcing = node.get('forcing')
+                forcing = self.get(node, 'forcing')
                 if forcing is not None and compsetname.startswith(forcing+'_'):
                     expect(len(desc)==0,
                            "Too many matches on forcing field {} in file {}".\
                                format(forcing, self.filename))
-                    desc = node.text
+                    desc = self.text(node)
             if desc is None:
                 desc = compsetname.split('_')[0]
             return desc
 
+
         # first pass just make a hash of the option descriptions
         for node in desc_nodes:
-            option = node.get('option')
+            option = self.get(node, 'option')
             if option is not None:
-                optiondesc[option] = node.text
+                optiondesc[option] = self.text(node)
+
         #second pass find a comp_class match
+        desc = ""
         for node in desc_nodes:
-            compdesc = node.get(comp_class)
+            compdesc = self.get(node, comp_class)
 
-            if compdesc is None:
-                continue
-            opt_parts = [ x.rstrip("]") for x in compdesc.split("[%") ]
-            parts = opt_parts.pop(0).split("%")
+            if compdesc is not None:
+                opt_parts = [ x.rstrip("]") for x in compdesc.split("[%") ]
+                parts = opt_parts.pop(0).split("%")
+                reqset = set(parts)
+                fullset = set(parts+opt_parts)
+                match, complist =  self._get_description_match(compsetname, reqset, fullset, modifier_mode)
+                if match:
+                    desc = self.text(node)
+                    for opt in complist:
+                        if opt in optiondesc:
+                            desc += optiondesc[opt]
 
-            reqset = set(parts)
-            fullset = set(parts+opt_parts)
-            if self._get_description_match(compsetname, reqset, fullset, modifier_mode):
-                desc = node.text
-                break
+
         # cpl and esp components may not have a description
         if comp_class not in ['cpl','esp']:
             expect(len(desc) > 0,
-                   "No description found for comp_class {} matching compsetname {} in file {}"\
-                       .format(comp_class,compsetname, self.filename))
+                   "No description found for comp_class {} matching compsetname {} in file {}, expected match in {} % {}"\
+                       .format(comp_class,compsetname, self.filename, list(reqset), list(opt_parts)))
         return desc
 
     def _get_description_match(self, compsetname, reqset, fullset, modifier_mode):
@@ -207,61 +211,62 @@ class Component(EntryID):
 
         >>> obj = Component('testingonly', 'ATM')
         >>> obj._get_description_match("1850_DATM%CRU_FRED",set(["DATM"]), set(["DATM","CRU","HSI"]), "*")
-        True
+        (True, ['DATM', 'CRU'])
         >>> obj._get_description_match("1850_DATM%FRED_Barn",set(["DATM"]), set(["DATM","CRU","HSI"]), "*")
-        False
+        (False, None)
         >>> obj._get_description_match("1850_DATM_Barn",set(["DATM"]), set(["DATM","CRU","HSI"]), "?")
-        True
+        (True, ['DATM'])
         >>> obj._get_description_match("1850_DATM_Barn",set(["DATM"]), set(["DATM","CRU","HSI"]), "1")
         Traceback (most recent call last):
         ...
-        SystemExit: ERROR: Expected exactly one modifer found 0
+        SystemExit: ERROR: Expected exactly one modifer found 0 in ['DATM']
         >>> obj._get_description_match("1850_DATM%CRU%HSI_Barn",set(["DATM"]), set(["DATM","CRU","HSI"]), "1")
         Traceback (most recent call last):
         ...
-        SystemExit: ERROR: Expected exactly one modifer found 2
+        SystemExit: ERROR: Expected exactly one modifer found 2 in ['DATM', 'CRU', 'HSI']
         >>> obj._get_description_match("1850_CAM50%WCCM%RCO2_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "*")
-        True
+        (True, ['CAM50', 'WCCM', 'RCO2'])
 
         # The following is not allowed because the required WCCM field is missing
         >>> obj._get_description_match("1850_CAM50%RCO2_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "*")
-        False
+        (False, None)
         >>> obj._get_description_match("1850_CAM50_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
-        False
+        (False, None)
         >>> obj._get_description_match("1850_CAM50%WCCM_Barn",set(["CAM50", "WCCM"]), set(["CAM50","WCCM","RCO2"]), "+")
-        True
+        (True, ['CAM50', 'WCCM'])
         """
         match = False
         comparts = compsetname.split('_')
+        matchcomplist = None
+
         for comp in comparts:
             complist = comp.split('%')
             cset = set(complist)
             if cset == reqset or (cset > reqset and cset <= fullset):
                 if modifier_mode == '1':
                     expect(len(complist) == 2,
-                           "Expected exactly one modifer found {}".format(len(complist)-1))
+                           "Expected exactly one modifer found {} in {}".format(len(complist)-1,complist))
                 elif modifier_mode == '+':
                     expect(len(complist) >= 2,
-                           "Expected one or more modifers found {}".format(len(complist)-1))
+                           "Expected one or more modifers found {} in {}".format(len(complist)-1, list(reqset)))
                 elif modifier_mode == '?':
                     expect(len(complist) <= 2,
-                           "Expected 0 or one modifers found {}".format(len(complist)-1))
+                           "Expected 0 or one modifers found {} in {}".format(len(complist)-1, complist))
                 expect(not match,"Found multiple matches in file {} for {}".format(self.filename,comp))
                 match = True
+                matchcomplist = complist
                 # found a match
 
-        return match
-
-
+        return match, matchcomplist
 
     def _get_description_v2(self, compsetname):
-        rootnode = self.get_node("description")
+        rootnode = self.get_child("description")
         desc = ""
-        desc_nodes = self.get_nodes("desc", root=rootnode)
+        desc_nodes = self.get_children("desc", root=rootnode)
         for node in desc_nodes:
-            compsetmatch = node.get("compset")
+            compsetmatch = self.get(node, "compset")
             if compsetmatch is not None and re.search(compsetmatch, compsetname):
-                desc += node.text
+                desc += self.text(node)
 
         return desc
 
@@ -269,18 +274,11 @@ class Component(EntryID):
         """
         print values for help and description in target config_component.xml file
         """
-        rootnode = self.get_node("help")
-        helptext = rootnode.text
-
-        rootnode = self.get_node("description")
-        compsets = {}
-        descs = self.get_nodes("desc", root=rootnode)
-        for desc in descs:
-            attrib = desc.get("compset")
-            text = desc.text
-            compsets[attrib] = text
-
+        helpnode = self.get_child("help")
+        helptext = self.text(helpnode)
         logger.info(" {}".format(helptext))
-        for v in sorted(compsets.iteritems()):
-            label, definition = v
-            logger.info("   {:20s} : {}".format(label, definition))
+        entries = self.get_children("entry")
+        for entry in entries:
+            name = self.get(entry, "id")
+            text = self.text(self.get_child("desc", root=entry))
+            logger.info("   {:20s} : {}".format(name, text.encode('utf-8')))

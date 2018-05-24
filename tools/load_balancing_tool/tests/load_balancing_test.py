@@ -197,7 +197,7 @@ class LoadBalanceTests(unittest.TestCase):
 
 
     def test_solve_from_timing_dir(self):
-        cmd = "./load_balancing_solve.py --timing-dir %s --total-tasks 64 --blocksize 2" % os.path.join(TEST_DIR, "timing")
+        cmd = "./load_balancing_solve.py --timing-dir %s --total-tasks 64 --blocksize 2 --layout IceLndAtmOcn" % os.path.join(TEST_DIR, "timing")
         output = run_cmd_no_fail(cmd, from_dir=CODE_DIR)
         self._check_solution(output, "NTASKS_ATM", 62)
 
@@ -210,13 +210,14 @@ class LoadBalanceTests(unittest.TestCase):
 
             self.assertTrue(os.access(pes_file.name, os.R_OK), "pesfile %s not written" % pes_file.name)
             pesobj = CIME.XML.pes.Pes(pes_file.name)
-        for node in pesobj.get_nodes('pes'):
-            pesize = node.get('pesize')
-            pes_ntasks, pes_nthrds, pes_rootpe, _ = \
-               pesobj.find_pes_layout('any', 'any', 'any', pesize_opts=pesize)
+
+        pes_ntasks, pes_nthrds, pes_rootpe, _, _, _ = \
+               pesobj.find_pes_layout('any', 'any', 'any', '')
+        self.assertTrue(pes_ntasks['NTASKS_ATM']==992)
+        
 
     def test_set_blocksize_atm(self):
-        cmd = "./load_balancing_solve.py --timing-dir %s --total-tasks 64 --blocksize 2 --blocksize-atm 4" % os.path.join(TEST_DIR, "timing")
+        cmd = "./load_balancing_solve.py --timing-dir %s --total-tasks 64 --blocksize 2 --blocksize-atm 4 --layout IceLndAtmOcn" % os.path.join(TEST_DIR, "timing")
         output = run_cmd_no_fail(cmd, from_dir=CODE_DIR)
         self._check_solution(output, "NTASKS_ATM", 60)
         self._check_solution(output, "NBLOCKS_ATM", 15)
@@ -266,7 +267,7 @@ class LoadBalanceTests(unittest.TestCase):
 
         if os.path.isdir(expected_dir):
 
-            cmd = "./load_balancing_solve.py --total-tasks 32 --blocksize 1 --test-id test_lbt --print-models --test-root {} ".format(test_root)
+            cmd = "./load_balancing_solve.py --total-tasks 32 --blocksize 1 --test-id test_lbt --print-models --test-root {} --layout IceLndAtmOcn".format(test_root)
             output = run_cmd_no_fail(cmd, from_dir=CODE_DIR)
             self.assertTrue(output.find("***ATM***") > 0,
                             "--print-models failed to print ATM data")

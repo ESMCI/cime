@@ -34,26 +34,27 @@ These variables will appear in ``env_run.xml`` and are used by the DICE ``cime_c
 datamode values
 --------------------
 
-The xml variable ``DICE_MODE`` sets the streams that are associated with DICE and also sets the namelist variable ``datamode`` that specifies what additional operations need to be done by DICE on the streams before returning to the driver.
-One of the variables in ``shr_strdata_nml`` is ``datamode``, whose value is a character string.  Each data model has a unique set of ``datamode`` values that it supports. 
-The valid values for ``datamode`` are set in the file ``namelist_definition_dice.xml`` using the xml variable ``DICE_MODE`` in the ``config_component.xml`` file for DICE. 
-CIME will generate a value ``datamode`` that is compset dependent. 
+The xml variable ``DICE_MODE`` (described in :ref:`dice_mode`) sets the streams that are associated with DICE and also sets the namelist variable ``datamode``.
+``datamode`` (which appears in ``shr_strdata_nml``) specifies what additional operations need to be done by DICE on the streams before returning to the driver.
 
-The following are the supported DICE datamode values and their relationship to the ``DICE_MODE`` xml variable value.
+Each data model has its own set of supported ``datamode`` values. The following are the supported DICE ``datamode`` values, as defined in the file ``namelist_definition_dice.xml``.
 
 .. csv-table:: "Valid values for datamode namelist variable"
    :header: "datamode variable", "description"
    :widths: 20, 80
 
    "NULL", "Turns off the data model as a provider of data to the coupler.  The ice_present flag will be set to false and the coupler will assume no exchange of data to or from the data model."
-   "COPYALL", "The default science mode of the data model is the COPYALL mode. This mode will examine the fields found in all input data streams, if any input field names match the field names used internally, they are copied into the export array and passed directly to the coupler without any special user code.  Any required fields not found on an input stream will be set to zero."
+   "COPYALL", "The default science mode of the data model is the COPYALL mode. This mode will examine the fields found in all input data streams; if any input field names match the field names used internally, they are copied into the export array and passed directly to the coupler without any special user code.  Any required fields not found on an input stream will be set to zero."
    "SSTDATA","Is a prognostic mode. It requires data be sent to the ice model. Ice fraction (extent) data is read from an input stream, atmosphere state variables are received from the coupler, and then an atmosphere-ice surface flux is computed and sent to the coupler. It is called ``SSTDATA`` mode because normally the ice fraction data is found in the same data files that provide SST data to the data ocean model. They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other. "
+
+.. _dice_mode:
 
 -------------------------------
 DICE_MODE, datamode and streams
 -------------------------------
 
-The following tabe describes the valid values of ``DICE_MODE``, and how it relates to the associated input streams and the ``datamode`` namelist variable.
+The following table describes the valid values of ``DICE_MODE`` (defined in the ``config_component.xml`` file for DICE), and how they relate to the associated input streams and the ``datamode`` namelist variable.
+CIME will generate a value of ``DICE_MODE`` based on the compset.
 
 .. csv-table:: "Relationship between DICE_MODE, datamode and streams"
    :header: "DICE_MODE, "description-streams-datamode"
@@ -126,54 +127,14 @@ Field names
 -----------
 
 DICE defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
-In general, the stream input file should translate the stream input variable names into the ``dice_fld`` names below for use within the data ice model.
+
+.. note:: In general, the stream input file should translate the stream input variable names into the ``docn_fld`` names below for use within the data ocn model.
 
 .. csv-table:: "DICE internal field names"
    :header: "dice_fld (avifld)", "driver_fld (avofld)"
    :widths: 30, 30
 
-   "to",    "So_t"	       
-   "s",	    "So_s"	       
-   "uo",    "So_u"	       
-   "vo",    "So_v"	       
-   "dhdx",  "So_dhdx"      
-   "dhdy",  "So_dhdy"      
-   "q",	    "Fioo_q"       
-   "z",	    "Sa_z"	       
-   "ua",    "Sa_u"	       
-   "va",    "Sa_v"	       
-   "ptem",  "Sa_ptem"      
-   "tbot",  "Sa_tbot"      
-   "shum",  "Sa_shum"      
-   "dens",  "Sa_dens"      
-   "swndr", "Faxa_swndr"   
-   "swvdr", "Faxa_swvdr"   
-   "swndf", "Faxa_swndf"   
-   "swvdf", "Faxa_swvdf"   
-   "lwdn",  "Faxa_lwdn"    
-   "rain",  "Faxa_rain"    
-   "snow",  "Faxa_snow"    
-   "t",	    "Si_t"	       
-   "tref",  "Si_tref"      
-   "qref",  "Si_qref"      
    "ifrac", "Si_ifrac"     
-   "avsdr", "Si_avsdr"     
-   "anidr", "Si_anidr"     
-   "avsdf", "Si_avsdf"     
-   "anidf", "Si_anidf"     
-   "tauxa", "Faii_taux"    
-   "tauya", "Faii_tauy"    
-   "lat",   "Faii_lat"     
-   "sen",   "Faii_sen"     
-   "lwup",  "Faii_lwup"    
-   "evap",  "Faii_evap"    
-   "swnet", "Faii_swnet"   
-   "swpen", "Fioi_swpen"   
-   "melth", "Fioi_melth"   
-   "meltw", "Fioi_meltw"   
-   "salt",  "Fioi_salt"    
-   "tauxo", "Fioi_taux"    
-   "tauyo", "Fioi_tauy"    
 
 
 

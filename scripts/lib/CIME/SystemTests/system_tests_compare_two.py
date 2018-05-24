@@ -37,8 +37,7 @@ In addition, they MAY require the following methods:
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case import Case
-from CIME.case_submit import check_case
-from CIME.case_st_archive import archive_last_restarts
+from CIME.utils import get_model
 
 import shutil, os, glob
 
@@ -48,7 +47,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
     def __init__(self,
                  case,
-                 separate_builds,
+                 separate_builds = False,
                  run_two_suffix = 'test',
                  run_one_description = '',
                  run_two_description = '',
@@ -184,8 +183,12 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # Although we're doing separate builds, it still makes sense
             # to share the sharedlibroot area with case1 so we can reuse
             # pieces of the build from there.
-            self._case2.set_value("SHAREDLIBROOT",
-                                  self._case1.get_value("SHAREDLIBROOT"))
+            if get_model() != "e3sm":
+                # We need to turn off this change for E3SM because it breaks
+                # the MPAS build system
+                self._case2.set_value("SHAREDLIBROOT",
+                                      self._case1.get_value("SHAREDLIBROOT"))
+
             self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
         else:
             self._activate_case1()
@@ -208,6 +211,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         """
         first_phase = self._case1.get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
         run_type = self._case1.get_value("RUN_TYPE")
+
         # First run
         if not self._multisubmit or first_phase:
             logger.info('Doing first run: ' + self._run_one_description)
@@ -217,6 +221,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             self._case_one_custom_postrun_action()
 
         # Second run
+        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, first_phase))
         if not self._multisubmit or not first_phase:
             # Subtle issue: case1 is already in a writeable state since it tends to be opened
             # with a with statement in all the API entrances in CIME. case2 was created via clone,
@@ -225,10 +230,11 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             with self._case2:
                 logger.info('Doing second run: ' + self._run_two_description)
                 self._activate_case2()
+                # This assures that case two namelists are populated
+                self._skip_pnl = False
                 # we need to make sure run2 is properly staged.
                 if run_type != "startup":
-                    check_case(self._case2)
-                self._force_case2_settings()
+                    self._case2.check_case()
 
                 self._case_two_custom_prerun_action()
                 self.run_indv(suffix = self._run_two_suffix)
@@ -249,9 +255,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         files.
         """
         rundir2 = self._case2.get_value("RUNDIR")
-        archive_last_restarts(case = self._case1,
-                              archive_restdir = rundir2,
-                              link_to_restart_files = True)
+        self._case1.archive_last_restarts(archive_restdir = rundir2,
+                                          rundir=self._case1.get_value("RUNDIR"),
+                                          link_to_restart_files = True)
 
     # ========================================================================
     # Private methods
@@ -277,9 +283,13 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
         Assumes that self._case1 is already set to point to the case1 object
         """
-        # Since case 2 has the same name as case1 its CIME_OUTPUT_ROOT must also be different
+        # Since case2 has the same name as case1, its CIME_OUTPUT_ROOT
+        # must also be different, so that anything put in
+        # $CIME_OUTPUT_ROOT/$CASE/ is not accidentally shared between
+        # case1 and case2. (Currently nothing is placed here, but this
+        # helps prevent future problems.)
         output_root2 = os.path.join(self._case1.get_value("CIME_OUTPUT_ROOT"),
-                                    self._case1.get_value("CASE"), "case2")
+                                    self._case1.get_value("CASE"), "case2_output_root")
         return output_root2
 
     def _get_case2_exeroot(self):
@@ -289,17 +299,13 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         Returns None if we should use the default value of exeroot.
         """
         if self._separate_builds:
-            # Put the case2 bld directory directly under the case2
-            # CIME_OUTPUT_ROOT, rather than following the typical
-            # practice of putting it under CIME_OUTPUT_ROOT/CASENAME,
-            # because the latter leads to too-long paths that make some
-            # compilers fail.
-            #
-            # This only works because case2's CIME_OUTPUT_ROOT is unique
-            # to this case. (If case2's CIME_OUTPUT_ROOT were in some
-            # more generic location, then this would result in its bld
-            # directory being inadvertently shared with other tests.)
-            case2_exeroot = os.path.join(self._get_output_root2(), "bld")
+            # case2's EXEROOT needs to be somewhere that (1) is unique
+            # to this case (considering that case1 and case2 have the
+            # same case name), and (2) does not have too long of a path
+            # name (because too-long paths can make some compilers
+            # fail).
+            case1_exeroot = self._case1.get_value("EXEROOT")
+            case2_exeroot = os.path.join(case1_exeroot, "case2bld")
         else:
             # Use default exeroot
             case2_exeroot = None
@@ -309,9 +315,12 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         """
         Gets rundir for case2.
         """
-        # Put the case2 run directory alongside its bld directory for
-        # consistency. (See notes about EXEROOT in _get_case2_exeroot.)
-        case2_rundir = os.path.join(self._get_output_root2(), "run")
+        # case2's RUNDIR needs to be somewhere that is unique to this
+        # case (considering that case1 and case2 have the same case
+        # name). Note that the location below is symmetrical to the
+        # location of case2's EXEROOT set in _get_case2_exeroot.
+        case1_rundir = self._case1.get_value("RUNDIR")
+        case2_rundir = os.path.join(case1_rundir, "case2run")
         return case2_rundir
 
     def _setup_cases_if_not_yet_done(self):
@@ -349,6 +358,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                     cime_output_root = self._get_output_root2(),
                     exeroot = self._get_case2_exeroot(),
                     rundir = self._get_case2_rundir())
+                self._write_info_to_case2_output_root()
                 self._setup_cases()
             except:
                 # If a problem occurred in setting up the test cases, it's
@@ -391,6 +401,38 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         os.chdir(self._caseroot2)
         self._set_active_case(self._case2)
 
+    def _write_info_to_case2_output_root(self):
+        """
+        Writes a file with some helpful information to case2's
+        output_root.
+
+        The motivation here is two-fold:
+
+        (1) Currently, case2's output_root directory is empty. This
+            could be confusing.
+
+        (2) For users who don't know where to look, it could be hard to
+            find case2's bld and run directories. It is somewhat easier
+            to stumble upon case2's output_root, so we put a file there
+            pointing them to the right place.
+        """
+
+        readme_path = os.path.join(self._get_output_root2(), "README")
+        try:
+            with open(readme_path, "w") as fd:
+                fd.write("This directory is typically empty.\n\n")
+                fd.write("case2's run dir is here: {}\n\n".format(
+                    self._case2.get_value("RUNDIR")))
+                fd.write("case2's bld dir is here: {}\n".format(
+                    self._case2.get_value("EXEROOT")))
+        except IOError:
+            # It's not a big deal if we can't write the README file
+            # (e.g., because the directory doesn't exist or isn't
+            # writeable; note that the former may be the case in unit
+            # tests). So just continue merrily on our way if there was a
+            # problem.
+            pass
+
     def _setup_cases(self):
         """
         Does all test-specific set up for the two test cases.
@@ -414,6 +456,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # note that we print a warning to the log file if that happens, in the
         # caller of this method).
         self._case.flush()
+        # This assures that case one namelists are populated
+        # and creates the case.test script
+        self._case.case_setup(test_mode=False, reset=True)
 
         # Set up case 2
         self._activate_case2()
@@ -425,19 +470,6 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
         # Go back to case 1 to ensure that's where we are for any following code
         self._activate_case1()
-
-    def _force_case2_settings(self):
-        """
-        Sets some settings in case2 that are normally set automatically.
-
-        This is needed because we aren't running case2 via the normal mechanism
-        (i.e., via the submit script).
-        """
-
-        # RUN_WITH_SUBMIT is normally set when you run the case's submit script.
-        # Trick the scripts into thinking that we are running via the submit
-        # script, like we're supposed to
-        self._case2.set_value("RUN_WITH_SUBMIT",True)
 
     def _link_to_case2_output(self):
         """

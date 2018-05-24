@@ -33,9 +33,12 @@ null  :=
 EXENAME = cprnc
 RM = rm
 
+NETCDF_PATH ?= $(NETCDF_FORTRAN_PATH)
+
 # Default for the netcdf library and include directories
 LIB_NETCDF := $(NETCDF_PATH)/lib
 INC_NETCDF := $(NETCDF_PATH)/include
+LDFLAGS = -L$(LIB_NETCDF) -lnetcdff
 
 # Determine platform
 UNAMES := $(shell uname -s)
@@ -45,7 +48,6 @@ GENF90 = ../../src/externals/genf90/genf90.pl
 
 FC := $(SFC)
 FFLAGS += -I$(INC_NETCDF) -I.
-LDFLAGS=$(SLIBS)
 #------------------------------------------------------------------------
 # Default rules and macros
 #------------------------------------------------------------------------
@@ -72,7 +74,7 @@ endif
 	$(FC) -c $(FFLAGS) $<
 
 $(EXEDIR)/$(EXENAME): $(OBJS)
-	$(FC) -o $@ $(OBJS) $(LDFLAGS)
+	$(FC) -o $@ $(OBJS) $(LDFLAGS) $(SLIBS)
 
 compare_vars_mod.F90 : compare_vars_mod.F90.in
 	perl $(GENF90) $< > $@

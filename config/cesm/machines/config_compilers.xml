@@ -264,30 +264,6 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
-<compiler MACH="fram">
- <CPPDEFS>
-  <append> -D$(OS) </append>
- </CPPDEFS>
-  <FFLAGS>
-  <append> -xCORE-AVX2 </append>
-  </FFLAGS>
-  <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
-  <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
-  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 </append>
-    <append MODEL="micom"> -r8 </append>
-  </FFLAGS>
-  <MPICC> mpiicc </MPICC>
-  <MPICXX> mpiicpc </MPICXX>
-  <MPIFC> mpiifort </MPIFC>
-  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
-  <SLIBS>
-    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
-  </SLIBS>
-</compiler>
-
 <compiler COMPILER="nag">
   <CFLAGS>
     <base> -std=gnu99 </base>
@@ -899,7 +875,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="skybridge" COMPILER="intel">
+<compiler MACH="sandiatoss3" COMPILER="intel">
   <CFLAGS>
     <append DEBUG="FALSE"> -O2  </append>
   </CFLAGS>
@@ -918,7 +894,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="stampede">
+<compiler MACH="stampede2-skx">
   <CPPDEFS>
     <append> -DHAVE_NANOTIME </append>
   </CPPDEFS>
@@ -927,21 +903,49 @@ using a fortran linker.
   <PNETCDF_PATH>$ENV{TACC_PNETCDF_DIR}</PNETCDF_PATH>
 </compiler>
 
-<compiler MACH="stampede" COMPILER="intel">
+<compiler MACH="stampede2-skx" COMPILER="intel">
   <CFLAGS>
-    <append> -xHost </append>
+    <append> -xCOMMON-AVX512 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
-    <append> -xHost </append>
+    <append> -xCOMMON-AVX512 -no-fma </append>
     <append MPILIB="mpi-serial"> -mcmodel medium </append>
   </FFLAGS>
   <LDFLAGS>
-    <append>-L$ENV{TACC_HDF5_LIB} -lhdf5</append>
+    <append>-L$ENV{TACC_HDF5_LIB} -lhdf5 $(MKL) -zmuldefs -xCOMMON-AVX512</append>
   </LDFLAGS>
   <SLIBS>
     <append>$SHELL{${NETCDF_PATH}/bin/nf-config --flibs} -L$ENV{TACC_HDF5_LIB} -lhdf5</append>
   </SLIBS>
   <TRILINOS_PATH>$ENV{TRILINOS_PATH}</TRILINOS_PATH>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+</compiler>
+
+<compiler MACH="stampede2-knl">
+  <CPPDEFS>
+    <append> -DHAVE_NANOTIME </append>
+  </CPPDEFS>
+  <NETCDF_PATH>$ENV{TACC_NETCDF_DIR}</NETCDF_PATH>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <PNETCDF_PATH>$ENV{TACC_PNETCDF_DIR}</PNETCDF_PATH>
+</compiler>
+
+<compiler MACH="stampede2-knl" COMPILER="intel">
+  <CFLAGS>
+    <append> -xCOMMON-AVX512 -no-fma </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -xCOMMON-AVX512 -no-fma </append>
+    <append MPILIB="mpi-serial"> -mcmodel medium </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append>-L$ENV{TACC_HDF5_LIB} -lhdf5 $(MKL) -zmuldefs -xCOMMON-AVX512</append>
+  </LDFLAGS>
+  <SLIBS>
+    <append>$SHELL{${NETCDF_PATH}/bin/nf-config --flibs} -L$ENV{TACC_HDF5_LIB} -lhdf5</append>
+  </SLIBS>
+  <TRILINOS_PATH>$ENV{TRILINOS_PATH}</TRILINOS_PATH>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="theta">
@@ -1008,6 +1012,9 @@ using a fortran linker.
   <CPPDEFS>
     <append MODEL="pio1"> -DNO_MPIMOD </append>
   </CPPDEFS>
+  <SLIBS>
+    <append> -ldl </append>
+  </SLIBS>
 </compiler>
 
 <compiler MACH="cheyenne">
@@ -1056,6 +1063,40 @@ using a fortran linker.
   </CMAKE_OPTS>
 </compiler>
 
+<compiler COMPILER="intel" MACH="lawrencium-lr3">
+  <CPPDEFS>
+    <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <SLIBS>
+    <append> -lnetcdff -lnetcdf -mkl </append>
+  </SLIBS>
+  <FFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </CFLAGS>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+  <LAPACK_LIBDIR>/global/software/sl-6.x86_64/modules/intel/2016.1.150/lapack/3.6.0-intel/lib</LAPACK_LIBDIR>
+</compiler>
+
+<compiler COMPILER="intel" MACH="lawrencium-lr2">
+  <CPPDEFS>
+    <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <SLIBS>
+    <append> -lnetcdff -lnetcdf -mkl </append>
+  </SLIBS>
+  <FFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </CFLAGS>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+  <LAPACK_LIBDIR>/global/software/sl-6.x86_64/modules/intel/2016.1.150/lapack/3.6.0-intel/lib</LAPACK_LIBDIR>
+</compiler>
+
 <compiler MACH="yellowstone" COMPILER="gnu">
   <LAPACK_LIBDIR> /glade/apps/opt/lib </LAPACK_LIBDIR>
   <SCC MPILIB="mpi-serial">gcc</SCC>
@@ -1100,6 +1141,72 @@ using a fortran linker.
   </SLIBS>
   <SCC MPILIB="mpi-serial">pgcc</SCC>
   <SFC MPILIB="mpi-serial">pgfortran</SFC>
+</compiler>
+
+<compiler COMPILER="intel" MACH="lbl-lr3">
+  <CPPDEFS>
+    <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <SLIBS>
+    <append> -lnetcdff -lnetcdf -mkl </append>
+  </SLIBS>
+  <FFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </CFLAGS>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+</compiler>
+
+<compiler COMPILER="intel" MACH="lbl-lr2">
+  <CPPDEFS>
+    <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <SLIBS>
+    <append> -lnetcdff -lnetcdf -mkl </append>
+  </SLIBS>
+  <FFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append DEBUG="TRUE"> -ftrapuv </append>
+  </CFLAGS>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+</compiler>
+
+<compiler COMPILER="gnu" MACH="modex">
+  <SLIBS>
+    <append> -L$ENV{HDF5_HOME}/lib -lhdf5_fortran -lhdf5 -lhdf5_hl -lhdf5hl_fortran </append>
+    <append> -L$ENV{NETCDF_PATH}/lib/ -lnetcdff -lnetcdf -lcurl -lblas -llapack</append>
+  </SLIBS>
+  <CPPDEFS>
+     <append MODEL="gptl"> -DHAVE_VPRINTF -DHAVE_GETTIMEOFDAY -DHAVE_BACKTRACE </append>
+  </CPPDEFS>
+</compiler>
+
+<compiler MACH="fram">
+  <CPPDEFS>
+   <append> -D$(OS) </append>
+  </CPPDEFS>
+  <FFLAGS>
+   <append> -xCORE-AVX2 </append>
+  </FFLAGS>
+  <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
+  <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <MPICC> mpiicc </MPICC>
+  <MPICXX> mpiicpc </MPICXX>
+  <MPIFC> mpiifort </MPIFC>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <SLIBS>
+    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
+  </SLIBS>
 </compiler>
 
 </config_compilers>
