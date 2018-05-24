@@ -2,7 +2,7 @@ set(doc_string "Set by CIME build.")
 
 set(CMAKE_Fortran_COMPILER @CMAKE_Fortran_COMPILER@                              CACHE FILEPATH "${doc_string}")
 set(CMAKE_C_COMPILER       @CMAKE_C_COMPILER@                                    CACHE FILEPATH "${doc_string}")
-set(USER_CMAKE_MODULE_PATH "@CIME_DIR@/src/CMake;@ACME_PIO_DIR@/../pio2/cmake"   CACHE FILEPATH "${doc_string}")
+set(USER_CMAKE_MODULE_PATH "@CIME_DIR@/src/CMake;@E3SM_PIO_DIR@/../pio2/cmake"   CACHE FILEPATH "${doc_string}")
 set(GENF90_PATH            @GENF90_EXE@                                          CACHE STRING   "${doc_string}")
 set(NetCDF_PATH            @E3SM_NETCDF_DIR@                                     CACHE FILEPATH "${doc_string}")
 set(PnetCDF_PATH           @E3SM_NETCDF_DIR@                                     CACHE FILEPATH "${doc_string}")

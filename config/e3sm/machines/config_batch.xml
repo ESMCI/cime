@@ -3,7 +3,7 @@
   <!--
      File:    config_batch.xml
      Purpose: abstract out the parts of run scripts that are different, and use this configuration to
-     create acme run scripts from a single template.
+     create e3sm run scripts from a single template.
 
      batch_system:     the batch system type and version
      batch_query:      the batch query command for each batch system.
@@ -80,7 +80,7 @@
 
   <batch_system type="cobalt_theta" >
     <batch_query>qstat</batch_query>
-    <batch_submit>/projects/ccsm/acme/tools/cobalt/dsub</batch_submit>
+    <batch_submit>/projects/ccsm/e3sm/tools/cobalt/dsub</batch_submit>
     <batch_cancel>qdel</batch_cancel>
     <batch_env>--env</batch_env>
     <batch_directive>#COBALT</batch_directive>
@@ -275,7 +275,7 @@
         <directive>-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}</directive>
       </directives>
       <queues>
-	<queue walltimemax="01:00:00" nodemin="1" nodemax="120" default="true">acme</queue>
+	<queue walltimemax="01:00:00" nodemin="1" nodemax="120" default="true">e3sm</queue>
       </queues>
     </batch_system>
 

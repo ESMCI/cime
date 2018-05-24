@@ -5,8 +5,8 @@ import sys, getpass, logging
 # Constants
 ESMCI_REMOTE_NAME = "esmci_remote_for_split"
 ESMCI_URL = "git@github.com:ESMCI/CIME.git"
-SPLIT_TAG_PREFIX = "acme-split-"
-MERGE_TAG_PREFIX = "to-acme-"
+SPLIT_TAG_PREFIX = "e3sm-split-"
+MERGE_TAG_PREFIX = "to-e3sm-"
 
 ###############################################################################
 def setup():

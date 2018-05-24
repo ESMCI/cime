@@ -102,7 +102,7 @@ def buildlib(bldroot, installpath, caseroot):
             copyifnewer(_file, os.path.join(installdir, "include", os.path.basename(_file)))
         for _file in glob.iglob(os.path.join(cimeroot,"src","share","RandNum","include","*")):
             copyifnewer(_file, os.path.join(installdir, "include", os.path.basename(_file)))
-
+ 
         # This runs the gptl make command
         gmake_opts = "-f {}/Makefile complib MODEL=csm_share ".format(os.path.join(caseroot,"Tools"))
         gmake_opts += "-j {} ".format(case.get_value("GMAKE_J"))
@@ -114,7 +114,6 @@ def buildlib(bldroot, installpath, caseroot):
         gmake_opts += " -C {}".format(libdir)
 
         gmake_cmd = case.get_value("GMAKE")
-
         cmd = "{} {}".format(gmake_cmd, gmake_opts)
         run_bld_cmd_ensure_logging(cmd, logger)
 

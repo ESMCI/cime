@@ -719,7 +719,7 @@ for mct, etc.
   <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="false">$SEMS_PFUNIT_ROOT</PFUNIT_PATH>
   <ADD_SLIBS> $(shell $(NETCDF_PATH)/bin/nf-config --flibs) -lblas -llapack</ADD_SLIBS>
   <CXX_LIBS>-lstdc++ -lmpi_cxx</CXX_LIBS>
-  <ALBANY_PATH>/projects/install/rhel6-x86_64/ACME/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
+  <ALBANY_PATH>/projects/install/rhel6-x86_64/e3sm/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
 </compiler>
 
 <compiler COMPILER="intel" MACH="melvin">
@@ -730,7 +730,7 @@ for mct, etc.
   <PNETCDF_PATH>$(PNETCDFROOT)</PNETCDF_PATH>
   <ADD_SLIBS> $(shell $(NETCDF_PATH)/bin/nf-config --flibs) -lblas -llapack</ADD_SLIBS>
   <CXX_LIBS>-lstdc++ -lmpi_cxx</CXX_LIBS>
-  <ALBANY_PATH>/projects/install/rhel6-x86_64/ACME/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
+  <ALBANY_PATH>/projects/install/rhel6-x86_64/e3sm/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
 </compiler>
 
 <compiler COMPILER="gnu" MACH="sandia-srn-sems">
@@ -741,7 +741,7 @@ for mct, etc.
   <PNETCDF_PATH>$(SEMS_NETCDF_ROOT)</PNETCDF_PATH>
   <ADD_SLIBS> $(shell $(NETCDF_PATH)/bin/nf-config --flibs) -L/usr/lib64 -L/usr/lib64/atlas -lblas -llapack</ADD_SLIBS>
   <CXX_LIBS>-lstdc++ -lmpi_cxx</CXX_LIBS>
-  <ALBANY_PATH>/data/acme/AlbanyTrilinos_06262017/Albany/build/install</ALBANY_PATH>
+  <ALBANY_PATH>/data/e3sm/AlbanyTrilinos_06262017/Albany/build/install</ALBANY_PATH>
 </compiler>
 
 <compiler COMPILER="intel" MACH="sandia-srn-sems">
@@ -753,7 +753,7 @@ for mct, etc.
   <ADD_SLIBS> $(shell $(NETCDF_PATH)/bin/nf-config --flibs) -L/usr/lib64 -L/usr/lib64/atlas -lblas -llapack</ADD_SLIBS>
   <ADD_SLIBS> /projects/sems/install/rhel6-x86_64/sems/compiler/intel/15.0.2/base/mkl/lib/mic/libmkl_scalapack_lp64.a -Wl,--start-group /projects/sems/install/rhel6-x86_64/sems/compiler/intel/15.0.2/base/mkl/lib/intel64/libmkl_intel_lp64.a /projects/sems/install/rhel6-x86_64/sems/compiler/intel/15.0.2/base/mkl/lib/intel64/libmkl_core.a /projects/sems/install/rhel6-x86_64/sems/compiler/intel/15.0.2/base/mkl/lib/intel64/libmkl_sequential.a -Wl,--end-group /projects/sems/install/rhel6-x86_64/sems/compiler/intel/15.0.2/base/mkl/lib/mic/libmkl_blacs_intelmpi_lp64.a -lpthread -lm </ADD_SLIBS>
   <CXX_LIBS>-lstdc++ -lmpi_cxx</CXX_LIBS>
-  <ALBANY_PATH>/data/acme/AlbanyTrilinos_06262017/Albany/build/install</ALBANY_PATH>
+  <ALBANY_PATH>/data/e3sm/AlbanyTrilinos_06262017/Albany/build/install</ALBANY_PATH>
 </compiler>
 
 <compiler COMPILER="gnu" MACH="anlworkstation">
@@ -762,7 +762,7 @@ for mct, etc.
   <CONFIG_ARGS> --host=Linux </CONFIG_ARGS>
   <ADD_SLIBS> $(shell $(NETCDF_PATH)/bin/nf-config --flibs) -lblas -llapack</ADD_SLIBS>
   <CXX_LIBS>-lstdc++ -lmpi_cxx</CXX_LIBS>
-  <ALBANY_PATH>/projects/install/rhel6-x86_64/ACME/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
+  <ALBANY_PATH>/projects/install/rhel6-x86_64/e3sm/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
 </compiler>
 
 <compiler COMPILER="intel" MACH="sandiatoss3">

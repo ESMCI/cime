@@ -5,8 +5,8 @@ format to CIME5. This tool will compare the two versions and suggest updates to
 the CIME5 file.
 
 The location of these files are needed by the script:
-    CIME2: cime/machines-acme/config_pes.xml
-    CIME5: config/acme/allactive/config_pesall.xml
+    CIME2: cime/machines-e3sm/config_pes.xml
+    CIME5: config/e3sm/allactive/config_pesall.xml
 """
 
 

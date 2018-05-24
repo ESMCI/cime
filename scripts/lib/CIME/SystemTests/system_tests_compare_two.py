@@ -303,7 +303,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # name (because too-long paths can make some compilers
             # fail).
             case1_exeroot = self._case1.get_value("EXEROOT")
-            case2_exeroot = os.path.join(case1_exeroot, "case2bld")
+            case2_exeroot = os.path.join(case1_exeroot, "case2bld")      
         else:
             # Use default exeroot
             case2_exeroot = None

@@ -577,16 +577,16 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist):
     logger.info("End Launching CMake")
     ####
 
-    if not model_only:
-        logs = _build_libraries(case, exeroot, sharedpath, caseroot,
-                                cimeroot, libroot, lid, compiler, buildlist, comp_interface)
+#    if not model_only:
+#        logs = _build_libraries(case, exeroot, sharedpath, caseroot,
+#                                cimeroot, libroot, lid, compiler, buildlist, comp_interface)
 
-    if not sharedlib_only:
-        os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
-        logs.extend(_build_model(build_threaded, exeroot, clm_config_opts, incroot, complist,
-                                lid, caseroot, cimeroot, compiler, buildlist, comp_interface))
+#    if not sharedlib_only:
+#        os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
+#        logs.extend(_build_model(build_threaded, exeroot, clm_config_opts, incroot, complist,
+#                                lid, caseroot, cimeroot, compiler, buildlist, comp_interface))
 
-        if not buildlist:
+    if not buildlist:
             # in case component build scripts updated the xml files, update the case object
             case.read_xml()
             # Note, doing buildlists will never result in the system thinking the build is complete

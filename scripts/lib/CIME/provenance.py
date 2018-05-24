@@ -169,9 +169,9 @@ def _save_prerun_timing_e3sm(case, lid):
             # run_cmd_no_fail("./mdiag_reduce.csh", arg_stdout=mdiag_reduce, from_dir=os.path.join(caseroot, "Tools"))
             # gzip_existing_file(mdiag_reduce)
         elif mach == "anvil":
-            for cmd, filename in [("qstat -f -1 acme >", "qstatf"),
+            for cmd, filename in [("qstat -f -1 e3sm >", "qstatf"),
                                   ("qstat -f %s >" % job_id, "qstatf_jobid"),
-                                  ("qstat -r acme >", "qstatr")]:
+                                  ("qstat -r e3sm >", "qstatr")]:
                 full_cmd = cmd + " " + filename
                 run_cmd_no_fail(full_cmd + "." + lid, from_dir=full_timing_dir)
                 gzip_existing_file(os.path.join(full_timing_dir, filename + "." + lid))

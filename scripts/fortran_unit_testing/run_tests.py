@@ -378,7 +378,8 @@ def _main():
             name = spec.name+"/"+label
 
             if not os.path.islink("Macros.cmake"):
-                os.symlink(os.path.join(build_dir,"Macros.cmake"), "Macros.cmake")
+                os.symlink(os.path.join(build_dir,"Macros.cmake"), "Macros.cmake")   
+
             use_mpiserial = not use_mpi
             cmake_stage(name, directory, build_optimized, use_mpiserial, mpirun_command, output, pfunit_path, verbose=verbose,
                         enable_genf90=enable_genf90, cmake_args=cmake_args)

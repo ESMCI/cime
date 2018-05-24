@@ -40,6 +40,6 @@ INCLUDE_DIRECTORIES (
 )
 
 ADD_LIBRARY (driver ${DRIVER_SOURCE})
-ADD_DEPENDENCIES(driver  shr gptl seq esmf)
+ADD_DEPENDENCIES(driver shrsys shr gptl seq esmf)
 
 ENDIF()

@@ -94,9 +94,9 @@
 	<!-- CHARGE_ACCOUNT: The name of the account to charge for batch jobs
 	  can be overridden in environment or $HOME/.cime/config -->
 	<xs:element ref="CHARGE_ACCOUNT" minOccurs="0" maxOccurs="1"/>
-	<!-- SAVE_TIMING_DIR: (Acme only) directory for archiving timing output -->
+	<!-- SAVE_TIMING_DIR: (e3sm only) directory for archiving timing output -->
 	<xs:element ref="SAVE_TIMING_DIR" minOccurs="0" maxOccurs="1"/>
-	<!-- SAVE_TIMING_DIR_PROJECTS: (Acme only) projects whose jobs archive timing output -->
+	<!-- SAVE_TIMING_DIR_PROJECTS: (e3sm only) projects whose jobs archive timing output -->
 	<xs:element ref="SAVE_TIMING_DIR_PROJECTS" minOccurs="0" maxOccurs="1"/>
 	<!-- CIME_OUTPUT_ROOT: Base directory for case output,
 	     the bld and run directories are written below here -->
@@ -117,7 +117,7 @@
         <xs:element ref="GMAKE" minOccurs="0" maxOccurs="1"/>
 	<!-- GMAKE_J: optional number of threads to pass to the gmake flag -->
         <xs:element ref="GMAKE_J" minOccurs="0" maxOccurs="1"/>
-	<!-- TESTS: (acme only) list of tests to run on this machine -->
+	<!-- TESTS: (e3sm only) list of tests to run on this machine -->
         <xs:element ref="TESTS" minOccurs="0" maxOccurs="1"/>
 	<!-- BATCH_SYSTEM: batch system used on this machine (none is okay) -->
         <xs:element ref="BATCH_SYSTEM" minOccurs="1" maxOccurs="1"/>

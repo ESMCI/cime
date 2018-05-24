@@ -12,7 +12,7 @@ INCLUDE(ExternalProject)
 
 
 message("Hardwiring include path -- must automate")
-include(/home/asteyer/cimework/cime/src/CMake/CIME_initial_setup.cmake)
+include(/home/asteyer/cime/src/CMake/CIME_initial_setup.cmake)
 
 #include(/home/agsalin/buildmacrocime/Macros.cmake)
 
@@ -38,7 +38,7 @@ SET(CIME_BINARY_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to
 SET(E3SM_NETCDF_DIR "${NetCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
 SET(E3SM_HDF5_DIR "${PNetCDF_PATH}" CACHE PATH "Install location of HDF5. Default set by CIME.")
 SET(E3SM_PIO_DIR "${CIME_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
-SET(GENF90_EXE "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Degault set by CIME")
+SET(GENF90_EXE "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
 
 MESSAGE("----------------------------------------------")
 MESSAGE("Building with CMake with CIME in: ${CIME_DIR}")
@@ -101,6 +101,9 @@ ADD_DEFINITIONS(-DFORTRANUNDERSCORE -D_MPI)
 message("cime source dir:  ${CIME_DIR}") 
 message("cime binary dir:  ${CIME_BINARY_DIR}") 
 message("e3sm binary dir:  ${E3SM_BINARY_DIR}") 
+message("cime abs dir: ${CIME_ABS_PATH}")
+message("project binary dir ${PROJECT_BINARY_DIR}")
+message("cime rel dir: ${CIME_REL_DIR}")
 
 SET(MPEU_REL_DIR     src/externals/mct/mpeu)
 SET(MCT_REL_DIR      src/externals/mct/mct)
@@ -220,6 +223,7 @@ ENDIF()
 MESSAGE("\nAdding executables:")
 MESSAGE("   + e3sm.exe")
 ADD_EXECUTABLE(e3sm.exe ${DRIVER_DIR}/cime_driver.F90)
+INSTALL(TARGETS e3sm.exe RUNTIME DESTINATION ${PROJECT_BINARY_DIR})
 
 MESSAGE("\nAGS: HHEELLPP  what include dirs to add: data, stub, active?
 Just once or are they executable dependent??")
