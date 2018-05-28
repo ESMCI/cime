@@ -12,8 +12,8 @@ CIME.Servers.ftp module
     :undoc-members:
     :show-inheritance:
 
-CIME.Servers.generic\_server module
------------------------------------
+CIME.Servers.generic_server module
+----------------------------------
 
 .. automodule:: CIME.Servers.generic_server
     :members:

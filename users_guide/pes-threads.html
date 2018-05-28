@@ -1,23 +1,34 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>5. Controlling processors and threads &#8212; CIME 5.6 documentation</title>
+    
+    <title>5. Controlling processors and threads &mdash; CIME 5.6 documentation</title>
+    
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
+    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
     <link rel="next" title="6. Porting and validating CIME on a new platform" href="porting-cime.html" />
     <link rel="prev" title="4. Defining the machine" href="machine.html" /> 
-  </head><body>
+  </head>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -33,8 +44,8 @@
         <li class="right" >
           <a href="machine.html" title="4. Defining the machine"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -65,9 +76,9 @@ communicator.  In addition, the driver runs on the union of all
 processors and controls the sequencing and hardware partitioning.</p>
 <div class="section" id="pe-settings-for-a-case">
 <span id="defining-pes"></span><h2>5.1. pe-settings for a case<a class="headerlink" href="#pe-settings-for-a-case" title="Permalink to this headline">¶</a></h2>
-<p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
+<p>CIME looks at the xml element <code class="docutils literal"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
 to find the supported out-of-the-box model pe-settings for the primary component.</p>
-<p>When your run <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>, CIME identifies the primary component and the setting of the <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the standard output.</p>
+<p>When your run <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>, CIME identifies the primary component and the setting of the <code class="docutils literal"><span class="pre">PES_SPEC_FILE</span></code> in the standard output.</p>
 <p>By default, each primary component has a <strong>config_pes.xml</strong> file in
 its <strong>cime_config</strong> directory.  That file specifies out-of-the-box
 pe-layout for compsets that the primary component defines.  Currently,
@@ -77,7 +88,7 @@ out-of-the-box pe-layout that could be used for a compset/grid/machine
 combination: one for a low processor setting and one for a high
 processor setting.</p>
 <p>A typical entry in a <strong>config_pes.xml</strong> looks like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">grid</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;a%T62&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">grid</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;a%T62&quot;</span><span class="o">&gt;</span>
   <span class="o">&lt;</span><span class="n">mach</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cheyenne&quot;</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">pes</span> <span class="n">pesize</span><span class="o">=</span><span class="s2">&quot;any&quot;</span> <span class="n">compset</span><span class="o">=</span><span class="s2">&quot;DATM%IAF&quot;</span><span class="o">&gt;</span>
     <span class="o">.......</span>
@@ -86,7 +97,7 @@ processor setting.</p>
 <span class="o">&lt;/</span><span class="n">grid</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>Currently, the pesize can have values of <code class="docutils literal notranslate"><span class="pre">[any,S,M,L,X1,X2]</span></code>.</p>
+<p>Currently, the pesize can have values of <code class="docutils literal"><span class="pre">[any,S,M,L,X1,X2]</span></code>.</p>
 <p>Given the various dependencies, CIME uses an order of precedence to determine the optimal match. This order is as follows:</p>
 <ol class="arabic">
 <li><p class="first">grid match</p>
@@ -94,19 +105,19 @@ processor setting.</p>
 <div class="line">CIME first searches the grid nodes for a grid match in <strong>config_grids.xml</strong>.</div>
 <div class="line">The search is based on a regular expression match for the grid longname.</div>
 <div class="line">All grid matches are then used in the subsequent search.</div>
-<div class="line">If there is no grid match, all nodes that have <code class="docutils literal notranslate"><span class="pre">&lt;grid</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</div>
+<div class="line">If there is no grid match, all nodes that have <code class="docutils literal"><span class="pre">&lt;grid</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</div>
 </div>
 </li>
 <li><p class="first">machine match</p>
 <div class="line-block">
-<div class="line">CIME next uses the list of nodes obtained in the grid match to search for the machine name using the <code class="docutils literal notranslate"><span class="pre">&lt;mach&gt;</span></code> nodes.</div>
-<div class="line">If there is no machine match, then all nodes with <code class="docutils literal notranslate"><span class="pre">&lt;machine</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</div>
+<div class="line">CIME next uses the list of nodes obtained in the grid match to search for the machine name using the <code class="docutils literal"><span class="pre">&lt;mach&gt;</span></code> nodes.</div>
+<div class="line">If there is no machine match, then all nodes with <code class="docutils literal"><span class="pre">&lt;machine</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</div>
 </div>
 </li>
 <li><p class="first">pesize and compset match</p>
 <div class="line-block">
-<div class="line">CIME next uses the list of nodes obtained in the machine match to search for pesize and compset using the <code class="docutils literal notranslate"><span class="pre">&lt;pes&gt;</span></code> nodes.</div>
-<div class="line">If there is no match, the node with <code class="docutils literal notranslate"><span class="pre">&lt;pes</span> <span class="pre">pesize=&quot;any&quot;</span> <span class="pre">compset=&quot;any&quot;&gt;</span></code> is used.</div>
+<div class="line">CIME next uses the list of nodes obtained in the machine match to search for pesize and compset using the <code class="docutils literal"><span class="pre">&lt;pes&gt;</span></code> nodes.</div>
+<div class="line">If there is no match, the node with <code class="docutils literal"><span class="pre">&lt;pes</span> <span class="pre">pesize=&quot;any&quot;</span> <span class="pre">compset=&quot;any&quot;&gt;</span></code> is used.</div>
 </div>
 </li>
 </ol>
@@ -118,12 +129,12 @@ processor setting.</p>
 involves customizing the processor (PE) layout. (See <a class="reference internal" href="#optimizing-processor-layout"><span class="std std-ref">load
 balancing</span></a>.)  CIME provides significant
 flexibility with respect to the layout of components across different
-hardware processors.  In general, the CIME components – atm, lnd,
-ocn, and so on – can run on overlapping or mutually unique
+hardware processors.  In general, the CIME components &#8211; atm, lnd,
+ocn, and so on &#8211; can run on overlapping or mutually unique
 processors.  While each component is associated with a unique MPI
 communicator, the CIME driver runs on the union of all processors and
 controls the sequencing and hardware partitioning.</p>
-<p>The pe-layout settings are controlled by the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file
+<p>The pe-layout settings are controlled by the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file
 <strong>env_mach_pes.xml</strong> file. Variables in this file determine the number
 of MPI tasks and OpenMP threads for each component, the number of
 instances of each component and the layout of the components across
@@ -131,7 +142,7 @@ the hardware processors. The entries in <strong>env_mach_pes.xml</strong> have t
 following meanings:</p>
 <ul>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MAX_MPITASKS_PER_NODE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">MAX_MPITASKS_PER_NODE</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">The maximum number of MPI tasks per node. This is defined in <strong>config_machines.xml</strong> and therefore given a default setting, but can be user modified.</div>
 </div>
@@ -139,34 +150,34 @@ following meanings:</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MAX_TASKS_PER_NODE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">MAX_TASKS_PER_NODE</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">The total number of (MPI tasks) * (OpenMP threads) allowed on a node. This is defined in <strong>config_machines.xml</strong> and therefore given a default setting, but can be user modified.</div>
-<div class="line">Some computational platforms use a special software customized for the target hardware called symmetric multi-threading (SMT). This allows for over-subscription of the hardware cores. In cases where this is beneficial to model performance, the variable <code class="docutils literal notranslate"><span class="pre">MAX_TASKS_PER_NODE</span></code> will be greater than the hardware cores per node as specified by <code class="docutils literal notranslate"><span class="pre">MAX_MPITASKS_PER_NODE</span></code>.</div>
+<div class="line">Some computational platforms use a special software customized for the target hardware called symmetric multi-threading (SMT). This allows for over-subscription of the hardware cores. In cases where this is beneficial to model performance, the variable <code class="docutils literal"><span class="pre">MAX_TASKS_PER_NODE</span></code> will be greater than the hardware cores per node as specified by <code class="docutils literal"><span class="pre">MAX_MPITASKS_PER_NODE</span></code>.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">NTASKS</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">NTASKS</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Total number of MPI tasks. A negative value indicates nodes rather than tasks, where <em>MAX_MPITASKS_PER_NODE * -NTASKS</em> equals the number of MPI tasks.</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">NTASKS</span></code> can be positive or negative. If it is negative, this indicates nodes rather than tasks.</div>
+<div class="line"><code class="docutils literal"><span class="pre">NTASKS</span></code> can be positive or negative. If it is negative, this indicates nodes rather than tasks.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">NTHRDS</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Number of OpenMP threads per MPI task.</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code> must be greater than or equal to 1. If <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code> = 1, this generally means threading parallelization will be off for the given component.</div>
+<div class="line"><code class="docutils literal"><span class="pre">NTHRDS</span></code> must be greater than or equal to 1. If <code class="docutils literal"><span class="pre">NTHRDS</span></code> = 1, this generally means threading parallelization will be off for the given component.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ROOTPE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ROOTPE</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">The global MPI task of the component root task; if negative, indicates nodes rather than tasks.</div>
 <div class="line">The root processor for each component is set relative to the MPI global communicator.</div>
@@ -175,7 +186,7 @@ following meanings:</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PSTRID</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">PSTRID</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">The stride of MPI tasks across the global set of pes (for now set to 1). This variable is currently not used and is a placeholder for future development.</div>
 </div>
@@ -183,7 +194,7 @@ following meanings:</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">NINST</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">NINST</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">The number of component instances, which are spread evenly across NTASKS.</div>
 </div>
@@ -191,7 +202,7 @@ following meanings:</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">COST_PER_NODE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">COST_PER_NODE</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">The numbers of cores/node used for accounting purposes. The user should not normally need to set this - but it is useful for understanding how you will be charged.</div>
 </div>
@@ -199,8 +210,8 @@ following meanings:</p>
 </dl>
 </li>
 </ul>
-<p>Each CIME component has corresponding entries for <code class="docutils literal notranslate"><span class="pre">NTASKS</span></code>, <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code>, <code class="docutils literal notranslate"><span class="pre">ROOTPE</span></code> and <code class="docutils literal notranslate"><span class="pre">NINST</span></code> in the <strong>env_mach_pes.xml</strong> file. The layout of components on processors has no impact on the science.
-If all components have identical <code class="docutils literal notranslate"><span class="pre">NTASKS</span></code>, <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code>, and <code class="docutils literal notranslate"><span class="pre">ROOTPE</span></code> settings, all components will run sequentially on the same hardware processors.</p>
+<p>Each CIME component has corresponding entries for <code class="docutils literal"><span class="pre">NTASKS</span></code>, <code class="docutils literal"><span class="pre">NTHRDS</span></code>, <code class="docutils literal"><span class="pre">ROOTPE</span></code> and <code class="docutils literal"><span class="pre">NINST</span></code> in the <strong>env_mach_pes.xml</strong> file. The layout of components on processors has no impact on the science.
+If all components have identical <code class="docutils literal"><span class="pre">NTASKS</span></code>, <code class="docutils literal"><span class="pre">NTHRDS</span></code>, and <code class="docutils literal"><span class="pre">ROOTPE</span></code> settings, all components will run sequentially on the same hardware processors.</p>
 <p>The scientific sequencing is hardwired into the driver. Changing
 processor layouts does not change intrinsic coupling lags or coupling
 sequencing.</p>
@@ -219,23 +230,23 @@ ice, coupler and ocean models can run concurrently, and the ocean
 model can also run concurrently with the atmosphere model.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">if <strong>env_mach_pes.xml</strong> is modified after <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>  has been called, then you must run <a class="reference external" href="../Tools_user/case.setup.html">case.setup –reset</a> and recompile using  <a class="reference external" href="../Tools_user/case.build.html">case.build</a>.</p>
+<p class="last">if <strong>env_mach_pes.xml</strong> is modified after <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a>  has been called, then you must run <a class="reference external" href="../Tools_user/case.setup.html">case.setup &#8211;reset</a> and recompile using  <a class="reference external" href="../Tools_user/case.build.html">case.build</a>.</p>
 </div>
 </div>
 <div class="section" id="case-resource-allocation">
 <h2>5.3. Case Resource Allocation<a class="headerlink" href="#case-resource-allocation" title="Permalink to this headline">¶</a></h2>
 <p>Resources for your case will be allocated according to the following logic.</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">NTASKS</span></code> * <code class="docutils literal notranslate"><span class="pre">NTHRDS</span></code> is the total number of hardware processors allocated to a component.</li>
+<li><code class="docutils literal"><span class="pre">NTASKS</span></code> * <code class="docutils literal"><span class="pre">NTHRDS</span></code> is the total number of hardware processors allocated to a component.</li>
 <li>The total number of cores that are allocated will be based on the product of (1) and (2) below where<ol class="arabic">
-<li><code class="docutils literal notranslate"><span class="pre">MAX(ROOTPE(comp)</span> <span class="pre">+</span> <span class="pre">NTASKS(comp))</span></code> across all components</li>
-<li><code class="docutils literal notranslate"><span class="pre">MAX(NTHRDS)</span></code> across all components</li>
+<li><code class="docutils literal"><span class="pre">MAX(ROOTPE(comp)</span> <span class="pre">+</span> <span class="pre">NTASKS(comp))</span></code> across all components</li>
+<li><code class="docutils literal"><span class="pre">MAX(NTHRDS)</span></code> across all components</li>
 </ol>
 </li>
 </ul>
 <p>In the following example, the atmosphere and ocean will run concurrently. The atmosphere will use 16 MPI tasks each with 4 threads per task for a total of 64 cores. The ocean will use 16 MPI tasks with 1 thread per task. BUT since the atmosphere has 4 threads, the ocean will use 64 total cores. The total number of cores will be 128. The atmosphere will run on MPI tasks 0-15 and the ocean will run on MPI tasks 16-31 in the global MPI communicators.</p>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NTASKS_ATM</span><span class="o">=</span><span class="mi">16</span> <span class="n">NTHRDS_ATM</span><span class="o">=</span><span class="mi">4</span>  <span class="n">ROOTPE_ATM</span><span class="o">=</span><span class="mi">0</span>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">NTASKS_ATM</span><span class="o">=</span><span class="mi">16</span> <span class="n">NTHRDS_ATM</span><span class="o">=</span><span class="mi">4</span>  <span class="n">ROOTPE_ATM</span><span class="o">=</span><span class="mi">0</span>
 <span class="n">NTASKS_OCN</span><span class="o">=</span><span class="mi">16</span> <span class="n">NTHRDS_OCN</span><span class="o">=</span><span class="mi">1</span>  <span class="n">ROOTPE_OCN</span><span class="o">=</span><span class="mi">16</span>
 </pre></div>
 </div>
@@ -245,7 +256,7 @@ hardware processors, and the first 16 MPI tasks will be laid out on
 the first 64 hardware processors with a stride of 4. The next 16 MPI
 tasks are laid out on the second set of 64 hardware processors in the
 same manner, even though the ocean is not threaded.  If you had set
-<code class="docutils literal notranslate"><span class="pre">ROOTPE_OCN</span></code> to 64 in this example, a total of 312 processors would
+<code class="docutils literal"><span class="pre">ROOTPE_OCN</span></code> to 64 in this example, a total of 312 processors would
 be requested, the atmosphere would be laid out on the first 64
 hardware processors in 16x4 fashion, and the ocean model would be laid
 out on hardware processors 255-311. Hardware processors 64-254 would
@@ -258,12 +269,12 @@ and job submit commands for your case.</p>
 <p>Load balancing is the practice of specifying processor layout for a given model configuration
 (compset, grid, and so on) to optimize throughput and efficiency. For a fixed total number of
 processors, the goal of optimization to achieve maximum throughput. In contrast, for a given
-configuration across varied processor counts, the purpose is to find several “sweet spots” where
+configuration across varied processor counts, the purpose is to find several &#8220;sweet spots&#8221; where
 the model is minimally idle, cost is relatively low, and the throughput is relatively high.</p>
 <p>As with most models, increasing total processors normally results in both increased throughput
 and increased cost.
 If models scaled linearly, the cost would remain constant across different processor counts,
-but models generally don’t scale linearly and the cost increases as processor count increases.</p>
+but models generally don&#8217;t scale linearly and the cost increases as processor count increases.</p>
 <p>Performing a load-balancing exercise on a proposed case before
 undertaking a long production run is recommended practice.  Load
 balancing requires you to consider a number of factors, such as which
@@ -339,10 +350,7 @@ when running with mixed active and data models.</p>
 <li>Keep a single component on a single node, if possible, to minimize internal component communication cost.</li>
 <li>Assume that hardware performance can vary due to contention on the interconnect, file systems, or other areas. If you are unsure of a timing result, run cases multiple times.</li>
 </ul>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">give an example of a fully active case - show the pe-layout and timing file here.</p>
-</div>
+<p>The pe-layout and the associated timings are found in the  <a class="reference internal" href="timers.html#model-timing-data"><span class="std std-ref">timing files</span></a> generated for your run.</p>
 </div>
 </div>
 
@@ -372,20 +380,18 @@ when running with mixed active and data models.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/pes-threads.rst.txt"
+      <li><a href="../_sources/users_guide/pes-threads.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -407,13 +413,13 @@ when running with mixed active and data models.</p>
         <li class="right" >
           <a href="machine.html" title="4. Defining the machine"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

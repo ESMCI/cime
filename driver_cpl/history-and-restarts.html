@@ -1,23 +1,34 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>3.6. History and Restarts &#8212; CIME 5.6 documentation</title>
+    
+    <title>3.6. History and Restarts &mdash; CIME 5.6 documentation</title>
+    
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
+    <link rel="up" title="3. Implementation" href="implementation.html" />
     <link rel="next" title="3.7. Mass and Heat Budgets" href="budgets.html" />
     <link rel="prev" title="3.5. Bit-for-bit flag" href="bit-for-bit-flag.html" /> 
-  </head><body>
+  </head>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -33,9 +44,9 @@
         <li class="right" >
           <a href="bit-for-bit-flag.html" title="3.5. Bit-for-bit flag"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -55,7 +66,7 @@ For most models, this requires the writing of a restart file.
 The restart file can be any format, although netcdf has become relatively standard, and it should contain any scalars, fields, or information that is required to restart the component model in exactly the same state as when the restart was written and the model was stopped.
 The expectation in CIME is that a restart of a model run will be bit-for-bit identical and this is regularly tested as part of component model development by running the model 10 days, writing a restart at the end of 5 days, and then restarting at day 5 and comparing the result with the 10 day run.
 Unlike history files, restart files must be coordinated across different components.
-The restart frequency is set in the driver time manager namelist by driver namelist variables <code class="docutils literal notranslate"><span class="pre">restart_option</span></code>, <code class="docutils literal notranslate"><span class="pre">restart_n</span></code>, and <code class="docutils literal notranslate"><span class="pre">restart_ymd</span></code>.
+The restart frequency is set in the driver time manager namelist by driver namelist variables <code class="docutils literal"><span class="pre">restart_option</span></code>, <code class="docutils literal"><span class="pre">restart_n</span></code>, and <code class="docutils literal"><span class="pre">restart_ymd</span></code>.
 The driver will trigger a restart alarm in clocks when a coordinated restart is requested.
 The components are required to check this alarm whenever they are called and to write a restart file at the end of the current coupling period.
 This method ensures all components are writing restart files at a consistent timestamp.
@@ -82,20 +93,18 @@ The run length of a CESM1 production run is usually specified using the nmonths 
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/driver_cpl/history-and-restarts.rst.txt"
+      <li><a href="../_sources/driver_cpl/history-and-restarts.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -117,14 +126,14 @@ The run length of a CESM1 production run is usually specified using the nmonths 
         <li class="right" >
           <a href="bit-for-bit-flag.html" title="3.5. Bit-for-bit flag"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

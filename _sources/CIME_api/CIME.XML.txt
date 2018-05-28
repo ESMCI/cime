@@ -12,8 +12,8 @@ CIME.XML.archive module
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.archive\_base module
------------------------------
+CIME.XML.archive_base module
+----------------------------
 
 .. automodule:: CIME.XML.archive_base
     :members:
@@ -60,80 +60,80 @@ CIME.XML.compsets module
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.entry\_id module
--------------------------
+CIME.XML.entry_id module
+------------------------
 
 .. automodule:: CIME.XML.entry_id
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_archive module
-----------------------------
+CIME.XML.env_archive module
+---------------------------
 
 .. automodule:: CIME.XML.env_archive
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_base module
--------------------------
+CIME.XML.env_base module
+------------------------
 
 .. automodule:: CIME.XML.env_base
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_batch module
---------------------------
+CIME.XML.env_batch module
+-------------------------
 
 .. automodule:: CIME.XML.env_batch
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_build module
---------------------------
+CIME.XML.env_build module
+-------------------------
 
 .. automodule:: CIME.XML.env_build
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_case module
--------------------------
+CIME.XML.env_case module
+------------------------
 
 .. automodule:: CIME.XML.env_case
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_mach\_pes module
-------------------------------
+CIME.XML.env_mach_pes module
+----------------------------
 
 .. automodule:: CIME.XML.env_mach_pes
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_mach\_specific module
------------------------------------
+CIME.XML.env_mach_specific module
+---------------------------------
 
 .. automodule:: CIME.XML.env_mach_specific
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_run module
-------------------------
+CIME.XML.env_run module
+-----------------------
 
 .. automodule:: CIME.XML.env_run
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.env\_test module
--------------------------
+CIME.XML.env_test module
+------------------------
 
 .. automodule:: CIME.XML.env_test
     :members:
@@ -148,8 +148,8 @@ CIME.XML.files module
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.generic\_xml module
-----------------------------
+CIME.XML.generic_xml module
+---------------------------
 
 .. automodule:: CIME.XML.generic_xml
     :members:
@@ -188,8 +188,8 @@ CIME.XML.machines module
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.namelist\_definition module
-------------------------------------
+CIME.XML.namelist_definition module
+-----------------------------------
 
 .. automodule:: CIME.XML.namelist_definition
     :members:
@@ -212,16 +212,16 @@ CIME.XML.pio module
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.standard\_module\_setup module
----------------------------------------
+CIME.XML.standard_module_setup module
+-------------------------------------
 
 .. automodule:: CIME.XML.standard_module_setup
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.test\_reporter module
-------------------------------
+CIME.XML.test_reporter module
+-----------------------------
 
 .. automodule:: CIME.XML.test_reporter
     :members:

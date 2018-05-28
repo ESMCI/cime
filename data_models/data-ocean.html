@@ -1,23 +1,34 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>9. Data Ocean (DOCN) &#8212; CIME 5.6 documentation</title>
+    
+    <title>9. Data Ocean (DOCN) &mdash; CIME 5.6 documentation</title>
+    
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
+    <link rel="up" title="Data Models" href="index.html" />
     <link rel="next" title="10. Data River (DROF)" href="data-river.html" />
     <link rel="prev" title="8. Data Ice (DICE)" href="data-seaice.html" /> 
-  </head><body>
+  </head>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -33,8 +44,8 @@
         <li class="right" >
           <a href="data-seaice.html" title="8. Data Ice (DICE)"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Data Models</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Data Models</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -83,7 +94,7 @@ Users must create scientifically appropriate data for their particular
 application or use one of the standard SOM forcing files from the full
 prognostic control runs.  For CESM, some of these are available in the
 <a class="reference external" href="https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/ocn/docn7/SOM/">inputdata repository</a>.
-The user then modifies the <code class="docutils literal notranslate"><span class="pre">$DOCN_SOM_FILENAME</span></code> variable in
+The user then modifies the <code class="docutils literal"><span class="pre">$DOCN_SOM_FILENAME</span></code> variable in
 env_run.xml to point to the appropriate SOM forcing dataset.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -93,17 +104,17 @@ env_run.xml to point to the appropriate SOM forcing dataset.</p>
 <span id="docn-xml-vars"></span><h2>9.1. xml variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are xml variables that CIME supports for DOCN.  These
 variables are defined in
-<code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code>.
-These variables will appear in <code class="docutils literal notranslate"><span class="pre">env_run.xml</span></code> and are used by the
-DOCN <code class="docutils literal notranslate"><span class="pre">cime_config/buildnml</span></code> script to generate the DOCN namelist
-file <code class="docutils literal notranslate"><span class="pre">docn_in</span></code> and the required associated stream files for the
+<code class="docutils literal"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code>.
+These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the
+DOCN <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DOCN namelist
+file <code class="docutils literal"><span class="pre">docn_in</span></code> and the required associated stream files for the
 case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These xml variables are used by the the docn’s <strong>cime_config/buildnml</strong> script in conjunction with docn’s <strong>cime_config/namelist_definition_docn.xml</strong> file to generate the namelist file <code class="docutils literal notranslate"><span class="pre">docn_in</span></code>.</p>
+<p class="last">These xml variables are used by the the docn&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with docn&#8217;s <strong>cime_config/namelist_definition_docn.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">docn_in</span></code>.</p>
 </div>
 <table border="1" class="colwidths-given docutils" id="id1">
-<caption><span class="caption-text">“DOCN xml variables”</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;DOCN xml variables&#8221;</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -117,7 +128,7 @@ case.</p>
 <tr class="row-even"><td>DOCN_MODE</td>
 <td>Data mode</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>Valid values are: null, prescribed, som, interannual, ww3</td>
 </tr>
 <tr class="row-even"><td>DOCN_SOM_FILENAME</td>
@@ -126,80 +137,80 @@ case.</p>
 <tr class="row-odd"><td>SSTICE_STREAM</td>
 <td>Prescribed SST and ice coverage stream name.</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>Sets SST and ice coverage stream name for prescribed runs.</td>
 </tr>
 <tr class="row-odd"><td>SSTICE_DATA_FILENAME</td>
 <td>Prescribed SST and ice coverage data file name.</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>Sets SST and ice coverage data file name for DOCN prescribed runs.</td>
 </tr>
 <tr class="row-odd"><td>SSTICE_YEAR_ALIGN</td>
 <td>The model year that corresponds to SSTICE_YEAR_START on the data file.</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>Prescribed SST and ice coverage data will be aligned so that the first year of</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>data corresponds to SSTICE_YEAR_ALIGN in the model. For instance, if the first</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>year of prescribed data is the same as the first year of the model run, this</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>should be set to the year given in RUN_STARTDATE.</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
-<td>If SSTICE_YEAR_ALIGN is later than the model’s starting year, or if the model is</td>
+<tr class="row-even"><td>&nbsp;</td>
+<td>If SSTICE_YEAR_ALIGN is later than the model&#8217;s starting year, or if the model is</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>run after the prescribed data ends (as determined by SSTICE_YEAR_END), the</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>default behavior is to assume that the data from SSTICE_YEAR_START to SSTICE_YEAR_END</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>cyclically repeats. This behavior is controlled by the <em>taxmode</em> stream option</td>
 </tr>
 <tr class="row-even"><td>SSTICE_YEAR_START</td>
 <td>The first year of data to use from SSTICE_DATA_FILENAME.</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>This is the first year of prescribed SST and ice coverage data to use. For</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>example, if a data file has data for years 0-99, and SSTICE_YEAR_START is 10,</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>years 0-9 in the file will not be used.</td>
 </tr>
 <tr class="row-even"><td>SSTICE_YEAR_END</td>
 <td>The last year of data to use from SSTICE_DATA_FILENAME.</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>This is the last year of prescribed SST and ice coverage data to use. For</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>example, if a data file has data for years 0-99, and value is 49,</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>years 50-99 in the file will not be used.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the xml variables for <code class="docutils literal notranslate"><span class="pre">DOCN_SSTDATA_FILENAME</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCN_SSTDATA_YEAR_START</span></code>, and <code class="docutils literal notranslate"><span class="pre">DOCN_SSTDATA_YEAR_END</span></code>. CICE in prescribed mode also uses these values.</p>
+<p class="last">For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the xml variables for <code class="docutils literal"><span class="pre">DOCN_SSTDATA_FILENAME</span></code>, <code class="docutils literal"><span class="pre">DOCN_SSTDATA_YEAR_START</span></code>, and <code class="docutils literal"><span class="pre">DOCN_SSTDATA_YEAR_END</span></code>. CICE in prescribed mode also uses these values.</p>
 </div>
 </div>
 <div class="section" id="datamode-values">
 <span id="docn-datamodes"></span><h2>9.2. datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
-<p>The xml variable <code class="docutils literal notranslate"><span class="pre">DOCN_MODE</span></code> (described in <a class="reference internal" href="#docn-mode"><span class="std std-ref">DOCN_MODE, datamode and streams</span></a>) sets the streams that are associated with DOCN and also sets the namelist variable <code class="docutils literal notranslate"><span class="pre">datamode</span></code>.
-<code class="docutils literal notranslate"><span class="pre">datamode</span></code> (which appears in <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code>) specifies what additional operations need to be done by DOCN on the streams before returning to the driver.</p>
-<p>Each data model has its own set of supported <code class="docutils literal notranslate"><span class="pre">datamode</span></code> values. The following are the supported DOCN <code class="docutils literal notranslate"><span class="pre">datamode</span></code> values, as defined in the file <code class="docutils literal notranslate"><span class="pre">namelist_definition_docn.xml</span></code>.</p>
+<p>The xml variable <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> (described in <a class="reference internal" href="#docn-mode"><span class="std std-ref">DOCN_MODE, datamode and streams</span></a>) sets the streams that are associated with DOCN and also sets the namelist variable <code class="docutils literal"><span class="pre">datamode</span></code>.
+<code class="docutils literal"><span class="pre">datamode</span></code> (which appears in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>) specifies what additional operations need to be done by DOCN on the streams before returning to the driver.</p>
+<p>Each data model has its own set of supported <code class="docutils literal"><span class="pre">datamode</span></code> values. The following are the supported DOCN <code class="docutils literal"><span class="pre">datamode</span></code> values, as defined in the file <code class="docutils literal"><span class="pre">namelist_definition_docn.xml</span></code>.</p>
 <table border="1" class="colwidths-given docutils" id="id2">
-<caption><span class="caption-text">“Valid values for datamode namelist variable”</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -230,63 +241,63 @@ case.</p>
 </div>
 <div class="section" id="docn-mode-datamode-and-streams">
 <span id="docn-mode"></span><h2>9.3. DOCN_MODE, datamode and streams<a class="headerlink" href="#docn-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
-<p>The following table describes the valid values of <code class="docutils literal notranslate"><span class="pre">DOCN_MODE</span></code> (defined in the <code class="docutils literal notranslate"><span class="pre">config_component.xml</span></code> file for DOCN), and how they relate to the associated input streams and the <code class="docutils literal notranslate"><span class="pre">datamode</span></code> namelist variable.
-CIME will generate a value of <code class="docutils literal notranslate"><span class="pre">DOCN_MODE</span></code> based on the compset.</p>
+<p>The following table describes the valid values of <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> (defined in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DOCN), and how they relate to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.
+CIME will generate a value of <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> based on the compset.</p>
 <table border="1" class="colwidths-given docutils" id="id3">
-<caption><span class="caption-text">“Relationship between DOCN_MODE, datamode and streams”</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;Relationship between DOCN_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">DOCN_MODE, description-streams-datamode”</th>
-<th class="head">&#160;</th>
+<tr class="row-odd"><th class="head">DOCN_MODE, description-streams-datamode&#8221;</th>
+<th class="head">&nbsp;</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>null</td>
 <td>null mode</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: none</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: null</td>
 </tr>
 <tr class="row-odd"><td>prescribed</td>
 <td>run with prescribed climatological SST and ice-coverage</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams:  prescribed</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: SSTDATA</td>
 </tr>
 <tr class="row-even"><td>interannual</td>
 <td>run with interannual SST and ice-coverage</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams:  prescribed</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: SSTDATA</td>
 </tr>
 <tr class="row-odd"><td>som</td>
 <td>run in slab ocean mode</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams:  som</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: SOM</td>
 </tr>
 <tr class="row-even"><td>ww3</td>
 <td>ww3 mode</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: ww3</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: COPYALL</td>
 </tr>
 </tbody>
@@ -295,10 +306,10 @@ CIME will generate a value of <code class="docutils literal notranslate"><span c
 <div class="section" id="namelists">
 <span id="docn-namelists"></span><h2>9.4. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>As is the case for all data models, DOCN namelists can be separated into two groups, stream-independent and stream-dependent.</p>
-<p>The namelist file for DOCN is <code class="docutils literal notranslate"><span class="pre">docn_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">docn_in_NNN</span></code> for multiple instances).</p>
+<p>The namelist file for DOCN is <code class="docutils literal"><span class="pre">docn_in</span></code> (or <code class="docutils literal"><span class="pre">docn_in_NNN</span></code> for multiple instances).</p>
 <p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a> .</p>
-<p>As part of the stream dependent namelist input, DOCN supports two science modes, <code class="docutils literal notranslate"><span class="pre">SSTDATA</span></code> (prescribed mode) and <code class="docutils literal notranslate"><span class="pre">SOM</span></code> (slab ocean mode).</p>
-<p id="docn-stream-independent-namelists">The stream-independent group is <code class="docutils literal notranslate"><span class="pre">docn_nml</span></code> and the DOCN stream-independent namelist variables are:</p>
+<p>As part of the stream dependent namelist input, DOCN supports two science modes, <code class="docutils literal"><span class="pre">SSTDATA</span></code> (prescribed mode) and <code class="docutils literal"><span class="pre">SOM</span></code> (slab ocean mode).</p>
+<p id="docn-stream-independent-namelists">The stream-independent group is <code class="docutils literal"><span class="pre">docn_nml</span></code> and the DOCN stream-independent namelist variables are:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="28%" />
@@ -332,10 +343,10 @@ CIME will generate a value of <code class="docutils literal notranslate"><span c
 <p>DOCN defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">In general, the stream input file should translate the stream input variable names into the <code class="docutils literal notranslate"><span class="pre">docn_fld</span></code> names below for use within the data ocn model.</p>
+<p class="last">In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">docn_fld</span></code> names below for use within the data ocn model.</p>
 </div>
 <table border="1" class="colwidths-given docutils" id="id4">
-<caption><span class="caption-text">“DOCN internal field names”</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;DOCN internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -378,18 +389,18 @@ CIME will generate a value of <code class="docutils literal notranslate"><span c
 <p>The following outlines the steps you would take to create monthly averages of SST and ice coverage from a previous fully prognostic run that can then be read as as stream data by DOCN.</p>
 <p>As an example, the following uses an f09_g16 CESM B-configuration simulation using CAM5 physics and with cosp enabled. The procedure to create the SST/ICE file is as follows:</p>
 <ol class="arabic">
-<li><p class="first">Save monthly averaged ‘aice’ information from cice code (this is the default).</p>
+<li><p class="first">Save monthly averaged &#8216;aice&#8217; information from cice code (this is the default).</p>
 </li>
 <li><p class="first">Save monthly averaged SST information from pop2. To do this, copy $SRCROOT/pop2/input_templates/gx1v6_tavg_contents to $CASEROOT/SourceMods/src.pop2 and change the 2 in front of SST to 1 for monthly frequency.</p>
 </li>
 <li><p class="first">Extract (using ncrcat) SST from monthly pop2 history files and form a single netcdf file containing just SST; change SST to SST_cpl.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncrcat</span> <span class="o">-</span><span class="n">v</span> <span class="n">SST</span> <span class="n">case</span><span class="o">.</span><span class="n">pop</span><span class="o">.</span><span class="n">h</span><span class="o">.*.</span><span class="n">nc</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncrcat</span> <span class="o">-</span><span class="n">v</span> <span class="n">SST</span> <span class="n">case</span><span class="o">.</span><span class="n">pop</span><span class="o">.</span><span class="n">h</span><span class="o">.*.</span><span class="n">nc</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span>
 <span class="o">&gt;</span> <span class="n">ncrename</span> <span class="o">-</span><span class="n">v</span> <span class="n">SST</span><span class="p">,</span><span class="n">SST_cpl</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span> <span class="n">sst_cpl</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">Extract aice from monthly cice history files and form a single netcdf file containing aice; change aice to ice_cov; divide values by 100 (to convert from percent to fraction).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncrcat</span> <span class="o">-</span><span class="n">v</span> <span class="n">aice</span> <span class="n">case</span><span class="o">.</span><span class="n">cice</span><span class="o">.</span><span class="n">h</span><span class="o">.*.</span><span class="n">nc</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncrcat</span> <span class="o">-</span><span class="n">v</span> <span class="n">aice</span> <span class="n">case</span><span class="o">.</span><span class="n">cice</span><span class="o">.</span><span class="n">h</span><span class="o">.*.</span><span class="n">nc</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span>
 <span class="o">&gt;</span> <span class="n">ncrename</span> <span class="o">-</span><span class="n">v</span> <span class="n">aice</span><span class="p">,</span><span class="n">ice_cov</span> <span class="n">temp</span><span class="o">.</span><span class="n">nc</span> <span class="n">temp2</span><span class="o">.</span><span class="n">nc</span>
 <span class="o">&gt;</span> <span class="n">ncap2</span> <span class="o">-</span><span class="n">s</span> <span class="s1">&#39;ice_cov=ice_cov/100.&#39;</span> <span class="n">temp2</span><span class="o">.</span><span class="n">nc</span> <span class="n">ice_cov</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
@@ -399,7 +410,7 @@ CIME will generate a value of <code class="docutils literal notranslate"><span c
 (Note: although it might be possible to merely change the fill value to -1.8, this is conforming to other SST/ICE files, which have SST_cpl explicitly set to -1.8 over land.)
 To change coordinate lengths and names, replace nlon by lon, nlat by lat, TLONG by lon, TLAT by lat.
 The last step is to run ncgen. Note: when using ncdump followed by ncgen, precision will be lost; however, one can specify -d 9,17 to maximize precision - as in the following example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncdump</span> <span class="o">-</span><span class="n">d</span> <span class="mi">9</span><span class="p">,</span><span class="mi">17</span> <span class="n">old</span><span class="o">.</span><span class="n">nc</span> <span class="o">&gt;</span> <span class="n">old</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncdump</span> <span class="o">-</span><span class="n">d</span> <span class="mi">9</span><span class="p">,</span><span class="mi">17</span> <span class="n">old</span><span class="o">.</span><span class="n">nc</span> <span class="o">&gt;</span> <span class="n">old</span>
 <span class="o">&gt;</span> <span class="n">ncgen</span> <span class="o">-</span><span class="n">o</span> <span class="n">new</span><span class="o">.</span><span class="n">nc</span> <span class="n">new</span>
 </pre></div>
 </div>
@@ -412,32 +423,32 @@ The last step is to run ncgen.
 (Note: the replacement of longitude and latitude missing values by actual values should not be necessary but is safer.)</p>
 </li>
 <li><p class="first">Combine (using ncks) the two netcdf files.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">v</span> <span class="n">ice_cov</span> <span class="n">ice_cov</span><span class="o">.</span><span class="n">nc</span> <span class="n">sst_cpl</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">v</span> <span class="n">ice_cov</span> <span class="n">ice_cov</span><span class="o">.</span><span class="n">nc</span> <span class="n">sst_cpl</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 <p>Rename the file to ssticetemp.nc.
 The time variable will refer to the number of days at the end of each month, counting from year 0, whereas the actual simulation began at year 1.
 However, we want time values to be in the middle of each month, referenced to the first year of the simulation (first time value equals 15.5).
 Extract (using ncks) time variable from existing amip sst file (for correct number of months - 132 in this example) into working netcdf file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">d</span> <span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">131</span> <span class="o">-</span><span class="n">v</span> <span class="n">time</span> <span class="n">amipsst</span><span class="o">.</span><span class="n">nc</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">d</span> <span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">131</span> <span class="o">-</span><span class="n">v</span> <span class="n">time</span> <span class="n">amipsst</span><span class="o">.</span><span class="n">nc</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 <p>Add date variable: ncdump date variable from existing amip sst file; modify first year to be year 0 instead of 1949 (do not including leading zeroes or it will interpret as octal) and use correct number of months; ncgen to new netcdf file; extract date (using ncks) and place in working netcdf file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">v</span> <span class="n">date</span> <span class="n">datefile</span><span class="o">.</span><span class="n">nc</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">v</span> <span class="n">date</span> <span class="n">datefile</span><span class="o">.</span><span class="n">nc</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 <p>Add datesec variable: extract (using ncks) datesec (correct number of months) from existing amip sst file and place in working netcdf file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">d</span> <span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">131</span> <span class="o">-</span><span class="n">v</span> <span class="n">datesec</span> <span class="n">amipsst</span><span class="o">.</span><span class="n">nc</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncks</span> <span class="o">-</span><span class="n">d</span> <span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">131</span> <span class="o">-</span><span class="n">v</span> <span class="n">datesec</span> <span class="n">amipsst</span><span class="o">.</span><span class="n">nc</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 </li>
 <li><p class="first">At this point, you have an SST/ICE file in the correct format.</p>
 </li>
-<li><p class="first">Due to CAM’s linear interpolation between mid-month values, you need to apply a procedure to assure that the computed monthly means are consistent with the input data.
-To do this, invoke <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/tools/icesst/bcgen</span></code> and following the following steps:</p>
+<li><p class="first">Due to CAM&#8217;s linear interpolation between mid-month values, you need to apply a procedure to assure that the computed monthly means are consistent with the input data.
+To do this, invoke <code class="docutils literal"><span class="pre">$SRCROOT/components/cam/tools/icesst/bcgen</span></code> and following the following steps:</p>
 <ol class="loweralpha">
 <li><p class="first">Rename SST_cpl to SST, and ice_cov to ICEFRAC in the current SST/ICE file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncrename</span> <span class="o">-</span><span class="n">v</span> <span class="n">SST_cpl</span><span class="p">,</span><span class="n">SST</span> <span class="o">-</span><span class="n">v</span> <span class="n">ice_cov</span><span class="p">,</span><span class="n">ICEFRAC</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">ncrename</span> <span class="o">-</span><span class="n">v</span> <span class="n">SST_cpl</span><span class="p">,</span><span class="n">SST</span> <span class="o">-</span><span class="n">v</span> <span class="n">ice_cov</span><span class="p">,</span><span class="n">ICEFRAC</span> <span class="n">ssticetemp</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 </li>
@@ -457,12 +468,12 @@ To do this, invoke <code class="docutils literal notranslate"><span class="pre">
 </li>
 </ol>
 <ol class="arabic simple" start="9">
-<li>Place the new SST/ICE file in desired location and modify <code class="docutils literal notranslate"><span class="pre">env_run.xml</span></code> to have :<ol class="loweralpha">
-<li><code class="docutils literal notranslate"><span class="pre">SSTICE_DATA_FILENAME</span></code> point to the complete path of your SST/ICE file.</li>
-<li><code class="docutils literal notranslate"><span class="pre">SSTICE_GRID_FILENAME</span></code> correspond to full path of (in this case) gx1v6 grid file.</li>
-<li><code class="docutils literal notranslate"><span class="pre">SSTICE_YEAR_START</span></code> set to 0</li>
-<li><code class="docutils literal notranslate"><span class="pre">SSTICE_YEAR_END</span></code> to one less than the total number of years</li>
-<li><code class="docutils literal notranslate"><span class="pre">SSTICE_YEAR_ALIGN</span></code> to 1 (for CESM, since CESM starts counting at year 1).</li>
+<li>Place the new SST/ICE file in desired location and modify <code class="docutils literal"><span class="pre">env_run.xml</span></code> to have :<ol class="loweralpha">
+<li><code class="docutils literal"><span class="pre">SSTICE_DATA_FILENAME</span></code> point to the complete path of your SST/ICE file.</li>
+<li><code class="docutils literal"><span class="pre">SSTICE_GRID_FILENAME</span></code> correspond to full path of (in this case) gx1v6 grid file.</li>
+<li><code class="docutils literal"><span class="pre">SSTICE_YEAR_START</span></code> set to 0</li>
+<li><code class="docutils literal"><span class="pre">SSTICE_YEAR_END</span></code> to one less than the total number of years</li>
+<li><code class="docutils literal"><span class="pre">SSTICE_YEAR_ALIGN</span></code> to 1 (for CESM, since CESM starts counting at year 1).</li>
 </ol>
 </li>
 </ol>
@@ -498,20 +509,18 @@ To do this, invoke <code class="docutils literal notranslate"><span class="pre">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/data-ocean.rst.txt"
+      <li><a href="../_sources/data_models/data-ocean.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -533,13 +542,13 @@ To do this, invoke <code class="docutils literal notranslate"><span class="pre">
         <li class="right" >
           <a href="data-seaice.html" title="8. Data Ice (DICE)"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Data Models</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Data Models</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

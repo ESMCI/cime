@@ -195,8 +195,8 @@ CIME.SystemTests.rep module
     :undoc-members:
     :show-inheritance:
 
-CIME.SystemTests.restart\_tests module
---------------------------------------
+CIME.SystemTests.restart_tests module
+-------------------------------------
 
 .. automodule:: CIME.SystemTests.restart_tests
     :members:
@@ -219,16 +219,16 @@ CIME.SystemTests.sms module
     :undoc-members:
     :show-inheritance:
 
-CIME.SystemTests.system\_tests\_common module
----------------------------------------------
+CIME.SystemTests.system_tests_common module
+-------------------------------------------
 
 .. automodule:: CIME.SystemTests.system_tests_common
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.SystemTests.system\_tests\_compare\_two module
----------------------------------------------------
+CIME.SystemTests.system_tests_compare_two module
+------------------------------------------------
 
 .. automodule:: CIME.SystemTests.system_tests_compare_two
     :members:

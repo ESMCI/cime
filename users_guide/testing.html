@@ -1,23 +1,34 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>8. Testing &#8212; CIME 5.6 documentation</title>
+    
+    <title>8. Testing &mdash; CIME 5.6 documentation</title>
+    
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '5.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
+    <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html" />
     <link rel="next" title="9. Fortran Unit Testing" href="unit_testing.html" />
     <link rel="prev" title="7. Timers and timing" href="timers.html" /> 
-  </head><body>
+  </head>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -33,8 +44,8 @@
         <li class="right" >
           <a href="timers.html" title="7. Timers and timing"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,13 +62,13 @@ run a single basic test or an entire suite of tests that are run in parallel for
 <div class="section" id="testname-syntax">
 <h2>8.1. Testname syntax<a class="headerlink" href="#testname-syntax" title="Permalink to this headline">¶</a></h2>
 <p>Tests come in the forms:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">[</span><span class="o">.</span><span class="n">TESTMODS</span><span class="p">]]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">[</span><span class="o">.</span><span class="n">TESTMODS</span><span class="p">]]</span>
 </pre></div>
 </div>
 <p>Where</p>
 <ul>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">TESTTYPE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">TESTTYPE</span></code></dt>
 <dd><p class="first last">How you want to do the test. Options for this value are listed in config_tests.xml.
 A common test type would be ERS which stands for exact restart, which means you want to test the
 grid and compset to see if they reproduce the same result upon restart as they would if no restart
@@ -66,32 +77,32 @@ took place.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MODIFIERS</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">MODIFIERS</span></code></dt>
 <dd><p class="first">These are changes to the default settings for the test.</p>
 <p>The currently accepted modifiers are:</p>
 <div class="last line-block">
-<div class="line"><code class="docutils literal notranslate"><span class="pre">_LdN</span></code>, <code class="docutils literal notranslate"><span class="pre">_LnN</span></code>, <code class="docutils literal notranslate"><span class="pre">_LyN</span></code> - this changes the default length of the test.
-<code class="docutils literal notranslate"><span class="pre">N</span></code> is an integer, <code class="docutils literal notranslate"><span class="pre">d</span></code> is day, <code class="docutils literal notranslate"><span class="pre">n</span></code> is timestep and <code class="docutils literal notranslate"><span class="pre">y</span></code> is year.  <code class="docutils literal notranslate"><span class="pre">_Ld3</span></code> would specify that the test is modified to be a 3 day test.</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">_D</span></code> - this sets the xml variable <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> to TRUE.</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">_IOP</span></code> - this turns on pnetcdf for the PIO backend.</div>
+<div class="line"><code class="docutils literal"><span class="pre">_LdN</span></code>, <code class="docutils literal"><span class="pre">_LnN</span></code>, <code class="docutils literal"><span class="pre">_LyN</span></code> - this changes the default length of the test.
+<code class="docutils literal"><span class="pre">N</span></code> is an integer, <code class="docutils literal"><span class="pre">d</span></code> is day, <code class="docutils literal"><span class="pre">n</span></code> is timestep and <code class="docutils literal"><span class="pre">y</span></code> is year.  <code class="docutils literal"><span class="pre">_Ld3</span></code> would specify that the test is modified to be a 3 day test.</div>
+<div class="line"><code class="docutils literal"><span class="pre">_D</span></code> - this sets the xml variable <code class="docutils literal"><span class="pre">DEBUG</span></code> to TRUE.</div>
+<div class="line"><code class="docutils literal"><span class="pre">_IOP</span></code> - this turns on pnetcdf for the PIO backend.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">GRID</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">GRID</span></code></dt>
 <dd><p class="first last">The model grid (can be an alias)</p>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">COMPSET</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">COMPSET</span></code></dt>
 <dd><p class="first last">The compset name (can be an alias)</p>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MACHINE_COMPILER</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">MACHINE_COMPILER</span></code></dt>
 <dd><p class="first last">This is optional; <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  will probe
 the underlying machine and use the default compiler for that machine if this value is not
 supplied.</p>
@@ -99,8 +110,8 @@ supplied.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">TESTMODS</span></code></dt>
-<dd><p class="first last">This is optional. This points to a directory with  <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> files or a <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> that can be used to provide test specific case modifications for the test.</p>
+<dt><code class="docutils literal"><span class="pre">TESTMODS</span></code></dt>
+<dd><p class="first last">This is optional. This points to a directory with  <code class="docutils literal"><span class="pre">user_nl_xxx</span></code> files or a <code class="docutils literal"><span class="pre">shell_commands</span></code> that can be used to provide test specific case modifications for the test.</p>
 </dd>
 </dl>
 </li>
@@ -112,29 +123,29 @@ supplied.</p>
 <p>The following are the type of tests that are supported by CIME:</p>
 <ul>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERS</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERS</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup (default 6 days + 5 days).</div>
 <div class="line">Do an 11 day initial test - write a restart at day 6.    (file suffix: base)</div>
 <div class="line">Do a 5 day restart test, starting from restart at day 6. (file suffix: rest)</div>
-<div class="line">Compare component history files ‘.base’ and ‘.rest’ at day 11.</div>
+<div class="line">Compare component history files &#8216;.base&#8217; and &#8216;.rest&#8217; at day 11.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERS2</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERS2</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup  (default 6 days + 5 days).</div>
 <div class="line">Do an 11 day initial test without making restarts.     (file suffix: base)</div>
 <div class="line">Do an 11 day restart test stopping at day 6 with a restart, then resuming from restart at day 6. (file suffix: rest)</div>
-<div class="line">Compare component history files “.base” and “.rest” at day 11.</div>
+<div class="line">Compare component history files &#8221;.base&#8221; and &#8221;.rest&#8221; at day 11.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERT</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERT</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).</div>
 </div>
@@ -142,7 +153,7 @@ supplied.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">IRT</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">IRT</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup, (default 4 days + 7 days) with restart from interim file.</div>
 </div>
@@ -150,7 +161,7 @@ supplied.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERIO</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERIO</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup with different PIO methods, (default 6 days + 5 days).</div>
 </div>
@@ -158,7 +169,7 @@ supplied.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERR</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERR</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup with resubmit, (default 4 days + 3 days).</div>
 </div>
@@ -166,7 +177,7 @@ supplied.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERRI</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERRI</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</div>
 </div>
@@ -174,35 +185,35 @@ supplied.</p>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERI</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERI</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</div>
 <div class="line">ref1case: Do an initial run for 3 days writing restarts at day 3. ref1case is a clone of the main case. Short term archiving is on.</div>
 <div class="line">ref2case (Suffix hybrid): Do a hybrid run for default 19 days running with ref1 restarts from day 3, and writing restarts at day 10.
 ref2case is a clone of the main case. Short term archiving is on.</div>
 <div class="line">case: Do a branch run, starting from restarts written in ref2case, for 9 days and writing restarts at day 5. Short term archiving is off.</div>
-<div class="line">case (Suffix base): Do a restart run from the branch run restarts for 4 days. Then ompare component history files ‘.base’ and ‘.hybrid’ at day 19.
+<div class="line">case (Suffix base): Do a restart run from the branch run restarts for 4 days. Then ompare component history files &#8216;.base&#8217; and &#8216;.hybrid&#8217; at day 19.
 Short term archiving is off.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERP</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ERP</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">PES counts hybrid (OPENMP/MPI) restart bit for bit test from startup, (default 6 days + 5 days).</div>
 <div class="line">Initial PES set up out of the box.</div>
 <div class="line">Do an 11 day initial test - write a restart at day 6.     (file suffix base)</div>
 <div class="line">Half the number of tasks and threads for each component.</div>
 <div class="line">Do a 5 day restart test starting from restart at day 6. (file suffix rest)</div>
-<div class="line">Compare component history files ‘.base’ and ‘.rest’ at day 11.</div>
+<div class="line">Compare component history files &#8216;.base&#8217; and &#8216;.rest&#8217; at day 11.</div>
 <div class="line">This is just like an ERS test but the tasks/threading counts are modified on restart.</div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PEA</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">PEA</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Single PE bit for bit test (default 5 days)</div>
 <div class="line">Do an initial run on 1 PE with mpi library.     (file suffix: base)</div>
@@ -213,7 +224,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PEM</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">PEM</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Modified PE counts for MPI(NTASKS) bit for bit test (default 5 days)</div>
 <div class="line">Do an initial run with default PE layout                               (file suffix: base)</div>
@@ -224,7 +235,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PET</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">PET</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Modified threading OPENMP bit for bit test (default 5 days)</div>
 <div class="line">Do an initial run where all components are threaded by default. (file suffix: base)</div>
@@ -235,7 +246,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PFS</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">PFS</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Performance test setup. History and restart output is turned off. (default 20 days)</div>
 </div>
@@ -243,7 +254,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ICP</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">ICP</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">CICE performance test.</div>
 </div>
@@ -251,7 +262,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">OCP</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">OCP</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">POP performance test. (default 10 days)</div>
 </div>
@@ -259,7 +270,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MCC</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">MCC</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Multi-driver validation vs single-instance. (default 5 days)</div>
 </div>
@@ -267,7 +278,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">NCK</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">NCK</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Multi-instance validation vs single instance - sequential PE for instances (default length)</div>
 <div class="line">Do an initial run test with NINST 1. (file suffix: base)</div>
@@ -278,7 +289,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">REP</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">REP</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Reproducibility: Two identical runs are bit for bit. (default 5 days)</div>
 </div>
@@ -286,7 +297,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">SBN</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">SBN</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Smoke build-namelist test (just run preview_namelist and check_input_data).</div>
 </div>
@@ -294,7 +305,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">SMS</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">SMS</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Smoke startup test (default 5 days)</div>
 <div class="line">Do a 5 day initial test. (file suffix: base)</div>
@@ -303,7 +314,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">SEQ</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">SEQ</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Different sequencing bit for bit test. (default 10 days)</div>
 <div class="line">Do an initial run test with out-of-box PE-layout. (file suffix: base)</div>
@@ -314,7 +325,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">DAE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">DAE</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Data assimilation test, default 1 day, two DA cycles, no data modification.</div>
 </div>
@@ -322,7 +333,7 @@ Short term archiving is off.</div>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PRE</span></code></dt>
+<dt><code class="docutils literal"><span class="pre">PRE</span></code></dt>
 <dd><div class="first last line-block">
 <div class="line">Pause-resume test: by default a bit for bit test of pause-resume cycling.</div>
 <div class="line">Default 5 hours, five pause/resume cycles, no data modification.</div>
@@ -363,59 +374,59 @@ Short term archiving is off.</div>
 current status of all your tests.</p>
 <div class="section" id="using-create-test-e3sm">
 <h3>8.2.1. Using <strong>create_test</strong> (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h3>
-<p>Usage will differ slightly depending on if you’re using E3SM or CESM.</p>
+<p>Usage will differ slightly depending on if you&#8217;re using E3SM or CESM.</p>
 <p>Using examples to illustrate common use cases</p>
 <p>To run a test:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
 <p>To run a test with a non-default compiler:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">--</span><span class="n">compiler</span> <span class="n">intel</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">--</span><span class="n">compiler</span> <span class="n">intel</span>
 </pre></div>
 </div>
-<p>To run a test with baseline comparisons against baseline name ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<p>To run a test with baseline comparisons against baseline name &#8216;master&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
-<p>To run a test and update baselines with baseline name ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<p>To run a test and update baselines with baseline name &#8216;master&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
 <p>To run a test with a non-default test-id:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">t</span> <span class="n">my_test_id</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">t</span> <span class="n">my_test_id</span>
 </pre></div>
 </div>
 <p>To run a test and use a non-default test-root for your case dir:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./create_test SMS.f19_f19.A -t $test_root
+<div class="highlight-default"><div class="highlight"><pre><span></span>./create_test SMS.f19_f19.A -t $test_root
 </pre></div>
 </div>
 <p>To run a test and use and put case, build, and run dirs all in the same root:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./create_test SMS.f19_f19.A --output-root $output_root
+<div class="highlight-default"><div class="highlight"><pre><span></span>./create_test SMS.f19_f19.A --output-root $output_root
 </pre></div>
 </div>
 <p>To run a test and force it to go into a certain batch queue:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">q</span> <span class="n">myqueue</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">q</span> <span class="n">myqueue</span>
 </pre></div>
 </div>
 <p>To run a test and use a non-default project (can impact things like directory paths and acct for batch system):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">p</span> <span class="n">myproj</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">p</span> <span class="n">myproj</span>
 </pre></div>
 </div>
 <p>To run two tests:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">B</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">B</span>
 </pre></div>
 </div>
 <p>To run a test suite:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span>
 </pre></div>
 </div>
 <p>To run a test suite excluding a specific test:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span> <span class="o">^</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span> <span class="o">^</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
 <p>See create_test -h for the full list of options</p>
 <p>Interpreting test output is pretty easy, looking at an example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
 
 <span class="n">Creating</span> <span class="n">test</span> <span class="n">directory</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
 <span class="n">RUNNING</span> <span class="n">TESTS</span><span class="p">:</span>
@@ -449,20 +460,20 @@ tools to help the user do this without having to repeat full runs of test cases 
 results to a baseline area.</p>
 <p>compare_test_results: Takes a batch of cases of tests that have already been run and compare their
 results to a baseline area.</p>
-<p>Take a batch of results for the jenkins user for the testid ‘mytest’ and copy the results to
-baselines for ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<p>Take a batch of results for the jenkins user for the testid &#8216;mytest&#8217; and copy the results to
+baselines for &#8216;master&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
-<p>Take a batch of results for the jenkins user for the testid ‘mytest’ and compare the results to
-baselines for ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
+<p>Take a batch of results for the jenkins user for the testid &#8216;mytest&#8217; and compare the results to
+baselines for &#8216;master&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="adding-tests">
 <h3>8.2.3. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h3>
-<p>Open the config/$model/tests.py file, you’ll see a python dict at the top
+<p>Open the config/$model/tests.py file, you&#8217;ll see a python dict at the top
 of the file called _TESTS, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
 comment at the top of this file indicating that you add a test with
@@ -475,19 +486,19 @@ argument for mods.</p>
 for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.</p>
 <p>Run full suite:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <p>Run a test class:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span> <span class="n">K_TestCimeCase</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span> <span class="n">K_TestCimeCase</span>
 </pre></div>
 </div>
 <p>Run a specific test:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span> <span class="n">K_TestCimeCase</span><span class="o">.</span><span class="n">test_cime_case</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts_regression_tests</span><span class="o">.</span><span class="n">py</span> <span class="n">K_TestCimeCase</span><span class="o">.</span><span class="n">test_cime_case</span>
 </pre></div>
 </div>
 <p>If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
-won’t print the output of the test until testing has completed. When there are failures for a
+won&#8217;t print the output of the test until testing has completed. When there are failures for a
 test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
 analysis. The user will be notified of the specific directories that will be left for them to
 examine.</p>
@@ -525,20 +536,18 @@ examine.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/testing.rst.txt"
+      <li><a href="../_sources/users_guide/testing.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
-    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -560,13 +569,13 @@ examine.</p>
         <li class="right" >
           <a href="timers.html" title="7. Timers and timing"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Case Control System Part 1: Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>
