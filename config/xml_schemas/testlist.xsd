@@ -53,7 +53,11 @@
 
   <xs:element name="option">
     <xs:complexType mixed="true">
-      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="name"              use="required" type="xs:NCName"/>
+      <xs:attribute name="comment"           use="optional"/>
+      <xs:attribute name="wallclock"         use="optional"/>
+      <xs:attribute name="memleak_tolerance" use="optional"/>
+      <xs:attribute name="tput_tolerance"    use="optional"/>
     </xs:complexType>
   </xs:element>
 
