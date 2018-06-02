@@ -1,11 +1,11 @@
-CIME.SystemTests.test_utils package
-===================================
+CIME.SystemTests.test\_utils package
+====================================
 
 Submodules
 ----------
 
-CIME.SystemTests.test_utils.user_nl_utils module
-------------------------------------------------
+CIME.SystemTests.test\_utils.user\_nl\_utils module
+---------------------------------------------------
 
 .. automodule:: CIME.SystemTests.test_utils.user_nl_utils
     :members:

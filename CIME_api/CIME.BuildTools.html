@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.BuildTools package &mdash; CIME 5.6 documentation</title>
-    
+    <title>CIME.BuildTools package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
-    <link rel="up" title="CIME package" href="CIME.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.Servers package" href="CIME.Servers.html" />
     <link rel="prev" title="CIME package" href="CIME.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,9 +33,9 @@
         <li class="right" >
           <a href="CIME.html" title="CIME package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -71,7 +60,7 @@ more.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.cmakemacroswriter.</code><code class="descname">CMakeMacroWriter</code><span class="sig-paren">(</span><em>output</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.BuildTools.macrowriterbase.MacroWriterBase" title="CIME.BuildTools.macrowriterbase.MacroWriterBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.BuildTools.macrowriterbase.MacroWriterBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.BuildTools.macrowriterbase.MacroWriterBase" title="CIME.BuildTools.macrowriterbase.MacroWriterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.BuildTools.macrowriterbase.MacroWriterBase</span></code></a></p>
 <p>Macro writer for the CMake format.</p>
 <p>For details on the provided methods, see MacroWriterBase, which this
 class inherits from.</p>
@@ -79,7 +68,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.end_ifeq">
 <code class="descname">end_ifeq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter.end_ifeq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.end_ifeq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a statement to end a block started with start_ifeq.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span> <span class="o">=</span> <span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
@@ -95,7 +84,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.environment_variable_string">
 <code class="descname">environment_variable_string</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter.environment_variable_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.environment_variable_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an environment variable reference.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">environment_variable_string</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
 <span class="go">&#39;$ENV{foo}&#39;</span>
@@ -107,7 +96,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.set_variable">
 <code class="descname">set_variable</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter.set_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.set_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a statement setting a variable to some value.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
@@ -120,7 +109,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.shell_command_strings">
 <code class="descname">shell_command_strings</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter.shell_command_strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.shell_command_strings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return strings used to get the output of a shell command.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_up</span><span class="p">,</span> <span class="n">inline</span><span class="p">,</span> <span class="n">tear_down</span> <span class="o">=</span> <span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">shell_command_strings</span><span class="p">(</span><span class="s2">&quot;echo bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">set_up</span>
@@ -137,7 +126,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.start_ifeq">
 <code class="descname">start_ifeq</code><span class="sig-paren">(</span><em>left</em>, <em>right</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter.start_ifeq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.start_ifeq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a statement to start a conditional block.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
@@ -150,7 +139,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.variable_string">
 <code class="descname">variable_string</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/cmakemacroswriter.html#CMakeMacroWriter.variable_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.cmakemacroswriter.CMakeMacroWriter.variable_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a string to refer to a variable with the given name.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">variable_string</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
 <span class="go">&#39;${foo}&#39;</span>
@@ -166,19 +155,19 @@ class inherits from.</p>
 <p>This script writes CIME build information to a directory.</p>
 <p>The pieces of information that will be written include:</p>
 <ol class="arabic simple">
-<li>Machine-specific build settings (i.e. the &#8220;Macros&#8221; file).</li>
-<li>File-specific build settings (i.e. &#8220;Depends&#8221; files).</li>
+<li>Machine-specific build settings (i.e. the “Macros” file).</li>
+<li>File-specific build settings (i.e. “Depends” files).</li>
 <li>Environment variable loads (i.e. the env_mach_specific files).</li>
 </ol>
 <p>The .env_mach_specific.sh and .env_mach_specific.csh files are specific to a
 given compiler, MPI library, and DEBUG setting. By default, these will be the
-machine&#8217;s default compiler, the machine&#8217;s default MPI library, and FALSE,
+machine’s default compiler, the machine’s default MPI library, and FALSE,
 respectively. These can be changed by setting the environment variables
 COMPILER, MPILIB, and DEBUG, respectively.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.configure.FakeCase">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.configure.</code><code class="descname">FakeCase</code><span class="sig-paren">(</span><em>compiler</em>, <em>mpilib</em>, <em>debug</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="CIME.BuildTools.configure.FakeCase.get_value">
 <code class="descname">get_value</code><span class="sig-paren">(</span><em>attrib</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase.get_value" title="Permalink to this definition">¶</a></dt>
@@ -193,13 +182,13 @@ COMPILER, MPILIB, and DEBUG, respectively.</p>
 <p>Arguments:
 machobj - Machines argument for this machine.
 output_dir - Directory in which to place output.
-macros_format - Container containing the string &#8216;Makefile&#8217; to produce</p>
+macros_format - Container containing the string ‘Makefile’ to produce</p>
 <blockquote>
-<div>Makefile Macros output, and/or &#8216;CMake&#8217; for CMake output.</div></blockquote>
+<div>Makefile Macros output, and/or ‘CMake’ for CMake output.</div></blockquote>
 <p>compiler - String containing the compiler vendor to configure for.
 mpilib - String containing the MPI implementation to configure for.
 debug - Boolean specifying whether debugging options are enabled.
-unit_testing - Boolean specifying whether we&#8217;re running unit tests (as</p>
+unit_testing - Boolean specifying whether we’re running unit tests (as</p>
 <blockquote>
 <div>opposed to a system run)</div></blockquote>
 </dd></dl>
@@ -210,7 +199,7 @@ unit_testing - Boolean specifying whether we&#8217;re running unit tests (as</p>
 <dl class="class">
 <dt id="CIME.BuildTools.macroconditiontree.MacroConditionTree">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.macroconditiontree.</code><code class="descname">MacroConditionTree</code><span class="sig-paren">(</span><em>name</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/macroconditiontree.html#MacroConditionTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.macroconditiontree.MacroConditionTree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Tree containing the various possible settings of a specific macro.</p>
 <p>Unlike the PossibleValues class, this class assumes that we have
 finished determining which settings could apply on a given machine. It
@@ -224,7 +213,7 @@ write_out</p>
 <code class="descname">merge</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/macroconditiontree.html#MacroConditionTree.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.macroconditiontree.MacroConditionTree.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge another tree with this one.</p>
 <p>This should be considered destructive to both trees. The only valid
-value is the one that&#8217;s returned.</p>
+value is the one that’s returned.</p>
 </dd></dl>
 
 <dl class="method">
@@ -256,14 +245,14 @@ more.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.macrowriterbase.MacroWriterBase">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.macrowriterbase.</code><code class="descname">MacroWriterBase</code><span class="sig-paren">(</span><em>output</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/macrowriterbase.html#MacroWriterBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.macrowriterbase.MacroWriterBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Abstract base class for macro file writers.</p>
 <p>The methods here come in three flavors:
 1. indent_left/indent_right change the level of indent used internally by</p>
 <blockquote>
 <div>the class.</div></blockquote>
 <ol class="arabic simple" start="2">
-<li>The various methods ending in &#8220;_string&#8221; return strings relevant to the
+<li>The various methods ending in “_string” return strings relevant to the
 build system.</li>
 <li>The other methods write information to the file handle associated with
 an individual writer instance.</li>
@@ -353,8 +342,8 @@ if pre is not None:</p>
 <blockquote>
 <div>writer.write(pre)</div></blockquote>
 <p># Use the variable to write an if block.
-writer.start_ifeq(var, &#8220;TRUE&#8221;)
-writer.set_variable(&#8220;foo&#8221;, &#8220;bar&#8221;)
+writer.start_ifeq(var, “TRUE”)
+writer.set_variable(“foo”, “bar”)
 writer.end_ifeq()</p>
 <p># Cleanup
 if post is not None:</p>
@@ -404,7 +393,7 @@ more.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.makemacroswriter.</code><code class="descname">MakeMacroWriter</code><span class="sig-paren">(</span><em>output</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.BuildTools.macrowriterbase.MacroWriterBase" title="CIME.BuildTools.macrowriterbase.MacroWriterBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.BuildTools.macrowriterbase.MacroWriterBase</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.BuildTools.macrowriterbase.MacroWriterBase" title="CIME.BuildTools.macrowriterbase.MacroWriterBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.BuildTools.macrowriterbase.MacroWriterBase</span></code></a></p>
 <p>Macro writer for the Makefile format.</p>
 <p>For details on the provided methods, see MacroWriterBase, which this
 class inherits from.</p>
@@ -412,7 +401,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter.end_ifeq">
 <code class="descname">end_ifeq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter.end_ifeq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter.end_ifeq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a statement to end a block started with start_ifeq.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span> <span class="o">=</span> <span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
@@ -428,7 +417,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter.environment_variable_string">
 <code class="descname">environment_variable_string</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter.environment_variable_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter.environment_variable_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an environment variable reference.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">environment_variable_string</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
 <span class="go">&#39;$(foo)&#39;</span>
@@ -440,7 +429,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter.set_variable">
 <code class="descname">set_variable</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter.set_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter.set_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a statement setting a variable to some value.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
@@ -453,7 +442,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter.shell_command_strings">
 <code class="descname">shell_command_strings</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter.shell_command_strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter.shell_command_strings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return strings used to get the output of a shell command.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">shell_command_strings</span><span class="p">(</span><span class="s2">&quot;echo bar&quot;</span><span class="p">)</span>
 <span class="go">(None, &#39;$(shell echo bar)&#39;, None)</span>
@@ -465,7 +454,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter.start_ifeq">
 <code class="descname">start_ifeq</code><span class="sig-paren">(</span><em>left</em>, <em>right</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter.start_ifeq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter.start_ifeq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write out a statement to start a conditional block.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
@@ -478,7 +467,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.makemacroswriter.MakeMacroWriter.variable_string">
 <code class="descname">variable_string</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/makemacroswriter.html#MakeMacroWriter.variable_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.makemacroswriter.MakeMacroWriter.variable_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a string to refer to a variable with the given name.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">variable_string</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
 <span class="go">&#39;$(foo)&#39;</span>
@@ -494,8 +483,8 @@ class inherits from.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.possiblevalues.PossibleValues">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.possiblevalues.</code><code class="descname">PossibleValues</code><span class="sig-paren">(</span><em>name</em>, <em>setting</em>, <em>specificity</em>, <em>depends</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/possiblevalues.html#PossibleValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.possiblevalues.PossibleValues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Holds a list of settings for a single &#8220;Macros&#8221; variable.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds a list of settings for a single “Macros” variable.</p>
 <p>This helper class takes in variable settings and, for each one, decides
 whether to throw it out, add it to the list of values, or replace the
 existing list of values with the new, more specific setting.</p>
@@ -536,7 +525,7 @@ lowest allowed specificity is 0.</div></blockquote>
 SLIBS refers to NETCDF_PATH, then NETCDF_PATH has to be
 set first).</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span> <span class="o">=</span> <span class="n">PossibleValues</span><span class="p">(</span><span class="s1">&#39;var&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dep1&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span><span class="o">.</span><span class="n">add_setting</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dep2&#39;</span><span class="p">})</span>
@@ -565,7 +554,7 @@ set first).</dd>
 <code class="descname">to_cond_trees</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/possiblevalues.html#PossibleValues.to_cond_trees"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.possiblevalues.PossibleValues.to_cond_trees" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert this object to a pair of MacroConditionTree objects.</p>
 <p>This represents the step where the list of possible values is
-frozen and we&#8217;re ready to convert it into an actual text file. This
+frozen and we’re ready to convert it into an actual text file. This
 object is checked for ambiguities before conversion.</p>
 <p>The return value is a tuple of two trees. The first contains all
 initial settings, and the second contains all appending settings.
@@ -580,9 +569,9 @@ If either would be empty, None is returned instead.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.valuesetting.ValueSetting">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.valuesetting.</code><code class="descname">ValueSetting</code><span class="sig-paren">(</span><em>value</em>, <em>do_append</em>, <em>conditions</em>, <em>set_up</em>, <em>tear_down</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/valuesetting.html#ValueSetting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.valuesetting.ValueSetting" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Holds data about how a value can be assigned to a variable.</p>
-<p>Note that this class doesn&#8217;t know or care <em>which</em> variable might be
+<p>Note that this class doesn’t know or care <em>which</em> variable might be
 assigned in this way, only that there is a procedure to perform that
 operation</p>
 <p>Public attributes:
@@ -594,7 +583,7 @@ than overwriting other settings.</div></blockquote>
 <dl class="docutils">
 <dt>conditions - Dictionary containing the set of values that different</dt>
 <dd>variables have to have to use this setting (e.g.
-DEBUG=&#8221;TRUE&#8221; might be a condition on a debug flag).</dd>
+DEBUG=”TRUE” might be a condition on a debug flag).</dd>
 <dt>set_up - List of any commands that have to be executed in the build</dt>
 <dd>system before this setting can occur.</dd>
 <dt>tear_down - List of any commands that should be executed to clean up</dt>
@@ -613,10 +602,10 @@ is a symmetric relation (this function returns the same value if
 self and other are swapped).</p>
 <p>The rules to determine this are as follows:</p>
 <ol class="arabic simple">
-<li>If one or both settings are appending to the value, there&#8217;s no
+<li>If one or both settings are appending to the value, there’s no
 ambiguity, because both can cooperate to set the value.</li>
 </ol>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">is_ambiguous_with</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 <span class="go">False</span>
@@ -626,10 +615,10 @@ ambiguity, because both can cooperate to set the value.</li>
 </div>
 <ol class="arabic simple" start="2">
 <li>If the two settings have conflicting conditions, then there
-is no ambiguity because they can&#8217;t both apply to the same
+is no ambiguity because they can’t both apply to the same
 build.</li>
 </ol>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">is_ambiguous_with</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 <span class="go">False</span>
@@ -637,10 +626,10 @@ build.</li>
 </div>
 <ol class="arabic simple" start="3">
 <li>If one setting is strictly more specific than the other, then
-there&#8217;s no ambiguity, because we prefer the more specific
+there’s no ambiguity, because we prefer the more specific
 setting whenever both apply to a build.</li>
 </ol>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;mpich2&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">is_ambiguous_with</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 <span class="go">False</span>
@@ -651,7 +640,7 @@ setting whenever both apply to a build.</li>
 <ol class="arabic simple" start="4">
 <li>All other cases are considered ambiguous.</li>
 </ol>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">is_ambiguous_with</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 <span class="go">True</span>
@@ -702,18 +691,20 @@ setting whenever both apply to a build.</li>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.BuildTools.txt"
+      <li><a href="../_sources/CIME_api/CIME.BuildTools.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -735,14 +726,14 @@ setting whenever both apply to a build.</li>
         <li class="right" >
           <a href="CIME.html" title="CIME package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

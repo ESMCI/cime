@@ -24,8 +24,8 @@ CIME.aprun module
     :undoc-members:
     :show-inheritance:
 
-CIME.bless_test_results module
-------------------------------
+CIME.bless\_test\_results module
+--------------------------------
 
 .. automodule:: CIME.bless_test_results
     :members:
@@ -56,24 +56,24 @@ CIME.buildnml module
     :undoc-members:
     :show-inheritance:
 
-CIME.code_checker module
-------------------------
+CIME.code\_checker module
+-------------------------
 
 .. automodule:: CIME.code_checker
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.compare_namelists module
------------------------------
+CIME.compare\_namelists module
+------------------------------
 
 .. automodule:: CIME.compare_namelists
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.compare_test_results module
---------------------------------
+CIME.compare\_test\_results module
+----------------------------------
 
 .. automodule:: CIME.compare_test_results
     :members:
@@ -88,24 +88,24 @@ CIME.date module
     :undoc-members:
     :show-inheritance:
 
-CIME.get_timing module
-----------------------
+CIME.get\_timing module
+-----------------------
 
 .. automodule:: CIME.get_timing
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.hist_utils module
-----------------------
+CIME.hist\_utils module
+-----------------------
 
 .. automodule:: CIME.hist_utils
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.locked_files module
-------------------------
+CIME.locked\_files module
+-------------------------
 
 .. automodule:: CIME.locked_files
     :members:
@@ -136,40 +136,40 @@ CIME.provenance module
     :undoc-members:
     :show-inheritance:
 
-CIME.simple_compare module
---------------------------
+CIME.simple\_compare module
+---------------------------
 
 .. automodule:: CIME.simple_compare
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.test_scheduler module
---------------------------
+CIME.test\_scheduler module
+---------------------------
 
 .. automodule:: CIME.test_scheduler
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.test_status module
------------------------
+CIME.test\_status module
+------------------------
 
 .. automodule:: CIME.test_status
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.test_utils module
-----------------------
+CIME.test\_utils module
+-----------------------
 
 .. automodule:: CIME.test_utils
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME.user_mod_support module
-----------------------------
+CIME.user\_mod\_support module
+------------------------------
 
 .. automodule:: CIME.user_mod_support
     :members:
@@ -184,8 +184,8 @@ CIME.utils module
     :undoc-members:
     :show-inheritance:
 
-CIME.wait_for_tests module
---------------------------
+CIME.wait\_for\_tests module
+----------------------------
 
 .. automodule:: CIME.wait_for_tests
     :members:

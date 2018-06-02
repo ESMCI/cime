@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.Servers package &mdash; CIME 5.6 documentation</title>
-    
+    <title>CIME.Servers package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
-    <link rel="up" title="CIME package" href="CIME.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.SystemTests package" href="CIME.SystemTests.html" />
     <link rel="prev" title="CIME.BuildTools package" href="CIME.BuildTools.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,9 +33,9 @@
         <li class="right" >
           <a href="CIME.BuildTools.html" title="CIME.BuildTools package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -66,11 +55,12 @@
 <dl class="class">
 <dt id="CIME.Servers.ftp.FTP">
 <em class="property">class </em><code class="descclassname">CIME.Servers.ftp.</code><code class="descname">FTP</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
 <dl class="method">
 <dt id="CIME.Servers.ftp.FTP.fileexists">
 <code class="descname">fileexists</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.fileexists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.Servers.ftp.FTP.getdirectory">
@@ -80,7 +70,9 @@
 <dl class="method">
 <dt id="CIME.Servers.ftp.FTP.getfile">
 <code class="descname">getfile</code><span class="sig-paren">(</span><em>rel_path</em>, <em>full_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.getfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -93,7 +85,7 @@ so that they are interchangable objects</p>
 <dl class="class">
 <dt id="CIME.Servers.generic_server.GenericServer">
 <em class="property">class </em><code class="descclassname">CIME.Servers.generic_server.</code><code class="descname">GenericServer</code><span class="sig-paren">(</span><em>host=' '</em>, <em>user=' '</em>, <em>passwd=' '</em>, <em>acct=' '</em>, <em>timeout=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/generic_server.html#GenericServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.generic_server.GenericServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="CIME.Servers.generic_server.GenericServer.fileexists">
 <code class="descname">fileexists</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/generic_server.html#GenericServer.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.generic_server.GenericServer.fileexists" title="Permalink to this definition">¶</a></dt>
@@ -116,11 +108,12 @@ fail if full_path already exists on client, return True if successful</p>
 <dl class="class">
 <dt id="CIME.Servers.gftp.GridFTP">
 <em class="property">class </em><code class="descclassname">CIME.Servers.gftp.</code><code class="descname">GridFTP</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
 <dl class="method">
 <dt id="CIME.Servers.gftp.GridFTP.fileexists">
 <code class="descname">fileexists</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP.fileexists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.Servers.gftp.GridFTP.getdirectory">
@@ -130,7 +123,9 @@ fail if full_path already exists on client, return True if successful</p>
 <dl class="method">
 <dt id="CIME.Servers.gftp.GridFTP.getfile">
 <code class="descname">getfile</code><span class="sig-paren">(</span><em>rel_path</em>, <em>full_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/gftp.html#GridFTP.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.gftp.GridFTP.getfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -141,11 +136,12 @@ fail if full_path already exists on client, return True if successful</p>
 <dl class="class">
 <dt id="CIME.Servers.svn.SVN">
 <em class="property">class </em><code class="descclassname">CIME.Servers.svn.</code><code class="descname">SVN</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
 <dl class="method">
 <dt id="CIME.Servers.svn.SVN.fileexists">
 <code class="descname">fileexists</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN.fileexists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.Servers.svn.SVN.getdirectory">
@@ -155,7 +151,9 @@ fail if full_path already exists on client, return True if successful</p>
 <dl class="method">
 <dt id="CIME.Servers.svn.SVN.getfile">
 <code class="descname">getfile</code><span class="sig-paren">(</span><em>rel_path</em>, <em>full_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/svn.html#SVN.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.svn.SVN.getfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -166,11 +164,12 @@ fail if full_path already exists on client, return True if successful</p>
 <dl class="class">
 <dt id="CIME.Servers.wget.WGET">
 <em class="property">class </em><code class="descclassname">CIME.Servers.wget.</code><code class="descname">WGET</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
 <dl class="method">
 <dt id="CIME.Servers.wget.WGET.fileexists">
 <code class="descname">fileexists</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.fileexists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if rel_path exists on server</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.Servers.wget.WGET.getdirectory">
@@ -180,7 +179,9 @@ fail if full_path already exists on client, return True if successful</p>
 <dl class="method">
 <dt id="CIME.Servers.wget.WGET.getfile">
 <code class="descname">getfile</code><span class="sig-paren">(</span><em>rel_path</em>, <em>full_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.getfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.getfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get file from rel_path on server and place in location full_path on client
+fail if full_path already exists on client, return True if successful</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -219,18 +220,20 @@ fail if full_path already exists on client, return True if successful</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.Servers.txt"
+      <li><a href="../_sources/CIME_api/CIME.Servers.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -252,14 +255,14 @@ fail if full_path already exists on client, return True if successful</p>
         <li class="right" >
           <a href="CIME.BuildTools.html" title="CIME.BuildTools package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

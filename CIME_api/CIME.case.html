@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.case package &mdash; CIME 5.6 documentation</title>
-    
+    <title>CIME.case package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
-    <link rel="up" title="CIME package" href="CIME.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.tests package" href="CIME.tests.html" />
     <link rel="prev" title="CIME.XML package" href="CIME.XML.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,9 +33,9 @@
         <li class="right" >
           <a href="CIME.XML.html" title="CIME.XML package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -68,7 +57,7 @@ through the Case module.</p>
 <dl class="class">
 <dt id="CIME.case.case.Case">
 <em class="property">class </em><code class="descclassname">CIME.case.case.</code><code class="descname">Case</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>read_only=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p><a class="reference external" href="https://github.com/ESMCI/cime/wiki/Developers-Introduction">https://github.com/ESMCI/cime/wiki/Developers-Introduction</a>
 The Case class is the heart of the CIME Case Control system.  All
 interactions with a Case take part through this class.  All of the
@@ -78,14 +67,14 @@ with that file.</p>
 <p>XML files which are part of the CIME distribution and are meant to
 be readonly with respect to a case are typically named
 config_something.xml and the corresponding python Class is
-Something and can be found in file CIME.XML.something.py.  I&#8217;ll
+Something and can be found in file CIME.XML.something.py.  I’ll
 refer to these as the CIME config classes.</p>
 <p>XML files which are part of a case and thus are read/write to a
 case are typically named env_whatever.xml and the cooresponding
 python modules are CIME.XML.env_whatever.py and classes are
-EnvWhatever.  I&#8217;ll refer to these as the Case env classes.</p>
+EnvWhatever.  I’ll refer to these as the Case env classes.</p>
 <p>The Case Class includes an array of the Case env classes, in the
-configure function and it&#8217;s supporting functions defined below
+configure function and it’s supporting functions defined below
 the case object creates and manipulates the Case env classes
 by reading and interpreting the CIME config classes.</p>
 <p>This class extends across multiple files, class members external to this file
@@ -164,7 +153,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_input_data">
-<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if no files missing</p>
 </dd></dl>
 
@@ -176,7 +165,7 @@ files that are associated with these restart files.)</p>
 <dl class="method">
 <dt id="CIME.case.case.Case.check_lockedfiles">
 <code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>skip=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check that all lockedfiles match what&#8217;s in case</p>
+<dd><p>Check that all lockedfiles match what’s in case</p>
 <p>If caseroot is not specified, it is set to the current working directory</p>
 </dd></dl>
 
@@ -455,7 +444,7 @@ case_cmpgen_namelists is a member of Class case from file case.py</p>
 <div class="section" id="module-CIME.case.case_run">
 <span id="cime-case-case-run-module"></span><h2>CIME.case.case_run module<a class="headerlink" href="#module-CIME.case.case_run" title="Permalink to this headline">¶</a></h2>
 <p>case_run is a member of Class Case
-&#8216;</p>
+‘</p>
 <dl class="function">
 <dt id="CIME.case.case_run.case_run">
 <code class="descclassname">CIME.case.case_run.</code><code class="descname">case_run</code><span class="sig-paren">(</span><em>self</em>, <em>skip_pnl=False</em>, <em>set_continue_run=False</em>, <em>submit_resubmits=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_run.html#case_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_run.case_run" title="Permalink to this definition">¶</a></dt>
@@ -582,7 +571,7 @@ of Class case.py from file case.py</p>
 <dl class="function">
 <dt id="CIME.case.check_lockedfiles.check_lockedfiles">
 <code class="descclassname">CIME.case.check_lockedfiles.</code><code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>self</em>, <em>skip=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_lockedfiles.html#check_lockedfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_lockedfiles.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check that all lockedfiles match what&#8217;s in case</p>
+<dd><p>Check that all lockedfiles match what’s in case</p>
 <p>If caseroot is not specified, it is set to the current working directory</p>
 </dd></dl>
 
@@ -650,18 +639,20 @@ create_dirs and create_namelists are members of Class case from file case.py</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.case.txt"
+      <li><a href="../_sources/CIME_api/CIME.case.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -683,14 +674,14 @@ create_dirs and create_namelists are members of Class case from file case.py</p>
         <li class="right" >
           <a href="CIME.XML.html" title="CIME.XML package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

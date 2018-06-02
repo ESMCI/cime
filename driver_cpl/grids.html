@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3.2. Grids &mdash; CIME 5.6 documentation</title>
-    
+    <title>3.2. Grids &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
-    <link rel="up" title="3. Implementation" href="implementation.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3.3. Initialization and Restart" href="initialization-and-restart.html" />
     <link rel="prev" title="3.1. Time Management" href="time-management.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,9 +33,9 @@
         <li class="right" >
           <a href="time-management.html" title="3.1. Time Management"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -62,19 +51,19 @@
 <p>The standard implementation for grids in CIME has been that the atmosphere and land models are run on identical grids and the ocean and sea ice model are run on identical grids.
 The ocean model mask is used to derive a complementary mask for the land grid such that for any given combination of atmosphere/land and ocean/ice grids, there is a unique land mask.
 This approach for dealing with grids is still used a majority of the time.
-But there is a new capability, called <code class="docutils literal"><span class="pre">trigrid</span></code> that allows the atmosphere and land grids to be unique.
-A typical grid is the finite volume &#8220;1 degree&#8221; atmosphere/land grid matched with the  &#8220;1 degree&#8221; ocean/ice grid.
+But there is a new capability, called <code class="docutils literal notranslate"><span class="pre">trigrid</span></code> that allows the atmosphere and land grids to be unique.
+A typical grid is the finite volume “1 degree” atmosphere/land grid matched with the  “1 degree” ocean/ice grid.
 The runoff grid is generally unique to runoff and the land ice grid is coupled on the land grid with interpolation carried out to a unique land ice grid inside that component.</p>
 <p>Historically, the ocean grid has been the higher resolution grid in CIME model configurations.
 While that is no longer always the case, the current driver implementation largely reflects that presumption.
 The atmosphere/ocean fluxes in the coupler are computed on the ocean grid.
-The driver namelist variable <code class="docutils literal"><span class="pre">aoflux_grid</span></code> allows users to specify the atmosphere/ocean flux computation grid in the coupler in the future.
+The driver namelist variable <code class="docutils literal notranslate"><span class="pre">aoflux_grid</span></code> allows users to specify the atmosphere/ocean flux computation grid in the coupler in the future.
 In addition, the default mapping approach used also reflects the presumption that the ocean is generally higher resolution.
 Fluxes are always mapped using a locally conservative area average methods to preserve conservation.
 However, states are mapped using bilinear interpolation from the atmosphere grid to the ocean grid to better preserve gradients, while they are mapped using a locally conservative area average approach from the ocean grid to the atmosphere grid.
 These choices are based on the presumption that the ocean grid is higher resolution.</p>
 <p>There has always been an option that all grids (atmosphere, land, ocean, and ice) could be identical, and this is still supported.
-There are a couple of namelist variables, <code class="docutils literal"><span class="pre">samegrid_ao</span></code>, <code class="docutils literal"><span class="pre">samegrid_al</span></code>, and <code class="docutils literal"><span class="pre">samegrid_ro</span></code> that tell the coupler whether to expect that the following grids; atmosphere/ocean, atmosphere/land, and runoff/ocean respectively are identical.
+There are a couple of namelist variables, <code class="docutils literal notranslate"><span class="pre">samegrid_ao</span></code>, <code class="docutils literal notranslate"><span class="pre">samegrid_al</span></code>, and <code class="docutils literal notranslate"><span class="pre">samegrid_ro</span></code> that tell the coupler whether to expect that the following grids; atmosphere/ocean, atmosphere/land, and runoff/ocean respectively are identical.
 These are set automaticaly in the driver namelist depending on the grid chosen and impact mapping as well as domain checking.</p>
 </div>
 <div class="section" id="trigrid-configurations">
@@ -94,7 +83,7 @@ A summary of trigrid support follows:
 </div>
 <div class="section" id="fractions">
 <h2>3.2.3. Fractions<a class="headerlink" href="#fractions" title="Permalink to this headline">¶</a></h2>
-<p>The component grid fractions in the coupler are defined and computed in <code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/driver/seq_frac_mct</span></code>.
+<p>The component grid fractions in the coupler are defined and computed in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/driver_cpl/driver/seq_frac_mct</span></code>.
 A slightly modified version of the notes from this file is pasted below.
 Just to clarify some of the terms.
 - fractions_a, fractions_l, fractions_i, and fractions_o are the fractions on the atmosphere, land, ice, and ocean grids.
@@ -105,8 +94,8 @@ This can be different from lfrac because of the trigrid implementation.
 lfrac is the land fraction consistent with the ocean mask and lfrin is the land fraction in the land model.
 ifrad and ofrad are fractions at the last radiation timestep.
 These fractions preserve conservation of heat in the net shortwave calculation because the net shortwave calculation is one timestep behind the ice fraction evolution in the system.
-When the variable &#8220;dom&#8221; is mentioned below, that refers to a field sent from a component at initialization.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>!  the fractions fields are now afrac, ifrac, ofrac, lfrac, and lfrin.
+When the variable “dom” is mentioned below, that refers to a field sent from a component at initialization.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!  the fractions fields are now afrac, ifrac, ofrac, lfrac, and lfrin.
 !    afrac = fraction of atm on a grid
 !    lfrac = fraction of lnd on a grid
 !    ifrac = fraction of ice on a grid
@@ -234,12 +223,12 @@ When the variable &#8220;dom&#8221; is mentioned below, that refers to a field s
 <h2>3.2.4. Domain Checking<a class="headerlink" href="#domain-checking" title="Permalink to this headline">¶</a></h2>
 <p>Domain checking is a very important initialization step in the system.
 Domain checking verifies that the longitudes, latitudes, areas, masks, and fractions of different grids are consistent with each other.
-The subroutine that carries out domain checking is in <code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/driver/seq_domain_mct</span></code>.
-Tolerances for checking the domains can be set in the drv_in driver namelist via the namelist variables, <code class="docutils literal"><span class="pre">eps_frac</span></code>, <code class="docutils literal"><span class="pre">eps_amask</span></code>, <code class="docutils literal"><span class="pre">eps_agrid</span></code>, <code class="docutils literal"><span class="pre">eps_aarea</span></code>, <code class="docutils literal"><span class="pre">eps_omask</span></code>, <code class="docutils literal"><span class="pre">eps_ogrid</span></code>, and <code class="docutils literal"><span class="pre">eps_oarea</span></code>.
+The subroutine that carries out domain checking is in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/driver_cpl/driver/seq_domain_mct</span></code>.
+Tolerances for checking the domains can be set in the drv_in driver namelist via the namelist variables, <code class="docutils literal notranslate"><span class="pre">eps_frac</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_amask</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_agrid</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_aarea</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_omask</span></code>, <code class="docutils literal notranslate"><span class="pre">eps_ogrid</span></code>, and <code class="docutils literal notranslate"><span class="pre">eps_oarea</span></code>.
 These values are derived in the coupler namelist from the script env variables, EPS_FRAC, EPS_AMASK, EPS_AGRID, EPS_AAREA, EPS_OMASK, EPS_OGRID, and EPS_OAREA in the env_run.xml.
 If an error is detected in the domain checking, the model will write an error message and abort.</p>
 <p>The domain checking is dependent on the grids and in particular, the samegrid input namelist settings. But it basically does the following,</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocean</span><span class="o">/</span><span class="n">ice</span> <span class="n">grid</span> <span class="n">comparison</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ocean</span><span class="o">/</span><span class="n">ice</span> <span class="n">grid</span> <span class="n">comparison</span><span class="p">:</span>
    <span class="n">verifies</span> <span class="n">the</span> <span class="n">grids</span> <span class="n">are</span> <span class="n">the</span> <span class="n">same</span> <span class="n">size</span>
    <span class="n">verifies</span> <span class="n">the</span> <span class="n">difference</span> <span class="ow">in</span> <span class="n">longitudes</span> <span class="ow">and</span> <span class="n">latitudes</span> <span class="ow">is</span> <span class="n">less</span> <span class="n">than</span> <span class="n">eps_ogrid</span><span class="o">.</span>
    <span class="n">verifies</span> <span class="n">the</span> <span class="n">difference</span> <span class="ow">in</span> <span class="n">masks</span> <span class="ow">is</span> <span class="n">less</span> <span class="n">than</span> <span class="n">eps_omask</span>
@@ -274,14 +263,14 @@ While that is no longer always the case, the current implementation largely refl
 In general, mapping of fluxes is done using a locally conservative area average approach to preserve conservation.
 State fields are generally mapped using bilinear interpolation from the atmosphere grid to the ocean grid to better preserve gradients, but state fields are generally mapped using the conservative area average approach from the ocean grid to the atmosphere grid.
 But this is not a requirement of the system.
-The individual state and flux mapping files are specified at runtime using the <code class="docutils literal"><span class="pre">seq_maps.rc</span></code> input file, and any valid mapping file using any mapping approach can be specified in that input file.</p>
-<p>The <code class="docutils literal"><span class="pre">seq_maps.c</span></code> file contains information about the mapping files as well as the mapping type.
-There are currently two types of mapping implementations, &#8220;X&#8221; and &#8220;Y&#8221;.</p>
+The individual state and flux mapping files are specified at runtime using the <code class="docutils literal notranslate"><span class="pre">seq_maps.rc</span></code> input file, and any valid mapping file using any mapping approach can be specified in that input file.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">seq_maps.c</span></code> file contains information about the mapping files as well as the mapping type.
+There are currently two types of mapping implementations, “X” and “Y”.</p>
 <ul class="simple">
-<li>&#8220;X&#8221; mapping rearranges the source data to the destination grid decomposition and then a local mapping is done from the source to the destination grid on the destination decomposition. In the &#8220;X&#8221; type, the source grid is rearranged.</li>
-<li>&#8220;Y&#8221; mapping does a local mapping from the source grid to the destination grid on the source grid decomposition. That generates a partial sum of the destination values which are then rearranged to the destination decomposition and summed. Both options produce reasonable results, although they may differ in value by &#8220;roundoff&#8221; due to differences in order or operations. The type chosen impacts performance. In both implementations, the number of flops is basically identical. The difference is the communication. In the &#8220;Y&#8221; type, the destination grid is rearranged.</li>
+<li>“X” mapping rearranges the source data to the destination grid decomposition and then a local mapping is done from the source to the destination grid on the destination decomposition. In the “X” type, the source grid is rearranged.</li>
+<li>“Y” mapping does a local mapping from the source grid to the destination grid on the source grid decomposition. That generates a partial sum of the destination values which are then rearranged to the destination decomposition and summed. Both options produce reasonable results, although they may differ in value by “roundoff” due to differences in order or operations. The type chosen impacts performance. In both implementations, the number of flops is basically identical. The difference is the communication. In the “Y” type, the destination grid is rearranged.</li>
 </ul>
-<p>Since historically, the ocean grid is higher resolution than the atmosphere grid, &#8220;X&#8221; mapping is used for atmosphere to ocean/ice mapping and &#8220;Y&#8221; mapping is used from ocean/ice to atmosphere mapping to optimize mapping performance.</p>
+<p>Since historically, the ocean grid is higher resolution than the atmosphere grid, “X” mapping is used for atmosphere to ocean/ice mapping and “Y” mapping is used from ocean/ice to atmosphere mapping to optimize mapping performance.</p>
 <p>Mapping corrections are made in some cases in the polar region.
 In particular, the current bilinear and area conservative mapping approaches introduce relatively large errors in mapping vector fields around the pole.
 The current coupler can correct the interpolated surface wind velocity near the pole when mapping from the atmosphere to the ocean and ice grids.
@@ -291,7 +280,7 @@ The algorithm is contained in the file models/drv/driver/map_atmocn_mct.F90 and 
 This feature is generally on by default.
 The other alternative is the cart3d option which converts the surface u and v velocity to 3d x,y,z vectors then maps those three vectors before coverting back to u and v east and north directions on the surface.
 Both vector mapping methods introduce errors of different degrees but are generally much better than just mapping vector fields as if they were individual scalars.
-The <code class="docutils literal"><span class="pre">vect_map</span></code> namelist input is set in the <code class="docutils literal"><span class="pre">drv_in</span></code> file.</p>
+The <code class="docutils literal notranslate"><span class="pre">vect_map</span></code> namelist input is set in the <code class="docutils literal notranslate"><span class="pre">drv_in</span></code> file.</p>
 <p>The input mapping files are assumed to be valid for grids with masks of value zero or one where grid points with a mask of zero are never considered in the mapping.
 Well defined, locally conservative area mapping files as well as bilinear mapping files can be generated using this masked approach.
 However, there is another issue which is that a grid fraction in an active cell might actually change over time.
@@ -352,18 +341,20 @@ One critical point is that if mapping files are generated by different tools off
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/driver_cpl/grids.txt"
+      <li><a href="../_sources/driver_cpl/grids.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -385,14 +376,14 @@ One critical point is that if mapping files are generated by different tools off
         <li class="right" >
           <a href="time-management.html" title="3.1. Time Management"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Driver/Coupler</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

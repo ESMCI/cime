@@ -1,32 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME.XML.namelist_definition &mdash; CIME 5.6 documentation</title>
-    
+    <title>CIME.XML.namelist_definition &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../../../index.html" />
-    <link rel="up" title="Module code" href="../../index.html" /> 
-  </head>
-  <body role="document">
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -36,8 +25,8 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -62,13 +51,13 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
-<span class="kn">from</span> <span class="nn">CIME.namelist</span> <span class="kn">import</span> <span class="n">fortran_namelist_base_value</span><span class="p">,</span> \
+<span class="kn">from</span> <span class="nn">CIME.namelist</span> <span class="k">import</span> <span class="n">fortran_namelist_base_value</span><span class="p">,</span> \
     <span class="n">is_valid_fortran_namelist_literal</span><span class="p">,</span> <span class="n">character_literal_to_string</span><span class="p">,</span> \
     <span class="n">expand_literal_list</span><span class="p">,</span> <span class="n">Namelist</span><span class="p">,</span> <span class="n">get_fortran_name_only</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="kn">import</span> <span class="n">EntryID</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="k">import</span> <span class="n">EntryID</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="k">import</span> <span class="n">Files</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -86,16 +75,16 @@
 <span class="sd">    - validate</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct a `NamelistDefinition` from an XML file.&quot;&quot;&quot;</span>
 
         <span class="c1"># if the file is invalid we may not be able to check the version</span>
         <span class="c1"># but we need to do it this way until we remove the version 1 files</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_schema</span><span class="p">(</span><span class="s2">&quot;NAMELIST_DEFINITION_FILE&quot;</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">infile</span><span class="p">),</span> <span class="s2">&quot;File {} does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">infile</span><span class="p">),</span> <span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> does not exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NamelistDefinition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="p">{}</span>
@@ -106,7 +95,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="NamelistDefinition.set_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">set_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.set_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">set_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        populates the object data types for all nodes that are not part of the skip_groups array</span>
 <span class="sd">        returns nodes that do not have attributes of `skip_default_entry` or `per_stream_entry`</span>
@@ -116,17 +105,17 @@
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
             <span class="n">skip_default_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;skip_default_entry&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
             <span class="n">per_stream_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;per_stream_entry&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
-            <span class="n">set_node_values</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">set_node_values</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="n">skip_groups</span><span class="p">:</span>
                 <span class="n">group_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_group_name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">skip_groups</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                    <span class="n">set_node_values</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">set_node_values</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_default_entry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">per_stream_entry</span><span class="p">:</span>
                         <span class="n">default_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_entry_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                <span class="n">set_node_values</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">set_node_values</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_default_entry</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">per_stream_entry</span><span class="p">:</span>
                     <span class="n">default_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">set_node_values</span><span class="p">:</span>
@@ -138,7 +127,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_group_name</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">default_nodes</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_group_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_group_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">2.0</span><span class="p">:</span>
@@ -162,8 +151,8 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">2.0</span><span class="p">:</span>
             <span class="n">valid_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_element_info</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s2">&quot;valid_values&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">valid_values</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">valid_values</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">if</span> <span class="n">valid_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">valid_values</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">valid_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">valid_values</span> <span class="o">=</span> <span class="n">valid_values</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">valid_values</span>
 
@@ -187,11 +176,11 @@
 
     <span class="c1"># Currently we don&#39;t use this object to construct new files, and it&#39;s no</span>
     <span class="c1"># good for that purpose anyway, so stop this function from being called.</span>
-<div class="viewcode-block" id="NamelistDefinition.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This function is not implemented.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;NamelistDefinition does not support `set_value`.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.get_value_match"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_value_match">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">entry_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the default value for the variable named `vid`.</span>
 
 <span class="sd">        The return value is a list of strings corresponding to the</span>
@@ -200,16 +189,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Merge internal attributes with those passed in.</span>
         <span class="n">all_attributes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">all_attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">all_attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">entry_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">entry_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">entry_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">NamelistDefinition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">vid</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span><span class="n">attributes</span><span class="o">=</span><span class="n">all_attributes</span><span class="p">,</span> <span class="n">exact_match</span><span class="o">=</span><span class="n">exact_match</span><span class="p">,</span>
                                                                 <span class="n">entry_node</span><span class="o">=</span><span class="n">entry_node</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_split_defaults_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -224,9 +213,9 @@
         <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">delim</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">delim</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">delim</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">delim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># If not inside a string...</span>
                     <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">):</span>
                         <span class="c1"># if we have a quote character, start a string.</span>
@@ -239,7 +228,7 @@
                     <span class="c1"># If inside a string, the only thing that can happen is the end</span>
                     <span class="c1"># of the string.</span>
                     <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="n">delim</span><span class="p">:</span>
-                        <span class="n">delim</span> <span class="o">=</span> <span class="bp">None</span>
+                        <span class="n">delim</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="n">pos</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">value</span>
 
@@ -266,8 +255,8 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size_string</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span>
-                       <span class="s2">&quot;In namelist definition, variable {} had the non-integer string {!r} specified as an array size.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size_string</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="s2">&quot;In namelist definition, variable </span><span class="si">{}</span><span class="s2"> had the non-integer string </span><span class="si">{!r}</span><span class="s2"> specified as an array size.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size_string</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
 
@@ -277,16 +266,16 @@
             <span class="c1"># Length allowed only for character variables.</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span><span class="p">,</span>
                    <span class="s2">&quot;In namelist definition, length specified for non-character &quot;</span>
-                   <span class="s2">&quot;variable {}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                   <span class="s2">&quot;variable </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
             <span class="c1"># Check that the length is actually an integer, to make the error</span>
             <span class="c1"># message a bit cleaner if the xml input is bad.</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">max_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span>
-                       <span class="s2">&quot;In namelist definition, character variable {} had the non-integer string {!r} specified as a length.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">length</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="s2">&quot;In namelist definition, character variable </span><span class="si">{}</span><span class="s2"> had the non-integer string </span><span class="si">{!r}</span><span class="s2"> specified as a length.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">length</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">max_len</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">max_len</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">type_</span><span class="p">,</span> <span class="n">max_len</span><span class="p">,</span> <span class="n">size</span></div>
 
     <span class="nd">@staticmethod</span>
@@ -319,24 +308,24 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">scalar</span><span class="p">):</span>
                 <span class="n">invalid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">invalid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid values {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">invalid</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">False</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid values </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">invalid</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Now that we know that the strings as input are valid Fortran, do some</span>
         <span class="c1"># canonicalization for further checks.</span>
         <span class="n">canonical_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canonicalize_value</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
         <span class="c1"># Check maximum length (if applicable).</span>
-        <span class="k">if</span> <span class="n">max_len</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">max_len</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="n">canonical_value</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="bp">False</span>
+                    <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Check valid value constraints (if applicable).</span>
         <span class="n">valid_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">valid_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">valid_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;integer&#39;</span><span class="p">,</span> <span class="s1">&#39;character&#39;</span><span class="p">),</span>
-                   <span class="s2">&quot;Found valid_values attribute for variable {} with type {}, but valid_values only allowed for character and integer variables.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">type_</span><span class="p">))</span>
+                   <span class="s2">&quot;Found valid_values attribute for variable </span><span class="si">{}</span><span class="s2"> with type </span><span class="si">{}</span><span class="s2">, but valid_values only allowed for character and integer variables.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">type_</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
                 <span class="n">compare_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">valid_values</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -345,13 +334,13 @@
                 <span class="k">if</span> <span class="n">scalar</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compare_list</span><span class="p">:</span>
                     <span class="n">invalid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">invalid</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid values {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">invalid</span><span class="p">))</span>
-                <span class="k">return</span> <span class="bp">False</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Invalid values </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">invalid</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Check size of input array.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expand_literal_list</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">size</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="s2">&quot;Value index exceeds variable size for variable {}, allowed array length is {} value array size is {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">expand_literal_list</span><span class="p">(</span><span class="n">value</span><span class="p">))))</span>
-        <span class="k">return</span> <span class="bp">True</span></div>
+            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Value index exceeds variable size for variable </span><span class="si">{}</span><span class="s2">, allowed array length is </span><span class="si">{}</span><span class="s2"> value array size is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">expand_literal_list</span><span class="p">(</span><span class="n">value</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="nf">_expect_variable_in_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variable_template</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Used to get a better error message for an unexpected variable.&quot;&quot;&quot;</span>
@@ -362,25 +351,25 @@
         <span class="c1"># Is name user modifiable?</span>
         <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
         <span class="n">user_modifiable_only_by_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;modify_via_xml&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">user_modifiable_only_by_xml</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span>
-                   <span class="s2">&quot;Cannot change {} in user_nl file: set via xml variable {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">user_modifiable_only_by_xml</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">user_modifiable_only_by_xml</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="s2">&quot;Cannot change </span><span class="si">{}</span><span class="s2"> in user_nl file: set via xml variable </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">user_modifiable_only_by_xml</span><span class="p">))</span>
         <span class="n">user_cannot_modify</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;cannot_modify_by_user_nl&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">user_cannot_modify</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">expect</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span>
-                   <span class="s2">&quot;Cannot change {} in user_nl file: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">user_cannot_modify</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">user_cannot_modify</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="s2">&quot;Cannot change </span><span class="si">{}</span><span class="s2"> in user_nl file: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">user_cannot_modify</span><span class="p">))</span>
 
-<div class="viewcode-block" id="NamelistDefinition.validate"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelist</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.validate"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelist</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate a namelist object against this definition.</span>
 
 <span class="sd">        The optional `filename` argument can be used to assist in error</span>
 <span class="sd">        reporting when the namelist comes from a specific, known file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Improve error reporting when a file name is provided.</span>
-        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable {!r}&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable </span><span class="si">{!r}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable {!r} from file &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable </span><span class="si">{!r}</span><span class="s2"> from file &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
 
         <span class="c1"># Iterate through variables.</span>
         <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">namelist</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">():</span>
@@ -390,20 +379,20 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_expect_variable_in_definition</span><span class="p">(</span><span class="n">qualified_variable_name</span><span class="p">,</span> <span class="n">variable_template</span><span class="p">)</span>
 
                 <span class="c1"># Check if can actually change this variable via filename change</span>
-                <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_user_modifiable_in_variable_definition</span><span class="p">(</span><span class="n">qualified_variable_name</span><span class="p">)</span>
 
                 <span class="c1"># and has the right group name...</span>
                 <span class="n">var_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">qualified_variable_name</span><span class="p">)</span>
                 <span class="n">expect</span><span class="p">(</span><span class="n">var_group</span> <span class="o">==</span> <span class="n">group_name</span><span class="p">,</span>
-                       <span class="p">(</span><span class="n">variable_template</span> <span class="o">+</span> <span class="s2">&quot; is in a group named {!r}, but should be in {!r}.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">variable_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">group_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">var_group</span><span class="p">)))</span>
+                       <span class="p">(</span><span class="n">variable_template</span> <span class="o">+</span> <span class="s2">&quot; is in a group named </span><span class="si">{!r}</span><span class="s2">, but should be in </span><span class="si">{!r}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">variable_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">group_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">var_group</span><span class="p">)))</span>
 
                 <span class="c1"># and has a valid value.</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">namelist</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">)</span>
                 <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_valid_value</span><span class="p">(</span><span class="n">qualified_variable_name</span><span class="p">,</span> <span class="n">value</span><span class="p">),</span>
-                       <span class="p">(</span><span class="n">variable_template</span> <span class="o">+</span> <span class="s2">&quot; has invalid value {!r}.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">variable_name</span><span class="p">),</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span> <span class="k">for</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]))</span></div>
+                       <span class="p">(</span><span class="n">variable_template</span> <span class="o">+</span> <span class="s2">&quot; has invalid value </span><span class="si">{!r}</span><span class="s2">.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">variable_name</span><span class="p">),</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span> <span class="k">for</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]))</span></div>
 
-<div class="viewcode-block" id="NamelistDefinition.dict_to_namelist"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.dict_to_namelist">[docs]</a>    <span class="k">def</span> <span class="nf">dict_to_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.dict_to_namelist"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.dict_to_namelist">[docs]</a>    <span class="k">def</span> <span class="nf">dict_to_namelist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Converts a dictionary of name-value pairs to a `Namelist`.</span>
 
 <span class="sd">        The input is assumed to be similar to the output of `parse` when</span>
@@ -415,17 +404,17 @@
 <span class="sd">        reporting when the namelist comes from a specific, known file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Improve error reporting when a file name is provided.</span>
-        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable {!s}&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable </span><span class="si">{!s}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable {!r} from file &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">variable_template</span> <span class="o">=</span> <span class="s2">&quot;Variable </span><span class="si">{!r}</span><span class="s2"> from file &quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">variable_name</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">:</span>
             <span class="n">variable_lc</span> <span class="o">=</span> <span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="n">qualified_varname</span> <span class="o">=</span> <span class="n">get_fortran_name_only</span><span class="p">(</span><span class="n">variable_lc</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_expect_variable_in_definition</span><span class="p">(</span><span class="n">qualified_varname</span><span class="p">,</span> <span class="n">variable_template</span><span class="p">)</span>
             <span class="n">group_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">qualified_varname</span><span class="p">)</span>
-            <span class="n">expect</span> <span class="p">(</span><span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;No group found for var {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable_lc</span><span class="p">))</span>
+            <span class="n">expect</span> <span class="p">(</span><span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;No group found for var </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable_lc</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">group_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
                 <span class="n">groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
             <span class="n">groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_lc</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict_</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span>
@@ -440,7 +429,7 @@
         <span class="k">return</span><span class="p">(</span><span class="n">input_pathname</span><span class="p">)</span></div>
 
     <span class="c1"># pylint: disable=arguments-differ</span>
-<div class="viewcode-block" id="NamelistDefinition.get_default_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistDefinition.get_default_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.get_default_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the default value for the variable named `item`.</span>
 
 <span class="sd">        The return value is a list of strings corresponding to the</span>
@@ -449,12 +438,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Merge internal attributes with those passed in.</span>
         <span class="n">all_attributes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">all_attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">attribute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">attribute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">all_attributes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
 
-        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">all_attributes</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value_match</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">all_attributes</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_defaults_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div></div>
 </pre></div>
 
@@ -465,12 +454,14 @@
         <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -486,13 +477,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

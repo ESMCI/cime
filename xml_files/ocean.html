@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME Ocean Data and Stub XML Files &mdash; CIME 5.6 documentation</title>
-    
+    <title>CIME Ocean Data and Stub XML Files &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
-    <link rel="up" title="Data, Stub and Driver Component XML Files" href="components.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME River Runoff Data and Stub XML Files" href="river.html" />
     <link rel="prev" title="CIME Land Ice Data and Stub XML Files" href="landice.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,9 +33,9 @@
         <li class="right" >
           <a href="landice.html" title="CIME Land Ice Data and Stub XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="components.html" accesskey="U">Data, Stub and Driver Component XML Files</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="components.html" accesskey="U">Data, Stub and Driver Component XML Files</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -59,14 +48,12 @@
 <span id="ocean"></span><h1>CIME Ocean Data and Stub XML Files<a class="headerlink" href="#cime-ocean-data-and-stub-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>Ocean component XML files for data, stub, and dead components.</p>
 <div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
 </div>
 <div class="section" id="cimeroot-src-components-data-comps-docn-cime-config">
 <h2>CIMEROOT/src/components/data_comps/docn/cime_config<a class="headerlink" href="#cimeroot-src-components-data-comps-docn-cime-config" title="Permalink to this headline">¶</a></h2>
 <p>Ocean data model, <strong>docn</strong>, XML files and settings.</p>
 <p>XML specification for archiving docn output files.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
   &lt;comp_archive_spec compname=&quot;docn&quot; compclass=&quot;ocn&quot;&gt;
     &lt;rest_file_extension&gt;rs*\d*&lt;/rest_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
@@ -80,7 +67,7 @@
 </pre></div>
 </div>
 <p>XML variables and component descriptions specific to docn.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
 &lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;setup_comp.xsl&quot; ?&gt;
 
@@ -362,7 +349,7 @@
 </pre></div>
 </div>
 <p>XML namelist definitions for docn.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
 &lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;namelist_definition.xsl&quot;?&gt;
 
@@ -1015,7 +1002,7 @@
 <p>The ocean stub model, <strong>socn</strong>, does not output any files in the RUNDIR nor
 does it have any namelist settings.</p>
 <p>XML variables and component descriptions specific to socn.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
 &lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;entry_id.xsl&quot; ?&gt;
 
@@ -1049,7 +1036,7 @@ does it have any namelist settings.</p>
 <p>The ocean dead model, <strong>xocn</strong>, does not output any files in the RUNDIR nor
 does it have any namelist settings.</p>
 <p>XML variables and component descriptions specific to xocn.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
 &lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;entry_id.xsl&quot; ?&gt;
 
@@ -1106,18 +1093,20 @@ does it have any namelist settings.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/ocean.txt"
+      <li><a href="../_sources/xml_files/ocean.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1139,14 +1128,14 @@ does it have any namelist settings.</p>
         <li class="right" >
           <a href="landice.html" title="CIME Land Ice Data and Stub XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="components.html" >Data, Stub and Driver Component XML Files</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="components.html" >Data, Stub and Driver Component XML Files</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

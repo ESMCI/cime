@@ -1,34 +1,23 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3. Input Streams &mdash; CIME 5.6 documentation</title>
-    
+    <title>3. Input Streams &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '5.6',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="CIME 5.6 documentation" href="../index.html" />
-    <link rel="up" title="Data Models" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="4. Design Details" href="design-details.html" />
     <link rel="prev" title="2. Input Namelists" href="input-namelists.html" /> 
-  </head>
-  <body role="document">
+  </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -44,8 +33,8 @@
         <li class="right" >
           <a href="input-namelists.html" title="2. Input Namelists"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Data Models</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -61,25 +50,25 @@
 <p>An <em>input data stream</em> is a time-series of input data files where all the fields in the stream are located in the same data file and all share the same spatial and temporal coordinates (ie. are all on the same grid and share the same time axis). Normally a time axis has a uniform dt, but this is not a requirement.</p>
 <p>The data models can have multiple input streams.</p>
 <p>The data for one stream may be all in one file or may be spread over several files. For example, 50 years of monthly average data might be contained all in one data file or it might be spread over 50 files, each containing one year of data.</p>
-<p>The data models can <em>loop</em> over stream data &#8211; i.e., repeatedly cycle over some subset of an input stream&#8217;s time axis. When looping, the models can only loop over whole years. For example, an input stream might have SST data for years 1950 through 2000, but a model could loop over the data for years 1960 through 1980. A model <em>cannot</em> loop over partial years, for example, from 1950-Feb-10 through 1980-Mar-15.</p>
+<p>The data models can <em>loop</em> over stream data – i.e., repeatedly cycle over some subset of an input stream’s time axis. When looping, the models can only loop over whole years. For example, an input stream might have SST data for years 1950 through 2000, but a model could loop over the data for years 1960 through 1980. A model <em>cannot</em> loop over partial years, for example, from 1950-Feb-10 through 1980-Mar-15.</p>
 <p>The input data must be in a netcdf file and the time axis in that file must be CF-1.0 compliant.</p>
 <p>There are two main categories of information that the data models need to know about a stream:</p>
 <ul class="simple">
-<li>data that describes what a user wants &#8211; what streams to use and how to use them &#8211; things that can be changed by a user.</li>
-<li>data that describes the stream data &#8211; meta-data about the inherent properties of the data itself &#8211; things that cannot be changed by a user.</li>
+<li>data that describes what a user wants – what streams to use and how to use them – things that can be changed by a user.</li>
+<li>data that describes the stream data – meta-data about the inherent properties of the data itself – things that cannot be changed by a user.</li>
 </ul>
-<p>Generally, information about what streams a user wants to use and how to use them is input via the strdata (&#8220;stream data&#8221;) Fortran namelist, while meta-data that describes the stream data itself is found in an xml-like text file called a &#8220;stream description file.&#8221;</p>
+<p>Generally, information about what streams a user wants to use and how to use them is input via the strdata (“stream data”) Fortran namelist, while meta-data that describes the stream data itself is found in an xml-like text file called a “stream description file.”</p>
 </div>
 <div class="section" id="stream-data-and-shr-strdata-nml-namelists">
 <h2>3.2. Stream Data and shr_strdata_nml namelists<a class="headerlink" href="#stream-data-and-shr-strdata-nml-namelists" title="Permalink to this headline">¶</a></h2>
-<p>The stream data (referred to as <em>strdata</em>) input is set via a Fortran namelist called <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>.
-That namelist, the associated strdata datatype, and the methods are contained in the share source code file, <code class="docutils literal"><span class="pre">shr_strdata_mod.F90</span></code>.
+<p>The stream data (referred to as <em>strdata</em>) input is set via a Fortran namelist called <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code>.
+That namelist, the associated strdata datatype, and the methods are contained in the share source code file, <code class="docutils literal notranslate"><span class="pre">shr_strdata_mod.F90</span></code>.
 In general, strdata input defines an array of input streams and operations to perform on those streams.
 Therefore, many namelist inputs are arrays of character strings.
 Different variables of the same index are associated. For instance, mapalgo(1) spatial interpolation will be performed between streams(1) and the target domain.</p>
-<p>Each data model has an associated input namelist file, <code class="docutils literal"><span class="pre">xxx_in</span></code>, where <code class="docutils literal"><span class="pre">xxx=[datm,dlnd,dice,docn,drof,dwav]</span></code>.</p>
-<p>The input namelist file for each data model has a stream dependent namelist group, <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>, and a stream independent namelist group.
-The  <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> namelist variables <strong>are the same for all data models</strong>.</p>
+<p>Each data model has an associated input namelist file, <code class="docutils literal notranslate"><span class="pre">xxx_in</span></code>, where <code class="docutils literal notranslate"><span class="pre">xxx=[datm,dlnd,dice,docn,drof,dwav]</span></code>.</p>
+<p>The input namelist file for each data model has a stream dependent namelist group, <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code>, and a stream independent namelist group.
+The  <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code> namelist variables <strong>are the same for all data models</strong>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="8%" />
@@ -111,7 +100,7 @@ The  <code class="docutils literal"><span class="pre">shr_strdata_nml</span></co
 </tr>
 </tbody>
 </table>
-<p id="shr-strdata-nml">The following table summaries the <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> entries.</p>
+<p id="shr-strdata-nml">The following table summaries the <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code> entries.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="8%" />
@@ -141,7 +130,7 @@ be read from this file and that grid will serve as the target grid
 for all input data for this strdata input.
 If the value is <strong>null</strong> then the domain of the first stream
 will be used as the component domain</p>
-<p class="last">default=&#8221;null&#8221;</p>
+<p class="last">default=”null”</p>
 </td>
 </tr>
 <tr class="row-even"><td>streams</td>
@@ -150,54 +139,54 @@ will be used as the component domain</p>
 The  stream_input_filename is a stream text input file and the format and options are described elsewhere.
 The year_align, year_first, and year_last provide information about  the time axis of the file and how to relate
 the input time axis to the model time axis.</p>
-<p class="last">default=&#8221;null&#8221;.</p>
+<p class="last">default=”null”.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>fillalgo</td>
 <td><p class="first">array (up to 30 elements) of fill algorithms associated with the array of streams.</p>
-<p>Valid options are just copy (ie. no fill), special value, nearest neighbor, nearest neighbor in &#8220;i&#8221; direction,
-or nearest neighbor in &#8220;j&#8221; direction.</p>
-<p>valid values:  &#8216;copy&#8217;,&#8217;spval&#8217;,&#8217;nn&#8217;,&#8217;nnoni&#8217;,&#8217;nnonj&#8217;</p>
-<p class="last">default value=&#8217;nn&#8217;</p>
+<p>Valid options are just copy (ie. no fill), special value, nearest neighbor, nearest neighbor in “i” direction,
+or nearest neighbor in “j” direction.</p>
+<p>valid values:  ‘copy’,’spval’,’nn’,’nnoni’,’nnonj’</p>
+<p class="last">default value=’nn’</p>
 </td>
 </tr>
 <tr class="row-even"><td>fillmask</td>
 <td><p class="first">array (up to 30 elements) of fill masks.</p>
-<p>valid values: &#8220;nomask,srcmask,dstmask,bothmask&#8221;</p>
-<p class="last">default=&#8221;nomask&#8221;</p>
+<p>valid values: “nomask,srcmask,dstmask,bothmask”</p>
+<p class="last">default=”nomask”</p>
 </td>
 </tr>
 <tr class="row-odd"><td>fillread</td>
 <td><p class="first">array (up to 30 elements) fill mapping files to read. Secifies the weights file to read in instead of
 computing the weights on the fly for the fill operation.  If this is set, fillalgo and fillmask are ignored.</p>
-<p class="last">default=&#8217;NOT_SET&#8217;</p>
+<p class="last">default=’NOT_SET’</p>
 </td>
 </tr>
 <tr class="row-even"><td>fillwrite</td>
 <td><p class="first">array of fill mapping file to write</p>
-<p class="last">default=&#8217;NOT_SET&#8217;</p>
+<p class="last">default=’NOT_SET’</p>
 </td>
 </tr>
 <tr class="row-odd"><td>mapalgo</td>
 <td><p class="first">array of spatial interpolation algorithms</p>
-<p class="last">default=&#8221;bilinear&#8221;</p>
+<p class="last">default=”bilinear”</p>
 </td>
 </tr>
 <tr class="row-even"><td>mapmask</td>
 <td><p class="first">array of spatial interpolation mask</p>
-<p class="last">default=&#8217;NOT_SET&#8217;</p>
+<p class="last">default=’NOT_SET’</p>
 </td>
 </tr>
 <tr class="row-odd"><td>mapread</td>
 <td><p class="first">array of spatial interpolation mapping files to read (optional)</p>
-<p class="last">default=&#8217;NOT_SET&#8217;</p>
+<p class="last">default=’NOT_SET’</p>
 </td>
 </tr>
 <tr class="row-even"><td>mapwrite</td>
 <td>array (up to 30 elements) of spatial interpolation mapping files to write (optional). Specifies the weights file
 to generate after weights are computed on the fly for the mapping (interpolation) operation, thereby allowing
 users to save and reuse a set of weights later.
-default=&#8217;NOT_SET&#8217;</td>
+default=’NOT_SET’</td>
 </tr>
 <tr class="row-odd"><td>tintalgo</td>
 <td><p class="first">array (up to 30 elements) of time interpolation algorithm options associated with the array of streams.</p>
@@ -207,7 +196,7 @@ lower   = Use lower time-value</p>
 <p>nearest = Use the nearest time-value</p>
 <p>linear  = Linearly interpolate between the two time-values</p>
 <p>coszen  = Scale according to the cosine of the solar zenith angle (for solar)</p>
-<p class="last">default=&#8221;linear&#8221;</p>
+<p class="last">default=”linear”</p>
 </td>
 </tr>
 <tr class="row-even"><td>taxMode</td>
@@ -222,7 +211,7 @@ the least and greatest valid value of the time array.</p>
 <p>extend = extrapolate before and after the period by using the first or last value.</p>
 <p>cycle  = cycle between the range of data</p>
 <p>limit  = restrict to the period for which the data is valid</p>
-<p class="last">default=&#8221;cycle&#8221;</p>
+<p class="last">default=”cycle”</p>
 </td>
 </tr>
 <tr class="row-odd"><td>dtlimit</td>
@@ -246,9 +235,9 @@ to turn off trapping, set the value to 1.0e30 or something similar.</p>
 </tr>
 </tbody>
 </table>
-<p><code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> contains a namelist variable, <code class="docutils literal"><span class="pre">streams</span></code>, that specifies a list of input stream description files and for each file what years of data to use, and how to align the input stream time axis with the model run time axis.</p>
-<p>The general input format for the <code class="docutils literal"><span class="pre">streams</span></code> namelist variable is:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
+<p><code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code> contains a namelist variable, <code class="docutils literal notranslate"><span class="pre">streams</span></code>, that specifies a list of input stream description files and for each file what years of data to use, and how to align the input stream time axis with the model run time axis.</p>
+<p>The general input format for the <code class="docutils literal notranslate"><span class="pre">streams</span></code> namelist variable is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
   <span class="n">streams</span> <span class="o">=</span> <span class="s1">&#39;stream1.txt year_align year_first year_last &#39;</span><span class="p">,</span>
             <span class="s1">&#39;stream2.txt year_align year_first year_last &#39;</span><span class="p">,</span>
              <span class="o">...</span>
@@ -257,7 +246,7 @@ to turn off trapping, set the value to 1.0e30 or something similar.</p>
 </pre></div>
 </div>
 <p>where:</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>streamN.txt
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>streamN.txt
    the stream description file, a plain text file containing details about the input stream (see below)
 year_first
    the first year of data that will be used
@@ -270,54 +259,54 @@ year_align
 </div>
 <div class="section" id="details-on-year-align">
 <h2>3.3. Details on year_align<a class="headerlink" href="#details-on-year-align" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">year_align</span></code> value gives the simulation year corresponding to
-<code class="docutils literal"><span class="pre">year_first</span></code>. A common usage is to set this to the year of
-<code class="docutils literal"><span class="pre">RUN_STARTDATE</span></code>. With this setting, the forcing in the first year of
-the run will be the forcing of year <code class="docutils literal"><span class="pre">year_first</span></code>. Another use case is
+<p>The <code class="docutils literal notranslate"><span class="pre">year_align</span></code> value gives the simulation year corresponding to
+<code class="docutils literal notranslate"><span class="pre">year_first</span></code>. A common usage is to set this to the year of
+<code class="docutils literal notranslate"><span class="pre">RUN_STARTDATE</span></code>. With this setting, the forcing in the first year of
+the run will be the forcing of year <code class="docutils literal notranslate"><span class="pre">year_first</span></code>. Another use case is
 to align the calendar of transient forcing with the model calendar. For
-example, setting <code class="docutils literal"><span class="pre">year_align</span></code> = <code class="docutils literal"><span class="pre">year_first</span></code> will lead to the
+example, setting <code class="docutils literal notranslate"><span class="pre">year_align</span></code> = <code class="docutils literal notranslate"><span class="pre">year_first</span></code> will lead to the
 forcing calendar being the same as the model calendar. The forcing for a
 given model year would be the forcing of the same year. This would be
 appropriate in transient runs where the model calendar is setup to span
 the same year range as the forcing data.</p>
-<p>For some data model modes, <code class="docutils literal"><span class="pre">year_align</span></code> can be set via an xml variable
-whose name ends with <code class="docutils literal"><span class="pre">YR_ALIGN</span></code> (there are a few such xml variables,
+<p>For some data model modes, <code class="docutils literal notranslate"><span class="pre">year_align</span></code> can be set via an xml variable
+whose name ends with <code class="docutils literal notranslate"><span class="pre">YR_ALIGN</span></code> (there are a few such xml variables,
 each pertaining to a particular data model mode).</p>
 <p>An example of this is land-only historical simulations in which we run
 the model for 1850 to 2010 using atmospheric forcing data that is only
 available for 1901 to 2010. In this case, we want to run the model for
-years 1850 (so <code class="docutils literal"><span class="pre">RUN_STARTDATE</span></code> has year 1850) through 1900 by looping
+years 1850 (so <code class="docutils literal notranslate"><span class="pre">RUN_STARTDATE</span></code> has year 1850) through 1900 by looping
 over the forcing data for 1901-1920, and then run the model for years
 1901-2010 using the forcing data from 1901-2010. To do this, we
 initially set:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_ALIGN</span><span class="o">=</span><span class="mi">1901</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_ALIGN</span><span class="o">=</span><span class="mi">1901</span>
 <span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_START</span><span class="o">=</span><span class="mi">1901</span>
 <span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_END</span><span class="o">=</span><span class="mi">1920</span>
 </pre></div>
 </div>
 <p>When the model has completed year 1900, then we set:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_ALIGN</span><span class="o">=</span><span class="mi">1901</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_ALIGN</span><span class="o">=</span><span class="mi">1901</span>
 <span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_START</span><span class="o">=</span><span class="mi">1901</span>
 <span class="o">./</span><span class="n">xmlchange</span> <span class="n">DATM_CLMNCEP_YR_END</span><span class="o">=</span><span class="mi">2010</span>
 </pre></div>
 </div>
 <p>With this setup, the correlation between model run year and forcing year
 looks like this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">RUN</span>   <span class="n">Year</span> <span class="p">:</span> <span class="mi">1850</span> <span class="o">...</span> <span class="mi">1860</span> <span class="mi">1861</span> <span class="o">...</span> <span class="mi">1870</span> <span class="o">...</span> <span class="mi">1880</span> <span class="mi">1881</span> <span class="o">...</span> <span class="mi">1890</span> <span class="o">...</span> <span class="mi">1900</span> <span class="mi">1901</span> <span class="o">...</span> <span class="mi">2010</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span>   <span class="n">Year</span> <span class="p">:</span> <span class="mi">1850</span> <span class="o">...</span> <span class="mi">1860</span> <span class="mi">1861</span> <span class="o">...</span> <span class="mi">1870</span> <span class="o">...</span> <span class="mi">1880</span> <span class="mi">1881</span> <span class="o">...</span> <span class="mi">1890</span> <span class="o">...</span> <span class="mi">1900</span> <span class="mi">1901</span> <span class="o">...</span> <span class="mi">2010</span>
 <span class="n">FORCE</span> <span class="n">Year</span> <span class="p">:</span> <span class="mi">1910</span> <span class="o">...</span> <span class="mi">1920</span> <span class="mi">1901</span> <span class="o">...</span> <span class="mi">1910</span> <span class="o">...</span> <span class="mi">1920</span> <span class="mi">1901</span> <span class="o">...</span> <span class="mi">1910</span> <span class="o">...</span> <span class="mi">1920</span> <span class="mi">1901</span> <span class="o">...</span> <span class="mi">2010</span>
 </pre></div>
 </div>
-<p>Setting <code class="docutils literal"><span class="pre">DATM_CLMNCEP_YR_ALIGN</span></code> to 1901 tells the code that you want
+<p>Setting <code class="docutils literal notranslate"><span class="pre">DATM_CLMNCEP_YR_ALIGN</span></code> to 1901 tells the code that you want
 to align model year 1901 with forcing data year 1901, and then it
 calculates what the forcing year should be if the model starts in
 year 1850.</p>
 </div>
 <div class="section" id="customizing-shr-strdata-nml-values">
 <h2>3.4. Customizing shr_strdata_nml values<a class="headerlink" href="#customizing-shr-strdata-nml-values" title="Permalink to this headline">¶</a></h2>
-<p>The contents of <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> are automatically generated by that data model&#8217;s <strong>cime_config/buildnml</strong> script.
+<p>The contents of <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code> are automatically generated by that data model’s <strong>cime_config/buildnml</strong> script.
 These contents are easily customizable for your target experiment.
-As an example we refer to the following <code class="docutils literal"><span class="pre">datm_in</span></code> contents (that would appear in both <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal"><span class="pre">$RUNDIR</span></code>):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>\<span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
+As an example we refer to the following <code class="docutils literal notranslate"><span class="pre">datm_in</span></code> contents (that would appear in both <code class="docutils literal notranslate"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
    <span class="n">datamode</span>   <span class="o">=</span> <span class="s1">&#39;CLMNCEP&#39;</span>
    <span class="n">domainfile</span> <span class="o">=</span> <span class="s1">&#39;/glade/proj3/cseg/inputdata/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc&#39;</span>
    <span class="n">dtlimit</span>    <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span>
@@ -335,17 +324,17 @@ As an example we refer to the following <code class="docutils literal"><span cla
 <span class="o">/</span>
 </pre></div>
 </div>
-<p>As is discussed in the <a class="reference internal" href="../users_guide/running-a-case.html#running-a-case"><span class="std std-ref">CIME User&#8217;s Guide</span></a>, to change the contents of <code class="docutils literal"><span class="pre">datm_in</span></code>, you must edit <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_datm</span></code>.
+<p>As is discussed in the <a class="reference internal" href="../users_guide/running-a-case.html#running-a-case"><span class="std std-ref">CIME User’s Guide</span></a>, to change the contents of <code class="docutils literal notranslate"><span class="pre">datm_in</span></code>, you must edit <code class="docutils literal notranslate"><span class="pre">$CASEROOT/user_nl_datm</span></code>.
 In the above example, you can to this to change any of the above settings <strong>except for the names</strong></p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>datm.streams.txt.CLM_QIAN.Solar
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>datm.streams.txt.CLM_QIAN.Solar
 datm.streams.txt.CLM_QIAN.Precip
 datm.streams.txt.CLM_QIAN.TPQW
 datm.streams.txt.presaero.trans_1850-2000
 </pre></div>
 </div>
-<p>Other than these names, any namelist variable from <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> can be modified by adding the appropriate keyword/value pairs to <code class="docutils literal"><span class="pre">user_nl_datm</span></code>.</p>
-<p>As an example, the following could be the contents of <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_datm</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>!------------------------------------------------------------------------
+<p>Other than these names, any namelist variable from <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code> can be modified by adding the appropriate keyword/value pairs to <code class="docutils literal notranslate"><span class="pre">user_nl_datm</span></code>.</p>
+<p>As an example, the following could be the contents of <code class="docutils literal notranslate"><span class="pre">$CASEROOT/user_nl_datm</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>!------------------------------------------------------------------------
 ! Users should ONLY USE user_nl_datm to change namelists variables
 ! Users should add all user specific namelist changes below in the form of
 ! namelist_var = new_namelist_value
@@ -364,8 +353,8 @@ streams    = &quot;datm.streams.txt.CLM_QIAN.Solar  1895 1948 1900  &quot;,
              &quot;datm.streams.txt.presaero.trans_1850-2000 1849 1849 2006&quot;
 </pre></div>
 </div>
-<p>and the contents of <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> (in both <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal"><span class="pre">$RUNDIR</span></code>) would be</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">datamode</span>   <span class="o">=</span> <span class="s1">&#39;CLMNCEP&#39;</span>
+<p>and the contents of <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code> (in both <code class="docutils literal notranslate"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>) would be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datamode</span>   <span class="o">=</span> <span class="s1">&#39;CLMNCEP&#39;</span>
 <span class="n">domainfile</span> <span class="o">=</span> <span class="s1">&#39;/glade/proj3/cseg/inputdata/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc&#39;</span>
 <span class="n">dtlimit</span>    <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span>
 <span class="n">fillalgo</span>   <span class="o">=</span> <span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span>
@@ -381,38 +370,38 @@ streams    = &quot;datm.streams.txt.CLM_QIAN.Solar  1895 1948 1900  &quot;,
 <span class="n">vectors</span>    <span class="o">=</span> <span class="s1">&#39;null&#39;</span>
 </pre></div>
 </div>
-<p>As is discussed in the <a class="reference internal" href="../users_guide/running-a-case.html#running-a-case"><span class="std std-ref">CIME User&#8217;s Guide</span></a>, you should use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs</span></code>.</p>
+<p>As is discussed in the <a class="reference internal" href="../users_guide/running-a-case.html#running-a-case"><span class="std std-ref">CIME User’s Guide</span></a>, you should use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal notranslate"><span class="pre">CaseDocs</span></code>.</p>
 </div>
 <div class="section" id="stream-description-file">
 <span id="id2"></span><h2>3.5. Stream Description File<a class="headerlink" href="#stream-description-file" title="Permalink to this headline">¶</a></h2>
 <p>The <em>stream description file</em> is not a Fortran namelist, but a locally built xml-like parsing implementation.
-Sometimes it is called a &#8220;stream dot-text file&#8221; because it has a &#8221;.txt.&#8221; in the filename.
+Sometimes it is called a “stream dot-text file” because it has a “.txt.” in the filename.
 Stream description files contain data that specifies the names of the fields in the stream, the names of the input data files, and the file system directory where the data files are located.</p>
 <p>The data elements found in the stream description file are:</p>
 <dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">dataSource</span></code></dt>
-<dd>A comment about the source of the data &#8211; always set to GENERIC and is there only for backwards compatibility.</dd>
-<dt><code class="docutils literal"><span class="pre">domainInfo</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">dataSource</span></code></dt>
+<dd>A comment about the source of the data – always set to GENERIC and is there only for backwards compatibility.</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">domainInfo</span></code></dt>
 <dd><p class="first">Information about the domain data for this stream specified by the following 3 sub elements.</p>
 <dl class="last docutils">
-<dt><code class="docutils literal"><span class="pre">variableNames</span></code></dt>
-<dd>A list of the domain variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This data models require five variables in this list. The names of model&#8217;s variables (names on the right) must be: &#8220;time,&#8221; &#8220;lon,&#8221; &#8220;lat,&#8221; &#8220;area,&#8221; and &#8220;mask.&#8221;</dd>
-<dt><code class="docutils literal"><span class="pre">filePath</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">variableNames</span></code></dt>
+<dd>A list of the domain variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This data models require five variables in this list. The names of model’s variables (names on the right) must be: “time,” “lon,” “lat,” “area,” and “mask.”</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">filePath</span></code></dt>
 <dd>The file system directory where the domain data file is located.</dd>
-<dt><code class="docutils literal"><span class="pre">fileNames</span></code></dt>
-<dd>The name of the domain data file. Often the domain data is located in the same file as the field data (above), in which case the name of the domain file could simply be the name of the first field data file. Sometimes the field data files don&#8217;t contain the domain data required by the data models, in this case, one new file can be created that contains the required data.</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">fileNames</span></code></dt>
+<dd>The name of the domain data file. Often the domain data is located in the same file as the field data (above), in which case the name of the domain file could simply be the name of the first field data file. Sometimes the field data files don’t contain the domain data required by the data models, in this case, one new file can be created that contains the required data.</dd>
 </dl>
 </dd>
-<dt><code class="docutils literal"><span class="pre">fieldInfo</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">fieldInfo</span></code></dt>
 <dd><p class="first">Information about the stream data for this stream specified by the following 3 required sub elements and optional offset element.</p>
 <dl class="last docutils">
-<dt><code class="docutils literal"><span class="pre">variableNames</span></code></dt>
-<dd>A list of the field variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This is the list of fields to read in from the data file; there may be other fields in the file which are not read in (i.e., they won&#8217;t be used).</dd>
-<dt><code class="docutils literal"><span class="pre">filePath</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">variableNames</span></code></dt>
+<dd>A list of the field variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This is the list of fields to read in from the data file; there may be other fields in the file which are not read in (i.e., they won’t be used).</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">filePath</span></code></dt>
 <dd>The file system directory where the data files are located.</dd>
-<dt><code class="docutils literal"><span class="pre">fileNames</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">fileNames</span></code></dt>
 <dd>The list of data files to use. If there is more than one file, the files must be in chronological order, that is, the dates in time axis of the first file are before the dates in the time axis of the second file.</dd>
-<dt><code class="docutils literal"><span class="pre">offset</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">offset</span></code></dt>
 <dd>The offset allows a user to shift the time axis of a data stream by a fixed and constant number of seconds. For instance, if a data set contains daily average data with timestamps for the data at the end of the day, it might be appropriate to shift the time axis by 12 hours so the data is taken to be at the middle of the day instead of the end of the day. This feature supports only simple shifts in seconds as a way of correcting input data time axes without having to modify the input data time axis manually. This feature does not support more complex shifts such as end of month to mid-month. But in conjunction with the time interpolation methods in the strdata input, hopefully most user needs can be accommodated with the two settings. Note that a positive offset advances the input data time axis forward by that number of seconds.</dd>
 </dl>
 </dd>
@@ -421,15 +410,15 @@ Stream description files contain data that specifies the names of the fields in 
 At a given time, they read/derive fields from input files.
 Those input files have data on a discrete time axis as well.
 Each data point in the input files is associated with a discrete time (as opposed to a time interval).
-Depending on whether you pick lower, upper, nearest, linear, or coszen, the data in the input file will be &#8220;interpolated&#8221; to the time in the model.</p>
+Depending on whether you pick lower, upper, nearest, linear, or coszen, the data in the input file will be “interpolated” to the time in the model.</p>
 <p>The offset shifts the time axis of the input data the given number of seconds.
 So if the input data is at 0, 3600, 7200, 10800 seconds (hourly) and you set an offset of 1800, then the input data will be set at times 1800, 5400, 9000, and 12600.
-So a model at time 3600 using linear interpolation would have data at &#8220;n=2&#8221; with offset of 0 will have data at &#8220;n=(2+3)/2&#8221; with an offset of 1800.
+So a model at time 3600 using linear interpolation would have data at “n=2” with offset of 0 will have data at “n=(2+3)/2” with an offset of 1800.
 n=2 is the 2nd data in the time list 0, 3600, 7200, 10800 in this example.
 n=(2+3)/2 is the average of the 2nd and 3rd data in the time list 0, 3600, 7200, 10800.
 offset can be positive or negative.</p>
 <p>Actual example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">stream</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">stream</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">domainInfo</span><span class="o">&gt;</span>
    <span class="o">&lt;</span><span class="n">variableNames</span><span class="o">&gt;</span>
       <span class="n">time</span>   <span class="n">time</span>
@@ -470,30 +459,30 @@ offset can be positive or negative.</p>
 </div>
 <div class="section" id="customizing-stream-description-files">
 <h2>3.6. Customizing stream description files<a class="headerlink" href="#customizing-stream-description-files" title="Permalink to this headline">¶</a></h2>
-<p>Each data model&#8217;s <strong>cime-config/buildnml</strong> utility automatically generates the required stream description files for the case.
+<p>Each data model’s <strong>cime-config/buildnml</strong> utility automatically generates the required stream description files for the case.
 The directory contents of each data model will look like the following (using DATM as an example)</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$CIMEROOT/components/data_comps/datm/cime_config/buildnml
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/components/data_comps/datm/cime_config/buildnml
 $CIMEROOT/components/data_comps/datm/cime_config/namelist_definition_datm.xml
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">namelist_definition_datm.xml</span></code> file defines and sets default values for all the namelist variables and associated groups and also provides out-of-the box settings for the target data model and target stream.
+<p>The <code class="docutils literal notranslate"><span class="pre">namelist_definition_datm.xml</span></code> file defines and sets default values for all the namelist variables and associated groups and also provides out-of-the box settings for the target data model and target stream.
 <strong>buildnml</strong> utilizes these two files to construct the stream files for the given compset settings. You can modify the generated stream files for your particular needs by doing the following:</p>
 <ol class="arabic">
-<li><p class="first">Copy the relevant description file from <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> to <code class="docutils literal"><span class="pre">$CASEROOT</span></code> and pre-pend a &#8220;user_&#8221;string to the filename. Change the permission of the file to write. For example, assuming you are in <strong>$CASEROOT</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>cp $CASEROOT/CaseDocs/datm.streams.txt.CLM_QIAN.Solar  $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
+<li><p class="first">Copy the relevant description file from <code class="docutils literal notranslate"><span class="pre">$CASEROOT/CaseDocs</span></code> to <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> and pre-pend a “user_”string to the filename. Change the permission of the file to write. For example, assuming you are in <strong>$CASEROOT</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cp $CASEROOT/CaseDocs/datm.streams.txt.CLM_QIAN.Solar  $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
 chmod u+w $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
 </pre></div>
 </div>
 </li>
-<li><p class="first">Edit <code class="docutils literal"><span class="pre">$CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar</span></code> with your desired changes.</p>
+<li><p class="first">Edit <code class="docutils literal notranslate"><span class="pre">$CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar</span></code> with your desired changes.</p>
 <ul class="simple">
 <li><em>Be sure not to put any tab characters in the file: use spaces instead</em>.</li>
-<li>In contrast to other user_nl_xxx files, be sure to set all relevant data model settings in the xml files, issue the <strong>preview_namelist</strong> command and THEN edit the <code class="docutils literal"><span class="pre">user_datm.streams.txt.CLM_QIAN.Solar</span></code> file.</li>
+<li>In contrast to other user_nl_xxx files, be sure to set all relevant data model settings in the xml files, issue the <strong>preview_namelist</strong> command and THEN edit the <code class="docutils literal notranslate"><span class="pre">user_datm.streams.txt.CLM_QIAN.Solar</span></code> file.</li>
 <li><strong>Once you have created a user_xxx.streams.txt.* file, further modifications to the relevant data model settings in the xml files will be ignored.</strong></li>
 <li>If you later realize that you need to change some settings in an xml file, you should remove the user_xxx.streams.txt.* file(s), make the modifications in the xml file, rerun <strong>preview_namelists</strong>, and then reintroduce your modifications into a new user_xxx.streams.txt.* stream file(s).</li>
 </ul>
 </li>
-<li><p class="first">Call <strong>preview_namelists</strong> and verify that your changes do indeed appear in the resultant stream description file appear in <code class="docutils literal"><span class="pre">CaseDocs/datm.streams.txt.CLM_QIAN.Solar</span></code>. These changes will also appear in <code class="docutils literal"><span class="pre">$RUNDIR/datm.streams.txt.CLM_QIAN.Solar</span></code>.</p>
+<li><p class="first">Call <strong>preview_namelists</strong> and verify that your changes do indeed appear in the resultant stream description file appear in <code class="docutils literal notranslate"><span class="pre">CaseDocs/datm.streams.txt.CLM_QIAN.Solar</span></code>. These changes will also appear in <code class="docutils literal notranslate"><span class="pre">$RUNDIR/datm.streams.txt.CLM_QIAN.Solar</span></code>.</p>
 </li>
 </ol>
 </div>
@@ -527,18 +516,20 @@ chmod u+w $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/input-streams.txt"
+      <li><a href="../_sources/data_models/input-streams.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -560,13 +551,13 @@ chmod u+w $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
         <li class="right" >
           <a href="input-namelists.html" title="2. Input Namelists"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Data Models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>
