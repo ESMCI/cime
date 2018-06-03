@@ -62,9 +62,10 @@
      <xs:restriction base="xs:NCName">
         <xs:enumeration value="wallclock"/>
         <xs:enumeration value="comment"/>
-        <xs:enumeration value="queue"/>
         <xs:enumeration value="memleak_tolerance"/>
         <xs:enumeration value="tput_tolerance"/>
+        <!-- Queue can't actually be set, but is currently in the CAM testlist -->
+        <xs:enumeration value="queue"/>
      </xs:restriction>
   </xs:simpleType>
 
