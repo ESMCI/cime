@@ -31,14 +31,15 @@ class HOMME(SystemTestsCommon):
             basecmp  = self._case.get_value("BASECMP_CASE")
             generate = self._case.get_value("GENERATE_BASELINE")
             gmake    = self._case.get_value("GMAKE")
+            cprnc    = self._case.get_value("CCSM_CPRNC")
 
             basename = basegen if generate else basecmp
-            cmake_cmd = "cmake -C {}/components/homme/cmake/machineFiles/{}.cmake -DUSE_NUM_PROCS={} {}/components/homme -DHOMME_BASELINE_DIR={}/{}".format(srcroot, mach, procs, srcroot, baseline, basename)
+            cmake_cmd = "cmake -C {}/components/homme/cmake/machineFiles/{}.cmake -DUSE_NUM_PROCS={} {}/components/homme -DHOMME_BASELINE_DIR={}/{} -DCPRNC_DIR={}/..".format(srcroot, mach, procs, srcroot, baseline, basename, cprnc)
 
             run_cmd_no_fail(cmake_cmd, arg_stdout="homme.bldlog", combine_output=True, from_dir=exeroot)
             run_cmd_no_fail("{} -j8".format(gmake), arg_stdout="homme.bldlog", combine_output=True, from_dir=exeroot)
 
-            post_build(self._case, [os.path.join(exeroot, "homme.bldlog")])
+            post_build(self._case, [os.path.join(exeroot, "homme.bldlog")], build_complete=True)
 
     def run_phase(self):
 
@@ -76,7 +77,7 @@ class HOMME(SystemTestsCommon):
 
         expect(stat == 0, "RUN FAIL for HOMME")
 
-    # Homme is a bit of an oddball test since it's not really running the ACME model
+    # Homme is a bit of an oddball test since it's not really running the E3SM model
     # We need to override some methods to make the core infrastructure work.
 
     def _generate_baseline(self):

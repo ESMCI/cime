@@ -10,7 +10,9 @@
 #include <sys/time.h>
 
 #ifndef NO_COMM_F2C
+#ifndef HAVE_COMM_F2C
 #define HAVE_COMM_F2C
+#endif
 #endif
 
 #ifndef MIN
@@ -54,6 +56,7 @@ typedef struct {
 
 typedef struct {
   double last;              /* timestamp from last call */
+  double latest;            /* most recent delta */
   double accum;             /* accumulated time */
   float max;                /* longest time for start/stop pair */
   float min;                /* shortest time for start/stop pair */

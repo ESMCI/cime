@@ -9,7 +9,7 @@
   Miscellaneous Tools
 #####################################
 
-In addition to basic infrastructure for a coupled model, CIME contains in its distribution several stand-alone 
+In addition to basic infrastructure for a coupled model, CIME contains in its distribution several stand-alone
 tools that are necessary and/or useful when building a climate model.  Guides for using them will be here.
 
 .. toctree::
@@ -17,13 +17,10 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
    :numbered:
 
 
-Statistical Ensemble Test
-
-Mapping Tools
-
-cprnc
-
-load-balancing-tool.rst
+   ect.rst
+   mapping-tools.rst
+   cprnc.rst
+   load-balancing-tool.rst
 
 Indices and tables
 ==================
@@ -31,4 +28,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

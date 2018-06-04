@@ -7,7 +7,7 @@ sys.path.append(os.path.join(_CIMEROOT, "scripts", "utils", "python"))
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "fortran_unit_testing", "python"))
 
 from standard_script_setup import *
-from CIME.BuildTools.configure import configure
+from CIME.BuildTools.configure import configure, FakeCase
 from CIME.utils import run_cmd_no_fail, stringify_bool, expect
 from CIME.XML.machines import Machines
 from CIME.XML.compilers import Compilers
@@ -91,7 +91,7 @@ requires genf90.pl to be in the user's path."""
                         help="""MPI Library to use in build.
                         If not specified, use the default for this machine/compiler.
                         Must match an MPILIB option in config_compilers.xml.
-                        e.g., for yellowstone, can use 'mpich2'.
+                        e.g., for cheyenne, can use 'mpt'.
                         Only relevant if --use-mpi is specified."""
     )
 
@@ -180,6 +180,7 @@ def cmake_stage(name, test_spec_dir, build_optimized, use_mpiserial, mpirun_comm
             "cmake",
             "-C Macros.cmake",
             test_spec_dir,
+            "-DCIMEROOT="+_CIMEROOT,
             "-DCIME_CMAKE_MODULE_DIRECTORY="+os.path.abspath(os.path.join(_CIMEROOT,"src","CMake")),
             "-DCMAKE_BUILD_TYPE="+build_type,
             "-DPFUNIT_MPIRUN='"+mpirun_command+"'",
@@ -242,8 +243,8 @@ def find_pfunit(compilerobj, mpilib, use_openmp):
     expect(pfunit_path is not None,
            """PFUNIT_PATH not found for this machine and compiler, with MPILIB={} and compile_threaded={}.
 You must specify PFUNIT_PATH in config_compilers.xml, with attributes MPILIB and compile_threaded.""".format(mpilib, attrs['compile_threaded']))
-    logger.info("Using PFUNIT_PATH: {}".format(pfunit_path.text))
-    return pfunit_path.text
+    logger.info("Using PFUNIT_PATH: {}".format(compilerobj.text(pfunit_path)))
+    return compilerobj.text(pfunit_path)
 
 #=================================================
 # Iterate over input suite specs, building the tests.
@@ -321,7 +322,8 @@ def _main():
               unit_testing=True)
     machspecific = EnvMachSpecific(build_dir, unit_testing=True)
 
-    machspecific.load_env(compiler, debug, mpilib)
+    fake_case = FakeCase(compiler, mpilib, debug)
+    machspecific.load_env(fake_case)
     os.environ["OS"] = os_
     os.environ["COMPILER"] = compiler
     os.environ["DEBUG"] = stringify_bool(debug)
@@ -349,7 +351,7 @@ def _main():
         }
 
         # We can get away with specifying case=None since we're using exe_only=True
-        mpirun_command, _ = machspecific.get_mpirun(case=None, attribs=mpi_attribs, exe_only=True)
+        mpirun_command, _ = machspecific.get_mpirun(None, mpi_attribs, None, exe_only=True)
         mpirun_command = machspecific.get_resolved_value(mpirun_command)
         logger.info("mpirun command is '{}'".format(mpirun_command))
 

@@ -9,9 +9,7 @@ count are modified on retart.
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.case_setup import case_setup
 from CIME.SystemTests.restart_tests import RestartTest
-from CIME.check_lockedfiles import *
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +25,6 @@ class ERP(RestartTest):
                              run_one_description = 'initial',
                              run_two_description = 'restart')
 
-    def _common_setup(self):
-        self._case.set_value("BUILD_THREADED",True)
-
     def _case_two_setup(self):
         # halve the number of tasks and threads
         for comp in self._case.get_values("COMP_CLASSES"):
@@ -37,16 +32,16 @@ class ERP(RestartTest):
             nthreads  = self._case1.get_value("NTHRDS_{}".format(comp))
             rootpe    = self._case1.get_value("ROOTPE_{}".format(comp))
             if ( nthreads > 1 ):
-                self._case.set_value("NTHRDS_{}".format(comp), nthreads/2)
+                self._case.set_value("NTHRDS_{}".format(comp), int(nthreads/2))
             if ( ntasks > 1 ):
-                self._case.set_value("NTASKS_{}".format(comp), ntasks/2)
-                self._case.set_value("ROOTPE_{}".format(comp), rootpe/2)
+                self._case.set_value("NTASKS_{}".format(comp), int(ntasks/2))
+                self._case.set_value("ROOTPE_{}".format(comp), int(rootpe/2))
 
         RestartTest._case_two_setup(self)
+        self._case.case_setup(test_mode=True, reset=True)
         # Note, some components, like CESM-CICE, have
         # decomposition information in env_build.xml that
         # needs to be regenerated for the above new tasks and thread counts
-        case_setup(self._case, test_mode=True, reset=True)
 
     def _case_one_custom_postrun_action(self):
         self.copy_case1_restarts_to_case2()
