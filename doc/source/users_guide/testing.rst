@@ -192,11 +192,7 @@ MODIFIERS    Description
 
    _D        XML variable DEBUG set to "TRUE"
 
-   _E        USE_ESMF_LIB set to "TRUE"
-
    _I        Marker to distinguish tests with same name - ignored.
-
-   _IOP      Turns on pnetcdf for the PIO backend.
 
    _Lo#      Run length set by o (STOP_OPTION) and # (STOP_N).
               | o = {"y":"nyears", "m":"nmonths",  "d":"ndays", 
@@ -273,10 +269,6 @@ current status of all your tests.
 Query_testlists
 ===================
 .. _query_testlists:
-
-.. KDR Will query_testlists be renamed query_tests?
-   And will ../Tools_user/query_tests.html then exist?
-   "To see the available tests for your model, call `query_tests <../Tools_user/query_tests.html>`_."
 
 **$CIMEROOT/scripts/query_testlists** gathers descriptions of the tests and testlists available 
 for CESM, the components, and projects.
