@@ -119,7 +119,7 @@ class TestScheduler(object):
                  use_existing=False, save_timing=False, queue=None,
                  allow_baseline_overwrite=False, output_root=None,
                  force_procs=None, force_threads=None, mpilib=None,
-                 input_dir=None, pesfile=None, mail_user=None, mail_type=None, allow_pnl=False):
+                 input_dir=None, pesfile=None, mail_user=None, mail_type=None):
     ###########################################################################
         self._cime_root       = CIME.utils.get_cime_root()
         self._cime_model      = get_model()
@@ -131,7 +131,6 @@ class TestScheduler(object):
         self._input_dir       = input_dir
         self._pesfile         = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
-        self._allow_pnl       = allow_pnl
 
         self._mail_user = mail_user
         self._mail_type = mail_type
@@ -549,12 +548,7 @@ class TestScheduler(object):
         envtest.set_value("GENERATE_BASELINE", self._baseline_gen_name is not None)
         envtest.set_value("COMPARE_BASELINE", self._baseline_cmp_name is not None)
         envtest.set_value("CCSM_CPRNC", self._machobj.get_value("CCSM_CPRNC", resolved=False))
-
         tput_tolerance = self._machobj.get_value("TEST_TPUT_TOLERANCE", resolved=False)
-        if test in self._test_data and "options" in self._test_data[test] and \
-                "tput_tolerance" in self._test_data[test]['options']:
-            tput_tolerance = self._test_data[test]['options']['tput_tolerance']
-
         envtest.set_value("TEST_TPUT_TOLERANCE", 0.25 if tput_tolerance is None else tput_tolerance)
 
         # Add the test instructions from config_test to env_test in the case
@@ -667,9 +661,7 @@ class TestScheduler(object):
     ###########################################################################
         test_dir = self._get_test_dir(test)
 
-        cmd = "./case.submit"
-        if not self._allow_pnl:
-            cmd += " --skip-preview-namelist"
+        cmd = "./case.submit --skip-preview-namelist"
         if self._no_batch:
             cmd += " --no-batch"
         if self._mail_user:
@@ -961,13 +953,9 @@ class TestScheduler(object):
                     ts = TestStatus(self._get_test_dir(test))
                     nlfail = ts.get_status(NAMELIST_PHASE) == TEST_FAIL_STATUS
                     ts_status = ts.get_overall_test_status(ignore_namelists=True, check_memory=False, check_throughput=False)
-                    local_run = not self._no_run and self._no_batch
 
                     if ts_status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
                         logger.info( "{} {} (phase {})".format(ts_status, test, phase))
-                        rv = False
-                    elif ts_status == TEST_PEND_STATUS and local_run:
-                        logger.info( "{} {} (Some phases left in PEND)".format(TEST_FAIL_STATUS, test))
                         rv = False
                     elif nlfail:
                         logger.info( "{} {} (but otherwise OK) {}".format(NAMELIST_FAIL_STATUS, test, phase))

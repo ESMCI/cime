@@ -299,10 +299,6 @@ class TestStatus(object):
         'DIFF'
         >>> _test_helper2('FAIL ERS.foo.A BASELINE\nFAIL ERS.foo.A NLCOMP\nFAIL ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN')
         'FAIL'
-        >>> _test_helper2('PEND ERS.foo.A COMPARE_2\nFAIL ERS.foo.A RUN')
-        'FAIL'
-        >>> _test_helper2('PEND ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN')
-        'PEND'
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD')
         'PASS'
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD', wait_for_run=True)
@@ -324,7 +320,7 @@ class TestStatus(object):
                 run_phase_found = True
 
             if (status == TEST_PEND_STATUS):
-                rv = TEST_PEND_STATUS
+                return status
 
             elif (status == TEST_FAIL_STATUS):
                 if ( (not check_throughput and phase == THROUGHPUT_PHASE) or

@@ -51,10 +51,9 @@
     </xs:complexType>
   </xs:element>
 
-
   <xs:element name="option">
     <xs:complexType mixed="true">
-      <xs:attribute name="name"              use="required" type="OptionType"/>
+      <xs:attribute name="name" use="required" type="xs:NCName"/>
     </xs:complexType>
   </xs:element>
 
