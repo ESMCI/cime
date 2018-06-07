@@ -17,7 +17,6 @@ include(/home/asteyer/cime/src/CMake/CIME_initial_setup.cmake)
 #include(/home/agsalin/buildmacrocime/Macros.cmake)
 
 PROJECT(E3SM Fortran C)
-
 message("XXX ${NetCDF_PATH}")
 message("XXY ${FFLAGS}")
 set(CMAKE_Fortran_FLAGS ${FFLAGS})
@@ -243,6 +242,8 @@ INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${WAV_S_BINARY_DIR}
                      ${ESP_S_BINARY_DIR}
                      ${E3SM_PIO_LIBRARY_DIR}
+                     ${MCT_BINARY_DIR}
+                     ${MPEU_BINARY_DIR}
                      )
 
 MESSAGE("   + CompMod:")
