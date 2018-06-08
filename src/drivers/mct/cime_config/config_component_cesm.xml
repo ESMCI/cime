@@ -110,6 +110,15 @@
     We will not document this further in this guide.</desc>
   </entry>
 
+  <entry id="COMPRESS_ARCHIVE_FILES">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>TRUE</default_value>
+    <group>run_data_archive</group>
+    <file>env_run.xml</file>
+    <desc>Logical  compress/convert  archive files to netcdf-4</desc>
+  </entry>
+
   <entry id="BFBFLAG">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
@@ -416,6 +425,47 @@
       evaporation and ocn global salinity does not drift. This is intended
       for use when coupling POP to a DATM. Only used for C, G and J compsets.
       Default is off
+    </desc>
+  </entry>
+
+  <entry id="COSZ_AVG">
+    <type>char</type>
+    <valid_values>.true.,.false.</valid_values>
+    <default_value>.false.</default_value>
+    <values match="last">
+      <value compset="_CAM5%PTAEROUPD1">.true.</value>
+      <value compset="_CAM60%PTAERO">.true.</value>
+      <value compset="_CAM54%PTAERO">.true.</value>
+      <value compset="_CAM5%NUDGEPTAEROUPD1">.true.</value>
+      <value compset="_CAM54%NUDGEPTAERO">.true.</value>
+      <value compset="_CAM60%NUDGEPTAERO">.true.</value>
+      <value compset="_MICOM">.true.</value>
+    </values>
+    <group>run_component_cpl</group>
+    <file>env_run.xml</file>
+    <desc>
+      Default is false and true for N* cpmpsets, controls value of ALB_COSZ_AVG
+    </desc>
+  </entry>
+
+  <entry id="OCN_FLUX_SCHEME">
+    <type>integer</type>
+    <valid_values>0,1,2</valid_values>
+    <default_value>0</default_value>
+    <values match="last">
+      <value compset="_CAM5%PTAEROUPD1">1</value>
+      <value compset="_CAM60%PTAERO">1</value>
+      <value compset="_CAM54%PTAERO">1</value>
+      <value compset="_CAM5%NUDGEPTAEROUPD1">1</value>
+      <value compset="_CAM54%NUDGEPTAERO">1</value>
+      <value compset="_CAM60%NUDGEPTAERO">1</value>
+      <value compset="_MICOM">1</value>
+      <value compset="_DATM.*_MICOM">0</value>
+    </values>
+    <group>run_component_cpl</group>
+    <file>env_run.xml</file>
+    <desc>
+      Default is false and true for N* cpmpsets, controls value of FLUX_SCHEME
     </desc>
   </entry>
 

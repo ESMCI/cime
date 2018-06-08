@@ -649,6 +649,14 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
         else:
             self.submit(resubmit=True)
 
+    if self.get_value('COMPRESS_ARCHIVE_FILES'):
+        archiveroot = self.get_value('DOUT_S_ROOT')
+        convert='/noresm2netcdf4.sh'
+        cmd_convert=caseroot+convert
+        cmd="%s %s" %(cmd_convert,archiveroot)
+        logger.info("cmd={}".format(cmd))
+        run_cmd_no_fail(cmd)
+
     return True
 
 def test_st_archive(self, testdir="st_archive_test"):

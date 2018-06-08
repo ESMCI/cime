@@ -39,6 +39,8 @@ def _create_drv_namelists(case, infile, confdir, nmlgen, files):
     config['DRV_THREADING'] = case.get_value('DRV_THREADING')
     config['CPL_ALBAV'] = case.get_value('CPL_ALBAV')
     config['CPL_EPBAL'] = case.get_value('CPL_EPBAL')
+    config['COSZ_AVG'] = case.get_value('COSZ_AVG')
+    config['OCN_FLUX_SCHEME'] = case.get_value('OCN_FLUX_SCHEME')
     config['FLDS_WISO'] = case.get_value('FLDS_WISO')
     config['BUDGETS'] = case.get_value('BUDGETS')
     config['MACH'] = case.get_value('MACH')
@@ -63,6 +65,13 @@ def _create_drv_namelists(case, infile, confdir, nmlgen, files):
     #----------------------------------------------------
     nmlgen.init_defaults(infile, config)
 
+# setting flux_scheme and alb_cosz_avg values
+
+    FLUX_SCHEME_NORESM = case.get_value('OCN_FLUX_SCHEME')
+    nmlgen.set_value('flux_scheme', value=FLUX_SCHEME_NORESM)
+    ALB_COSZ_AVG_NORESM = case.get_value('COSZ_AVG')
+    nmlgen.set_value('alb_cosz_avg', value=ALB_COSZ_AVG_NORESM)
+#finish
     #--------------------------------
     # Overwrite: set brnch_retain_casename
     #--------------------------------
@@ -114,7 +123,7 @@ def _create_drv_namelists(case, infile, confdir, nmlgen, files):
         expect(atmdt == mindt, 'Active atm should match shortest model timestep atmdt={} mindt={}'
                .format(atmdt, mindt))
             
-
+    
     #--------------------------------
     # Overwrite: set start_ymd
     #--------------------------------

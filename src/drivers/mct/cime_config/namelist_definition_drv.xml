@@ -889,7 +889,7 @@
     </values>
   </entry>
 
-  <entry id="flux_scheme">
+  <entry id="flux_scheme" modify_via_xml="OCN_FLUX_SCHEME">
     <type>integer</type>
     <category>control</category>
     <group>seq_infodata_inparm</group>
@@ -904,11 +904,11 @@
          has now iteration added as default (since CESM2 beta08 tag)
     </desc>
     <values>
-      <value>0</value>
+      <value>$OCN_FLUX_SCHEME</value>
     </values>
   </entry>
 
-  <entry id="alb_cosz_avg">
+  <entry id="alb_cosz_avg" modify_via_xml="COSZ_AVG">
     <type>logical</type>
     <category>control</category>
     <group>seq_infodata_inparm</group>
@@ -920,7 +920,7 @@
        =T -> use cosz average over time-step also for albedos
     </desc>
     <values>
-      <value>.false.</value>
+      <value>$COSZ_AVG</value>
     </values>
   </entry>
 
