@@ -271,6 +271,14 @@
       <grid name="rof">JRA025</grid>
     </model_grid>
 
+    <model_grid alias="TL319_tn14" not_compset="_CAM">
+      <grid name="atm">TL319</grid>
+      <grid name="lnd">TL319</grid>
+      <grid name="ocnice">tnx1v4</grid>
+      <grid name="rof">JRA025</grid>
+      <mask>tnx1v4</mask>
+    </model_grid>
+
     <model_grid alias="T62_g16" not_compset="_CAM">
       <grid name="atm">T62</grid>
       <grid name="lnd">T62</grid>
@@ -326,12 +334,6 @@
       <grid name="atm">T62</grid>
       <grid name="lnd">T62</grid>
       <grid name="ocnice">tnx0.25v4</grid>
-    </model_grid>
-
-    <model_grid alias="TL319_tn14" not_compset="_CAM">
-      <grid name="atm">TL319</grid>
-      <grid name="lnd">TL319</grid>
-      <grid name="ocnice">tnx1v4</grid>
     </model_grid>
 
     <!-- finite volume grids -->
@@ -1238,12 +1240,6 @@
       <support>Backward compatible for very high resolution Spectral-dycore experiments</support>
     </domain>
 
-    <domain name="TL319">
-      <nx>640</nx>  <ny>320</ny>
-      <file grid="atm|lnd" mask="tnx1v4">$DIN_LOC_ROOT/share/domains/domain.lnd.TL319_tnx1v4.170928.nc</file>
-      <desc>TL319 is Gaussian grid:</desc>
-    </domain>
-
     <domain name="T85">
       <!-- global spectral (eulerian dycore) grids-->
       <nx>256</nx>  <ny>128</ny>
@@ -1445,6 +1441,7 @@
       <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v2.161014.nc</file>
       <file grid="atm|lnd" mask="tx0.1v3">$DIN_LOC_ROOT/share/domains/domain.lnd.TL319_tx0.1v3.170730.nc</file>
       <file grid="ocnice"  mask="tx0.1v3">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v3.170730.nc</file>
+      <file grid="atm|lnd" mask="tnx1v4">$DIN_LOC_ROOT/share/domains/domain.lnd.TL319_tnx1v4.170928.nc</file>
       <desc>TL319 grid for JRA55</desc>
     </domain>
 
@@ -2225,10 +2222,6 @@
       <map name="ROF2OCN_FMAPNAME">cpl/cpl6/map_r05_to_tnx0.25v4_e300r100_170629.nc</map>
     </gridmap>
 
-    <gridmap rof_grid="JRA025" ocn_grid="tnx1v4" >
-      <map name="ROF2OCN_FMAPNAME">cpl/cpl6/map_JRA025_to_tnx1v4_e300r100_170928.nc</map>
-    </gridmap>
-
     <gridmap rof_grid="rx1" ocn_grid="gx3v7" >
       <map name="ROF2OCN_LIQ_RMAPNAME">cpl/gridmaps/rx1/map_rx1_to_gx3v7_nnsm_e1000r500_180430.nc</map>
       <map name="ROF2OCN_ICE_RMAPNAME">cpl/gridmaps/rx1/map_rx1_to_gx3v7_nnsm_e1000r500_180430.nc</map>
@@ -2344,9 +2337,9 @@
       <map name="ROF2OCN_LIQ_RMAPNAME">cpl/gridmaps/rJRA025/map_JRA025m_to_tx0.1v3_e333r100_170830.nc</map>
       <map name="ROF2OCN_ICE_RMAPNAME">cpl/gridmaps/rJRA025/map_JRA025m_to_tx0.1v3_e333r100_170830.nc</map>
     </gridmap>
-    <gridmap rof_grid="JRA025" ocn_grid="tnx0.25v4" >
-      <map name="ROF2OCN_LIQ_RMAPNAME">cpl/cpl6/map_JRA025_to_tnx1v4_e300r100_170928.nc</map>
-      <map name="ROF2OCN_ICE_RMAPNAME">cpl/cpl6/map_JRA025_to_tnx1v4_e300r100_170928.nc</map>
+    <gridmap rof_grid="JRA025" ocn_grid="tnx1v4" >
+      <map name="ROF2OCN_LIQ_RMAPNAME">cpl/cpl6/map_JRA025_to_tnx1v4_e1000r300_170928.nc</map>
+      <map name="ROF2OCN_ICE_RMAPNAME">cpl/cpl6/map_JRA025_to_tnx1v4_e1000r300_170928.nc</map>
     </gridmap>
 
     <!-- ======================================================== -->
