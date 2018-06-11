@@ -21,7 +21,6 @@ cd $ABASE
 nthreads=16
 
 # Set various variables
-ncks=`which ncks`  
 ncdump=`which ncdump`
 nccopy=`which nccopy`
 complevel=5 # 1-9
