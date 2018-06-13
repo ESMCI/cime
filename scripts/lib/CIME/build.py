@@ -581,8 +581,8 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist):
 #        logs = _build_libraries(case, exeroot, sharedpath, caseroot,
 #                                cimeroot, libroot, lid, compiler, buildlist, comp_interface)
 
-#    if not sharedlib_only:
-#        os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
+    if not sharedlib_only:
+        os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
 #        logs.extend(_build_model(build_threaded, exeroot, clm_config_opts, incroot, complist,
 #                                lid, caseroot, cimeroot, compiler, buildlist, comp_interface))
 
