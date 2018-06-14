@@ -428,7 +428,7 @@
    <!-- vilje is PBS -->
   <batch_system MACH="vilje" type="pbs">
     <submit_args>
-      <arg flag="-N " name="cesmRun"/> 
+      <arg flag="-N cesmRun"/> 
     </submit_args>
     <directives>
       <directive>-A nn2345k</directive>
