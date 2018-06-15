@@ -96,6 +96,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         debug = case.get_value("DEBUG")
         mpilib = case.get_value("MPILIB")
         sysos = case.get_value("OS")
+        exeroot = case.get_value("EXEROOT")
         expect(mach is not None, "xml variable MACH is not set")
 
         # creates the Macros.make, Depends.compiler, Depends.machine, Depends.machine.compiler
@@ -106,6 +107,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         # Also write out Cmake macro file
         if not os.path.isfile("Macros.cmake"):
             configure(Machines(machine=mach), caseroot, ["CMake"], compiler, mpilib, debug, sysos)
+        cimeroot = case.get_value("CIMEROOT")
 
         # Set tasks to 1 if mpi-serial library
         if mpilib == "mpi-serial":
@@ -197,6 +199,19 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
 
         # Create needed directories for case
         case.create_dirs()
+
+        # Copy includedCMakeLists.txt to case directory and set paths
+        with open(os.path.join(cimeroot, "scripts", "cmake", "includedCMakeLists.txt")) as fin, open(os.path.join(exeroot,"includedCMakeLists.txt"), "w") as fout:
+            for line in fin.readlines():
+                fout.writelines(line)
+                if "cmake_minimum_required" in line:
+                    fout.writelines("include({})\n".format(os.path.join(caseroot,"Macros.cmake")))
+                    fout.writelines("include({})\n".format(os.path.join(cimeroot,"src","CMake","CIME_initial_setup.cmake")))
+                if "Configuring Components" in line:
+                    for model in models:
+                        comp = case.get_value("COMP_{}".format(model))
+                        fout.writelines("SET({}_REL_DIR {})\n".format(model,case.get_value("COMP_ROOT_DIR_{}".format(model))))
+                        fout.writelines("SET({}_BINARY_DIR".format(model) + "${CIME_BINARY_DIR}/" + "{}/obj)\n".format(model))
 
         logger.info("If an old case build already exists, might want to run \'case.build --clean\' before building")
 
