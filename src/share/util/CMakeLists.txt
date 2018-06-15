@@ -1,4 +1,4 @@
-# AGS: This file already existed for unit test build -- 
+# AGS: This file already existed for unit test build --
 #      Leaving that logic alone under NOT E3SM_BUILD
 #
 
@@ -55,56 +55,30 @@ ELSE()
 # CMake for E3SM build
   MESSAGE("   + SHRSYS, SHRCAL, SHR:")
 
-  # Section to use genf90.pl to generate shr_infnan and shr_assert
-  # Note: dtypes.h, shr_infnan_mod.F90, and shr_assert_mod.F90
-  #       end up in BINARY (build) tree
-  IF (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90)
-  #IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90)
-    # Do genf90 on input files
-    SET (GENF90 ${E3SM_SOURCE_DIR}/${CIME_REL_DIR}/src/externals/genf90/genf90.pl)
-    MESSAGE("     - Generating shr_infnan_mod, shr_assert_mod, and shr_frz_mod with ${GENF90}")
+  SET(TEMPSRCF90 shr_assert_mod.F90  shr_frz_mod.F90  shr_infnan_mod.F90)
 
-    execute_process (COMMAND ${GENF90}
-                     ${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90.in
-                     OUTPUT_FILE shr_infnan_mod.F90
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+FOREACH(tempfile IN LISTS TEMPSRCF90)
+MESSAGE("Add custom generation command for ${tempfile}")
+ADD_CUSTOM_COMMAND(
+	OUTPUT ${tempfile}
+	COMMAND ${GENF90_EXE}/genf90.pl ${CMAKE_CURRENT_SOURCE_DIR}/${tempfile}.in > ${tempfile}
+	DEPENDS  ${tempfile}.in
+)
+ENDFOREACH()
 
-    execute_process (COMMAND ${GENF90}
-                     ${CMAKE_CURRENT_SOURCE_DIR}/shr_assert_mod.F90.in
-                     OUTPUT_FILE shr_assert_mod.F90
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-    execute_process (COMMAND ${GENF90}
-                     ${CMAKE_CURRENT_SOURCE_DIR}/shr_frz_mod.F90.in
-                     OUTPUT_FILE shr_frz_mod.F90
-                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-  ENDIF()
-# Have "make clean" remove remnants of genf90.pl call
-  set(genneedtoclean 
-       ${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90
-       ${CMAKE_CURRENT_SOURCE_DIR}/shr_assert_mod.F90
-       ${CMAKE_CURRENT_SOURCE_DIR}/shr_frz_mod.F90
-       ${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h)
-#  set(genneedtoclean ${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90
-#     ${CMAKE_CURRENT_BINARY_DIR}/shr_assert_mod.F90 dtypes.h)
-  set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${genneedtoclean}")
 
   #First build these files, which have no dependencies and are depended on elsewhere
   FILE(GLOB SHR_SYS_SOURCE shr_sys_mod.F90 shr_kind_mod.F90
-                           shr_mpi_mod.F90 shr_log_mod.F90 shr_pio_mod.F90 
+                           shr_mpi_mod.F90 shr_log_mod.F90 shr_pio_mod.F90
                            shr_file_mod.F90 shr_string_mod.F90 shr_timer_mod.F90
                            shr_const_mod.F90 shr_orb_mod.F90
                            shr_nl_mod.F90 shr_strconvert_mod.F90
                            shr_wv_sat_mod.F90 shr_flds_mod.F90
-                           shr_abort_mod.F90 shr_ncread_mod.F90 shr_map_mod.F90
-                           shr_infnan_mod.F90 shr_frz_mod.F90 shr_assert_mod.F90)
-                           #${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90
-                           #${CMAKE_CURRENT_BINARY_DIR}/shr_assert_mod.F90)
+                           shr_abort_mod.F90 shr_ncread_mod.F90 shr_map_mod.F90)
 
   # infnan required  -DCPRGNU to compile on gnu)
   INCLUDE_DIRECTORIES (${E3SM_SHR_DIR}) #shr_assert.h
-  ADD_LIBRARY (shrsys ${SHR_SYS_SOURCE})
+  ADD_LIBRARY (shrsys ${SHR_SYS_SOURCE} ${TEMPSRCF90})
   ADD_DEPENDENCIES(shrsys  PIO)
 
   #Later, build these files, teasing out circular directory dependencies

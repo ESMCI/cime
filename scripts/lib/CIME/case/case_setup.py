@@ -210,8 +210,11 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
                 if "Configuring Components" in line:
                     for model in models:
                         comp = case.get_value("COMP_{}".format(model))
-                        fout.writelines("SET({}_REL_DIR {})\n".format(model,case.get_value("COMP_ROOT_DIR_{}".format(model))))
-                        fout.writelines("SET({}_BINARY_DIR".format(model) + "${CIME_BINARY_DIR}/" + "{}/obj)\n".format(model))
+                        # this may not work for e3sm (comp_root_dir_xxx is not defined)
+                        comp_dir = os.path.join(case.get_value("COMP_ROOT_DIR_{}".format(model)),"cpl")
+                        fout.writelines("SET({}_DIR {})\n".format(model,comp_dir))
+                        rel_dir = comp_dir.replace(cimeroot,"")
+                        fout.writelines("SET({}_BINARY_DIR".format(model) + " ${CIME_BINARY_DIR}" + "{})\n".format(rel_dir))
 
         logger.info("If an old case build already exists, might want to run \'case.build --clean\' before building")
 
