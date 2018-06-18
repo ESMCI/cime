@@ -46,10 +46,6 @@ ELSE()
 ENDIF()
 MESSAGE("----------------------------------------------\n")
 
-#AGS: needed this or ran into error in  gptl. Need logic?
-#ADD_DEFINITIONS(-DHAVE_MPI)
-
-
 FIND_PATH(E3SM_NETCDF_INCLUDE_DIR netcdf.mod PATHS ${E3SM_NETCDF_DIR}/include NO_DEFAULT_PATHS)
 IF(NOT E3SM_NETCDF_INCLUDE_DIR)
   MESSAGE(FATAL_ERROR "Can't find netcdf.mod under ${E3SM_NETCDF_DIR}/include")
@@ -58,15 +54,6 @@ FIND_PATH(E3SM_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a libpnetcdf.a PA
 
 INCLUDE_DIRECTORIES(${E3SM_NETCDF_INCLUDE_DIR})
 MESSAGE("-- Found netcdf.mod at ${E3SM_NETCDF_INCLUDE_DIR}")
-
-#FIND_PATH(E3SM_HDF5_INCLUDE_DIR hdf5.h PATHS ${E3SM_HDF5_DIR}/include NO_DEFAULT_PATHS)
-#IF(NOT E3SM_HDF5_INCLUDE_DIR)
-#  MESSAGE(FATAL_ERROR "Can't find hdf5.h under ${E3SM_HDF5_DIR}/include")
-#ENDIF()
-#FIND_PATH(E3SM_HDF5_LIBRARY_DIR NAMES libhdf5_hl.a libhdf5.a PATHS ${E3SM_HDF5_DIR}/lib NO_DEFAULT_PATHS)
-#
-#INCLUDE_DIRECTORIES(${E3SM_HDF5_INCLUDE_DIR})
-#MESSAGE("-- Found hdf5.h at ${E3SM_HDF5_INCLUDE_DIR}")
 
 # Require installed PIO under E3SM_PIO_DIR
 IF (NOT DEFINED E3SM_PIO_DIR)
@@ -81,16 +68,6 @@ externalproject_add(PIO
   INSTALL_COMMAND ""
 )
 SET(E3SM_PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
-
-#message("\nAGS hack for GNU:  -DCPRGNU")
-#ADD_DEFINITIONS(-DCPRGNU)
-
-#message("AGS hack2:   -DFORTRANUNDERSCORE -D_MPI")
-#ADD_DEFINITIONS(-DFORTRANUNDERSCORE -D_MPI)
-
-# not sure if needed
-#message("AGS hack3:   -DHAVE_COMM_F2C -D_MPI") # for MPAS
-#ADD_DEFINITIONS(-DHAVE_COMM_F2C -D_MPI)
 
 # Path to CIME/cime dir (either standalone or within E3SM)
 message("cime source dir:  ${CIME_DIR}")
@@ -149,27 +126,6 @@ ADD_SUBDIRECTORY(${ROF_DIR})
 ADD_SUBDIRECTORY(${LND_DIR})
 ADD_SUBDIRECTORY(${ESP_DIR})
 
-## Add MPAS components -- had to run make to generate inc files
-##   MPASLI_ONLY code runs but dies at end with mpi error
-#SET(MPAS_FRAMEWORK_DIR  components/mpasli/model/src/framework)
-#SET(MPAS_EZXML_DIR  components/mpasli/model/src/external/ezxml)
-#SET(MPAS_OPERATORS_DIR  components/mpasli/model/src/operators)
-#SET(MPAS_GLC_DIR  components/mpasli/model/src/core_landice)
-#SET(MPAS_GLCDRIVER_DIR  components/mpasli/driver)
-#SET(MPAS_FRAMEWORK_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_FRAMEWORK_DIR})
-#SET(MPAS_EZXML_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_EZXML_DIR})
-#SET(MPAS_OPERATORS_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_OPERATORS_DIR})
-#SET(MPAS_GLC_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_GLC_DIR})
-#SET(MPAS_GLCDRIVER_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_GLCDRIVER_DIR})
-#
-#SET(E3SM_MPAS_EZXML_DIR ${E3SM_MODEL_DIR}/${MPAS_EZXML_DIR}) # path to ezxml.h
-#
-#ADD_SUBDIRECTORY(${MPAS_FRAMEWORK_DIR})
-#ADD_SUBDIRECTORY(${MPAS_EZXML_DIR})
-#ADD_SUBDIRECTORY(${MPAS_OPERATORS_DIR})
-#ADD_SUBDIRECTORY(${MPAS_GLC_DIR})
-#ADD_SUBDIRECTORY(${MPAS_GLCDRIVER_DIR})
-
 IF (HAVE_E3SM)
   SET(LND_CLM_DIR      ${E3SM_COMPONENTS_DIR}/clm/src)
   SET(LND_CLM_BINARY_DIR ${E3SM_BINARY_DIR}/${LND_CLM_DIR})
@@ -187,12 +143,9 @@ IF (HAVE_E3SM)
 ENDIF()
 
 MESSAGE("\nAdding executables:")
-MESSAGE("   + e3sm.exe")
-ADD_EXECUTABLE(e3sm.exe ${DRIVER_DIR}/cime_driver.F90)
-INSTALL(TARGETS e3sm.exe RUNTIME DESTINATION ${PROJECT_BINARY_DIR})
-
-MESSAGE("\nAGS: HHEELLPP  what include dirs to add: data, stub, active?
-Just once or are they executable dependent??")
+MESSAGE("   + ${MODEL}.exe")
+ADD_EXECUTABLE(${MODEL}.exe ${DRIVER_DIR}/cime_driver.F90)
+INSTALL(TARGETS ${MODEL}.exe RUNTIME DESTINATION ${PROJECT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${GPTL_BINARY_DIR}
@@ -228,26 +181,17 @@ set (NETCDF_LIB netcdff
 message ("\nAGS: these are pio netcdf Libs : ${PIO_LIB} ${NETCDF_LIB}")
 
 IF (HAVE_E3SM)
-TARGET_LINK_LIBRARIES(e3sm.exe  compmod
- #                     clm socn sice sglc datm rtm swav sesp
+TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
                       ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
                       ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
                       driver shr seq shrcal gptl esmf streams mct mpeu shrsys
                       ${PIO_LIB} ${NETCDF_LIB} -llapack)
 ELSE()
-TARGET_LINK_LIBRARIES(e3sm.exe  compmod
- #                     slnd docn dice sglc
- #                     datm drof swav sesp
+TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
                       ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
                       ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
                       driver shr seq shrcal gptl esmf streams mct mpeu shrsys
                       ${PIO_LIB} ${NETCDF_LIB})
 ENDIF()
-#TARGET_LINK_LIBRARIES(e3sm_MPASLI_ONLY.exe
-#                      slnd socn sice
-#                        mpasglcdriver mpasglc mpasoperators mpasframework mpasezxml
-#                      satm srof swav sesp
-#                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys
-#
 
 MESSAGE("\nAnd CMake says...:")
