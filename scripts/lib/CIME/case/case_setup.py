@@ -185,7 +185,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):
             logger.info("Creating user_nl_xxx files for components and cpl")
-
+        cime_model = case.get_value("MODEL")
         bldxshr = False
         # loop over models
         for model in models:
@@ -212,6 +212,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
                     line = line.replace("${MODEL}",case.get_value("MODEL"))
                 fout.writelines(line)
                 if "cmake_minimum_required" in line:
+                    fout.writelines("Set(CASEROOT \"{}\")\n".format(caseroot))
                     fout.writelines("include({})\n".format(os.path.join(caseroot,"Macros.cmake")))
                     fout.writelines("include({})\n".format(os.path.join(cimeroot,"src","CMake","CIME_initial_setup.cmake")))
                 if "Configuring Components" in line:
@@ -224,9 +225,15 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
                     for model in models:
                         comp = case.get_value("COMP_{}".format(model))
                         # this may not work for e3sm (comp_root_dir_xxx is not defined)
-                        comp_dir = os.path.join(case.get_value("COMP_ROOT_DIR_{}".format(model)),"cpl")
-                        fout.writelines("SET({}_DIR {})\n".format(model,comp_dir))
+                        if cime_model == 'cesm':
+                            comp_dir = os.path.join(case.get_value("COMP_ROOT_DIR_{}".format(model)),"cpl")
+                        else:
+                            config_file = case.get_value("CONFIG_{}_FILE".format(model))
+                            comp_dir = config_file.replace("cime_config/config_component.xml","cpl")
                         rel_dir = comp_dir.replace(cimeroot,"")
+                        fout.writelines("SET({}_DIR {})\n".format(model,comp_dir))
+
+
                         fout.writelines("SET({}_BINARY_DIR".format(model) + " ${CIME_BINARY_DIR}" + "{})\n".format(rel_dir))
 
 
