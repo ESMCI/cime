@@ -10,69 +10,67 @@
 cmake_minimum_required(VERSION 2.7)
 INCLUDE(ExternalProject)
 
-PROJECT(E3SM Fortran C)
+PROJECT(CIME Fortran C)
 message("XXX ${NETCDF_PATH}")
-set(NetCDF_PATH ${NETCDF_PATH})
-set(PNetCDF_PATH ${PNETCDF_PATH})
 message("XXY ${FFLAGS}")
 set(CMAKE_Fortran_FLAGS ${FFLAGS})
 ADD_DEFINITIONS(${CPPDEFS})
 
 # May want to rename CIME_BUILD
-OPTION(E3SM_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
-OPTION(HAVE_E3SM "Flag for CIME to know that we are building E3SM components" OFF)
+OPTION(CIME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
+OPTION(HAVE_CIME "Flag for CIME to know that we are building CIME components" OFF)
 
 SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME.")
 IF(NOT EXISTS ${CIME_REL_DIR})
-  SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by E3SM or CIME.")
+  SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME or CIME.")
 ENDIF()
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_SOURCE_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to CIME.")
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_BINARY_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_BINARY_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to binary directory for CIME.")
-SET(E3SM_NETCDF_DIR "${NetCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
-SET(E3SM_HDF5_DIR "${PNetCDF_PATH}" CACHE PATH "Install location of HDF5. Default set by CIME.")
-SET(E3SM_PIO_DIR "${CIME_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
-SET(GENF90_EXE "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
+SET(CIME_NETCDF_DIR "${NETCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
+SET(CIME_PNETCDF_DIR "${PNETCDF_PATH}" CACHE PATH "Install location of PNETCDF. Default set by CIME.")
+SET(PIO_DIR "${CIME_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
+SET(GENF90_PATH "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
 
 MESSAGE("----------------------------------------------")
 MESSAGE("Building with CMake with CIME in: ${CIME_DIR}")
-IF (DEFINED  E3SM_COMPONENTS_DIR)
-  MESSAGE("   and with E3SM components in: ${PROJECT_SOURCE_DIR}/${E3SM_COMPONENTS_DIR}")
-  SET(HAVE_E3SM ON)
+IF (DEFINED  CIME_COMPONENTS_DIR)
+  MESSAGE("   and with CIME components in: ${PROJECT_SOURCE_DIR}/${CIME_COMPONENTS_DIR}")
+  SET(HAVE_CIME ON)
 ELSE()
-  MESSAGE("   E3SM_COMPONENTS_DIR not set; just building CIME.")
-  SET(HAVE_E3SM OFF)
+  MESSAGE("   CIME_COMPONENTS_DIR not set; just building CIME.")
+  SET(HAVE_CIME OFF)
 ENDIF()
 MESSAGE("----------------------------------------------\n")
 
-FIND_PATH(E3SM_NETCDF_INCLUDE_DIR netcdf.mod PATHS ${E3SM_NETCDF_DIR}/include NO_DEFAULT_PATHS)
-IF(NOT E3SM_NETCDF_INCLUDE_DIR)
-  MESSAGE(FATAL_ERROR "Can't find netcdf.mod under ${E3SM_NETCDF_DIR}/include")
+FIND_PATH(CIME_NETCDF_INCLUDE_DIR netcdf.mod PATHS ${NETCDF_PATH}/include NO_DEFAULT_PATHS)
+IF(NOT CIME_NETCDF_INCLUDE_DIR)
+  MESSAGE(FATAL_ERROR "Can't find netcdf.mod under ${NETCDF_PATH}/include")
 ENDIF()
-FIND_PATH(E3SM_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a libpnetcdf.a PATHS ${E3SM_NETCDF_DIR}/lib NO_DEFAULT_PATHS)
+FIND_PATH(CIME_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a PATHS ${NETCDF_PATH}/lib NO_DEFAULT_PATHS)
 
-INCLUDE_DIRECTORIES(${E3SM_NETCDF_INCLUDE_DIR})
-MESSAGE("-- Found netcdf.mod at ${E3SM_NETCDF_INCLUDE_DIR}")
+INCLUDE_DIRECTORIES(${NETCDF_PATH}/include)
+MESSAGE("-- Found netcdf.mod at ${CIME_NETCDF_INCLUDE_DIR}")
 
-# Require installed PIO under E3SM_PIO_DIR
-IF (NOT DEFINED E3SM_PIO_DIR)
-  MESSAGE(FATAL_ERROR "E3SM_PIO_DIR of ${E3SM_PIO_DIR} does not exist.")
+# Require installed PIO under PIO_DIR
+IF (NOT DEFINED PIO_DIR)
+  MESSAGE(FATAL_ERROR "PIO_DIR of ${PIO_DIR} does not exist.")
 ENDIF()
 
-configure_file(${CIME_DIR}/pio_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake @ONLY)
+#configure_file(${CIME_DIR}/pio_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake @ONLY)
 externalproject_add(PIO
   PREFIX PIO
-  SOURCE_DIR ${E3SM_PIO_DIR}
-  CMAKE_ARGS -C ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake
+  SOURCE_DIR ${PIO_DIR}
+  CMAKE_ARGS -C ${CASEROOT}/Macros.cmake -DPnetCDF_PATH=${PNETCDF_PATH} -DNetCDF_PATH=${NETCDF_PATH} -DGENF90_PATH=${GENF90_PATH} -DCMAKE_Fortran_FLAGS:STRING="${FFLAGS} ${INCLDIR}" -DCMAKE_C_FLAGS:STRING="${CFLAGS} ${INCLDIR}" -DGPTL_PATH:STRING=${GPTL_BINARY_DIR} -DPIO_ENABLE_TESTS:BOOL=OFF -DUSER_CMAKE_MODULE_PATH:LIST=${PIO_DIR}/../pio2/cmake$<SEMICOLON>${CIME_DIR}/src/CMake -DCMAKE_Fortran_COMPILER=${MPIFC} -DCMAKE_C_COMPILER=${MPICC}
   INSTALL_COMMAND ""
 )
-SET(E3SM_PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
-
-# Path to CIME/cime dir (either standalone or within E3SM)
+SET(PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
+INCLUDE_DIRECTORIES(${PIO_LIBRARY_DIR})
+# Path to CIME/cime dir (either standalone or within CIME)
 message("cime source dir:  ${CIME_DIR}")
 message("cime binary dir:  ${CIME_BINARY_DIR}")
-message("e3sm binary dir:  ${E3SM_BINARY_DIR}")
+message("cime binary dir:  ${CIME_BINARY_DIR}")
 message("cime abs dir: ${CIME_ABS_PATH}")
 message("project binary dir ${PROJECT_BINARY_DIR}")
 message("cime rel dir: ${CIME_REL_DIR}")
@@ -99,12 +97,9 @@ SET(STREAMS_BINARY_DIR ${CIME_BINARY_DIR}/${STREAMS_REL_DIR})
 SET(DRIVER_BINARY_DIR ${CIME_BINARY_DIR}/${DRIVER_REL_DIR})
 
 # Need include from source dir, not build dir like usual
-SET(E3SM_SHR_DIR ${SHR_DIR}/include)
-message("e3sm shr dir:  ${E3SM_SHR_DIR}")
+INCLUDE_DIRECTORIES(${SHR_DIR}/include)
 
 MESSAGE("\nConfiguring libraries, utils, share, driver:")
-
-
 
 ADD_SUBDIRECTORY(${CIME_DIR}/${MPEU_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${MCT_REL_DIR})
@@ -126,24 +121,25 @@ ADD_SUBDIRECTORY(${ROF_DIR})
 ADD_SUBDIRECTORY(${LND_DIR})
 ADD_SUBDIRECTORY(${ESP_DIR})
 
-IF (HAVE_E3SM)
-  SET(LND_CLM_DIR      ${E3SM_COMPONENTS_DIR}/clm/src)
-  SET(LND_CLM_BINARY_DIR ${E3SM_BINARY_DIR}/${LND_CLM_DIR})
+IF (HAVE_CIME)
+  SET(LND_CLM_DIR      ${CIME_COMPONENTS_DIR}/clm/src)
+  SET(LND_CLM_BINARY_DIR ${CIME_BINARY_DIR}/${LND_CLM_DIR})
   ADD_SUBDIRECTORY(${LND_CLM_DIR})
 
-  SET(RTM_DIR      ${E3SM_COMPONENTS_DIR}/rtm/src)
-  SET(RTM_BINARY_DIR ${E3SM_BINARY_DIR}/${RTM_DIR})
+  SET(RTM_DIR      ${CIME_COMPONENTS_DIR}/rtm/src)
+  SET(RTM_BINARY_DIR ${CIME_BINARY_DIR}/${RTM_DIR})
   ADD_SUBDIRECTORY(${RTM_DIR})
 ENDIF()
 
-IF (HAVE_E3SM)
-  SET(ATM_CAM_DIR      ${E3SM_COMPONENTS_DIR}/cam/src)
-  SET(ATM_CAM_BINARY_DIR ${E3SM_BINARY_DIR}/${ATM_CAM_DIR})
+IF (HAVE_CIME)
+  SET(ATM_CAM_DIR      ${CIME_COMPONENTS_DIR}/cam/src)
+  SET(ATM_CAM_BINARY_DIR ${CIME_BINARY_DIR}/${ATM_CAM_DIR})
   ADD_SUBDIRECTORY(${ATM_CAM_DIR})
 ENDIF()
 
 MESSAGE("\nAdding executables:")
 MESSAGE("   + ${MODEL}.exe")
+SET(CMAKE_EXE_LINKER_FLAGS "${LDFLAGS} ${SLIBS}")
 ADD_EXECUTABLE(${MODEL}.exe ${DRIVER_DIR}/cime_driver.F90)
 INSTALL(TARGETS ${MODEL}.exe RUNTIME DESTINATION ${PROJECT_BINARY_DIR})
 
@@ -161,7 +157,6 @@ INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${ROF_BINARY_DIR}
                      ${WAV_BINARY_DIR}
                      ${ESP_BINARY_DIR}
-                     ${E3SM_PIO_LIBRARY_DIR}
                      ${MCT_BINARY_DIR}
                      ${MPEU_BINARY_DIR}
                      )
@@ -170,7 +165,7 @@ MESSAGE("   + CompMod:")
 ADD_LIBRARY(compmod ${DRIVER_DIR}/cime_comp_mod.F90)
 ADD_DEPENDENCIES(compmod driver)
 
-set (PIO_LIB ${E3SM_PIO_LIBRARY_DIR}/libpio.a)
+set (PIO_LIB ${PIO_LIBRARY_DIR}/libpio.a)
 set (NETCDF_LIB netcdff
                 netcdf
                 pnetcdf
@@ -180,7 +175,7 @@ set (NETCDF_LIB netcdff
 
 message ("\nAGS: these are pio netcdf Libs : ${PIO_LIB} ${NETCDF_LIB}")
 
-IF (HAVE_E3SM)
+IF (HAVE_CIME)
 TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
                       ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
                       ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}

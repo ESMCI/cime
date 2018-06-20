@@ -1,5 +1,5 @@
-MESSAGE("   + SROF:")
-FILE(GLOB SROF_SOURCE *F90)
+MESSAGE("   + XWAV:")
+FILE(GLOB XWAV_SOURCE cpl/*F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -7,6 +7,7 @@ INCLUDE_DIRECTORIES (
           ${SEQ_BINARY_DIR}
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
+	  ${XSHR_BINARY_DIR}
 )
-ADD_LIBRARY (srof ${SROF_SOURCE})
-ADD_DEPENDENCIES(srof  shrsys shr seq esmf gptl)
+ADD_LIBRARY (xwav ${XWAV_SOURCE})
+ADD_DEPENDENCIES(xwav shrsys shr seq esmf gptl xshr)

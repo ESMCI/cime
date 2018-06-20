@@ -2,7 +2,7 @@
 #      Leaving that logic alone under NOT E3SM_BUILD
 #
 
-IF (NOT E3SM_BUILD)
+IF (NOT CIME_BUILD)
 # CMake for Unit Test build
 
 set(genf90_files shr_infnan_mod.F90.in shr_assert_mod.F90.in)
@@ -52,7 +52,7 @@ sourcelist_to_parent(share_sources)
 sourcelist_to_parent(share_mct_sources)
 sourcelist_to_parent(share_pio_sources)
 ELSE()
-# CMake for E3SM build
+# CMake for CIME build
   MESSAGE("   + SHRSYS, SHRCAL, SHR:")
 
   SET(TEMPSRCF90 shr_assert_mod.F90  shr_frz_mod.F90  shr_infnan_mod.F90)
@@ -61,7 +61,7 @@ FOREACH(tempfile IN LISTS TEMPSRCF90)
 MESSAGE("Add custom generation command for ${tempfile}")
 ADD_CUSTOM_COMMAND(
 	OUTPUT ${tempfile}
-	COMMAND ${GENF90_EXE}/genf90.pl ${CMAKE_CURRENT_SOURCE_DIR}/${tempfile}.in > ${tempfile}
+	COMMAND ${GENF90_PATH}/genf90.pl ${CMAKE_CURRENT_SOURCE_DIR}/${tempfile}.in > ${tempfile}
 	DEPENDS  ${tempfile}.in
 )
 ENDFOREACH()
@@ -76,8 +76,6 @@ ENDFOREACH()
                            shr_wv_sat_mod.F90 shr_flds_mod.F90
                            shr_abort_mod.F90 shr_ncread_mod.F90 shr_map_mod.F90)
 
-  # infnan required  -DCPRGNU to compile on gnu)
-  INCLUDE_DIRECTORIES (${E3SM_SHR_DIR}) #shr_assert.h
   ADD_LIBRARY (shrsys ${SHR_SYS_SOURCE} ${TEMPSRCF90})
   ADD_DEPENDENCIES(shrsys  PIO)
 
@@ -99,7 +97,7 @@ ENDFOREACH()
                        ${ESMF_BINARY_DIR} # esmf.mod
                        ${SEQ_BINARY_DIR}  #seq_flds_mod
                        ${STREAMS_BINARY_DIR}  #shr_dmodel_mod
-                       ${E3SM_PIO_LIBRARY_DIR} #Need pio.mod
+                       ${CIME_PIO_LIBRARY_DIR} #Need pio.mod
                        ${MPI_Fortran_INCLUDE_PATH})
   ADD_LIBRARY (shr ${SHR_SOURCE})
   ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq streams)

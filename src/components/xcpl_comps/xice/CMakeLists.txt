@@ -1,5 +1,5 @@
-MESSAGE("   + SWAV:")
-FILE(GLOB SWAV_SOURCE *F90)
+MESSAGE("   + XICE:")
+FILE(GLOB XICE_SOURCE cpl/*F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -7,6 +7,7 @@ INCLUDE_DIRECTORIES (
           ${SEQ_BINARY_DIR}
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
+	  ${XSHR_BINARY_DIR}
 )
-ADD_LIBRARY (swav ${SWAV_SOURCE})
-ADD_DEPENDENCIES(swav  shrsys shr seq esmf gptl)
+ADD_LIBRARY (xice ${XICE_SOURCE})
+ADD_DEPENDENCIES(xice shrsys shr seq esmf gptl xshr)

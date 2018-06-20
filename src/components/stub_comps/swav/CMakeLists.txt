@@ -1,5 +1,5 @@
-MESSAGE("   + SATM:")
-FILE(GLOB SATM_SOURCE *F90)
+MESSAGE("   + SWAV:")
+FILE(GLOB SWAV_SOURCE cpl/*F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -8,5 +8,5 @@ INCLUDE_DIRECTORIES (
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
 )
-ADD_LIBRARY (satm ${SATM_SOURCE})
-ADD_DEPENDENCIES(satm  shrsys shr seq esmf gptl)
+ADD_LIBRARY (swav ${SWAV_SOURCE})
+ADD_DEPENDENCIES(swav  shrsys shr seq esmf gptl)

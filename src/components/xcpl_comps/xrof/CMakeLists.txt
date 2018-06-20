@@ -1,5 +1,5 @@
-MESSAGE("   + SATM:")
-FILE(GLOB XOCN_SOURCE *F90)
+MESSAGE("   + XROF:")
+FILE(GLOB XROF_SOURCE cpl/*F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -9,5 +9,5 @@ INCLUDE_DIRECTORIES (
           ${MPEU_BINARY_DIR}
 	  ${XSHR_BINARY_DIR}
 )
-ADD_LIBRARY (xocn ${XOCN_SOURCE})
-ADD_DEPENDENCIES(xocn shrsys shr seq esmf gptl xshr)
+ADD_LIBRARY (xrof ${XROF_SOURCE})
+ADD_DEPENDENCIES(xrof shrsys shr seq esmf gptl xshr)

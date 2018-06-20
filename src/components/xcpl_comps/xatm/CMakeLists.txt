@@ -1,5 +1,5 @@
-MESSAGE("   + SGLC:")
-FILE(GLOB SGLC_SOURCE *F90)
+MESSAGE("   + XATM:")
+FILE(GLOB XATM_SOURCE cpl/*F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -7,6 +7,7 @@ INCLUDE_DIRECTORIES (
           ${SEQ_BINARY_DIR}
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
+	  ${XSHR_BINARY_DIR}
 )
-ADD_LIBRARY (sglc ${SGLC_SOURCE})
-ADD_DEPENDENCIES(sglc  seq esmf shrcal)
+ADD_LIBRARY (xatm ${XATM_SOURCE})
+ADD_DEPENDENCIES(xatm shrsys shr seq esmf gptl xshr)

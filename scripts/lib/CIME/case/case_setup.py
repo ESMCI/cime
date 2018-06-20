@@ -226,10 +226,10 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
                         comp = case.get_value("COMP_{}".format(model))
                         # this may not work for e3sm (comp_root_dir_xxx is not defined)
                         if cime_model == 'cesm':
-                            comp_dir = os.path.join(case.get_value("COMP_ROOT_DIR_{}".format(model)),"cpl")
+                            comp_dir = case.get_value("COMP_ROOT_DIR_{}".format(model))
                         else:
                             config_file = case.get_value("CONFIG_{}_FILE".format(model))
-                            comp_dir = config_file.replace("cime_config/config_component.xml","cpl")
+                            comp_dir = config_file.replace("cime_config/config_component.xml","")
                         rel_dir = comp_dir.replace(cimeroot,"")
                         fout.writelines("SET({}_DIR {})\n".format(model,comp_dir))
 
