@@ -10,9 +10,8 @@
 cmake_minimum_required(VERSION 2.7)
 INCLUDE(ExternalProject)
 
-
-message("Hardwiring include path -- must automate")
-include(/home/asteyer/cime/src/CMake/CIME_initial_setup.cmake)
+message("Run CIME initial setup")
+include(${CMAKE_SOURCE_DIR}/src/CMake/CIME_initial_setup.cmake)
 
 #include(/home/agsalin/buildmacrocime/Macros.cmake)
 
@@ -30,6 +29,7 @@ SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CM
 IF(NOT EXISTS ${CIME_REL_DIR})
   SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by E3SM or CIME.")
 ENDIF()
+
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_SOURCE_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to CIME.")
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_BINARY_DIR}/${CIME_REL_DIR} ABSOLUTE)
