@@ -97,10 +97,9 @@ ENDFOREACH()
                        ${ESMF_BINARY_DIR} # esmf.mod
                        ${SEQ_BINARY_DIR}  #seq_flds_mod
                        ${STREAMS_BINARY_DIR}  #shr_dmodel_mod
-                       ${CIME_PIO_LIBRARY_DIR} #Need pio.mod
                        ${MPI_Fortran_INCLUDE_PATH})
   ADD_LIBRARY (shr ${SHR_SOURCE})
   ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq streams)
-  ADD_DEPENDENCIES(shr  PIO)
+  ADD_DEPENDENCIES(shr pio)
 
 ENDIF()

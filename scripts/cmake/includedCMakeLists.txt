@@ -18,7 +18,6 @@ ADD_DEFINITIONS(${CPPDEFS})
 
 # May want to rename CIME_BUILD
 OPTION(CIME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
-OPTION(HAVE_CIME "Flag for CIME to know that we are building CIME components" OFF)
 
 SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME.")
 IF(NOT EXISTS ${CIME_REL_DIR})
@@ -30,44 +29,38 @@ GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_BINARY_DIR}/${CIME_REL_DIR} ABSOL
 SET(CIME_BINARY_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to binary directory for CIME.")
 SET(CIME_NETCDF_DIR "${NETCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
 SET(CIME_PNETCDF_DIR "${PNETCDF_PATH}" CACHE PATH "Install location of PNETCDF. Default set by CIME.")
-SET(PIO_DIR "${CIME_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
 SET(GENF90_PATH "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
 
 MESSAGE("----------------------------------------------")
 MESSAGE("Building with CMake with CIME in: ${CIME_DIR}")
-IF (DEFINED  CIME_COMPONENTS_DIR)
-  MESSAGE("   and with CIME components in: ${PROJECT_SOURCE_DIR}/${CIME_COMPONENTS_DIR}")
-  SET(HAVE_CIME ON)
-ELSE()
-  MESSAGE("   CIME_COMPONENTS_DIR not set; just building CIME.")
-  SET(HAVE_CIME OFF)
-ENDIF()
 MESSAGE("----------------------------------------------\n")
 
-FIND_PATH(CIME_NETCDF_INCLUDE_DIR netcdf.mod PATHS ${NETCDF_PATH}/include NO_DEFAULT_PATHS)
-IF(NOT CIME_NETCDF_INCLUDE_DIR)
-  MESSAGE(FATAL_ERROR "Can't find netcdf.mod under ${NETCDF_PATH}/include")
-ENDIF()
-FIND_PATH(CIME_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a PATHS ${NETCDF_PATH}/lib NO_DEFAULT_PATHS)
-
 INCLUDE_DIRECTORIES(${NETCDF_PATH}/include)
-MESSAGE("-- Found netcdf.mod at ${CIME_NETCDF_INCLUDE_DIR}")
 
 # Require installed PIO under PIO_DIR
-IF (NOT DEFINED PIO_DIR)
-  MESSAGE(FATAL_ERROR "PIO_DIR of ${PIO_DIR} does not exist.")
-ENDIF()
+#IF (NOT DEFINED PIO_DIR)
+#  MESSAGE(FATAL_ERROR "PIO_DIR of ${PIO_DIR} does not exist.")
+#ENDIF()
 
 #configure_file(${CIME_DIR}/pio_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake @ONLY)
-externalproject_add(PIO
-  PREFIX PIO
-  SOURCE_DIR ${PIO_DIR}
-  CMAKE_ARGS -C ${CASEROOT}/Macros.cmake -DPnetCDF_PATH=${PNETCDF_PATH} -DNetCDF_PATH=${NETCDF_PATH} -DGENF90_PATH=${GENF90_PATH} -DCMAKE_Fortran_FLAGS:STRING="${FFLAGS} ${INCLDIR}" -DCMAKE_C_FLAGS:STRING="${CFLAGS} ${INCLDIR}" -DGPTL_PATH:STRING=${GPTL_BINARY_DIR} -DPIO_ENABLE_TESTS:BOOL=OFF -DUSER_CMAKE_MODULE_PATH:LIST=${PIO_DIR}/../pio2/cmake$<SEMICOLON>${CIME_DIR}/src/CMake -DCMAKE_Fortran_COMPILER=${MPIFC} -DCMAKE_C_COMPILER=${MPICC}
-  INSTALL_COMMAND ""
-)
-SET(PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
-INCLUDE_DIRECTORIES(${PIO_LIBRARY_DIR})
+#externalproject_add(PIO
+#  PREFIX PIO
+#  SOURCE_DIR ${PIO_DIR}
+#  CMAKE_ARGS -C ${CASEROOT}/Macros.cmake -DPnetCDF_PATH=${PNETCDF_PATH} -DNetCDF_PATH=${NETCDF_PATH} -DGENF90_PATH=${GENF90_PATH} -DCMAKE_Fortran_FLAGS:STRING="${FFLAGS} ${INCLDIR}" -DCMAKE_C_FLAGS:STRING="${CFLAGS} ${INCLDIR}" -DGPTL_PATH:STRING=${GPTL_BINARY_DIR} -DPIO_ENABLE_TESTS:BOOL=OFF -DUSER_CMAKE_MODULE_PATH:LIST=${PIO_DIR}/../pio2/cmake$<SEMICOLON>${CIME_DIR}/src/CMake -DCMAKE_Fortran_COMPILER=${MPIFC} -DCMAKE_C_COMPILER=${MPICC}
+#  INSTALL_COMMAND ""
+#)
+#SET(PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
+#INCLUDE_DIRECTORIES(${PIO_LIBRARY_DIR})
 # Path to CIME/cime dir (either standalone or within CIME)
+SET(PIO_VERSION 1)
+SET(PIO_REL_DIR src/externals/pio${PIO_VERSION})
+SET(USER_CMAKE_MODULE_PATH ${CIME_DIR}/${PIO_REL_DIR}/../pio2/cmake;${CIME_DIR}/src/CMake)
+SET(CMAKE_C_FLAGS ${CFLAGS})
+SET(CMAKE_Fortran_FLAGS ${FFLAGS})
+SET(PIO_ENABLE_TESTS OFF)
+SET(PnetCDF_PATH ${PNETCDF_PATH})
+SET(NetCDF_PATH ${NETCDF_PATH})
+
 message("cime source dir:  ${CIME_DIR}")
 message("cime binary dir:  ${CIME_BINARY_DIR}")
 message("cime binary dir:  ${CIME_BINARY_DIR}")
@@ -90,6 +83,7 @@ SET(DRIVER_DIR       ${CIME_DIR}/${DRIVER_REL_DIR})
 SET(MPEU_BINARY_DIR ${CIME_BINARY_DIR}/${MPEU_REL_DIR})
 SET(MCT_BINARY_DIR ${CIME_BINARY_DIR}/${MCT_REL_DIR})
 SET(GPTL_BINARY_DIR ${CIME_BINARY_DIR}/${GPTL_REL_DIR})
+SET(PIO_BINARY_DIR ${CIME_BINARY_DIR}/${PIO_REL_DIR})
 SET(SEQ_BINARY_DIR ${CIME_BINARY_DIR}/${SEQ_REL_DIR})
 SET(SHR_BINARY_DIR ${CIME_BINARY_DIR}/${SHR_UTIL_REL_DIR})
 SET(ESMF_BINARY_DIR ${CIME_BINARY_DIR}/${ESMF_REL_DIR})
@@ -98,12 +92,23 @@ SET(DRIVER_BINARY_DIR ${CIME_BINARY_DIR}/${DRIVER_REL_DIR})
 
 # Need include from source dir, not build dir like usual
 INCLUDE_DIRECTORIES(${SHR_DIR}/include)
+IF( ${PIO_VERSION} EQUAL 1)
+  INCLUDE_DIRECTORIES(${PIO_BINARY_DIR}/pio)
+ELSE()  
+  INCLUDE_DIRECTORIES(${PIO_BINARY_DIR}/src/clib ${PIO_BINARY_DIR}/src/flib )
+ENDIF()
 
 MESSAGE("\nConfiguring libraries, utils, share, driver:")
+
+#IF( MPILIB STREQUAL "mpi-serial")
+# ADD_SUBDIRECTORY(${CIME_DIR}/${MPISERIAL_REL_DIR})
+#ENDIF()
+
 
 ADD_SUBDIRECTORY(${CIME_DIR}/${MPEU_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${MCT_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${GPTL_REL_DIR})
+ADD_SUBDIRECTORY(${CIME_DIR}/${PIO_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${SHR_UTIL_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${ESMF_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${STREAMS_REL_DIR})
@@ -121,21 +126,6 @@ ADD_SUBDIRECTORY(${ROF_DIR})
 ADD_SUBDIRECTORY(${LND_DIR})
 ADD_SUBDIRECTORY(${ESP_DIR})
 
-IF (HAVE_CIME)
-  SET(LND_CLM_DIR      ${CIME_COMPONENTS_DIR}/clm/src)
-  SET(LND_CLM_BINARY_DIR ${CIME_BINARY_DIR}/${LND_CLM_DIR})
-  ADD_SUBDIRECTORY(${LND_CLM_DIR})
-
-  SET(RTM_DIR      ${CIME_COMPONENTS_DIR}/rtm/src)
-  SET(RTM_BINARY_DIR ${CIME_BINARY_DIR}/${RTM_DIR})
-  ADD_SUBDIRECTORY(${RTM_DIR})
-ENDIF()
-
-IF (HAVE_CIME)
-  SET(ATM_CAM_DIR      ${CIME_COMPONENTS_DIR}/cam/src)
-  SET(ATM_CAM_BINARY_DIR ${CIME_BINARY_DIR}/${ATM_CAM_DIR})
-  ADD_SUBDIRECTORY(${ATM_CAM_DIR})
-ENDIF()
 
 MESSAGE("\nAdding executables:")
 MESSAGE("   + ${MODEL}.exe")
@@ -159,34 +149,17 @@ INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${ESP_BINARY_DIR}
                      ${MCT_BINARY_DIR}
                      ${MPEU_BINARY_DIR}
+		     ${PIO_BINARY_DIR}
                      )
 
 MESSAGE("   + CompMod:")
 ADD_LIBRARY(compmod ${DRIVER_DIR}/cime_comp_mod.F90)
 ADD_DEPENDENCIES(compmod driver)
 
-set (PIO_LIB ${PIO_LIBRARY_DIR}/libpio.a)
-set (NETCDF_LIB netcdff
-                netcdf
-                pnetcdf
-                hdf5_hl
-                hdf5
-                z curl)
-
-message ("\nAGS: these are pio netcdf Libs : ${PIO_LIB} ${NETCDF_LIB}")
-
-IF (HAVE_CIME)
 TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
                       ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
                       ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
                       driver shr seq shrcal gptl esmf streams mct mpeu shrsys
-                      ${PIO_LIB} ${NETCDF_LIB} -llapack)
-ELSE()
-TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
-                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
-                      ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
-                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys
-                      ${PIO_LIB} ${NETCDF_LIB})
-ENDIF()
+                      pio)
 
 MESSAGE("\nAnd CMake says...:")

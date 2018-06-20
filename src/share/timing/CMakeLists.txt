@@ -32,10 +32,9 @@ ELSE ()
 MESSAGE("   + GPTL:")
   SET(ENV{MODEL} "gptl")
   include(${CASEROOT}/Macros.cmake)
-  ADD_DEFINITIONS(${CPPDEFS})
-  IF(NOT ${MPI_LIB_NAME} STREQUAL "mpi-serial")
-    ADD_DEFINITIONS(-DHAVE_MPI)
-  ENDIF() 
+# CIME always has MPI
+  ADD_DEFINITIONS(${CPPDEFS} -DHAVE_MPI)
+
 
   SET(SRCS_C  GPTLget_memusage.c
               GPTLprint_memusage.c
