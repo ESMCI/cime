@@ -96,7 +96,6 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         debug = case.get_value("DEBUG")
         mpilib = case.get_value("MPILIB")
         sysos = case.get_value("OS")
-        exeroot = case.get_value("EXEROOT")
         expect(mach is not None, "xml variable MACH is not set")
 
         # creates the Macros.make, Depends.compiler, Depends.machine, Depends.machine.compiler
@@ -107,7 +106,6 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         # Also write out Cmake macro file
         if not os.path.isfile("Macros.cmake"):
             configure(Machines(machine=mach), caseroot, ["CMake"], compiler, mpilib, debug, sysos)
-        cimeroot = case.get_value("CIMEROOT")
 
         # Set tasks to 1 if mpi-serial library
         if mpilib == "mpi-serial":
@@ -185,10 +183,10 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):
             logger.info("Creating user_nl_xxx files for components and cpl")
-        cime_model = case.get_value("MODEL")
         # loop over models
         for model in models:
             logger.debug("Building {} usernl files".format(model))
+            comp = self.get_value("COMP_{}".format(model))
             _build_usernl_files(case, model, comp)
             if comp == "cism":
                 glcroot = case.get_value("COMP_ROOT_DIR_GLC")
