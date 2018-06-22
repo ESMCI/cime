@@ -889,7 +889,7 @@
     </values>
   </entry>
 
-  <entry id="flux_scheme" modify_via_xml="OCN_FLUX_SCHEME">
+  <entry id="flux_scheme">
     <type>integer</type>
     <category>control</category>
     <group>seq_infodata_inparm</group>
@@ -908,7 +908,7 @@
     </values>
   </entry>
 
-  <entry id="alb_cosz_avg" modify_via_xml="COSZ_AVG">
+  <entry id="alb_cosz_avg">
     <type>logical</type>
     <category>control</category>
     <group>seq_infodata_inparm</group>
