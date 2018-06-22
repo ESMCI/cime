@@ -623,6 +623,7 @@
     <directives>
      <directive> --ntasks={{ total_tasks }}</directive>
      <directive> --export=ALL</directive>
+     <directive> --switches=1</directive>
    </directives>
     <queues>
       <queue walltimemax="00:59:00" nodemin="1" nodemax="288" default="true">normal</queue>
