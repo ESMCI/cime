@@ -113,6 +113,9 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
     int blocklengths[rrcnt];
     MPI_Datatype subarray[rrcnt];
 
+    /* preserve the value of unlimdimoffset, as it may be changed */
+    PIO_Offset _unlimdimoffset = unlimdimoffset;
+
     if(rrcnt == 0)
 	return PIO_NOERR;
 
@@ -153,54 +156,105 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
 	    gdims[i] = iodesc->dimlen[i];
     }
 
+    int true_rrcnt=-1;
+    MPI_Aint prev_end=-1;
     for( int rc=0; rc<rrcnt; rc++)
     {
 	int sacount[fndims];
 	int sastart[fndims];
-	for (int i=dim_offset; i< fndims; i++)
-	{
-	    sacount[i-dim_offset] = (int) countlist[rc][i];
-	    sastart[i-dim_offset] = (int) startlist[rc][i];
+        for (int i=dim_offset; i< fndims; i++)
+        {
+            sacount[i-dim_offset] = (int) countlist[rc][i];
+            sastart[i-dim_offset] = (int) startlist[rc][i];
+        }
+        if(gdim0 > 0)
+        {
+            unlimdimoffset = gdim0;
+            sastart[0] = max(0, frame);
+            displacements[rc]=0;
+        }
+        else
+            displacements[rc] = unlimdimoffset * max(0, frame);
+
+        /* Check whether this request is actually contiguous. If contiguous,
+         * we do not need to create an MPI derived datatype.
+         */
+        int blocklen=1, isContig=1, warnContig=0;
+        MPI_Aint disp=0, shape=iodesc->mpitype_size;
+        for (int i=sa_ndims-1; i>=0; i--)
+        {
+            if (isContig) {
+                /* blocklen is the amount of this request */
+                blocklen *= sacount[i];
+                /* disp is the flattened starting index */
+                disp += sastart[i] * shape;
+                /* shape is the dimension product from sa_ndims-1 to i */
+                shape *= gdims[i];
+
+                if (warnContig == 0) {
+                    if (sacount[i] < gdims[i])
+                        /* remaining sacount[ii] must == 1 */
+                        warnContig = 1; /* possible non-contiguos */
+                }
+                else if (sacount[i] != 1) {
+                    isContig = 0;
+                    break; /* loop i */
+                }
+            }
 	}
-	if(gdim0 > 0)
-	{
-	    unlimdimoffset = gdim0;
-	    sastart[0] = max(0, frame);
-	    displacements[rc]=0;
-	}
-	else
-	    displacements[rc] = unlimdimoffset * max(0, frame);
+        disp += _unlimdimoffset * max(0, frame);
 
 #if PIO_ENABLE_LOGGING
 	for (int i=0; i< sa_ndims; i++)
 	    LOG((3, "vard: sastart[%d]=%d sacount[%d]=%d gdims[%d]=%d %ld %ld displacement = %ld un %d",
 		 i,sastart[i], i,sacount[i], i, gdims[i], startlist[rc][i], countlist[rc][i], displacements[rc], unlimdimoffset));
 #endif
-	if((mpierr = MPI_Type_create_subarray(sa_ndims, gdims,
-					      sacount, sastart,MPI_ORDER_C
-					      ,iodesc->mpitype, subarray + rc)))
-	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        if (isContig) { /* no need to create a new MPI datatype */
+            if (prev_end == disp) {
+                /* this request is actually contiguous from the previous one
+                 * and can be coalesced into the previous displacements and
+                 * blocklengths.
+                 */
+                blocklengths[true_rrcnt] += blocklen;
+                prev_end += blocklen;
+            }
+            else {
+                /* this request is not contiguous from the previous one */
+                true_rrcnt++;
+                subarray[true_rrcnt] = iodesc->mpitype;
+                displacements[true_rrcnt] = disp;
+                blocklengths[true_rrcnt] = blocklen;
+                prev_end = disp + blocklen;
+            }
+        }
+        else {
+            true_rrcnt++;
+            if((mpierr = MPI_Type_create_subarray(sa_ndims, gdims,
+                                                  sacount, sastart,MPI_ORDER_C
+                                                  ,iodesc->mpitype, subarray + true_rrcnt)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-	if((mpierr = MPI_Type_commit(subarray + rc)))
-	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            if((mpierr = MPI_Type_commit(subarray + true_rrcnt)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        }
 
 #if PIO_ENABLE_LOGGING
 	LOG((3,"vard: blocklengths[%d]=%d displacement[%d]=%ld unlimdimoffset=%ld",rc,blocklengths[rc], rc, displacements[rc], unlimdimoffset));
 #endif
 
-
     }
+    true_rrcnt++;
 
-    if((mpierr = MPI_Type_create_struct(rrcnt, blocklengths, displacements, subarray, filetype)))
+    if((mpierr = MPI_Type_create_struct(true_rrcnt, blocklengths, displacements, subarray, filetype)))
 	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     if((mpierr = MPI_Type_commit(filetype)))
 	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-    for( int rc=0; rc<rrcnt; rc++)
-      if (subarray[rc] != MPI_DATATYPE_NULL && (mpierr = MPI_Type_free(subarray + rc)))
-	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
+    for( int rc=0; rc<true_rrcnt; rc++)
+        if (subarray[rc] != MPI_DATATYPE_NULL && subarray[rc] != iodesc->mpitype &&
+            (mpierr = MPI_Type_free(subarray + rc)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -433,19 +487,23 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                     /* For each variable to be written. */
                     for (int nv = 0; nv < nvars; nv++)
                     {
-		      
+
                         /* Get the var info. */
                         if ((ierr = get_var_desc(varids[nv], &file->varlist, &vdesc)))
                             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
 #if USE_VARD_WRITE
-			/* vard does not support type conversion fail over to varn if var is not the same type as defined in file */
+			/* In PnetCDF 1.10.0 and later, supports type
+			 * conversion in vard APIs.  However, it requires all
+			 * variables accessed by the filetype are of the same
+			 * NC data type.
+			 * */
 			if ((ierr = ncmpi_inq_vartype(file->fh, varids[nv], &fvartype)))
                             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-			    if (fvartype != vdesc->pio_type){
-			      LOG((0, "ERROR: pnetcdf vard does not support type conversion varid %d filetype %d piotype %d"
-				   ,varids[nv],fvartype, vdesc->pio_type));
-			    }			      
+			if (fvartype != vdesc->pio_type){
+			    LOG((0, "ERROR: pnetcdf vard does not support type conversion varid %d filetype %d piotype %d"
+				 ,varids[nv],fvartype, vdesc->pio_type));
+			}
 
                         /* If this is the first variable or the frame has changed between variables (this should be rare) */
 			if(nv==0 || (nv > 0 && frame != NULL && frame[nv] != frame[nv-1])){
