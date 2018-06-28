@@ -391,7 +391,7 @@ contains
        if (ice_present) then
           mapper_i2o => prep_ocn_get_mapper_SFi2o()
           call seq_map_map(mapper_i2o,fractions_i,fractions_o,fldlist='ofrac',norm=.false.)
-       else
+       elseif (atm_present) then
           ko = mct_aVect_indexRa(fractions_o,"ofrac",perrWith=subName)
           kf = mct_aVect_indexRA(dom_o%data ,"frac" ,perrWith=subName)
           fractions_o%rAttr(ko,:) = dom_o%data%rAttr(kf,:)
