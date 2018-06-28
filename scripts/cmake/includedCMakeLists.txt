@@ -28,15 +28,14 @@ GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_SOURCE_DIR}/${CIME_REL_DIR} ABSOL
 SET(CIME_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to CIME.")
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_BINARY_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_BINARY_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to binary directory for CIME.")
-SET(CIME_NETCDF_DIR "${NETCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
-SET(CIME_PNETCDF_DIR "${PNETCDF_PATH}" CACHE PATH "Install location of PNETCDF. Default set by CIME.")
+# note that what letters in netcdf and pnetcdf are capital or lower case can cause errors
+SET(CIME_NetCDF_DIR "${NetCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
+SET(CIME_PNetCDF_DIR "${PNetCDF_PATH}" CACHE PATH "Install location of PNETCDF. Default set by CIME.")
 SET(GENF90_PATH "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
 
 MESSAGE("----------------------------------------------")
 MESSAGE("Building with CMake with CIME in: ${CIME_DIR}")
 MESSAGE("----------------------------------------------\n")
-
-INCLUDE_DIRECTORIES(${NETCDF_PATH}/include)
 
 # Path to CIME/cime dir (either standalone or within CIME)
 SET(PIO_VERSION 1)
@@ -45,8 +44,14 @@ SET(USER_CMAKE_MODULE_PATH ${CIME_DIR}/${PIO_REL_DIR}/../pio2/cmake;${CIME_DIR}/
 SET(CMAKE_C_FLAGS ${CFLAGS})
 SET(CMAKE_Fortran_FLAGS ${FFLAGS})
 SET(PIO_ENABLE_TESTS OFF)
-SET(PnetCDF_PATH ${PNETCDF_PATH})
-SET(NetCDF_PATH ${NETCDF_PATH})
+
+# note that what letters in netcdf and pnetcdf are capital or lower case can cause errors
+SET(PNetCDF_PATH ${PNetCDF_PATH})
+SET(NetCDF_PATH ${NetCDF_PATH})
+
+# note that what letters in netcdf and pnetcdf are capital or lower case can cause errors
+INCLUDE_DIRECTORIES(${NETCDF_PATH}/include)
+INCLUDE_DIRECTORIES(${PNetCDF_PATH}/include)
 
 message("cime source dir:  ${CIME_DIR}")
 message("cime binary dir:  ${CIME_BINARY_DIR}")
