@@ -42,7 +42,7 @@
 #==========================================================================
 
 if(ENABLE_GENF90)
-
+  message("Generating F90 files")
   # Notify CMake that a Fortran file can be generated from a genf90
   # template.
   function(preprocess_genf90_template genf90_file fortran_file)

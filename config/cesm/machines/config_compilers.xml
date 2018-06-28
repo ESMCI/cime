@@ -666,6 +666,7 @@ using a fortran linker.
 </compiler>
 
 <compiler MACH="hobart" COMPILER="intel">
+  <PNETCDF_PATH>$ENV{PNETCDF_PATH}</PNETCDF_PATH>
   <CFLAGS>
     <append> -lifcore</append>
   </CFLAGS>
@@ -682,7 +683,7 @@ using a fortran linker.
     <append> -lifcore</append>
   </LDFLAGS>
   <SLIBS>
-    <append MPILIB="mvapich2"> -mkl=cluster </append>
+    <append MPILIB="mvapich2"> -mkl=cluster -L${PNETCDF_PATH}/lib -lpnetcdf</append>
   </SLIBS>
   <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="false">/fs/cgd/csm/tools/pFUnit/pFUnit3.2.8_hobart_Intel15.0.2_noMPI_noOpenMP</PFUNIT_PATH>
 </compiler>

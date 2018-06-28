@@ -3,103 +3,54 @@
 # the top level of CIME or the top level of ACME. The required
 # CIME_REL_DIR variable is set in CIME to be "." and in ACME
 # to be "cime".  Except for this misdirection, this is meant
-# to be the full-functioning top-level CMakeLists.txt file 
+# to be the full-functioning top-level CMakeLists.txt file
 # [Andy, 10/4/16]
-#  
+#
 
 cmake_minimum_required(VERSION 2.7)
 INCLUDE(ExternalProject)
 
-message("Run CIME initial setup")
-include(${CMAKE_SOURCE_DIR}/src/CMake/CIME_initial_setup.cmake)
-
-#include(/home/agsalin/buildmacrocime/Macros.cmake)
-
-PROJECT(E3SM Fortran C)
-message("XXX ${NetCDF_PATH}")
+PROJECT(CIME Fortran C)
+message("XXX ${NETCDF_PATH}")
 message("XXY ${FFLAGS}")
 set(CMAKE_Fortran_FLAGS ${FFLAGS})
-
+ADD_DEFINITIONS(${CPPDEFS})
 
 # May want to rename CIME_BUILD
-OPTION(E3SM_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
-OPTION(HAVE_E3SM "Flag for CIME to know that we are building E3SM components" OFF)
+OPTION(CIME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
 
 SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME.")
 IF(NOT EXISTS ${CIME_REL_DIR})
-  SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by E3SM or CIME.")
+  SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME or CIME.")
 ENDIF()
 
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_SOURCE_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to CIME.")
 GET_FILENAME_COMPONENT(CIME_ABS_PATH ${PROJECT_BINARY_DIR}/${CIME_REL_DIR} ABSOLUTE)
 SET(CIME_BINARY_DIR ${CIME_ABS_PATH} CACHE INTERNAL "The fully qualified path to binary directory for CIME.")
-SET(E3SM_NETCDF_DIR "${NetCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
-SET(E3SM_HDF5_DIR "${PNetCDF_PATH}" CACHE PATH "Install location of HDF5. Default set by CIME.")
-SET(E3SM_PIO_DIR "${CIME_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
-SET(GENF90_EXE "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
+SET(CIME_NETCDF_DIR "${NETCDF_PATH}" CACHE PATH "Install location of NetCDF. Default set by CIME.")
+SET(CIME_PNETCDF_DIR "${PNETCDF_PATH}" CACHE PATH "Install location of PNETCDF. Default set by CIME.")
+SET(GENF90_PATH "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
 
 MESSAGE("----------------------------------------------")
 MESSAGE("Building with CMake with CIME in: ${CIME_DIR}")
-IF (DEFINED  E3SM_COMPONENTS_DIR)
-  MESSAGE("   and with E3SM components in: ${PROJECT_SOURCE_DIR}/${E3SM_COMPONENTS_DIR}")
-  SET(HAVE_E3SM ON)
-ELSE()
-  MESSAGE("   E3SM_COMPONENTS_DIR not set; just building CIME.")
-  SET(HAVE_E3SM OFF)
-ENDIF()
 MESSAGE("----------------------------------------------\n")
 
-#AGS: needed this or ran into error in  gptl. Need logic?
-ADD_DEFINITIONS(-DHAVE_MPI)
+INCLUDE_DIRECTORIES(${NETCDF_PATH}/include)
 
+# Path to CIME/cime dir (either standalone or within CIME)
+SET(PIO_VERSION 1)
+SET(PIO_REL_DIR src/externals/pio${PIO_VERSION})
+SET(USER_CMAKE_MODULE_PATH ${CIME_DIR}/${PIO_REL_DIR}/../pio2/cmake;${CIME_DIR}/src/CMake)
+SET(CMAKE_C_FLAGS ${CFLAGS})
+SET(CMAKE_Fortran_FLAGS ${FFLAGS})
+SET(PIO_ENABLE_TESTS OFF)
+SET(PnetCDF_PATH ${PNETCDF_PATH})
+SET(NetCDF_PATH ${NETCDF_PATH})
 
-FIND_PATH(E3SM_NETCDF_INCLUDE_DIR netcdf.mod PATHS ${E3SM_NETCDF_DIR}/include NO_DEFAULT_PATHS)
-IF(NOT E3SM_NETCDF_INCLUDE_DIR)
-  MESSAGE(FATAL_ERROR "Can't find netcdf.mod under ${E3SM_NETCDF_DIR}/include")
-ENDIF()
-FIND_PATH(E3SM_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a libpnetcdf.a PATHS ${E3SM_NETCDF_DIR}/lib NO_DEFAULT_PATHS)
-
-INCLUDE_DIRECTORIES(${E3SM_NETCDF_INCLUDE_DIR})
-MESSAGE("-- Found netcdf.mod at ${E3SM_NETCDF_INCLUDE_DIR}")
-
-#FIND_PATH(E3SM_HDF5_INCLUDE_DIR hdf5.h PATHS ${E3SM_HDF5_DIR}/include NO_DEFAULT_PATHS)
-#IF(NOT E3SM_HDF5_INCLUDE_DIR)
-#  MESSAGE(FATAL_ERROR "Can't find hdf5.h under ${E3SM_HDF5_DIR}/include")
-#ENDIF()
-#FIND_PATH(E3SM_HDF5_LIBRARY_DIR NAMES libhdf5_hl.a libhdf5.a PATHS ${E3SM_HDF5_DIR}/lib NO_DEFAULT_PATHS)
-#
-#INCLUDE_DIRECTORIES(${E3SM_HDF5_INCLUDE_DIR})
-#MESSAGE("-- Found hdf5.h at ${E3SM_HDF5_INCLUDE_DIR}")
-
-# Require installed PIO under E3SM_PIO_DIR
-IF (NOT DEFINED E3SM_PIO_DIR)
-  MESSAGE(FATAL_ERROR "E3SM_PIO_DIR of ${E3SM_PIO_DIR} does not exist.")
-ENDIF()
-
-configure_file(${CIME_DIR}/pio_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake @ONLY)
-externalproject_add(PIO
-  PREFIX PIO
-  SOURCE_DIR ${E3SM_PIO_DIR}
-  CMAKE_ARGS -C ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake
-  INSTALL_COMMAND ""
-)
-SET(E3SM_PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
-
-message("\nAGS hack for GNU:  -DCPRGNU") 
-ADD_DEFINITIONS(-DCPRGNU)
-
-message("AGS hack2:   -DFORTRANUNDERSCORE -D_MPI") 
-ADD_DEFINITIONS(-DFORTRANUNDERSCORE -D_MPI)
-
-# not sure if needed
-#message("AGS hack3:   -DHAVE_COMM_F2C -D_MPI") # for MPAS
-#ADD_DEFINITIONS(-DHAVE_COMM_F2C -D_MPI)
-
-# Path to CIME/cime dir (either standalone or within E3SM)
-message("cime source dir:  ${CIME_DIR}") 
-message("cime binary dir:  ${CIME_BINARY_DIR}") 
-message("e3sm binary dir:  ${E3SM_BINARY_DIR}") 
+message("cime source dir:  ${CIME_DIR}")
+message("cime binary dir:  ${CIME_BINARY_DIR}")
+message("cime binary dir:  ${CIME_BINARY_DIR}")
 message("cime abs dir: ${CIME_ABS_PATH}")
 message("project binary dir ${PROJECT_BINARY_DIR}")
 message("cime rel dir: ${CIME_REL_DIR}")
@@ -119,6 +70,7 @@ SET(DRIVER_DIR       ${CIME_DIR}/${DRIVER_REL_DIR})
 SET(MPEU_BINARY_DIR ${CIME_BINARY_DIR}/${MPEU_REL_DIR})
 SET(MCT_BINARY_DIR ${CIME_BINARY_DIR}/${MCT_REL_DIR})
 SET(GPTL_BINARY_DIR ${CIME_BINARY_DIR}/${GPTL_REL_DIR})
+SET(PIO_BINARY_DIR ${CIME_BINARY_DIR}/${PIO_REL_DIR})
 SET(SEQ_BINARY_DIR ${CIME_BINARY_DIR}/${SEQ_REL_DIR})
 SET(SHR_BINARY_DIR ${CIME_BINARY_DIR}/${SHR_UTIL_REL_DIR})
 SET(ESMF_BINARY_DIR ${CIME_BINARY_DIR}/${ESMF_REL_DIR})
@@ -126,14 +78,24 @@ SET(STREAMS_BINARY_DIR ${CIME_BINARY_DIR}/${STREAMS_REL_DIR})
 SET(DRIVER_BINARY_DIR ${CIME_BINARY_DIR}/${DRIVER_REL_DIR})
 
 # Need include from source dir, not build dir like usual
-SET(E3SM_SHR_DIR ${SHR_DIR}/include)
-message("e3sm shr dir:  ${E3SM_SHR_DIR}") 
+INCLUDE_DIRECTORIES(${SHR_DIR}/include)
+IF( ${PIO_VERSION} EQUAL 1)
+  INCLUDE_DIRECTORIES(${PIO_BINARY_DIR}/pio)
+ELSE()
+  INCLUDE_DIRECTORIES(${PIO_BINARY_DIR}/src/clib ${PIO_BINARY_DIR}/src/flib )
+ENDIF()
 
 MESSAGE("\nConfiguring libraries, utils, share, driver:")
+
+#IF( MPILIB STREQUAL "mpi-serial")
+# ADD_SUBDIRECTORY(${CIME_DIR}/${MPISERIAL_REL_DIR})
+#ENDIF()
+
 
 ADD_SUBDIRECTORY(${CIME_DIR}/${MPEU_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${MCT_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${GPTL_REL_DIR})
+ADD_SUBDIRECTORY(${CIME_DIR}/${PIO_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${SHR_UTIL_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${ESMF_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${STREAMS_REL_DIR})
@@ -142,90 +104,21 @@ ADD_SUBDIRECTORY(${DRIVER_DIR})
 #
 
 MESSAGE("\nConfiguring Components:")
-SET(LND_D_REL_DIR      src/components/data_comps/dlnd)
-SET(LND_S_REL_DIR      src/components/stub_comps/slnd/cpl)
-SET(OCN_D_REL_DIR      src/components/data_comps/docn)
-SET(OCN_S_REL_DIR      src/components/stub_comps/socn/cpl)
-SET(ICE_D_REL_DIR      src/components/data_comps/dice)
-SET(ICE_S_REL_DIR      src/components/stub_comps/sice/cpl)
-SET(GLC_S_REL_DIR      src/components/stub_comps/sglc/cpl)
-SET(ATM_D_REL_DIR      src/components/data_comps/datm)
-SET(ATM_S_REL_DIR      src/components/stub_comps/satm/cpl)
-SET(ROF_D_REL_DIR      src/components/data_comps/drof)
-SET(ROF_S_REL_DIR      src/components/stub_comps/srof/cpl)
-SET(WAV_S_REL_DIR      src/components/stub_comps/swav/cpl)
-SET(ESP_S_REL_DIR      src/components/stub_comps/sesp/cpl)
-SET(LND_D_BINARY_DIR ${CIME_BINARY_DIR}/${LND_D_REL_DIR})
-SET(LND_S_BINARY_DIR ${CIME_BINARY_DIR}/${LND_S_REL_DIR})
-SET(OCN_D_BINARY_DIR ${CIME_BINARY_DIR}/${OCN_D_REL_DIR})
-SET(OCN_S_BINARY_DIR ${CIME_BINARY_DIR}/${OCN_S_REL_DIR})
-SET(ICE_D_BINARY_DIR ${CIME_BINARY_DIR}/${ICE_D_REL_DIR})
-SET(ICE_S_BINARY_DIR ${CIME_BINARY_DIR}/${ICE_S_REL_DIR})
-SET(GLC_S_BINARY_DIR ${CIME_BINARY_DIR}/${GLC_S_REL_DIR})
-SET(ATM_D_BINARY_DIR ${CIME_BINARY_DIR}/${ATM_D_REL_DIR})
-SET(ATM_S_BINARY_DIR ${CIME_BINARY_DIR}/${ATM_S_REL_DIR})
-SET(ROF_D_BINARY_DIR ${CIME_BINARY_DIR}/${ROF_D_REL_DIR})
-SET(ROF_S_BINARY_DIR ${CIME_BINARY_DIR}/${ROF_S_REL_DIR})
-SET(WAV_S_BINARY_DIR ${CIME_BINARY_DIR}/${WAV_S_REL_DIR})
-SET(ESP_S_BINARY_DIR ${CIME_BINARY_DIR}/${ESP_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${LND_D_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${LND_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${OCN_D_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${OCN_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ICE_D_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ICE_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${GLC_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ATM_D_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ATM_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ROF_D_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ROF_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${WAV_S_REL_DIR})
-ADD_SUBDIRECTORY(${CIME_DIR}/${ESP_S_REL_DIR})
+ADD_SUBDIRECTORY(${ATM_DIR})
+ADD_SUBDIRECTORY(${OCN_DIR})
+ADD_SUBDIRECTORY(${WAV_DIR})
+ADD_SUBDIRECTORY(${GLC_DIR})
+ADD_SUBDIRECTORY(${ICE_DIR})
+ADD_SUBDIRECTORY(${ROF_DIR})
+ADD_SUBDIRECTORY(${LND_DIR})
+ADD_SUBDIRECTORY(${ESP_DIR})
 
-## Add MPAS components -- had to run make to generate inc files
-##   MPASLI_ONLY code runs but dies at end with mpi error
-#SET(MPAS_FRAMEWORK_DIR  components/mpasli/model/src/framework)
-#SET(MPAS_EZXML_DIR  components/mpasli/model/src/external/ezxml)
-#SET(MPAS_OPERATORS_DIR  components/mpasli/model/src/operators)
-#SET(MPAS_GLC_DIR  components/mpasli/model/src/core_landice)
-#SET(MPAS_GLCDRIVER_DIR  components/mpasli/driver)
-#SET(MPAS_FRAMEWORK_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_FRAMEWORK_DIR})
-#SET(MPAS_EZXML_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_EZXML_DIR})
-#SET(MPAS_OPERATORS_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_OPERATORS_DIR})
-#SET(MPAS_GLC_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_GLC_DIR})
-#SET(MPAS_GLCDRIVER_BINARY_DIR ${E3SM_BINARY_DIR}/${MPAS_GLCDRIVER_DIR})
-#
-#SET(E3SM_MPAS_EZXML_DIR ${E3SM_MODEL_DIR}/${MPAS_EZXML_DIR}) # path to ezxml.h
-#
-#ADD_SUBDIRECTORY(${MPAS_FRAMEWORK_DIR})
-#ADD_SUBDIRECTORY(${MPAS_EZXML_DIR})
-#ADD_SUBDIRECTORY(${MPAS_OPERATORS_DIR})
-#ADD_SUBDIRECTORY(${MPAS_GLC_DIR})
-#ADD_SUBDIRECTORY(${MPAS_GLCDRIVER_DIR})
-
-IF (HAVE_E3SM) 
-  SET(LND_CLM_DIR      ${E3SM_COMPONENTS_DIR}/clm/src)
-  SET(LND_CLM_BINARY_DIR ${E3SM_BINARY_DIR}/${LND_CLM_DIR})
-  ADD_SUBDIRECTORY(${LND_CLM_DIR})
-
-  SET(RTM_DIR      ${E3SM_COMPONENTS_DIR}/rtm/src)
-  SET(RTM_BINARY_DIR ${E3SM_BINARY_DIR}/${RTM_DIR})
-  ADD_SUBDIRECTORY(${RTM_DIR})
-ENDIF()
-
-IF (HAVE_E3SM) 
-  SET(ATM_CAM_DIR      ${E3SM_COMPONENTS_DIR}/cam/src)
-  SET(ATM_CAM_BINARY_DIR ${E3SM_BINARY_DIR}/${ATM_CAM_DIR})
-  ADD_SUBDIRECTORY(${ATM_CAM_DIR})
-ENDIF()
 
 MESSAGE("\nAdding executables:")
-MESSAGE("   + e3sm.exe")
-ADD_EXECUTABLE(e3sm.exe ${DRIVER_DIR}/cime_driver.F90)
-INSTALL(TARGETS e3sm.exe RUNTIME DESTINATION ${PROJECT_BINARY_DIR})
-
-MESSAGE("\nAGS: HHEELLPP  what include dirs to add: data, stub, active?
-Just once or are they executable dependent??")
+MESSAGE("   + ${MODEL}.exe")
+SET(CMAKE_EXE_LINKER_FLAGS "${LDFLAGS} ${SLIBS}")
+ADD_EXECUTABLE(${MODEL}.exe ${DRIVER_DIR}/cime_driver.F90)
+INSTALL(TARGETS ${MODEL}.exe RUNTIME DESTINATION ${PROJECT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${GPTL_BINARY_DIR}
@@ -233,54 +126,27 @@ INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${STREAMS_BINARY_DIR}
                      ${SEQ_BINARY_DIR}
                      ${DRIVER_BINARY_DIR}
-                     ${LND_D_BINARY_DIR}
-                     ${OCN_D_BINARY_DIR}
-                     ${ICE_D_BINARY_DIR}
-                     ${GLC_S_BINARY_DIR}
-                     ${ATM_D_BINARY_DIR}
-                     ${ROF_D_BINARY_DIR}
-                     ${WAV_S_BINARY_DIR}
-                     ${ESP_S_BINARY_DIR}
-                     ${E3SM_PIO_LIBRARY_DIR}
+                     ${LND_BINARY_DIR}
+                     ${OCN_BINARY_DIR}
+                     ${ICE_BINARY_DIR}
+                     ${GLC_BINARY_DIR}
+                     ${ATM_BINARY_DIR}
+                     ${ROF_BINARY_DIR}
+                     ${WAV_BINARY_DIR}
+                     ${ESP_BINARY_DIR}
                      ${MCT_BINARY_DIR}
                      ${MPEU_BINARY_DIR}
+		     ${PIO_BINARY_DIR}
                      )
 
 MESSAGE("   + CompMod:")
 ADD_LIBRARY(compmod ${DRIVER_DIR}/cime_comp_mod.F90)
-ADD_DEPENDENCIES(compmod dlnd docn dice sglc datm drof swav sesp driver)
+ADD_DEPENDENCIES(compmod driver)
 
-set (PIO_LIB ${E3SM_PIO_LIBRARY_DIR}/libpio.a)
-set (NETCDF_LIB netcdff
-                netcdf
-                pnetcdf
-                hdf5_hl
-                hdf5
-                z curl)
-
-message ("\nAGS: these are pio netcdf Libs : ${PIO_LIB} ${NETCDF_LIB}")
-
-IF (HAVE_E3SM)
-TARGET_LINK_LIBRARIES(e3sm.exe  compmod
- #                     clm socn sice sglc datm rtm swav sesp
+TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
                       ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
                       ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
-                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys 
-                      ${PIO_LIB} ${NETCDF_LIB} -llapack)
-ELSE()
-TARGET_LINK_LIBRARIES(e3sm.exe  compmod
- #                     slnd docn dice sglc
- #                     datm drof swav sesp  
-                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
-                      ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
-                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys 
-                      ${PIO_LIB} ${NETCDF_LIB})
-ENDIF()
-#TARGET_LINK_LIBRARIES(e3sm_MPASLI_ONLY.exe  
-#                      slnd socn sice 
-#                        mpasglcdriver mpasglc mpasoperators mpasframework mpasezxml
-#                      satm srof swav sesp
-#                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys 
-#      
+                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys
+                      pio)
 
 MESSAGE("\nAnd CMake says...:")

@@ -103,7 +103,6 @@ add_subdirectory(${SHARE_ROOT}/test/unit)
 ELSE()  #E3SM_BUILD
 
 # CMakeLists.txt file for E3SM build is stash in cmake-scripts dir
-INCLUDE (scripts/cmake/includedCMakeLists.txt)
+INCLUDE (${CMAKE_CURRENT_BINARY_DIR}/includedCMakeLists.txt)
 
 ENDIF()
-

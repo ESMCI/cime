@@ -1,6 +1,6 @@
 # AGS: CMake logic already existed -- preserving that functionalituy
-#       within !E3SM_BUILD.
-if (NOT E3SM_BUILD)
+#       within !CIME_BUILD.
+if (NOT CIME_BUILD)
 
 INCLUDE(FortranCInterface)
 FortranCInterface_HEADER(cmake_fortran_c_interface.h
@@ -28,8 +28,14 @@ SET(SRCS_F90  perf_mod.F90
 ADD_LIBRARY(timing ${SRCS_F90} ${SRCS_C})
 
 ELSE ()
-# Code for E3SM build system
+# Code for CIME build system
 MESSAGE("   + GPTL:")
+  SET(ENV{MODEL} "gptl")
+  include(${CASEROOT}/Macros.cmake)
+# CIME always has MPI
+  ADD_DEFINITIONS(${CPPDEFS} -DHAVE_MPI)
+
+
   SET(SRCS_C  GPTLget_memusage.c
               GPTLprint_memusage.c
               GPTLutil.c
@@ -41,11 +47,10 @@ MESSAGE("   + GPTL:")
                 perf_utils.F90)
 
   INCLUDE_DIRECTORIES (${MPI_Fortran_INCLUDE_PATH}
-    ${CMAKE_CURRENT_SOURCE_DIR}  
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
   )
 
   ADD_LIBRARY(gptl ${SRCS_F90} ${SRCS_C})
 
 ENDIF()
-

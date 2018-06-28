@@ -1,5 +1,5 @@
-MESSAGE("   + SLND:")
-FILE(GLOB SLND_SOURCE *F90)
+MESSAGE("   + SGLC:")
+FILE(GLOB SGLC_SOURCE cpl/*F90)
 INCLUDE_DIRECTORIES (
           ${SHR_BINARY_DIR}
           ${ESMF_BINARY_DIR}
@@ -8,5 +8,5 @@ INCLUDE_DIRECTORIES (
           ${MCT_BINARY_DIR}
           ${MPEU_BINARY_DIR}
 )
-ADD_LIBRARY (slnd ${SLND_SOURCE})
-ADD_DEPENDENCIES(slnd  shrsys shr seq esmf gptl)
+ADD_LIBRARY (sglc ${SGLC_SOURCE})
+ADD_DEPENDENCIES(sglc  seq esmf shrcal)
