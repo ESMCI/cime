@@ -42,8 +42,8 @@ ENDIF ()
 
 # PNetcdf is optional but used by default
 OPTION(WITH_PNETCDF "Whether to build with PnetCDF" TRUE)
-IF (${WITH_PNETCDF})
-  FIND_PACKAGE(PnetCDF REQUIRED COMPONENTS Fortran)
+IF (${WITH_PNetCDF})
+  FIND_PACKAGE(PNetCDF REQUIRED COMPONENTS Fortran)
 ELSE ()
   MESSAGE(WARNING "Warning: Not building with PNetcdf - cannot run all regression tests.")
 ENDIF ()
