@@ -186,7 +186,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         # loop over models
         for model in models:
             logger.debug("Building {} usernl files".format(model))
-            comp = self.get_value("COMP_{}".format(model))
+            comp = case.get_value("COMP_{}".format(model))
             _build_usernl_files(case, model, comp)
             if comp == "cism":
                 glcroot = case.get_value("COMP_ROOT_DIR_GLC")
