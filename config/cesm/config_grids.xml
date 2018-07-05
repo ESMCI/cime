@@ -277,6 +277,10 @@
       <grid name="ocnice">tx0.66v1</grid>
     </model_grid>
 
+    <model_grid alias="im1" compset="_MOM">
+      <grid name="ocnice">ISOMIPv1</grid>
+    </model_grid>
+
     <model_grid alias="T62_g16" not_compset="_CAM">
       <grid name="atm">T62</grid>
       <grid name="lnd">T62</grid>
@@ -1357,6 +1361,13 @@
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.66v1.180605.nc</file>
       <desc>tx0.66v1 is tripole v1 0.66-deg MOM6 grid:</desc>
       <support>Experimental for MOM6 experiments</support>
+    </domain>
+
+    <domain name="ISOMIPv1">
+      <nx>40</nx> <ny>240</ny>
+      <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.ISOMIPv1.180628.nc</file>
+      <desc>Idealized ISOMIP grid for MOM6+CISM</desc>
+      <support>for MOM6+CISM experiments</support>
     </domain>
 
     <domain name="tx0.1v2">
