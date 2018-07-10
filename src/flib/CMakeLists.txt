@@ -161,7 +161,7 @@ if (MPIF_H_PATH)
   check_macro (MPI_HAS_MPIIO
     NAME TryMPIIO.f90
     HINTS ${CMAKE_MODULE_PATH}
-    DEFINITIONS -I{MPIF_H_PATH}
+    DEFINITIONS -I${MPIF_H_PATH}
     COMMENT "whether MPIIO is supported")
   if (${MPI_HAS_MPIIO})
     message (STATUS "MPIIO verified and enabled.")
