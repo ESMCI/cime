@@ -54,8 +54,8 @@ be run manually.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./case.st_archive --help
 usage: case.st_archive [-h] [-d] [-v] [-s] [--caseroot CASEROOT]
                        [--no-incomplete-logs] [--copy-only]
-                       [--last-date LAST_DATE] [--force-move] [--test]
-                       [--resubmit]
+                       [--last-date LAST_DATE] [--force-move] [--test-all]
+                       [--test-case] [--resubmit]
 
 Performs short term archiving for restart files, history and rpointer
 files in the $RUNDIR associated with $CASEROOT.  Normally this script
@@ -63,7 +63,7 @@ is called by case.submit on batch systems.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cime/doc/source/Tools_user/temp_files/case.st_archive.log
+  -d, --debug           Print debug information (very verbose) to file /Users/sacks/cime/doc/source/Tools_user/temp_files/case.st_archive.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --caseroot CASEROOT   Case directory to build
@@ -72,7 +72,8 @@ optional arguments:
   --last-date LAST_DATE
                         WARNING: This option with --force-move may corrupt your run directory! Use at your own risk! Last simulation date to archive, specified as &#39;Year-Month-Day&#39;. Year must be specified with 4 digits, while month and day can be specified without zero padding. &#39;0003-11-4&#39; would archive at most files for the simulated year 3, month 11, day 4.This option implies --copy-only unless --force-move is specified 
   --force-move          Move the files even if it&#39;s unsafe to do so, dangerous if used with --copy-only.
-  --test                Run tests of st_archiver functionality
+  --test-all            Run tests of st_archiver functionality on config_arvchive.xml
+  --test-case           Run tests of st_archiver functionality on env_arvchive.xml
   --resubmit            If RESUBMIT is set, this performs the resubmissions.This is primarily meant for use by case.submit
 </pre></div>
 </div>

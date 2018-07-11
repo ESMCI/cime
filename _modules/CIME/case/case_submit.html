@@ -207,6 +207,11 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking that inputdata is available as part of case submission&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">check_all_input_data</span><span class="p">()</span>
 
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;COMP_WAV&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ww&#39;</span><span class="p">:</span>
+        <span class="c1"># the ww3 buildnml has dependancies on inputdata so we must run it again</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="s1">&#39;WAV&#39;</span><span class="p">)</span>
+
+
     <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">),</span> <span class="s2">&quot;Build complete is &quot;</span>
            <span class="s2">&quot;not True please rebuild the model by calling case.build&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Check case OK&quot;</span><span class="p">)</span></div>
