@@ -262,6 +262,7 @@
     <MPILIBS compiler="intel" >mpt,openmpi</MPILIBS>
     <MPILIBS compiler="pgi" >mpt</MPILIBS>
     <MPILIBS compiler="gnu" >openmpi</MPILIBS>
+    <PROJECT>UESM0006</PROJECT>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>$ENV{CESMDATAROOT}/lmwg</DIN_LOC_ROOT_CLMFORC>
