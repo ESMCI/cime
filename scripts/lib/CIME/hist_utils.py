@@ -183,13 +183,15 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
 
     return one_not_two, two_not_one, match_ups
 
-def _compare_hists(case, from_dir1, from_dir2, suffix1="", suffix2="", outfile_suffix="", add_bfail=False):
+def _compare_hists(case, from_dir1, from_dir2, suffix1="", suffix2="", outfile_suffix="", allow_bfail=False):
     if from_dir1 == from_dir2:
         expect(suffix1 != suffix2, "Comparing files to themselves?")
 
     testcase = case.get_value("CASE")
     casedir = case.get_value("CASEROOT")
     all_success = True
+    any_bfail_failures = False  # whether there have been failures due to missing baselines
+    any_non_bfail_failures = False  # whether there have been "true" failures (not just missing baselines)
     num_compared = 0
     comments = "Comparing hists for case '{}' dir1='{}', suffix1='{}',  dir2='{}' suffix2='{}'\n".format(testcase, from_dir1, suffix1, from_dir2, suffix2)
     multiinst_driver_compare = False
@@ -212,12 +214,17 @@ def _compare_hists(case, from_dir1, from_dir2, suffix1="", suffix2="", outfile_s
         one_not_two, two_not_one, match_ups = _hists_match(model, hists1, hists2, suffix1, suffix2)
         for item in one_not_two:
             comments += "    {}File '{}' had no counterpart in '{}' with suffix '{}'\n".format(
-                (TEST_NO_BASELINES_COMMENT + " ") if add_bfail else "", item, from_dir2, suffix2)
+                (TEST_NO_BASELINES_COMMENT + " ") if allow_bfail else "", item, from_dir2, suffix2)
             all_success = False
+            if allow_bfail:
+                any_bfail_failures = True
+            else:
+                any_non_bfail_failures = True
 
         for item in two_not_one:
             comments += "    File '{}' had no counterpart in '{}' with suffix '{}'\n".format(item, from_dir1, suffix1)
             all_success = False
+            any_non_bfail_failures = True
 
         num_compared += len(match_ups)
 
@@ -238,14 +245,25 @@ def _compare_hists(case, from_dir1, from_dir2, suffix1="", suffix2="", outfile_s
                         logger.warning("Could not copy {} to {}".format(cprnc_log_file, casedir))
 
                 all_success = False
+                any_non_bfail_failures = True
 
     if num_compared == 0:
         all_success = False
         comments += "Did not compare any hist files! Missing baselines?\n"
 
+    if all_success:
+        bfail_only = False
+    elif any_non_bfail_failures:
+        bfail_only = False
+    elif any_bfail_failures:
+        bfail_only = True
+    else:
+        # This can happen for num_compared == 0
+        bfail_only = False
+
     comments += "PASS" if all_success else "FAIL"
 
-    return all_success, comments
+    return all_success, bfail_only, comments
 
 def compare_test(case, suffix1, suffix2):
     """
@@ -259,7 +277,10 @@ def compare_test(case, suffix1, suffix2):
     """
     rundir   = case.get_value("RUNDIR")
 
-    return _compare_hists(case, rundir, rundir, suffix1, suffix2)
+    all_success, bfail_only, comments = _compare_hists(case, rundir, rundir, suffix1, suffix2)
+    # We shouldn't have baseline failures for compare_test
+    expect(not bfail_only)
+    return all_success, comments
 
 def cprnc(model, file1, file2, case, rundir, multiinst_driver_compare=False, outfile_suffix=""):
     """
@@ -320,7 +341,7 @@ def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
     outfile_suffix - if non-blank, then the cprnc output file name ends with
         this suffix (with a '.' added before the given suffix). if None, no output file saved.
 
-    returns (SUCCESS, comments)
+    returns (SUCCESS, comments, test_status_comments)
     SUCCESS means all hist files matched their corresponding baseline
     """
     rundir   = case.get_value("RUNDIR")
@@ -334,16 +355,22 @@ def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
 
     for bdir in dirs_to_check:
         if not os.path.isdir(bdir):
-            return False, "ERROR {} baseline directory '{}' does not exist".format(TEST_NO_BASELINES_COMMENT,bdir)
+            comments = "ERROR {} baseline directory '{}' does not exist".format(TEST_NO_BASELINES_COMMENT,bdir)
+            test_status_comments = comments
+            return False, comments, test_status_comments
 
-    success, comments = _compare_hists(case, rundir, basecmp_dir, outfile_suffix=outfile_suffix, add_bfail=True)
+    success, bfail_only, comments = _compare_hists(case, rundir, basecmp_dir, outfile_suffix=outfile_suffix, allow_bfail=True)
     if get_model() == "e3sm":
         bless_log = os.path.join(basecmp_dir, BLESS_LOG_NAME)
         if os.path.exists(bless_log):
             last_line = open(bless_log, "r").readlines()[-1]
             comments += "\n  Most recent bless: {}".format(last_line)
 
-    return success, comments
+    if bfail_only:
+        test_status_comments = "ERROR {} some baseline files were missing".format(TEST_NO_BASELINES_COMMENT)
+    else:
+        test_status_comments = ""
+    return success, comments, test_status_comments
 
 def get_extension(model, filepath):
     """
