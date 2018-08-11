@@ -32,13 +32,13 @@ def compare_history(case, baseline_name, baseline_root, log_id):
 
         outfile_suffix = "{}.{}".format(baseline_name, log_id)
         try:
-            result, comments = compare_baseline(case, baseline_dir=baseline_full_dir,
-                                                outfile_suffix=outfile_suffix)
+            result, comments, ts_comments = compare_baseline(case, baseline_dir=baseline_full_dir,
+                                                             outfile_suffix=outfile_suffix)
         except IOError:
-            result, comments = compare_baseline(case, baseline_dir=baseline_full_dir,
-                                                outfile_suffix=None)
+            result, comments, ts_comments = compare_baseline(case, baseline_dir=baseline_full_dir,
+                                                             outfile_suffix=None)
 
-        return result, comments
+        return result, comments, ts_comments
 
 ###############################################################################
 def compare_test_results(baseline_name, baseline_root, test_root, compiler, test_id=None, compare_tests=None, namelists_only=False, hist_only=False):
@@ -135,18 +135,12 @@ def compare_test_results(baseline_name, baseline_root, test_root, compiler, test
                             all_pass_or_skip = False
 
                     if do_compare:
-                        success, detailed_comments = compare_history(case, baseline_name, baseline_root, log_id)
+                        success, detailed_comments, compare_comment = compare_history(case, baseline_name, baseline_root, log_id)
                         if success:
                             compare_result = TEST_PASS_STATUS
                         else:
                             compare_result = TEST_FAIL_STATUS
                             all_pass_or_skip = False
-
-                        # Following the logic in SystemTestsCommon._compare_baseline:
-                        # We'll print the comment if it's a brief one-liner; otherwise
-                        # the comment will only appear in the log file
-                        if "\n" not in detailed_comments:
-                            compare_comment = detailed_comments
 
             brief_result = ""
             if not hist_only:

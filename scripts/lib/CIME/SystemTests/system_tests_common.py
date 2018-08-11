@@ -478,11 +478,14 @@ class SystemTestsCommon(object):
         """
         with self._test_status:
             # compare baseline
-            success, comments = compare_baseline(self._case)
+            success, comments, ts_comments = compare_baseline(self._case)
             append_testlog(comments)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
-            ts_comments = (os.path.dirname(baseline_name) + ": " + comments) if "\n" not in comments else os.path.dirname(baseline_name)
+            if ts_comments:
+                ts_comments = os.path.dirname(baseline_name) + ": " + ts_comments
+            else:
+                ts_comments = os.path.dirname(baseline_name)
             self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
 
     def _generate_baseline(self):

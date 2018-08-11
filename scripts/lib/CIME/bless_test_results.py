@@ -55,7 +55,7 @@ def bless_history(test_name, test_dir, baseline_name, baseline_root, report_only
 
             baseline_full_dir = os.path.join(baseline_root, baseline_name, case.get_value("CASEBASEID"))
 
-            cmp_result, cmp_comments = compare_baseline(case, baseline_dir=baseline_full_dir, outfile_suffix=None)
+            cmp_result, cmp_comments, cmp_ts_comments = compare_baseline(case, baseline_dir=baseline_full_dir, outfile_suffix=None)
             if cmp_result:
                 logger.info("Diff appears to have been already resolved.")
                 return True, None
