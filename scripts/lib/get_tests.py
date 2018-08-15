@@ -6,7 +6,7 @@ import six, sys, os
 # Expect that, if a model wants to use python-based test lists, they will have a file
 # config/$model/tests.py , containing a test dictionary called _TESTS
 
-sys.path.append(os.path.join(get_cime_root(), "config", get_model()))
+sys.path.insert(0, os.path.join(get_cime_root(), "config", get_model()))
 _ALL_TESTS = {}
 try:
     from tests import _TESTS # pylint: disable=import-error
@@ -44,12 +44,16 @@ _CIME_TESTS = {
                    ("TESTBUILDFAIL_P1.f19_g16_rx1.A",
                     "TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
                     "TESTRUNFAIL_P1.f19_g16_rx1.A",
+                    "TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
                     "TESTRUNFAILEXC_P1.f19_g16_rx1.A",
                     "TESTRUNPASS_P1.f19_g16_rx1.A",
                     "TESTTESTDIFF_P1.f19_g16_rx1.A",
                     "TESTMEMLEAKFAIL_P1.f09_g16.X",
                     "TESTMEMLEAKPASS_P1.f09_g16.X")
                    ),
+
+    "cime_test_all" : ("cime_test_only", "0:10:00",
+                       ("TESTRUNDIFF_P1.f19_g16_rx1.A", )),
 
     "cime_developer" : (None, "0:15:00",
                             ("NCK_Ld3.f45_g37_rx1.A",
@@ -70,6 +74,7 @@ _CIME_TESTS = {
                              "MCC_P1.f19_g16_rx1.A",
                              "LDSTA.f45_g37_rx1.A")
                             ),
+
 }
 
 _ALL_TESTS.update(_CIME_TESTS)

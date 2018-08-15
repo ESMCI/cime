@@ -7,11 +7,9 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.XML.machines      import Machines
 from CIME.BuildTools.configure import configure
-from CIME.utils             import get_cime_root, run_and_log_case_status, get_model, get_batch_script_for_job
+from CIME.utils             import get_cime_root, run_and_log_case_status, get_model, get_batch_script_for_job, safe_copy
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
-
-import shutil
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +39,7 @@ def _build_usernl_files(case, model, comp):
             expect(ninst_model==ninst_max,"MULTI_DRIVER mode, all components must have same NINST value.  NINST_{} != {}".format(model,ninst_max))
     if comp == "cpl":
         if not os.path.exists("user_nl_cpl"):
-            shutil.copy(os.path.join(model_dir, "user_nl_cpl"), ".")
+            safe_copy(os.path.join(model_dir, "user_nl_cpl"), ".")
     else:
         if ninst == 1:
             ninst = case.get_value("NINST_{}".format(model))
@@ -55,25 +53,28 @@ def _build_usernl_files(case, model, comp):
                     # to user_nl_foo_INST; otherwise, copy the original
                     # user_nl_foo from model_dir
                     if os.path.exists(nlfile):
-                        shutil.copy(nlfile, inst_nlfile)
+                        safe_copy(nlfile, inst_nlfile)
                     elif os.path.exists(model_nl):
-                        shutil.copy(model_nl, inst_nlfile)
+                        safe_copy(model_nl, inst_nlfile)
         else:
             # ninst = 1
             if not os.path.exists(nlfile):
                 if os.path.exists(model_nl):
-                    shutil.copy(model_nl, nlfile)
+                    safe_copy(model_nl, nlfile)
 
 ###############################################################################
 def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
 ###############################################################################
     os.chdir(caseroot)
 
+    non_local = case.get_value("NONLOCAL")
+
     # Check that $DIN_LOC_ROOT exists - and abort if not a namelist compare tests
-    din_loc_root = case.get_value("DIN_LOC_ROOT")
-    testcase     = case.get_value("TESTCASE")
-    expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
-           "inputdata root is not a directory: {}".format(din_loc_root))
+    if not non_local:
+        din_loc_root = case.get_value("DIN_LOC_ROOT")
+        testcase     = case.get_value("TESTCASE")
+        expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
+               "inputdata root is not a directory: {}".format(din_loc_root))
 
     # Remove batch scripts
     if reset or clean:
@@ -88,7 +89,8 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
             case.set_value("BUILD_COMPLETE", False)
 
     if not clean:
-        case.load_env()
+        if not non_local:
+            case.load_env()
 
         models = case.get_values("COMP_CLASSES")
         mach = case.get_value("MACH")
@@ -162,16 +164,15 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
             else:
                 case.set_value("TOTALPES", case.total_tasks*case.thread_count)
 
-            # create batch files
+            # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
             env_batch = case.get_env("batch")
+            env_batch.set_job_defaults([(case.get_primary_job(), {})], case)
+
+            # create batch files
             env_batch.make_all_batch_files(case)
             if get_model() == "e3sm" and not case.get_value("TEST"):
                 input_batch_script = os.path.join(case.get_value("MACHDIR"), "template.case.run.sh")
                 env_batch.make_batch_script(input_batch_script, "case.run", case, outfile=get_batch_script_for_job("case.run.sh"))
-
-            # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
-            env_batch.set_job_defaults([(case.get_primary_job(), {})], case)
-            case.schedule_rewrite(env_batch)
 
             # Make a copy of env_mach_pes.xml in order to be able
             # to check that it does not change once case.setup is invoked
@@ -200,7 +201,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         logger.info("If an old case build already exists, might want to run \'case.build --clean\' before building")
 
         # Some tests need namelists created here (ERP) - so do this if we are in test mode
-        if test_mode or get_model() == "e3sm":
+        if (test_mode or get_model() == "e3sm") and not non_local:
             logger.info("Generating component namelists as part of setup")
             case.create_namelists()
 
@@ -208,7 +209,10 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         env_module = case.get_env("mach_specific")
         env_module.make_env_mach_specific_file("sh", case)
         env_module.make_env_mach_specific_file("csh", case)
-        env_module.save_all_env_info("software_environment.txt")
+        if not non_local:
+            env_module.save_all_env_info("software_environment.txt")
+
+        logger.info("You can now run './preview_run' to get more info on how your case will be run")
 
 ###############################################################################
 def case_setup(self, clean=False, test_mode=False, reset=False):
