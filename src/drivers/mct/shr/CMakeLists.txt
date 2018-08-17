@@ -21,8 +21,9 @@ INCLUDE_DIRECTORIES (
      ${ESMF_BINARY_DIR} #esmf.mod
      ${MPI_Fortran_INCLUDE_PATH} #mpif.h
      ${MCT_BINARY_DIR}
-     ${MPEU_BINARY_DIR})
+     ${MPEU_BINARY_DIR}
+     ${GPTL_BINARY_DIR})
 ADD_LIBRARY (seq ${SEQ_SOURCE})
-ADD_DEPENDENCIES(seq  shrsys shrcal esmf)
+ADD_DEPENDENCIES(seq  shrsys shrcal esmf gptl)
 
 ENDIF()
