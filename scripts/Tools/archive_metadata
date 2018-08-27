@@ -78,7 +78,7 @@ exclude_files_list = ['archive_metadata', 'case.build',
                       'lt_archive.sh', 'mkDepends', 'mkSrcfiles', 'save_provenance',
                       'README.archive', 'case.qstatus', 'pelayout', 'preview_run',
                       'archive', 'bld', 'run']
-exclude_dirs_list = ['archive_files', 'Tools', '.svn', '.git', 'tmp']
+exclude_dirs_list = ['archive_files', 'Tools', '.svn', '.git', 'tmp', 'archive_temp_dir']
 
 # define the XML variable path settings for postprocessing
 pp_xml_vars = {'atm'        : 'ATMDIAG_OUTPUT_ROOT_PATH',
@@ -209,6 +209,16 @@ def commandline_options(args):
                         help='Ignore updating the SVN repository with all the caseroot files. ' \
                         'The experiments database will be updated.')
 
+    parser.add_argument('--exclude-files', dest='user_exclude_files', required=False,
+                        help='Comma-separated list with no spaces of files to be excluded ' \
+                        'from the SVN repository. These are in addition to the default excluded ' \
+                        'files: "{0}"'.format(exclude_files_list))
+
+    parser.add_argument('--exclude-dirs', dest='user_exclude_dirs', required=False,
+                        help='Comma-separated list with no spaces of directories to be excluded ' \
+                        'from the SVN repository. These are in addition to the default excluded ' \
+                        'directories: "{0}"'.format(exclude_dirs_list))
+
     parser.add_argument('--dryrun', action='store_true',
                         help='Parse settings and print what actions will be taken but ' \
                         'do not execute the action.')
@@ -225,6 +235,7 @@ def commandline_options(args):
                         'No --test-post argument defaults to posting metadata to the ' \
                         'production expdb2.0 web application server '\
                         'at http://csegweb.cgd.ucar.edu/expdb2.0')
+
 
     opts = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
@@ -762,18 +773,43 @@ def get_pbs_files(case_dict):
     logger.debug('get_pbs_files')
 
     files = list()
-    tmp_files = list()
-
+    pp_patterns = list()
     os.chdir(case_dict['CASEROOT'])
     patterns = ['{0}.run.o*'.format(case_dict['CASE']),
                 '{0}.run.e*'.format(case_dict['CASE']),
                 '{0}.st_archive.o*'.format(case_dict['CASE']),
                 '{0}.st_archive.e*'.format(case_dict['CASE'])]
-
+    if os.path.exists('{0}/postprocess'.format(case_dict['CASEROOT'])):
+        comps = ['atm','ice','lnd','ocn']
+        for comp in comps:
+            pp_patterns = ['./postprocess/{0}_averages.o*'.format(comp),
+                           './postprocess/{0}_averages.e*'.format(comp),
+                           './postprocess/{0}_diagnostics.o*'.format(comp),
+                           './postprocess/{0}_diagnostics.e*'.format(comp)]
+    patterns = patterns + pp_patterns
+    pp_patterns = ['./postprocess/lnd_regrid.o*',
+                   './postprocess/lnd_regrid.e*',
+                   './postprocess/timeseries.o*',
+                   './postprocess/timeseries.e*',
+                   './postprocess/iconform.o*',
+                   './postprocess/iconform.e*',
+                   './postprocess/xconform.o*',
+                   './postprocess/xconform.e*',
+                   './postprocess/ilamb_initialize.o*',
+                   './postprocess/ilamb_initialize.e*',
+                   './postprocess/ilamb_diagnostics.o*',
+                   './postprocess/ilamb_diagnostics.e*',
+                   './postprocess/iomb_initialize.o*',
+                   './postprocess/iomb_initialize.e*',
+                   './postprocess/iomb_diagnostics.o*',
+                   './postprocess/iomb_diagnostics.e*',
+                   './postprocess/*.err.*',
+                   './postprocess/*.out.*']
+    patterns = patterns + pp_patterns
     for pattern in patterns:
         tmp_files = list()
         tmp_files = glob.glob(pattern)
-        files.append(tmp_files)
+        files = files + tmp_files
 
     return files
 
@@ -931,15 +967,15 @@ def compare_dir_trees(dir1, dir2, exclude_files, exclude_dirs):
     dirs_cmp = filecmp.dircmp(dir1, dir2, exclude_files)
 
     tmp_lf = [fn for fn in dirs_cmp.left_only if fn not in exclude_dirs and
-              not os.path.islink(fn) and 'archive_temp_dir' not in fn]
+              not os.path.islink(fn)]
     lf = [fn for fn in tmp_lf if fn not in exclude_files]
 
     tmp_rf = [fn for fn in dirs_cmp.right_only if fn not in exclude_dirs and
-              not os.path.islink(fn) and 'archive_temp_dir' not in fn]
+              not os.path.islink(fn)]
     rf = [fn for fn in tmp_rf if fn not in exclude_files]
 
     tmp_ff = [fn for fn in dirs_cmp.funny_files if fn not in exclude_dirs and
-              not os.path.islink(fn) and 'archive_temp_dir' not in fn]
+              not os.path.islink(fn)]
     ff = [fn for fn in tmp_ff if fn not in exclude_files]
 
     # files and directories need to be added to svn repo from the caseroot
