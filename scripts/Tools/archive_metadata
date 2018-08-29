@@ -37,11 +37,10 @@ else:
 logger = logging.getLogger(__name__)
 _svn_expdb_url = 'https://svn-cesm2-expdb.cgd.ucar.edu'
 _exp_types = ['CMIP6', 'production', 'tuning']
-_xml_vars = ['CASE', 'COMPILER', 'COMPSET', 'CONTINUE_RUN', 'DOUT_L_MS',
-             'DOUT_L_MSROOT', 'DOUT_S', 'DOUT_S_ROOT', 'GRID',
-             'MACH', 'MPILIB', 'MODEL', 'MODEL_VERSION', 'REST_N', 'REST_OPTION',
-             'RUNDIR', 'RUN_REFCASE', 'RUN_REFDATE', 'RUN_STARTDATE',
-             'RUN_TYPE', 'STOP_N', 'STOP_OPTION', 'USER']
+_xml_vars = ['CASE', 'COMPILER', 'COMPSET', 'CONTINUE_RUN', 'DOUT_S', 'DOUT_S_ROOT', 
+             'GRID', 'MACH', 'MPILIB', 'MODEL', 'MODEL_VERSION', 'REST_N', 'REST_OPTION',
+             'RUNDIR', 'RUN_REFCASE', 'RUN_REFDATE', 'RUN_STARTDATE', 'RUN_TYPE', 
+             'STOP_N', 'STOP_OPTION', 'USER']
 _run_vars = ['JOB_QUEUE', 'JOB_WALLCLOCK_TIME', 'PROJECT']
 _archive_list = ['Buildconf', 'CaseDocs', 'CaseStatus', 'LockedFiles',
                  'Macros.make', 'README.case', 'SourceMods', 'software_environment.txt',
@@ -243,14 +242,15 @@ def get_disk_size(start_path, exclude=None):
     """
     logger.debug('get_disk_size')
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        if exclude and exclude in dirnames:
-            continue
-        for fname in filenames:
-            fpath = os.path.join(dirpath, fname)
-            if os.path.islink(fpath):
+    if os.path.exists(start_path):
+        for dirpath, dirnames, filenames in os.walk(start_path):
+            if exclude and exclude in dirnames:
                 continue
-            total_size += os.path.getsize(fpath)
+            for fname in filenames:
+                fpath = os.path.join(dirpath, fname)
+                if os.path.islink(fpath):
+                    continue
+                total_size += os.path.getsize(fpath)
 
     return total_size
 
@@ -276,7 +276,7 @@ def get_pp_path(pp_dir, comp, subdir):
         subdir = ''
     elif subdir == 'timeseries' or comp in ['glc', 'rof']:
         pp_path_var = _pp_xml_vars['timeseries']
-        subdir = 'tseries'
+        subdir = '{0}/proc/tseries'.format(comp)
     elif comp == 'xconform':
         pp_path_var = _pp_xml_vars['xconform']
     elif comp == 'ocn' and subdir == 'diag':
@@ -294,8 +294,11 @@ def get_pp_path(pp_dir, comp, subdir):
     # construct the final path basaed on comp and subdir
     pp_path = pp_path.rstrip()
     if len(pp_path) > 2:
-        if comp not in ['timeseries', 'xconform']:
-            pp_path = os.path.join(pp_path, comp, 'proc', subdir)
+        if (comp not in ['timeseries', 'xconform', 'ice','ocn']
+            or 'tseries' in subdir):
+            pp_path = os.path.join(pp_path, subdir)
+        elif comp == 'ice' and subdir == 'diag':
+            pp_path = pp_path.replace('climo','diag',1)
 
     os.chdir(cwd)
     return pp_path
@@ -349,7 +352,7 @@ def get_pp_status(case_dict):
     pp_dir = os.path.join(case_dict['CASEROOT'], 'postprocess')
     pp_log_dir = os.path.join(case_dict['CASEROOT'], 'postprocess', 'logs')
 
-    msg_avg['atm'] = "Successfully completed generating atmosphere climatology averages"
+    msg_avg['atm'] = "COMPLETED SUCCESSFULLY"
     msg_diags['atm'] = "Successfully completed generating atmosphere diagnostics"
     case_dict['atm_avg_dates'] = case_dict['atm_diag_dates'] = get_diag_dates('atm', pp_dir)
 
@@ -357,7 +360,7 @@ def get_pp_status(case_dict):
     msg_diags['ice'] = "Successfully completed generating ice diagnostics"
     case_dict['ice_avg_dates'] = case_dict['ice_diag_dates'] = get_diag_dates('ice', pp_dir)
 
-    msg_avg['lnd'] = "Successfully completed generating land climatology averages"
+    msg_avg['lnd'] = "COMPLETED SUCCESSFULLY"
     msg_diags['lnd'] = "Successfully completed generating land diagnostics"
     case_dict['lnd_avg_dates'] = case_dict['lnd_diag_dates'] = get_diag_dates('lnd', pp_dir)
 
@@ -1065,7 +1068,8 @@ def populate_local_repo(case_dict, ignore_logs, ignore_timing):
     # add files with .xml as the suffix from the postprocess directory
     if os.path.isdir('./postprocess'):
         pp_path = '{0}/{1}'.format(case_dict['archive_temp_dir'], 'postprocess')
-        os.mkdir(pp_path)
+        if not os.path.exists(pp_path):
+            os.mkdir(pp_path)
         xml_files = glob.glob('./postprocess/*.xml')
         for xml_file in xml_files:
             if os.path.isfile(xml_file):
@@ -1253,7 +1257,7 @@ def update_repo(ignore_logs, ignore_timing, case_dict, username, password):
                 checkin_trunk(case_dict, 'ci', msg, username, password)
                 create_tag(case_dict, new_tag, username, password)
                 logger.info('SVN repository trunk updated at URL "%s"', case_dict['svn_repo_url'])
-                logger.info('   and a new trunk tag created for  "%s"', new_tag)
+                logger.info(' and a new trunk tag created "%s"', new_tag)
             else:
                 # create a new case repo
                 new_tag = '{0}_0001'.format(case_dict['CASE'])
@@ -1353,9 +1357,9 @@ def initialize_main(options):
 
     case_dict['archive_temp_dir'] = ''
 
-    case_dict['user_add_files'] = ''
+    case_dict['user_add_files'] = list()
     if options.user_add_files:
-        case_dict['user_add_files'] = options.user_add_files[0]
+        case_dict['user_add_files'] = options.user_add_files[0].split(',')
 
     case_dict['q_casename'] = ''
     case_dict['q_outfile'] = ''
@@ -1456,7 +1460,7 @@ def main_func(options):
 
     # clean-up the temporary archive files dir
     if case_dict['dryrun']:
-        logger.info('Dryrun - removing temporary directory')
+        logger.info('Dryrun - deleting "./archive_temp_dir"')
     else:
         if not options.ignore_repo_update and os.path.exists(case_dict['archive_temp_dir']):
             shutil.rmtree(case_dict['archive_temp_dir'])
