@@ -231,28 +231,60 @@ def get_case_vars(case_dict, case):
     return case_dict
 
 # ---------------------------------------------------------------------
-def get_disk_size(start_path, exclude=None):
+def bytes_2_human(n):
 # ---------------------------------------------------------------------
-    """get_disk_size
-    return the total disk usage for a given path ignoring symlinks.
+    """bytes to human
+    http://code.activestate.com/recipes/578019
+    >>> bytes_2_human(10000)
+     '9.8K'
+     >>> bytes_2_human(100001221)
+     '95.4M'
+
+    """
+    logger.debug('bytes_2_human')
+    symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    prefix = {}
+    for i, s in enumerate(symbols):
+        prefix[s] = 1 << (i+1)*10
+    for s in reversed(symbols):
+        if n >= prefix[s]:
+            value = float(n) / prefix[s]
+            return '%.1f%s' % (value, s)
+
+    return "%sB" % n
+
+# ---------------------------------------------------------------------
+def get_disk_usage(path):
+# ---------------------------------------------------------------------
+    """get_disk_usage
+    return the total disk usage for a given path.
 
     Arguments:
-        start_path - path to start
-        exclude - a directory to exclude - should this be a list?
+        path - path to start
     """
-    logger.debug('get_disk_size')
+    logger.debug('get_disk_usage')
     total_size = 0
-    if os.path.exists(start_path):
-        for dirpath, dirnames, filenames in os.walk(start_path):
-            if exclude and exclude in dirnames:
-                continue
-            for fname in filenames:
-                fpath = os.path.join(dirpath, fname)
-                if os.path.islink(fpath):
-                    continue
-                total_size += os.path.getsize(fpath)
+    raw_size = 0
+    cwd = os.getcwd()
+    if os.path.exists(path):
+        os.chdir(path)
+        cmd = ['du', '--summarize', '--human-readable']
+        try:
+            total_size = subprocess.check_output(cmd)
+            total_size = total_size.replace('\t.\n', '')
+        except subprocess.CalledProcessError:
+            msg = "Error executing command = '{0}'".format(cmd)
+            logger.warning(msg)
+        cmd = ['du', '--summarize']
+        try:
+            raw_size = subprocess.check_output(cmd)
+            raw_size = int(raw_size.replace('\t.\n', ''))
+        except subprocess.CalledProcessError:
+            msg = "Error executing command = '{0}'".format(cmd)
+            logger.warning(msg)
 
-    return total_size
+    os.chdir(cwd)
+    return raw_size, total_size
 
 # ---------------------------------------------------------------------
 def get_pp_path(pp_dir, comp, subdir):
@@ -294,11 +326,11 @@ def get_pp_path(pp_dir, comp, subdir):
     # construct the final path basaed on comp and subdir
     pp_path = pp_path.rstrip()
     if len(pp_path) > 2:
-        if (comp not in ['timeseries', 'xconform', 'ice','ocn']
+        if (comp not in ['timeseries', 'xconform', 'ice', 'ocn']
             or 'tseries' in subdir):
             pp_path = os.path.join(pp_path, subdir)
         elif comp == 'ice' and subdir == 'diag':
-            pp_path = pp_path.replace('climo','diag',1)
+            pp_path = pp_path.replace('climo', 'diag', 1)
 
     os.chdir(cwd)
     return pp_path
@@ -386,7 +418,7 @@ def get_pp_status(case_dict):
             log_file = max(avg_logs, key=os.path.getctime)
             if (is_last_process_complete(log_file, msg_avg[comp],
                                          'Average list complies with standards.')):
-                case_dict[comp+'_avg_status'] = 'Complete'
+                case_dict[comp+'_avg_status'] = 'Succeeded'
             else:
                 case_dict[comp+'_avg_status'] = 'Started'
 
@@ -394,7 +426,7 @@ def get_pp_status(case_dict):
             case_dict[comp+'_avg_size'] = 0
             case_dict[comp+'_avg_path'] = get_pp_path(pp_dir, comp, 'climo')
             if case_dict[comp+'_avg_path'] is not None:
-                case_dict[comp+'_avg_size'] = get_disk_size(case_dict[comp+'_avg_path'])
+                (raw_size, case_dict[comp+'_avg_size']) = get_disk_usage(case_dict[comp+'_avg_path'])
 
         diag_logs = list()
         diag_file_pattern = ("{0}/{1}_diagnostics.log.*".format(pp_log_dir, comp))
@@ -403,7 +435,7 @@ def get_pp_status(case_dict):
         if diag_logs:
             log_file = max(diag_logs, key=os.path.getctime)
             if is_last_process_complete(log_file, msg_diags[comp], 'ncks version'):
-                case_dict[comp+'_diag_status'] = 'Complete'
+                case_dict[comp+'_diag_status'] = 'Succeeded'
             else:
                 case_dict[comp+'_diag_status'] = 'Started'
 
@@ -411,9 +443,8 @@ def get_pp_status(case_dict):
             case_dict[comp+'_diag_size'] = 0
             case_dict[comp+'_diag_path'] = get_pp_path(pp_dir, comp, 'diag')
             if case_dict[comp+'_diag_path'] is not None:
-                case_dict[comp+'_diag_size'] = get_disk_size(case_dict[comp+'_diag_path'])
-
-
+                (raw_size, case_dict[comp+'_diag_size']) = get_disk_usage(case_dict[comp+'_diag_path'])
+ 
     # get timeseries status
     case_dict['timeseries_status'] = 'Unknown'
     case_dict['timeseries_path'] = get_pp_path(pp_dir, 'timeseries', '')
@@ -426,15 +457,17 @@ def get_pp_status(case_dict):
         if is_last_process_complete(filepath=log_file,
                                     expect_text='Successfully completed',
                                     fail_text='opening'):
-            case_dict['timeseries_status'] = 'Complete'
+            case_dict['timeseries_status'] = 'Succeeded'
         else:
             case_dict['timeseries_status'] = 'Started'
+    tseries_size = 0
     for comp in tseries_comps:
         case_dict[comp+'_timeseries_path'] = get_pp_path(pp_dir, comp, 'timeseries')
-        case_dict[comp+'_timeseries_size'] = get_disk_size(case_dict[comp+'_timeseries_path'])
+        (raw_size, case_dict[comp+'_timeseries_size']) = get_disk_usage(case_dict[comp+'_timeseries_path']) 
+
         case_dict[comp+'_timeseries_status'] = case_dict['timeseries_status']
-        case_dict['timeseries_size'] = (case_dict['timeseries_size']
-                                        + case_dict[comp+'_timeseries_size'])
+        tseries_size += raw_size
+    case_dict['timeseries_size'] = bytes_2_human(tseries_size)
 
     # get iconform status = this initializes files in the POSTPROCESS_PATH
     case_dict['iconform_status'] = 'Unknown'
@@ -448,14 +481,14 @@ def get_pp_status(case_dict):
         log_file = max(iconform_logs, key=os.path.getctime)
         if (is_last_process_complete(log_file, 'Successfully created the conform tool',
                                      'Running createOutputSpecs')):
-            case_dict['iconform_status'] = 'Complete'
+            case_dict['iconform_status'] = 'Succeeded'
         else:
             case_dict['iconform_status'] = 'Started'
 
     # get xconform status
     case_dict['xconform_status'] = 'Unknown'
     case_dict['xconform_path'] = get_pp_path(pp_dir, 'xconform', subdir=None)
-    case_dict['xconform_size'] = get_disk_size(case_dict['xconform_path'])
+    (raw_disk, case_dict['xconform_size']) = get_disk_usage(case_dict['xconform_path'])
 
     xconform_logs = list()
     xconform_file_pattern = ("{0}/xconform.log.*".format(pp_log_dir))
@@ -465,7 +498,7 @@ def get_pp_status(case_dict):
         if (is_last_process_complete(log_file,
                                      'Successfully completed converting all files',
                                      'cesm_conform_generator INFO')):
-            case_dict['xconform_status'] = 'Complete'
+            case_dict['xconform_status'] = 'Succeeded'
         else:
             case_dict['xconform_status'] = 'Started'
 
@@ -541,7 +574,7 @@ def get_case_status(case_dict):
         run_status = is_last_process_complete(cstatus, "case.run success", "case.run starting")
         if run_status is True:
             case_dict['run_status'] = 'Succeeded'
-            case_dict['run_size'] = get_disk_size(case_dict['run_path'])
+            (raw_disk, case_dict['run_size']) = get_disk_usage(case_dict['run_path'])
             case_dict['run_last_date'] = get_run_last_date(case_dict['CASE'], case_dict['run_path'])
 
         # get the STA status
@@ -551,8 +584,15 @@ def get_case_status(case_dict):
                                                   "st_archive starting")
             if sta_status is True:
                 case_dict['sta_status'] = 'Succeeded'
-                case_dict['sta_size'] = get_disk_size(case_dict['sta_path'], exclude='proc')
+                # exclude the proc directories in the sta size estimates
                 case_dict['sta_last_date'] = get_sta_last_date(case_dict['DOUT_S_ROOT'])
+                sta_size = 0
+                for subdir in ['atm/hist','esp/hist','ice/hist','glc/hist','lnd/hist',
+                               'logs','ocn/hist','rest','rof/hist','wav/hist']:
+                    path = os.path.join(case_dict['sta_path'], subdir)
+                    (raw_disk, toss) = get_disk_usage(path)
+                    sta_size += raw_disk
+                case_dict['sta_size'] = bytes_2_human(sta_size)
 
     # check if the postprocess dir exists in the caseroot
     case_dict['postprocess'] = False
@@ -909,6 +949,7 @@ def compare_dir_trees(dir1, dir2, archive_list):
                     raise SVNException(msg)
 
                 # recurse through this new subdir
+                archive_list = archive_list + filename
                 compare_dir_trees(new_dir1, new_dir2, archive_list)
 
     # files need to be removed from svn repo that are no longer in the caseroot
@@ -941,7 +982,7 @@ def compare_dir_trees(dir1, dir2, archive_list):
     common_dirs = dirs_cmp.common_dirs
     if common_dirs:
         for common_dir in common_dirs:
-            if common_dir in _archive_list:
+            if common_dir in archive_list:
                 new_dir1 = os.path.join(dir1, common_dir)
                 new_dir2 = os.path.join(dir2, common_dir)
                 compare_dir_trees(new_dir1, new_dir2, archive_list)
@@ -1359,7 +1400,7 @@ def initialize_main(options):
 
     case_dict['user_add_files'] = list()
     if options.user_add_files:
-        case_dict['user_add_files'] = options.user_add_files[0].split(',')
+        case_dict['user_add_files'] = options.user_add_files.split(',')
 
     case_dict['q_casename'] = ''
     case_dict['q_outfile'] = ''
