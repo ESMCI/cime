@@ -427,12 +427,12 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     output, errput = proc.communicate(input_str)
     if output is not None:
         try:
-            output = output.decode('utf-8').strip()
+            output = output.decode('utf-8', errors='ignore').strip()
         except AttributeError:
             pass
     if errput is not None:
         try:
-            errput = errput.decode('utf-8').strip()
+            errput = errput.decode('utf-8', errors='ignore').strip()
         except AttributeError:
             pass
 
@@ -1353,7 +1353,7 @@ def does_file_have_string(filepath, text):
     return os.path.isfile(filepath) and text in open(filepath).read()
 
 
-def is_last_process_complete(filepath, expect_text, fail_text ):
+def is_last_process_complete(filepath, expect_text, fail_text):
     """
     Search the filepath in reverse order looking for expect_text
     before finding fail_text.
