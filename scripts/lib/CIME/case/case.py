@@ -1137,7 +1137,7 @@ directory, NOT in this subdirectory."""
         append_status("INFORMATION ABOUT YOUR GIT VERSION CONTROL SYSTEM :","README.case", caseroot=self._caseroot)
         append_status("remote branch:{}".format(gittag),"README.case", caseroot=self._caseroot)
         append_status("git branch:{}".format(gitbranch),"README.case", caseroot=self._caseroot)
-        append_status("git log:{}".format(gitlog),"README.case", caseroot=self._caseroot)
+        append_status("git log:{}".format(gitlog.encode('utf8')),"README.case", caseroot=self._caseroot)
 #
         if not clone:
             self._create_caseroot_sourcemods()
