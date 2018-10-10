@@ -1509,6 +1509,15 @@ contains
     attname  = 'So_bldepth'
     call metadata_set(attname, longname, stdname, units)
 
+    ! Melt rate
+    call seq_flds_add(o2x_states,"So_mr")
+    call seq_flds_add(x2g_states,"So_mr")
+    longname = 'Basal melt rate'
+    stdname  = 'basal_melt_rate'
+    units    = 'kg/m^2/s'
+    attname  = 'So_mr'
+    call metadata_set(attname, longname, stdname, units)
+
     call seq_flds_add(xao_states,"So_fswpen")
     call seq_flds_add(o2x_states,"So_fswpen")
     longname = 'Fraction of sw penetrating surface layer for diurnal cycle'
