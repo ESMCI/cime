@@ -1498,7 +1498,7 @@ contains
     ! use reading a restart as a surrogate from whether this is a startup run
 
     skip_ocean_run = .true.
-    if ( read_restart) skip_ocean_run = .false.
+    if ( read_restart .or. .not. atm_present) skip_ocean_run = .false.
     ocnrun_count = 0
     cpl2ocn_first = .true.
 
@@ -2289,6 +2289,7 @@ contains
 
        ! override ocnrun_alarm and ocnnext_alarm for first ocn run
        ! skip_ocean_run is initialized above to true if it's a startup
+       ! and if atm is present.
        ! if it's not a startup, ignore all of this
        ! stop the overide on the second ocnrun_alarm
 
