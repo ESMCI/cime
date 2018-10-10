@@ -98,7 +98,7 @@ contains
 
   !================================================================================================
 
-  subroutine prep_glc_init(infodata, lnd_c2_glc)
+  subroutine prep_glc_init(infodata, lnd_c2_glc, ocn_c2_glc)
 
     !---------------------------------------------------------------
     ! Description
@@ -107,6 +107,7 @@ contains
     ! Arguments
     type (seq_infodata_type) , intent(inout) :: infodata
     logical                  , intent(in)    :: lnd_c2_glc ! .true.  => lnd to glc coupling on
+    logical                  , intent(in)    :: ocn_c2_glc ! .true.  => ocn to glc coupling on
     !
     ! Local Variables
     integer                          :: eli
@@ -194,6 +195,10 @@ contains
        end if
        call shr_sys_flush(logunit)
 
+    end if
+
+    if (glc_present .and. ocn_c2_glc) then
+      !AA TODO
     end if
 
   end subroutine prep_glc_init
