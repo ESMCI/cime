@@ -159,7 +159,8 @@
       <mask>gx3v7</mask>
     </model_grid>
 
-    <model_grid alias="mip1" compset="_CISM">
+    <model_grid alias="mip1" >
+      <grid name="ocnice">ISOMIPv1</grid>
       <grid name="glc">MISMIPgrid</grid>
     </model_grid>
 
@@ -280,10 +281,6 @@
       <grid name="atm">T62</grid>
       <grid name="lnd">T62</grid>
       <grid name="ocnice">tx0.66v1</grid>
-    </model_grid>
-
-    <model_grid alias="im1" compset="_MOM">
-      <grid name="ocnice">ISOMIPv1</grid>
     </model_grid>
 
     <model_grid alias="T62_g16" not_compset="_CAM">
