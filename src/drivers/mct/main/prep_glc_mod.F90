@@ -5,6 +5,7 @@ module prep_glc_mod
   use shr_kind_mod    , only: cl => SHR_KIND_CL
   use shr_sys_mod     , only: shr_sys_abort, shr_sys_flush
   use seq_comm_mct    , only: num_inst_glc, num_inst_lnd, num_inst_frc
+  use seq_comm_mct    , only: num_inst_ocn
   use seq_comm_mct    , only: CPLID, GLCID, logunit
   use seq_comm_mct    , only: seq_comm_getData=>seq_comm_setptrs
   use seq_infodata_mod, only: seq_infodata_type, seq_infodata_getdata
@@ -16,7 +17,7 @@ module prep_glc_mod
   use perf_mod
   use component_type_mod, only: component_get_x2c_cx, component_get_c2x_cx
   use component_type_mod, only: component_get_dom_cx
-  use component_type_mod, only: glc, lnd
+  use component_type_mod, only: glc, lnd, ocn
   use glc_elevclass_mod, only : glc_get_num_elevation_classes, glc_elevclass_as_string
   use glc_elevclass_mod, only : glc_all_elevclass_strings, GLC_ELEVCLASS_STRLEN
 
@@ -64,9 +65,11 @@ module prep_glc_mod
   type(seq_map), pointer :: mapper_Sl2g
   type(seq_map), pointer :: mapper_Fl2g
   type(seq_map), pointer :: mapper_Fg2l
+  type(seq_map), pointer :: mapper_So2g
 
   ! attribute vectors
   type(mct_aVect), pointer :: l2x_gx(:) ! Lnd export, glc grid, cpl pes - allocated in driver
+  type(mct_aVect), pointer :: o2x_gx(:) ! Lnd export, glc grid, cpl pes - allocated in driver
 
   ! accumulation variables
   type(mct_aVect), pointer :: l2gacc_lx(:) ! Lnd export, lnd grid, cpl pes - allocated in driver
@@ -110,7 +113,7 @@ contains
     logical                  , intent(in)    :: ocn_c2_glc ! .true.  => ocn to glc coupling on
     !
     ! Local Variables
-    integer                          :: eli
+    integer                          :: eli, eoi
     integer                          :: lsize_l
     integer                          :: lsize_g
     logical                          :: samegrid_lg   ! samegrid land and glc
@@ -118,6 +121,7 @@ contains
     logical                          :: iamroot_CPLID ! .true. => CPLID masterproc
     logical                          :: glc_present   ! .true. => glc is present
     character(CL)                    :: lnd_gnam      ! lnd grid
+    character(CL)                    :: ocn_gnam      ! ond grid
     character(CL)                    :: glc_gnam      ! glc grid
     type(mct_avect), pointer         :: l2x_lx
     type(mct_avect), pointer         :: x2g_gx
@@ -129,37 +133,39 @@ contains
          esmf_map_flag=esmf_map_flag   , &
          glc_present=glc_present       , &
          lnd_gnam=lnd_gnam             , &
+         ocn_gnam=ocn_gnam             , &
          glc_gnam=glc_gnam)
 
     allocate(mapper_Sl2g)
     allocate(mapper_Fl2g)
     allocate(mapper_Fg2l)
+    allocate(mapper_So2g)
 
     smb_renormalize = prep_glc_do_renormalize_smb(infodata)
 
-    if (glc_present .and. lnd_c2_glc) then
+    if (glc_present) then
 
        call seq_comm_getData(CPLID, &
             mpicom=mpicom_CPLID, iamroot=iamroot_CPLID)
 
-       l2x_lx => component_get_c2x_cx(lnd(1))
-       lsize_l = mct_aVect_lsize(l2x_lx)
-
-       x2g_gx => component_get_x2c_cx(glc(1))
-       lsize_g = mct_aVect_lsize(x2g_gx)
-
-       allocate(l2x_gx(num_inst_lnd))
-       allocate(l2gacc_lx(num_inst_lnd))
-       do eli = 1,num_inst_lnd
-          call mct_aVect_init(l2x_gx(eli), rList=seq_flds_x2g_fields, lsize=lsize_g)
-          call mct_aVect_zero(l2x_gx(eli))
-
-          call mct_aVect_init(l2gacc_lx(eli), rList=seq_flds_l2x_fields_to_glc, lsize=lsize_l)
-          call mct_aVect_zero(l2gacc_lx(eli))
-       enddo
-       l2gacc_lx_cnt = 0
-
        if (lnd_c2_glc) then
+
+          l2x_lx => component_get_c2x_cx(lnd(1))
+          lsize_l = mct_aVect_lsize(l2x_lx)
+
+          x2g_gx => component_get_x2c_cx(glc(1))
+          lsize_g = mct_aVect_lsize(x2g_gx)
+
+          allocate(l2x_gx(num_inst_lnd))
+          allocate(l2gacc_lx(num_inst_lnd))
+          do eli = 1,num_inst_lnd
+             call mct_aVect_init(l2x_gx(eli), rList=seq_flds_x2g_fields, lsize=lsize_g)
+             call mct_aVect_zero(l2x_gx(eli))
+
+             call mct_aVect_init(l2gacc_lx(eli), rList=seq_flds_l2x_fields_to_glc, lsize=lsize_l)
+             call mct_aVect_zero(l2gacc_lx(eli))
+          enddo
+          l2gacc_lx_cnt = 0
 
           samegrid_lg = .true.
           if (trim(lnd_gnam) /= trim(glc_gnam)) samegrid_lg = .false.
@@ -195,10 +201,30 @@ contains
        end if
        call shr_sys_flush(logunit)
 
-    end if
+       if (ocn_c2_glc) then
 
-    if (glc_present .and. ocn_c2_glc) then
-      !AA TODO
+          !AA TODO: uncomment the block below
+
+          !allocate(o2x_gx(num_inst_ocn))
+          !do eoi = 1, num_inst_ocn
+          !   call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
+          !   call mct_aVect_zero(o2x_gx(eoi))
+          !enddo
+          !if (trim(ocn_gnam) == "ISOMIPv1") ocn_gnam = "MISMIPgrid" !AA TODO: eliminate this
+          !if (trim(ocn_gnam) /= trim(glc_gnam)) then
+          !   write(logunit,*) subname,' ERROR: ocn2glc coupling is requested when the two ', &
+          !        'are on different grids'
+          !   call shr_sys_abort(subname//' ERROR: unknown value for glc_renormalize_smb')
+          !endif
+
+          !if (iamroot_CPLID) then
+          !   write(logunit,*) ' '
+          !   write(logunit,F00) 'Initializing mapper_So2g'
+          !end if
+          !call seq_map_init_rearrolap(mapper_So2g, ocn(1), glc(1), 'mapper_So2g')
+       end if
+       call shr_sys_flush(logunit)
+
     end if
 
   end subroutine prep_glc_init
