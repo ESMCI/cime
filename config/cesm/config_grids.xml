@@ -40,7 +40,7 @@
       <grid name="glc"	  compset="CISM1" >gland5UM</grid>
       <grid name="glc"	  compset="CISM2" >gland4</grid>
       <grid name="glc"    compset="XGLC"  >gland4</grid>
-      <grid name="glc"    compset="TMISMIP">MISMIPgrid</grid>
+      <grid name="glc"    compset="Tu"    >MISOMIPgrid</grid>
       <grid name="wav"	  compset="SWAV"  >null</grid>
       <grid name="wav"	  compset="DWAV"  >ww3a</grid>
       <grid name="wav"	  compset="WW3"	  >ww3a</grid>
@@ -159,8 +159,8 @@
       <mask>gx3v7</mask>
     </model_grid>
 
-    <model_grid alias="mip1" compset="_CISM">
-      <grid name="glc">MISMIPgrid</grid>
+    <model_grid alias="miso2k" compset="_CISM">
+      <grid name="glc">MISOMIPgrid</grid>
     </model_grid>
 
     <model_grid alias="T42_T42_musgs" not_compset="_POP">
@@ -1446,9 +1446,9 @@
       <desc>4-km Greenland grid, for use with the glissade dycore</desc>
     </domain>
 
-    <domain name="MISMIPgrid">
-      <nx>324</nx> <ny>40</ny>
-      <desc>2-km MISMIP+ grid to use for idealized experiment</desc>
+    <domain name="MISOMIPgrid">
+      <nx>402</nx> <ny>40</ny>
+      <desc>2-km MISOMIP grid to use for idealized experiment</desc>
     </domain>
 
     <!-- WW3 domains-->
