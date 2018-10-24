@@ -40,7 +40,7 @@
       <grid name="glc"	  compset="CISM1" >gland5UM</grid>
       <grid name="glc"	  compset="CISM2" >gland4</grid>
       <grid name="glc"    compset="XGLC"  >gland4</grid>
-      <grid name="glc"    compset="Tu"    >MISOMIPgrid</grid>
+      <grid name="glc"    compset="Tu"    >MISOMIP</grid>
       <grid name="wav"	  compset="SWAV"  >null</grid>
       <grid name="wav"	  compset="DWAV"  >ww3a</grid>
       <grid name="wav"	  compset="WW3"	  >ww3a</grid>
@@ -1366,7 +1366,7 @@
       <support>Experimental for MOM6 experiments</support>
     </domain>
 
-    <domain name="MISOMIP">
+    <domain name="">
       <nx>40</nx> <ny>240</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.ISOMIPv1.180628.nc</file>
       <desc>Idealized MISOMIP grid for MOM6+CISM</desc>
@@ -1443,7 +1443,7 @@
       <desc>4-km Greenland grid, for use with the glissade dycore</desc>
     </domain>
 
-    <domain name="MISOMIPgrid">
+    <domain name="MISOMIP">
       <nx>402</nx> <ny>40</ny>
       <desc>2-km MISOMIP grid to use for idealized experiment</desc>
     </domain>
