@@ -1366,7 +1366,7 @@
       <support>Experimental for MOM6 experiments</support>
     </domain>
 
-    <domain name="">
+    <domain name="MISOMIP">
       <nx>40</nx> <ny>240</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.ISOMIPv1.180628.nc</file>
       <desc>Idealized MISOMIP grid for MOM6+CISM</desc>
