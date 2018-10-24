@@ -210,7 +210,7 @@ contains
           !   call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
           !   call mct_aVect_zero(o2x_gx(eoi))
           !enddo
-          !if (trim(ocn_gnam) == "ISOMIPv1") ocn_gnam = "MISMIPgrid" !AA TODO: eliminate this
+          !if (trim(ocn_gnam) == "MISOMIP") ocn_gnam = "MISMIPgrid" !AA TODO: eliminate this
           !if (trim(ocn_gnam) /= trim(glc_gnam)) then
           !   write(logunit,*) subname,' ERROR: ocn2glc coupling is requested when the two ', &
           !        'are on different grids'
