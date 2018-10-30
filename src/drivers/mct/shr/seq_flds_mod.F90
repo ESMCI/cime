@@ -2374,6 +2374,15 @@ contains
     call set_glc_elevclass_field(name, attname, longname, stdname, units, x2l_states_from_glc, &
          additional_list = .true.)
 
+    name = 'Sg_thck'
+    longname = 'Ice thickness of glacier'
+    stdname  = 'ice_thickness'
+    units    = 'm'
+    attname  = 'Sg_thck'
+    call metadata_set(attname, longname, stdname, units)
+    call seq_flds_add(g2x_states,"Sg_thck")
+    call seq_flds_add(x2o_states,"Sg_thck")
+
     name = 'Flgg_hflx'
     longname = 'Downward heat flux from glacier interior'
     stdname  = 'downward_heat_flux_in_glacier'

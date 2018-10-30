@@ -164,6 +164,10 @@
       <grid name="glc">MISOMIP</grid>
     </model_grid>
 
+    <model_grid alias="mismip2k" >
+      <grid name="glc">MISOMIP</grid>
+    </model_grid>
+
     <model_grid alias="T42_T42_musgs" not_compset="_POP">
       <grid name="atm">T42</grid>
       <grid name="lnd">T42</grid>
@@ -1366,7 +1370,7 @@
       <support>Experimental for MOM6 experiments</support>
     </domain>
 
-    <domain name="MISOMIP">
+    <domain name="ISOMIP">
       <nx>40</nx> <ny>240</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.ISOMIPv1.180628.nc</file>
       <desc>Idealized MISOMIP grid for MOM6+CISM</desc>
