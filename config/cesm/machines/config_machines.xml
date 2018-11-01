@@ -70,13 +70,7 @@ This allows using a different mpirun command to launch unit tests
     <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
     <mpirun mpilib="default">
-      <executable>mpirun --map-to socket --bind-to core</executable>
-      <arguments>
-	<arg name="anum_tasks"> -np {{ total_tasks }}</arg>
-      </arguments>
-    </mpirun>
-    <mpirun mpilib="openmpi">
-      <executable>mpirun --map-to socket --bind-to core </executable>
+      <executable>mpirun --map-by socket --bind-to core</executable>
       <arguments>
 	<arg name="anum_tasks"> -np {{ total_tasks }}</arg>
       </arguments>

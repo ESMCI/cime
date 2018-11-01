@@ -54,7 +54,7 @@
   </batch_system>
 
   <batch_system MACH="aws-tutorial" type="pbs">
-    <directives queue="batch">
+    <directives queue="regular">
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
       <directive> -l nodes={{ num_nodes }}:ppn={{ max_tasks_per_node }}</directive>
     </directives>
