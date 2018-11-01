@@ -56,11 +56,10 @@
   <batch_system MACH="aws-tutorial" type="pbs">
     <directives queue="batch">
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
+      <directive> -l nodes={{ num_nodes }}:ppn={{ max_tasks_per_node }}</directive>
     </directives>
-
     <queues>
-      <queue walltimemax="12:00" nodemin="1" nodemax="8">regular</queue>
+      <queue walltimemax="01:00" nodemin="1" nodemax="8">regular</queue>
     </queues>
   </batch_system>
 
