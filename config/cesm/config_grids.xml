@@ -159,6 +159,10 @@
       <mask>gx3v7</mask>
     </model_grid>
 
+    <model_grid alias="iso2k" >
+      <grid name="ocnice">ISOMIP</grid>
+    </model_grid>
+
     <model_grid alias="miso2k" >
       <grid name="ocnice">MISOMIP</grid>
       <grid name="glc">MISOMIP</grid>
@@ -1373,7 +1377,7 @@
     <domain name="ISOMIP">
       <nx>40</nx> <ny>240</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.ISOMIPv1.180628.nc</file>
-      <desc>Idealized MISOMIP grid for MOM6+CISM</desc>
+      <desc>2-km MISOMIP grid to use for idealized experiment</desc>
       <support>for MOM6+CISM experiments</support>
     </domain>
 
