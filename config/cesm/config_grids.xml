@@ -159,6 +159,10 @@
       <mask>gx3v7</mask>
     </model_grid>
 
+    <model_grid alias="iso2k" >
+      <grid name="ocnice">ISOMIP</grid>
+    </model_grid>
+
     <model_grid alias="miso2k" >
       <grid name="ocnice">MISOMIP</grid>
       <grid name="glc">MISOMIP</grid>
@@ -1445,6 +1449,11 @@
     <domain name="gland4">
       <nx>416</nx> <ny>704</ny>
       <desc>4-km Greenland grid, for use with the glissade dycore</desc>
+    </domain>
+
+    <domain name="MISOMIP">
+      <nx>402</nx> <ny>40</ny>
+      <desc>2-km MISOMIP grid to use for idealized experiment</desc>
     </domain>
 
     <!-- WW3 domains-->
