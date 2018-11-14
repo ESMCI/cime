@@ -203,25 +203,22 @@ contains
 
        if (ocn_c2_glc) then
 
-          !AA TODO: uncomment the block below
+          allocate(o2x_gx(num_inst_ocn))
+          do eoi = 1, num_inst_ocn
+             call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
+             call mct_aVect_zero(o2x_gx(eoi))
+          enddo
+          if (trim(ocn_gnam) /= trim(glc_gnam)) then
+             write(logunit,*) subname,' ERROR: ocn2glc coupling is requested when the two ', &
+                  'are on different grids'
+             call shr_sys_abort(subname//' ERROR: unknown value for glc_renormalize_smb')
+          endif
 
-          !allocate(o2x_gx(num_inst_ocn))
-          !do eoi = 1, num_inst_ocn
-          !   call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
-          !   call mct_aVect_zero(o2x_gx(eoi))
-          !enddo
-          !if (trim(ocn_gnam) == "MISOMIP") ocn_gnam = "MISMIPgrid" !AA TODO: eliminate this
-          !if (trim(ocn_gnam) /= trim(glc_gnam)) then
-          !   write(logunit,*) subname,' ERROR: ocn2glc coupling is requested when the two ', &
-          !        'are on different grids'
-          !   call shr_sys_abort(subname//' ERROR: unknown value for glc_renormalize_smb')
-          !endif
-
-          !if (iamroot_CPLID) then
-          !   write(logunit,*) ' '
-          !   write(logunit,F00) 'Initializing mapper_So2g'
-          !end if
-          !call seq_map_init_rearrolap(mapper_So2g, ocn(1), glc(1), 'mapper_So2g')
+          if (iamroot_CPLID) then
+             write(logunit,*) ' '
+             write(logunit,F00) 'Initializing mapper_So2g'
+          end if
+          call seq_map_init_rearrolap(mapper_So2g, ocn(1), glc(1), 'mapper_So2g')
        end if
        call shr_sys_flush(logunit)
 
