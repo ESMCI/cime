@@ -18,10 +18,10 @@
 !  the fractions fields are defined for each grid in the fraction bundles as
 !    needed as follows.
 !    character(*),parameter :: fraclist_a = 'afrac:ifrac:ofrac:lfrac:lfrin'
-!    character(*),parameter :: fraclist_o = 'afrac:ifrac:ofrac:ifrad:ofrad'
+!    character(*),parameter :: fraclist_o = 'afrac:ifrac:ofrac:ifrad:ofrad:gfrac'
 !    character(*),parameter :: fraclist_i = 'afrac:ifrac:ofrac'
 !    character(*),parameter :: fraclist_l = 'afrac:lfrac:lfrin'
-!    character(*),parameter :: fraclist_g = 'gfrac:lfrac'
+!    character(*),parameter :: fraclist_g = 'gfrac:lfrac:ofrac'
 !    character(*),parameter :: fraclist_r = 'lfrac:rfrac'
 !
 !  we assume ocean and ice are on the same grids, same masks
@@ -47,7 +47,7 @@
 !  where fractions_* are a bundle of fractions on a particular grid and
 !    *frac (ie afrac) is the fraction of a particular component in the bundle.
 !
-!  fraclist_g and fraclist_r don't yet interact with atm, lnd, ice, ocn.
+!  fraclist_g and fraclist_r don't yet interact with atm, lnd, ice.
 !
 !  the fractions are computed fundamentally as follows (although the
 !    detailed implementation might be slightly different)
@@ -144,6 +144,7 @@ module seq_frac_mct
   use prep_atm_mod, only: prep_atm_get_mapper_Fi2a
   use prep_atm_mod, only: prep_atm_get_mapper_Fl2a
   use prep_glc_mod, only: prep_glc_get_mapper_Fl2g
+  use prep_glc_mod, only: prep_glc_get_mapper_Fo2g
 
   use component_type_mod
 
@@ -195,6 +196,7 @@ module seq_frac_mct
   type(seq_map)  , pointer :: mapper_a2l
   type(seq_map)  , pointer :: mapper_l2r
   type(seq_map)  , pointer :: mapper_l2g
+  type(seq_map)  , pointer :: mapper_o2g
 
   private seq_frac_check
 
@@ -264,10 +266,10 @@ contains
     integer :: debug_old      ! old debug value
 
     character(*),parameter :: fraclist_a = 'afrac:ifrac:ofrac:lfrac:lfrin'
-    character(*),parameter :: fraclist_o = 'afrac:ifrac:ofrac:ifrad:ofrad'
+    character(*),parameter :: fraclist_o = 'afrac:ifrac:ofrac:ifrad:ofrad:gfrac'
     character(*),parameter :: fraclist_i = 'afrac:ifrac:ofrac'
     character(*),parameter :: fraclist_l = 'afrac:lfrac:lfrin'
-    character(*),parameter :: fraclist_g = 'gfrac:lfrac'
+    character(*),parameter :: fraclist_g = 'gfrac:lfrac:ofrac'
     character(*),parameter :: fraclist_r = 'lfrac:rfrac'
     character(*),parameter :: fraclist_w = 'wfrac'
 
@@ -397,6 +399,12 @@ contains
           fractions_o%rAttr(ko,:) = dom_o%data%rAttr(kf,:)
           mapper_o2a => prep_atm_get_mapper_Fo2a()
           call seq_map_map(mapper_o2a, fractions_o, fractions_a, fldlist='ofrac',norm=.false.)
+       elseif (glc_present) then
+          ko = mct_aVect_indexRa(fractions_o,"ofrac",perrWith=subName)
+          kf = mct_aVect_indexRA(dom_o%data ,"frac" ,perrWith=subName)
+          fractions_o%rAttr(ko,:) = dom_o%data%rAttr(kf,:)
+          mapper_o2g => prep_glc_get_mapper_Fo2g()
+          call seq_map_map(mapper_o2g, fractions_o, fractions_g, fldlist='ofrac',norm=.false.)
        endif
 
        if (atm_present) then
