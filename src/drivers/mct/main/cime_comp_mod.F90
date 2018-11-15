@@ -1681,7 +1681,7 @@ contains
 
           call seq_domain_check( infodata,                                             &
                atm(ens1), ice(ens1), lnd(ens1), ocn(ens1), rof(ens1), glc(ens1),       &
-               samegrid_al, samegrid_ao, samegrid_ro, samegrid_lg)
+               samegrid_al, samegrid_ao, samegrid_ro, samegrid_lg, samegrid_og)
 
        endif
        if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
@@ -2959,10 +2959,14 @@ contains
                    call component_diag(infodata, glc, flow='x2c', comment='send glc', &
                         info_debug=info_debug, timer_diag='CPL:glcprep_diagav')
 
-                else
+                else if (.not. ocn_c2_glc) then
                    call prep_glc_zero_fields()
                 end if  ! glcrun_avg_alarm
              end if  ! lnd_c2_glc
+
+             if (ocn_c2_glc) then
+               call prep_glc_calc_o2x_gx(fractions_ox, timer='CPL:glcprep_ocn2glc')
+             endif
 
              if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
              call t_drvstopf  ('CPL:GLCPREP',cplrun=.true.)
