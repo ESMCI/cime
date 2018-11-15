@@ -48,7 +48,7 @@ contains
 
   subroutine seq_domain_check( infodata, &
        atm, ice, lnd, ocn, rof, glc, &
-       samegrid_al, samegrid_ao, samegrid_ro, samegrid_lg)
+       samegrid_al, samegrid_ao, samegrid_ro, samegrid_lg, samegrid_og)
 
     !-----------------------------------------------------------
     ! Uses
@@ -59,6 +59,7 @@ contains
     use prep_lnd_mod, only: prep_lnd_get_mapper_Fa2l
     use prep_ocn_mod, only: prep_ocn_get_mapper_SFi2o
     use prep_glc_mod, only: prep_glc_get_mapper_Fl2g
+    use prep_glc_mod, only: prep_glc_get_mapper_Fo2g
     !
     ! Arguments
     !
@@ -73,12 +74,14 @@ contains
     logical                  , intent(in)    :: samegrid_ao ! atm ocn grid same
     logical                  , intent(in)    :: samegrid_ro ! rof ocn grid same
     logical                  , intent(in)    :: samegrid_lg ! lnd glc grid same
+    logical                  , intent(in)    :: samegrid_og ! ocn glc grid same
     !
     ! Local variables
     !
     type(seq_map)   , pointer :: mapper_i2a ! inout needed for lower methods
     type(seq_map)   , pointer :: mapper_i2o ! inout needed for lower methods
     type(seq_map)   , pointer :: mapper_o2a !
+    type(seq_map)   , pointer :: mapper_o2g !
     type(seq_map)   , pointer :: mapper_l2g !
     type(seq_map)   , pointer :: mapper_a2l !
     type(seq_map)   , pointer :: mapper_l2a !
@@ -98,6 +101,7 @@ contains
     !
     type(mct_gGrid) :: lnddom_a              ! lnd domain info on atm decomp
     type(mct_gGrid) :: lnddom_g              ! lnd domain info on glc decomp
+    type(mct_gGrid) :: ocndom_g              ! ocn domain info on glc decomp
     type(mct_gGrid) :: icedom_a              ! ice domain info on atm decomp (all grids same)
     type(mct_gGrid) :: ocndom_a              ! ocn domain info on atm decomp (all grids same)
     type(mct_gGrid) :: icedom_o              ! ocn domain info on ocn decomp (atm/ocn grid different)
@@ -156,6 +160,7 @@ contains
     mapper_i2a => prep_atm_get_mapper_Fi2a()
     mapper_i2o => prep_ocn_get_mapper_SFi2o()
     mapper_o2a => prep_atm_get_mapper_Fo2a()
+    mapper_o2g => prep_glc_get_mapper_Fo2g()
     mapper_l2g => prep_glc_get_mapper_Fl2g()
     mapper_a2l => prep_lnd_get_mapper_Fa2l()
     mapper_l2a => prep_atm_get_mapper_Fl2a()
@@ -331,6 +336,43 @@ contains
        call mct_aVect_zero(icedom_o%data)
        call seq_map_map(mapper_i2o, icedom_i%data, icedom_o%data, norm=.false.)
     end if
+
+    if (glc_present .and. ocn_present) then
+       gsmap_o  => component_get_gsmap_cx(ocn) ! gsmap_ox
+       ocndom_o => component_get_dom_cx(ocn)   ! dom_ox
+       ocnsize  = mct_avect_lsize(ocndom_o%data)
+       gocnsize = mct_gsMap_gsize(gsMap_o)
+
+       gsmap_g  => component_get_gsmap_cx(glc) ! gsmap_gx
+       glcdom_g => component_get_dom_cx(glc)   ! dom_gx
+       glcsize  = mct_avect_lsize(glcdom_g%data)
+       gglcsize = mct_gsMap_gsize(gsMap_g)
+
+       if (samegrid_og .and. gocnsize /= gglcsize) then
+         write(logunit,*) subname,' error: global glcsize = ',gglcsize,' global ocnsize= ',gglcsize
+         call shr_sys_flush(logunit)
+         call shr_sys_abort(subname//' glc and ocn grid must have the same global size')
+       endif
+
+       if (samegrid_og) then
+         call mct_gGrid_init(oGGrid=ocndom_g, iGGrid=ocndom_o, lsize=glcsize)
+         call mct_aVect_zero(ocndom_g%data)
+         call seq_map_map(mapper_o2g, ocndom_o%data, ocndom_g%data, norm=.false.)
+         if (iamroot) write(logunit,F00) ' --- checking glc/ocn domains ---'
+         npts = glcsize
+         allocate(mask(npts),stat=rcode)
+         if(rcode /= 0) call shr_sys_abort(subname//' allocate mask')
+         call mct_aVect_getRAttr(ocndom_g%data,"mask",mask,rcode)
+         where (mask < eps_axmask) mask = 0.0_R8
+         call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'mask', eps=eps_axmask, mpicom=mpicom_cplid, mask=mask)
+         call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'lat' , eps=eps_axgrid, mpicom=mpicom_cplid, mask=mask)
+         call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'lon' , eps=eps_axgrid, mpicom=mpicom_cplid, mask=mask)
+         call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'area', eps=eps_axarea, mpicom=mpicom_cplid, mask=mask)
+         deallocate(mask,stat=rcode)
+         if(rcode /= 0) call shr_sys_abort(subname//' deallocate mask')
+       endif
+
+    endif
 
     if (rof_present .and. ocnrof_prognostic .and. samegrid_ro) then
        gsmap_r  => component_get_gsmap_cx(glc) ! gsmap_gx
