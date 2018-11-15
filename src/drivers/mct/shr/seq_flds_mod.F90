@@ -1510,8 +1510,8 @@ contains
     call metadata_set(attname, longname, stdname, units)
 
     ! Melt rate
-    call seq_flds_add(o2x_states,"Fogo_mr")
-    call seq_flds_add(x2g_states,"Fogo_mr")
+    call seq_flds_add(o2x_fluxes,"Fogo_mr")
+    call seq_flds_add(x2g_fluxes,"Fogo_mr")
     longname = 'Basal melt rate'
     stdname  = 'basal_melt_rate'
     units    = 'kg/m^2/s'
