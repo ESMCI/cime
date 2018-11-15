@@ -35,6 +35,7 @@ module prep_glc_mod
   public :: prep_glc_accum
   public :: prep_glc_accum_avg
 
+  public :: prep_glc_calc_o2x_gx
   public :: prep_glc_calc_l2x_gx
 
   public :: prep_glc_zero_fields
@@ -45,6 +46,7 @@ module prep_glc_mod
   public :: prep_glc_get_l2gacc_lx_cnt
   public :: prep_glc_get_mapper_Sl2g
   public :: prep_glc_get_mapper_Fl2g
+  public :: prep_glc_get_mapper_Fo2g
 
   !--------------------------------------------------------------------------
   ! Private interfaces
@@ -65,7 +67,7 @@ module prep_glc_mod
   type(seq_map), pointer :: mapper_Sl2g
   type(seq_map), pointer :: mapper_Fl2g
   type(seq_map), pointer :: mapper_Fg2l
-  type(seq_map), pointer :: mapper_So2g
+  type(seq_map), pointer :: mapper_Fo2g
 
   ! attribute vectors
   type(mct_aVect), pointer :: l2x_gx(:) ! Lnd export, glc grid, cpl pes - allocated in driver
@@ -117,6 +119,7 @@ contains
     integer                          :: lsize_l
     integer                          :: lsize_g
     logical                          :: samegrid_lg   ! samegrid land and glc
+    logical                          :: samegrid_og   ! samegrid ocn and glc
     logical                          :: esmf_map_flag ! .true. => use esmf for mapping
     logical                          :: iamroot_CPLID ! .true. => CPLID masterproc
     logical                          :: glc_present   ! .true. => glc is present
@@ -139,7 +142,7 @@ contains
     allocate(mapper_Sl2g)
     allocate(mapper_Fl2g)
     allocate(mapper_Fg2l)
-    allocate(mapper_So2g)
+    allocate(mapper_Fo2g)
 
     smb_renormalize = prep_glc_do_renormalize_smb(infodata)
 
@@ -148,13 +151,13 @@ contains
        call seq_comm_getData(CPLID, &
             mpicom=mpicom_CPLID, iamroot=iamroot_CPLID)
 
+       x2g_gx => component_get_x2c_cx(glc(1))
+       lsize_g = mct_aVect_lsize(x2g_gx)
+
        if (lnd_c2_glc) then
 
           l2x_lx => component_get_c2x_cx(lnd(1))
           lsize_l = mct_aVect_lsize(l2x_lx)
-
-          x2g_gx => component_get_x2c_cx(glc(1))
-          lsize_g = mct_aVect_lsize(x2g_gx)
 
           allocate(l2x_gx(num_inst_lnd))
           allocate(l2gacc_lx(num_inst_lnd))
@@ -203,22 +206,23 @@ contains
 
        if (ocn_c2_glc) then
 
+          samegrid_og = .true.
+          if (trim(ocn_gnam) /= trim(glc_gnam)) samegrid_og = .false.
+
           allocate(o2x_gx(num_inst_ocn))
           do eoi = 1, num_inst_ocn
-             call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
-             call mct_aVect_zero(o2x_gx(eoi))
+            call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
+            call mct_aVect_zero(o2x_gx(eoi))
           enddo
-          if (trim(ocn_gnam) /= trim(glc_gnam)) then
-             write(logunit,*) subname,' ERROR: ocn2glc coupling is requested when the two ', &
-                  'are on different grids'
-             call shr_sys_abort(subname//' ERROR: unknown value for glc_renormalize_smb')
-          endif
 
           if (iamroot_CPLID) then
              write(logunit,*) ' '
              write(logunit,F00) 'Initializing mapper_So2g'
           end if
-          call seq_map_init_rearrolap(mapper_So2g, ocn(1), glc(1), 'mapper_So2g')
+          call seq_map_init_rcfile(mapper_Fo2g, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_fmapname:','ocn2glc_fmaptype:',samegrid_og, &
+               'mapper_Fo2g initialization',esmf_map_flag)
+               
        end if
        call shr_sys_flush(logunit)
 
@@ -525,6 +529,53 @@ contains
     first_time = .false.
 
   end subroutine prep_glc_merge
+
+  !================================================================================================
+
+  subroutine prep_glc_calc_o2x_gx(fractions_ox, timer)
+    !---------------------------------------------------------------
+    ! Description
+    ! Create o2x_gx (note that o2x_gx is a local module variable)
+    !
+    use shr_string_mod, only : shr_string_listGetNum
+    ! Arguments
+    type(mct_aVect) , intent(in) :: fractions_ox(:)
+    character(len=*), intent(in) :: timer
+    !
+    ! Local Variables
+    integer :: egi, eli, efi, eoi
+    integer :: num_flux_fields
+    integer :: num_state_fields
+    integer :: field_num
+    character(len=cl) :: fieldname
+    character(*), parameter   :: subname = '(prep_glc_calc_o2x_gx)'
+    type(mct_avect), pointer  :: o2x_ox
+    !---------------------------------------------------------------
+
+    call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
+
+    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes))
+    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states))
+
+    do egi = 1,num_inst_glc
+       ! Use fortran mod to address ensembles in merge
+       eli = mod((egi-1),num_inst_lnd) + 1
+       efi = mod((egi-1),num_inst_frc) + 1
+
+       do field_num = 1, num_flux_fields
+         call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes)
+         print *, "debuggg1", fieldname, field_num
+       enddo
+    enddo
+
+    do eoi = 1,num_inst_ocn
+      o2x_ox => component_get_c2x_cx(ocn(eoi))
+      call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), norm=.true.)
+    enddo
+    
+    call t_drvstopf  (trim(timer))
+
+  end subroutine prep_glc_calc_o2x_gx
 
   !================================================================================================
 
@@ -1135,5 +1186,10 @@ contains
     type(seq_map), pointer :: prep_glc_get_mapper_Fl2g
     prep_glc_get_mapper_Fl2g => mapper_Fl2g
   end function prep_glc_get_mapper_Fl2g
+
+  function prep_glc_get_mapper_Fo2g()
+    type(seq_map), pointer :: prep_glc_get_mapper_Fo2g
+    prep_glc_get_mapper_Fo2g => mapper_Fo2g
+  end function prep_glc_get_mapper_Fo2g
 
 end module prep_glc_mod
