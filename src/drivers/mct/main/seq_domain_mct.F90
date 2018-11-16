@@ -365,8 +365,8 @@ contains
          call mct_aVect_getRAttr(ocndom_g%data,"mask",mask,rcode)
          where (mask < eps_axmask) mask = 0.0_R8
          call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'mask', eps=eps_axmask, mpicom=mpicom_cplid, mask=mask)
-         call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'lat' , eps=eps_axgrid, mpicom=mpicom_cplid, mask=mask)
-         call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'lon' , eps=eps_axgrid, mpicom=mpicom_cplid, mask=mask)
+         !call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'lat' , eps=eps_axgrid, mpicom=mpicom_cplid, mask=mask)
+         !call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'lon' , eps=eps_axgrid, mpicom=mpicom_cplid, mask=mask)
          call seq_domain_check_grid(glcdom_g%data, ocndom_g%data, 'area', eps=eps_axarea, mpicom=mpicom_cplid, mask=mask)
          deallocate(mask,stat=rcode)
          if(rcode /= 0) call shr_sys_abort(subname//' deallocate mask')
