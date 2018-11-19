@@ -31,6 +31,7 @@ module prep_glc_mod
 
   public :: prep_glc_init
   public :: prep_glc_mrg
+  public :: prep_glc_mrg_o2g
 
   public :: prep_glc_accum
   public :: prep_glc_accum_avg
@@ -55,6 +56,7 @@ module prep_glc_mod
   private :: prep_glc_do_renormalize_smb
   private :: prep_glc_set_g2x_lx_fields
   private :: prep_glc_merge
+  private :: prep_glc_merge_o2g
   private :: prep_glc_map_one_state_field_lnd2glc
   private :: prep_glc_map_qice_conservative_lnd2glc
   private :: prep_glc_renormalize_smb
@@ -87,6 +89,9 @@ module prep_glc_mod
 
   ! Name of flux field giving surface mass balance
   character(len=*), parameter :: qice_fieldname = 'Flgl_qice'
+
+  ! Melt rate passed from ocn
+  character(len=*), parameter :: mr_fieldname = 'Fogo_mr'
 
   ! Names of some other fields
   character(len=*), parameter :: Sg_frac_field = 'Sg_ice_covered'
@@ -380,6 +385,127 @@ contains
 
   !================================================================================================
 
+  subroutine prep_glc_mrg_o2g(infodata, fractions_gx, timer_mrg)
+
+    !---------------------------------------------------------------
+    ! Description
+    ! Merge glc inputs
+    !
+    ! Arguments
+    type(seq_infodata_type) , intent(in)    :: infodata
+    type(mct_aVect)         , intent(in)    :: fractions_gx(:)
+    character(len=*)        , intent(in)    :: timer_mrg
+    !
+    ! Local Variables
+    integer :: egi, eoi, efi
+    type(mct_avect), pointer :: x2g_gx
+    character(*), parameter  :: subname = '(prep_glc_mrg)'
+    !---------------------------------------------------------------
+
+    call t_drvstartf (trim(timer_mrg),barrier=mpicom_CPLID)
+    do egi = 1,num_inst_glc
+       ! Use fortran mod to address ensembles in merge
+       eoi = mod((egi-1),num_inst_ocn) + 1
+       efi = mod((egi-1),num_inst_frc) + 1
+
+       x2g_gx => component_get_x2c_cx(glc(egi))
+       call prep_glc_merge_o2g(o2x_gx(eoi), fractions_gx(efi), x2g_gx)
+    enddo
+    call t_drvstopf  (trim(timer_mrg))
+
+  end subroutine prep_glc_mrg_o2g
+
+  !================================================================================================
+
+  subroutine prep_glc_merge_o2g( o2x_g, fractions_g, x2g_g )
+
+    !-----------------------------------------------------------------------
+    ! Description
+    ! "Merge" ocn forcing for glc input.
+    !
+    ! Flux fields are copied directly
+    !
+    ! Arguments
+    type(mct_aVect), intent(inout)  :: o2x_g  ! input
+    type(mct_aVect), intent(in)     :: fractions_g
+    type(mct_aVect), intent(inout)  :: x2g_g  ! output
+    !-----------------------------------------------------------------------
+
+    integer       :: num_flux_fields
+    integer       :: num_state_fields
+    integer       :: nflds
+    integer       :: i,n
+    integer       :: mrgstr_index
+    integer       :: index_o2x
+    integer       :: index_x2g
+    integer       :: lsize
+    logical       :: iamroot
+    logical, save :: first_time = .true.
+    character(CL),allocatable :: mrgstr(:)   ! temporary string
+    character(CL) :: field   ! string converted to char
+    character(*), parameter   :: subname = '(prep_glc_merge) '
+
+    !-----------------------------------------------------------------------
+
+    call seq_comm_getdata(CPLID, iamroot=iamroot)
+    lsize = mct_aVect_lsize(x2g_g)
+
+    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes))
+    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states))
+
+    if (first_time) then
+       nflds = mct_aVect_nRattr(x2g_g)
+       if (nflds /= (num_flux_fields + num_state_fields)) then
+          write(logunit,*) subname,' ERROR: nflds /= num_flux_fields + num_state_fields: ', &
+               nflds, num_flux_fields, num_state_fields
+          call shr_sys_abort(subname//' ERROR: nflds /= num_flux_fields + num_state_fields')
+       end if
+
+       allocate(mrgstr(nflds))
+    end if
+
+    mrgstr_index = num_state_fields ! no state field is needed for o2g comm. so passing state fields.
+
+    do i = 1, num_flux_fields
+       call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
+       print *, "debuggg3", trim(field)
+
+       if (trim(field) == mr_fieldname) then
+          index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
+          index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
+
+          if (first_time) then
+             mrgstr(mrgstr_index) = subname//'x2g%'//trim(field)//' =' // &
+                  ' = o2x%'//trim(field)
+          end if
+
+          ! treat mr as if it were a state variable, with a simple copy.
+          do n = 1, lsize
+             x2g_g%rAttr(index_x2g,n) = o2x_g%rAttr(index_o2x,n)
+          end do
+
+       endif  ! mr_fieldname
+
+       mrgstr_index = mrgstr_index + 1
+
+    end do
+
+    if (first_time) then
+       if (iamroot) then
+          write(logunit,'(A)') subname//' Summary:'
+          do i = 1,nflds
+             write(logunit,'(A)') trim(mrgstr(i))
+          enddo
+       endif
+       deallocate(mrgstr)
+    endif
+
+    first_time = .false.
+
+  end subroutine prep_glc_merge_o2g
+
+  !================================================================================================
+
   subroutine prep_glc_mrg(infodata, fractions_gx, timer_mrg)
 
     !---------------------------------------------------------------
@@ -487,10 +613,10 @@ contains
     do i = 1, num_flux_fields
 
        call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
-       index_l2x = mct_aVect_indexRA(l2x_g, trim(field))
-       index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
 
        if (trim(field) == qice_fieldname) then
+          index_l2x = mct_aVect_indexRA(l2x_g, trim(field))
+          index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
 
           if (first_time) then
              mrgstr(mrgstr_index) = subname//'x2g%'//trim(field)//' =' // &
@@ -502,14 +628,14 @@ contains
              x2g_g%rAttr(index_x2g,n) = l2x_g%rAttr(index_l2x,n)
           end do
 
-       else
-          write(logunit,*) subname,' ERROR: Flux fields other than ', &
-               qice_fieldname, ' currently are not handled in lnd2glc remapping.'
-          write(logunit,*) '(Attempt to handle flux field <', trim(field), '>.)'
-          write(logunit,*) 'Substantial thought is needed to determine how to remap other fluxes'
-          write(logunit,*) 'in a smooth, conservative manner.'
-          call shr_sys_abort(subname//&
-               ' ERROR: Flux fields other than qice currently are not handled in lnd2glc remapping.')
+       !else
+       !   write(logunit,*) subname,' ERROR: Flux fields other than ', &
+       !        qice_fieldname, ' currently are not handled in lnd2glc remapping.'
+       !   write(logunit,*) '(Attempt to handle flux field <', trim(field), '>.)'
+       !   write(logunit,*) 'Substantial thought is needed to determine how to remap other fluxes'
+       !   write(logunit,*) 'in a smooth, conservative manner.'
+       !   call shr_sys_abort(subname//&
+       !        ' ERROR: Flux fields other than qice currently are not handled in lnd2glc remapping.')
        endif  ! qice_fieldname
 
        mrgstr_index = mrgstr_index + 1
@@ -570,7 +696,7 @@ contains
 
     do eoi = 1,num_inst_ocn
       o2x_ox => component_get_c2x_cx(ocn(eoi))
-      call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), norm=.true.)
+      call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), fldlist="Fogo_mr")
     enddo
     
     call t_drvstopf  (trim(timer))
