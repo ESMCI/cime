@@ -184,8 +184,6 @@ module cime_comp_mod
 
 #include <mpif.h>
 
-#define CPL_BYPASS
-
   !----------------------------------------------------------------------------
   ! temporary variables
   !----------------------------------------------------------------------------
@@ -1567,8 +1565,8 @@ contains
        call shr_sys_abort(subname//' ERROR: if prognostic esp must also have esp present')
     endif
 #ifndef CPL_BYPASS
-    if ((ice_prognostic .or. ocn_prognostic .or. lnd_prognostic) .and. .not. atm_present) then
-       call shr_sys_abort(subname//' ERROR: if prognostic surface model must also have atm present')
+    if ((ice_prognostic .or. lnd_prognostic) .and. .not. atm_present) then
+       call shr_sys_abort(subname//' ERROR: if prognostic ice or lnd, model must also have atm present')
     endif
 #endif
     if ((glclnd_present .or. glcocn_present .or. glcice_present) .and. .not.glc_present) then
@@ -2947,6 +2945,7 @@ contains
 
              if (lnd_c2_glc) then
                 ! NOTE - only create appropriate input to glc if the avg_alarm is on
+
                 if (glcrun_avg_alarm) then
                    call prep_glc_accum_avg(timer='CPL:glcprep_avg')
                    lnd2glc_averaged_now = .true.
@@ -2965,8 +2964,9 @@ contains
              end if  ! lnd_c2_glc
 
              if (ocn_c2_glc) then
-               call prep_glc_calc_o2x_gx(fractions_ox, timer='CPL:glcprep_ocn2glc')
-             endif
+                call prep_glc_calc_o2x_gx(fractions_ox, timer='CPL:glcprep_ocn2glc')
+                call prep_glc_mrg_o2g(infodata, fractions_gx, timer_mrg='CPL:glcprep_mrgx2g')
+             endif ! ocn_c2_glc
 
              if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
              call t_drvstopf  ('CPL:GLCPREP',cplrun=.true.)
