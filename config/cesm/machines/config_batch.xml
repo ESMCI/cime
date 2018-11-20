@@ -395,7 +395,7 @@
        <directive>--ntasks-per-node={{ tasks_per_node }}</directive>
     </directives>
     <queues>
-      <queue walltimemin="00:00:00" walltimemax="72:00:00" nodemin="1" nodemax="64" default="true">lr2</queue>
+      <queue walltimemax="12:00" nodemin="1" nodemax="4032">regular</queue>
     </queues>
   </batch_system>
 
