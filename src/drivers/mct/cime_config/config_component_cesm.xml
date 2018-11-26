@@ -541,6 +541,7 @@
       <!-- Turn on two-way coupling for TG compsets - even though there are no
            feedbacks for a TG compset, this will give us additional diagnostics -->
       <value compset="_DLND.+CISM\d">TRUE</value>
+      <value compset="MOM6.+CISM\d">TRUE</value>
     </values>
     <group>run_glc</group>
     <file>env_run.xml</file>
