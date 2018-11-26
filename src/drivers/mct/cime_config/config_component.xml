@@ -1629,6 +1629,23 @@
     <desc>glc2ocn runoff mapping file decomp type for ice runoff</desc>
   </entry>
 
+  <entry id="GLC2OCN_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>glc2ocn state mapping file</desc>
+  </entry>
+
+  <entry id="GLC2OCN_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>glc2ocn state mapping file decomp type</desc>
+  </entry>
+
   <entry id="OCN2WAV_SMAPNAME">
     <type>char</type>
     <default_value>idmap</default_value>
