@@ -1114,7 +1114,7 @@
 	<command name="load">mpi/intel/mvapich2-2.3rc2-intel-18.0.3</command>
       </modules>
       <modules compiler="pgi">
-	<command name="load">compiler/pgi/18.1</command>
+	<command name="load">compiler/pgi/18.10</command>
 	<command name="load">tool/netcdf/4.6.1/pgi</command>
       </modules>
       <modules compiler="nag">
