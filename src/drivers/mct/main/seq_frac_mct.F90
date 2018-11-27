@@ -138,6 +138,7 @@ module seq_frac_mct
   use prep_lnd_mod, only: prep_lnd_get_mapper_Fa2l
   use prep_ocn_mod, only: prep_ocn_get_mapper_Fa2o
   use prep_ocn_mod, only: prep_ocn_get_mapper_SFi2o
+  use prep_ocn_mod, only: prep_ocn_get_mapper_Sg2o
   use prep_ice_mod, only: prep_ice_get_mapper_SFo2i
   use prep_rof_mod, only: prep_rof_get_mapper_Fl2r
   use prep_atm_mod, only: prep_atm_get_mapper_Fo2a
@@ -197,6 +198,7 @@ module seq_frac_mct
   type(seq_map)  , pointer :: mapper_l2r
   type(seq_map)  , pointer :: mapper_l2g
   type(seq_map)  , pointer :: mapper_o2g
+  type(seq_map)  , pointer :: mapper_g2o
 
   private seq_frac_check
 
@@ -403,8 +405,6 @@ contains
           ko = mct_aVect_indexRa(fractions_o,"ofrac",perrWith=subName)
           kf = mct_aVect_indexRA(dom_o%data ,"frac" ,perrWith=subName)
           fractions_o%rAttr(ko,:) = dom_o%data%rAttr(kf,:)
-          mapper_o2g => prep_glc_get_mapper_Fo2g()
-          call seq_map_map(mapper_o2g, fractions_o, fractions_g, fldlist='ofrac',norm=.false.)
        endif
 
        if (atm_present) then
@@ -415,6 +415,12 @@ contains
           ! --- this should be an atm2ice call above, but atm2ice doesn't work
           mapper_o2i => prep_ice_get_mapper_SFo2i()
           call seq_map_map(mapper_o2i,fractions_o,fractions_i,fldlist='afrac',norm=.false.)
+       endif
+       if (glc_present) then
+          mapper_o2g => prep_glc_get_mapper_Fo2g()
+          call seq_map_map(mapper_o2g, fractions_o, fractions_g, fldlist='ofrac',norm=.false.)
+          mapper_g2o => prep_ocn_get_mapper_Sg2o()
+          call seq_map_map(mapper_g2o, fractions_g, fractions_o, fldlist='gfrac',norm=.false.)
        endif
     end if
 
