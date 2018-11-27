@@ -63,6 +63,7 @@ module prep_ocn_mod
   public :: prep_ocn_get_mapper_Rg2o_liq
   public :: prep_ocn_get_mapper_Rg2o_ice
   public :: prep_ocn_get_mapper_Sw2o
+  public :: prep_ocn_get_mapper_Sg2o
 
   !--------------------------------------------------------------------------
   ! Private interfaces
@@ -85,6 +86,7 @@ module prep_ocn_mod
   type(seq_map), pointer :: mapper_Rg2o_liq
   type(seq_map), pointer :: mapper_Rg2o_ice
   type(seq_map), pointer :: mapper_Sw2o
+  type(seq_map), pointer :: mapper_Sg2o
 
   ! attribute vectors
   type(mct_aVect), pointer :: a2x_ox(:) ! Atm export, ocn grid, cpl pes
@@ -182,6 +184,7 @@ contains
     allocate(mapper_Rg2o_liq)
     allocate(mapper_Rg2o_ice)
     allocate(mapper_Sw2o)
+    allocate(mapper_Sg2o)
 
     if (ocn_present) then
 
@@ -345,6 +348,14 @@ contains
           call seq_map_init_rcfile(mapper_Rg2o_ice, glc(1), ocn(1), &
                'seq_maps.rc', 'glc2ocn_ice_rmapname:', 'glc2ocn_ice_rmaptype:',samegrid_og, &
                'mapper_Rg2o_ice initialization',esmf_map_flag)
+
+          if (iamroot_CPLID) then
+             write(logunit,*) ' '
+             write(logunit,F00) 'Initializing mapper_Sg2o'
+          end if
+          call seq_map_init_rcfile(mapper_Sg2o, glc(1), ocn(1), &
+               'seq_maps.rc', 'glc2ocn_smapname:', 'glc2ocn_smaptype:',samegrid_og, &
+               'mapper_Sg2o initialization',esmf_map_flag)
        endif
        call shr_sys_flush(logunit)
 
@@ -1371,5 +1382,10 @@ contains
     type(seq_map), pointer :: prep_ocn_get_mapper_Sw2o
     prep_ocn_get_mapper_Sw2o => mapper_Sw2o
   end function prep_ocn_get_mapper_Sw2o
+
+  function prep_ocn_get_mapper_Sg2o()
+    type(seq_map), pointer :: prep_ocn_get_mapper_Sg2o
+    prep_ocn_get_mapper_Sg2o => mapper_Sg2o
+  end function prep_ocn_get_mapper_Sg2o
 
 end module prep_ocn_mod
