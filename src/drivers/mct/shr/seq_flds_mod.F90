@@ -189,6 +189,7 @@ module seq_flds_mod
 
   character(CXX) :: seq_flds_g2x_states
   character(CXX) :: seq_flds_g2x_states_to_lnd
+  character(CXX) :: seq_flds_g2x_states_to_ocn
   character(CXX) :: seq_flds_g2x_fluxes
   character(CXX) :: seq_flds_g2x_fluxes_to_lnd
   character(CXX) :: seq_flds_g2o_liq_fluxes
@@ -309,6 +310,7 @@ contains
     character(CXX) :: x2o_fluxes = ''
     character(CXX) :: g2x_states = ''
     character(CXX) :: g2x_states_to_lnd = ''
+    character(CXX) :: g2x_states_to_ocn = ''
     character(CXX) :: g2x_fluxes = ''
     character(CXX) :: g2x_fluxes_to_lnd = ''
     character(CXX) :: g2o_liq_fluxes = ''
@@ -2382,6 +2384,7 @@ contains
     call metadata_set(attname, longname, stdname, units)
     call seq_flds_add(g2x_states,"Sg_thck")
     call seq_flds_add(x2o_states,"Sg_thck")
+    call seq_flds_add(g2x_states_to_ocn,"Sg_thck")
 
     name = 'Flgg_hflx'
     longname = 'Downward heat flux from glacier interior'
@@ -3219,6 +3222,7 @@ contains
     seq_flds_x2o_states = trim(x2o_states)
     seq_flds_g2x_states = trim(g2x_states)
     seq_flds_g2x_states_to_lnd = trim(g2x_states_to_lnd)
+    seq_flds_g2x_states_to_ocn = trim(g2x_states_to_ocn)
     seq_flds_x2g_states = trim(x2g_states)
     seq_flds_xao_states = trim(xao_states)
     seq_flds_xao_albedo = trim(xao_albedo)
