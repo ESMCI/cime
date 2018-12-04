@@ -156,7 +156,7 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
     # SystemTestsCommon
     # ------------------------------------------------------------------------
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, is_batch=True):
         """
         This fake implementation appends to the log and raises an exception if
         it's supposed to
@@ -187,6 +187,9 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
         return (self.compare_should_pass, "no comment")
 
     def _check_for_memleak(self):
+        pass
+
+    def _st_archive_case_test(self):
         pass
 
     # ------------------------------------------------------------------------

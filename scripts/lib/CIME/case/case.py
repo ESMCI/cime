@@ -71,7 +71,7 @@ class Case(object):
     from CIME.case.case_test  import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
     from CIME.case.case_st_archive import case_st_archive, restore_from_archive, \
-        archive_last_restarts, test_st_archive
+        archive_last_restarts, test_st_archive, test_env_archive
     from CIME.case.case_run import case_run
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
     from CIME.case.check_lockedfiles import check_lockedfile, check_lockedfiles, check_pelayouts_require_rebuild
@@ -123,6 +123,7 @@ class Case(object):
         self.spare_nodes = None
         self.tasks_per_numa = None
         self.cores_per_task = None
+        self.srun_binding = None
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
@@ -177,6 +178,8 @@ class Case(object):
         self.cores_per_task = self.thread_count / threads_per_core
 
         os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
+
+        self.srun_binding = smt_factor*max_mpitasks_per_node / self.tasks_per_node
 
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
@@ -359,11 +362,12 @@ class Case(object):
 
         return item
 
-    def set_value(self, item, value, subgroup=None, ignore_type=False, allow_undefined=False):
+    def set_value(self, item, value, subgroup=None, ignore_type=False, allow_undefined=False, return_file=False):
         """
         If a file has been defined, and the variable is in the file,
-        then that value will be set in the file object and the file
-        name is returned
+        then that value will be set in the file object and the resovled value
+        is returned unless return_file is True, in which case (resolved_value, filename)
+        is returned where filename is the name of the modified file.
         """
         if item == "CASEROOT":
             self._caseroot = value
@@ -373,7 +377,7 @@ class Case(object):
             result = env_file.set_value(item, value, subgroup, ignore_type)
             if (result is not None):
                 logger.debug("Will rewrite file {} {}".format(env_file.filename, item))
-                return result
+                return (result, env_file.filename) if return_file else result
 
         if len(self._files) == 1:
             expect(allow_undefined or result is not None,
@@ -408,7 +412,7 @@ class Case(object):
             if result is not None:
                 del self.lookups[key]
 
-    def _set_compset(self, compset_name, files):
+    def _set_compset(self, compset_name, files, driver="mct"):
         """
         Loop through all the compset files and find the compset
         specifation file that matches either the input 'compset_name'.
@@ -424,6 +428,11 @@ class Case(object):
         compset_alias = None
         components = files.get_components("COMPSETS_SPEC_FILE")
         logger.debug(" Possible components for COMPSETS_SPEC_FILE are {}".format(components))
+
+        self.set_lookup_value("COMP_INTERFACE", driver)
+        if self._cime_model == 'cesm':
+            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
+            self.set_lookup_value("COMP_ROOT_DIR_CPL",comp_root_dir_cpl)
 
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
         # that has a match for either the alias or the longname in that order
@@ -515,7 +524,6 @@ class Case(object):
 
         Assumes that self._primary_component has already been set.
         """
-
         component = self.get_primary_component()
 
         compset_spec_file = files.get_value("COMPSETS_SPEC_FILE",
@@ -576,7 +584,7 @@ class Case(object):
         for env_file in self._env_entryid_files:
             env_file.set_components(comp_classes)
 
-    def _get_component_config_data(self, files):
+    def _get_component_config_data(self, files, driver=None):
         # attributes used for multi valued defaults
         # attlist is a dictionary used to determine the value element that has the most matches
         attlist = {"compset":self._compsetname, "grid":self._gridname, "cime_model":self._cime_model}
@@ -605,6 +613,7 @@ class Case(object):
             env_file.add_elements_by_group(drv_comp_model_specific, attributes=attlist)
 
         self.clean_up_lookups(allow_undefined=True)
+
         # loop over all elements of both component_classes and components - and get config_component_file for
         # for each component
         self.set_comp_classes(drv_comp.get_valid_model_components())
@@ -614,11 +623,10 @@ class Case(object):
 
         # will need a change here for new cpl components
         root_dir_node_name = 'COMP_ROOT_DIR_CPL'
-        comp_root_dir = files.get_value(root_dir_node_name,
-                                        {"component":"drv"}, resolved=False)
+        comp_root_dir = files.get_value(root_dir_node_name, {"component":driver}, resolved=False)
+
         if comp_root_dir is not None:
             self.set_value(root_dir_node_name, comp_root_dir)
-
 
         for i in range(1,len(self._component_classes)):
             comp_class = self._component_classes[i]
@@ -641,7 +649,8 @@ class Case(object):
             # For files following version 3 schema this also checks the compsetname validity
 
             self._component_description[comp_class] = compobj.get_description(self._compsetname)
-            expect(self._component_description[comp_class] is not None,"No description found in file {} for component {} in comp_class {}".format(comp_config_file, comp_name, comp_class))
+            expect(self._component_description[comp_class] is not None,
+                   "No description found in file {} for component {} in comp_class {}".format(comp_config_file, comp_name, comp_class))
             logger.info("{} component is {}".format(comp_class, self._component_description[comp_class]))
             for env_file in self._env_entryid_files:
                 env_file.add_elements_by_group(compobj, attributes=attlist)
@@ -751,30 +760,26 @@ class Case(object):
 
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
-                  pesfile=None,user_grid=False, gridfile=None,
+                  pesfile=None, gridfile=None,
                   multi_driver=False, ninst=1, test=False,
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
-                  input_dir=None, driver=None):
+                  input_dir=None, driver=None, non_local=False):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
-
-        if driver:
-            self.set_lookup_value("COMP_INTERFACE", driver)
 
         #--------------------------------------------
         # compset, pesfile, and compset components
         #--------------------------------------------
-        files = Files()
-        compset_alias, science_support = self._set_compset(
-            compset_name, files)
+        files = Files(comp_interface=driver)
+
+        compset_alias, science_support = self._set_compset(compset_name, files, driver)
 
         self._components = self.get_compset_components()
+
         #--------------------------------------------
         # grid
         #--------------------------------------------
-        if user_grid is True and gridfile is not None:
-            self.set_value("GRIDS_SPEC_FILE", gridfile)
         grids = Grids(gridfile)
 
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname)
@@ -787,7 +792,7 @@ class Case(object):
         #--------------------------------------------
         # component config data
         #--------------------------------------------
-        self._get_component_config_data(files)
+        self._get_component_config_data(files, driver=driver)
 
         # This needs to be called after self.set_comp_classes, which is called
         # from self._get_component_config_data
@@ -880,22 +885,29 @@ class Case(object):
         self.set_value("REALUSER", os.environ["USER"])
 
         # Set project id
-        if project is None:
-            project = get_project(machobj)
         if project is not None:
             self.set_value("PROJECT", project)
-        elif machobj.get_value("PROJECT_REQUIRED"):
-            expect(project is not None, "PROJECT_REQUIRED is true but no project found")
-        # Get charge_account id if it exists
-        charge_account = get_charge_account(machobj)
-        if charge_account is not None:
-            self.set_value("CHARGE_ACCOUNT", charge_account)
+            self.set_value("CHARGE_ACCOUNT", project)
+        else:
+            project = get_project(machobj)
+            if project is not None:
+                self.set_value("PROJECT", project)
+            elif machobj.get_value("PROJECT_REQUIRED"):
+                expect(project is not None, "PROJECT_REQUIRED is true but no project found")
+            # Get charge_account id if it exists
+            charge_account = get_charge_account(machobj)
+            if charge_account is not None:
+                self.set_value("CHARGE_ACCOUNT", charge_account)
 
         # Resolve the CIME_OUTPUT_ROOT variable, other than this
         # we don't want to resolve variables until we need them
         if output_root is None:
             output_root = self.get_value("CIME_OUTPUT_ROOT")
         self.set_value("CIME_OUTPUT_ROOT", output_root)
+        if non_local:
+            self.set_value("EXEROOT", os.path.join(output_root, self.get_value("CASE"), "bld"))
+            self.set_value("RUNDIR", os.path.join(output_root, self.get_value("CASE"), "run"))
+            self.set_value("NONLOCAL", True)
 
         # Overwriting an existing exeroot or rundir can cause problems
         exeroot = self.get_value("EXEROOT")
@@ -1040,6 +1052,16 @@ class Case(object):
                 safe_copy(os.path.join(machines_dir, "syslog.{}".format(machine)), os.path.join(casetools, "mach_syslog"))
             else:
                 safe_copy(os.path.join(machines_dir, "syslog.noop"), os.path.join(casetools, "mach_syslog"))
+
+        # add archive_metadata to the CASEROOT but only for CESM
+        if get_model() == "cesm":
+            try:
+                exefile = os.path.join(toolsdir, "archive_metadata")
+                destfile = os.path.join(self._caseroot,os.path.basename(exefile))
+                os.symlink(exefile, destfile)
+            except Exception as e:
+                logger.warning("FAILED to set up exefiles: {}".format(str(e)))
+
 
     def _create_caseroot_sourcemods(self):
         components = self.get_compset_components()
@@ -1304,7 +1326,7 @@ directory, NOT in this subdirectory."""
             tests_spec_file = self.get_value("TESTS_SPEC_FILE")
 
         testcnt = 0
-        if compset_alias is not None:
+        if os.path.isfile(tests_spec_file) and compset_alias is not None:
             # It's important that we not try to find matching tests if
             # compset_alias is None, since compset=None tells get_tests to find
             # tests of all compsets!
@@ -1390,7 +1412,7 @@ directory, NOT in this subdirectory."""
         self._files.remove(old_object)
         self._files.append(new_object)
 
-    def get_latest_cpl_log(self, coupler_log_path=None):
+    def get_latest_cpl_log(self, coupler_log_path=None, cplname="cpl"):
         """
         find and return the latest cpl log file in the
         coupler_log_path directory
@@ -1398,7 +1420,7 @@ directory, NOT in this subdirectory."""
         if coupler_log_path is None:
             coupler_log_path = self.get_value("RUNDIR")
         cpllog = None
-        cpllogs = glob.glob(os.path.join(coupler_log_path, 'cpl.log.*'))
+        cpllogs = glob.glob(os.path.join(coupler_log_path, '{}.log.*'.format(cplname)))
         if cpllogs:
             cpllog = max(cpllogs, key=os.path.getctime)
             return cpllog
@@ -1408,11 +1430,11 @@ directory, NOT in this subdirectory."""
     def create(self, casename, srcroot, compset_name, grid_name,
                user_mods_dir=None, machine_name=None,
                project=None, pecount=None, compiler=None, mpilib=None,
-               pesfile=None,user_grid=False, gridfile=None,
+               pesfile=None, gridfile=None,
                multi_driver=False, ninst=1, test=False,
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
-               input_dir=None, driver=None):
+               input_dir=None, driver=None, non_local=False):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
@@ -1423,12 +1445,12 @@ directory, NOT in this subdirectory."""
             self.configure(compset_name, grid_name, machine_name=machine_name,
                            project=project,
                            pecount=pecount, compiler=compiler, mpilib=mpilib,
-                           pesfile=pesfile,user_grid=user_grid, gridfile=gridfile,
+                           pesfile=pesfile, gridfile=gridfile,
                            multi_driver=multi_driver, ninst=ninst, test=test,
                            walltime=walltime, queue=queue,
                            output_root=output_root,
                            run_unsupported=run_unsupported, answer=answer,
-                           input_dir=input_dir, driver=driver)
+                           input_dir=input_dir, driver=driver, non_local=non_local)
 
             self.create_caseroot()
 

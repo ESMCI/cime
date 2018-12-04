@@ -27,7 +27,7 @@ module component_mod
   use seq_map_mod
   use t_drv_timers_mod
   use component_type_mod
-  use seq_cdata_mod,    only : seq_cdata
+  use seq_cdata_mod,    only : seq_cdata, seq_cdata_init
   use mct_mod   ! mct_ wrappers for mct lib
   use perf_mod
   use ESMF
@@ -63,6 +63,8 @@ module component_mod
   integer  :: mpicom_GLOID, mpicom_CPLID           ! GLOID, CPLID mpi communicator
   integer  :: nthreads_GLOID, nthreads_CPLID
   logical  :: drv_threading
+  integer (kind=MPI_ADDRESS_KIND) :: max_mpi_tag
+
 
   !===============================================================================
 
@@ -91,8 +93,9 @@ contains
     character(len=3)         , intent(in)            :: ntype
     !
     ! Local Variables
+    logical :: flag
+    integer :: ierr
     integer  :: eci       ! index
-    character(len=cl), allocatable :: comp_resume(:) ! Set if comp needs post-DA process
     character(*), parameter :: subname = '(component_init_pre)'
     !---------------------------------------------------------------
 
@@ -103,8 +106,10 @@ contains
     call seq_comm_getinfo(CPLID, mpicom=mpicom_CPLID, iamroot=iamroot_CPLID, nthreads=nthreads_CPLID)
     iamin_CPLID = seq_comm_iamin(CPLID)
 
+    ! MPI spec. guarantees at least 32768 tags available, but most implementations will have more.
+    call mpi_attr_get(MPI_COMM_WORLD, MPI_TAG_UB, max_mpi_tag, flag, ierr)
+
     ! Initialize component type variables
-    allocate(comp_resume(size(comp)))
     do eci = 1,size(comp)
 
        comp(eci)%compid       = compid(eci)
@@ -137,61 +142,40 @@ contains
        allocate(comp(eci)%dom_cc)
        allocate(comp(eci)%gsmap_cc)
        allocate(comp(eci)%cdata_cc)
-       comp(eci)%cdata_cc%name     = 'cdata_'//ntype(1:1)//ntype(1:1)
-       comp(eci)%cdata_cc%ID       =  comp(eci)%compid
-       comp(eci)%cdata_cc%mpicom   =  comp(eci)%mpicom_compid
-       comp(eci)%cdata_cc%dom      => comp(eci)%dom_cc
-       comp(eci)%cdata_cc%gsmap    => comp(eci)%gsmap_cc
-       comp(eci)%cdata_cc%infodata => infodata
-
-       ! Does this component need to do post-data assimilation processing?
-       if (seq_timemgr_data_assimilation_active(ntype(1:3))) then
-          comp_resume(:) = 'TRUE'
-       else
-          comp_resume(:) = ''
-       end if
+       call seq_cdata_init(comp(eci)%cdata_cc, comp(eci)%compid,              &
+            'cdata_'//ntype(1:1)//ntype(1:1), comp(eci)%dom_cc,               &
+            comp(eci)%gsmap_cc, infodata, seq_timemgr_data_assimilation_active(ntype(1:3)))
 
        ! Determine initial value of comp_present in infodata - to do - add this to component
 #ifdef CPRPGI
        if (comp(1)%oneletterid == 'a') then
           call seq_infodata_getData(infodata, atm_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, atm_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'l') then
           call seq_infodata_getData(infodata, lnd_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, lnd_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'i') then
           call seq_infodata_getData(infodata, ice_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, ice_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'o') then
           call seq_infodata_getData(infodata, ocn_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, ocn_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'r') then
           call seq_infodata_getData(infodata, rof_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, rof_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'g') then
           call seq_infodata_getData(infodata, glc_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, glc_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'w') then
           call seq_infodata_getData(infodata, wav_present=comp(eci)%present)
-          call seq_infodata_PutData(infodata, wav_resume=comp_resume)
        end if
        if (comp(1)%oneletterid == 'e') then
           call seq_infodata_getData(infodata, esp_present=comp(eci)%present)
        end if
 #else
        call seq_infodata_getData(comp(1)%oneletterid, infodata, comp_present=comp(eci)%present)
-
-       ! Does this component need to do post-data assimilation processing?
-       call seq_infodata_PutData(comp(1)%oneletterid, infodata, comp_resume=comp_resume)
 #endif
     end do
-    deallocate(comp_resume)
 
   end subroutine component_init_pre
 
@@ -344,9 +328,11 @@ contains
     ! Local Variables
     integer         :: eci
     integer         :: rc        ! return code
+    integer         :: mpi_tag
     type(mct_gGrid) :: dom_tmp   ! temporary
     character(*), parameter :: subname = '(component_init_cx)'
     character(*), parameter :: F0I = "('"//subname//" : ', A, 2i8 )"
+    character(*), parameter :: F1I = "('"//subname//" : ', A, I10, A, I10 )"
     !---------------------------------------------------------------
 
     ! Initialize driver rearrangers and AVs on driver
@@ -402,7 +388,18 @@ contains
                    call shr_sys_flush(logunit)
                 end if
                 call seq_mctext_gGridInit(comp(1))
-                call seq_map_map_exchange(comp(1), flow='c2x', dom_flag=.true., msgtag=comp(1)%cplcompid*10000+1*10+1)
+
+                if (size(comp) > 1) then
+                    mpi_tag = comp(eci)%cplcompid*100+eci*10+1
+                else
+                    mpi_tag = comp(eci)%cplcompid*10000+eci*10+1
+                end if
+                if (mpi_tag > max_mpi_tag) then
+                   write(logunit, F1I) 'MPI message tag ',mpi_tag,' exceeds max ',max_mpi_tag
+                   call shr_sys_abort(subname//' ERROR: Max mpi tag exceeded')
+                end if
+                call seq_map_map_exchange(comp(1), flow='c2x', dom_flag=.true., msgtag=mpi_tag)
+
              else if (eci > 1) then
                 if (iamroot_CPLID) then
                    write(logunit,F0I) 'comparing comp domain ensemble number ',eci
@@ -575,7 +572,9 @@ contains
     !
     ! Local Variables
     integer :: eci, num_inst
+    integer :: mpi_tag
     character(*), parameter :: subname = '(component_init_areacor)'
+    character(*), parameter :: F1I = "('"//subname//" : ', A, I10, A, I10 )"
     !---------------------------------------------------------------
 
     num_inst = size(comp)
@@ -585,8 +584,16 @@ contains
        if (comp(eci)%iamin_cplcompid) then
 
           ! Map component domain from coupler to component processes
-          call seq_map_map(comp(eci)%mapper_Cx2c, comp(eci)%dom_cx%data, &
-               comp(eci)%dom_cc%data, msgtag=comp(eci)%cplcompid*10000+eci*10+5)
+          if ( num_inst > 1) then
+             mpi_tag = comp(eci)%cplcompid*100+eci*10+5
+          else
+             mpi_tag = comp(eci)%cplcompid*10000+eci*10+5
+          end if
+          if (mpi_tag > max_mpi_tag) then
+             write(logunit, F1I) 'MPI message tag ',mpi_tag,' exceeds max ',max_mpi_tag
+             call shr_sys_abort(subname//' ERROR: Max mpi tag exceeded')
+          end if
+          call seq_map_map(comp(eci)%mapper_Cx2c, comp(eci)%dom_cx%data, comp(eci)%dom_cc%data, msgtag=mpi_tag)
 
           ! For only component pes
           if (comp(eci)%iamin_compid) then
@@ -604,8 +611,16 @@ contains
           endif
 
           ! Map corrected initial component AVs from component to coupler pes
-          call seq_map_map(comp(eci)%mapper_cc2x, comp(eci)%c2x_cc, &
-               comp(eci)%c2x_cx, msgtag=comp(eci)%cplcompid*10000+eci*10+7)
+          if (num_inst > 1) then
+              mpi_tag = comp(eci)%cplcompid*100+eci*10+7
+          else
+              mpi_tag = comp(eci)%cplcompid*10000+eci*10+7
+          end if
+          if (mpi_tag > max_mpi_tag) then
+             write(logunit, F1I) 'MPI message tag ',mpi_tag,' exceeds max ',max_mpi_tag
+             call shr_sys_abort(subname//' ERROR: Max mpi tag exceeded')
+          end if
+          call seq_map_map(comp(eci)%mapper_cc2x, comp(eci)%c2x_cc, comp(eci)%c2x_cx, msgtag=mpi_tag)
 
        endif
     enddo
@@ -839,7 +854,9 @@ contains
     ! Local Variables
     integer :: eci
     integer :: ierr
+    integer :: mpi_tag
     character(*), parameter :: subname = '(component_exch)'
+    character(*), parameter :: F1I = "('"//subname//" : ', A, I10, A, I10 )"
     !---------------------------------------------------------------
 
     if (present(timer_barrier))  then
@@ -863,11 +880,27 @@ contains
           end if
 
           if (flow == 'x2c') then ! coupler to component
-             call seq_map_map(comp(eci)%mapper_Cx2c, comp(eci)%x2c_cx, comp(eci)%x2c_cc, &
-                  msgtag=comp(eci)%cplcompid*10000+eci*10+2)
+             if ( size(comp) > 1) then
+                mpi_tag = comp(eci)%cplcompid*100+eci*10+2
+             else
+                mpi_tag = comp(eci)%cplcompid*10000+eci*10+2
+             end if
+             if (mpi_tag > max_mpi_tag) then
+                write(logunit, F1I) 'MPI message tag ',mpi_tag,' exceeds max ',max_mpi_tag
+                call shr_sys_abort(subname//' ERROR: Max mpi tag exceeded')
+             end if
+             call seq_map_map(comp(eci)%mapper_Cx2c, comp(eci)%x2c_cx, comp(eci)%x2c_cc, msgtag=mpi_tag)
           else if (flow == 'c2x') then ! component to coupler
-             call seq_map_map(comp(eci)%mapper_Cc2x, comp(eci)%c2x_cc, comp(eci)%c2x_cx, &
-                  msgtag=comp(eci)%cplcompid*10000+eci*10+4)
+             if ( size(comp) > 1) then
+                mpi_tag = comp(eci)%cplcompid*100+eci*10+4
+             else
+                mpi_tag = comp(eci)%cplcompid*10000+eci*10+4
+             end if
+             if (mpi_tag > max_mpi_tag) then
+                write(logunit, F1I) 'MPI message tag ',mpi_tag,' exceeds max ',max_mpi_tag
+                call shr_sys_abort(subname//' ERROR: Max mpi tag exceeded')
+             end if
+             call seq_map_map(comp(eci)%mapper_Cc2x, comp(eci)%c2x_cc, comp(eci)%c2x_cx, msgtag=mpi_tag)
           end if
 
           if (present(timer_map_exch)) then
