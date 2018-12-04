@@ -577,6 +577,7 @@ contains
     integer, save :: index_r2x_Flrr_flood
     integer, save :: index_g2x_Fogg_rofl
     integer, save :: index_g2x_Fogg_rofi
+    integer, save :: index_g2x_Sg_thck
     integer, save :: index_x2o_Foxx_swnet
     integer, save :: index_x2o_Faxa_snow
     integer, save :: index_x2o_Faxa_rain
@@ -622,6 +623,7 @@ contains
     type(mct_aVect_sharedindices),save :: r2x_sharedindices
     type(mct_aVect_sharedindices),save :: w2x_sharedindices
     type(mct_aVect_sharedindices),save :: xao_sharedindices
+    type(mct_aVect_sharedindices),save :: g2o_sharedindices
     logical, save :: first_time = .true.
     character(*),parameter :: subName = '(prep_ocn_merge) '
     !-----------------------------------------------------------------------
@@ -656,6 +658,7 @@ contains
        index_r2x_Flrr_flood     = mct_aVect_indexRA(r2x_o,'Flrr_flood')
        index_g2x_Fogg_rofl      = mct_aVect_indexRA(g2x_o,'Fogg_rofl')
        index_g2x_Fogg_rofi      = mct_aVect_indexRA(g2x_o,'Fogg_rofi')
+       index_g2x_Sg_thck        = mct_aVect_indexRA(g2x_o,'Sg_thck')
        index_x2o_Faxa_snow      = mct_aVect_indexRA(x2o_o,'Faxa_snow')
        index_x2o_Faxa_rain      = mct_aVect_indexRA(x2o_o,'Faxa_rain')
        index_x2o_Faxa_prec      = mct_aVect_indexRA(x2o_o,'Faxa_prec')
@@ -763,6 +766,7 @@ contains
        call mct_aVect_setSharedIndices(r2x_o, x2o_o, r2x_SharedIndices)
        call mct_aVect_setSharedIndices(w2x_o, x2o_o, w2x_SharedIndices)
        call mct_aVect_setSharedIndices(xao_o, x2o_o, xao_SharedIndices)
+       call mct_aVect_setSharedIndices(g2x_o, x2o_o, g2o_SharedIndices)
 
        do ko = 1,noflds
           !--- document merge ---
@@ -899,6 +903,7 @@ contains
     call mct_aVect_copy(aVin=r2x_o, aVout=x2o_o, vector=mct_usevector, sharedIndices=r2x_SharedIndices)
     call mct_aVect_copy(aVin=w2x_o, aVout=x2o_o, vector=mct_usevector, sharedIndices=w2x_SharedIndices)
     call mct_aVect_copy(aVin=xao_o, aVout=x2o_o, vector=mct_usevector, sharedIndices=xao_SharedIndices)
+    call mct_aVect_copy(aVin=g2x_o, aVout=x2o_o, vector=mct_usevector, sharedIndices=g2o_SharedIndices)
 
     !--- document manual merges ---
     if (first_time) then
@@ -1268,6 +1273,9 @@ contains
 
        call seq_map_map(mapper_Rg2o_ice, g2x_gx, g2x_ox(egi), &
             fldlist=seq_flds_g2o_ice_fluxes, norm=.false.)
+
+       call seq_map_map(mapper_Sg2o, g2x_gx, g2x_ox(egi), &
+            fldlist=seq_flds_g2x_states_to_ocn, norm=.false.)
     enddo
     call t_drvstopf  (trim(timer))
   end subroutine prep_ocn_calc_g2x_ox
