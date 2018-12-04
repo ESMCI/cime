@@ -468,7 +468,6 @@ contains
 
     do i = 1, num_flux_fields
        call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
-       print *, "debuggg3", trim(field)
 
        if (trim(field) == mr_fieldname) then
           index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
@@ -690,7 +689,6 @@ contains
 
        do field_num = 1, num_flux_fields
          call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes)
-         print *, "debuggg1", fieldname, field_num
        enddo
     enddo
 
