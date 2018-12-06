@@ -403,7 +403,7 @@
 
   <entry id="CPL_SEQ_OPTION">
     <type>char</type>
-    <valid_values>CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2,NUOPC,NUOPC_TIGHT</valid_values>
+    <valid_values>CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2,NUOPC,NUOPC_TIGHT,MISOMIP</valid_values>
     <default_value>CESM1_MOD_TIGHT</default_value>
     <values match="last">
       <value compset="_DATM.*_DOCN%SOM"			>CESM1_MOD</value>
@@ -414,6 +414,7 @@
       <value compset="_XATM.*_XLND.*_XICE.*_XOCN"	>CESM1_MOD</value>
       <value compset="_SOCN"				>CESM1_MOD</value>
       <value compset="_MPAS"				>CESM1_MOD</value>
+      <value compset="_SATM.*_MOM6.*_CISM2" >MISOMIP</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
