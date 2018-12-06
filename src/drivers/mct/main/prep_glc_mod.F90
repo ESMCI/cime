@@ -227,7 +227,7 @@ contains
           call seq_map_init_rcfile(mapper_Fo2g, ocn(1), glc(1), &
                'seq_maps.rc','ocn2glc_fmapname:','ocn2glc_fmaptype:',samegrid_og, &
                'mapper_Fo2g initialization',esmf_map_flag)
-               
+
        end if
        call shr_sys_flush(logunit)
 
@@ -468,7 +468,6 @@ contains
 
     do i = 1, num_flux_fields
        call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
-       print *, "debuggg3", trim(field)
 
        if (trim(field) == mr_fieldname) then
           index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
@@ -690,7 +689,6 @@ contains
 
        do field_num = 1, num_flux_fields
          call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes)
-         print *, "debuggg1", fieldname, field_num
        enddo
     enddo
 
@@ -698,7 +696,7 @@ contains
       o2x_ox => component_get_c2x_cx(ocn(eoi))
       call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), fldlist="Fogo_mr")
     enddo
-    
+
     call t_drvstopf  (trim(timer))
 
   end subroutine prep_glc_calc_o2x_gx
