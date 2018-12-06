@@ -1022,7 +1022,8 @@ contains
         trim(cpl_seq_option) /= 'RASM_OPTION1' .and. &
         trim(cpl_seq_option) /= 'RASM_OPTION2' .and. &
         trim(cpl_seq_option) /= 'NUOPC' .and. &
-        trim(cpl_seq_option) /= 'NUOPC_TIGHT' ) then
+        trim(cpl_seq_option) /= 'NUOPC_TIGHT' .and. &
+        trim(cpl_seq_option) /= 'MISOMIP' ) then
        call shr_sys_abort(subname//' invalid cpl_seq_option = '//trim(cpl_seq_option))
     endif
 
@@ -2634,13 +2635,37 @@ contains
        endif
 
        !----------------------------------------------------------
+       !| OCN SETUP-SEND (misomip)
+       !----------------------------------------------------------
+       if (ocn_present .and. ocnrun_alarm) then
+          if (trim(cpl_seq_option) == 'MISOMIP') then
+             call cime_run_ocn_setup_send()
+          end if
+       endif
+
+       !----------------------------------------------------------
+       !| RUN OCN MODEL (misomip)
+       !----------------------------------------------------------
+       if (ocn_present .and. ocnrun_alarm) then
+          if (trim(cpl_seq_option) == 'MISOMIP') then
+             call component_run(Eclock_o, ocn, ocn_run, infodata, &
+                  seq_flds_x2c_fluxes=seq_flds_x2o_fluxes, &
+                  seq_flds_c2x_fluxes=seq_flds_o2x_fluxes, &
+                  comp_prognostic=ocn_prognostic, comp_num=comp_num_ocn, &
+                  timer_barrier= 'CPL:OCN_RUN_BARRIER', timer_comp_run='CPL:OCN_RUN', &
+                  run_barriers=run_barriers, ymd=ymd, tod=tod,comp_layout=ocn_layout)
+          endif
+       end if
+
+       !----------------------------------------------------------
        !| OCN RECV-POST (NOT cesm1_mod_tight or nuopc_tight)
        !----------------------------------------------------------
        if (ocn_present .and. ocnnext_alarm) then
           if (trim(cpl_seq_option) == 'CESM1_MOD'    .or. &
               trim(cpl_seq_option) == 'RASM_OPTION1' .or. &
               trim(cpl_seq_option) == 'RASM_OPTION2' .or. &
-              trim(cpl_seq_option) == 'NUOPC') then
+              trim(cpl_seq_option) == 'NUOPC'        .or. &
+              trim(cpl_seq_option) == 'MISOMIP') then
              call cime_run_ocn_recv_post()
           end if
        end if
