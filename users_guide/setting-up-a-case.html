@@ -45,9 +45,6 @@
             
   <div class="section" id="setting-up-a-case">
 <span id="id1"></span><h1>3. Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Permalink to this headline">¶</a></h1>
-<p>After creating a case, some aspects of the case are fixed (any variables in env_case.xml). Changing the pe-layout
-(see <a class="reference internal" href="pes-threads.html#defining-pes"><span class="std std-ref">Changing Pes</span></a>) or some aspects of the batch system you may be using must be modified before running
-<strong>case.setup</strong>.</p>
 <div class="section" id="calling-case-setup">
 <h2>3.1. Calling <strong>case.setup</strong><a class="headerlink" href="#calling-case-setup" title="Permalink to this headline">¶</a></h2>
 <p>After creating a case or changing aspects of a case, such as the pe-layout, call the <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> command from <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.
@@ -60,11 +57,9 @@ This creates the following additional files and directories in <code class="docu
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>.case.run</td>
-<td>A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed.
-The directive values are generated using the contents
-of <strong>env_mach_pes.xml</strong>. Running <a class="reference external" href="../Tools_user/case.setup.html">case.setup –clean</a>  will remove this file.
-This file should not be edited directly and instead controlled through XML variables in <strong>env_batch.xml</strong>. It should also
-<em>never</em> be run directly.</td>
+<td>Run script containing the batch directives. The directives are generated using the contents
+of <strong>env_mach_pes.xml</strong>. Running <a class="reference external" href="../Tools_user/case.setup.html">case.setup –clean</a>  will remove this file. You should
+<strong>never</strong> run this script.</td>
 </tr>
 <tr class="row-even"><td>Macros.make</td>
 <td><p class="first">File containing machine-specific makefile directives for your target platform/compiler.
@@ -74,7 +69,7 @@ Running <a class="reference external" href="../Tools_user/case.setup.html">case.
 However. if you remove or rename the Macros.make file, running <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> recreates it.</p>
 </td>
 </tr>
-<tr class="row-odd"><td>user_nl_xxx[_NNNN]</td>
+<tr class="row-odd"><td>user_nl_xxx[_NNNN] files</td>
 <td><p class="first">Files where all user modifications to component namelists are made.</p>
 <p><strong>xxx</strong> is any one of the set of components targeted for the case.
 For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm or rtm, and so on.</p>

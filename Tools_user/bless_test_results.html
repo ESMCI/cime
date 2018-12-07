@@ -49,69 +49,8 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./bless_test_results --help
-usage: 
-bless_test_results [-n] [-r &lt;TESTROOT&gt;] [-b &lt;BRANCH&gt;] [-c &lt;COMPILER&gt;] [&lt;TEST&gt; &lt;TEST&gt; ...] [--verbose]
-OR
-bless_test_results --help
-
-[1mEXAMPLES:[0m
-    [1;32m# From most recent run, bless any namelist changes [0m
-    &gt; bless_test_results -n
-    [1;32m# From most recent run, bless all changes [0m
-    &gt; bless_test_results
-    [1;32m# From most recent run, bless changes to test foo and bar only [0m
-    &gt; bless_test_results foo bar
-    [1;32m# From most recent run, bless only namelist changes to test foo and bar only [0m
-    &gt; bless_test_results -n foo bar
-    [1;32m# From most recent run of jenkins, bless history changes for next [0m
-    &gt; bless_test_results -r /home/jenkins/acme/scratch/jenkins -b next --hist-only
-
-Analyze results from a test root area, finding namelist and non-BFB changes,
-and updating baselines. Purpose is, instead of re-running tests in generate
-mode, which is very slow, allow for very fast analsis and blessing of diffs.
-You may need to load modules for cprnc to work.
-
-positional arguments:
-  bless_tests           When blessing, limit the bless to tests matching these
-                        regex (default: None)
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/sacks/cime/scripts/Tools/bless_test_results.log
-                        (default: False)
-  -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
-  -n, --namelists-only  Only analyze namelists. (default: False)
-  --hist-only           Only analyze history files. (default: False)
-  -b BASELINE_NAME, --baseline-name BASELINE_NAME
-                        Name of baselines to use. Default will use
-                        BASELINE_NAME_CMP first if possible, otherwise branch
-                        name. (default: None)
-  --baseline-root BASELINE_ROOT
-                        Root of baselines. Default will use the BASELINE_ROOT
-                        from the case. (default: None)
-  -c COMPILER, --compiler COMPILER
-                        Compiler of run you want to bless (default: gnu)
-  -p, --no-skip-pass    Normally, if namelist or baseline phase exists and
-                        shows PASS, we assume no bless is needed. This option
-                        forces the bless to happen regardless. (default:
-                        False)
-  --report-only         Only report what files will be overwritten and why.
-                        Caution is a good thing when updating baselines
-                        (default: False)
-  -r TEST_ROOT, --test-root TEST_ROOT
-                        Path to test results that are being blessed (default:
-                        /Users/sacks/projects/scratch)
-  -t TEST_ID, --test-id TEST_ID
-                        Limit processes to case dirs matching this test-id.
-                        Can be useful if mutiple runs dumped into the same
-                        dir. (default: None)
-  -f, --force           Update every diff without asking. VERY DANGEROUS.
-                        Should only be used within testing scripts. (default:
-                        False)
+Could not find machine match for &#39;lunabean.cgd.ucar.edu&#39; or &#39;lunabean&#39;
+ERROR: Could not initialize machine object from /Users/aliceb/cesm/cime/config/cesm/machines/config_machines.xml or /Users/aliceb/.cime/config_machines.xml
 </pre></div>
 </div>
 </div>

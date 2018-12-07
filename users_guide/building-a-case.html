@@ -45,26 +45,23 @@
             
   <div class="section" id="building-a-case">
 <span id="id1"></span><h1>4. Building a Case<a class="headerlink" href="#building-a-case" title="Permalink to this headline">¶</a></h1>
-<p>Once the case has been created and setup, its time to build the executable.
-Several directories full of source code must be built all with the same compiler and flags.
-<strong>case.build</strong> performs all build operations (setting dependecies, invoking Make,
-creating the executable).</p>
+<p>The following describes the process of building the model executable.</p>
 <div class="section" id="calling-case-build">
 <span id="building-the-model"></span><h2>4.1. Calling <strong>case.build</strong><a class="headerlink" href="#calling-case-build" title="Permalink to this headline">¶</a></h2>
 <p>After calling <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> , run <a class="reference external" href="../Tools_user/case.build.html">case.build</a>  to build the model executable. Running this will:</p>
 <ol class="arabic simple">
 <li>Create the component namelists in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> and <code class="docutils literal notranslate"><span class="pre">$CASEROOT/CaseDocs</span></code>.</li>
-<li>Create the necessary compiled libraries used by coupler and component models <code class="docutils literal notranslate"><span class="pre">mct</span></code>, <code class="docutils literal notranslate"><span class="pre">pio</span></code>, <code class="docutils literal notranslate"><span class="pre">gptl</span></code> and <code class="docutils literal notranslate"><span class="pre">csm_share</span></code>.
+<li>Create the necessary compiled libraries <code class="docutils literal notranslate"><span class="pre">mct</span></code>, <code class="docutils literal notranslate"><span class="pre">pio</span></code>, <code class="docutils literal notranslate"><span class="pre">gptl</span></code> and <code class="docutils literal notranslate"><span class="pre">csm_share</span></code>.
 The libraries will be placed in a path below <code class="docutils literal notranslate"><span class="pre">$SHAREDLIBROOT</span></code>.</li>
-<li>Create the necessary compiled libraries for each component model. These are be placed in <code class="docutils literal notranslate"><span class="pre">$EXEROOT/bld/lib</span></code>.</li>
+<li>Create the necessary compiled libraries. These are be placed in <code class="docutils literal notranslate"><span class="pre">$EXEROOT/bld/lib</span></code>.</li>
 <li>Create the model executable (<code class="docutils literal notranslate"><span class="pre">$MODEL.exe</span></code>), which is placed in <code class="docutils literal notranslate"><span class="pre">$EXEROOT</span></code>.</li>
 </ol>
 <p>You do not need to change the default build settings to create the executable, but it is useful to become familiar with them in order to make optimal use of the system. The CIME scripts provide you with a great deal of flexibility in customizing the build process.</p>
 <p>The <strong>env_build.xml</strong> variables control various aspects of building the executable. Most of the variables should not be modified, but users can modify these:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">$BUILD_THREADED</span></code> : if TRUE, the model will be built with OpenMP.</li>
-<li><code class="docutils literal notranslate"><span class="pre">$DEBUG</span></code> : if TRUE, the model is compiled with debugging instead of optimization flags.</li>
-<li><code class="docutils literal notranslate"><span class="pre">$GMAKE_J</span></code> : How many threads GNUMake should use while building.</li>
+<li><code class="docutils literal notranslate"><span class="pre">$BUILD_THREADED</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">$DEBUG</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">$GMAKE_J</span></code></li>
 </ul>
 <p>The best way to see what xml variables are in your <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> directory is to use the <a class="reference external" href="../Tools_user/xmlquery.html">xmlquery</a>  command. For usage information, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlquery</span> <span class="o">--</span><span class="n">help</span>

@@ -70,11 +70,6 @@ the xml element <code class="docutils literal notranslate"><span class="pre">COM
 </pre></div>
 </div>
 <p>Every file listed in COMPSETS_SPEC_FILE will be searched for the compset specified in the call to create_newcase.</p>
-<p>CIME will note which component’s config_compsets.xml had the matching compset name and that component will be treated as
-the <strong>primary component</strong> As an example, the primary component for a compset that has a prognostic atmosphere,
-land and cice (in prescribed mode) and a data ocean is the atmosphere component (for cesm this is CAM) because the compset
-is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
-In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 <div class="section" id="compset-longname">
 <span id="defining-compsets"></span><h2>2.1. Compset longname<a class="headerlink" href="#compset-longname" title="Permalink to this headline">¶</a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>

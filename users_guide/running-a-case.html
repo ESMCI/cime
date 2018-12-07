@@ -190,7 +190,6 @@ progress.</p>
 <code class="docutils literal notranslate"><span class="pre">$REST_OPTION</span></code>, <code class="docutils literal notranslate"><span class="pre">$REST_N</span></code> and/or <code class="docutils literal notranslate"><span class="pre">$REST_DATE</span></code>, and <code class="docutils literal notranslate"><span class="pre">$RESUBMIT</span></code>
 before resubmitting.</p>
 </div>
-<p>See the <a class="reference internal" href="cime-change-namelist.html#basic-example"><span class="std std-ref">basic example</span></a> for a complete example of how to run a case.</p>
 </div>
 <div class="section" id="troubleshooting-a-job-that-fails">
 <h3>5.1.3. Troubleshooting a job that fails<a class="headerlink" href="#troubleshooting-a-job-that-fails" title="Permalink to this headline">¶</a></h3>
@@ -316,8 +315,7 @@ inputs are modified. All models use restart files to perform this
 type of run. <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> are required for
 branch runs. To set up a branch run, locate the restart tar file or
 restart directory for <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> from a
-previous run, then place those files in the <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>  directory.
-See <span class="xref std std-ref">setting up a branch run</span>.</div></blockquote>
+previous run, then place those files in the <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>  directory.</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">hybrid</span></code></p>
 <blockquote>
 <div>A hybrid run is initialized like a startup but it uses
@@ -378,7 +376,7 @@ restart files that are required for restart.</p>
 <p>Archiving (referred to as short-term archiving here) is the phase of a model run when output data are
 moved from <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> to a local disk area (short-term archiving).
 It has no impact on the production run except to clean up disk space
-in the <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> which can help manage user disk quotas.</p>
+in the <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> and help manage user quotas.</p>
 <p>Several variables in <strong>env_run.xml</strong> control the behavior of
 short-term archiving. This is an example of how to control the
 data output flow with two variable settings:</p>

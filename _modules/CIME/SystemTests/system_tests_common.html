@@ -190,9 +190,6 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_st_archive_case_test</span><span class="p">()</span>
-
-
         <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
@@ -317,15 +314,6 @@
 <span class="sd">        tests</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_st_archive_case_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">test_env_archive</span><span class="p">()</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
-
 
     <span class="k">def</span> <span class="nf">_get_mem_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -50,7 +50,7 @@ that are needed to get a model running.</p>
 <div class="section" id="prerequisites">
 <h2>1.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Part 1 of this guide assumes that CIME or a CIME-driven model and the necessary input files
-have been installed on the computer you are using. If that is not the case, see <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">Porting CIME</span></a>.</p>
+have been installed on the computer you are using. If that is not the case, see Installing CIME.</p>
 <p>Other prerequisites:</p>
 <ul class="simple">
 <li>Familiarity with basic climate modeling concepts.</li>
@@ -84,7 +84,8 @@ occupy physically distinct domains in the Earth system and/or require different 
 <blockquote>
 <div><p>For each of the 7 physical components (models), there can be three different implementations in a CIME-driven coupled model.</p>
 <p><em>active</em>: Solve a complex set of equations to describe the model’s behavior. Also called <em>prognostic</em> or <em>full</em> models.
-These can be full General Circulation Models. Multiple active models might be available (for example POP and MPAS-ocean to represent the global ocean) but only one ocean or atmosphere model at a time can be used in a component set.</p>
+Multiple active models might be available (for example POP and MPAS-ocean to represent the global ocean) but only one at a time
+can be used in a component set.</p>
 <p><em>data</em>: For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
 version that sends and receives the same variables to and from other models, but with the values read from files rather
 than computed from the equations. The values received are ignored. These active-model substitutes are called <em>data models</em>.
@@ -96,7 +97,7 @@ required place in the driver and do not send or receive any data.</p>
 <dl class="docutils">
 <dt><strong>component set</strong> or <strong>compset</strong>:   The particular combination of active, data and stub versions of the 7 components is referred to</dt>
 <dd>as a <em>component set</em> or  <em>compset</em>.  The Case Control System allows one to define
-several possible compsets and configure and run them on supported platforms. See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Component Sets</span></a> for more information.</dd>
+several possible compsets and configure and run them on supported platforms.</dd>
 <dt><strong>grid</strong> or <strong>model grid</strong>:</dt>
 <dd>Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
 different grids. The resulting set of all numerical grids is called the <em>model grid</em> or sometimes just the <em>grid</em>, where
@@ -129,40 +130,116 @@ For variables that can be set in more than one way, the order of precedence is:<
 <ul class="simple">
 <li>variable appears in a command line argument to a CIME command</li>
 <li>variable is set as an environment variable</li>
-<li>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="cime-config.html#customizing-cime"><span class="std std-ref">here</span></a>.</li>
+<li>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code></li>
 <li>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</li>
 </ul>
 </div>
-<div class="section" id="quick-start">
-<h2>1.4. Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
-<p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands. (This assumes that CIME has been ported to your current machine).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
-<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">mycase</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
-</pre></div>
-</div>
-<p>The output from each command is explained in the following sections.</p>
-<p>After you submit the case, you can follow the progress of your run by monitoring the <strong>CaseStatus</strong> file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
-</pre></div>
-</div>
-<p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
+<div class="section" id="directory-content">
+<h2>1.4. Directory content<a class="headerlink" href="#directory-content" title="Permalink to this headline">¶</a></h2>
+<p>If you use CIME as part of a climate model or standalone, the content of the <strong>cime</strong> directory is the same.</p>
+<p>If you are using it as part of a climate model, <strong>cime</strong> is usually one of the first subdirectories under the main directory.</p>
+<p>The following is the directory structure of e3sm and cesm:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>README, etc.</td>
+<td>typical top-level directory content</td>
+</tr>
+<tr class="row-even"><td>components/</td>
+<td>source code for active models</td>
+</tr>
+<tr class="row-odd"><td>cime</td>
+<td>All of CIME code”</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>CIME’s content is split into several subdirectories. Users should start in the <strong>scripts/</strong> subdirectory.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>CMakeLists.txt</td>
+<td>For building with CMake</td>
+</tr>
+<tr class="row-even"><td>ChangeLog</td>
+<td>Developer-maintained record of changes to CIME</td>
+</tr>
+<tr class="row-odd"><td>ChangeLog_template</td>
+<td>Template for an entry in ChangeLog</td>
+</tr>
+<tr class="row-even"><td>LICENSE.TXT</td>
+<td>The CIME license</td>
+</tr>
+<tr class="row-odd"><td>README</td>
+<td>Brief intro to CIME</td>
+</tr>
+<tr class="row-even"><td>README.md</td>
+<td>README in markdown language</td>
+</tr>
+<tr class="row-odd"><td>README.unit_testing</td>
+<td>Instructions for running unit tests with CIME</td>
+</tr>
+<tr class="row-even"><td><strong>config/</strong></td>
+<td><strong>Shared and model-specific configuration files</strong></td>
+</tr>
+<tr class="row-odd"><td>config/cesm/</td>
+<td>CESM-specific configuration options</td>
+</tr>
+<tr class="row-even"><td>config/e3sm/</td>
+<td>E3SM-specific configuration options</td>
+</tr>
+<tr class="row-odd"><td><strong>scripts/</strong></td>
+<td><strong>The CIME user interface</strong></td>
+</tr>
+<tr class="row-even"><td>scripts/lib/</td>
+<td>Infrastructure source code for CIME scripts and functions</td>
+</tr>
+<tr class="row-odd"><td>scripts/Tools/</td>
+<td>Auxiliary tools; scripts and functions</td>
+</tr>
+<tr class="row-even"><td><strong>src/</strong></td>
+<td><strong>Model source code provided by CIME</strong></td>
+</tr>
+<tr class="row-odd"><td>src/components/</td>
+<td>CIME-provided components including data and stub models</td>
+</tr>
+<tr class="row-even"><td>src/drivers/</td>
+<td>CIME-provided main driver for a climate model</td>
+</tr>
+<tr class="row-odd"><td>src/externals/</td>
+<td>Software provided with CIME for building a climate model</td>
+</tr>
+<tr class="row-even"><td>src/share/</td>
+<td>Model source code provided by CIME and used by multiple components</td>
+</tr>
+<tr class="row-odd"><td><strong>tests/</strong></td>
+<td><strong>Tests</strong></td>
+</tr>
+<tr class="row-even"><td><strong>tools/</strong></td>
+<td><strong>Standalone climate modeling tools</strong></td>
+</tr>
+<tr class="row-odd"><td>utils/</td>
+<td>Some Perl source code needed by some prognostic components</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 </div>
 <div class="section" id="discovering-available-cases-with-query-config">
 <h2>1.5. Discovering available cases with <strong>query_config</strong><a class="headerlink" href="#discovering-available-cases-with-query-config" title="Permalink to this headline">¶</a></h2>
-<p>Your CIME-driven model has many more possible cases besides the simple one in the above Quick Start.</p>
 <p>Use the utility <a class="reference external" href="../Tools_user/query_config.html">query_config</a>  to see which out-of-the-box compsets, components, grids and machines are available for your model.</p>
 <p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried.</p>
 <p>If CIME is part of a CIME-driven model, <a class="reference external" href="../Tools_user/query_config.html">query_config</a> will allow you to query all prognostic component compsets.</p>
 <p>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<p>To see all available component sets, try:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="nb">all</span>
 </pre></div>
 </div>
 <p><strong>Usage examples</strong></p>
@@ -184,35 +261,168 @@ For variables that can be set in more than one way, the order of precedence is:<
 <span class="n">AIAF</span>                 <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">IAF_SLND_DICE</span><span class="o">%</span><span class="n">IAF_DOCN</span><span class="o">%</span><span class="n">IAF_DROF</span><span class="o">%</span><span class="n">IAF_SGLC_SWAV</span>
 </pre></div>
 </div>
-<p>Each model component specifies its own definitions of what can appear after the <strong>%</strong>  modifier in the compset longname (for example, <strong>DOM</strong> in <strong>DOCN%DOM</strong>).</p>
-<p>To see what supported modifiers are for <strong>DOCN</strong>, run <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as in this example:</p>
+<p>Each model component specifies its own definitions of what can appear after the <code class="docutils literal notranslate"><span class="pre">%</span></code> modifier in the compset longname (for example, <code class="docutils literal notranslate"><span class="pre">DOM</span></code> in <code class="docutils literal notranslate"><span class="pre">DOCN%DOM</span></code>).</p>
+<p>To see what supported modifiers are for <code class="docutils literal notranslate"><span class="pre">DOCN</span></code>, run <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as in this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
 </pre></div>
 </div>
 <p>The output will be similar to this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================</span>
-<span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
-<span class="o">=========================================</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
+ <span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
+ <span class="o">=========================================</span>
 
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP1</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">1</span>
-   <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP10</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">10</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP2</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">2</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP3</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">3</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP4</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">4</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP5</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">5</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP6</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">6</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP7</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">7</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP8</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">8</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP9</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">9</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">ocean</span> <span class="n">mode</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">IAF</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">interannual</span> <span class="n">mode</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">NULL</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">null</span> <span class="n">mode</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
-  <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOMAQP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
-  <span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP1</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">1</span>
+    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP10</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">10</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP2</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">2</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP3</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">3</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP4</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">4</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP5</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">5</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP6</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">6</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP7</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">7</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP8</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">8</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP9</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">9</span>
+      <span class="n">_DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">ocean</span> <span class="n">mode</span>
+      <span class="n">_DOCN</span><span class="o">%</span><span class="n">IAF</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">interannual</span> <span class="n">mode</span>
+     <span class="n">_DOCN</span><span class="o">%</span><span class="n">NULL</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">null</span> <span class="n">mode</span>
+      <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
+   <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOMAQP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
+<span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
 </pre></div>
 </div>
-<p>For more details on how CIME determines the output for query_config, see <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Component Sets</span></a>.</p>
+</div>
+<div class="section" id="quick-start">
+<h2>1.6. Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands for an example. (This assumes that CIME has been ported to your current machine).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
+<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">mycase</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+</pre></div>
+</div>
+<p>The output from each command is explained in the following sections.</p>
+<p>After you submit the case, you can follow the progress of your run by monitoring the <code class="docutils literal notranslate"><span class="pre">CaseStatus</span></code> file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
+</pre></div>
+</div>
+<p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
+<p>The following are two more detailed examples for how to setup and carry out basic runs.</p>
+<div class="section" id="setting-up-a-multi-year-run">
+<span id="basic-examples"></span><h3>1.6.1. Setting up a multi-year run<a class="headerlink" href="#setting-up-a-multi-year-run" title="Permalink to this headline">¶</a></h3>
+<p>This shows all of the steps necessary to do a CESM multi-year pre-industrial simulation starting from a “cold start” for all components.</p>
+<ol class="arabic">
+<li><p class="first">Create a new case named EXAMPLE_CASE in your <strong>$HOME</strong> directory. Use an 1850 control compset at 1-degree resolution (CESM components/resolution).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIME/scripts
+&gt; ./create_newcase --case ~/EXAMPLE_CASE --compset B1850 --res f09_g17
+</pre></div>
+</div>
+</li>
+<li><p class="first">Check the pe-layout by running <strong>./pelayout</strong>. Make sure it is suitable for your machine.
+If it is not use <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a> or  <a class="reference external" href="../Tools_user/pelayout.html">pelayout</a> to modify your pe-layout.
+Then setup your case and build your executable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/</span><span class="n">EXAMPLE_CASE</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The CESM2 case.build script is compute intensive and may not be suitable to run on a login node. As an alternative you would submit this job to an interactive queue.
+For example, on the NCAR cheyenne platform, you would use <strong>qcmd – ./case.build</strong> to do this.</p>
+</div>
+</li>
+<li><p class="first">In your case directory, set the job to run 12 model months, set the wallclock time, and submit the job.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nmonths</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_N</span><span class="o">=</span><span class="mi">12</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="mi">06</span><span class="p">:</span><span class="mi">00</span> <span class="o">--</span><span class="n">subgroup</span> <span class="n">case</span><span class="o">.</span><span class="n">run</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make sure the run succeeded.</p>
+<p>For cesm compsets, you should see the following line at the end of the <strong>cpl.log</strong> file in your run directory or your short term archiving directory, set by <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">seq_mct_drv</span><span class="p">):</span> <span class="o">===============</span>       <span class="n">SUCCESSFUL</span> <span class="n">TERMINATION</span> <span class="n">OF</span> <span class="n">CPL7</span><span class="o">-</span><span class="n">cesm</span> <span class="o">===============</span>
+</pre></div>
+</div>
+<p>For e3sm compsets, you should see the following line at the end of the <strong>cpl.log</strong> file in your run directory or your short term archiving directory, set by <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">seq_mct_drv</span><span class="p">):</span> <span class="o">===============</span>       <span class="n">SUCCESSFUL</span> <span class="n">TERMINATION</span> <span class="n">OF</span> <span class="n">CPL7</span><span class="o">-</span><span class="n">e3sm</span> <span class="o">===============</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">In the same case directory, Set the case to resubmit itself 10 times so it will run a total of 11 years (including the initial year), and resubmit the case. (Note that a resubmit will automatically change the run to be a continuation run).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RESUBMIT</span><span class="o">=</span><span class="mi">10</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+</pre></div>
+</div>
+<p>By default resubmitted runs are not submitted until the previous run is completed.
+To change this behavior, and submit all jobs at once (with batch dependencies such that only one job is run at a time), use the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span> <span class="o">--</span><span class="n">resubmit</span><span class="o">-</span><span class="n">immediate</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="setting-up-a-branch-or-hybrid-run">
+<h3>1.6.2. Setting up a branch or hybrid run<a class="headerlink" href="#setting-up-a-branch-or-hybrid-run" title="Permalink to this headline">¶</a></h3>
+<p>A branch or hybrid run uses initialization data from a previous run. Here is an example in which a valid load-balanced scenario is assumed.</p>
+<ol class="arabic">
+<li><p class="first">The first step in setting up a branch or hybrid run is to create a new case. A CESM compset and resolution is assumed below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+&gt; create_newcase --case ~/EXAMPLE_CASEp --compset B1850 --res f09_g17
+&gt; cd ~/EXAMPLE_CASEp
+</pre></div>
+</div>
+</li>
+<li><p class="first">For a branch run, use the following <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  commands to branch <strong>EXAMPLE_CASE</strong> at year 0001-02-01.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_TYPE</span><span class="o">=</span><span class="n">branch</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFCASE</span><span class="o">=</span><span class="n">EXAMPLE_CASE</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFDATE</span><span class="o">=</span><span class="mi">0001</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">For a hybrid run, use the following <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a>  command to start up from <strong>EXAMPLE_CASE</strong> at year 0001-02-01.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_TYPE</span><span class="o">=</span><span class="n">hybrid</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFCASE</span><span class="o">=</span><span class="n">EXAMPLE_CASE</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RUN_REFDATE</span><span class="o">=</span><span class="mi">0001</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">01</span>
+</pre></div>
+</div>
+<p>For a branch run, your <strong>env_run.xml</strong> file for <strong>EXAMPLE_CASEp</strong> should be identical to the file for <strong>EXAMPLE_CASE</strong> except for the <code class="docutils literal notranslate"><span class="pre">$RUN_TYPE</span></code> setting.</p>
+<p>Also, modifications introduced into <strong>user_nl_</strong> files in <strong>EXAMPLE_CASE</strong> should be reintroduced in <strong>EXAMPLE_CASEp</strong>.</p>
+</li>
+<li><p class="first">Next, set up and build your case executable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Pre-stage the necessary restart/initial data in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>. Assume for this example that it was created in the <strong>/rest/0001-02-01-00000</strong> directory shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $RUNDIR
+&gt; cp /user/archive/EXAMPLE_CASE/rest/0001-02-01-00000/* .
+</pre></div>
+</div>
+<p>It is assumed that you already have a valid load-balanced scenario.
+Go back to the case directory, set the job to run 12 model months, and submit the job.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="o">~/</span><span class="n">EXAMPLE_CASEp</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nmonths</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">STOP_N</span><span class="o">=</span><span class="mi">12</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="mi">06</span><span class="p">:</span><span class="mi">00</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make sure the run succeeded (see above directions) and then change
+the run to a continuation run. Set it to resubmit itself 10 times
+so it will run a total of 11 years (including the initial year),
+then resubmit the case.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">CONTINUE_RUN</span><span class="o">=</span><span class="n">TRUE</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">RESUMIT</span><span class="o">=</span><span class="mi">10</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
 </div>
 </div>
 
@@ -228,8 +438,13 @@ For variables that can be set in more than one way, the order of precedence is:<
 <li><a class="reference internal" href="#prerequisites">1.1. Prerequisites</a></li>
 <li><a class="reference internal" href="#key-terms-and-concepts">1.2. Key Terms and concepts</a></li>
 <li><a class="reference internal" href="#cime-and-your-environment">1.3. CIME and your environment</a></li>
-<li><a class="reference internal" href="#quick-start">1.4. Quick start</a></li>
+<li><a class="reference internal" href="#directory-content">1.4. Directory content</a></li>
 <li><a class="reference internal" href="#discovering-available-cases-with-query-config">1.5. Discovering available cases with <strong>query_config</strong></a></li>
+<li><a class="reference internal" href="#quick-start">1.6. Quick start</a><ul>
+<li><a class="reference internal" href="#setting-up-a-multi-year-run">1.6.1. Setting up a multi-year run</a></li>
+<li><a class="reference internal" href="#setting-up-a-branch-or-hybrid-run">1.6.2. Setting up a branch or hybrid run</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

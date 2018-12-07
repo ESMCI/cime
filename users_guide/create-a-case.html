@@ -45,59 +45,27 @@
             
   <div class="section" id="creating-a-case">
 <span id="id1"></span><h1>2. Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this headline">¶</a></h1>
-<p>This and following sections provide more detail about the basic commands of the CIME Case Control System: <strong>create_newcase</strong>,
-<strong>case.setup</strong>, <strong>case.build</strong> and <strong>case.submit</strong>. On a supported system, you can configure, build and run many complex
-climate model configurations with only these 4 commands.</p>
-<p>To see if your machine is supported try:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">machines</span>
-</pre></div>
-</div>
-<p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
+<p>Creating a CIME experiment or <em>case</em> requires, at a minimum, specifying a compset and a model grid and a case directory.</p>
 <div class="section" id="calling-create-newcase">
 <h2>2.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>The first step in creating a CIME-based experiment is to use <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>.</p>
-<p>See the options for <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> in the  <strong>help</strong> text.:</p>
+<p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
+<p>Review the input options for <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> in the  <strong>help</strong> text.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p>The only required arguments to <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> are:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">CASENAME</span> <span class="o">--</span><span class="n">compset</span> <span class="n">COMPSET</span> <span class="o">--</span><span class="n">res</span> <span class="n">GRID</span>
+<p>The only required arguments to <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> are shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Creating a CIME experiment or <em>case</em> requires, at a minimum, specifying a compset and a model grid and a case directory.
-CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em> (machines).</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">--case</span></code> argument must be a string and may not contain any of the following special characters</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; + * ? &lt; &gt; { } [ ] ~ ` @ :
+<p>CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em> (machines).</p>
+<p>The [CASE] argument must be a string and may not contain any of the following special characters</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; + * ? &lt; &gt; / { } [ ] ~ ` @ :
 </pre></div>
 </div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">--case</span></code> argument is used to define the name of your case, a very important piece of
-metadata that will be used in filenames, internal metadata and directory paths. The
-<code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is a directory create_newcase will create with the same name as the
-<code class="docutils literal notranslate"><span class="pre">CASENAME</span></code>. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is simply a name (not a path), <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created in
-the directory where you execute create_newcase. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is a relative or absolute
-path, <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created there, and the name of the case will be the last component
-of the path.</p>
 </div>
 <div class="section" id="results-of-calling-create-newcase">
 <h2>2.2. Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this headline">¶</a></h2>
-<p>Suppose <strong>create_newcase</strong> was called as follows.
-Here, $CIMEROOT is the full pathname of the root directory of the CIME distribution:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
-&gt; create_newcase --case ~/cime/example1 --compset A --res f09_g16_rx1
-</pre></div>
-</div>
-<p>In the example, the command creates a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> directory: <code class="docutils literal notranslate"><span class="pre">~/cime/example1</span></code>.
-If that directory already exists, a warning is printed and the command aborts.</p>
-<p>In the argument to <code class="docutils literal notranslate"><span class="pre">--case</span></code>, the case name is taken from the string after the last slash
-— so here the case name is <code class="docutils literal notranslate"><span class="pre">example1</span></code>.</p>
-<p>The output from create_newcase includes information such as.</p>
-<ul class="simple">
-<li>The compset longname is <code class="docutils literal notranslate"><span class="pre">2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV</span></code></li>
-<li>The model resolution is <code class="docutils literal notranslate"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code></li>
-</ul>
 <p><a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> installs files in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> that will build and run the model and to optionally archive the case on the target platform.</p>
 <p>Running <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> creates the following scripts, files and directories in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
 <p><strong>User Scripts</strong></p>

@@ -109,7 +109,7 @@
     <span class="kn">from</span> <span class="nn">CIME.case.case_test</span>  <span class="k">import</span> <span class="n">case_test</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_submit</span> <span class="k">import</span> <span class="n">check_DA_settings</span><span class="p">,</span> <span class="n">check_case</span><span class="p">,</span> <span class="n">submit</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_st_archive</span> <span class="k">import</span> <span class="n">case_st_archive</span><span class="p">,</span> <span class="n">restore_from_archive</span><span class="p">,</span> \
-        <span class="n">archive_last_restarts</span><span class="p">,</span> <span class="n">test_st_archive</span><span class="p">,</span> <span class="n">test_env_archive</span>
+        <span class="n">archive_last_restarts</span><span class="p">,</span> <span class="n">test_st_archive</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_run</span> <span class="k">import</span> <span class="n">case_run</span>
     <span class="kn">from</span> <span class="nn">CIME.case.case_cmpgen_namelists</span> <span class="k">import</span> <span class="n">case_cmpgen_namelists</span>
     <span class="kn">from</span> <span class="nn">CIME.case.check_lockedfiles</span> <span class="k">import</span> <span class="n">check_lockedfile</span><span class="p">,</span> <span class="n">check_lockedfiles</span><span class="p">,</span> <span class="n">check_pelayouts_require_rebuild</span>
@@ -161,7 +161,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_numa</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cores_per_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># check if case has been configured and if so initialize derived</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -215,9 +214,7 @@
         <span class="n">threads_per_core</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="p">(</span><span class="n">threads_per_node</span> <span class="o">&lt;=</span> <span class="n">max_mpitasks_per_node</span><span class="p">)</span> <span class="k">else</span> <span class="n">smt_factor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cores_per_task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">/</span> <span class="n">threads_per_core</span>
 
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="n">smt_factor</span><span class="o">*</span><span class="n">max_mpitasks_per_node</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span></div>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span></div>
 
     <span class="c1"># Define __enter__ and __exit__ so that we can use this as a context manager</span>
     <span class="c1"># and force a flush on exit.</span>

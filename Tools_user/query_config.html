@@ -53,7 +53,7 @@ usage: query_config [-h] [-d] [-v] [-s]
                     [--compsets [{all,allactive,drv,cam,cism,clm,cice,pop}]]
                     [--components [{all,mct,drv,datm,satm,xatm,cam,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,desp,sesp}]]
                     [--grids]
-                    [--machines [{all,current,bluewaters,brutus,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,eastwind,edison,gaea,hobart,homebrew,laramie,lawrencium-lr3,lawrencium-lr2,melvin,mira,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,rosa,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,lbl-lr3,lbl-lr2,theta,yellowstone,modex,roo2}]]
+                    [--machines [{all,current,bluewaters,brutus,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,eastwind,edison,gaea,hobart,homebrew,laramie,lawrencium-lr3,lawrencium-lr2,melvin,mira,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,rosa,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,lbl-lr3,lbl-lr2,theta,yellowstone,modex}]]
                     [--long]
 
 Displays information about available compsets, component settings, grids and/or
@@ -63,7 +63,7 @@ information will be listed for each.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/sacks/cime/scripts/query_config.log
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/query_config.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --compsets [{all,allactive,drv,cam,cism,clm,cice,pop}]
@@ -72,7 +72,7 @@ optional arguments:
                         Query component settings corresponding to the target component for cesm model.
                         If the option is empty, then the lists settings defined by all components is output
   --grids               Query supported model grids for cesm model.
-  --machines [{all,current,bluewaters,brutus,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,eastwind,edison,gaea,hobart,homebrew,laramie,lawrencium-lr3,lawrencium-lr2,melvin,mira,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,rosa,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,lbl-lr3,lbl-lr2,theta,yellowstone,modex,roo2}]
+  --machines [{all,current,bluewaters,brutus,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,eastwind,edison,gaea,hobart,homebrew,laramie,lawrencium-lr3,lawrencium-lr2,melvin,mira,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,rosa,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,lbl-lr3,lbl-lr2,theta,yellowstone,modex}]
                         Query supported machines for cesm model.
                         If option is left empty then all machines are listed,
                         If the option is &#39;current&#39; then only the current machine details are listed.
