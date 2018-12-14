@@ -267,6 +267,12 @@ typedef struct io_desc_t
      * 1-based mappings to the global array for that task. */
     PIO_Offset *map;
 
+    /** If the map passed in is not monotonically increasing
+     *	then map is sorted and remap is an array of original
+     * indices of map. */
+
+    int *remap;
+
     /** Number of tasks involved in the communication between comp and
      * io tasks. */
     int nrecvs;
@@ -293,6 +299,9 @@ typedef struct io_desc_t
     /** Does this decomp leave holes in the field (true) or write
      * everywhere (false) */
     bool needsfill;
+
+    /** If the map is not monotonically increasing we will need to sort it. */
+    bool needssort;
 
     /** The maximum number of bytes of this iodesc before flushing. */
     int maxbytes;

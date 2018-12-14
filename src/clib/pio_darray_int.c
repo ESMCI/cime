@@ -1905,3 +1905,126 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
 
     return PIO_NOERR;
 }
+
+void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int nvars)
+{
+    void *tmparray;
+    if (!(tmparray = malloc(iodesc->piotype_size * arraylen)))
+	return NULL;
+
+    int maplen = arraylen / nvars;
+    switch (iodesc->piotype)
+    {
+    case PIO_BYTE:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((signed char *)tmparray)[iodesc->remap[m]] = ((signed char *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_CHAR:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((char *)tmparray)[iodesc->remap[m]] = ((char *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_SHORT:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((short *)tmparray)[iodesc->remap[m]] = ((short *)array)[m+maplen*v];
+	    }
+	}
+
+	break;
+    case PIO_INT:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((int *)tmparray)[iodesc->remap[m]] = ((int *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_FLOAT:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((float *)tmparray)[iodesc->remap[m]] = ((float *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_DOUBLE:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((double *)tmparray)[iodesc->remap[m]] = ((double *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_UBYTE:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((unsigned char *)tmparray)[iodesc->remap[m]] = ((unsigned char *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_USHORT:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((unsigned short *)tmparray)[iodesc->remap[m]] = ((unsigned short *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_UINT:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((unsigned int *)tmparray)[iodesc->remap[m]] = ((unsigned int *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_INT64:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((long long *)tmparray)[iodesc->remap[m]] = ((long long *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_UINT64:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((unsigned long long *)tmparray)[iodesc->remap[m]] = ((unsigned long long *)array)[m+maplen*v];
+	    }
+	}
+	break;
+    case PIO_STRING:
+	for (int v=0; v < nvars; v++)
+	{
+	    for (int m=0; m < maplen; m++)
+	    {
+		((char **)tmparray)[iodesc->remap[m]] = ((char **)array)[m+maplen*v];
+	    }
+	}
+	break;
+    default:
+	return NULL;
+    }
+}

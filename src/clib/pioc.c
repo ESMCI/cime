@@ -362,6 +362,27 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
     return PIO_NOERR;
 }
 
+void pio_map_sort(const PIO_Offset *map, int *remap, int maplen)
+{
+    bool switched=false;
+    do
+    {
+	switched = false;
+	for(int i=1; i<maplen; i++)
+	{
+	    if (map[remap[i-1]] < map[remap[i]])
+	    {
+		int remaptemp = remap[i];
+		remap[i] = remap[i-1];
+		remap[i-1] = remaptemp;
+		switched = true;
+	    }
+	}
+    }
+    while(switched);
+}
+
+
 /**
  * Initialize the decomposition used with distributed arrays. The
  * decomposition describes how the data will be distributed between
@@ -495,12 +516,32 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     /* Remember the map. */
     if (!(iodesc->map = malloc(sizeof(PIO_Offset) * maplen)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    iodesc->needssort = false;
+    iodesc->remap = NULL;
     for (int m = 0; m < maplen; m++)
     {
-        iodesc->map[m] = compmap[m];
+	if(m > 0 && compmap[m] > 0 && compmap[m] < compmap[m-1])
+	    iodesc->needssort = true;
         LOG((4, "compmap[%d] = %d", m, compmap[m]));
     }
-
+    if (iodesc->needssort){
+	if (!(iodesc->remap = malloc(sizeof(int) * maplen)))
+	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+	for (int m=0; m < maplen; m++)
+	    iodesc->remap[m] = m;
+	pio_map_sort(compmap, iodesc->remap, maplen);
+	for (int m=0; m < maplen; m++)
+	{
+	    iodesc->map[iodesc->remap[m]] = compmap[m];
+	}
+    }
+    else
+    {
+	for (int m=0; m < maplen; m++)
+	{
+	    iodesc->map[m] = compmap[m];
+	}
+    }
     /* Remember the dim sizes. */
     if (!(iodesc->dimlen = malloc(sizeof(int) * ndims)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);

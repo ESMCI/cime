@@ -113,6 +113,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
+    void *tmparray;
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -264,9 +265,18 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated token for variable buffer"));
     }
+    if (iodesc->needssort)
+    {
+	tmparray = pio_sorted_copy(iodesc, array, arraylen, nvars);
+    }
+    else
+    {
+	tmparray = array;
+    }
+
 
     /* Move data from compute to IO tasks. */
-    if ((ierr = rearrange_comp2io(ios, iodesc, array, file->iobuf, nvars)))
+    if ((ierr = rearrange_comp2io(ios, iodesc, tmparray, file->iobuf, nvars)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Write the darray based on the iotype. */
@@ -364,6 +374,9 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         }
     }
 
+    if(iodesc->needssort && tmparray != NULL)
+	free(tmparray);
+
     /* Flush data to disk for pnetcdf. */
     if (ios->ioproc && file->iotype == PIO_IOTYPE_PNETCDF)
         if ((ierr = flush_output_buffer(file, flushtodisk, 0)))
@@ -403,7 +416,7 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
     unsigned long long uint64_fill_value = NC_FILL_UINT64;
     char *string_fill_value = "";
     int ret;
-    
+
     /* Check inputs. */
     assert(fillvalue);
 
@@ -412,7 +425,7 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
 
     /* Is there a _FillValue attribute? */
     ret = PIOc_inq_att_eh(ncid, varid, "_FillValue", 0, NULL, NULL);
-    
+
     LOG((3, "pio_inq_var_fill_expected ret %d", ret));
 
     /* If there is a fill value, get it. */
@@ -472,7 +485,7 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
             return PIO_EBADTYPE;
         }
     }
-    
+
     return PIO_NOERR;
 }
 
