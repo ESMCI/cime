@@ -269,7 +269,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     {
 	if (!(tmparray = malloc(arraylen*nvars*iodesc->piotype_size)))
 	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-	pio_sorted_copy(array, tmparray, iodesc, nvars);
+	pio_sorted_copy(array, tmparray, iodesc, nvars, 0);
     }
     else
     {
@@ -890,6 +890,8 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     {
 	if (!(tmparray = malloc(iodesc->piotype_size*iodesc->maplen)))
 	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+	for(int m=0; m<iodesc->maplen;m++)
+	    ((int *) array)[m] = -1;
     }
     else
 	tmparray = array;
@@ -900,7 +902,7 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
 
     if (iodesc->needssort)
     {
-	pio_sorted_copy(tmparray, array, iodesc, 1);
+	pio_sorted_copy(tmparray, array, iodesc, 1, 1);
 	free(tmparray);
     }
 

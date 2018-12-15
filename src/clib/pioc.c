@@ -380,6 +380,20 @@ void pio_map_sort(const PIO_Offset *map, int *remap, int maplen)
 	}
     }
     while(switched);
+/*
+    for(int i=maplen-1; i>=0; i--)
+    {
+	for(int j = 1; j<=i; j++)
+	{
+	    if (map[remap[j-1]] > map[remap[j]])
+	    {
+		int tmp = remap[j-1];
+		remap[j-1] = remap[j];
+		remap[j] = tmp;
+	    }
+	}
+    }
+*/
 }
 
 
@@ -531,7 +545,10 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 	    iodesc->remap[m] = m;
 	pio_map_sort(compmap, iodesc->remap, maplen);
 	for (int m=0; m < maplen; m++)
-	    iodesc->map[iodesc->remap[m]] = compmap[m];
+	    iodesc->map[m] = compmap[iodesc->remap[m]];
+	for (int m=1; m < maplen; m++)
+	    if (iodesc->map[m] < iodesc->map[m-1])
+		printf("%d: compmap[%d] %ld map[%d] %ld remap[%d] %d\n",ios->comp_rank, m, compmap[m], m, iodesc->map[m], m, iodesc->remap[m]);
     }
     else
     {
@@ -559,7 +576,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
         iodesc->num_aiotasks = ios->num_iotasks;
         LOG((2, "creating subset rearranger iodesc->num_aiotasks = %d",
              iodesc->num_aiotasks));
-        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, gdimlen,
+        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)iodesc->map, gdimlen,
                                             ndims, iodesc)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
@@ -605,7 +622,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            if ((ierr = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+            if ((ierr = box_rearrange_create(ios, maplen, iodesc->map, gdimlen, ndims, iodesc)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
