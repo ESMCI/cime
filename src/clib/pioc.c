@@ -370,7 +370,7 @@ void pio_map_sort(const PIO_Offset *map, int *remap, int maplen)
 	switched = false;
 	for(int i=1; i<maplen; i++)
 	{
-	    if (map[remap[i-1]] < map[remap[i]])
+	    if (map[remap[i-1]] > map[remap[i]])
 	    {
 		int remaptemp = remap[i];
 		remap[i] = remap[i-1];
@@ -531,9 +531,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 	    iodesc->remap[m] = m;
 	pio_map_sort(compmap, iodesc->remap, maplen);
 	for (int m=0; m < maplen; m++)
-	{
 	    iodesc->map[iodesc->remap[m]] = compmap[m];
-	}
     }
     else
     {

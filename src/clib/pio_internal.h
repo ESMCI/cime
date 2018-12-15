@@ -361,7 +361,7 @@ extern "C" {
     int determine_procs(int num_io_procs, int component_count, int *num_procs_per_comp,
                         int **proc_list, int **my_proc_list);
 
-    void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int nvars);
+    int pio_sorted_copy(const void *array, void *tmparray, io_desc_t *iodesc, int nvars);
 #if defined(__cplusplus)
 }
 #endif

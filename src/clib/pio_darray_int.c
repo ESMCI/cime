@@ -1906,13 +1906,9 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
     return PIO_NOERR;
 }
 
-void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int nvars)
+int pio_sorted_copy(const void *array, void *sortedarray, io_desc_t *iodesc, int nvars)
 {
-    void *tmparray;
-    if (!(tmparray = malloc(iodesc->piotype_size * arraylen)))
-	return NULL;
-
-    int maplen = arraylen / nvars;
+    int maplen = iodesc->maplen;
     switch (iodesc->piotype)
     {
     case PIO_BYTE:
@@ -1920,7 +1916,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((signed char *)tmparray)[iodesc->remap[m]] = ((signed char *)array)[m+maplen*v];
+		((signed char *)sortedarray)[iodesc->remap[m]] = ((signed char *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1929,7 +1925,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((char *)tmparray)[iodesc->remap[m]] = ((char *)array)[m+maplen*v];
+		((char *)sortedarray)[iodesc->remap[m]] = ((char *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1938,7 +1934,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((short *)tmparray)[iodesc->remap[m]] = ((short *)array)[m+maplen*v];
+		((short *)sortedarray)[iodesc->remap[m]] = ((short *)array)[m+maplen*v];
 	    }
 	}
 
@@ -1948,7 +1944,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((int *)tmparray)[iodesc->remap[m]] = ((int *)array)[m+maplen*v];
+		((int *)sortedarray)[iodesc->remap[m]] = ((int *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1957,7 +1953,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((float *)tmparray)[iodesc->remap[m]] = ((float *)array)[m+maplen*v];
+		((float *)sortedarray)[iodesc->remap[m]] = ((float *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1966,7 +1962,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((double *)tmparray)[iodesc->remap[m]] = ((double *)array)[m+maplen*v];
+		((double *)sortedarray)[iodesc->remap[m]] = ((double *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1975,7 +1971,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((unsigned char *)tmparray)[iodesc->remap[m]] = ((unsigned char *)array)[m+maplen*v];
+		((unsigned char *)sortedarray)[iodesc->remap[m]] = ((unsigned char *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1984,7 +1980,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((unsigned short *)tmparray)[iodesc->remap[m]] = ((unsigned short *)array)[m+maplen*v];
+		((unsigned short *)sortedarray)[iodesc->remap[m]] = ((unsigned short *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -1993,7 +1989,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((unsigned int *)tmparray)[iodesc->remap[m]] = ((unsigned int *)array)[m+maplen*v];
+		((unsigned int *)sortedarray)[iodesc->remap[m]] = ((unsigned int *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -2002,7 +1998,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((long long *)tmparray)[iodesc->remap[m]] = ((long long *)array)[m+maplen*v];
+		((long long *)sortedarray)[iodesc->remap[m]] = ((long long *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -2011,7 +2007,7 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((unsigned long long *)tmparray)[iodesc->remap[m]] = ((unsigned long long *)array)[m+maplen*v];
+		((unsigned long long *)sortedarray)[iodesc->remap[m]] = ((unsigned long long *)array)[m+maplen*v];
 	    }
 	}
 	break;
@@ -2020,11 +2016,12 @@ void *pio_sorted_copy(io_desc_t *iodesc, void *array, PIO_Offset arraylen, int n
 	{
 	    for (int m=0; m < maplen; m++)
 	    {
-		((char **)tmparray)[iodesc->remap[m]] = ((char **)array)[m+maplen*v];
+		((char **)sortedarray)[iodesc->remap[m]] = ((char **)array)[m+maplen*v];
 	    }
 	}
 	break;
     default:
-	return NULL;
+	return pio_err(NULL, NULL, PIO_EBADTYPE, __FILE__, __LINE__);
     }
+    return PIO_NOERR;
 }

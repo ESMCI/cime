@@ -267,13 +267,14 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     }
     if (iodesc->needssort)
     {
-	tmparray = pio_sorted_copy(iodesc, array, arraylen, nvars);
+	if (!(tmparray = malloc(arraylen*nvars*iodesc->piotype_size)))
+	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+	pio_sorted_copy(array, tmparray, iodesc, nvars);
     }
     else
     {
 	tmparray = array;
     }
-
 
     /* Move data from compute to IO tasks. */
     if ((ierr = rearrange_comp2io(ios, iodesc, tmparray, file->iobuf, nvars)))
@@ -844,8 +845,8 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     void *iobuf = NULL;    /* holds the data as read on the io node. */
     size_t rlen = 0;       /* the length of data in iobuf. */
-    int ierr;           /* Return code. */
-
+    int ierr;              /* Return code. */
+    void *tmparray;        /* unsorted copy of array buf if required */
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -885,9 +886,23 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
         return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
 
+    if (iodesc->needssort)
+    {
+	if (!(tmparray = malloc(iodesc->piotype_size*iodesc->maplen)))
+	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    }
+    else
+	tmparray = array;
+
     /* Rearrange the data. */
-    if ((ierr = rearrange_io2comp(ios, iodesc, iobuf, array)))
+    if ((ierr = rearrange_io2comp(ios, iodesc, iobuf, tmparray)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
+
+    if (iodesc->needssort)
+    {
+	pio_sorted_copy(tmparray, array, iodesc, 1);
+	free(tmparray);
+    }
 
     /* Free the buffer. */
     if (rlen > 0)
