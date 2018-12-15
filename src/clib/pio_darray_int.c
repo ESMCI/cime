@@ -1948,9 +1948,7 @@ int pio_sorted_copy(const void *array, void *sortedarray, io_desc_t *iodesc, int
 		{
 		    ((int *)sortedarray)[m] = ((int *)array)[iodesc->remap[m]+maplen*v];
 		}
-/*		for (int m=0; m < maplen; m++)
-		    printf("0:%d: array=%d sorted=%d\n",m,((int *)array)[m], ((int *)sortedarray)[m]);
-*/	    }
+	    }
 	    break;
 	case PIO_FLOAT:
 	    for (int v=0; v < nvars; v++)
@@ -2067,14 +2065,6 @@ int pio_sorted_copy(const void *array, void *sortedarray, io_desc_t *iodesc, int
 		{
 		    ((int *)sortedarray)[iodesc->remap[m]] = ((int *)array)[m+maplen*v];
 		}
-		int flag=0;
-		for (int m=0; m < maplen; m++)
-		    if(((int *)sortedarray)[m] < 0)
-			flag =1;
-		if(flag==1)
-		    for (int m=0; m < maplen; m++)
-			printf("%d %d %d %d\n",m, iodesc->remap[m], ((int *)sortedarray)[iodesc->remap[m]], ((int *)array)[m]);
-
 	    }
 	    break;
 	case PIO_FLOAT:
