@@ -1026,6 +1026,9 @@ contains
     integer(IN)              :: curr_tod   ! Current time-of-day (s)
     integer(IN)              :: start_ymd  ! Starting date YYYYMMDD
     integer(IN)              :: start_tod  ! Starting time-of-day (s)
+    integer(IN)              :: stop_ymd   ! Stopping date YYYYMMDD
+    integer(IN)              :: stop_tod   ! Stopping time-of-day (s)
+
     real(r8)                 :: curr_time  ! Time interval since reference time
     real(r8)                 :: prev_time  ! Time interval since reference time
     real(r8)                 :: avg_time   ! Average time for time average
@@ -1039,19 +1042,22 @@ contains
     integer(IN)              :: found = -10
     logical                  :: useavg
     logical                  :: use_double ! if true, use double-precision
+    logical                  :: use_stop_date ! use the stop date instead of current for runs < 24 hours.
     logical                  :: lwrite_now
     logical                  :: whead, wdata  ! for writing restart/history cdf files
     real(r8)                 :: tbnds(2)
     character(len=16) :: date_str
 
-    integer(IN), parameter   :: maxout = 20
-    integer(IN)       , save :: ntout = 0
-    character(CS)     , save :: tname(maxout) = 'x1y2z3'
-    integer(IN)       , save :: ncnt(maxout)  = -10
-    character(CL)     , save :: hist_file(maxout)       ! local path to history filename
+! This routine keeps track of information about ALL the aux hist files,
+! of which there can be maxout.  See the save attribute.
+    integer(IN), parameter   :: maxout = 20             ! number of history files this can handle
+    integer(IN)       , save :: ntout = 0               ! counter of the hist files?
+    character(CS)     , save :: tname(maxout) = 'x1y2z3' ! switch-name to compare against the aname passed in
+    integer(IN)       , save :: ncnt(maxout)  = -10     ! number of times written to each hist file so far
+    character(CL)     , save :: hist_file(maxout)       ! local paths to history filenames
     type(mct_aVect)   , save :: avavg(maxout)           ! av accumulator if needed
     integer(IN)       , save :: avcnt(maxout) = 0       ! accumulator counter
-    logical           , save :: fwrite(maxout) = .true. ! first write
+    logical           , save :: fwrite(maxout) = .true. ! first write  of each file
     real(r8)          , save :: tbnds1(maxout)          ! first time_bnds
     real(r8)          , save :: tbnds2(maxout)          ! second time_bnds
 
@@ -1080,6 +1086,7 @@ contains
        lwrite_now = write_now
     endif
 
+! Get the forecast end date+time to make the right file names for the history files.
     call seq_timemgr_EClockGetData( EClock_d, &
          curr_ymd=curr_ymd,                   &
          curr_tod=curr_tod,                   &
@@ -1087,7 +1094,29 @@ contains
          start_tod=start_tod,                 &
          curr_time=curr_time,                 &
          prev_time=prev_time,                 &
+         stop_ymd=stop_ymd,                   &
+         stop_tod=stop_tod,                   &
          calendar=calendar)
+
+    use_stop_date = (stop_ymd - curr_ymd) == 0 .or. &
+                   ((stop_ymd - curr_ymd) == 1 .and. stop_tod == 0)
+! Having the right number of samples results in correct data being written to each file.
+!     Ignores 3, (4,) 12 hour forecasts.  All of my fixes ignore 1 hour forecasts (WACCMX).
+!     Ignores other flows; l2x, x2a, ...
+!     Something like this may belong in the calling routine.
+    if (use_stop_date) then
+       if (     aname == 'a2x1h' .or. aname == 'a2x1hi') then
+          samples_per_file = 6
+       else if (aname == 'a2x3h' .or. aname == 'a2x3h_prec') then
+          samples_per_file = 2
+       else if (aname == 'a2x1d' .or. aname == 'r2x' ) then
+          samples_per_file = 1
+       endif
+    else
+       samples_per_file = nt
+    endif
+    write(logunit, *) 'seq_hist_writeaux stop_{ymd,tod}, use_stop_date, samples = ', &
+         stop_ymd, stop_tod, use_stop_date, samples_per_file
 
     first_call = .true.
     do n = 1, ntout
@@ -1114,7 +1143,7 @@ contains
     if (first_call) then
        ntout = ntout + 1
        if (ntout > maxout) then
-          write(logunit, *) 'write_history_writeaux maxout exceeded', ntout, maxout
+          write(logunit, *) 'seq_hist_writeaux maxout exceeded', ntout, maxout
           call shr_sys_abort()
        endif
        tname(ntout) = trim(aname)
@@ -1130,8 +1159,6 @@ contains
     endif
 
     if (iamin_CPLID) then !>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-       samples_per_file = nt
 
        if (useavg) then
           if (lwrite_now) then
@@ -1159,12 +1186,25 @@ contains
           if (ncnt(found) == 1) then
              fk1 = 1
              call seq_infodata_GetData( infodata,  case_name=case_name)
-             call shr_cal_date2ymd(curr_ymd, yy, mm, dd)
+
+             ! If the stop time is in the same day as the current time,
+             !     use stop time in the history file name.
+             if (use_stop_date) then
+                call shr_cal_date2ymd(stop_ymd, yy, mm, dd)
+             else
+                call shr_cal_date2ymd(curr_ymd, yy, mm, dd)
+             endif
 
              if (present(yr_offset)) then
                 yy = yy + yr_offset
              end if
-             call shr_cal_ymdtod2string(date_str, yy, mm, dd, curr_tod)
+
+             if (use_stop_date) then
+                call shr_cal_ymdtod2string(date_str, yy, mm, dd, stop_tod)
+             else
+                call shr_cal_ymdtod2string(date_str, yy, mm, dd, 0)
+             endif
+
              write(hist_file(found), "(8a)") &
                   trim(case_name),'.cpl',trim(inst_suffix),'.h',trim(aname),'.',trim(date_str), '.nc'
           else
@@ -1270,7 +1310,7 @@ contains
 
           enddo ! fk=1,2
 
-          if (ncnt(found) == nt) then
+          if (ncnt(found) == samples_per_file) then
              call seq_io_close(hist_file(found), file_ind=found)
           end if
           if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
