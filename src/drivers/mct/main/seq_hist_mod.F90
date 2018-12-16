@@ -976,10 +976,6 @@ contains
 
   subroutine seq_hist_writeaux(infodata, EClock_d, comp, flow, aname, dname, inst_suffix, &
        nx, ny, nt, write_now, flds, tbnds1_offset, yr_offset, av_to_write)
-! KDR Does nt need to be passed in, if it's only used by samples_per_file,
-! which can(?) now be calculated (in a cumbersome way) from {start,stop}_{ymd,tod} and aname?
-! Also, it refers to the unlimited dimension of the files, 
-! so it's not used to dimension the files.
 
     implicit none
 
@@ -1052,12 +1048,12 @@ contains
     real(r8)                 :: tbnds(2)
     character(len=16) :: date_str
 
-! KDR Ah, this routine keeps track of information about ALL the aux hist files,
-! of which there can be maxout of them.  See the save attribute.
-    integer(IN), parameter   :: maxout = 20             ! number of history files this can handle.
-    integer(IN)       , save :: ntout = 0               ! KDR counter of the hist files?
-    character(CS)     , save :: tname(maxout) = 'x1y2z3' ! KDR switch-name to compare against the aname passed in.
-    integer(IN)       , save :: ncnt(maxout)  = -10     ! KDR number of times written to each hist file so far
+! This routine keeps track of information about ALL the aux hist files,
+! of which there can be maxout.  See the save attribute.
+    integer(IN), parameter   :: maxout = 20             ! number of history files this can handle
+    integer(IN)       , save :: ntout = 0               ! counter of the hist files?
+    character(CS)     , save :: tname(maxout) = 'x1y2z3' ! switch-name to compare against the aname passed in
+    integer(IN)       , save :: ncnt(maxout)  = -10     ! number of times written to each hist file so far
     character(CL)     , save :: hist_file(maxout)       ! local paths to history filenames
     type(mct_aVect)   , save :: avavg(maxout)           ! av accumulator if needed
     integer(IN)       , save :: avcnt(maxout) = 0       ! accumulator counter
@@ -1090,7 +1086,7 @@ contains
        lwrite_now = write_now
     endif
 
-! KDR get the forecast end date+time to make the right file names for the history files.
+! Get the forecast end date+time to make the right file names for the history files.
     call seq_timemgr_EClockGetData( EClock_d, &
          curr_ymd=curr_ymd,                   &
          curr_tod=curr_tod,                   &
@@ -1104,11 +1100,10 @@ contains
 
     use_stop_date = (stop_ymd - curr_ymd) == 0 .or. &
                    ((stop_ymd - curr_ymd) == 1 .and. stop_tod == 0)
-! KDR Kluge to see if having the right number of samples fixes anything.  It results in
-!     correct data being written.
+! Having the right number of samples results in correct data being written to each file.
 !     Ignores 3, (4,) 12 hour forecasts.  All of my fixes ignore 1 hour forecasts (WACCMX).
 !     Ignores other flows; l2x, x2a, ...
-!     Something like this may belong in 
+!     Something like this may belong in the calling routine.
     if (use_stop_date) then
        if (     aname == 'a2x1h' .or. aname == 'a2x1hi') then
           samples_per_file = 6
@@ -1165,8 +1160,6 @@ contains
 
     if (iamin_CPLID) then !>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-! KDR       samples_per_file = nt
-
        if (useavg) then
           if (lwrite_now) then
              avcnt(found) = avcnt(found) + 1
@@ -1194,7 +1187,7 @@ contains
              fk1 = 1
              call seq_infodata_GetData( infodata,  case_name=case_name)
 
-             ! KDR If the stop time is in the same day as the current time,
+             ! If the stop time is in the same day as the current time,
              !     use stop time in the history file name.
              if (use_stop_date) then
                 call shr_cal_date2ymd(stop_ymd, yy, mm, dd)
@@ -1205,7 +1198,6 @@ contains
              if (present(yr_offset)) then
                 yy = yy + yr_offset
              end if
-             call shr_cal_ymdtod2string(date_str, yy, mm, dd, curr_tod)
 
              if (use_stop_date) then
                 call shr_cal_ymdtod2string(date_str, yy, mm, dd, stop_tod)
