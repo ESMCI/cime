@@ -8,7 +8,7 @@
 
 NP=$1
 shift
-if [ $LMOD_FAMILY_MPI -eq "openmpi" ]
+if [ "$LMOD_FAMILY_MPI" == "openmpi" ]
 then
   mpirun -np $NP $@
 else
