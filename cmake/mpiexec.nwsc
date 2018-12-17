@@ -8,5 +8,9 @@
 
 NP=$1
 shift
-
-mpirun.lsf $@ -n$NP
+if [ $LMOD_FAMILY_MPI -eq "openmpi" ]
+then
+  mpirun -np $NP $@
+else
+  mpiexec_mpt -n $NP $@
+fi
