@@ -1,7 +1,146 @@
 ======================================================================
 
 Originator: Chris Fischer 
-Date: 11-12-2018
+Date: 11-29-2018
+Tag: cime_cesm2_1_rel_06
+Answer Changes: None
+Tests: scripts_regression_tests 
+Dependencies:
+
+Brief Summary:
+    - Fix new pylint errors.
+    - Update addmetadata for POP-ECT tests.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+5a86646 Merge pull request #2921 from jedwards4b/fixpylint3errors
+98821ff Merge pull request #2919 from ESMCI/fischer/addmetadata
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/BuildTools/macrowriterbase.py
+M       scripts/lib/CIME/SystemTests/erio.py
+M       scripts/lib/CIME/SystemTests/ers.py
+M       scripts/lib/CIME/SystemTests/ers2.py
+M       scripts/lib/CIME/SystemTests/homme.py
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/SystemTests/system_tests_compare_two.py
+M       scripts/lib/CIME/case/case_run.py
+M       scripts/lib/CIME/case/case_setup.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/provenance.py
+M       scripts/lib/e3sm_cime_mgmt.py
+M       src/build_scripts/buildlib.gptl
+M       src/build_scripts/buildlib.pio
+M       tools/statistical_ensemble_test/addmetadata.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-17-2018
+Tag: cime_cesm2_1_rel_05
+Answer Changes: None
+Tests:  ./create_test cime_developer on cheyenne
+Dependencies:
+
+Brief Summary:
+    - Do not include time of day in cpl auxiliary hist file names.
+
+User interface changes: 
+    - Changes names of cpl auxiliary history files.
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+b3fc9d6 Merge pull request #2914 from billsacks/auxhist_no_time
+
+Modified files: git diff --name-status [previous_tag]
+M       src/drivers/mct/main/seq_hist_mod.F90
+
+======================================================================
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-13-2018
+Tag: cime_cesm2_1_rel_04
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Fix 2010 period for datm GSWP3v1.
+    - Update pyCECT to v3.0.8
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+2e72d20 Merge pull request #2908 from ekluzek/fix2010datm
+5f4a911 Merge pull request #2905 from ESMCI/fischer/pyCECT_v3.0.8
+
+Modified files: git diff --name-status [previous_tag]
+M       src/components/data_comps/datm/cime_config/config_component.xml
+M       tools/statistical_ensemble_test/pyCECT/README_pyCECT.rst
+M       tools/statistical_ensemble_test/pyCECT/README_pyEnsSum.rst
+M       tools/statistical_ensemble_test/pyCECT/README_pyEnsSumPop.rst
+M       tools/statistical_ensemble_test/pyCECT/pyCECT.py
+M       tools/statistical_ensemble_test/pyCECT/pyEnsLib.py
+M       tools/statistical_ensemble_test/pyCECT/pyEnsSum.py
+M       tools/statistical_ensemble_test/pyCECT/pyEnsSumPop.py
+D       tools/statistical_ensemble_test/pyCECT/pyEnsSumPop_test.sh
+M       tools/statistical_ensemble_test/pyCECT/test_pop_CECT.sh
+D       tools/statistical_ensemble_test/pyCECT/test_pop_ensemble.sh
+A       tools/statistical_ensemble_test/pyCECT/test_pyEnsSumPop.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-5-2018
+Tag: cime_cesm2_1_rel_03
+Answer Changes: None
+Tests: code_checker, stand-alone tests, scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Add Total Time parsing for timeseries and xconform to archive_metadata
+    - Fine tuning for CMIP6 cases in archive_metadata.
+    - CESM-CECT update.
+    - Python3 compatibility update for archive_metadata.
+    - Remove reference to deleted testmods directories.
+    - Compute tasks_per_node via floor division.
+    - Response to review comments of pr 2844 and remove user-grid option.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+c515c37 Merge pull request #2900 from bertinia/maint-5.6_archive_metadata
+47f3970 Merge pull request #2884 from bertinia/maint-5.6_archive_metadata
+3ad6a6e Merge pull request #2866 from jedwards4b/set_update
+a2b6885 Merge pull request #2865 from bertinia/maint-5.6_archive_metadata
+b56664c Merge pull request #2862 from billsacks/doc_testmods
+ad361d2 Merge pull request #2860 from jedwards4b/py3fix
+7e82e9b Merge pull request #2853 from jedwards4b/cleanuppr
+
+
+Modified files: git diff --name-status [previous_tag]
+M       doc/source/users_guide/testing.rst
+M       scripts/Tools/archive_metadata
+M       scripts/create_newcase
+M       scripts/fortran_unit_testing/run_tests.py
+M       scripts/lib/CIME/XML/env_mach_pes.py
+M       tools/statistical_ensemble_test/README
+M       tools/statistical_ensemble_test/ensemble.py
+D       tools/statistical_ensemble_test/ensemble.sh
+M       tools/statistical_ensemble_test/single_run.py
+D       tools/statistical_ensemble_test/single_run.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 10-12-2018
 Tag: cime_cesm2_1_rel_02
 Answer Changes: None
 Tests: Z_FullSystemTest, scripts_regression_tests, hand tests
