@@ -3765,15 +3765,14 @@ contains
           if (do_hist_a2x24hr) then
              do eai = 1,num_inst_atm
                 inst_suffix = component_get_suffix(atm(eai))
-                write_hist_alarm = t24hr_alarm .or. stop_alarm
                 if (trim(hist_a2x24hr_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
                         aname='a2x1d',dname='doma',inst_suffix=trim(inst_suffix),  &
-                        nx=atm_nx, ny=atm_ny, nt=1, write_now=write_hist_alarm)
+                        nx=atm_nx, ny=atm_ny, nt=1, write_now=t24hr_alarm)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
                         aname='a2x1d',dname='doma',inst_suffix=trim(inst_suffix),  &
-                        nx=atm_nx, ny=atm_ny, nt=1, write_now=write_hist_alarm, flds=hist_a2x24hr_flds)
+                        nx=atm_nx, ny=atm_ny, nt=1, write_now=t24hr_alarm, flds=hist_a2x24hr_flds)
                 endif
              enddo
           endif
