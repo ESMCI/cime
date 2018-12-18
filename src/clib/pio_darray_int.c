@@ -397,8 +397,8 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 #if USE_VARD_WRITE
     if (!ios->async || !ios->ioproc)
     {
-      if ((ierr = get_gdim0(file, iodesc, varids[0], fndims, &gdim0)))
-        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+	if ((ierr = get_gdim0(file, iodesc, varids[0], fndims, &gdim0)))
+	    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     }
 #endif
@@ -618,7 +618,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                             if(filetype != MPI_DATATYPE_NULL)
                             {
                                 if((mpierr = MPI_Type_free(&filetype)))
-                                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+				    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
                             }
                             vard_llen = 0; /* reset request size to 0 */
                             numReqs = 0;
@@ -1291,23 +1291,23 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 if (regioncnt == iodesc->maxregions - 1)
                 {
 #if USE_VARD_READ
-		  MPI_Datatype filetype;
-		  PIO_Offset unlimdimoffset;
-		  int mpierr;
-		  if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
+		    MPI_Datatype filetype;
+		    PIO_Offset unlimdimoffset;
+		    int mpierr;
+		    if (gdim0 == 0) /* if there is an unlimited dimension get the offset between records of a variable */
 		    {
-		      if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
-			return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+			if((ierr = ncmpi_inq_recsize(file->fh, &unlimdimoffset)))
+			    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 		    }
-		  else
-		    unlimdimoffset = gdim0;
+		    else
+			unlimdimoffset = gdim0;
 
-		  ierr = get_vard_mpidatatype(iodesc, gdim0, unlimdimoffset,
-					      rrlen, ndims, fndims,
-					      vdesc->record, startlist, countlist, &filetype);
-		  ierr = ncmpi_get_vard_all(file->fh, vid, filetype, iobuf, iodesc->llen, iodesc->mpitype);
-		  if(filetype != MPI_DATATYPE_NULL && (mpierr = MPI_Type_free(&filetype)))
-		    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+		    ierr = get_vard_mpidatatype(iodesc, gdim0, unlimdimoffset,
+						rrlen, ndims, fndims,
+						vdesc->record, startlist, countlist, &filetype);
+		    ierr = ncmpi_get_vard_all(file->fh, vid, filetype, iobuf, iodesc->llen, iodesc->mpitype);
+		    if(filetype != MPI_DATATYPE_NULL && (mpierr = MPI_Type_free(&filetype)))
+			return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
 #else
                     /* Read a list of subarrays. */
@@ -1903,5 +1903,245 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
             return pio_err(NULL, file, ret, __FILE__, __LINE__);
     }
 
+    return PIO_NOERR;
+}
+
+int pio_sorted_copy(const void *array, void *sortedarray, io_desc_t *iodesc, int nvars,int direction)
+{
+    int maplen = iodesc->maplen;
+
+    if (direction == 0){
+	switch (iodesc->piotype)
+	{
+	case PIO_BYTE:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((signed char *)sortedarray)[m] = ((signed char *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_CHAR:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((char *)sortedarray)[m] = ((char *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_SHORT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((short *)sortedarray)[m] = ((short *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+
+	    break;
+	case PIO_INT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((int *)sortedarray)[m] = ((int *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_FLOAT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((float *)sortedarray)[m] = ((float *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_DOUBLE:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((double *)sortedarray)[m] = ((double *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_UBYTE:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned char *)sortedarray)[m] = ((unsigned char *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_USHORT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned short *)sortedarray)[m] = ((unsigned short *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_UINT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned int *)sortedarray)[m] = ((unsigned int *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_INT64:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((long long *)sortedarray)[m] = ((long long *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_UINT64:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned long long *)sortedarray)[m] = ((unsigned long long *)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_STRING:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((char **)sortedarray)[m] = ((char **)array)[iodesc->remap[m]+maplen*v];
+		}
+	    }
+	    break;
+	default:
+	    return pio_err(NULL, NULL, PIO_EBADTYPE, __FILE__, __LINE__);
+	}
+    }
+    else
+    {
+	switch (iodesc->piotype)
+	{
+	case PIO_BYTE:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((signed char *)sortedarray)[iodesc->remap[m]] = ((signed char *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_CHAR:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((char *)sortedarray)[iodesc->remap[m]] = ((char *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_SHORT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((short *)sortedarray)[iodesc->remap[m]] = ((short *)array)[m+maplen*v];
+		}
+	    }
+
+	    break;
+	case PIO_INT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((int *)sortedarray)[iodesc->remap[m]] = ((int *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_FLOAT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((float *)sortedarray)[iodesc->remap[m]] = ((float *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_DOUBLE:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((double *)sortedarray)[iodesc->remap[m]] = ((double *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_UBYTE:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned char *)sortedarray)[iodesc->remap[m]] = ((unsigned char *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_USHORT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned short *)sortedarray)[iodesc->remap[m]] = ((unsigned short *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_UINT:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned int *)sortedarray)[iodesc->remap[m]] = ((unsigned int *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_INT64:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((long long *)sortedarray)[iodesc->remap[m]] = ((long long *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_UINT64:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((unsigned long long *)sortedarray)[iodesc->remap[m]] = ((unsigned long long *)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	case PIO_STRING:
+	    for (int v=0; v < nvars; v++)
+	    {
+		for (int m=0; m < maplen; m++)
+		{
+		    ((char **)sortedarray)[iodesc->remap[m]] = ((char **)array)[m+maplen*v];
+		}
+	    }
+	    break;
+	default:
+	    return pio_err(NULL, NULL, PIO_EBADTYPE, __FILE__, __LINE__);
+	}
+    }
     return PIO_NOERR;
 }

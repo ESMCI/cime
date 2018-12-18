@@ -362,6 +362,41 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
     return PIO_NOERR;
 }
 
+void pio_map_sort(const PIO_Offset *map, int *remap, int maplen)
+{
+    bool switched=false;
+    do
+    {
+	switched = false;
+	for(int i=1; i<maplen; i++)
+	{
+	    if (map[remap[i-1]] > map[remap[i]])
+	    {
+		int remaptemp = remap[i];
+		remap[i] = remap[i-1];
+		remap[i-1] = remaptemp;
+		switched = true;
+	    }
+	}
+    }
+    while(switched);
+/*
+    for(int i=maplen-1; i>=0; i--)
+    {
+	for(int j = 1; j<=i; j++)
+	{
+	    if (map[remap[j-1]] > map[remap[j]])
+	    {
+		int tmp = remap[j-1];
+		remap[j-1] = remap[j];
+		remap[j] = tmp;
+	    }
+	}
+    }
+*/
+}
+
+
 /**
  * Initialize the decomposition used with distributed arrays. The
  * decomposition describes how the data will be distributed between
@@ -495,12 +530,33 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     /* Remember the map. */
     if (!(iodesc->map = malloc(sizeof(PIO_Offset) * maplen)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    iodesc->needssort = false;
+    iodesc->remap = NULL;
     for (int m = 0; m < maplen; m++)
     {
-        iodesc->map[m] = compmap[m];
+	if(m > 0 && compmap[m] > 0 && compmap[m] < compmap[m-1])
+	    iodesc->needssort = true;
         LOG((4, "compmap[%d] = %d", m, compmap[m]));
     }
-
+    if (iodesc->needssort){
+	if (!(iodesc->remap = malloc(sizeof(int) * maplen)))
+	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+	for (int m=0; m < maplen; m++)
+	    iodesc->remap[m] = m;
+	pio_map_sort(compmap, iodesc->remap, maplen);
+	for (int m=0; m < maplen; m++)
+	    iodesc->map[m] = compmap[iodesc->remap[m]];
+	for (int m=1; m < maplen; m++)
+	    if (iodesc->map[m] < iodesc->map[m-1])
+		printf("%d: compmap[%d] %ld map[%d] %ld remap[%d] %d\n",ios->comp_rank, m, compmap[m], m, iodesc->map[m], m, iodesc->remap[m]);
+    }
+    else
+    {
+	for (int m=0; m < maplen; m++)
+	{
+	    iodesc->map[m] = compmap[m];
+	}
+    }
     /* Remember the dim sizes. */
     if (!(iodesc->dimlen = malloc(sizeof(int) * ndims)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
@@ -520,7 +576,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
         iodesc->num_aiotasks = ios->num_iotasks;
         LOG((2, "creating subset rearranger iodesc->num_aiotasks = %d",
              iodesc->num_aiotasks));
-        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, gdimlen,
+        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)iodesc->map, gdimlen,
                                             ndims, iodesc)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
@@ -566,7 +622,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            if ((ierr = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+            if ((ierr = box_rearrange_create(ios, maplen, iodesc->map, gdimlen, ndims, iodesc)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
