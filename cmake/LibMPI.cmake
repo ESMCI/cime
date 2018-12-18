@@ -27,7 +27,8 @@ function (platform_name RETURN_VARIABLE)
 
 
     if (SITENAME MATCHES "^laramie" OR
-            SITENAME MATCHES "^cheyenne")
+            SITENAME MATCHES "^cheyenne" OR
+	    SITENAME MATCHES "^chadmin")
 
 	set (${RETURN_VARIABLE} "nwscla" PARENT_SCOPE)
 

@@ -18,7 +18,7 @@ module load pnetcdf/1.9.0
 export CC=mpicc
 export FC=mpif90
 
-export PIO_DASHBOARD_ROOT=`pwd`/dashboard
+export PIO_DASHBOARD_ROOT=/glade/u/home/jedwards/sandboxes/dashboard
 export PIO_COMPILER_ID=PGI-`$CC --version | head -n 2 | tail -n 1 | cut -d' ' -f2`
 
 if [ ! -d "$PIO_DASHBOARD_ROOT" ]; then
