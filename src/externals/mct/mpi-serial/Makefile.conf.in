@@ -6,6 +6,7 @@ INCFLAG		= @INCLUDEFLAG@
 DEFS            = @DEFS@
 CFLAGS          = @CFLAGS@
 AR              = @AR@
+ARFLAGS         = @ARFLAGS@
 RANLIB          = @RANLIB@
 LIBS            = @LIBS@
 CRULE           = .c.o

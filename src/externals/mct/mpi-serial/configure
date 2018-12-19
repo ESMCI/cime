@@ -607,6 +607,7 @@ GREP
 CPP
 FCLIBS
 RANLIB
+ARFLAGS
 AR
 ac_ct_FC
 FCFLAGS
@@ -676,6 +677,7 @@ CPPFLAGS
 FC
 FCFLAGS
 AR
+ARFLAGS
 RANLIB
 CPP
 INCLUDEFLAG'
@@ -1306,6 +1308,7 @@ Some influential environment variables:
   FC          Fortran compiler command
   FCFLAGS     Fortran compiler flags
   AR          Archive Command
+  ARFLAGS     User defined Archive flags
   RANLIB      Archive index update command
   CPP         C preprocessor
   INCLUDEFLAG Fortran compiler flag for specifying module search path
@@ -3200,8 +3203,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # ARCHIVE COMMAND SIMILAR ACROSS ALL PLATFORMS
 
+
 if test -z "$AR"; then
-   AR="ar cruv"
+   AR="ar"
+fi
+if test -z "$ARFLAGS"; then
+   ARFLAGS="cruv"
 fi
 
 # RANLIB
@@ -4477,7 +4484,7 @@ _ACEOF
 # 1 to this macro) to the Fortran 90 compiler in order to get "version" output
 ac_save_FCFLAGS=$FCFLAGS
 FCFLAGS="$FCFLAGS $ac_version"
-(eval echo $as_me:4480: \"$ac_link\") >&5
+(eval echo $as_me:4487: \"$ac_link\") >&5
 ac_fc_version_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_fc_version_output" >&5
 FCFLAGS=$ac_save_FCFLAGS

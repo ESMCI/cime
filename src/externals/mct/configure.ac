@@ -56,6 +56,7 @@ AC_ARG_VAR(ENDIAN,Fortran compiler flag for converting big-endian to little-endi
 AC_ARG_VAR(INCLUDEFLAG,Fortran compiler flag for specifying module search path)
 AC_ARG_VAR(INCLUDEPATH,Additional library and module paths with INCLUDEFLAG)
 AC_ARG_VAR(AR,Archive command)
+AC_ARG_VAR(ARFLAGS,User defined Archive flags)
 AC_ARG_VAR(RANLIB,Archive index update command)
 AC_ARG_VAR(BABELROOT,Root directory of your Babel installation. i.e.: $BABELROOT/bin/babel $BABELROOT/lib/libsidl.so)
 AC_ARG_VAR(COMPILER_ROOT,Root directory of your FORTRAN compiler)
@@ -101,7 +102,10 @@ if test "$ES" = "YES"; then
       MPIFC="esmpif90"
    fi
    if test -z "$AR"; then
-      AR="esar cqs"
+      AR="esar"
+   fi
+   if test -z "$ARFLAGS"; then
+      ARFLAGS="cqs"
    fi
    if test -z "FPP"; then
       FPPFLAGS=" "
@@ -567,7 +571,10 @@ fi
 
 # ARCHIVE COMMAND SIMILAR ACROSS ALL PLATFORMS
 if test -z "$AR"; then
-   AR="ar cq"
+   AR="ar"
+fi
+if test -z "$ARFLAGS"; then
+   ARFLAGS="cq"
 fi
 
 # RANLIB
@@ -588,7 +595,7 @@ echo Output Variables: {CC=$CC} {CFLAGS=$CFLAGS} \
 {BIT64=$BIT64} {ENDIAN=$ENDIAN} {MPIFC=$MPIFC} \
 {MPILIBS=$MPILIBS} {MPIHEADER=$MPIHEADER}  \
 {INCLUDEFLAG=$INCLUDEFLAG} {INCLUDEPATH=$INCLUDEPATH} \
-{AR=$AR} {RANLIB=$RANLIB} {BABELROOT=$BABELROOT} {COMPILER_ROOT=$COMPILER_ROOT} \
+{AR=$AR} {ARFLAGS=$ARFLAGS} {RANLIB=$RANLIB} {BABELROOT=$BABELROOT} {COMPILER_ROOT=$COMPILER_ROOT} \
 {PYTHON=$PYTHON} {PYTHONOPTS=$PYTHONOPTS} {FORT_SIZE=$FORT_SIZE} {prefix=$prefix} \
 {SRCDIR=$SRCDIR} {FC_DEFINE=$FC_DEFINE}
 echo

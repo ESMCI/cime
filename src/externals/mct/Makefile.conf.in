@@ -81,6 +81,7 @@ includedir      = @prefix@/include
 # OTHER COMMANDS #
 RANLIB		= @RANLIB@
 AR		= @AR@
+ARFLAGS		= @ARFLAGS@
 RM		= rm -f
 
 

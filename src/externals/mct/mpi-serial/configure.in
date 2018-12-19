@@ -8,8 +8,12 @@ AC_PROG_FC
 
 # ARCHIVE COMMAND SIMILAR ACROSS ALL PLATFORMS
 AC_ARG_VAR(AR,Archive Command)
+AC_ARG_VAR(ARFLAGS,User defined Archive flags)
 if test -z "$AR"; then
-   AR="ar cruv"
+   AR="ar"
+fi
+if test -z "$ARFLAGS"; then
+   ARFLAGS="cruv"
 fi
 
 # RANLIB

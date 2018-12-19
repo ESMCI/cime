@@ -46,7 +46,7 @@ all: 	lib$(MODULE).a
 
 lib$(MODULE).a:	$(OBJS_ALL)
 	$(RM) $@
-	$(AR) $@ $(OBJS_ALL)
+	$(AR) $(ARFLAGS) $@ $(OBJS_ALL)
 	$(RANLIB) $@
 
 # ADDITIONAL FLAGS SPECIFIC FOR MCT COMPILATION
