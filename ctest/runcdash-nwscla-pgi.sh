@@ -10,10 +10,11 @@ fi
 module reset
 module unload netcdf
 module swap intel pgi/17.9
+module swap mpt mpt/2.18
 module load git/2.10.2
 module load cmake/3.12.1
-module load netcdf-mpi/4.5.0
-module load pnetcdf/1.9.0
+module load netcdf-mpi/4.6.1
+module load pnetcdf/1.11.0
 
 export CC=mpicc
 export FC=mpif90
