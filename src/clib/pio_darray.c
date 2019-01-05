@@ -462,7 +462,7 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
         case PIO_DOUBLE:
             memcpy(fillvalue, &double_fill_value, type_size);
             break;
-#ifdef _NETCDF4
+#if defined(_NETCDF4) || defined(_PNETCDF)
         case PIO_UBYTE:
             memcpy(fillvalue, &ubyte_fill_value, type_size);
             break;
@@ -478,10 +478,12 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
         case PIO_UINT64:
             memcpy(fillvalue, &uint64_fill_value, type_size);
             break;
+#ifdef _NETCDF4
         case PIO_STRING:
             memcpy(fillvalue, string_fill_value, type_size);
             break;
 #endif /* _NETCDF4 */
+#endif/* _NETCDF4 || _PNETCDF */
         default:
             return PIO_EBADTYPE;
         }
