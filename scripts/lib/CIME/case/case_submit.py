@@ -33,6 +33,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
         print "limit0",resource.getrlimit(resource.RLIMIT_STACK)
         resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
         print "limit1",resource.getrlimit(resource.RLIMIT_STACK)
+    caseroot = case.get_value("CASEROOT")
 
     if job is None:
         job = case.get_primary_job()
@@ -177,6 +178,11 @@ def check_case(self):
     self.create_namelists() # Must be called before check_all_input_data
     logger.info("Checking that inputdata is available as part of case submission")
     self.check_all_input_data()
+
+    if self.get_value('COMP_WAV') == 'ww':
+        # the ww3 buildnml has dependancies on inputdata so we must run it again
+        self.create_namelists(component='WAV')
+
 
     expect(self.get_value("BUILD_COMPLETE"), "Build complete is "
            "not True please rebuild the model by calling case.build")

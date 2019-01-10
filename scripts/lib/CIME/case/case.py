@@ -67,11 +67,11 @@ class Case(object):
     are listed in the following imports
     """
     from CIME.case.case_setup import case_setup
-    from CIME.case.case_clone import create_clone
+    from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
     from CIME.case.case_test  import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
     from CIME.case.case_st_archive import case_st_archive, restore_from_archive, \
-        archive_last_restarts, test_st_archive
+        archive_last_restarts, test_st_archive, test_env_archive
     from CIME.case.case_run import case_run
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
     from CIME.case.check_lockedfiles import check_lockedfile, check_lockedfiles, check_pelayouts_require_rebuild
@@ -123,6 +123,7 @@ class Case(object):
         self.spare_nodes = None
         self.tasks_per_numa = None
         self.cores_per_task = None
+        self.srun_binding = None
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
@@ -177,6 +178,8 @@ class Case(object):
         self.cores_per_task = self.thread_count / threads_per_core
 
         os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
+
+        self.srun_binding = smt_factor*max_mpitasks_per_node / self.tasks_per_node
 
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
@@ -751,7 +754,7 @@ class Case(object):
 
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
-                  pesfile=None,user_grid=False, gridfile=None,
+                  pesfile=None, gridfile=None,
                   multi_driver=False, ninst=1, test=False,
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
@@ -770,11 +773,10 @@ class Case(object):
             compset_name, files)
 
         self._components = self.get_compset_components()
+
         #--------------------------------------------
         # grid
         #--------------------------------------------
-        if user_grid is True and gridfile is not None:
-            self.set_value("GRIDS_SPEC_FILE", gridfile)
         grids = Grids(gridfile)
 
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname)
@@ -1040,6 +1042,16 @@ class Case(object):
                 safe_copy(os.path.join(machines_dir, "syslog.{}".format(machine)), os.path.join(casetools, "mach_syslog"))
             else:
                 safe_copy(os.path.join(machines_dir, "syslog.noop"), os.path.join(casetools, "mach_syslog"))
+
+        # add archive_metadata to the CASEROOT but only for CESM
+        if get_model() == "cesm":
+            try:
+                exefile = os.path.join(toolsdir, "archive_metadata")
+                destfile = os.path.join(self._caseroot,os.path.basename(exefile))
+                os.symlink(exefile, destfile)
+            except Exception as e:
+                logger.warning("FAILED to set up exefiles: {}".format(str(e)))
+
 
     def _create_caseroot_sourcemods(self):
         components = self.get_compset_components()
@@ -1408,7 +1420,7 @@ directory, NOT in this subdirectory."""
     def create(self, casename, srcroot, compset_name, grid_name,
                user_mods_dir=None, machine_name=None,
                project=None, pecount=None, compiler=None, mpilib=None,
-               pesfile=None,user_grid=False, gridfile=None,
+               pesfile=None, gridfile=None,
                multi_driver=False, ninst=1, test=False,
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
@@ -1423,7 +1435,7 @@ directory, NOT in this subdirectory."""
             self.configure(compset_name, grid_name, machine_name=machine_name,
                            project=project,
                            pecount=pecount, compiler=compiler, mpilib=mpilib,
-                           pesfile=pesfile,user_grid=user_grid, gridfile=gridfile,
+                           pesfile=pesfile, gridfile=gridfile,
                            multi_driver=multi_driver, ninst=ninst, test=test,
                            walltime=walltime, queue=queue,
                            output_root=output_root,

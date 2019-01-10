@@ -59,6 +59,9 @@ class EnvMachPes(EnvBase):
                 ninst = self.get_value("NINST_{}".format(comp))
                 expect(ninst == ninst_max,
                        "All components must have the same NINST value in multi_driver mode.  NINST_{}={} shoud be {}".format(comp,ninst,ninst_max))
+        if "NTASKS" in vid or "NTHRDS" in vid:
+            expect(value != 0, "Cannot set NTASKS or NTHRDS to 0")
+
 
         return EnvBase.set_value(self, vid, value, subgroup=subgroup, ignore_type=ignore_type)
 
@@ -91,7 +94,7 @@ class EnvMachPes(EnvBase):
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):
         expect(total_tasks > 0,"totaltasks > 0 expected, totaltasks = {}".format(total_tasks))
-        tasks_per_node = min(self.get_value("MAX_TASKS_PER_NODE")/ max_thread_count,
+        tasks_per_node = min(self.get_value("MAX_TASKS_PER_NODE")// max_thread_count,
                              self.get_value("MAX_MPITASKS_PER_NODE"), total_tasks)
         return tasks_per_node if tasks_per_node > 0 else 1
 

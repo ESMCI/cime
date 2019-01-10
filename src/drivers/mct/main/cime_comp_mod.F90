@@ -199,7 +199,7 @@ module cime_comp_mod
   type(mct_aVect) , pointer :: o2x_ox => null()
   type(mct_aVect) , pointer :: a2x_ax => null()
 
-  character(len=CL) :: suffix
+  character(len=CL) :: inst_suffix
   logical           :: iamin_id
   character(len=seq_comm_namelen) :: compname
 
@@ -270,6 +270,7 @@ module cime_comp_mod
   logical  :: t24hr_alarm            ! alarm every twentyfour hours
   logical  :: t1yr_alarm             ! alarm every year, at start of year
   logical  :: pause_alarm            ! pause alarm
+  logical  :: write_hist_alarm       ! alarm to write a history file under multiple conditions
   integer  :: drv_index              ! seq_timemgr index for driver
 
   real(r8) :: days_per_year = 365.0  ! days per year
@@ -421,7 +422,7 @@ module cime_comp_mod
   real(r8) :: reprosum_diffmax       ! setup reprosum, set rel_diff_max
   logical  :: reprosum_recompute     ! setup reprosum, recompute if tolerance exceeded
 
-  integer  :: shr_flux_scheme        !+tht option for COARE flux computation (=0,1,2)
+  integer  :: shr_flux_scheme        !+tht option for COARE flux computation (=0,1)
   logical  :: shr_alb_cosz_avg       !+tht option for using cosz time-step average in albedos
 
   logical  :: output_perf = .false.  ! require timing data output for this pe
@@ -583,12 +584,14 @@ contains
   !*******************************************************************************
   !===============================================================================
 
-  subroutine cime_pre_init1()
+  subroutine cime_pre_init1(esmf_log_option)
     use shr_pio_mod, only : shr_pio_init1, shr_pio_init2
     use seq_comm_mct, only: num_inst_driver
     !----------------------------------------------------------
     !| Initialize MCT and MPI communicators and IO
     !----------------------------------------------------------
+
+    character(CS), intent(out) :: esmf_log_option    ! For esmf_logfile_kind
 
     integer, dimension(num_inst_total) :: comp_id, comp_comm, comp_comm_iam
     logical :: comp_iamin(num_inst_total)
@@ -796,6 +799,11 @@ contains
             write(logunit,'(2A,I0,A)') subname,' Driver is running with',num_inst_driver,'instances'
     endif
 
+    !----------------------------------------------------------
+    ! Read ESMF namelist settings
+    !----------------------------------------------------------
+    call esmf_readnl(NLFileName, mpicom_GLOID, esmf_log_option)
+
     !
     !  When using io servers (pio_async_interface=.true.) the server tasks do not return from
     !  shr_pio_init2
@@ -803,6 +811,49 @@ contains
     call shr_pio_init2(comp_id,comp_name,comp_iamin,comp_comm,comp_comm_iam)
 
   end subroutine cime_pre_init1
+
+  !===============================================================================
+  !*******************************************************************************
+  !===============================================================================
+  subroutine esmf_readnl(NLFileName, mpicom, esmf_logfile_kind)
+     use shr_file_mod, only: shr_file_getUnit, shr_file_freeUnit
+
+     character(len=*),  intent(in)  :: NLFileName
+     integer,           intent(in)  :: mpicom
+     character(len=CS), intent(out) :: esmf_logfile_kind
+
+     integer                     :: ierr   ! I/O error code
+     integer                     :: unitn  ! Namelist unit number to read
+     integer                     :: rank
+     character(len=*), parameter :: subname = '(esmf_readnl) '
+
+     namelist /esmf_inparm/ esmf_logfile_kind
+
+     esmf_logfile_kind = 'ESMF_LOGKIND_NONE'
+     call mpi_comm_rank(mpicom, rank, ierr)
+
+     !-------------------------------------------------------------------------
+     ! Read in namelist
+     !-------------------------------------------------------------------------
+     if (rank == 0) then
+        unitn = shr_file_getUnit()
+        write(logunit,"(A)") subname,' read esmf_inparm namelist from: '//trim(NLFileName)
+        open(unitn, file=trim(NLFileName), status='old')
+        ierr = 1
+        do while( ierr /= 0 )
+           read(unitn, nml=esmf_inparm, iostat=ierr)
+           if (ierr < 0) then
+              call shr_sys_abort( subname//':: namelist read returns an'// &
+                   ' end of file or end of record condition' )
+           end if
+        end do
+        close(unitn)
+        call shr_file_freeUnit(unitn)
+     end if
+
+     call mpi_bcast(esmf_logfile_kind, CS, MPI_CHARACTER, 0, mpicom, ierr)
+
+  end subroutine esmf_readnl
 
   !===============================================================================
   !*******************************************************************************
@@ -957,7 +1008,7 @@ contains
 
     call shr_flux_docoare(shr_flux_scheme)            !+tht option for COARE flux computation
     call shr_orb_doalbavg(shr_alb_cosz_avg)           !+tht option for albedo cosz avg'ing
- 
+
     ! Check cpl_seq_option
 
     if (trim(cpl_seq_option) /= 'CESM1_ORIG' .and. &
@@ -2122,7 +2173,6 @@ contains
 
     hashint = 0
 
-
     call seq_infodata_putData(infodata,atm_phase=1,lnd_phase=1,ocn_phase=1,ice_phase=1)
     call seq_timemgr_EClockGetData( EClock_d, stepno=begstep)
     call seq_timemgr_EClockGetData( EClock_d, dtime=dtime)
@@ -2348,7 +2398,7 @@ contains
                 a2x_ox => prep_ocn_get_a2x_ox()
                 o2x_ox => component_get_c2x_cx(ocn(eoi))
                 xao_ox => prep_aoflux_get_xao_ox()
-                 call seq_flux_atmocn_mct(infodata, tod, dtime, a2x_ox(eai), o2x_ox, xao_ox(exi))
+                call seq_flux_atmocn_mct(infodata, tod, dtime, a2x_ox(eai), o2x_ox, xao_ox(exi))
              enddo
              call t_drvstopf  ('CPL:atmocnp_fluxo',hashint=hashint(6))
           endif
@@ -2374,9 +2424,7 @@ contains
              eai = mod((exi-1),num_inst_atm) + 1
              xao_ox => prep_aoflux_get_xao_ox()        ! array over all instances
              a2x_ox => prep_ocn_get_a2x_ox()
-!+tht albedo cosz option
              call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi), dtime) !+tht dtime
-!-tht
           enddo
           call t_drvstopf  ('CPL:atmocnp_ocnalb',hashint=hashint(5))
 
@@ -2874,9 +2922,7 @@ contains
              eai = mod((exi-1),num_inst_atm) + 1
              xao_ox => prep_aoflux_get_xao_ox()        ! array over all instances
              a2x_ox => prep_ocn_get_a2x_ox()
-!+tht albedo cosz option
-             call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi), dtime) !+tht
-!-tht
+             call seq_flux_ocnalb_mct(infodata, ocn(1), a2x_ox(eai), fractions_ox(efi), xao_ox(exi), dtime) !+tht dtime
           enddo
           call t_drvstopf  ('CPL:atmocnp_ocnalb')
 
@@ -3055,10 +3101,10 @@ contains
              if (do_hist_r2x) then
                 call t_drvstartf ('driver_rofpost_histaux', barrier=mpicom_CPLID)
                 do eri = 1,num_inst_rof
-                   suffix =  component_get_suffix(rof(eri))
+                   inst_suffix =  component_get_suffix(rof(eri))
                    call seq_hist_writeaux(infodata, EClock_d, rof(eri), flow='c2x', &
-                        aname='r2x'//trim(suffix), dname='domrb', &
-                        nx=rof_nx, ny=rof_ny, nt=1, write_now=t24hr_alarm)
+                        aname='r2x',dname='domrb',inst_suffix=trim(inst_suffix),  &
+                        nx=rof_nx, ny=rof_ny, nt=1, write_now=write_hist_alarm)
                 enddo
                 call t_drvstopf ('driver_rofpost_histaux')
              endif
@@ -3652,14 +3698,14 @@ contains
 
           if (do_hist_a2x) then
              do eai = 1,num_inst_atm
-                suffix =  component_get_suffix(atm(eai))
+                inst_suffix =  component_get_suffix(atm(eai))
                 if (trim(hist_a2x_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x'//trim(suffix), dname='doma', &
+                        aname='a2x',dname='doma', inst_suffix=trim(inst_suffix), &
                         nx=atm_nx, ny=atm_ny, nt=ncpl)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x'//trim(suffix), dname='doma', &
+                        aname='a2x',dname='doma', inst_suffix=trim(inst_suffix), &
                         nx=atm_nx, ny=atm_ny, nt=ncpl, flds=hist_a2x_flds)
                 endif
              enddo
@@ -3667,14 +3713,14 @@ contains
 
           if (do_hist_a2x1hri .and. t1hr_alarm) then
              do eai = 1,num_inst_atm
-                suffix =  component_get_suffix(atm(eai))
+                inst_suffix =  component_get_suffix(atm(eai))
                 if (trim(hist_a2x1hri_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x1hi'//trim(suffix), dname='doma', &
+                        aname='a2x1hi',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=24)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x1hi'//trim(suffix), dname='doma', &
+                        aname='a2x1hi',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=24, flds=hist_a2x1hri_flds)
                 endif
              enddo
@@ -3682,14 +3728,14 @@ contains
 
           if (do_hist_a2x1hr) then
              do eai = 1,num_inst_atm
-                suffix =  component_get_suffix(atm(eai))
+                inst_suffix =  component_get_suffix(atm(eai))
                 if (trim(hist_a2x1hr_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x1h'//trim(suffix), dname='doma', &
+                        aname='a2x1h',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=24, write_now=t1hr_alarm)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x1h'//trim(suffix), dname='doma', &
+                        aname='a2x1h',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=24, write_now=t1hr_alarm, flds=hist_a2x1hr_flds)
                 endif
              enddo
@@ -3697,14 +3743,14 @@ contains
 
           if (do_hist_a2x3hr) then
              do eai = 1,num_inst_atm
-                suffix =  component_get_suffix(atm(eai))
+                inst_suffix =  component_get_suffix(atm(eai))
                 if (trim(hist_a2x3hr_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x3h'//trim(suffix), dname='doma', &
+                        aname='a2x3h',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=8, write_now=t3hr_alarm)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x3h'//trim(suffix), dname='doma', &
+                        aname='a2x3h',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=8, write_now=t3hr_alarm, flds=hist_a2x3hr_flds)
                 endif
              enddo
@@ -3712,14 +3758,14 @@ contains
 
           if (do_hist_a2x3hrp) then
              do eai = 1,num_inst_atm
-                suffix = component_get_suffix(atm(eai))
+                inst_suffix = component_get_suffix(atm(eai))
                 if (trim(hist_a2x3hrp_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x3h_prec'//trim(suffix), dname='doma', &
+                        aname='a2x3h_prec',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=8, write_now=t3hr_alarm)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x3h_prec'//trim(suffix), dname='doma', &
+                        aname='a2x3h_prec',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=8, write_now=t3hr_alarm, flds=hist_a2x3hrp_flds)
                 endif
              enddo
@@ -3727,14 +3773,14 @@ contains
 
           if (do_hist_a2x24hr) then
              do eai = 1,num_inst_atm
-                suffix = component_get_suffix(atm(eai))
+                inst_suffix = component_get_suffix(atm(eai))
                 if (trim(hist_a2x24hr_flds) == 'all') then
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x1d'//trim(suffix), dname='doma', &
+                        aname='a2x1d',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=1, write_now=t24hr_alarm)
                 else
                    call seq_hist_writeaux(infodata, EClock_d, atm(eai), flow='c2x', &
-                        aname='a2x1d'//trim(suffix), dname='doma', &
+                        aname='a2x1d',dname='doma',inst_suffix=trim(inst_suffix),  &
                         nx=atm_nx, ny=atm_ny, nt=1, write_now=t24hr_alarm, flds=hist_a2x24hr_flds)
                 endif
              enddo
@@ -3784,11 +3830,11 @@ contains
                      rdays_offset = tbnds1_offset, &
                      years_offset = -1)
                 do eli = 1,num_inst_lnd
-                   suffix = component_get_suffix(lnd(eli))
+                   inst_suffix = component_get_suffix(lnd(eli))
                    ! Use yr_offset=-1 so the file with fields from year 1 has time stamp
                    ! 0001-01-01 rather than 0002-01-01, etc.
                    call seq_hist_writeaux(infodata, EClock_d, lnd(eli), flow='c2x', &
-                        aname='l2x1yr_glc'//trim(suffix), dname='doml', &
+                        aname='l2x1yr_glc',dname='doml',inst_suffix=trim(inst_suffix),  &
                         nx=lnd_nx, ny=lnd_ny, nt=1, write_now=.true., &
                         tbnds1_offset = tbnds1_offset, yr_offset=-1, &
                         av_to_write=prep_glc_get_l2gacc_lx_one_instance(eli))
@@ -3798,9 +3844,9 @@ contains
 
           if (do_hist_l2x) then
              do eli = 1,num_inst_lnd
-                suffix =  component_get_suffix(lnd(eli))
+                inst_suffix =  component_get_suffix(lnd(eli))
                 call seq_hist_writeaux(infodata, EClock_d, lnd(eli), flow='c2x', &
-                     aname='l2x'//trim(suffix), dname='doml', &
+                     aname='l2x',dname='doml',inst_suffix=trim(inst_suffix),  &
                      nx=lnd_nx, ny=lnd_ny, nt=ncpl)
              enddo
           endif

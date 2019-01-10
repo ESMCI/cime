@@ -1,5 +1,531 @@
 ======================================================================
 
+Originator: Chris Fischer 
+Date: 11-29-2018
+Tag: cime_cesm2_1_rel_06
+Answer Changes: None
+Tests: scripts_regression_tests 
+Dependencies:
+
+Brief Summary:
+    - Fix new pylint errors.
+    - Update addmetadata for POP-ECT tests.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+5a86646 Merge pull request #2921 from jedwards4b/fixpylint3errors
+98821ff Merge pull request #2919 from ESMCI/fischer/addmetadata
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/BuildTools/macrowriterbase.py
+M       scripts/lib/CIME/SystemTests/erio.py
+M       scripts/lib/CIME/SystemTests/ers.py
+M       scripts/lib/CIME/SystemTests/ers2.py
+M       scripts/lib/CIME/SystemTests/homme.py
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/SystemTests/system_tests_compare_two.py
+M       scripts/lib/CIME/case/case_run.py
+M       scripts/lib/CIME/case/case_setup.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/provenance.py
+M       scripts/lib/e3sm_cime_mgmt.py
+M       src/build_scripts/buildlib.gptl
+M       src/build_scripts/buildlib.pio
+M       tools/statistical_ensemble_test/addmetadata.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-17-2018
+Tag: cime_cesm2_1_rel_05
+Answer Changes: None
+Tests:  ./create_test cime_developer on cheyenne
+Dependencies:
+
+Brief Summary:
+    - Do not include time of day in cpl auxiliary hist file names.
+
+User interface changes: 
+    - Changes names of cpl auxiliary history files.
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+b3fc9d6 Merge pull request #2914 from billsacks/auxhist_no_time
+
+Modified files: git diff --name-status [previous_tag]
+M       src/drivers/mct/main/seq_hist_mod.F90
+
+======================================================================
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-13-2018
+Tag: cime_cesm2_1_rel_04
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Fix 2010 period for datm GSWP3v1.
+    - Update pyCECT to v3.0.8
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+2e72d20 Merge pull request #2908 from ekluzek/fix2010datm
+5f4a911 Merge pull request #2905 from ESMCI/fischer/pyCECT_v3.0.8
+
+Modified files: git diff --name-status [previous_tag]
+M       src/components/data_comps/datm/cime_config/config_component.xml
+M       tools/statistical_ensemble_test/pyCECT/README_pyCECT.rst
+M       tools/statistical_ensemble_test/pyCECT/README_pyEnsSum.rst
+M       tools/statistical_ensemble_test/pyCECT/README_pyEnsSumPop.rst
+M       tools/statistical_ensemble_test/pyCECT/pyCECT.py
+M       tools/statistical_ensemble_test/pyCECT/pyEnsLib.py
+M       tools/statistical_ensemble_test/pyCECT/pyEnsSum.py
+M       tools/statistical_ensemble_test/pyCECT/pyEnsSumPop.py
+D       tools/statistical_ensemble_test/pyCECT/pyEnsSumPop_test.sh
+M       tools/statistical_ensemble_test/pyCECT/test_pop_CECT.sh
+D       tools/statistical_ensemble_test/pyCECT/test_pop_ensemble.sh
+A       tools/statistical_ensemble_test/pyCECT/test_pyEnsSumPop.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-5-2018
+Tag: cime_cesm2_1_rel_03
+Answer Changes: None
+Tests: code_checker, stand-alone tests, scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Add Total Time parsing for timeseries and xconform to archive_metadata
+    - Fine tuning for CMIP6 cases in archive_metadata.
+    - CESM-CECT update.
+    - Python3 compatibility update for archive_metadata.
+    - Remove reference to deleted testmods directories.
+    - Compute tasks_per_node via floor division.
+    - Response to review comments of pr 2844 and remove user-grid option.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+c515c37 Merge pull request #2900 from bertinia/maint-5.6_archive_metadata
+47f3970 Merge pull request #2884 from bertinia/maint-5.6_archive_metadata
+3ad6a6e Merge pull request #2866 from jedwards4b/set_update
+a2b6885 Merge pull request #2865 from bertinia/maint-5.6_archive_metadata
+b56664c Merge pull request #2862 from billsacks/doc_testmods
+ad361d2 Merge pull request #2860 from jedwards4b/py3fix
+7e82e9b Merge pull request #2853 from jedwards4b/cleanuppr
+
+
+Modified files: git diff --name-status [previous_tag]
+M       doc/source/users_guide/testing.rst
+M       scripts/Tools/archive_metadata
+M       scripts/create_newcase
+M       scripts/fortran_unit_testing/run_tests.py
+M       scripts/lib/CIME/XML/env_mach_pes.py
+M       tools/statistical_ensemble_test/README
+M       tools/statistical_ensemble_test/ensemble.py
+D       tools/statistical_ensemble_test/ensemble.sh
+M       tools/statistical_ensemble_test/single_run.py
+D       tools/statistical_ensemble_test/single_run.sh
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 10-12-2018
+Tag: cime_cesm2_1_rel_02
+Answer Changes: None
+Tests: Z_FullSystemTest, scripts_regression_tests, hand tests
+Dependencies:
+
+Brief Summary:
+    - Add a default value of idmap_ignore for certain mapping files.
+    - Improve clean function.
+    - Add ability for testfile to contain comments.
+    - Clean and alphabetize (by MACH name) the config/cesm/machines/*.xml files. 
+    - Improve case clone functionality.
+    - Improve error message for issues in user_nl_* namelist files.
+    - Write cpl.hr2x files at ENDOFRUN when forecast is < 24 hours.
+    - Backporting PR #2833(Propagate logging settings to submitted jobs) to maint-5.6 branch.
+    - Remove overzelous debug code.
+    - Change default for flux_convergence for all but 1 degree case.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+fd439ba Merge pull request #2845 from jedwards4b/improve_idmap_test
+be6c214 Merge pull request #2844 from jedwards4b/run_tests_clean
+c2cab2f Merge pull request #2838 from jedwards4b/testfile_comments
+d68fa9c Merge pull request #2849 from jedwards4b/cleanup_xml
+cb81444 Merge pull request #2843 from jedwards4b/clone_modified_Tools
+f3f5f69 Merge pull request #2840 from jedwards4b/user_nl_error_msg
+61132ee Merge pull request #2832 from kdraeder/hr2x_at_endofrun
+d3457ec Merge pull request #2842 from jedwards4b/propagate_logging
+ad9c0f5 Merge pull request #2839 from jedwards4b/remove_debug_code
+6a7d374 Merge pull request #2837 from jedwards4b/tuning1.9
+
+
+Modified files: git diff --name-status [previous_tag]
+M       .travis.yml
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/archive_metadata
+M       scripts/create_newcase
+M       scripts/create_test
+M       scripts/fortran_unit_testing/run_tests.py
+M       scripts/lib/CIME/XML/batch.py
+M       scripts/lib/CIME/XML/compilers.py
+M       scripts/lib/CIME/XML/env_batch.py
+M       scripts/lib/CIME/XML/generic_xml.py
+M       scripts/lib/CIME/XML/machines.py
+M       scripts/lib/CIME/XML/namelist_definition.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_clone.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/CMake/FindpFUnit.cmake
+M       src/drivers/mct/cime_config/buildnml
+M       src/drivers/mct/cime_config/config_component.xml
+M       src/drivers/mct/cime_config/namelist_definition_drv.xml
+M       src/drivers/mct/main/cime_comp_mod.F90
+M       src/share/streams/shr_stream_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 10-8-2018
+Tag: cime_cesm2_1_rel_01
+Answer Changes: None
+Tests: scripts_regression_test
+Dependencies:
+
+Brief Summary:
+    - Update presaero and CO2 datasets for datm7 to new CMIP6 version.
+    - Better format for seq_flds_YYY_{fluxes,states} log messages.
+    - Attach the instance number to 'cpl' in cpl history file names.
+    - Fix inputdata issue for multi_instance cases.
+
+
+User interface changes: 
+    - Added clim_2010 option for DATM_PRESAERO
+      Added 20tr.latbnd option for DATM_CO2_TSERIES
+      GSWP3v1 and CRUNCEPv7 forcing sets appropriate years for compsets starting with 2010
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+88d9297 Merge pull request #2828 from ekluzek/newpresaero
+6568ded Merge pull request #2824 from kdraeder/kdr_seq_flds_log_msgs
+fcf60c8 Merge pull request #2782 from kdraeder/kdr_fix_cpl_hist_names
+6511798 Merge pull request #2823 from jedwards4b/multi_inst_check_input
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/Tools/archive_metadata
+M       scripts/create_newcase
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/nmlgen.py
+M       src/components/data_comps/datm/cime_config/buildnml
+M       src/components/data_comps/datm/cime_config/config_component.xml
+M       src/components/data_comps/datm/cime_config/namelist_definition_datm.xml
+M       src/components/data_comps/desp/cime_config/buildnml
+M       src/components/data_comps/dice/cime_config/buildnml
+M       src/components/data_comps/dlnd/cime_config/buildnml
+M       src/components/data_comps/docn/cime_config/buildnml
+M       src/components/data_comps/drof/cime_config/buildnml
+M       src/components/data_comps/dwav/cime_config/buildnml
+M       src/drivers/mct/main/cime_comp_mod.F90
+M       src/drivers/mct/main/seq_hist_mod.F90
+M       src/drivers/mct/shr/seq_flds_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 10-2-2018
+Tag: cime_cesm2_0_rel_06
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Archive_metadata updates for CMIP6 experiments.
+    - OS is not generic env var.
+    - New machines at ETH and CSCS.
+    - Update ESMF library on cheyenne.
+    - Fix documentation for histaux_r2x namelist variable.
+    - Dont allow zero ntasks nthrds.
+    - Add lapack and blas libraries to pgi compile on cheyenne.
+    - Updates for compatibility with XML to html tools.
+    - Remove additional rad->deg conversion to radians when creating ocean
+      domain files.
+    - ESMF logging fix.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+12e1c4d41 (HEAD -> maint-5.6, origin/maint-5.6) Merge pull request #2815 from bertinia/maint-5.6_archive_metadata
+767511a79 OS is not generic env var
+bec49f0c2 Merge pull request #2807 from beyerle/euler_daint
+9e74b8ab3 Merge pull request #2806 from ESMCI/fischer/ESMF_710r
+0f20ab46e Merge pull request #2774 from billsacks/fix_histaux_r2x_docs
+1c10e58e8 Merge pull request #2768 from jedwards4b/dont_allow_zero_ntasks_nthrds
+6a1069ce3 Merge pull request #2753 from jedwards4b/pgi_lapack
+5a0a56721 Merge pull request #2742 from bertinia/maint-5.6-component-return-values
+cbf8f2216 Merge pull request #2736 from jtruesdal/domainfix
+2e34a0305 Merge pull request #2733 from gold2718/esmf_log_fix
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/archive_metadata
+M       scripts/lib/CIME/XML/component.py
+M       scripts/lib/CIME/XML/compsets.py
+M       scripts/lib/CIME/XML/env_mach_pes.py
+M       scripts/lib/CIME/XML/machines.py
+M       scripts/lib/CIME/utils.py
+M       src/components/data_comps/docn/cime_config/config_component.xml
+M       src/drivers/mct/cime_config/config_component.xml
+M       src/drivers/mct/cime_config/namelist_definition_drv.xml
+M       src/drivers/mct/main/cime_comp_mod.F90
+M       src/drivers/mct/main/cime_driver.F90
+M       src/drivers/mct/shr/seq_comm_mct.F90
+M       src/drivers/mct/shr/seq_infodata_mod.F90
+M       src/share/esmf_wrf_timemgr/ESMF_Stubs.F90
+M       tools/mapping/gen_domain_files/src/gen_domain.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 7-24-2018
+Tag: cime_cesm2_0_rel_05
+Answer Changes: None
+Tests: scripts_regression_tests.py 
+Dependencies:
+
+Brief Summary:
+    - Theta enviroment updates.
+    - Fix wget option for directories.
+    - Remove trailing whitespace.
+    - Correct mpich for intel, clean up cprnc on hobart.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+59ef62860 (HEAD -> maint-5.6, origin/maint-5.6) Merge pull request #2727 from jedwards4b/more_theta_config
+d44d58a82 Merge pull request #2700 from jedwards4b/wget_fix
+41842b411 remove trailing whitespace
+1af4f4569 Merge pull request #2718 from jedwards4b/hobart_machine_cleanup
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_machines.xml
+M       scripts/lib/CIME/Servers/wget.py
+M       scripts/lib/CIME/utils.py
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 7-13-2018
+Tag: cime5.6.10
+Answer Changes: None
+Tests: hand test
+       code_checker on create_newcase; manually checked create_newcase --help
+       ERS_Ln9.f19_g17.X.hobart_intel , ERS_Ln9.f19_g17.X.hobart_gnu,
+       ERS_Ln9.f19_g17.X.hobart_nag
+Dependencies:
+
+Brief Summary:
+   - Add scripts/Tools/archive_metadata to CIME for use in CESM cases only. 
+   - Change DIN_LOC_ROOT_CLMFORC for new glade setup on cheyenne.
+   - Make docs more consistent.
+   - cprnc compiler updates for hobart.
+
+User interface changes: 
+    - archive_metadata --help stand_alone script.
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+9f4377c Merge pull request #2715 from bertinia/maint-5.6_archive_metadata
+ef2f2e4 Merge pull request #2714 from ekluzek/newgladedinlocclmfrc
+154b475 Merge pull request #2693 from billsacks/make_docs_more_consistent
+631869c Merge pull request #2709 from ESMCI/fischer/hobart_cprnc
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_machines.xml
+M       doc/source/users_guide/create-a-case.rst
+A       scripts/Tools/archive_metadata
+M       scripts/create_newcase
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/utils.py
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fiscehr 
+Date: 7-5-2018
+Tag: cime5.6.9
+Answer Changes: None
+Tests: prealpha on edison, cori-haswell, cori-knl
+       scripts_regression_tests, ect-uf on bluewaters
+Dependencies:
+
+Brief Summary:
+    - Maint-5.6 nersc update.
+    - Maint-5.6 hobart update.
+    - Fix issue with rebuilding csm_share.
+    - Bluewaters update.
+    - Edit and cleanup parts of CCS users guide.
+    - Change -v to --env for theta.
+    - Fix unittest.
+    - Tryagain with tput code.
+    - ww3 data staging fix.
+    - Fix refcase logiv.
+    - Add and clarify pieces that describe adding a test to the prebeta testing.
+    - Archive test refinement.
+
+User interface changes: 
+    -  --test becomes --test-all and --test-case is added
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+3ee8b07 Merge pull request #2697 from jedwards4b/maint-5.6-nersc-update
+b76c449 Merge pull request #2701 from jedwards4b/maint-5.6-hobart-update
+34677a4 Merge pull request #2684 from jedwards4b/improve_shared_build_performance
+57c8924 Merge pull request #2675 from jedwards4b/bluewaters_update
+3a5281d Merge pull request #2662 from ESMCI/rljacob/doc/ug1-read
+f8cc2a7 Merge pull request #2666 from jedwards4b/theta_fix
+2e9973f fix unittest
+49f59b6 tryagain with tput code
+0819198 Merge branch 'ww3_data_staging' into maint-5.6
+7478f2f Merge branch 'fix_refcase_logic' into maint-5.6
+cd64838 Merge pull request #2647 from ESMCI/fischer/augment_testing_doc
+3016427 Merge pull request #2656 from jedwards4b/archive_test_refinement
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       config/cesm/machines/template.st_archive
+M       config/e3sm/machines/template.st_archive
+M       config/xml_schemas/config_machines.xsd
+M       config/xml_schemas/testlist.xsd
+M       doc/source/users_guide/building-a-case.rst
+M       doc/source/users_guide/cime-change-namelist.rst
+A       doc/source/users_guide/cime-dir.rst
+M       doc/source/users_guide/compsets.rst
+M       doc/source/users_guide/create-a-case.rst
+M       doc/source/users_guide/index.rst
+M       doc/source/users_guide/introduction-and-overview.rst
+M       doc/source/users_guide/pes-threads.rst
+M       doc/source/users_guide/running-a-case.rst
+M       doc/source/users_guide/setting-up-a-case.rst
+M       doc/source/users_guide/testing.rst
+M       scripts/Tools/Makefile
+M       scripts/Tools/preview_run
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/XML/env_batch.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/case/case_submit.py
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/lib/CIME/test_scheduler.py
+M       scripts/lib/CIME/test_status.py
+M       scripts/lib/CIME/tests/SystemTests/test_system_tests_compare_two.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/build_scripts/buildlib.csm_share
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 6-5-2018
+Tag: cime_cesm2_0_rel_04
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Remove a "this is a test" line.
+    - Module updates for theta and edison
+    - Update PyCECT tool to v3.0.7
+    - Improvements to addmetadata script.
+    - More doc updates.
+    - Check options in config sections main and create_test and make sure each is supported. 
+    - Remove entries duplicated in components.
+    - Add half degree grid.
+    - Allow space after string in namelist.
+    - Fix issues with mpi-serial build.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+1da3a1d Merge pull request #2638 from billsacks/fix_doc
+e2fd6fa Merge pull request #2637 from ESMCI/fischer/machines_update
+db6080f Merge pull request #2634 from ESMCI/fischer/pyCECT
+87648e4 Merge pull request #2632 from ESMCI/fischer/addmetadata
+84ffa89 Merge pull request #2628 from ESMCI/mvertens/more_doc_updates
+827272e Merge pull request #2626 from jedwards4b/config_sanity
+3fd63b6 Merge pull request #2625 from jedwards4b/config_archive_update
+d3073e9 Merge pull request #2624 from jedwards4b/new_half_degree
+0e6c7a7 allow space after string in namelists
+30d0879 Merge pull request #2623 from jedwards4b/mpi_serial_bugfix
+
+
+Modified files: git diff --name-status [previous_tag]
+M	config/cesm/config_archive.xml
+M	config/cesm/config_files.xml
+M	config/cesm/config_grids.xml
+M	config/cesm/machines/config_machines.xml
+M	doc/source/users_guide/create-a-case.rst
+M	doc/source/users_guide/pes-threads.rst
+M	doc/source/users_guide/timers.rst
+M	doc/source/users_guide/workflows.rst
+M	scripts/create_newcase
+M	scripts/create_test
+M	scripts/lib/CIME/XML/machines.py
+M	scripts/lib/CIME/compare_namelists.py
+M	scripts/lib/CIME/utils.py
+M	scripts/tests/scripts_regression_tests.py
+M	src/externals/pio1/pio/box_rearrange.F90.in
+M	src/externals/pio1/pio/pio_support.F90
+M	src/externals/pio1/pio/piolib_mod.F90
+M	tools/statistical_ensemble_test/addmetadata.sh
+A	tools/statistical_ensemble_test/pyCECT/.gitignore
+A	tools/statistical_ensemble_test/pyCECT/EET.py
+M	tools/statistical_ensemble_test/pyCECT/LICENSE.txt
+M	tools/statistical_ensemble_test/pyCECT/README_pyCECT.rst
+M	tools/statistical_ensemble_test/pyCECT/README_pyEnsSum.rst
+M	tools/statistical_ensemble_test/pyCECT/ens_excluded_varlist.json
+A	tools/statistical_ensemble_test/pyCECT/ens_sub.pbs
+M	tools/statistical_ensemble_test/pyCECT/ens_sub.sh
+A	tools/statistical_ensemble_test/pyCECT/exclude_empty.json
+A	tools/statistical_ensemble_test/pyCECT/included_varlist.json
+M	tools/statistical_ensemble_test/pyCECT/pyCECT.py
+M	tools/statistical_ensemble_test/pyCECT/pyEnsLib.py
+M	tools/statistical_ensemble_test/pyCECT/pyEnsSum.py
+M	tools/statistical_ensemble_test/pyCECT/pyEnsSumPop.py
+
+======================================================================
+
+======================================================================
+
 Originator: Chris Fischer
 Date: 5-22-2018
 Tag: cime_cesm2_0_rel_03
