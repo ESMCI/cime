@@ -8,6 +8,7 @@
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
+#include <sys/time.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
@@ -16,7 +17,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_darray"
+#define TEST_NAME "test_perf1"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -68,7 +69,7 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param pio_type the type of the data.
  * @returns 0 for success, error code otherwise.
  */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
+int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 int pio_type)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
@@ -302,26 +303,40 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     char filename[NC_MAX_NAME + 1];
     int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
+    long long delta;
     int ret; /* Return code. */
 
     for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
     {
-        /* This will be our file name for writing out decompositions. */
+       struct timeval starttime, endtime;
+       long long startt, endt;
+
+       /* This will be our file name for writing out decompositions. */
         sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
                 *flavor, pio_type[t]);
+
+        /* Start the clock. */
+        gettimeofday(&starttime, NULL);
 
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
                                            &ioid, pio_type[t])))
             return ret;
 
-        /* Run a simple darray test. */
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t])))
+        /* Run a simple performance test. */
+        if ((ret = test_perf1(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t])))
             return ret;
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
             ERR(ret);
+        gettimeofday(&endtime, NULL);
+
+        /* Compute the time delta */
+        startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+        endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+        delta = endt - startt;
+        printf("time: %lld\n", delta);
     }
 
     return PIO_NOERR;
