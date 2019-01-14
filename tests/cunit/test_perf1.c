@@ -25,9 +25,8 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
-/* The number of dimensions in the example data. In this test, we
- * are using three-dimensional data. */
-#define NDIM 3
+#define NDIM3 3
+#define NDIM4 4
 
 /* But sometimes we need arrays of the non-record dimensions. */
 #define NDIM2 2
@@ -35,6 +34,7 @@
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 4
 #define Y_DIM_LEN 4
+#define Z_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
@@ -51,10 +51,10 @@
 #define NUM_TEST_CASES_FILLVALUE 2
 
 /* The dimension names. */
-char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
+char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
 
 /* Length of the dimensions in the sample data. */
-int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
+int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 
 /**
  * Test the darray functionality. Create a netCDF file with 3
@@ -73,7 +73,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 int pio_type)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int dimids[NDIM];      /* The dimension IDs. */
+    int dimids[NDIM4];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
     int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
@@ -145,17 +145,17 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                     ERR(ret);
 
                 /* Define netCDF dimensions and variable. */
-                for (int d = 0; d < NDIM; d++)
+                for (int d = 0; d < NDIM4; d++)
                     if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                         ERR(ret);
 
                 /* Define a variable. */
-                if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
+                if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM3, dimids, &varid)))
                     ERR(ret);
 
                 /* Define a variable with a different type. */
                 int other_type = pio_type == PIO_INT ? PIO_FLOAT : PIO_INT;
-                if ((ret = PIOc_def_var(ncid, VAR_NAME2, other_type, NDIM, dimids, &varid2)))
+                if ((ret = PIOc_def_var(ncid, VAR_NAME2, other_type, NDIM3, dimids, &varid2)))
                     ERR(ret);
 
                 /* End define mode. */
