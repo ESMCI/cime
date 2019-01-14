@@ -295,8 +295,8 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise.
  */
-int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    MPI_Comm test_comm)
+int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
+                  MPI_Comm test_comm)
 {
 #define NUM_TYPES_TO_TEST 3
     int ioid;
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
                 return ret;
 
             /* Run tests. */
-            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm)))
+            if ((ret = run_benchmark(iosysid, num_flavors, flavor, my_rank, test_comm)))
                 return ret;
 
             /* Finalize PIO system. */
