@@ -25,11 +25,10 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
+/* Ranks of different arrays. */
+#define NDIM2 2
 #define NDIM3 3
 #define NDIM4 4
-
-/* But sometimes we need arrays of the non-record dimensions. */
-#define NDIM2 2
 
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 4
@@ -38,6 +37,9 @@
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
+
+/* The number of 4D vars. */
+#define NUM_VARS 2
 
 /* The names of variables in the netCDF output files. */
 #define VAR_NAME "Billy-Bob"
@@ -70,7 +72,7 @@ int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
  * @returns 0 for success, error code otherwise.
  */
 int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                int pio_type)
+               int pio_type)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
@@ -308,10 +310,10 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
 
     for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
     {
-       struct timeval starttime, endtime;
-       long long startt, endt;
+        struct timeval starttime, endtime;
+        long long startt, endt;
 
-       /* This will be our file name for writing out decompositions. */
+        /* This will be our file name for writing out decompositions. */
         sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
                 *flavor, pio_type[t]);
 
@@ -342,6 +344,47 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
     return PIO_NOERR;
 }
 
+/**
+ * Create the test file. This is only run on task 0 and uses
+ * straight-up netCDF. */
+int
+create_test_file(int my_rank)
+{
+    int ncid;
+    char test_file_name[NC_MAX_NAME + 1];
+    int dimids[NDIM4];
+    int varids[NUM_VARS];
+    char var_name[NC_MAX_NAME + 1];
+    int d, v;
+    int ret;
+
+    if (my_rank)
+        return ERR_WRONG;
+
+    /* Create the file. */
+    sprintf(test_file_name, "test_input_%s.nc", TEST_NAME);
+    if ((ret = nc_create(test_file_name, NC_CLOBBER, &ncid)))
+        ERR(ret);
+
+    /* Define dimensions. */
+    for (d = 0; d < NDIM4; d++)
+        if ((ret = nc_def_dim(ncid, dim_name[d], dim_len[d], &dimids[d])))
+            ERR(ret);
+
+    /* Define vars. */
+    for (v = 0; v < NUM_VARS; v++)
+    {
+        sprintf(var_name, "var_%d", v);
+        if ((ret = nc_def_var(ncid, var_name, NC_DOUBLE, NDIM3, dimids, &varids[v])))
+            ERR(ret);
+    }
+
+    /* Close the file. */
+    if ((ret = nc_close(ncid)))
+        ERR(ret);
+    return PIO_NOERR;
+}
+
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
@@ -361,6 +404,11 @@ int main(int argc, char **argv)
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
+
+    /* Create a test file. */
+    if (!my_rank)
+        if ((ret = create_test_file(my_rank)))
+            ERR(ERR_INIT);
 
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
