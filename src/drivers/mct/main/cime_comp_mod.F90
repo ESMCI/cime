@@ -2635,6 +2635,17 @@ contains
        endif
 
        !----------------------------------------------------------
+       !| ATM/OCN SETUP (misomip)
+       !----------------------------------------------------------
+       ! The following maps to the ocean, computes atm/ocn fluxes, merges to the ocean,
+       ! accumulates ocn input and computes ocean albedos
+       if (ocn_present) then
+          if (trim(cpl_seq_option) == 'MISOMIP') then
+             call cime_run_atmocn_setup(hashint)
+          end if
+       endif
+
+       !----------------------------------------------------------
        !| OCN SETUP-SEND (misomip)
        !----------------------------------------------------------
        if (ocn_present .and. ocnrun_alarm) then
@@ -3524,6 +3535,7 @@ contains
     ! ocn average
     !----------------------------------------------------
     if (iamin_CPLID .and. ocn_prognostic) then
+
        call cime_comp_barriers(mpicom=mpicom_CPLID, timer='CPL:OCNPREP_BARRIER')
        call t_drvstartf ('CPL:OCNPREP',cplrun=.true.,barrier=mpicom_CPLID)
        if (drv_threading) call seq_comm_setnthreads(nthreads_CPLID)
