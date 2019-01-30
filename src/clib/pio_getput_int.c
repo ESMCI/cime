@@ -896,6 +896,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     char count_present = count ? true : false;    /* Is count non-NULL? */
     char stride_present = stride ? true : false;  /* Is stride non-NULL? */
     nc_type vartype;   /* The type of the var we are reading from. */
+    PIO_Offset *fake_stride;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;          /* Return code from function calls. */
 
@@ -1065,7 +1066,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             else
             {
                 /* This is not a scalar var. */
-                PIO_Offset *fake_stride;
                 var_desc_t *vdesc;
                 int *request;
 
