@@ -157,7 +157,7 @@ MODULE seq_infodata_mod
      logical                 :: histaux_a2x24hr ! cpl writes aux hist files: a2x daily all
      logical                 :: histaux_l2x1yrg ! cpl writes aux hist files: l2x annual glc forcings
      logical                 :: histaux_l2x     ! cpl writes aux hist files: l2x every c2l comm
-     logical                 :: histaux_r2x     ! cpl writes aux hist files: r2x every c2o comm
+     logical                 :: histaux_r2x     ! cpl writes aux hist files: r2x daily
      logical                 :: histaux_double_precision ! if true, use double-precision for cpl aux hist files
      logical                 :: histavg_atm     ! cpl writes atm fields in average history file
      logical                 :: histavg_lnd     ! cpl writes lnd fields in average history file
@@ -397,7 +397,7 @@ CONTAINS
     logical                :: histaux_a2x24hr    ! cpl writes aux hist files: a2x daily all
     logical                :: histaux_l2x1yrg    ! cpl writes aux hist files: l2x annual glc forcings
     logical                :: histaux_l2x        ! cpl writes aux hist files: l2x every c2l comm
-    logical                :: histaux_r2x        ! cpl writes aux hist files: r2x every c2o comm
+    logical                :: histaux_r2x        ! cpl writes aux hist files: r2x daily
     logical                :: histaux_double_precision ! if true, use double-precision for cpl aux hist files
     logical                :: histavg_atm        ! cpl writes atm fields in average history file
     logical                :: histavg_lnd        ! cpl writes lnd fields in average history file
@@ -421,7 +421,7 @@ CONTAINS
     ! if reprosum_diffmax is exceeded
     logical                :: mct_usealltoall    ! flag for mct alltoall
     logical                :: mct_usevector      ! flag for mct vector
-    real(shr_kind_r8) :: max_cplstep_time  ! abort if cplstep time exceeds this value
+    real(shr_kind_r8)      :: max_cplstep_time   ! abort if cplstep time exceeds this value
     character(SHR_KIND_CL) :: model_doi_url
 
     namelist /seq_infodata_inparm/  &
@@ -432,9 +432,9 @@ CONTAINS
          restart_pfile, restart_file, run_barriers,        &
          single_column, scmlat, force_stop_at,             &
          scmlon, logFilePostFix, outPathRoot, flux_diurnal,&
-         flux_scheme, alb_cosz_avg,                        & !+tht options for COARE fluxes and avg cosz albedos
          coldair_outbreak_mod, &
          flux_convergence, flux_max_iteration, gust_fac   ,&
+         flux_scheme, alb_cosz_avg,                        & !+tht options for COARE fluxes and avg cosz albedos
          perpetual, perpetual_ymd, flux_epbal, flux_albav, &
          orb_iyear_align, orb_mode, wall_time_limit,       &
          orb_iyear, orb_obliq, orb_eccen, orb_mvelp,       &
@@ -1407,6 +1407,7 @@ CONTAINS
     end if
     if ( present(max_cplstep_time) ) max_cplstep_time = infodata%max_cplstep_time
     if ( present(model_doi_url) ) model_doi_url = infodata%model_doi_url
+
     if ( present(glc_valid_input)) glc_valid_input = infodata%glc_valid_input
 
   END SUBROUTINE seq_infodata_GetData_explicit
@@ -1557,7 +1558,7 @@ CONTAINS
        budget_ann, budget_ltann, budget_ltend ,                           &
        histaux_a2x    , histaux_a2x1hri, histaux_a2x1hr,                  &
        histaux_a2x3hr, histaux_a2x3hrp , histaux_l2x1yrg,                 &
-       histaux_a2x24hr, histaux_l2x   , histaux_r2x     , histaux_double_precision, &
+       histaux_a2x24hr, histaux_l2x   , histaux_r2x     , histaux_double_precision,  &
        orb_obliq, histavg_atm, histavg_lnd, histavg_ocn, histavg_ice,     &
        histavg_rof, histavg_glc, histavg_wav, histavg_xao,                &
        orb_iyear, orb_iyear_align, orb_mode, orb_mvelp,        &
@@ -2340,6 +2341,7 @@ CONTAINS
     call shr_mpi_bcast(infodata%glc_g2lupdate,           mpicom)
     call shr_mpi_bcast(infodata%glc_valid_input,         mpicom)
     call shr_mpi_bcast(infodata%model_doi_url,           mpicom)
+
     call seq_infodata_pauseresume_bcast(infodata,        mpicom)
 
   end subroutine seq_infodata_bcast

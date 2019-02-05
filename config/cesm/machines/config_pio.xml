@@ -141,6 +141,7 @@
   </entry>
   -->
 
+  <!--djlo activated this, and add netdcdf-->
   <!--- uncomment and fill in relevant sections
   <entry id="LND_PIO_TYPENAME">
     <values>
@@ -148,6 +149,7 @@
     </values>
   </entry>
   -->
+  <!--djlo-->
 
   <!--- uncomment and fill in relevant sections
   <entry id="ROF_PIO_STRIDE">
