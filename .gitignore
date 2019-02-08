@@ -1,5 +1,6 @@
 .project
 html/
+docs/
 *~
 \#*\#
 *.o
