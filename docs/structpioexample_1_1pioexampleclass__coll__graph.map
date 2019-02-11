@@ -1,0 +1,6 @@
+<map id="pioexample::pioexampleclass" name="pioexample::pioexampleclass">
+<area shape="rect" id="node2" href="$structpio__types_1_1io__desc__t.html" title="An io descriptor handle that is generated in PIO_initdecomp (see pio_types) " alt="" coords="253,5,396,32"/>
+<area shape="rect" id="node3" href="$structpio__types_1_1file__desc__t.html" title="File descriptor returned by PIO_openfile or PIO_createfile (see pio_types) " alt="" coords="250,119,399,145"/>
+<area shape="rect" id="node4" href="$structpio__types_1_1iosystem__desc__t.html" title="A defined PIO system descriptor created by PIO_init (see pio_types) " alt="" coords="5,74,144,115"/>
+<area shape="rect" id="node5" href="$structpio__types_1_1var__desc__t.html" title="A variable descriptor returned from PIO_def_var (see pio_types) " alt="" coords="249,169,400,196"/>
+</map>
