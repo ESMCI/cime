@@ -148,19 +148,12 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                                          fvp_int)))
                 ERR(ret);
 
-            /* This should not work, since the type of the var is
-             * PIO_FLOAT, and the type of the decomposition is
-             * PIO_INT. */
-//            if (PIOc_write_darray(ncid, varid[2], ioid, arraylen, test_data_float,
-//                                  fvp_float) != PIO_EINVAL)
-//                ERR(ERR_WRONG);
-
-            /* This should also fail, because it mixes an int and a
-             * float. */
-//            int frame[NUM_VAR] = {0, 0, 0};
-//            if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
-//                                        frame, NULL, 0) != PIO_EINVAL)
-//                ERR(ERR_WRONG);
+            /* This should work since an int and a
+             * float are the same size. */
+	    int frame[NUM_VAR] = {0, 0, 0};
+            if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
+                                        frame, NULL, 0) != PIO_EINVAL)
+                ERR(ret);
 
 
             /* Close the netCDF file. */

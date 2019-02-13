@@ -1213,7 +1213,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 }
             }
 
-#ifdef LOGGING
+#ifdef PIO_ENABLE_LOGGING
             for (int i = 1; i < ndims; i++)
                 LOG((3, "start[%d] %d count[%d] %d", i, start[i], i, count[i]));
 #endif /* LOGGING */
