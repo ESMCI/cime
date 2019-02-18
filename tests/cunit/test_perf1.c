@@ -291,47 +291,6 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
     return PIO_NOERR;
 }
 
-/**
- * Create the test file. This is only run on task 0 and uses
- * straight-up netCDF. */
-int
-create_test_file(int my_rank)
-{
-    int ncid;
-    char test_file_name[NC_MAX_NAME + 1];
-    int dimids[NDIM4];
-    int varids[NUM_VARS];
-    char var_name[NC_MAX_NAME + 1];
-    int d, v;
-    int ret;
-
-    if (my_rank)
-        return ERR_WRONG;
-
-    /* Create the file. */
-    sprintf(test_file_name, "test_input_%s.nc", TEST_NAME);
-    if ((ret = nc_create(test_file_name, NC_CLOBBER, &ncid)))
-        ERR(ret);
-
-    /* Define dimensions. */
-    for (d = 0; d < NDIM4; d++)
-        if ((ret = nc_def_dim(ncid, dim_name[d], dim_len[d], &dimids[d])))
-            ERR(ret);
-
-    /* Define vars. */
-    for (v = 0; v < NUM_VARS; v++)
-    {
-        sprintf(var_name, "var_%d", v);
-        if ((ret = nc_def_var(ncid, var_name, NC_DOUBLE, NDIM3, dimids, &varids[v])))
-            ERR(ret);
-    }
-
-    /* Close the file. */
-    if ((ret = nc_close(ncid)))
-        ERR(ret);
-    return PIO_NOERR;
-}
-
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
@@ -351,11 +310,6 @@ int main(int argc, char **argv)
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
-
-    /* Create a test file. */
-    if (!my_rank)
-        if ((ret = create_test_file(my_rank)))
-            ERR(ERR_INIT);
 
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
