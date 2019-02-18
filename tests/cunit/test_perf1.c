@@ -146,18 +146,13 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
                     ERR(ret);
 
-                /* Define netCDF dimensions and variable. */
+                /* Define netCDF dimensions. */
                 for (int d = 0; d < NDIM4; d++)
                     if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                         ERR(ret);
 
                 /* Define a variable. */
                 if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM3, dimids, &varid)))
-                    ERR(ret);
-
-                /* Define a variable with a different type. */
-                int other_type = pio_type == PIO_INT ? PIO_FLOAT : PIO_INT;
-                if ((ret = PIOc_def_var(ncid, VAR_NAME2, other_type, NDIM3, dimids, &varid2)))
                     ERR(ret);
 
                 /* End define mode. */
