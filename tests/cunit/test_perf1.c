@@ -117,8 +117,8 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
             for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
             {
                 /* Create the filename. */
-                sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d_provide_fill_%d.nc", TEST_NAME,
-                        flavor[fmt], pio_type, test_multi, provide_fill);
+                sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d_provide_fill_%d.nc",
+                        TEST_NAME, flavor[fmt], pio_type, test_multi, provide_fill);
 
                 /* Select the fill value and data. */
                 switch (pio_type)
@@ -172,18 +172,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 int flushtodisk = test_multi - 1;
                 if (!test_multi)
                 {
-                    /* These should not work. */
-                    if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, fillvalue) != PIO_EINVAL)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray(ncid, TEST_VAL_42, ioid, arraylen, test_data, fillvalue) != PIO_ENOTVAR)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray(ncid, varid2, ioid, arraylen, test_data, fillvalue) != PIO_EINVAL)
-                        ERR(ERR_WRONG);
-
                     /* Write the data. */
                     if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
                         ERR(ret);
@@ -191,26 +179,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 else
                 {
                     int varid_big = NC_MAX_VARS + TEST_VAL_42;
-
-                    /* These will not work. */
-                    if (PIOc_write_darray_multi(ncid + TEST_VAL_42, &varid, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EBADID)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray_multi(ncid, NULL, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EINVAL)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray_multi(ncid, &varid, ioid + TEST_VAL_42, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EBADID)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray_multi(ncid, &varid, ioid, -1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EINVAL)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_ENOTVAR)
-                        ERR(ERR_WRONG);
-                    if (PIOc_write_darray_multi(ncid, &wrong_varid, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_ENOTVAR)
-                        ERR(ERR_WRONG);
 
                     /* Write the data with the _multi function. */
                     if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
@@ -225,14 +193,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 /* Reopen the file. */
                 if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
                     ERR(ret);
-
-                /* These should not work. */
-                if (PIOc_read_darray(ncid2 + TEST_VAL_42, varid, ioid, arraylen,
-                                     test_data_in) != PIO_EBADID)
-                    ERR(ERR_WRONG);
-                if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen,
-                                     test_data_in) != PIO_EBADID)
-                    ERR(ERR_WRONG);
 
                 /* Set the record number. */
                 if ((ret = PIOc_setframe(ncid2, varid, 0)))
@@ -288,7 +248,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
 }
 
 /**
- * Run all the tests.
+ * Run a performance benchmark.
  *
  * @param iosysid the IO system ID.
  * @param num_flavors number of available iotypes in the build.
