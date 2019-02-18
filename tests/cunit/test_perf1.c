@@ -285,10 +285,11 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
                   MPI_Comm test_comm)
 {
 #define NUM_TYPES_TO_TEST 3
-    int ioid;
+    int ioid, ioid3;
     char filename[NC_MAX_NAME + 1];
     int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
+    int dim_len_3d[NDIM3] = {Z_DIM_LEN, X_DIM_LEN, Y_DIM_LEN};
     long long delta;
     int ret; /* Return code. */
 
@@ -308,6 +309,9 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
                                            &ioid, pio_type[t])))
             return ret;
+        if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len_3d,
+                                           &ioid3, pio_type[t])))
+            return ret;
 
         /* Run a simple performance test. */
         if ((ret = test_perf1(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t])))
@@ -315,6 +319,8 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
+        if ((ret = PIOc_freedecomp(iosysid, ioid3)))
             ERR(ret);
         gettimeofday(&endtime, NULL);
 
