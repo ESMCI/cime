@@ -224,19 +224,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                     }
                 }
 
-                /* Try to write, but it won't work, because we opened file read-only. */
-                if (!test_multi)
-                {
-                    if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
-                        ERR(ERR_WRONG);
-                }
-                else
-                {
-                    if (PIOc_write_darray_multi(ncid2, &varid, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EPERM)
-                        ERR(ERR_WRONG);
-                }
-
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid2)))
                     ERR(ret);
