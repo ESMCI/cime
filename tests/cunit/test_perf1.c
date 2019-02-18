@@ -58,6 +58,48 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 
+/* Create the decomposition to divide the 4-dimensional sample data
+ * between tasks. For the purposes of decomposition we are only
+ * concerned with 3 dimensions - we ignore the unlimited dimension.
+ *
+ * @param ntasks the number of available tasks
+ * @param my_rank rank of this task.
+ * @param iosysid the IO system ID.
+ * @param dim_len_3d an array of length 3 with the dim lengths.
+ * @param ioid a pointer that gets the ID of this decomposition.
+ * @param pio_type the data type to use for the decomposition.
+ * @returns 0 for success, error code otherwise.
+ **/
+int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3d,
+                            int *ioid, int pio_type)
+{
+    PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
+    PIO_Offset *compdof;  /* The decomposition mapping. */
+    int ret;
+
+    /* How many data elements per task? */
+    elements_per_pe = dim_len_3d[0] * dim_len_3d[1] * dim_len_3d[2]/ ntasks;
+
+    /* Allocate space for the decomposition array. */
+    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+
+    /* Describe the decomposition. This is a 1-based array, so add 1! */
+    for (int i = 0; i < elements_per_pe; i++)
+        compdof[i] = my_rank * elements_per_pe + i + 1;
+
+    /* Create the PIO decomposition for this test. */
+    if ((ret = PIOc_InitDecomp(iosysid, pio_type, NDIM3, dim_len_3d, elements_per_pe,
+                               compdof, ioid, NULL, NULL, NULL)))
+        ERR(ret);
+
+
+    /* Free the mapping. */
+    free(compdof);
+
+    return 0;
+}
+
 /**
  * Test the darray functionality. Create a netCDF file with 3
  * dimensions and 1 PIO_INT variable, and use darray to write some
