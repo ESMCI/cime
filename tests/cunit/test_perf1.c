@@ -124,7 +124,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     int varid2;    /* The ID of a varable of different type. */
     int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
-    PIO_Offset arraylen = 4;
+    PIO_Offset arraylen = 16;
     void *fillvalue;
     void *test_data;
     void *test_data_in;
@@ -227,43 +227,43 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
 
-                /* Reopen the file. */
-                if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-                    ERR(ret);
+                /* /\* Reopen the file. *\/ */
+                /* if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
+                /*     ERR(ret); */
 
-                /* Set the record number. */
-                if ((ret = PIOc_setframe(ncid2, varid, 0)))
-                    ERR(ret);
+                /* /\* Set the record number. *\/ */
+                /* if ((ret = PIOc_setframe(ncid2, varid, 0))) */
+                /*     ERR(ret); */
 
-                /* Read the data. */
-                if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
-                    ERR(ret);
+                /* /\* Read the data. *\/ */
+                /* if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in))) */
+                /*     ERR(ret); */
 
-                /* Check the results. */
-                for (int f = 0; f < arraylen; f++)
-                {
-                    switch (pio_type)
-                    {
-                    case PIO_INT:
-                        if (test_data_int_in[f] != test_data_int[f])
-                            return ERR_WRONG;
-                        break;
-                    case PIO_FLOAT:
-                        if (test_data_float_in[f] != test_data_float[f])
-                            return ERR_WRONG;
-                        break;
-                    case PIO_DOUBLE:
-                        if (test_data_double_in[f] != test_data_double[f])
-                            return ERR_WRONG;
-                        break;
-                    default:
-                        ERR(ERR_WRONG);
-                    }
-                }
+                /* /\* Check the results. *\/ */
+                /* for (int f = 0; f < arraylen; f++) */
+                /* { */
+                /*     switch (pio_type) */
+                /*     { */
+                /*     case PIO_INT: */
+                /*         if (test_data_int_in[f] != test_data_int[f]) */
+                /*             return ERR_WRONG; */
+                /*         break; */
+                /*     case PIO_FLOAT: */
+                /*         if (test_data_float_in[f] != test_data_float[f]) */
+                /*             return ERR_WRONG; */
+                /*         break; */
+                /*     case PIO_DOUBLE: */
+                /*         if (test_data_double_in[f] != test_data_double[f]) */
+                /*             return ERR_WRONG; */
+                /*         break; */
+                /*     default: */
+                /*         ERR(ERR_WRONG); */
+                /*     } */
+                /* } */
 
-                /* Close the netCDF file. */
-                if ((ret = PIOc_closefile(ncid2)))
-                    ERR(ret);
+                /* /\* Close the netCDF file. *\/ */
+                /* if ((ret = PIOc_closefile(ncid2))) */
+                /*     ERR(ret); */
             } /* next fillvalue test case */
         } /* next test multi */
     } /* next iotype */
@@ -313,8 +313,9 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
                                            &ioid3, pio_type[t])))
             return ret;
 
+        /* PIOc_set_log_level(3); */
         /* Run a simple performance test. */
-        if ((ret = test_perf1(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t])))
+        if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank, pio_type[t])))
             return ret;
 
         /* Free the PIO decomposition. */
