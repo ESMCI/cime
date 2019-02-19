@@ -215,8 +215,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 }
                 else
                 {
-                    int varid_big = NC_MAX_VARS + TEST_VAL_42;
-
                     /* Write the data with the _multi function. */
                     if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
                                                        fillvalue, flushtodisk)))
@@ -227,13 +225,13 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
 
-                /* /\* Reopen the file. *\/ */
-                /* if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
-                /*     ERR(ret); */
+                /* Reopen the file. */
+                if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+                    ERR(ret);
 
-                /* /\* Set the record number. *\/ */
-                /* if ((ret = PIOc_setframe(ncid2, varid, 0))) */
-                /*     ERR(ret); */
+                /* Set the record number. */
+                if ((ret = PIOc_setframe(ncid2, varid, 0)))
+                    ERR(ret);
 
                 /* /\* Read the data. *\/ */
                 /* if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in))) */
@@ -261,9 +259,9 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 /*     } */
                 /* } */
 
-                /* /\* Close the netCDF file. *\/ */
-                /* if ((ret = PIOc_closefile(ncid2))) */
-                /*     ERR(ret); */
+                /* Close the netCDF file. */
+                if ((ret = PIOc_closefile(ncid2)))
+                    ERR(ret);
             } /* next fillvalue test case */
         } /* next test multi */
     } /* next iotype */
