@@ -36,7 +36,7 @@
 #define Z_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 1
+#define NUM_TIMESTEPS 2
 
 /* The number of 4D vars. */
 #define NUM_VARS 2
@@ -225,7 +225,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                     /* Write a timestep of data. */
                     {
                         /* Set the value of the record dimension. */
-                        if ((ret = PIOc_setframe(ncid, varid, 0)))
+                        if ((ret = PIOc_setframe(ncid, varid, t)))
                             ERR(ret);
 
                         int frame = 0;
