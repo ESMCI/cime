@@ -36,7 +36,7 @@
 #define Z_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 2
+#define NUM_TIMESTEPS 1
 
 /* The number of 4D vars. */
 #define NUM_VARS 2
@@ -97,6 +97,18 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
     /* Free the mapping. */
     free(compdof);
 
+    return 0;
+}
+
+
+/**
+ * Do some fake computation.
+ *
+ * @return 0 always.
+ */
+int
+do_some_computation()
+{
     return 0;
 }
 
@@ -185,40 +197,53 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 }
 
                 /* Create the netCDF output file. */
-                if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-                    ERR(ret);
-
-                /* Define netCDF dimensions. */
-                for (int d = 0; d < NDIM4; d++)
-                    if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                {
+                    if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
                         ERR(ret);
 
-                /* Define a variable. */
-                if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM4, dimids, &varid)))
-                    ERR(ret);
+                    /* Define netCDF dimensions. */
+                    for (int d = 0; d < NDIM4; d++)
+                        if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                            ERR(ret);
 
-                /* End define mode. */
-                if ((ret = PIOc_enddef(ncid)))
-                    ERR(ret);
+                    /* Define a variable. */
+                    if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM4, dimids, &varid)))
+                        ERR(ret);
 
-                /* Set the value of the record dimension. */
-                if ((ret = PIOc_setframe(ncid, varid, 0)))
-                    ERR(ret);
-
-                int frame = 0;
-                int flushtodisk = test_multi - 1;
-                if (!test_multi)
-                {
-                    /* Write the data. */
-                    if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
+                    /* End define mode. */
+                    if ((ret = PIOc_enddef(ncid)))
                         ERR(ret);
                 }
-                else
+
+                for (int t = 0; t < NUM_TIMESTEPS; t++)
                 {
-                    /* Write the data with the _multi function. */
-                    if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
-                                                       fillvalue, flushtodisk)))
+
+                    /* Do some fake computation. */
+                    if ((ret = do_some_computation()))
                         ERR(ret);
+
+                    /* Write a timestep of data. */
+                    {
+                        /* Set the value of the record dimension. */
+                        if ((ret = PIOc_setframe(ncid, varid, 0)))
+                            ERR(ret);
+
+                        int frame = 0;
+                        int flushtodisk = test_multi - 1;
+                        if (!test_multi)
+                        {
+                            /* Write the data. */
+                            if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
+                                ERR(ret);
+                        }
+                        else
+                        {
+                            /* Write the data with the _multi function. */
+                            if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
+                                                               fillvalue, flushtodisk)))
+                                ERR(ret);
+                        }
+                    }
                 }
 
                 /* Close the netCDF file. */
