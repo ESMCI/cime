@@ -107,8 +107,15 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
  * @return 0 always.
  */
 int
-do_some_computation()
+do_some_computation(long long int max_i)
 {
+    float a, b, c;
+    for (int i = 0; i < max_i; i++)
+    {
+        a = b * c;
+        b = a * c;
+        c = a * b;
+    }
     return 0;
 }
 
@@ -224,7 +231,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 {
 
                     /* Do some fake computation. */
-                    if ((ret = do_some_computation()))
+                    if ((ret = do_some_computation(100000)))
                         ERR(ret);
 
                     /* Write a timestep of data in each var. */
