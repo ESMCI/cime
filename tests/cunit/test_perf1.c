@@ -194,7 +194,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                         ERR(ret);
 
                 /* Define a variable. */
-                if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM3, dimids, &varid)))
+                if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM4, dimids, &varid)))
                     ERR(ret);
 
                 /* End define mode. */
@@ -233,31 +233,32 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_setframe(ncid2, varid, 0)))
                     ERR(ret);
 
-                /* /\* Read the data. *\/ */
-                /* if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in))) */
-                /*     ERR(ret); */
+                /* Read the data. */
+                /* PIOc_set_log_level(3); */
+                if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
+                    ERR(ret);
 
-                /* /\* Check the results. *\/ */
-                /* for (int f = 0; f < arraylen; f++) */
-                /* { */
-                /*     switch (pio_type) */
-                /*     { */
-                /*     case PIO_INT: */
-                /*         if (test_data_int_in[f] != test_data_int[f]) */
-                /*             return ERR_WRONG; */
-                /*         break; */
-                /*     case PIO_FLOAT: */
-                /*         if (test_data_float_in[f] != test_data_float[f]) */
-                /*             return ERR_WRONG; */
-                /*         break; */
-                /*     case PIO_DOUBLE: */
-                /*         if (test_data_double_in[f] != test_data_double[f]) */
-                /*             return ERR_WRONG; */
-                /*         break; */
-                /*     default: */
-                /*         ERR(ERR_WRONG); */
-                /*     } */
-                /* } */
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
+                {
+                    switch (pio_type)
+                    {
+                    case PIO_INT:
+                        if (test_data_int_in[f] != test_data_int[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_FLOAT:
+                        if (test_data_float_in[f] != test_data_float[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_DOUBLE:
+                        if (test_data_double_in[f] != test_data_double[f])
+                            return ERR_WRONG;
+                        break;
+                    default:
+                        ERR(ERR_WRONG);
+                    }
+                }
 
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid2)))
@@ -311,7 +312,6 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
                                            &ioid3, pio_type[t])))
             return ret;
 
-        /* PIOc_set_log_level(3); */
         /* Run a simple performance test. */
         if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank, pio_type[t])))
             return ret;
