@@ -343,9 +343,6 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
         gettimeofday(&starttime, NULL);
 
         /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
-                                           &ioid, pio_type[t])))
-            return ret;
         if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len_3d,
                                            &ioid3, pio_type[t])))
             return ret;
@@ -355,8 +352,6 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ret;
 
         /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
         if ((ret = PIOc_freedecomp(iosysid, ioid3)))
             ERR(ret);
         gettimeofday(&endtime, NULL);
