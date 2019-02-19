@@ -39,7 +39,7 @@
 #define NUM_TIMESTEPS 2
 
 /* The number of 4D vars. */
-#define NUM_VARS 2
+#define NUM_VARS 1
 
 /* The names of variables in the netCDF output files. */
 #define VAR_NAME "Billy-Bob"
@@ -132,7 +132,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     int dimids[NDIM4];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
     int ncid2;     /* The ncid of the re-opened netCDF file. */
-    int varid;     /* The ID of the netCDF varable. */
+    int varid[NUM_VARS];     /* The ID of the netCDF varable. */
     int varid2;    /* The ID of a varable of different type. */
     int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
@@ -206,9 +206,14 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                             ERR(ret);
 
-                    /* Define a variable. */
-                    if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM4, dimids, &varid)))
-                        ERR(ret);
+                    /* Define the variables. */
+                    for (int v = 0; v < NUM_VARS; v++)
+                    {
+                        char var_name[NC_MAX_NAME + 1];
+                        sprintf(var_name, "var_%d", v);
+                        if ((ret = PIOc_def_var(ncid, var_name, pio_type, NDIM4, dimids, &varid[v])))
+                            ERR(ret);
+                    }
 
                     /* End define mode. */
                     if ((ret = PIOc_enddef(ncid)))
@@ -222,10 +227,11 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                     if ((ret = do_some_computation()))
                         ERR(ret);
 
-                    /* Write a timestep of data. */
+                    /* Write a timestep of data in each var. */
+                    for (int v = 0; v < NUM_VARS; v++)
                     {
                         /* Set the value of the record dimension. */
-                        if ((ret = PIOc_setframe(ncid, varid, t)))
+                        if ((ret = PIOc_setframe(ncid, varid[v], t)))
                             ERR(ret);
 
                         int frame = 0;
@@ -233,13 +239,13 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                         if (!test_multi)
                         {
                             /* Write the data. */
-                            if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
+                            if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, fillvalue)))
                                 ERR(ret);
                         }
                         else
                         {
                             /* Write the data with the _multi function. */
-                            if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
+                            if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 1, arraylen, test_data, &frame,
                                                                fillvalue, flushtodisk)))
                                 ERR(ret);
                         }
@@ -255,12 +261,12 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                     ERR(ret);
 
                 /* Set the record number. */
-                if ((ret = PIOc_setframe(ncid2, varid, 0)))
+                if ((ret = PIOc_setframe(ncid2, varid[0], 0)))
                     ERR(ret);
 
                 /* Read the data. */
                 /* PIOc_set_log_level(3); */
-                if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
+                if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
                     ERR(ret);
 
                 /* Check the results. */
