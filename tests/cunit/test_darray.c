@@ -202,10 +202,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                         ERR(ERR_WRONG);
 
 		    /* This should work - library type conversion */
-		    if (other_type && (ret = PIOc_write_darray(ncid, varid2, ioid, arraylen, test_data, ofillvalue))){
-			printf("other_type %d ret %d fillvalue %x\n",other_type, ret, fillvalue);
+		    if (other_type && (ret = PIOc_write_darray(ncid, varid2, ioid, arraylen, test_data, ofillvalue)))
                         ERR(ret);
-		    }
+
                     /* Write the data. */
                     if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
                         ERR(ret);
