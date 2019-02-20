@@ -129,7 +129,7 @@ do_some_computation(long long int max_i)
  * @returns 0 for success, error code otherwise.
  */
 int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-               int pio_type, int fmt)
+               int pio_type, int fmt, int test_multi)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
@@ -162,7 +162,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
 
     /* Add a couple of extra tests for the
      * PIOc_write_darray_multi() function. */
-    for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d.nc",
@@ -256,8 +255,9 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
         /* Compute the time delta */
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-        delta = endt - startt;
-        printf("%lld\t%s\n", delta, filename);
+        delta = (endt - startt)/NUM_TIMESTEPS;
+        printf("fmt\tpio_type\ttest_multi\ttime\tfilename\n");
+        printf("%d\t%d\t%d\t%lld\t%s\n", fmt, pio_type, test_multi, delta, filename);
 
         /* Reopen the file. */
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
@@ -340,9 +340,12 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* Run a simple performance test. */
         for (int fmt = 0; fmt < num_flavors; fmt++)
         {
-            if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
-                                  pio_type[t], fmt)))
-                return ret;
+            for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
+            {
+                if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
+                                      pio_type[t], fmt, test_multi)))
+                    return ret;
+            }
         }
 
         /* Free the PIO decomposition. */
