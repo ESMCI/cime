@@ -48,10 +48,6 @@
 /* Test cases relating to PIOc_write_darray_multi(). */
 #define NUM_TEST_CASES_WRT_MULTI 3
 
-/* Test with and without specifying a fill value to
- * PIOc_write_darray(). */
-#define NUM_TEST_CASES_FILLVALUE 2
-
 /* The dimension names. */
 char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
 
@@ -149,16 +145,12 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     struct timeval starttime, endtime;
     long long startt, endt;
     long long delta;
-    void *fillvalue;
     void *test_data;
     void *test_data_in;
-    int fillvalue_int = NC_FILL_INT;
     int test_data_int[arraylen];
     int test_data_int_in[arraylen];
-    float fillvalue_float = NC_FILL_FLOAT;
     float test_data_float[arraylen];
     float test_data_float_in[arraylen];
-    double fillvalue_double = NC_FILL_DOUBLE;
     double test_data_double[arraylen];
     double test_data_double_in[arraylen];
 
@@ -179,28 +171,23 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
          * PIOc_write_darray_multi() function. */
         for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
         {
-            /* Test with/without providing a fill value to PIOc_write_darray(). */
-            for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
             {
                 /* Create the filename. */
-                sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d_provide_fill_%d.nc",
-                        TEST_NAME, flavor[fmt], pio_type, test_multi, provide_fill);
+                sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d.nc",
+                        TEST_NAME, flavor[fmt], pio_type, test_multi);
 
                 /* Select the fill value and data. */
                 switch (pio_type)
                 {
                 case PIO_INT:
-                    fillvalue = provide_fill ? &fillvalue_int : NULL;
                     test_data = test_data_int;
                     test_data_in = test_data_int_in;
                     break;
                 case PIO_FLOAT:
-                    fillvalue = provide_fill ? &fillvalue_float : NULL;
                     test_data = test_data_float;
                     test_data_in = test_data_float_in;
                     break;
                 case PIO_DOUBLE:
-                    fillvalue = provide_fill ? &fillvalue_double : NULL;
                     test_data = test_data_double;
                     test_data_in = test_data_double_in;
                     break;
@@ -254,14 +241,14 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                         if (!test_multi)
                         {
                             /* Write the data. */
-                            if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, fillvalue)))
+                            if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, NULL)))
                                 ERR(ret);
                         }
                         else
                         {
                             /* Write the data with the _multi function. */
                             if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 1, arraylen, test_data, &frame,
-                                                               fillvalue, flushtodisk)))
+                                                               NULL, flushtodisk)))
                                 ERR(ret);
                         }
                     }
@@ -278,7 +265,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
                 endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
                 delta = endt - startt;
-                printf("time: %lld\n", delta);
+                printf("%lld\t%s\n", delta, filename);
 
                 /* Reopen the file. */
                 if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
@@ -318,7 +305,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid2)))
                     ERR(ret);
-            } /* next fillvalue test case */
+            }
         } /* next test multi */
     } /* next iotype */
 
@@ -349,16 +336,11 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
 
     for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
     {
-        struct timeval starttime, endtime;
-        long long startt, endt;
         float time;
 
         /* This will be our file name for writing out decompositions. */
         sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
                 *flavor, pio_type[t]);
-
-        /* Start the clock. */
-        gettimeofday(&starttime, NULL);
 
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len_3d,
@@ -373,13 +355,6 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid3)))
             ERR(ret);
-        gettimeofday(&endtime, NULL);
-
-        /* Compute the time delta */
-        startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
-        endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-        delta = endt - startt;
-        printf("time: %lld\n", delta);
     }
 
     return PIO_NOERR;
