@@ -146,6 +146,9 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 16;
+    struct timeval starttime, endtime;
+    long long startt, endt;
+    long long delta;
     void *fillvalue;
     void *test_data;
     void *test_data_in;
@@ -229,6 +232,9 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                         ERR(ret);
                 }
 
+                /* Start the clock. */
+                gettimeofday(&starttime, NULL);
+
                 for (int t = 0; t < NUM_TIMESTEPS; t++)
                 {
 
@@ -264,6 +270,15 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
+
+                /* Stop the clock. */
+                gettimeofday(&endtime, NULL);
+
+                /* Compute the time delta */
+                startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+                endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+                delta = endt - startt;
+                printf("time: %lld\n", delta);
 
                 /* Reopen the file. */
                 if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
