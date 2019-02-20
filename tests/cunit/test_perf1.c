@@ -130,10 +130,12 @@ do_some_computation(long long int max_i)
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
  * @param pio_type the type of the data.
+ * @param time point to float that gets write time per timestep in
+ * seconds.
  * @returns 0 for success, error code otherwise.
  */
 int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-               int pio_type)
+               int pio_type, float *time)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
@@ -334,6 +336,7 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
     {
         struct timeval starttime, endtime;
         long long startt, endt;
+        float time;
 
         /* This will be our file name for writing out decompositions. */
         sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
@@ -348,7 +351,8 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ret;
 
         /* Run a simple performance test. */
-        if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank, pio_type[t])))
+        if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
+                              pio_type[t], &time)))
             return ret;
 
         /* Free the PIO decomposition. */
