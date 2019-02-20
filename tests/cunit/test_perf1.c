@@ -129,7 +129,7 @@ do_some_computation(long long int max_i)
  * @returns 0 for success, error code otherwise.
  */
 int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-               int pio_type)
+               int pio_type, int fmt)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
@@ -160,150 +160,144 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
         test_data_double[f] = my_rank * 100000 + f + 0.5;
     }
 
-    /* Use PIO to create the example file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    /* Add a couple of extra tests for the
+     * PIOc_write_darray_multi() function. */
+    for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
     {
+        /* Create the filename. */
+        sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d.nc",
+                TEST_NAME, flavor[fmt], pio_type, test_multi);
 
-        /* Add a couple of extra tests for the
-         * PIOc_write_darray_multi() function. */
-        for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
+        /* Select the fill value and data. */
+        switch (pio_type)
         {
-            /* Create the filename. */
-            sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d.nc",
-                    TEST_NAME, flavor[fmt], pio_type, test_multi);
+        case PIO_INT:
+            test_data = test_data_int;
+            test_data_in = test_data_int_in;
+            break;
+        case PIO_FLOAT:
+            test_data = test_data_float;
+            test_data_in = test_data_float_in;
+            break;
+        case PIO_DOUBLE:
+            test_data = test_data_double;
+            test_data_in = test_data_double_in;
+            break;
+        default:
+            ERR(ERR_WRONG);
+        }
 
-            /* Select the fill value and data. */
+        /* Create the netCDF output file. */
+        {
+            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+                ERR(ret);
+
+            /* Define netCDF dimensions. */
+            for (int d = 0; d < NDIM4; d++)
+                if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                    ERR(ret);
+
+            /* Define the variables. */
+            for (int v = 0; v < NUM_VARS; v++)
+            {
+                char var_name[NC_MAX_NAME + 1];
+                sprintf(var_name, "var_%d", v);
+                if ((ret = PIOc_def_var(ncid, var_name, pio_type, NDIM4, dimids, &varid[v])))
+                    ERR(ret);
+            }
+
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
+        }
+
+        /* Start the clock. */
+        gettimeofday(&starttime, NULL);
+
+        for (int t = 0; t < NUM_TIMESTEPS; t++)
+        {
+
+            /* Do some fake computation. */
+            if ((ret = do_some_computation(100000)))
+                ERR(ret);
+
+            /* Write a timestep of data in each var. */
+            for (int v = 0; v < NUM_VARS; v++)
+            {
+                /* Set the value of the record dimension. */
+                if ((ret = PIOc_setframe(ncid, varid[v], t)))
+                    ERR(ret);
+
+                int frame = 0;
+                int flushtodisk = test_multi - 1;
+                if (!test_multi)
+                {
+                    /* Write the data. */
+                    if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, NULL)))
+                        ERR(ret);
+                }
+                else
+                {
+                    /* Write the data with the _multi function. */
+                    if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 1, arraylen, test_data, &frame,
+                                                       NULL, flushtodisk)))
+                        ERR(ret);
+                }
+            }
+        }
+
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Stop the clock. */
+        gettimeofday(&endtime, NULL);
+
+        /* Compute the time delta */
+        startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+        endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+        delta = endt - startt;
+        printf("%lld\t%s\n", delta, filename);
+
+        /* Reopen the file. */
+        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+            ERR(ret);
+
+        /* Set the record number. */
+        if ((ret = PIOc_setframe(ncid2, varid[0], 0)))
+            ERR(ret);
+
+        /* Read the data. */
+        /* PIOc_set_log_level(3); */
+        if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
+            ERR(ret);
+
+        /* Check the results. */
+        for (int f = 0; f < arraylen; f++)
+        {
             switch (pio_type)
             {
             case PIO_INT:
-                test_data = test_data_int;
-                test_data_in = test_data_int_in;
+                if (test_data_int_in[f] != test_data_int[f])
+                    return ERR_WRONG;
                 break;
             case PIO_FLOAT:
-                test_data = test_data_float;
-                test_data_in = test_data_float_in;
+                if (test_data_float_in[f] != test_data_float[f])
+                    return ERR_WRONG;
                 break;
             case PIO_DOUBLE:
-                test_data = test_data_double;
-                test_data_in = test_data_double_in;
+                if (test_data_double_in[f] != test_data_double[f])
+                    return ERR_WRONG;
                 break;
             default:
                 ERR(ERR_WRONG);
             }
+        }
 
-            /* Create the netCDF output file. */
-            {
-                if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-                    ERR(ret);
-
-                /* Define netCDF dimensions. */
-                for (int d = 0; d < NDIM4; d++)
-                    if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                        ERR(ret);
-
-                /* Define the variables. */
-                for (int v = 0; v < NUM_VARS; v++)
-                {
-                    char var_name[NC_MAX_NAME + 1];
-                    sprintf(var_name, "var_%d", v);
-                    if ((ret = PIOc_def_var(ncid, var_name, pio_type, NDIM4, dimids, &varid[v])))
-                        ERR(ret);
-                }
-
-                /* End define mode. */
-                if ((ret = PIOc_enddef(ncid)))
-                    ERR(ret);
-            }
-
-            /* Start the clock. */
-            gettimeofday(&starttime, NULL);
-
-            for (int t = 0; t < NUM_TIMESTEPS; t++)
-            {
-
-                /* Do some fake computation. */
-                if ((ret = do_some_computation(100000)))
-                    ERR(ret);
-
-                /* Write a timestep of data in each var. */
-                for (int v = 0; v < NUM_VARS; v++)
-                {
-                    /* Set the value of the record dimension. */
-                    if ((ret = PIOc_setframe(ncid, varid[v], t)))
-                        ERR(ret);
-
-                    int frame = 0;
-                    int flushtodisk = test_multi - 1;
-                    if (!test_multi)
-                    {
-                        /* Write the data. */
-                        if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, NULL)))
-                            ERR(ret);
-                    }
-                    else
-                    {
-                        /* Write the data with the _multi function. */
-                        if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 1, arraylen, test_data, &frame,
-                                                           NULL, flushtodisk)))
-                            ERR(ret);
-                    }
-                }
-            }
-
-            /* Close the netCDF file. */
-            if ((ret = PIOc_closefile(ncid)))
-                ERR(ret);
-
-            /* Stop the clock. */
-            gettimeofday(&endtime, NULL);
-
-            /* Compute the time delta */
-            startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
-            endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-            delta = endt - startt;
-            printf("%lld\t%s\n", delta, filename);
-
-            /* Reopen the file. */
-            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-                ERR(ret);
-
-            /* Set the record number. */
-            if ((ret = PIOc_setframe(ncid2, varid[0], 0)))
-                ERR(ret);
-
-            /* Read the data. */
-            /* PIOc_set_log_level(3); */
-            if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
-                ERR(ret);
-
-            /* Check the results. */
-            for (int f = 0; f < arraylen; f++)
-            {
-                switch (pio_type)
-                {
-                case PIO_INT:
-                    if (test_data_int_in[f] != test_data_int[f])
-                        return ERR_WRONG;
-                    break;
-                case PIO_FLOAT:
-                    if (test_data_float_in[f] != test_data_float[f])
-                        return ERR_WRONG;
-                    break;
-                case PIO_DOUBLE:
-                    if (test_data_double_in[f] != test_data_double[f])
-                        return ERR_WRONG;
-                    break;
-                default:
-                    ERR(ERR_WRONG);
-                }
-            }
-
-            /* Close the netCDF file. */
-            if ((ret = PIOc_closefile(ncid2)))
-                ERR(ret);
-        } /* next test multi */
-    } /* next iotype */
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid2)))
+            ERR(ret);
+    } /* next test multi */
 
     return PIO_NOERR;
 }
@@ -344,9 +338,12 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ret;
 
         /* Run a simple performance test. */
-        if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
-                              pio_type[t])))
-            return ret;
+        for (int fmt = 0; fmt < num_flavors; fmt++)
+        {
+            if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
+                                  pio_type[t], fmt)))
+                return ret;
+        }
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid3)))
