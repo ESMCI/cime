@@ -343,6 +343,7 @@ contains
     logical :: flds_co2a
     logical :: flds_co2b
     logical :: flds_co2c
+    logical :: flds_co2g
     logical :: flds_co2_dmsa
     logical :: flds_bgc_oi
     logical :: flds_wiso
@@ -350,7 +351,8 @@ contains
 
     namelist /seq_cplflds_inparm/  &
          flds_co2a, flds_co2b, flds_co2c, flds_co2_dmsa, flds_wiso, glc_nec, &
-         ice_ncat, seq_flds_i2o_per_cat, flds_bgc_oi, nan_check_component_fields
+         ice_ncat, seq_flds_i2o_per_cat, flds_bgc_oi, nan_check_component_fields, &
+         flds_co2g
 
     ! user specified new fields
     integer,  parameter :: nfldmax = 200
@@ -378,6 +380,7 @@ contains
        flds_co2a = .false.
        flds_co2b = .false.
        flds_co2c = .false.
+       flds_co2g = .false.
        flds_co2_dmsa = .false.
        flds_bgc_oi   = .false.
        flds_wiso = .false.
@@ -404,6 +407,7 @@ contains
     call shr_mpi_bcast(flds_co2a    , mpicom)
     call shr_mpi_bcast(flds_co2b    , mpicom)
     call shr_mpi_bcast(flds_co2c    , mpicom)
+    call shr_mpi_bcast(flds_co2g    , mpicom)
     call shr_mpi_bcast(flds_co2_dmsa, mpicom)
     call shr_mpi_bcast(flds_bgc_oi  , mpicom)
     call shr_mpi_bcast(flds_wiso    , mpicom)
@@ -1511,14 +1515,27 @@ contains
     attname  = 'So_bldepth'
     call metadata_set(attname, longname, stdname, units)
 
-    ! Melt rate
-    call seq_flds_add(o2x_fluxes,"Fogo_mr")
-    call seq_flds_add(x2g_fluxes,"Fogo_mr")
-    longname = 'Basal melt rate'
-    stdname  = 'basal_melt_rate'
-    units    = 'kg/m^2/s'
-    attname  = 'Fogo_mr'
-    call metadata_set(attname, longname, stdname, units)
+    if (trim(cime_model) == 'cesm' .and. flds_co2g) then
+
+      ! Melt rate
+      call seq_flds_add(o2x_fluxes,"Fogo_mr")
+      call seq_flds_add(x2g_fluxes,"Fogo_mr")
+      longname = 'Basal melt rate'
+      stdname  = 'basal_melt_rate'
+      units    = 'kg/m^2/s'
+      attname  = 'Fogo_mr'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Temperature at ocean vlev 10
+      call seq_flds_add(o2x_fluxes,"So_t_10")
+      call seq_flds_add(x2g_fluxes,"So_t_10")
+      longname = 'Temperature at ocean vertical level 10'
+      stdname  = 'temperature_vlev10'
+      units    = 'K'
+      attname  = 'So_t_10'
+      call metadata_set(attname, longname, stdname, units)
+
+    endif
 
     call seq_flds_add(xao_states,"So_fswpen")
     call seq_flds_add(o2x_states,"So_fswpen")
