@@ -76,6 +76,9 @@ int PIOc_strerror(int pioerr, char *errmsg)
         case PIO_EBADIOTYPE:
             strcpy(errmsg, "Bad IO type");
             break;
+	case PIO_EVARDIMMISMATCH:
+	    strcpy(errmsg, "Variable dim mismatch in multivar call");
+	    break;
         default:
             strcpy(errmsg, "Unknown Error: Unrecognized error code");
         }

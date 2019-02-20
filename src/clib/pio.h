@@ -760,6 +760,8 @@ enum PIO_ERROR_HANDLERS
 /** Define error codes for PIO. */
 #define PIO_FIRST_ERROR_CODE (-500)
 #define PIO_EBADIOTYPE  (-500)
+/** variable dimensions do not match in a multivar call */
+#define PIO_EVARDIMMISMATCH (-501)
 
 /** ??? */
 #define PIO_REQ_NULL (NC_REQ_NULL-1)

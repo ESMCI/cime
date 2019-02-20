@@ -79,7 +79,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int varid2;     /* The ID of a netCDF varable of different type. */
     int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
-    int mpi_type;
+    MPI_Datatype mpi_type;
     int type_size; /* size of a variable of type pio_type */
     int other_type; /* another variable of the same size but different type */
     PIO_Offset arraylen = 4;
@@ -231,9 +231,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame,
                                                 fillvalue, flushtodisk) != PIO_ENOTVAR)
                         ERR(ERR_WRONG);
+//		    pio_setloglevel(3);
                     if (PIOc_write_darray_multi(ncid, &wrong_varid, ioid, 1, arraylen, test_data, &frame,
                                                 fillvalue, flushtodisk) != PIO_ENOTVAR)
                         ERR(ERR_WRONG);
+//		    pio_setloglevel(0);
 
 		    /* This should work - library type conversion */
 		    if (other_type && (ret = PIOc_write_darray_multi(ncid, &varid2, ioid, 1, arraylen, test_data, &frame,

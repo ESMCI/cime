@@ -110,7 +110,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
     var_desc_t *vdesc0;    /* First entry in array of var_desc structure for each var. */
-    int fndims;            /* Number of dims in the var in the file. */
+    int fndims, fndims2;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
     void *tmparray;
@@ -162,6 +162,13 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if ((ierr = PIOc_inq_varndims(file->pio_ncid, varids[0], &fndims)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
         LOG((3, "called PIOc_inq_varndims varids[0] = %d fndims = %d", varids[0], fndims));
+	for (int v=1; v < nvars; v++){
+	    if ((ierr = PIOc_inq_varndims(file->pio_ncid, varids[v], &fndims2)))
+		return check_netcdf(file, ierr, __FILE__, __LINE__);
+	    if(fndims != fndims2)
+		return pio_err(ios, file, PIO_EVARDIMMISMATCH, __FILE__, __LINE__);
+	}
+
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
