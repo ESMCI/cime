@@ -1527,8 +1527,8 @@ contains
       call metadata_set(attname, longname, stdname, units)
 
       ! Temperature at ocean vlev 10
-      call seq_flds_add(o2x_fluxes,"So_t_10")
-      call seq_flds_add(x2g_fluxes,"So_t_10")
+      call seq_flds_add(o2x_states,"So_t_10")
+      call seq_flds_add(x2g_states,"So_t_10")
       longname = 'Temperature at ocean vertical level 10'
       stdname  = 'temperature_vlev10'
       units    = 'K'

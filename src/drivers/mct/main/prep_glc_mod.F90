@@ -69,6 +69,7 @@ module prep_glc_mod
   type(seq_map), pointer :: mapper_Sl2g
   type(seq_map), pointer :: mapper_Fl2g
   type(seq_map), pointer :: mapper_Fg2l
+  type(seq_map), pointer :: mapper_So2g
   type(seq_map), pointer :: mapper_Fo2g
 
   ! attribute vectors
@@ -90,8 +91,10 @@ module prep_glc_mod
   ! Name of flux field giving surface mass balance
   character(len=*), parameter :: qice_fieldname = 'Flgl_qice'
 
-  ! Melt rate passed from ocn
-  character(len=*), parameter :: mr_fieldname = 'Fogo_mr'
+  ! Fields passed from ocean
+  character(len=*), parameter :: fluxes_from_ocn = 'Fogo_mr'
+  character(len=*), parameter :: states_from_ocn= 'So_t_10'
+  !character(len=*), parameter :: states_from_ocn= 'So_t_10:So_t....'
 
   ! Names of some other fields
   character(len=*), parameter :: Sg_frac_field = 'Sg_ice_covered'
@@ -147,6 +150,7 @@ contains
     allocate(mapper_Sl2g)
     allocate(mapper_Fl2g)
     allocate(mapper_Fg2l)
+    allocate(mapper_So2g)
     allocate(mapper_Fo2g)
 
     smb_renormalize = prep_glc_do_renormalize_smb(infodata)
@@ -224,6 +228,9 @@ contains
              write(logunit,*) ' '
              write(logunit,F00) 'Initializing mapper_So2g'
           end if
+          call seq_map_init_rcfile(mapper_So2g, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_smapname:','ocn2glc_smaptype:',samegrid_og, &
+               'mapper_So2g initialization',esmf_map_flag)
           call seq_map_init_rcfile(mapper_Fo2g, ocn(1), glc(1), &
                'seq_maps.rc','ocn2glc_fmapname:','ocn2glc_fmaptype:',samegrid_og, &
                'mapper_Fo2g initialization',esmf_map_flag)
@@ -464,30 +471,47 @@ contains
        allocate(mrgstr(nflds))
     end if
 
-    mrgstr_index = num_state_fields ! no state field is needed for o2g comm. so passing state fields.
+    mrgstr_index = 1
+
+    do i = 1, num_state_fields
+       call seq_flds_getField(field, i, seq_flds_x2g_states)
+       if ( index(states_from_ocn,trim(field)) == 0) cycle
+
+       index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
+       index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
+
+       if (first_time) then
+          mrgstr(mrgstr_index) = subname//'x2g%'//trim(field)//' =' // &
+               ' = o2x%'//trim(field)
+       endif
+
+       do n = 1, lsize
+          x2g_g%rAttr(index_x2g,n) = o2x_g%rAttr(index_o2x,n)
+       end do
+
+       mrgstr_index = mrgstr_index + 1
+    enddo ! states from ocn
 
     do i = 1, num_flux_fields
        call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
+       if ( index(fluxes_from_ocn,trim(field)) == 0) cycle
 
-       if (trim(field) == mr_fieldname) then
-          index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
-          index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
+       index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
+       index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
 
-          if (first_time) then
-             mrgstr(mrgstr_index) = subname//'x2g%'//trim(field)//' =' // &
-                  ' = o2x%'//trim(field)
-          end if
+       if (first_time) then
+          mrgstr(mrgstr_index) = subname//'x2g%'//trim(field)//' =' // &
+               ' = o2x%'//trim(field)
+       end if
 
-          ! treat mr as if it were a state variable, with a simple copy.
-          do n = 1, lsize
-             x2g_g%rAttr(index_x2g,n) = o2x_g%rAttr(index_o2x,n)
-          end do
-
-       endif  ! mr_fieldname
+       ! treat mr as if it were a state variable, with a simple copy.
+       do n = 1, lsize
+          x2g_g%rAttr(index_x2g,n) = o2x_g%rAttr(index_o2x,n)
+       end do
 
        mrgstr_index = mrgstr_index + 1
 
-    end do
+    end do ! fluxes from ocn
 
     if (first_time) then
        if (iamroot) then
@@ -593,6 +617,8 @@ contains
 
     do i = 1, num_state_fields
        call seq_flds_getField(field, i, seq_flds_x2g_states)
+       if ( index(states_from_ocn,trim(field)) > 0) cycle
+
        index_l2x = mct_aVect_indexRA(l2x_g, trim(field))
        index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
 
@@ -610,8 +636,8 @@ contains
 
     index_lfrac = mct_aVect_indexRA(fractions_g,"lfrac")
     do i = 1, num_flux_fields
-
        call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
+       if ( index(fluxes_from_ocn,trim(field)) > 0) cycle
 
        if (trim(field) == qice_fieldname) then
           index_l2x = mct_aVect_indexRA(l2x_g, trim(field))
@@ -678,25 +704,11 @@ contains
     !---------------------------------------------------------------
 
     call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
-
-    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes))
-    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states))
-
-    do egi = 1,num_inst_glc
-       ! Use fortran mod to address ensembles in merge
-       eli = mod((egi-1),num_inst_lnd) + 1
-       efi = mod((egi-1),num_inst_frc) + 1
-
-       do field_num = 1, num_flux_fields
-         call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes)
-       enddo
-    enddo
-
     do eoi = 1,num_inst_ocn
-      o2x_ox => component_get_c2x_cx(ocn(eoi))
-      call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), fldlist="Fogo_mr")
+       o2x_ox => component_get_c2x_cx(ocn(eoi))
+       call seq_map_map(mapper_So2g, o2x_ox, o2x_gx(eoi), fldlist=states_from_ocn)
+       call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), fldlist=fluxes_from_ocn)
     enddo
-    
     call t_drvstopf  (trim(timer))
 
   end subroutine prep_glc_calc_o2x_gx
@@ -735,6 +747,7 @@ contains
 
        do field_num = 1, num_flux_fields
           call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes)
+          if ( index(fluxes_from_ocn,trim(fieldname)) > 0) cycle
 
           if (trim(fieldname) == qice_fieldname) then
 
@@ -760,6 +773,8 @@ contains
 
        do field_num = 1, num_state_fields
           call seq_flds_getField(fieldname, field_num, seq_flds_x2g_states)
+          if ( index(states_from_ocn,trim(fieldname)) > 0) cycle
+
           call prep_glc_map_one_state_field_lnd2glc(egi=egi, eli=eli, &
                fieldname = fieldname, &
                fractions_lx = fractions_lx(efi), &
