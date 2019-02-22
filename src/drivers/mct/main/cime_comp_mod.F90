@@ -4487,6 +4487,8 @@ contains
        call component_diag(infodata, ocn, flow='c2x', comment= 'recv ocn', &
             info_debug=info_debug, timer_diag='CPL:ocnpost_diagav')
 
+       if (ocn_c2_glc) call prep_glc_accum_o2g(timer='CPL:ocnpost_acco2g' )
+
        if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
        call t_drvstopf  ('CPL:OCNPOSTT',cplrun=.true.)
     endif
@@ -4653,6 +4655,8 @@ contains
           end if  ! lnd_c2_glc
 
           if (ocn_c2_glc) then
+             call prep_glc_accum_avg_o2g(timer='CPL:glcprep_avg')
+
              call prep_glc_calc_o2x_gx(fractions_ox, timer='CPL:glcprep_ocn2glc')
              call prep_glc_mrg_o2g(infodata, fractions_gx, timer_mrg='CPL:glcprep_mrgx2g')
           end if  ! ocn_c2_glc

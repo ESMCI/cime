@@ -34,7 +34,9 @@ module prep_glc_mod
   public :: prep_glc_mrg_o2g
 
   public :: prep_glc_accum
+  public :: prep_glc_accum_o2g
   public :: prep_glc_accum_avg
+  public :: prep_glc_accum_avg_o2g
 
   public :: prep_glc_calc_o2x_gx
   public :: prep_glc_calc_l2x_gx
@@ -78,7 +80,9 @@ module prep_glc_mod
 
   ! accumulation variables
   type(mct_aVect), pointer :: l2gacc_lx(:) ! Lnd export, lnd grid, cpl pes - allocated in driver
+  type(mct_aVect), pointer :: o2gacc_ox(:) ! Ocn export, ocn grid, cpl pes - allocated in driver
   integer        , target :: l2gacc_lx_cnt ! l2gacc_lx: number of time samples accumulated
+  integer        , target :: o2gacc_ox_cnt ! o2gacc_ox: number of time samples accumulated
 
   ! other module variables
   integer :: mpicom_CPLID  ! MPI cpl communicator
@@ -92,8 +96,10 @@ module prep_glc_mod
   character(len=*), parameter :: qice_fieldname = 'Flgl_qice'
 
   ! Fields passed from ocean
-  character(len=*), parameter :: fluxes_from_ocn = 'Fogo_mr'
   character(len=*), parameter :: states_from_ocn= 'So_t_10'
+  character(len=*), parameter :: fluxes_from_ocn = 'Fogo_mr'
+  character(len=*), parameter :: seq_flds_o2x_fields_to_glc = &
+                                  'So_t_10:Fogo_mr'
   !character(len=*), parameter :: states_from_ocn= 'So_t_10:So_t....'
 
   ! Names of some other fields
@@ -126,6 +132,7 @@ contains
     integer                          :: eli, eoi
     integer                          :: lsize_l
     integer                          :: lsize_g
+    integer                          :: lsize_o
     logical                          :: samegrid_lg   ! samegrid land and glc
     logical                          :: samegrid_og   ! samegrid ocn and glc
     logical                          :: esmf_map_flag ! .true. => use esmf for mapping
@@ -136,6 +143,7 @@ contains
     character(CL)                    :: glc_gnam      ! glc grid
     type(mct_avect), pointer         :: l2x_lx
     type(mct_avect), pointer         :: x2g_gx
+    type(mct_avect), pointer         :: o2x_ox
     character(*), parameter          :: subname = '(prep_glc_init)'
     character(*), parameter          :: F00 = "('"//subname//" : ', 4A )"
     !---------------------------------------------------------------
@@ -218,11 +226,19 @@ contains
           samegrid_og = .true.
           if (trim(ocn_gnam) /= trim(glc_gnam)) samegrid_og = .false.
 
+          o2x_ox => component_get_c2x_cx(ocn(1))
+          lsize_o = mct_aVect_lsize(o2x_ox)
+
           allocate(o2x_gx(num_inst_ocn))
+          allocate(o2gacc_ox(num_inst_lnd))
           do eoi = 1, num_inst_ocn
             call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
             call mct_aVect_zero(o2x_gx(eoi))
+
+            call mct_aVect_init(o2gacc_ox(eoi), rList=seq_flds_o2x_fields_to_glc, lsize=lsize_o)
+            call mct_aVect_zero(o2gacc_ox(eoi))
           enddo
+          o2gacc_ox_cnt = 0
 
           if (iamroot_CPLID) then
              write(logunit,*) ' '
@@ -331,6 +347,36 @@ contains
 
   end subroutine prep_glc_set_g2x_lx_fields
 
+  !================================================================================================
+
+  subroutine prep_glc_accum_o2g(timer)
+
+    !---------------------------------------------------------------
+    ! Description
+    ! Accumulate o2g inputs
+    !
+    ! Arguments
+    character(len=*), intent(in) :: timer
+    !
+    ! Local Variables
+    integer :: eoi
+    type(mct_avect), pointer :: o2x_ox
+    character(*), parameter :: subname = '(prep_glc_accum_o2g)'
+    !---------------------------------------------------------------
+
+    call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
+    do eoi = 1,num_inst_ocn
+       o2x_ox => component_get_c2x_cx(ocn(eoi))
+       if (o2gacc_ox_cnt == 0) then
+          call mct_avect_copy(o2x_ox, o2gacc_ox(eoi))
+       else
+          call mct_avect_accum(o2x_ox, o2gacc_ox(eoi))
+       endif
+    end do
+    o2gacc_ox_cnt = o2gacc_ox_cnt + 1
+    call t_drvstopf  (trim(timer))
+
+  end subroutine prep_glc_accum_o2g
 
   !================================================================================================
 
@@ -362,6 +408,33 @@ contains
     call t_drvstopf  (trim(timer))
 
   end subroutine prep_glc_accum
+
+  !================================================================================================
+
+  subroutine prep_glc_accum_avg_o2g(timer)
+
+    !---------------------------------------------------------------
+    ! Description
+    ! Finalize accumulation of glc inputs
+    !
+    ! Arguments
+    character(len=*), intent(in) :: timer
+    !
+    ! Local Variables
+    integer :: eoi
+    character(*), parameter :: subname = '(prep_glc_accum_avg_o2g)'
+    !---------------------------------------------------------------
+
+    call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
+    if (o2gacc_ox_cnt > 1) then
+       do eoi = 1,num_inst_ocn
+          call mct_avect_avg(o2gacc_ox(eoi), o2gacc_ox_cnt)
+       end do
+    end if
+    o2gacc_ox_cnt = 0
+    call t_drvstopf  (trim(timer))
+
+  end subroutine prep_glc_accum_avg_o2g
 
   !================================================================================================
 
@@ -450,7 +523,7 @@ contains
     logical, save :: first_time = .true.
     character(CL),allocatable :: mrgstr(:)   ! temporary string
     character(CL) :: field   ! string converted to char
-    character(*), parameter   :: subname = '(prep_glc_merge) '
+    character(*), parameter   :: subname = '(prep_glc_merge_o2g) '
 
     !-----------------------------------------------------------------------
 
@@ -706,8 +779,8 @@ contains
     call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
     do eoi = 1,num_inst_ocn
        o2x_ox => component_get_c2x_cx(ocn(eoi))
-       call seq_map_map(mapper_So2g, o2x_ox, o2x_gx(eoi), fldlist=states_from_ocn)
-       call seq_map_map(mapper_Fo2g, o2x_ox, o2x_gx(eoi), fldlist=fluxes_from_ocn)
+       call seq_map_map(mapper_So2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=states_from_ocn)
+       call seq_map_map(mapper_Fo2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=fluxes_from_ocn)
     enddo
     call t_drvstopf  (trim(timer))
 
