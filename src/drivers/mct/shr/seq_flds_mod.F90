@@ -1537,6 +1537,10 @@ contains
       attname  = 'Fogo_mr'
       call metadata_set(attname, longname, stdname, units)
 
+      ! Temperature at surface
+      call seq_flds_add(x2g_states,"So_t")
+      call seq_flds_add(x2g_states_from_ocn,"So_t")
+
       ! Temperature at ocean vlev 10
       call seq_flds_add(o2x_states,"So_t_10")
       call seq_flds_add(x2g_states,"So_t_10")

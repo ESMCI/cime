@@ -336,6 +336,23 @@
     </desc>
   </entry>
 
+  <entry id="OCN2GLC_10_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocn level 10</desc>
+  </entry>
+
+  <entry id="OCN2GLC_10_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocm level 10 decomp type</desc>
+  </entry>
+
   <entry id="ROF_NCPL">
     <type>integer</type>
     <default_value>8</default_value>
