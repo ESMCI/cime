@@ -146,7 +146,7 @@
       via the coupler.
     </desc>
     <values>
-      <value>.false.</value>
+      <value>$OCN_C2_GLC</value>
     </values>
   </entry>
 

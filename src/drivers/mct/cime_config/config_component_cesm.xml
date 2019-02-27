@@ -326,6 +326,16 @@
     </desc>
   </entry>
 
+  <entry id="OCN_C2_GLC">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_coupling</group>
+    <file>env_run.xml</file>
+    <desc>Flag to turn on ocn-glc two-way coupling. This is currently experimental
+    </desc>
+  </entry>
+
   <entry id="ROF_NCPL">
     <type>integer</type>
     <default_value>8</default_value>
