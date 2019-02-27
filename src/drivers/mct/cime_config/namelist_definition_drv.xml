@@ -3451,6 +3451,7 @@
       <value bfbflag="on">X</value> <!-- AA TODO: confirm this-->
     </values>
   </entry>
+
   <entry id="ocn2glc_10_smapname"    modify_via_xml="OCN2GLC_10_SMAPNAME">
     <type>char</type>
     <category>mapping</category>
@@ -3481,6 +3482,155 @@
     </values>
   </entry>
 
+  <entry id="ocn2glc_19_smapname"    modify_via_xml="OCN2GLC_19_SMAPNAME">
+    <type>char</type>
+    <category>mapping</category>
+    <input_pathname>abs</input_pathname>
+    <group>seq_maps</group>
+    <desc>
+      ocn to glc mapping file for states at ocn level 19
+    </desc>
+    <values>
+      <value>$OCN2GLC_19_SMAPNAME</value>
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_19_smaptype"    modify_via_xml="OCN2GLC_19_SMAPTYPE">
+    <type>char</type>
+    <category>mapping</category>
+    <group>seq_maps</group>
+    <desc>
+      The type of mapping desired, either "source" or "destination" mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    </desc>
+    <values>
+      <value>$OCN2GLC_19_SMAPTYPE</value>
+      <value bfbflag="on">X</value> <!-- AA TODO: confirm this-->
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_26_smapname"    modify_via_xml="OCN2GLC_26_SMAPNAME">
+    <type>char</type>
+    <category>mapping</category>
+    <input_pathname>abs</input_pathname>
+    <group>seq_maps</group>
+    <desc>
+      ocn to glc mapping file for states at ocn level 26
+    </desc>
+    <values>
+      <value>$OCN2GLC_26_SMAPNAME</value>
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_26_smaptype"    modify_via_xml="OCN2GLC_26_SMAPTYPE">
+    <type>char</type>
+    <category>mapping</category>
+    <group>seq_maps</group>
+    <desc>
+      The type of mapping desired, either "source" or "destination" mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    </desc>
+    <values>
+      <value>$OCN2GLC_26_SMAPTYPE</value>
+      <value bfbflag="on">X</value> <!-- AA TODO: confirm this-->
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_30_smapname"    modify_via_xml="OCN2GLC_30_SMAPNAME">
+    <type>char</type>
+    <category>mapping</category>
+    <input_pathname>abs</input_pathname>
+    <group>seq_maps</group>
+    <desc>
+      ocn to glc mapping file for states at ocn level 30
+    </desc>
+    <values>
+      <value>$OCN2GLC_30_SMAPNAME</value>
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_30_smaptype"    modify_via_xml="OCN2GLC_30_SMAPTYPE">
+    <type>char</type>
+    <category>mapping</category>
+    <group>seq_maps</group>
+    <desc>
+      The type of mapping desired, either "source" or "destination" mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    </desc>
+    <values>
+      <value>$OCN2GLC_30_SMAPTYPE</value>
+      <value bfbflag="on">X</value> <!-- AA TODO: confirm this-->
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_33_smapname"    modify_via_xml="OCN2GLC_33_SMAPNAME">
+    <type>char</type>
+    <category>mapping</category>
+    <input_pathname>abs</input_pathname>
+    <group>seq_maps</group>
+    <desc>
+      ocn to glc mapping file for states at ocn level 33
+    </desc>
+    <values>
+      <value>$OCN2GLC_33_SMAPNAME</value>
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_33_smaptype"    modify_via_xml="OCN2GLC_33_SMAPTYPE">
+    <type>char</type>
+    <category>mapping</category>
+    <group>seq_maps</group>
+    <desc>
+      The type of mapping desired, either "source" or "destination" mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    </desc>
+    <values>
+      <value>$OCN2GLC_33_SMAPTYPE</value>
+      <value bfbflag="on">X</value> <!-- AA TODO: confirm this-->
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_35_smapname"    modify_via_xml="OCN2GLC_35_SMAPNAME">
+    <type>char</type>
+    <category>mapping</category>
+    <input_pathname>abs</input_pathname>
+    <group>seq_maps</group>
+    <desc>
+      ocn to glc mapping file for states at ocn level 35
+    </desc>
+    <values>
+      <value>$OCN2GLC_35_SMAPNAME</value>
+    </values>
+  </entry>
+
+  <entry id="ocn2glc_35_smaptype"    modify_via_xml="OCN2GLC_35_SMAPTYPE">
+    <type>char</type>
+    <category>mapping</category>
+    <group>seq_maps</group>
+    <desc>
+      The type of mapping desired, either "source" or "destination" mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    </desc>
+    <values>
+      <value>$OCN2GLC_35_SMAPTYPE</value>
+      <value bfbflag="on">X</value> <!-- AA TODO: confirm this-->
+    </values>
+  </entry>
 
 
   <entry id="atm2ice_fmapname"    modify_via_xml="ATM2ICE_FMAPNAME">

@@ -1551,6 +1551,120 @@ contains
       attname  = 'So_t_10'
       call metadata_set(attname, longname, stdname, units)
 
+      ! Temperature at ocean vlev 19
+      call seq_flds_add(o2x_states,"So_t_19")
+      call seq_flds_add(x2g_states,"So_t_19")
+      call seq_flds_add(x2g_states_from_ocn,"So_t_19")
+      longname = 'Temperature at ocean vertical level 19'
+      stdname  = 'temperature_vlev19'
+      units    = 'K'
+      attname  = 'So_t_19'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Temperature at ocean vlev 26
+      call seq_flds_add(o2x_states,"So_t_26")
+      call seq_flds_add(x2g_states,"So_t_26")
+      call seq_flds_add(x2g_states_from_ocn,"So_t_26")
+      longname = 'Temperature at ocean vertical level 26'
+      stdname  = 'temperature_vlev26'
+      units    = 'K'
+      attname  = 'So_t_26'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Temperature at ocean vlev 30
+      call seq_flds_add(o2x_states,"So_t_30")
+      call seq_flds_add(x2g_states,"So_t_30")
+      call seq_flds_add(x2g_states_from_ocn,"So_t_30")
+      longname = 'Temperature at ocean vertical level 30'
+      stdname  = 'temperature_vlev30'
+      units    = 'K'
+      attname  = 'So_t_30'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Temperature at ocean vlev 33
+      call seq_flds_add(o2x_states,"So_t_33")
+      call seq_flds_add(x2g_states,"So_t_33")
+      call seq_flds_add(x2g_states_from_ocn,"So_t_33")
+      longname = 'Temperature at ocean vertical level 33'
+      stdname  = 'temperature_vlev33'
+      units    = 'K'
+      attname  = 'So_t_33'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Temperature at ocean vlev 35
+      call seq_flds_add(o2x_states,"So_t_35")
+      call seq_flds_add(x2g_states,"So_t_35")
+      call seq_flds_add(x2g_states_from_ocn,"So_t_35")
+      longname = 'Temperature at ocean vertical level 35'
+      stdname  = 'temperature_vlev35'
+      units    = 'K'
+      attname  = 'So_t_35'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Sea surface  salinity
+      call seq_flds_add(x2g_states,"So_s")
+      call seq_flds_add(x2g_states_from_ocn,"So_s")
+
+      ! Sea surface  salinity
+      call seq_flds_add(o2x_states,"So_s_10")
+      call seq_flds_add(x2g_states,"So_s_10")
+      call seq_flds_add(x2g_states_from_ocn,"So_s_10")
+      longname = 'Salinity at ocean vertical level 10'
+      stdname  = 'salinity_vlev10'
+      units    = 'g kg-1'
+      attname  = 'So_s'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Sea surface  salinity
+      call seq_flds_add(o2x_states,"So_s_19")
+      call seq_flds_add(x2g_states,"So_s_19")
+      call seq_flds_add(x2g_states_from_ocn,"So_s_19")
+      longname = 'Salinity at ocean vertical level 19'
+      stdname  = 'salinity_vlev19'
+      units    = 'g kg-1'
+      attname  = 'So_s'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Sea surface  salinity
+      call seq_flds_add(o2x_states,"So_s_26")
+      call seq_flds_add(x2g_states,"So_s_26")
+      call seq_flds_add(x2g_states_from_ocn,"So_s_26")
+      longname = 'Salinity at ocean vertical level 26'
+      stdname  = 'salinity_vlev26'
+      units    = 'g kg-1'
+      attname  = 'So_s'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Sea surface  salinity
+      call seq_flds_add(o2x_states,"So_s_30")
+      call seq_flds_add(x2g_states,"So_s_30")
+      call seq_flds_add(x2g_states_from_ocn,"So_s_30")
+      longname = 'Salinity at ocean vertical level 30'
+      stdname  = 'salinity_vlev30'
+      units    = 'g kg-1'
+      attname  = 'So_s'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Sea surface  salinity
+      call seq_flds_add(o2x_states,"So_s_33")
+      call seq_flds_add(x2g_states,"So_s_33")
+      call seq_flds_add(x2g_states_from_ocn,"So_s_33")
+      longname = 'Salinity at ocean vertical level 33'
+      stdname  = 'salinity_vlev33'
+      units    = 'g kg-1'
+      attname  = 'So_s'
+      call metadata_set(attname, longname, stdname, units)
+
+      ! Sea surface  salinity
+      call seq_flds_add(o2x_states,"So_s_35")
+      call seq_flds_add(x2g_states,"So_s_35")
+      call seq_flds_add(x2g_states_from_ocn,"So_s_35")
+      longname = 'Salinity at ocean vertical level 35'
+      stdname  = 'salinity_vlev35'
+      units    = 'g kg-1'
+      attname  = 'So_s'
+      call metadata_set(attname, longname, stdname, units)
+
     endif
 
     call seq_flds_add(xao_states,"So_fswpen")

@@ -73,6 +73,11 @@ module prep_glc_mod
   type(seq_map), pointer :: mapper_Fg2l
   type(seq_map), pointer :: mapper_So2g
   type(seq_map), pointer :: mapper_So2g_10
+  type(seq_map), pointer :: mapper_So2g_19
+  type(seq_map), pointer :: mapper_So2g_26
+  type(seq_map), pointer :: mapper_So2g_30
+  type(seq_map), pointer :: mapper_So2g_33
+  type(seq_map), pointer :: mapper_So2g_35
   type(seq_map), pointer :: mapper_Fo2g
 
   ! attribute vectors
@@ -154,6 +159,11 @@ contains
     allocate(mapper_Fg2l)
     allocate(mapper_So2g)
     allocate(mapper_So2g_10)
+    allocate(mapper_So2g_19)
+    allocate(mapper_So2g_26)
+    allocate(mapper_So2g_30)
+    allocate(mapper_So2g_33)
+    allocate(mapper_So2g_35)
     allocate(mapper_Fo2g)
 
     smb_renormalize = prep_glc_do_renormalize_smb(infodata)
@@ -244,6 +254,21 @@ contains
                'mapper_So2g initialization',esmf_map_flag)
           call seq_map_init_rcfile(mapper_So2g_10, ocn(1), glc(1), &
                'seq_maps.rc','ocn2glc_10_smapname:','ocn2glc_10_smaptype:',samegrid_og, &
+               'mapper_So2g initialization',esmf_map_flag)
+          call seq_map_init_rcfile(mapper_So2g_19, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_19_smapname:','ocn2glc_19_smaptype:',samegrid_og, &
+               'mapper_So2g initialization',esmf_map_flag)
+          call seq_map_init_rcfile(mapper_So2g_26, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_26_smapname:','ocn2glc_26_smaptype:',samegrid_og, &
+               'mapper_So2g initialization',esmf_map_flag)
+          call seq_map_init_rcfile(mapper_So2g_30, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_30_smapname:','ocn2glc_30_smaptype:',samegrid_og, &
+               'mapper_So2g initialization',esmf_map_flag)
+          call seq_map_init_rcfile(mapper_So2g_33, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_33_smapname:','ocn2glc_33_smaptype:',samegrid_og, &
+               'mapper_So2g initialization',esmf_map_flag)
+          call seq_map_init_rcfile(mapper_So2g_35, ocn(1), glc(1), &
+               'seq_maps.rc','ocn2glc_35_smapname:','ocn2glc_35_smaptype:',samegrid_og, &
                'mapper_So2g initialization',esmf_map_flag)
           call seq_map_init_rcfile(mapper_Fo2g, ocn(1), glc(1), &
                'seq_maps.rc','ocn2glc_fmapname:','ocn2glc_fmaptype:',samegrid_og, &
@@ -782,6 +807,18 @@ contains
        call seq_map_map(mapper_Fo2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=seq_flds_x2g_fluxes_from_ocn)
        call seq_map_map(mapper_So2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t")
        call seq_map_map(mapper_So2g_10, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t_10")
+       call seq_map_map(mapper_So2g_19, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t_19")
+       call seq_map_map(mapper_So2g_26, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t_26")
+       call seq_map_map(mapper_So2g_30, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t_30")
+       call seq_map_map(mapper_So2g_33, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t_33")
+       call seq_map_map(mapper_So2g_35, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_t_35")
+       call seq_map_map(mapper_So2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s")
+       call seq_map_map(mapper_So2g_10, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s_10")
+       call seq_map_map(mapper_So2g_19, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s_19")
+       call seq_map_map(mapper_So2g_26, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s_26")
+       call seq_map_map(mapper_So2g_30, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s_30")
+       call seq_map_map(mapper_So2g_33, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s_33")
+       call seq_map_map(mapper_So2g_35, o2gacc_ox(eoi), o2x_gx(eoi), fldlist="So_s_35")
     enddo
     call t_drvstopf  (trim(timer))
 

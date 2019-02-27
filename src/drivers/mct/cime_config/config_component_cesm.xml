@@ -353,6 +353,91 @@
     <desc>ocn2glc state mapping file at ocm level 10 decomp type</desc>
   </entry>
 
+  <entry id="OCN2GLC_19_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocn level 19</desc>
+  </entry>
+
+  <entry id="OCN2GLC_19_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocm level 19 decomp type</desc>
+  </entry>
+
+  <entry id="OCN2GLC_26_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocn level 26</desc>
+  </entry>
+
+  <entry id="OCN2GLC_26_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocm level 26 decomp type</desc>
+  </entry>
+
+  <entry id="OCN2GLC_30_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocn level 30</desc>
+  </entry>
+
+  <entry id="OCN2GLC_30_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocm level 30 decomp type</desc>
+  </entry>
+
+  <entry id="OCN2GLC_33_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocn level 33</desc>
+  </entry>
+
+  <entry id="OCN2GLC_33_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocm level 33 decomp type</desc>
+  </entry>
+
+  <entry id="OCN2GLC_35_SMAPNAME">
+    <type>char</type>
+    <default_value>idmap</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocn level 35</desc>
+  </entry>
+
+  <entry id="OCN2GLC_35_SMAPTYPE">
+    <type>char</type>
+    <valid_values>X,Y</valid_values>
+    <default_value>Y</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>ocn2glc state mapping file at ocm level 35 decomp type</desc>
+  </entry>
+
   <entry id="ROF_NCPL">
     <type>integer</type>
     <default_value>8</default_value>
