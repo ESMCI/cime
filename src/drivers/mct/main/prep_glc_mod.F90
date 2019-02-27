@@ -95,13 +95,6 @@ module prep_glc_mod
   ! Name of flux field giving surface mass balance
   character(len=*), parameter :: qice_fieldname = 'Flgl_qice'
 
-  ! Fields passed from ocean
-  character(len=*), parameter :: states_from_ocn= 'So_t_10'
-  character(len=*), parameter :: fluxes_from_ocn = 'Fogo_mr'
-  character(len=*), parameter :: seq_flds_o2x_fields_to_glc = &
-                                  'So_t_10:Fogo_mr'
-  !character(len=*), parameter :: states_from_ocn= 'So_t_10:So_t....'
-
   ! Names of some other fields
   character(len=*), parameter :: Sg_frac_field = 'Sg_ice_covered'
   character(len=*), parameter :: Sg_topo_field = 'Sg_topo'
@@ -179,7 +172,7 @@ contains
           allocate(l2x_gx(num_inst_lnd))
           allocate(l2gacc_lx(num_inst_lnd))
           do eli = 1,num_inst_lnd
-             call mct_aVect_init(l2x_gx(eli), rList=seq_flds_x2g_fields, lsize=lsize_g)
+             call mct_aVect_init(l2x_gx(eli), rList=seq_flds_x2g_fields_from_lnd, lsize=lsize_g)
              call mct_aVect_zero(l2x_gx(eli))
 
              call mct_aVect_init(l2gacc_lx(eli), rList=seq_flds_l2x_fields_to_glc, lsize=lsize_l)
@@ -232,10 +225,10 @@ contains
           allocate(o2x_gx(num_inst_ocn))
           allocate(o2gacc_ox(num_inst_lnd))
           do eoi = 1, num_inst_ocn
-            call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_o2x_fields, lsize=lsize_g)
+            call mct_aVect_init(o2x_gx(eoi), rList=seq_flds_x2g_fields_from_ocn, lsize=lsize_g)
             call mct_aVect_zero(o2x_gx(eoi))
 
-            call mct_aVect_init(o2gacc_ox(eoi), rList=seq_flds_o2x_fields_to_glc, lsize=lsize_o)
+            call mct_aVect_init(o2gacc_ox(eoi), rList=seq_flds_x2g_fields_from_ocn, lsize=lsize_o)
             call mct_aVect_zero(o2gacc_ox(eoi))
           enddo
           o2gacc_ox_cnt = 0
@@ -530,8 +523,8 @@ contains
     call seq_comm_getdata(CPLID, iamroot=iamroot)
     lsize = mct_aVect_lsize(x2g_g)
 
-    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes))
-    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states))
+    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes_from_ocn))
+    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states_from_ocn))
 
     if (first_time) then
        nflds = mct_aVect_nRattr(x2g_g)
@@ -547,8 +540,7 @@ contains
     mrgstr_index = 1
 
     do i = 1, num_state_fields
-       call seq_flds_getField(field, i, seq_flds_x2g_states)
-       if ( index(states_from_ocn,trim(field)) == 0) cycle
+       call seq_flds_getField(field, i, seq_flds_x2g_states_from_ocn)
 
        index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
        index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
@@ -566,8 +558,7 @@ contains
     enddo ! states from ocn
 
     do i = 1, num_flux_fields
-       call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
-       if ( index(fluxes_from_ocn,trim(field)) == 0) cycle
+       call seq_flds_getField(field, i, seq_flds_x2g_fluxes_from_ocn)
 
        index_o2x = mct_aVect_indexRA(o2x_g, trim(field))
        index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
@@ -672,8 +663,8 @@ contains
     call seq_comm_getdata(CPLID, iamroot=iamroot)
     lsize = mct_aVect_lsize(x2g_g)
 
-    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes))
-    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states))
+    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes_from_lnd))
+    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states_from_lnd))
 
     if (first_time) then
        nflds = mct_aVect_nRattr(x2g_g)
@@ -689,8 +680,7 @@ contains
     mrgstr_index = 1
 
     do i = 1, num_state_fields
-       call seq_flds_getField(field, i, seq_flds_x2g_states)
-       if ( index(states_from_ocn,trim(field)) > 0) cycle
+       call seq_flds_getField(field, i, seq_flds_x2g_states_from_lnd)
 
        index_l2x = mct_aVect_indexRA(l2x_g, trim(field))
        index_x2g = mct_aVect_indexRA(x2g_g, trim(field))
@@ -709,8 +699,7 @@ contains
 
     index_lfrac = mct_aVect_indexRA(fractions_g,"lfrac")
     do i = 1, num_flux_fields
-       call seq_flds_getField(field, i, seq_flds_x2g_fluxes)
-       if ( index(fluxes_from_ocn,trim(field)) > 0) cycle
+       call seq_flds_getField(field, i, seq_flds_x2g_fluxes_from_lnd)
 
        if (trim(field) == qice_fieldname) then
           index_l2x = mct_aVect_indexRA(l2x_g, trim(field))
@@ -767,20 +756,18 @@ contains
     character(len=*), intent(in) :: timer
     !
     ! Local Variables
-    integer :: egi, eli, efi, eoi
-    integer :: num_flux_fields
-    integer :: num_state_fields
-    integer :: field_num
-    character(len=cl) :: fieldname
+    integer :: eoi
     character(*), parameter   :: subname = '(prep_glc_calc_o2x_gx)'
     type(mct_avect), pointer  :: o2x_ox
     !---------------------------------------------------------------
 
     call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
+
     do eoi = 1,num_inst_ocn
        o2x_ox => component_get_c2x_cx(ocn(eoi))
-       call seq_map_map(mapper_So2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=states_from_ocn)
-       call seq_map_map(mapper_Fo2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=fluxes_from_ocn)
+
+       call seq_map_map(mapper_Fo2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=seq_flds_x2g_fluxes_from_ocn)
+       call seq_map_map(mapper_So2g, o2gacc_ox(eoi), o2x_gx(eoi), fldlist=seq_flds_x2g_states_from_ocn)
     enddo
     call t_drvstopf  (trim(timer))
 
@@ -810,8 +797,8 @@ contains
 
     call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
 
-    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes))
-    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states))
+    num_flux_fields = shr_string_listGetNum(trim(seq_flds_x2g_fluxes_from_lnd))
+    num_state_fields = shr_string_listGetNum(trim(seq_flds_x2g_states_from_lnd))
 
     do egi = 1,num_inst_glc
        ! Use fortran mod to address ensembles in merge
@@ -819,8 +806,7 @@ contains
        efi = mod((egi-1),num_inst_frc) + 1
 
        do field_num = 1, num_flux_fields
-          call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes)
-          if ( index(fluxes_from_ocn,trim(fieldname)) > 0) cycle
+          call seq_flds_getField(fieldname, field_num, seq_flds_x2g_fluxes_from_lnd)
 
           if (trim(fieldname) == qice_fieldname) then
 
@@ -845,8 +831,7 @@ contains
        end do
 
        do field_num = 1, num_state_fields
-          call seq_flds_getField(fieldname, field_num, seq_flds_x2g_states)
-          if ( index(states_from_ocn,trim(fieldname)) > 0) cycle
+          call seq_flds_getField(fieldname, field_num, seq_flds_x2g_states_from_lnd)
 
           call prep_glc_map_one_state_field_lnd2glc(egi=egi, eli=eli, &
                fieldname = fieldname, &
