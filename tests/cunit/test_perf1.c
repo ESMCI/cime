@@ -31,9 +31,9 @@
 #define NDIM4 4
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 4
-#define Y_DIM_LEN 4
-#define Z_DIM_LEN 4
+#define X_DIM_LEN 8
+#define Y_DIM_LEN 8
+#define Z_DIM_LEN 8
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
@@ -138,7 +138,7 @@ do_some_computation(long long int max_i)
  * @returns 0 for success, error code otherwise.
  */
 int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-               int pio_type, int fmt, int test_multi, int rearranger)
+               int ntasks, int pio_type, int fmt, int test_multi, int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
@@ -148,7 +148,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     int varid2;    /* The ID of a varable of different type. */
     int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
-    PIO_Offset arraylen = 16;
+    PIO_Offset arraylen = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks;
     struct timeval starttime, endtime;
     long long startt, endt;
     long long delta;
@@ -323,7 +323,7 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
  * @param rearranger the rearranger
  * @returns 0 for success, error code otherwise.
  */
-int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
+int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank, int ntasks,
                   MPI_Comm test_comm, int rearranger, int num_types, int *pio_type)
 {
     int ioid, ioid3;
@@ -351,7 +351,7 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
         {
             for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
             {
-                if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
+                if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank, ntasks,
                                       pio_type[t], fmt, test_multi, rearranger)))
                     return ret;
             }
@@ -366,7 +366,7 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
 }
 
 int
-run_some_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavor,
+run_some_benchmarks(MPI_Comm test_comm, int my_rank, int ntasks, int num_flavors, int *flavor,
                     int num_rearr, int *rearranger, int num_types, int *pio_type)
 {
     /* Only do something on max_ntasks tasks. */
@@ -389,7 +389,7 @@ run_some_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavo
                 return ret;
 
             /* Run tests. */
-            if ((ret = run_benchmark(iosysid, num_flavors, flavor, my_rank,
+            if ((ret = run_benchmark(iosysid, num_flavors, flavor, my_rank, ntasks,
                                      test_comm, rearranger[r], num_types, pio_type)))
                 return ret;
 
@@ -427,7 +427,7 @@ int main(int argc, char **argv)
         ERR(ret);
 
     /* Run a benchmark. */
-    if ((ret = run_some_benchmarks(test_comm, my_rank, num_flavors, flavor, NUM_REARRANGERS_TO_TEST,
+    if ((ret = run_some_benchmarks(test_comm, my_rank, ntasks, num_flavors, flavor, NUM_REARRANGERS_TO_TEST,
                                    rearranger, NUM_TYPES_TO_TEST, pio_type)))
         ERR(ret);
 
