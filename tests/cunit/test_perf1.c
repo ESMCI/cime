@@ -54,6 +54,9 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 
+/* Test with two rearrangers. */
+#define NUM_REARRANGERS_TO_TEST 2
+
 /* Create the decomposition to divide the 4-dimensional sample data
  * between tasks. For the purposes of decomposition we are only
  * concerned with 3 dimensions - we ignore the unlimited dimension.
@@ -126,10 +129,13 @@ do_some_computation(long long int max_i)
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
  * @param pio_type the type of the data.
+ * @param fmt indicates the IOtype.
+ * @param test_multi true for testing muti-var darray write.
+ * @param rearranger the rearranger
  * @returns 0 for success, error code otherwise.
  */
 int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-               int pio_type, int fmt, int test_multi)
+               int pio_type, int fmt, int test_multi, int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
@@ -256,8 +262,9 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
         delta = (endt - startt)/NUM_TIMESTEPS;
-        printf("fmt\tpio_type\ttest_multi\ttime\tfilename\n");
-        printf("%d\t%d\t%d\t%lld\t%s\n", fmt, pio_type, test_multi, delta, filename);
+        if (!my_rank)
+            printf("%d\t%d\t%d\t%d\t%lld\n", rearranger, fmt, pio_type, test_multi,
+                   delta);
 
         /* Reopen the file. */
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
@@ -310,10 +317,11 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
  * @param test_comm the communicator the test is running on.
+ * @param rearranger the rearranger
  * @returns 0 for success, error code otherwise.
  */
 int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
-                  MPI_Comm test_comm)
+                  MPI_Comm test_comm, int rearranger)
 {
 #define NUM_TYPES_TO_TEST 3
     int ioid, ioid3;
@@ -343,7 +351,7 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
             for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
             {
                 if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank,
-                                      pio_type[t], fmt, test_multi)))
+                                      pio_type[t], fmt, test_multi, rearranger)))
                     return ret;
             }
         }
@@ -356,10 +364,45 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
     return PIO_NOERR;
 }
 
+int
+run_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavor,
+               int num_rearr, int *rearranger)
+{
+    /* Only do something on max_ntasks tasks. */
+    if (my_rank < TARGET_NTASKS)
+    {
+        int iosysid;  /* The ID for the parallel I/O system. */
+        int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
+        int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+        int ret;      /* Return code. */
+
+        if (!my_rank)
+            printf("rearr\tfmt\tpio_type\ttest_multi\ttime\n");
+        for (int r = 0; r < num_rearr; r++)
+        {
+            /* Initialize the PIO IO system. This specifies how
+             * many and which processors are involved in I/O. */
+            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
+                                           ioproc_start, rearranger[r], &iosysid)))
+                return ret;
+
+            /* Run tests. */
+            if ((ret = run_benchmark(iosysid, num_flavors, flavor, my_rank,
+                                     test_comm, rearranger[r])))
+                return ret;
+
+            /* Finalize PIO system. */
+            if ((ret = PIOc_finalize(iosysid)))
+                return ret;
+        } /* next rearranger */
+    } /* endif my_rank < TARGET_NTASKS */
+
+    return PIO_NOERR;
+}
+
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
-#define NUM_REARRANGERS_TO_TEST 2
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
     int my_rank;
     int ntasks;
@@ -376,35 +419,14 @@ int main(int argc, char **argv)
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
-    /* Only do something on max_ntasks tasks. */
-    if (my_rank < TARGET_NTASKS)
-    {
-        int iosysid;  /* The ID for the parallel I/O system. */
-        int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-        int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int ret;      /* Return code. */
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+        ERR(ret);
 
-        /* Figure out iotypes. */
-        if ((ret = get_iotypes(&num_flavors, flavor)))
-            ERR(ret);
-
-        for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
-        {
-            /* Initialize the PIO IO system. This specifies how
-             * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
-                                           ioproc_start, rearranger[r], &iosysid)))
-                return ret;
-
-            /* Run tests. */
-            if ((ret = run_benchmark(iosysid, num_flavors, flavor, my_rank, test_comm)))
-                return ret;
-
-            /* Finalize PIO system. */
-            if ((ret = PIOc_finalize(iosysid)))
-                return ret;
-        } /* next rearranger */
-    } /* endif my_rank < TARGET_NTASKS */
+    /* Run a benchmark. */
+    if ((ret = run_benchmarks(test_comm, my_rank, num_flavors, flavor, NUM_REARRANGERS_TO_TEST,
+                              rearranger)))
+        ERR(ret);
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
