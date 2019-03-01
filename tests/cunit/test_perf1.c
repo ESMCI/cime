@@ -365,8 +365,8 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
 }
 
 int
-run_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavor,
-               int num_rearr, int *rearranger)
+run_some_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavor,
+                    int num_rearr, int *rearranger)
 {
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
@@ -424,8 +424,8 @@ int main(int argc, char **argv)
         ERR(ret);
 
     /* Run a benchmark. */
-    if ((ret = run_benchmarks(test_comm, my_rank, num_flavors, flavor, NUM_REARRANGERS_TO_TEST,
-                              rearranger)))
+    if ((ret = run_some_benchmarks(test_comm, my_rank, num_flavors, flavor, NUM_REARRANGERS_TO_TEST,
+                                   rearranger)))
         ERR(ret);
 
     /* Finalize the MPI library. */
