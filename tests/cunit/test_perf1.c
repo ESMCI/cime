@@ -57,6 +57,9 @@ int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 /* Test with two rearrangers. */
 #define NUM_REARRANGERS_TO_TEST 2
 
+/* Test with several types. */
+#define NUM_TYPES_TO_TEST 3
+
 /* Create the decomposition to divide the 4-dimensional sample data
  * between tasks. For the purposes of decomposition we are only
  * concerned with 3 dimensions - we ignore the unlimited dimension.
@@ -321,18 +324,16 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
  * @returns 0 for success, error code otherwise.
  */
 int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
-                  MPI_Comm test_comm, int rearranger)
+                  MPI_Comm test_comm, int rearranger, int num_types, int *pio_type)
 {
-#define NUM_TYPES_TO_TEST 3
     int ioid, ioid3;
     char filename[NC_MAX_NAME + 1];
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int dim_len_3d[NDIM3] = {Z_DIM_LEN, X_DIM_LEN, Y_DIM_LEN};
     long long delta;
     int ret; /* Return code. */
 
-    for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
+    for (int t = 0; t < num_types; t++)
     {
         float time;
 
@@ -366,7 +367,7 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank,
 
 int
 run_some_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavor,
-                    int num_rearr, int *rearranger)
+                    int num_rearr, int *rearranger, int num_types, int *pio_type)
 {
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
@@ -380,6 +381,7 @@ run_some_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavo
             printf("rearr\tfmt\tpio_type\ttest_multi\ttime\n");
         for (int r = 0; r < num_rearr; r++)
         {
+
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
             if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
@@ -388,7 +390,7 @@ run_some_benchmarks(MPI_Comm test_comm, int my_rank, int num_flavors, int *flavo
 
             /* Run tests. */
             if ((ret = run_benchmark(iosysid, num_flavors, flavor, my_rank,
-                                     test_comm, rearranger[r])))
+                                     test_comm, rearranger[r], num_types, pio_type)))
                 return ret;
 
             /* Finalize PIO system. */
@@ -408,6 +410,7 @@ int main(int argc, char **argv)
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     MPI_Comm test_comm; /* A communicator for this test. */
     int ret;         /* Return code. */
 
@@ -425,7 +428,7 @@ int main(int argc, char **argv)
 
     /* Run a benchmark. */
     if ((ret = run_some_benchmarks(test_comm, my_rank, num_flavors, flavor, NUM_REARRANGERS_TO_TEST,
-                                   rearranger)))
+                                   rearranger, NUM_TYPES_TO_TEST, pio_type)))
         ERR(ret);
 
     /* Finalize the MPI library. */
