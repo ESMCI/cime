@@ -1118,6 +1118,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
 
     /* Get the IO system info. */
     ios = file->iosystem;
+    LOG((3, "pio_read_darray_nc ios->ioproc %d", ios->ioproc));
 
     /* Get the variable info. */
     if ((ierr = get_var_desc(vid, &file->varlist, &vdesc)))
@@ -1133,6 +1134,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     if(!ios->async || !ios->ioproc)
 	ierr = get_gdim0(file, iodesc, vid, fndims, &gdim0);
 #endif
+    /* LOG((4, "fndims %d ndims %d", fndims, ndims)); */
 
     /* IO procs will read the data. */
     if (ios->ioproc)

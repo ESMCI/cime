@@ -31,9 +31,9 @@
 #define NDIM4 4
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 8
-#define Y_DIM_LEN 8
-#define Z_DIM_LEN 8
+#define X_DIM_LEN 16
+#define Y_DIM_LEN 16
+#define Z_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
@@ -143,7 +143,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM4];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
-    int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid[NUM_VARS];     /* The ID of the netCDF varable. */
     int varid2;    /* The ID of a varable of different type. */
     int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
@@ -153,13 +152,9 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
     long long startt, endt;
     long long delta;
     void *test_data;
-    void *test_data_in;
     int test_data_int[arraylen];
-    int test_data_int_in[arraylen];
     float test_data_float[arraylen];
-    float test_data_float_in[arraylen];
     double test_data_double[arraylen];
-    double test_data_double_in[arraylen];
 
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
@@ -181,15 +176,12 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
         {
         case PIO_INT:
             test_data = test_data_int;
-            test_data_in = test_data_int_in;
             break;
         case PIO_FLOAT:
             test_data = test_data_float;
-            test_data_in = test_data_float_in;
             break;
         case PIO_DOUBLE:
             test_data = test_data_double;
-            test_data_in = test_data_double_in;
             break;
         default:
             ERR(ERR_WRONG);
@@ -244,13 +236,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                     if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, NULL)))
                         ERR(ret);
                 }
-                else
-                {
-                    /* Write the data with the _multi function. */
-                    if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 1, arraylen, test_data, &frame,
-                                                       NULL, flushtodisk)))
-                        ERR(ret);
-                }
             }
         }
 
@@ -268,45 +253,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
         if (!my_rank)
             printf("%d\t%d\t%d\t%d\t%lld\n", rearranger, fmt, pio_type, test_multi,
                    delta);
-
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
-
-        /* Set the record number. */
-        if ((ret = PIOc_setframe(ncid2, varid[0], 0)))
-            ERR(ret);
-
-        /* Read the data. */
-        /* PIOc_set_log_level(3); */
-        if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
-            ERR(ret);
-
-        /* Check the results. */
-        for (int f = 0; f < arraylen; f++)
-        {
-            switch (pio_type)
-            {
-            case PIO_INT:
-                if (test_data_int_in[f] != test_data_int[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_FLOAT:
-                if (test_data_float_in[f] != test_data_float[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_DOUBLE:
-                if (test_data_double_in[f] != test_data_double[f])
-                    return ERR_WRONG;
-                break;
-            default:
-                ERR(ERR_WRONG);
-            }
-        }
-
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid2)))
-            ERR(ret);
     } /* next test multi */
 
     return PIO_NOERR;
@@ -333,7 +279,8 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank, int nt
     long long delta;
     int ret; /* Return code. */
 
-    for (int t = 0; t < num_types; t++)
+    /* for (int t = 0; t < num_types; t++) */
+    for (int t = 0; t < 1; t++)
     {
         float time;
 
@@ -347,9 +294,11 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank, int nt
             return ret;
 
         /* Run a simple performance test. */
-        for (int fmt = 0; fmt < num_flavors; fmt++)
+        /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+        for (int fmt = 0; fmt < 2; fmt++)
         {
-            for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
+            /* for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++) */
+            for (int test_multi = 0; test_multi < 1; test_multi++)
             {
                 if ((ret = test_perf1(iosysid, ioid3, num_flavors, flavor, my_rank, ntasks,
                                       pio_type[t], fmt, test_multi, rearranger)))
@@ -379,7 +328,8 @@ run_some_benchmarks(MPI_Comm test_comm, int my_rank, int ntasks, int num_flavors
 
         if (!my_rank)
             printf("rearr\tfmt\tpio_type\ttest_multi\ttime\n");
-        for (int r = 0; r < num_rearr; r++)
+        /* for (int r = 0; r < num_rearr; r++) */
+        for (int r = 0; r < 1; r++)
         {
 
             /* Initialize the PIO IO system. This specifies how
@@ -402,7 +352,7 @@ run_some_benchmarks(MPI_Comm test_comm, int my_rank, int ntasks, int num_flavors
     return PIO_NOERR;
 }
 
-/* Run tests for darray functions. */
+/* Run benchmarks. */
 int main(int argc, char **argv)
 {
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
@@ -416,7 +366,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, -1, &test_comm)))
+                              MIN_NTASKS, 3, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
