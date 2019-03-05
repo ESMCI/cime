@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <string.h> /* memcpy */
 #include <mpi.h>
+#include <uthash.h>
 
 #ifdef _NETCDF
 #include <netcdf.h>
@@ -528,8 +529,9 @@ typedef struct wmulti_buffer
     /** Pointer to the data. */
     void *data;
 
-    /** Pointer to the next multi-buffer in the list. */
-    struct wmulti_buffer *next;
+  /** uthash handle for hash of buffers **/
+  int htid;
+  UT_hash_handle hh;
 } wmulti_buffer;
 
 /**
@@ -563,7 +565,7 @@ typedef struct file_desc_t
 
     /** The wmulti_buffer is used to aggregate multiple variables with
      * the same communication pattern prior to a write. */
-    struct wmulti_buffer buffer;
+    struct wmulti_buffer *buffer;
 
     /** Data buffer for this file. */
     void *iobuf;
