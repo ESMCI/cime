@@ -1259,7 +1259,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         for (int i = 0; i < ios->num_iotasks; i++)
             sendcounts[ios->ioranks[i]] = 1;
 
-        /* Determine llen, the lenght of the data array on this IO
+        /* Determine llen, the length of the data array on this IO
          * node, by multipliying the counts in the
          * iodesc->firstregion. */
         iodesc->llen = 1;

@@ -27,9 +27,6 @@ void pio_add_to_file_list(file_desc_t *file)
 
     assert(file);
 
-    /* This file will be at the end of the list, and have no next. */
-//    file->next = NULL;
-
     /* Get a pointer to the global list of files. */
     cfile = pio_file_list;
 
