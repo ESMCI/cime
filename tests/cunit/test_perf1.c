@@ -36,7 +36,7 @@
 #define Z_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 2
+#define NUM_TIMESTEPS 1
 
 /* The number of 4D vars. */
 #define NUM_VARS 1
@@ -122,9 +122,8 @@ do_some_computation(long long int max_i)
 }
 
 /**
- * Test the darray functionality. Create a netCDF file with 3
- * dimensions and 1 PIO_INT variable, and use darray to write some
- * data.
+ * Test the darray functionality. Create a netCDF file with 4
+ * dimensions and some variables, and use darray to write some data.
  *
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition.
@@ -164,96 +163,92 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
         test_data_double[f] = my_rank * 100000 + f + 0.5;
     }
 
-    /* Add a couple of extra tests for the
-     * PIOc_write_darray_multi() function. */
+    /* Create the filename. */
+    sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d.nc",
+            TEST_NAME, flavor[fmt], pio_type, test_multi);
+
+    /* Select the fill value and data. */
+    switch (pio_type)
     {
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_pio_type_%d_test_multi_%d.nc",
-                TEST_NAME, flavor[fmt], pio_type, test_multi);
+    case PIO_INT:
+        test_data = test_data_int;
+        break;
+    case PIO_FLOAT:
+        test_data = test_data_float;
+        break;
+    case PIO_DOUBLE:
+        test_data = test_data_double;
+        break;
+    default:
+        ERR(ERR_WRONG);
+    }
 
-        /* Select the fill value and data. */
-        switch (pio_type)
-        {
-        case PIO_INT:
-            test_data = test_data_int;
-            break;
-        case PIO_FLOAT:
-            test_data = test_data_float;
-            break;
-        case PIO_DOUBLE:
-            test_data = test_data_double;
-            break;
-        default:
-            ERR(ERR_WRONG);
-        }
-
-        /* Create the netCDF output file. */
-        {
-            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-                ERR(ret);
-
-            /* Define netCDF dimensions. */
-            for (int d = 0; d < NDIM4; d++)
-                if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                    ERR(ret);
-
-            /* Define the variables. */
-            for (int v = 0; v < NUM_VARS; v++)
-            {
-                char var_name[NC_MAX_NAME + 1];
-                sprintf(var_name, "var_%d", v);
-                if ((ret = PIOc_def_var(ncid, var_name, pio_type, NDIM4, dimids, &varid[v])))
-                    ERR(ret);
-            }
-
-            /* End define mode. */
-            if ((ret = PIOc_enddef(ncid)))
-                ERR(ret);
-        }
-
-        /* Start the clock. */
-        gettimeofday(&starttime, NULL);
-
-        for (int t = 0; t < NUM_TIMESTEPS; t++)
-        {
-
-            /* Do some fake computation. */
-            if ((ret = do_some_computation(100000)))
-                ERR(ret);
-
-            /* Write a timestep of data in each var. */
-            for (int v = 0; v < NUM_VARS; v++)
-            {
-                /* Set the value of the record dimension. */
-                if ((ret = PIOc_setframe(ncid, varid[v], t)))
-                    ERR(ret);
-
-                int frame = 0;
-                int flushtodisk = test_multi - 1;
-                if (!test_multi)
-                {
-                    /* Write the data. */
-                    if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, NULL)))
-                        ERR(ret);
-                }
-            }
-        }
-
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid)))
+    /* Create the netCDF output file. */
+    {
+        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             ERR(ret);
 
-        /* Stop the clock. */
-        gettimeofday(&endtime, NULL);
+        /* Define netCDF dimensions. */
+        for (int d = 0; d < NDIM4; d++)
+            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                ERR(ret);
 
-        /* Compute the time delta */
-        startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
-        endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-        delta = (endt - startt)/NUM_TIMESTEPS;
-        if (!my_rank)
-            printf("%d\t%d\t%d\t%d\t%lld\n", rearranger, fmt, pio_type, test_multi,
-                   delta);
-    } /* next test multi */
+        /* Define the variables. */
+        for (int v = 0; v < NUM_VARS; v++)
+        {
+            char var_name[NC_MAX_NAME + 1];
+            sprintf(var_name, "var_%d", v);
+            if ((ret = PIOc_def_var(ncid, var_name, pio_type, NDIM4, dimids, &varid[v])))
+                ERR(ret);
+        }
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+    }
+
+    /* Start the clock. */
+    gettimeofday(&starttime, NULL);
+
+    for (int t = 0; t < NUM_TIMESTEPS; t++)
+    {
+
+        /* Do some fake computation. */
+        if ((ret = do_some_computation(100000)))
+            ERR(ret);
+
+        /* Write a timestep of data in each var. */
+        for (int v = 0; v < NUM_VARS; v++)
+        {
+            /* Set the value of the record dimension. */
+            if ((ret = PIOc_setframe(ncid, varid[v], t)))
+                ERR(ret);
+
+            int frame = 0;
+            int flushtodisk = test_multi - 1;
+            if (!test_multi)
+            {
+                /* Write the data. */
+                if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, NULL)))
+                    ERR(ret);
+            }
+        }
+    }
+
+    /* Close the netCDF file. */
+    if ((ret = PIOc_closefile(ncid)))
+        ERR(ret);
+
+    /* Stop the clock. */
+    gettimeofday(&endtime, NULL);
+
+    /* Compute the time delta */
+    startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+    endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+    delta = (endt - startt)/NUM_TIMESTEPS;
+    if (!my_rank)
+        printf("%d\t%d\t%d\t%d\t%lld\n", rearranger, fmt, pio_type, test_multi,
+               delta);
 
     return PIO_NOERR;
 }
