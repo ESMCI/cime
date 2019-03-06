@@ -573,8 +573,7 @@ typedef struct file_desc_t
     /** PIO data type. */
     int pio_type;
 
-    /** Pointer to the next file_desc_t in the list of open files. */
-//    struct file_desc_t *next;
+    /* hash table entry */
     UT_hash_handle hh;
 
     /** True if this task should participate in IO (only true for one

@@ -96,7 +96,7 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
  */
 int pio_delete_file_from_list(int ncid)
 {
-    file_desc_t *cfile, *pfile = NULL;
+    file_desc_t *cfile = NULL;
     int ret;
 
     /* Find the file pointer. */
@@ -263,8 +263,10 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
     if (current_iodesc && current_iodesc->ioid == ioid)
 	ciodesc = current_iodesc;
     else
+    {
 	HASH_FIND_INT(pio_iodesc_list, &ioid, ciodesc);
-
+	current_iodesc = ciodesc;
+    }
     return ciodesc;
 }
 
@@ -283,6 +285,8 @@ int pio_delete_iodesc_from_list(int ioid)
     if(ciodesc)
     {
 	HASH_DEL(pio_iodesc_list, ciodesc);
+	if (current_iodesc = ciodesc)
+	    current_iodesc = pio_iodesc_list;
 	free(ciodesc);
 	return PIO_NOERR;
     }
