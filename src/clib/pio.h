@@ -145,8 +145,8 @@ typedef struct var_desc_t
     /** The size in bytes of a datum of MPI type mpitype. */
     int mpi_type_size;
 
-    /** Pointer to next var in list. */
-    struct var_desc_t *next;
+    UT_hash_handle hh;
+
 } var_desc_t;
 
 /**
@@ -381,8 +381,8 @@ typedef struct io_desc_t
      * group. */
     MPI_Comm subset_comm;
 
-    /** Pointer to the next io_desc_t in the list. */
-    struct io_desc_t *next;
+    UT_hash_handle hh;
+
 } io_desc_t;
 
 /**
@@ -574,7 +574,8 @@ typedef struct file_desc_t
     int pio_type;
 
     /** Pointer to the next file_desc_t in the list of open files. */
-    struct file_desc_t *next;
+//    struct file_desc_t *next;
+    UT_hash_handle hh;
 
     /** True if this task should participate in IO (only true for one
      * task with netcdf serial files. */

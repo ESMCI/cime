@@ -7,6 +7,7 @@
 #include <pio_internal.h>
 #include <string.h>
 #include <stdio.h>
+#include <uthash.h>
 
 static io_desc_t *pio_iodesc_list = NULL;
 static io_desc_t *current_iodesc = NULL;
@@ -27,7 +28,7 @@ void pio_add_to_file_list(file_desc_t *file)
     assert(file);
 
     /* This file will be at the end of the list, and have no next. */
-    file->next = NULL;
+//    file->next = NULL;
 
     /* Get a pointer to the global list of files. */
     cfile = pio_file_list;
@@ -37,14 +38,7 @@ void pio_add_to_file_list(file_desc_t *file)
 
     /* If there is nothing in the list, then file will be the first
      * entry. Otherwise, move to end of the list. */
-    if (!cfile)
-        pio_file_list = file;
-    else
-    {
-        while (cfile->next)
-            cfile = cfile->next;
-        cfile->next = file;
-    }
+    HASH_ADD_INT(pio_file_list, pio_ncid, file);
 }
 
 /**
@@ -72,16 +66,13 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     if (current_file && current_file->pio_ncid == ncid)
         cfile = current_file;
     else
-        for (cfile = pio_file_list; cfile; cfile = cfile->next)
-            if (cfile->pio_ncid == ncid)
-            {
-                current_file = cfile;
-                break;
-            }
+	HASH_FIND_INT(pio_file_list, &ncid, cfile);
 
     /* If not found, return error. */
     if (!cfile)
         return PIO_EBADID;
+
+    current_file = cfile;
 
     /* We depend on every file having a pointer to the iosystem. */
     if (!cfile->iosystem)
@@ -108,30 +99,28 @@ int pio_delete_file_from_list(int ncid)
     file_desc_t *cfile, *pfile = NULL;
     int ret;
 
-    /* Look through list of open files. */
-    for (cfile = pio_file_list; cfile; cfile = cfile->next)
+    /* Find the file pointer. */
+    if (current_file && current_file->pio_ncid == ncid)
+        cfile = current_file;
+    else
+	HASH_FIND_INT(pio_file_list, &ncid, cfile);
+
+    if (cfile)
     {
-        if (cfile->pio_ncid == ncid)
-        {
-            if (!pfile)
-                pio_file_list = cfile->next;
-            else
-                pfile->next = cfile->next;
+	HASH_DEL(pio_file_list, cfile);
 
-            if (current_file == cfile)
-                current_file = pfile;
+	if (current_file == cfile)
+	    current_file = pio_file_list;
 
-            /* Free the varlist entries for this file. */
-            while (cfile->varlist)
-                if ((ret = delete_var_desc(cfile->varlist->varid, &cfile->varlist)))
-                    return pio_err(NULL, cfile, ret, __FILE__, __LINE__);
+	/* Free the varlist entries for this file. */
+	while (cfile->varlist)
+	    if ((ret = delete_var_desc(cfile->varlist->varid, &cfile->varlist)))
+		return pio_err(NULL, cfile, ret, __FILE__, __LINE__);
 
-            /* Free the memory used for this file. */
-            free(cfile);
+	/* Free the memory used for this file. */
+	free(cfile);
 
-            return PIO_NOERR;
-        }
-        pfile = cfile;
+	return PIO_NOERR;
     }
 
     /* No file was found. */
@@ -256,19 +245,8 @@ int pio_num_iosystem(int *niosysid)
  */
 int pio_add_to_iodesc_list(io_desc_t *iodesc)
 {
-    io_desc_t *ciodesc;
-
-    iodesc->next = NULL;
-    if (pio_iodesc_list == NULL)
-        pio_iodesc_list = iodesc;
-    else
-    {
-        for (ciodesc = pio_iodesc_list; ciodesc->next; ciodesc = ciodesc->next)
-            ;
-        ciodesc->next = iodesc;
-    }
+    HASH_ADD_INT(pio_iodesc_list, ioid, iodesc);
     current_iodesc = iodesc;
-
     return PIO_NOERR;
 }
 
@@ -281,19 +259,11 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
  */
 io_desc_t *pio_get_iodesc_from_id(int ioid)
 {
-    io_desc_t *ciodesc = NULL;
-
-    /* Do we already have a pointer to it? */
+    io_desc_t *ciodesc=NULL;
     if (current_iodesc && current_iodesc->ioid == ioid)
-        return current_iodesc;
-
-    /* Find the decomposition in the list. */
-    for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
-        if (ciodesc->ioid == ioid)
-        {
-            current_iodesc = ciodesc;
-            break;
-        }
+	ciodesc = current_iodesc;
+    else
+	HASH_FIND_INT(pio_iodesc_list, &ioid, ciodesc);
 
     return ciodesc;
 }
@@ -307,23 +277,14 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
  */
 int pio_delete_iodesc_from_list(int ioid)
 {
-    io_desc_t *ciodesc, *piodesc = NULL;
+    io_desc_t *ciodesc = NULL;
 
-    for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
+    ciodesc = pio_get_iodesc_from_id(ioid);
+    if(ciodesc)
     {
-        if (ciodesc->ioid == ioid)
-        {
-            if (piodesc == NULL)
-                pio_iodesc_list = ciodesc->next;
-            else
-                piodesc->next = ciodesc->next;
-
-            if (current_iodesc == ciodesc)
-                current_iodesc = pio_iodesc_list;
-            free(ciodesc);
-            return PIO_NOERR;
-        }
-        piodesc = ciodesc;
+	HASH_DEL(pio_iodesc_list, ciodesc);
+	free(ciodesc);
+	return PIO_NOERR;
     }
     return PIO_EBADID;
 }
@@ -358,18 +319,7 @@ int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, MPI_
     var_desc->mpi_type_size = mpi_type_size;
     var_desc->record = -1;
 
-    /* Add to list. */
-    if (*varlist)
-    {
-        var_desc_t *v;
-
-        /* Move to end of list. */
-        for (v = *varlist; v->next; v = v->next)
-            ;
-        v->next = var_desc;
-    }
-    else
-        *varlist = var_desc;
+    HASH_ADD_INT(*varlist, varid, var_desc);
 
     return PIO_NOERR;
 }
@@ -385,7 +335,7 @@ int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, MPI_
  */
 int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
 {
-    var_desc_t *my_var;
+    var_desc_t *my_var=NULL;
 
     /* Check inputs. */
     pioassert(varlist, "invalid input", __FILE__, __LINE__);
@@ -394,10 +344,7 @@ int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
     if (!*varlist)
         return PIO_ENOTVAR;
 
-    /* Find the var_desc_t for this varid. */
-    for (my_var = *varlist; my_var; my_var = my_var->next)
-        if (my_var->varid == varid)
-            break;
+    HASH_FIND_INT( *varlist, &varid, my_var);
 
     /* Did we find it? */
     if (!my_var)
@@ -420,6 +367,7 @@ int delete_var_desc(int varid, var_desc_t **varlist)
 {
     var_desc_t *v;
     var_desc_t *prev = NULL;
+    int ret;
 
     /* Check inputs. */
     pioassert(varid >= 0 && varlist, "invalid input", __FILE__, __LINE__);
@@ -428,27 +376,10 @@ int delete_var_desc(int varid, var_desc_t **varlist)
     if (!*varlist)
         return PIO_ENOTVAR;
 
-    /* Find the var_desc_t for this varid. */
-    for (v = *varlist; v->next; v = v->next)
-    {
-        LOG((3, "v->varid = %d", v->varid));
-        if (v->varid == varid)
-            break;
-        prev = v;
-    }
+    if ((ret = get_var_desc( varid, varlist, &v)))
+	return ret;
 
-    /* Did we find it? */
-    if (v->varid != varid)
-    {
-        LOG((3, "return notvar error"));
-        return PIO_ENOTVAR;
-    }
-
-    /* Adjust next pointer. */
-    if (prev)
-        prev->next = v->next;
-    else
-        *varlist = v->next;
+    HASH_DEL(*varlist, v);
 
     /* Free memory. */
     if (v->fillvalue)
