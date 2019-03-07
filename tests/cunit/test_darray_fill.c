@@ -360,12 +360,11 @@ int main(int argc, char **argv)
 
                 } /* next type */
             } /* next fill value test case */
+
+            /* Finalize PIO iosysid. */
+            if ((ret = PIOc_finalize(iosysid)))
+                return ret;
         } /* next rearranger */
-
-        /* Finalize PIO system. */
-        if ((ret = PIOc_finalize(iosysid)))
-            return ret;
-
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
