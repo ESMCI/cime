@@ -144,11 +144,17 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
     PIO_Offset bsize;     /* Size of the block. */
     PIO_Offset bsizeg;    /* Size of gap block. */
     PIO_Offset blklensum; /* Sum of all block lengths. */
-    PIO_Offset del_arr[arrlen - 1]; /* Array of deltas between adjacent elements in arr_in. */
-    PIO_Offset loc_arr[arrlen - 1];
+    PIO_Offset *del_arr; /* Array of deltas between adjacent elements in arr_in. */
+    PIO_Offset *loc_arr;
 
     /* Check inputs. */
     pioassert(arrlen > 0 && arr_in, "invalid input", __FILE__, __LINE__);
+
+    /* Allocate arrays. */
+    if (!(loc_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
+        return PIO_ENOMEM;
+    if (!(del_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
+        return PIO_ENOMEM;
 
     /* Count the number of contiguous blocks in arr_in. If any if
        these blocks is of size 1, we are done and can return.
@@ -225,6 +231,9 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
         if (arr_in[0] > 0)
             bsize = lgcd(bsize, arr_in[0]);
     }
+
+    free(loc_arr);
+    free(del_arr);
 
     return bsize;
 }

@@ -126,9 +126,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     PIO_Offset arraylen = EXPECTED_MAPLEN;
     int int_fillvalue = NC_FILL_INT;
     void *fillvalue = NULL;
-    int test_data[arraylen];
-    int test_data2[arraylen];
-    int test_data_in[arraylen];
+    int *test_data;
+    int *test_data2;
+    int *test_data_in;
+
+    if (!(test_data = malloc(sizeof(int) * arraylen)))
+        ERR(PIO_ENOMEM);
+    if (!(test_data2 = malloc(sizeof(int) * arraylen)))
+        ERR(PIO_ENOMEM);
+    if (!(test_data_in = malloc(sizeof(int) * arraylen)))
+        ERR(PIO_ENOMEM);
 
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
@@ -146,7 +153,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
+        /* sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
+        sprintf(filename, "data__iotype_.nc");
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -223,6 +231,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_closefile(ncid2)))
             ERR(ret);
     }
+
+    free(test_data);
+    free(test_data2);
+    free(test_data_in);
+
     return PIO_NOERR;
 }
 
