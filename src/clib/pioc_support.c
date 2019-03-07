@@ -1039,7 +1039,11 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     /* Fill local array with my map. Use the fill value for unused */
     /* elements at the end if max_maplen is longer than maplen. Also
      * subtract 1 because the iodesc->map is 1-based. */
-    int my_map[max_maplen];
+    int *my_map;
+
+    if (!(my_map = malloc(sizeof(int) * max_maplen)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
     for (int e = 0; e < max_maplen; e++)
     {
         my_map[e] = e < iodesc->maplen ? iodesc->map[e] - 1 : NC_FILL_INT;
@@ -1047,9 +1051,11 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     }
 
     /* Gather my_map from all computation tasks and fill the full_map array. */
-    if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen,
+    if ((mpierr = MPI_Allgather(my_map, max_maplen, MPI_INT, full_map, max_maplen,
                                 MPI_INT, ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    free(my_map);
 
     for (int p = 0; p < ios->num_comptasks; p++)
         for (int e = 0; e < max_maplen; e++)
