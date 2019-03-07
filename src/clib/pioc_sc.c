@@ -131,7 +131,7 @@ void compute_one_dim(int gdim, int ioprocs, int rank, PIO_Offset *start,
  * @param arrlen
  * @param arr_in
  * @returns the size of the block
- * @author Jim Edwards
+ * @author Jim Edwards, Ed Hartnett
  */
 PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 {
@@ -150,6 +150,12 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
     /* Check inputs. */
     pioassert(arrlen > 0 && arr_in, "invalid input", __FILE__, __LINE__);
 
+    /* Allocate arrays. */
+    if (!(loc_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
+        return PIO_ENOMEM;
+    if (!(del_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
+        return PIO_ENOMEM;
+
     /* Count the number of contiguous blocks in arr_in. If any if
        these blocks is of size 1, we are done and can return.
        Otherwise numtimes is the number of blocks. */
@@ -160,15 +166,13 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
         {
             numtimes++;
             if ( i > 0 && del_arr[i - 1] > 1)
-                return(1);
+            {
+                free(loc_arr);
+                free(del_arr);
+                return 1;
+            }
         }
     }
-
-    /* Allocate arrays. */
-    if (!(loc_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
-        return PIO_ENOMEM;
-    if (!(del_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
-        return PIO_ENOMEM;
 
     /* If numtimes is 0 the all of the data in arr_in is contiguous
      * and numblks=1. Not sure why I have three different variables
