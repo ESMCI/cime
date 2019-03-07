@@ -1533,10 +1533,14 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
 
     /* Read the map. */
     int map_varid;
-    int map_in[num_tasks_in][max_maplen_in];
+    int *map_in;
+
+    if (!(map_in = malloc(sizeof(int) * num_tasks_in * max_maplen_in)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
     if ((ret = PIOc_inq_varid(ncid, DECOMP_MAP_VAR_NAME, &map_varid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    if ((ret = PIOc_get_var_int(ncid, map_varid, (int *)map_in)))
+    if ((ret = PIOc_get_var_int(ncid, map_varid, map_in)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     if (map)
     {
@@ -1544,8 +1548,9 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int t = 0; t < num_tasks_in; t++)
             for (int l = 0; l < max_maplen_in; l++)
-                (*map)[t * max_maplen_in + l] = map_in[t][l];
+                (*map)[t * max_maplen_in + l] = map_in[t * max_maplen_in + l];
     }
+    free(map_in);
 
     /* Close the netCDF decomp file. */
     LOG((2, "pioc_read_nc_decomp_int about to close file ncid = %d", ncid));
