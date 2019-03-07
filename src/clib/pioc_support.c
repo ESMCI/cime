@@ -1035,6 +1035,10 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     /* 2D array that will hold all the map information for all
      * tasks. */
     int full_map[ios->num_comptasks][max_maplen];
+    int *full_map1;
+
+    if (!(full_map1 = malloc(sizeof(int) * ios->num_comptasks * max_maplen)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Fill local array with my map. Use the fill value for unused */
     /* elements at the end if max_maplen is longer than maplen. Also
@@ -1051,7 +1055,7 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     }
 
     /* Gather my_map from all computation tasks and fill the full_map array. */
-    if ((mpierr = MPI_Allgather(my_map, max_maplen, MPI_INT, full_map, max_maplen,
+    if ((mpierr = MPI_Allgather(my_map, max_maplen, MPI_INT, full_map1, max_maplen,
                                 MPI_INT, ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
@@ -1059,14 +1063,15 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
 
     for (int p = 0; p < ios->num_comptasks; p++)
         for (int e = 0; e < max_maplen; e++)
-            LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
+            LOG((3, "full_map[%d][%d] = %d", p, e, full_map1[p * max_maplen + e]));
 
     /* Write the netCDF decomp file. */
     if ((ret = pioc_write_nc_decomp_int(ios, filename, cmode, iodesc->ndims, iodesc->dimlen,
-                                        ios->num_comptasks, task_maplen, (int *)full_map, title,
+                                        ios->num_comptasks, task_maplen, full_map1, title,
                                         history, fortran_order)))
         return ret;
 
+    free(full_map1);
     return PIO_NOERR;
 }
 
