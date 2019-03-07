@@ -154,7 +154,10 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
     if (!(loc_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
         return PIO_ENOMEM;
     if (!(del_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
+    {
+        free(loc_arr);
         return PIO_ENOMEM;
+    }
 
     /* Count the number of contiguous blocks in arr_in. If any if
        these blocks is of size 1, we are done and can return.

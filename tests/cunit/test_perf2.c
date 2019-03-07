@@ -133,9 +133,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     if (!(test_data = malloc(sizeof(int) * arraylen)))
         ERR(PIO_ENOMEM);
     if (!(test_data2 = malloc(sizeof(int) * arraylen)))
+    {
+        free(test_data);
         ERR(PIO_ENOMEM);
+    }
     if (!(test_data_in = malloc(sizeof(int) * arraylen)))
+    {
+        free(test_data);
+        free(test_data2);
         ERR(PIO_ENOMEM);
+    }
 
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
@@ -373,8 +380,6 @@ int main(int argc, char **argv)
 {
     int my_rank;
     int ntasks;
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
     int ret;         /* Return code. */
 
@@ -393,6 +398,8 @@ int main(int argc, char **argv)
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+        int num_flavors; /* Number of PIO netCDF flavors in this build. */
+        int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
         int ret;      /* Return code. */
 
         /* Figure out iotypes. */

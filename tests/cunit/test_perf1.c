@@ -111,9 +111,9 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
 int
 do_some_computation(long long int max_i)
 {
-    float a, b, c;
     for (int i = 0; i < max_i; i++)
     {
+        float a, b, c;
         a = b * c;
         b = a * c;
         c = a * b;
@@ -224,8 +224,6 @@ int test_perf1(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
             if ((ret = PIOc_setframe(ncid, varid[v], t)))
                 ERR(ret);
 
-            int frame = 0;
-            int flushtodisk = test_multi - 1;
             if (!test_multi)
             {
                 /* Write the data. */
@@ -269,7 +267,6 @@ int run_benchmark(int iosysid, int num_flavors, int *flavor, int my_rank, int nt
 {
     int ioid, ioid3;
     char filename[NC_MAX_NAME + 1];
-    int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int dim_len_3d[NDIM3] = {Z_DIM_LEN, X_DIM_LEN, Y_DIM_LEN};
     long long delta;
     int ret; /* Return code. */
@@ -319,13 +316,13 @@ run_some_benchmarks(MPI_Comm test_comm, int my_rank, int ntasks, int num_flavors
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int ret;      /* Return code. */
 
         if (!my_rank)
             printf("rearr\tfmt\tpio_type\ttest_multi\ttime\n");
         /* for (int r = 0; r < num_rearr; r++) */
         for (int r = 0; r < 1; r++)
         {
+            int ret;      /* Return code. */
 
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
