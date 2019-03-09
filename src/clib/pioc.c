@@ -548,7 +548,8 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 	    iodesc->map[m] = compmap[iodesc->remap[m]];
 	for (int m=1; m < maplen; m++)
 	    if (iodesc->map[m] < iodesc->map[m-1])
-		printf("%d: compmap[%d] %ld map[%d] %ld remap[%d] %d\n",ios->comp_rank, m, compmap[m], m, iodesc->map[m], m, iodesc->remap[m]);
+		printf("%d: compmap[%d] %lld map[%d] %lld remap[%d] %d\n",ios->comp_rank, m,
+                       compmap[m], m, iodesc->map[m], m, iodesc->remap[m]);
     }
     else
     {

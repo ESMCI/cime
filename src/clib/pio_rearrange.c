@@ -549,7 +549,10 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     int recv_displs[ios->num_uniontasks];
 
     /* The list of indeces on each compute task */
-    PIO_Offset s2rindex[iodesc->ndof];
+    PIO_Offset *s2rindex;
+
+    if (!(s2rindex = malloc(sizeof(PIO_Offset) * iodesc->ndof)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Allocate memory for the array of counts and init to zero. */
     if (!(iodesc->scount = calloc(ios->num_iotasks, sizeof(int))))
@@ -766,6 +769,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                           recv_counts, recv_displs, sr_types, ios->union_comm,
                           &iodesc->rearr_opts.comp2io)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+    free(s2rindex);
 
     return PIO_NOERR;
 }
@@ -1200,14 +1205,20 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
          "ios->num_iotasks = %d", maplen, ndims, ios->num_comptasks, ios->num_iotasks));
 
     /* Allocate arrays needed for this function. */
-    int dest_ioproc[maplen]; /* Destination IO task for each data element on compute task. */
-    PIO_Offset dest_ioindex[maplen];    /* Offset into IO task array for each data element. */
+    int *dest_ioproc; /* Destination IO task for each data element on compute task. */
+    PIO_Offset *dest_ioindex;    /* Offset into IO task array for each data element. */
     int sendcounts[ios->num_uniontasks]; /* Send counts for swapm call. */
     int sdispls[ios->num_uniontasks];    /* Send displacements for swapm. */
     int recvcounts[ios->num_uniontasks]; /* Receive counts for swapm. */
     int rdispls[ios->num_uniontasks];    /* Receive displacements for swapm. */
     MPI_Datatype dtypes[ios->num_uniontasks]; /* Array of MPI_OFFSET types for swapm. */
     PIO_Offset iomaplen[ios->num_iotasks];   /* Gets the llen of all IO tasks. */
+
+    /* Allocate storage. */
+    if (!(dest_ioproc = malloc(sizeof(int) * maplen)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    if (!(dest_ioindex = malloc(sizeof(PIO_Offset) * maplen)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* This is the box rearranger. */
     iodesc->rearranger = PIO_REARR_BOX;
@@ -1392,6 +1403,10 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     LOG((2, "calling compute_counts maplen = %d", maplen));
     if ((ret = compute_counts(ios, iodesc, dest_ioproc, dest_ioindex)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Free resources. */
+    free(dest_ioproc);
+    free(dest_ioindex);
 
     /* Compute the max io buffer size needed for an iodesc. */
     if (ios->ioproc)

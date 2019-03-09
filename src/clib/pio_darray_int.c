@@ -404,13 +404,15 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     /* If this is an IO task write the data. */
     if (ios->ioproc)
     {
-        int rrcnt = 0; /* Number of subarray requests (pnetcdf only). */
         void *bufptr;
         size_t start[fndims];
         size_t count[fndims];
         int ndims = iodesc->ndims;
+#ifdef _PNETCDF
+        int rrcnt = 0; /* Number of subarray requests (pnetcdf only). */
         PIO_Offset *startlist[num_regions]; /* Array of start arrays for ncmpi_iput_varn(). */
         PIO_Offset *countlist[num_regions]; /* Array of count  arrays for ncmpi_iput_varn(). */
+#endif /* _PNETCDF */
 
         /* Process each region of data to be written. */
         for (int regioncnt = 0; regioncnt < num_regions; regioncnt++)
@@ -962,8 +964,12 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                         }
                     }
 
-                    /* Call the netCDF functions to write the data. */
+#ifdef LOGGING
+                    for (int i = 1; i < fndims; i++)
+                        LOG((3, "start[%d] %d count[%d] %d", i, start[i], i, count[i]));
+#endif /* LOGGING */
 
+                    /* Call the netCDF functions to write the data. */
                     if ((ierr = nc_put_vara(file->fh, varids[nv], start, count, bufptr)))
                         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
 
@@ -1017,7 +1023,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
               varids[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "write_darray_multi_serial nvars = %d fndims = %d iodesc->ndims = %d "
-         "iodesc->mpitype = %d", nvars, iodesc->ndims, fndims, iodesc->mpitype));
+         "iodesc->mpitype = %d", nvars, fndims, iodesc->ndims, iodesc->mpitype));
 
     /* Get the iosystem info. */
     ios = file->iosystem;
@@ -1120,6 +1126,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
 
     /* Get the IO system info. */
     ios = file->iosystem;
+    LOG((3, "pio_read_darray_nc ios->ioproc %d", ios->ioproc));
 
     /* Get the variable info. */
     if ((ierr = get_var_desc(vid, &file->varlist, &vdesc)))
@@ -1135,6 +1142,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     if(!ios->async || !ios->ioproc)
 	ierr = get_gdim0(file, iodesc, vid, fndims, &gdim0);
 #endif
+    /* LOG((4, "fndims %d ndims %d", fndims, ndims)); */
 
     /* IO procs will read the data. */
     if (ios->ioproc)
