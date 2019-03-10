@@ -287,7 +287,8 @@ int main(int argc, char **argv)
             MPIERR(ret);
         MPI_Group_free(&io_group);
         if (verbose)
-            printf("my_rank %d created io comm io_comm = %d\n", my_rank, io_comm);
+            printf("my_rank %d created io comm io_comm = %lld\n", my_rank,
+                   (long long int)io_comm);
 
         /* For processes in the IO component, get their rank within the IO
          * communicator. */
@@ -321,7 +322,8 @@ int main(int argc, char **argv)
             if ((ret = MPI_Group_incl(world_group, 1, my_proc_list[cmp], &group[cmp])))
                 MPIERR(ret);
             if (verbose)
-                printf("my_rank %d created component MPI group - group[%d] = %d\n", my_rank, cmp, group[cmp]);
+                printf("my_rank %d created component MPI group - group[%d] = %lld\n",
+                       my_rank, cmp, (long long int)group[cmp]);
 
             /* Add proc numbers from IO. */
             proc_list_union[0] = 0;
@@ -351,8 +353,8 @@ int main(int argc, char **argv)
                     MPIERR(ret);
             }
             if (verbose)
-                printf("my_rank %d intracomm created for cmp = %d comp_comm[cmp] = %d comp_rank = %d\n",
-                       my_rank, cmp, comp_comm[cmp], comp_rank);
+                printf("my_rank %d intracomm created for cmp = %d comp_comm[cmp] = %lld comp_rank = %d\n",
+                       my_rank, cmp, (long long int)comp_comm[cmp], comp_rank);
             
             /* If this is the IO component, make a copy of the IO comm for
              * each computational component. */
@@ -361,7 +363,8 @@ int main(int argc, char **argv)
                 if ((ret = MPI_Comm_dup(io_comm, &io_comm2)))
                     MPIERR(ret);
                 if (verbose)
-                    printf("my_rank %d dup of io_comm = %d io_rank = %d\n", my_rank, io_comm, io_rank);
+                    printf("my_rank %d dup of io_comm = %lld io_rank = %d\n", my_rank,
+                           (long long int)io_comm, io_rank);
             }
 
             /* Create a group for the union of the IO component
@@ -372,8 +375,9 @@ int main(int argc, char **argv)
                 MPIERR(ret);
             MPI_Group_free(&union_group[cmp]);
             if (verbose)
-                printf("my_rank %d created union - union_group[%d] %d with %d procs union_comm[%d] %d\n",
-                       my_rank, cmp, union_group[cmp], nprocs_union, cmp, union_comm[cmp]);
+                printf("my_rank %d created union - union_group[%d] %lld with %d procs union_comm[%d] %lld\n",
+                       my_rank, cmp, (long long int)union_group[cmp], nprocs_union, cmp,
+                       (long long int)union_comm[cmp]);
 
 
             if (in_io || in_cmp[cmp])
