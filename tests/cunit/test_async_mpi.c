@@ -159,9 +159,8 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
         {
             if (verbose)
             {
-                printf("my_rank %d about to call MPI_Waitany req[0] = %lld "
-                       "MPI_REQUEST_NULL = %d\n", my_rank, (long long int)(req[0]),
-                       MPI_REQUEST_NULL);
+                printf("my_rank %d about to call MPI_Waitany req[0] = %lld\n"
+                       my_rank, (long long int)(req[0]));
                 for (int c = 0; c < component_count; c++)
                     printf("my_rank %d req[%d] = %lld\n", my_rank, c,
                            (long long int)(req[c]));
@@ -169,8 +168,8 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
             if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
                 MPIERR(mpierr);
             if (verbose)
-                printf("my_rank %d Waitany returned index = %d req[%d] = %d\n",
-                       my_rank, index, index, (int)req[index]);
+                printf("my_rank %d Waitany returned index = %d req[%d] = %lld\n",
+                       my_rank, index, index, (long long int)req[index]);
         }
 
         /* Broadcast the index and msg value to the rest of the IO tasks. */
