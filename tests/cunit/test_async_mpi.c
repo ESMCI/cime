@@ -159,7 +159,7 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
         {
             if (verbose)
             {
-                printf("my_rank %d about to call MPI_Waitany req[0] = %lld\n"
+                printf("my_rank %d about to call MPI_Waitany req[0] = %lld\n",
                        my_rank, (long long int)(req[0]));
                 for (int c = 0; c < component_count; c++)
                     printf("my_rank %d req[%d] = %lld\n", my_rank, c,
