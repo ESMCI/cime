@@ -116,8 +116,9 @@ int get_test_comm(int my_rank, int ntasks, int min_ntasks, int max_ntasks, MPI_C
  * @returns 0 for success, error code otherwise.
  * @author Ed Hartnett
  */
-int msg_handler(int verbose, int my_rank, int io_rank, int component_count, MPI_Comm *union_comm,
-                MPI_Comm *comp_comm, int *comproot, MPI_Comm io_comm)
+int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
+                MPI_Comm *union_comm, MPI_Comm *comp_comm, int *comproot,
+                MPI_Comm io_comm)
 {
     int msg = 0;
     MPI_Request req[component_count];
@@ -133,13 +134,15 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count, MPI_
         for (int cmp = 0; cmp < component_count; cmp++)
         {
             if (verbose)
-                printf("my_rank %d cmp %d about to call MPI_Irecv comproot[cmp] %d union_comm[cmp] %d\n",
-                       my_rank, cmp, comproot[cmp], (int)union_comm[cmp]);
+                printf("my_rank %d cmp %d about to call MPI_Irecv comproot[cmp] %d "
+                       "union_comm[cmp] %d\n", my_rank, cmp, comproot[cmp],
+                       (int)union_comm[cmp]);
             if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, comproot[cmp], MPI_ANY_TAG,
                                     union_comm[cmp], &req[cmp])))
                 MPIERR(mpierr);
             if (verbose)
-                printf("my_rank %d MPI_Irecv req[%d] = %d\n", my_rank, cmp, req[cmp]);
+                printf("my_rank %d MPI_Irecv req[%d] = %d\n", my_rank, cmp,
+                       (int)req[cmp]);
         }
     }
 
@@ -156,28 +159,30 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count, MPI_
         {
             if (verbose)
             {
-                printf("my_rank %d about to call MPI_Waitany req[0] = %d MPI_REQUEST_NULL = %d\n",
-                       my_rank, req[0], MPI_REQUEST_NULL);
+                printf("my_rank %d about to call MPI_Waitany req[0] = %d "
+                       "MPI_REQUEST_NULL = %d\n", my_rank, (int)req[0],
+                       MPI_REQUEST_NULL);
                 for (int c = 0; c < component_count; c++)
                     printf("my_rank %d req[%d] = %d\n", my_rank, c, req[c]);
             }
             if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
                 MPIERR(mpierr);
             if (verbose)
-                printf("my_rank %d Waitany returned index = %d req[%d] = %d\n", my_rank, index, index, req[index]);
+                printf("my_rank %d Waitany returned index = %d req[%d] = %d\n",
+                       my_rank, index, index, (int)req[index]);
         }
 
         /* Broadcast the index and msg value to the rest of the IO tasks. */
         if (verbose)
-            printf("my_rank %d about to MPI_Bcast io_comm %d index %d msg %d\n", my_rank, io_comm,
-                   index, msg);
+            printf("my_rank %d about to MPI_Bcast io_comm %d index %d msg %d\n",
+                   my_rank, (int)io_comm, index, msg);
         if ((mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, io_comm)))
             MPIERR(mpierr);
         if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, io_comm)))
             MPIERR(mpierr);
         if (verbose)
-            printf("my_rank %d MPI_Bcast io_comm %d index %d msg %d\n", my_rank, io_comm,
-                   index, msg);
+            printf("my_rank %d MPI_Bcast io_comm %d index %d msg %d\n",
+                   my_rank, (int)io_comm, index, msg);
 
         /* Handle the message. This code is run on all IO tasks. */
         switch (msg)
