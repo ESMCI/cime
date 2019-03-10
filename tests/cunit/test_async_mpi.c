@@ -136,13 +136,13 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
             if (verbose)
                 printf("my_rank %d cmp %d about to call MPI_Irecv comproot[cmp] %d "
                        "union_comm[cmp] %d\n", my_rank, cmp, comproot[cmp],
-                       (int)union_comm[cmp]);
+                       (int)(union_comm[cmp]));
             if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, comproot[cmp], MPI_ANY_TAG,
                                     union_comm[cmp], &req[cmp])))
                 MPIERR(mpierr);
             if (verbose)
                 printf("my_rank %d MPI_Irecv req[%d] = %d\n", my_rank, cmp,
-                       (int)req[cmp]);
+                       (int)(req[cmp]));
         }
     }
 
@@ -160,10 +160,10 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
             if (verbose)
             {
                 printf("my_rank %d about to call MPI_Waitany req[0] = %d "
-                       "MPI_REQUEST_NULL = %d\n", my_rank, (int)req[0],
+                       "MPI_REQUEST_NULL = %d\n", my_rank, (int)(req[0]),
                        MPI_REQUEST_NULL);
                 for (int c = 0; c < component_count; c++)
-                    printf("my_rank %d req[%d] = %d\n", my_rank, c, req[c]);
+                    printf("my_rank %d req[%d] = %d\n", my_rank, c, (int)(req[c]));
             }
             if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
                 MPIERR(mpierr);
