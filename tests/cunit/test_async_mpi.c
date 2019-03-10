@@ -135,8 +135,8 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
         {
             if (verbose)
                 printf("my_rank %d cmp %d about to call MPI_Irecv comproot[cmp] %d "
-                       "union_comm[cmp] %d\n", my_rank, cmp, comproot[cmp],
-                       (int)(union_comm[cmp]));
+                       "union_comm[cmp] %ld\n", my_rank, cmp, comproot[cmp],
+                       (long long int)(union_comm[cmp]));
             if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, comproot[cmp], MPI_ANY_TAG,
                                     union_comm[cmp], &req[cmp])))
                 MPIERR(mpierr);
