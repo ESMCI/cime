@@ -174,15 +174,15 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
 
         /* Broadcast the index and msg value to the rest of the IO tasks. */
         if (verbose)
-            printf("my_rank %d about to MPI_Bcast io_comm %d index %d msg %d\n",
-                   my_rank, (int)io_comm, index, msg);
+            printf("my_rank %d about to MPI_Bcast io_comm %lld index %d msg %d\n",
+                   my_rank, (long long int)io_comm, index, msg);
         if ((mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, io_comm)))
             MPIERR(mpierr);
         if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, io_comm)))
             MPIERR(mpierr);
         if (verbose)
-            printf("my_rank %d MPI_Bcast io_comm %d index %d msg %d\n",
-                   my_rank, (int)io_comm, index, msg);
+            printf("my_rank %d MPI_Bcast io_comm %lld index %d msg %d\n",
+                   my_rank, (long long int)io_comm, index, msg);
 
         /* Handle the message. This code is run on all IO tasks. */
         switch (msg)
@@ -201,17 +201,19 @@ int msg_handler(int verbose, int my_rank, int io_rank, int component_count,
         if (!io_rank && msg != -1)
         {
             if (verbose)
-                printf("my_rank %d msg_handler about to Irecv index = %d comproot = %d union_comm = %d\n",
-                       my_rank, index, comproot[index], union_comm[index]);
+                printf("my_rank %d msg_handler about to Irecv index = %d comproot = %d union_comm = %lld\n",
+                       my_rank, index, comproot[index], (long long int)union_comm[index]);
             if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, comproot[index], MPI_ANY_TAG, union_comm[index],
                                     &req[index])))
                 MPIERR(mpierr);
             if (verbose)
-                printf("my_rank %d msg_handler called MPI_Irecv req[%d] = %d\n", my_rank, index, req[index]);
+                printf("my_rank %d msg_handler called MPI_Irecv req[%d] = %lld\n",
+                       my_rank, index, (long long int)req[index]);
         }
 
         if (verbose)
-            printf("my_rank %d msg_handler done msg = %d open_components = %d\n", my_rank, msg, open_components);
+            printf("my_rank %d msg_handler done msg = %d open_components = %d\n",
+                   my_rank, msg, open_components);
 
         /* If there are no more open components, exit. */
         if (msg == -1)
@@ -277,9 +279,6 @@ int main(int argc, char **argv)
         /* Create group for world. */
         if ((ret = MPI_Comm_group(test_comm, &world_group)))
             MPIERR(ret);
-
-        if (verbose)
-            printf("MPI_GROUP_NULL %d MPI_COMM_NULL %d\n", MPI_GROUP_NULL, MPI_COMM_NULL);
 
         /* There is one shared IO comm. Create it. */
         if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &io_group)))
