@@ -153,6 +153,7 @@
       <value compset="_CAM">CO2A</value>
       <value compset="_DATM">none</value>
       <value compset="_DATM%CPLHIST.+POP\d">CO2A</value>
+      <value compset="_DATM%CPLHIST.+MICOM%ECO">CO2A</value>
       <value compset="HIST.*_DATM.*_CLM">CO2A</value>
       <value compset="RCP.*_DATM.*_CLM">CO2A</value>
       <value compset="_BGC%BPRP">CO2C</value>
@@ -388,6 +389,7 @@
       <value compset="DATM.+DOCN%IAF">TRUE</value>
       <value compset="DATM%CPLHIST.+POP\d">FALSE</value>
       <value compset="DATM.+MICOM">TRUE</value>
+      <value compset="DATM%CPLHIST.+MICOM">FALSE</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
@@ -415,6 +417,7 @@
       <value compset="DATM.+POP\d">ocn</value>
       <value compset="DATM.+MICOM">ocn</value>
       <value compset="DATM%CPLHIST.+POP\d">off</value>
+      <value compset="DATM%CPLHIST.+MICOM">off</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
@@ -462,6 +465,7 @@
       <value compset="_CAM60%NUDGEPTAERO">1</value>
       <value compset="_MICOM">1</value>
       <value compset="_DATM.*_MICOM">0</value>
+      <value compset="_DATM%CPLHIST.*_MICOM">1</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
