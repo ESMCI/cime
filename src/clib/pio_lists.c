@@ -276,7 +276,7 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
  */
 int pio_delete_iodesc_from_list(int ioid)
 {
-    io_desc_t *ciodesc = NULL;
+    io_desc_t *ciodesc;
 
     ciodesc = pio_get_iodesc_from_id(ioid);
     if(ciodesc)
