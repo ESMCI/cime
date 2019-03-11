@@ -23,6 +23,7 @@ env:
   global:
     - CC=mpicc
     - CPPFLAGS='-I/usr/include'
+    - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
   
 script:

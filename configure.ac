@@ -49,7 +49,7 @@ AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
 AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
 AC_DEFINE([PIO_VERSION_PATCH], [0], [PIO patch version])
 
-# ???
+# ????
 AC_DEFINE([CPRGNU], [1], [defined by CMake build])
 
 # We must have MPI to build PIO.

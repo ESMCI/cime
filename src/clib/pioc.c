@@ -1051,7 +1051,7 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
 
     /* Set the MPI hint. */
     if (ios->ioproc)
-        if ((mpierr = MPI_Info_set(ios->info, hint, hintval)))
+        if ((mpierr = MPI_Info_set(ios->info, (char *)hint, (char *)hintval)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
