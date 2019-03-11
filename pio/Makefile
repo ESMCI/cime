@@ -17,7 +17,7 @@ FDEPENDS=$(SRCDIR)/fdepends.awk
 DEPSUF = .d
 MODSUF = .mod
 CPPSUF = .f90
-
+GENF90 := ../bin
 
 ifeq (,$(PIOARCH))
   PIOARCH=conf
@@ -28,7 +28,7 @@ export PIOARCH
 ifeq ($(findstring BG,$(CPPDEFS)),BG)
   SRCS_C = topology.c
 else
-  SRCS_C =  
+  SRCS_C =
 endif
 
 SRCS_FC =  pio.F90 \
@@ -41,10 +41,10 @@ SRCS_FC =  pio.F90 \
 	    pio_mpi_utils.F90 \
             pio_nf_utils.F90 \
 	    pio_utils.F90 \
-            pio_quicksort.F90 \
             pio_msg_mod.F90 \
 	    calcdisplace_mod.F90 \
 	    pio_msg_callbacks.F90 \
+            pio_support.F90 \
             C_interface_mod.F90
 
 ifeq (yes,$(USE_COMPRESSION))
@@ -59,7 +59,6 @@ TEMPLATES_FC = pionfatt_mod.F90.in \
 	        alloc_mod.F90.in \
                 box_rearrange.F90.in \
                 rearrange.F90.in \
-                pio_support.F90.in \
 	        iompi_mod.F90.in  \
 	        piodarray.F90.in \
 	        pio_spmd_utils.F90.in \
@@ -67,12 +66,15 @@ TEMPLATES_FC = pionfatt_mod.F90.in \
 
 TEMPSRCFC = $(TEMPLATES_FC:.in=)
 SRCS_FC += $(TEMPSRCFC)
+MOD_SRCS := $(filter-out C_interface_mod.F90 pio_msg_callbacks.F90 pio_msg_getput_callbacks.F90, $(SRCS_FC))
 
 OBJS=  $(SRCS_C:.c=.o) \
        $(SRCS_FC:.F90=.o)
 
+PP_SRC=$(SRCS_FC:.F90=.f90)
 
-MODFILES := $(SRCS_FC:.F90=$(MODSUF))
+
+MODFILES := $(MOD_SRCS:.F90=$(MODSUF))
 
 # File foo.DEPSUF will contain make dependency for foo.F90
 DEPENDS := $(SRCS_FC:.F90=$(DEPSUF))
@@ -91,32 +93,36 @@ all: depends
 depends: $(DEPENDS)
 	@echo "Done updating dependencies"
 
+ppsrc: $(PP_SRC)
+
 
 #
 # Suffix rules
 #
 
 .SUFFIXES:
-.SUFFIXES: .o .c .F90 $(DEPSUF)
+.SUFFIXES: .o .c .F90  $(DEPSUF)
 
 
 # For each file foo.F90, make the depency file foo.d
 
 %$(DEPSUF): %.F90
 	@echo 'Making dependencies for' $< '-->' $@
-	@$(AWK) -f $(FDEPENDS) -v NAME=$(basename $<) -v SUF=$(suffix $<) $< > $@
+	#@$(AWK) -f $(FDEPENDS) -v NAME=$(basename $<) -v SUF=$(suffix $<) $< > $@
 
 
 SRCS_CPP=
-.F90.o:
+%.o : %.F90
 	$(MPIFC) -c $(FPPDEFS) $(FFLAGS) $(FOPTS) $(INCLUDES) $<
 
-.c.o:
+%.o : %.c
 	$(MPICC) -c $(CPPDEFS) $(CFLAGS) $(COPTS) $(INCLUDES) $<
 
+%.f90 : %.F90
+	$(CPP) $< -o  $@
 
-$(TEMPSRCFC): $(TEMPLATE_FC)
-	$(PERL) $(SRCDIR)/genf90.pl $< > $*.F90
+$(TEMPSRCFC):
+	$(PERL) $(GENF90)/genf90.pl $< > $*.F90
 
 
 
@@ -133,6 +139,12 @@ clean:
 predistclean: clean
 	$(RM) $(TEMPSRCFC)
 
+install: $(LIB)
+	$(INSTALL) -d -m 755 $(INSTALL_LIB)
+	$(INSTALL) -d -m 755 $(INSTALL_INC)
+	$(INSTALL) -m 644 $(LIB) $(INSTALL_LIB)/$(LIB)
+	$(INSTALL) -m 644 $(MODFILES) $(INSTALL_INC)
+
 
 startandcount: calcdecomp.F90
 	$(FC) $(FC_DEFINE)TESTCALCDECOMP $(FFLAGS) $< -o $@
@@ -145,18 +157,20 @@ ifneq (0,$(LEVEL))
   include $(DEPENDS)
 endif
 
+piolib_mod.o : ionf_mod.o pio_mpi_utils.o calcdecomp.o
 alloc_mod.o : alloc_mod.F90
-box_rearrange.o : box_rearrange.F90
-iompi_mod.o : iompi_mod.F90
-piodarray.o : piodarray.F90
+box_rearrange.o : box_rearrange.F90 calcdisplace_mod.o pio_spmd_utils.o
+iompi_mod.o : iompi_mod.F90 pio_types.o alloc_mod.o
+piodarray.o : piodarray.F90 pio_kinds.o pio_support.o iompi_mod.o rearrange.o pionfwrite_mod.o pionfread_mod.o nf_mod.o
 pionfatt_mod.o : pionfatt_mod.F90
 pionfget_mod.o : pionfget_mod.F90
 pionfput_mod.o : pionfput_mod.F90
 pionfread_mod.o : pionfread_mod.F90
-pionfwrite_mod.o : pionfwrite_mod.F90
+pionfwrite_mod.o : pionfwrite_mod.F90 nf_mod.o pio_utils.o
 pio_support.o : pio_support.F90
-rearrange.o : rearrange.F90
-
+rearrange.o : rearrange.F90 box_rearrange.o
+pio.o : piodarray.o piolib_mod.o calcdecomp.o pionfatt_mod.o pionfget_mod.o pionfput_mod.o
+nf_mod.o : pio_utils.o pio_msg_mod.o
 alloc_mod.F90 : alloc_mod.F90.in
 box_rearrange.F90 : box_rearrange.F90.in
 iompi_mod.F90 : iompi_mod.F90.in
@@ -166,8 +180,6 @@ pionfget_mod.F90 : pionfget_mod.F90.in
 pionfput_mod.F90 : pionfput_mod.F90.in
 pionfread_mod.F90 : pionfread_mod.F90.in
 pionfwrite_mod.F90 : pionfwrite_mod.F90.in
-pio_support.F90 : pio_support.F90.in
 rearrange.F90 : rearrange.F90.in
 pio_spmd_utils.F90: pio_spmd_utils.F90.in
 pio_msg_getput_callbacks.F90 : pio_msg_getput_callbacks.F90.in
-

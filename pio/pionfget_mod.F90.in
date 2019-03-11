@@ -1,4 +1,10 @@
 #define __PIO_FILE__ "pionfget_mod.F90"
+!>
+!! @file
+!! $Revision$
+!! $LastChangedDate$
+!! @brief Read Routines for non-decomposed NetCDF data.
+!<
 module pionfget_mod
 #ifdef TIMING
   use perf_mod, only : t_startf, t_stopf      ! _EXTERNAL
@@ -17,20 +23,25 @@ module pionfget_mod
 #ifndef NO_MPIMOD
   use mpi ! _EXTERNAL
 #endif
+#ifdef USE_PNETCDF_MOD
+  use pnetcdf
+#endif
   implicit none
   private
 #ifdef _PNETCDF
+#ifndef USE_PNETCDF_MOD
 #include <pnetcdf.inc>  /*  _EXTERNAL */
+#endif
 #endif
 #ifdef NO_MPIMOD
   include 'mpif.h'  ! _EXTERNAL
 #endif
 !>
 !! @defgroup PIO_get_var PIO_get_var
-!! @brief Reads netcdf metadata from a file
+!! @brief Reads non-decomposed data from a NetCDF file
 !! @details The get_var interface is provided as a simplified interface to
-!!  read variables from a netcdf format file.   The variable is read on the 
-!!  root IO task and broadcast in its entirety to all tasks.  
+!!  read variables from a NetCDF format file.   The variable is read on the
+!!  root IO task and broadcast in its entirety to all tasks.
 !<
   public :: get_var
   interface get_var
@@ -47,13 +58,13 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Reads non-decomposed fields from a NetCDF file
 !! @details
-!! @param File @copydoc file_desc_t
+!! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
-!! @param index :
+!! @param index :  a multidimensional index that specifies which value to get
 !! @param ival : The value for the netcdf metadata
-!! @retval ierr @copydoc error_return
+!! @retval ierr @ref error_return
 !<
   integer function get_var1_{TYPE} (File,varid, index, ival) result(ierr)
     use pio_msg_mod, only : pio_msg_getvar1
@@ -63,13 +74,13 @@ CONTAINS
     {VTYPE}, intent(out) :: ival
     type(iosystem_desc_t), pointer :: ios
     character(len=*), parameter :: subName=modName//'::get_var1_{TYPE}'
-    integer :: iotype, mpierr, ilen, msg, sofindex
+    integer :: iotype, mpierr, ilen, msg, sofindex, itype
     integer(kind=pio_offset) :: kount(PIO_MAX_VAR_DIMS)
 #ifdef TIMING
-    call t_startf("pio_get_var1_{TYPE}")
+    call t_startf("PIO:pio_get_var1_{TYPE}")
 #endif
     ierr=0
-    iotype = File%iotype 
+    iotype = File%iotype
     ios => File%iosystem
     sofindex = size(index)
 
@@ -78,9 +89,9 @@ CONTAINS
     ival(1:ilen) = ' '
 #else
     ilen=1
-#endif	
+#endif
     if(Debug) print *,__PIO_FILE__,__LINE__,index, ilen
-    
+
     if(ios%async_interface .and. .not. ios%ioproc ) then
        msg=PIO_MSG_GETVAR1
        if(ios%comp_rank==0) call mpi_send(msg, 1, mpi_integer, ios%ioroot, 1, ios%union_comm, ierr)
@@ -88,7 +99,8 @@ CONTAINS
        call MPI_BCAST(varid,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
        call MPI_BCAST(sofindex,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
        call MPI_BCAST(index,sofindex,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
-       call MPI_BCAST({ITYPE},1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
+       itype = {ITYPE}
+       call MPI_BCAST(itype,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
        if({ITYPE} == TYPETEXT) then
           call MPI_BCAST(ilen,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
        end if
@@ -96,7 +108,7 @@ CONTAINS
 
 
     if(File%iosystem%IOProc) then
-       select case (iotype) 
+       select case (iotype)
 #ifdef _PNETCDF
        case(pio_iotype_pnetcdf)
           ierr = nfmpi_begin_indep_data(File%fh)
@@ -117,9 +129,9 @@ CONTAINS
 #endif
 
 #ifdef _NETCDF
-       case(pio_iotype_netcdf4p, pio_iotype_netcdf4c)
+       case(pio_iotype_netcdf4p)
           ierr = nf90_get_var(File%fh, varid, ival, start=index)
-       case(pio_iotype_netcdf)
+       case(pio_iotype_netcdf, pio_iotype_netcdf4c)
           ! Only io proc 0 will do reading
           if (File%iosystem%io_rank == 0) then
              ierr = nf90_get_var(File%fh, varid, ival, start=index)
@@ -133,13 +145,13 @@ CONTAINS
     ilen = len(ival)
 #else
     ilen=1
-#endif	
+#endif
 
     call MPI_Bcast(ival, ilen, {MPITYPE} , File%iosystem%IOMaster, File%iosystem%MY_comm, mpierr)
     call CheckMPIReturn(subName, mpierr)
 
 #ifdef TIMING
-    call t_stopf("pio_get_var1_{TYPE}")
+    call t_stopf("PIO:pio_get_var1_{TYPE}")
 #endif
   end function get_var1_{TYPE}
 
@@ -148,11 +160,11 @@ CONTAINS
 !! @ingroup PIO_get_var
 !! @brief Writes an netcdf attribute to a file
 !! @details
-!! @param File @copydoc file_desc_t
-!! @param vardesc @copydoc var_desc_t
-!! @param index :
+!! @param File @ref file_desc_t
+!! @param vardesc @ref var_desc_t
+!! @param index :  a multidimensional index that specifies which value to get
 !! @param ival : The value for the netcdf metadata
-!! @retval ierr @copydoc error_return
+!! @retval ierr @ref error_return
 !<
   integer function get_var1_vdesc_{TYPE} (File,vardesc, index, ival) result(ierr)
     type (File_desc_t), intent(in) :: File
@@ -173,29 +185,45 @@ CONTAINS
 !! @ingroup PIO_get_var
 !! @brief Writes an netcdf attribute to a file
 !! @details
-!! @param File @copydoc file_desc_t
+!! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
-!! @param start :
-!! @param count :
+!! @param start : A vector of size_t integers specifying the index in
+!!   the variable where the first of the data values will be read. The
+!!   indices are relative to 0, so for example, the first data value of
+!!   a variable would have index (0, 0, ... , 0). The length of start
+!!   must be the same as the number of dimensions of the specified
+!!   variable. The elements of start correspond, in order, to the
+!!   variable's dimensions. Hence, if the variable is a record variable,
+!!   the first index would correspond to the starting record number for
+!!   reading the data values.
+!! @param count : A vector of size_t integers specifying the edge
+!!   lengths along each dimension of the block of data values to be
+!!   read. To read a single value, for example, specify count as (1, 1,
+!!   ... , 1). The length of count is the number of dimensions of the
+!!   specified variable. The elements of count correspond, in order, to
+!!   the variable's dimensions. Hence, if the variable is a record
+!!   variable, the first element of count corresponds to a count of the
+!!   number of records to read.
+!! Note: setting any element of the count array to zero causes the function to exit without error, and without doing anything.
 !! @param ival : The value for the netcdf metadata
-!! @retval ierr @copydoc error_return
+!! @retval ierr @ref error_return
 !<
   integer function get_vara_{DIMS}d_{TYPE} (File,varid, start, count, ival) result(ierr)
     type (File_desc_t), intent(in) :: File
     integer, intent(in) :: varid, start(:), count(:)
     {VTYPE}, intent(out) :: ival{DIMSTR}
-         
+
     character(len=*), parameter :: subName=modName//'::get_vara_{DIMS}d_{TYPE}'
 
     integer :: dims({DIMS})
-    integer :: iotype, mpierr, i, msg, ilen
+    integer :: iotype, mpierr, i, msg, ilen, itype, slen
     integer(kind=PIO_OFFSET) :: isize
     type(iosystem_desc_t), pointer :: ios
 #ifdef TIMING
-    call t_startf("pio_get_vara_{DIMS}d_{TYPE}")
+    call t_startf("PIO:pio_get_vara_{DIMS}d_{TYPE}")
 #endif
     ierr=0
-    iotype = File%iotype 
+    iotype = File%iotype
     isize=1
     do i=1,size(count)
        isize=isize*count(i)
@@ -209,11 +237,12 @@ CONTAINS
        if(ios%comp_rank==0) call mpi_send(msg, 1, mpi_integer, ios%ioroot, 1, ios%union_comm, ierr)
        call MPI_BCAST(file%fh,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
        call MPI_BCAST(varid,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
-       call MPI_BCAST({ITYPE},1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
-
-       call MPI_BCAST(size(start),1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
-       call MPI_BCAST(start,size(start),MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
-       call MPI_BCAST(count,size(start),MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
+       itype = {ITYPE}
+       call MPI_BCAST(itype,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
+       slen = size(start)
+       call MPI_BCAST(slen,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
+       call MPI_BCAST(start,slen,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
+       call MPI_BCAST(count,slen,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
 
 #if ({DIMS} > 0)
        do i=1,{DIMS}
@@ -221,7 +250,7 @@ CONTAINS
        end do
        call MPI_BCAST(dims,{DIMS},MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
 #endif
-#if({ITYPE} == TYPETEXT) 
+#if({ITYPE} == TYPETEXT)
           call MPI_BCAST(ilen,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
 #endif
 
@@ -234,16 +263,16 @@ CONTAINS
 
 
     if(File%iosystem%IOProc) then
-       select case (iotype) 
+       select case (iotype)
 #ifdef _PNETCDF
        case(pio_iotype_pnetcdf)
           ierr = nfmpi_get_vara_all (File%fh, varid, int(start,kind=PIO_OFFSET), &
                int(count,kind=PIO_OFFSET), ival, isize, {MPITYPE})
 #endif
 #ifdef  _NETCDF
-       case(pio_iotype_netcdf4p, pio_iotype_netcdf4c)
+       case(pio_iotype_netcdf4p)
           ierr = nf90_get_var(File%fh, varid, ival, start=start, count=count)
-       case(pio_iotype_netcdf)
+       case(pio_iotype_netcdf, pio_iotype_netcdf4c)
           ! Only io proc 0 will do reading
           if (File%iosystem%io_rank == 0) then
              ierr = nf90_get_var(File%fh, varid, ival, start=start, count=count)
@@ -252,7 +281,7 @@ CONTAINS
              call MPI_BCAST(ival,int(isize), {MPITYPE} ,0,ios%IO_comm, mpierr)
              call CheckMPIReturn(subName,mpierr)
           end if
-	  
+
 
 #endif
        end select
@@ -266,7 +295,7 @@ CONTAINS
 
 
 #ifdef TIMING
-    call t_stopf("pio_get_vara_{DIMS}d_{TYPE}")
+    call t_stopf("PIO:pio_get_vara_{DIMS}d_{TYPE}")
 #endif
   end function get_vara_{DIMS}d_{TYPE}
 
@@ -276,12 +305,28 @@ CONTAINS
 !! @ingroup PIO_get_var
 !! @brief Writes an netcdf attribute to a file
 !! @details
-!! @param File @copydoc file_desc_t
-!! @param vardesc @copydoc var_desc_t
-!! @param start :
-!! @param count :
+!! @param File @ref file_desc_t
+!! @param vardesc @ref var_desc_t
+!! @param start : A vector of size_t integers specifying the index in
+!!   the variable where the first of the data values will be read. The
+!!   indices are relative to 0, so for example, the first data value of
+!!   a variable would have index (0, 0, ... , 0). The length of start
+!!   must be the same as the number of dimensions of the specified
+!!   variable. The elements of start correspond, in order, to the
+!!   variable's dimensions. Hence, if the variable is a record variable,
+!!   the first index would correspond to the starting record number for
+!!   reading the data values.
+!! @param count : A vector of size_t integers specifying the edge
+!!   lengths along each dimension of the block of data values to be
+!!   read. To read a single value, for example, specify count as (1, 1,
+!!   ... , 1). The length of count is the number of dimensions of the
+!!   specified variable. The elements of count correspond, in order, to
+!!   the variable's dimensions. Hence, if the variable is a record
+!!   variable, the first element of count corresponds to a count of the
+!!   number of records to read.
+!! Note: setting any element of the count array to zero causes the function to exit without error, and without doing anything.
 !! @param ival : The value for the netcdf metadata
-!! @retval ierr @copydoc error_return
+!! @retval ierr @ref error_return
 !<
   integer function get_vara_vdesc_{DIMS}d_{TYPE} (File,vardesc, start, count, ival) result(ierr)
     type (File_desc_t), intent(in) :: File
@@ -300,10 +345,10 @@ CONTAINS
 !! @ingroup PIO_get_var
 !! @brief Writes an netcdf attribute to a file
 !! @details
-!! @param File @copydoc file_desc_t
+!! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
 !! @param ival : The value for the netcdf metadata
-!! @retval ierr @copydoc error_return
+!! @retval ierr @ref error_return
 !<
   integer function get_var_{DIMS}d_{TYPE} (File,varid, ival) result(ierr)
     use pio_msg_mod, only : pio_msg_getvar_{DIMS}d
@@ -312,7 +357,7 @@ CONTAINS
     {VTYPE}, intent(out) :: ival{DIMSTR}
     type(iosystem_desc_t), pointer :: ios
     character(len=*), parameter :: subName=modName//'::get_var_{DIMS}d_{TYPE}'
-    integer :: iotype, mpierr, msg, ilen
+    integer :: iotype, mpierr, msg, ilen, itype
 #if ({DIMS} > 0)
     integer :: dims({DIMS})
     integer :: i
@@ -320,16 +365,16 @@ CONTAINS
     integer(kind=PIO_OFFSET) :: isize
 
 #ifdef TIMING
-    call t_startf("pio_get_var_{DIMS}d_{TYPE}")
+    call t_startf("PIO:pio_get_var_{DIMS}d_{TYPE}")
 #endif
     ierr=0
-    iotype = File%iotype 
-    isize=1	
+    iotype = File%iotype
+    isize=1
 #if ({DIMS} > 0)
     isize= size(ival)
 #endif
 #if ({ITYPE} == TYPETEXT)
-    ilen = len(ival)	
+    ilen = len(ival)
     isize = isize*ilen
     ival{DIMSTR} = ' '
 #endif
@@ -339,14 +384,15 @@ CONTAINS
        if(ios%comp_rank==0) call mpi_send(msg, 1, mpi_integer, ios%ioroot, 1, ios%union_comm, ierr)
        call MPI_BCAST(file%fh,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
        call MPI_BCAST(varid,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
-       call MPI_BCAST({ITYPE},1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
+       itype = {ITYPE}
+       call MPI_BCAST(itype,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
 #if ({DIMS} > 0)
        do i=1,{DIMS}
           dims(i)=size(ival,i)
        end do
        call MPI_BCAST(dims,{DIMS},MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
 #endif
-#if({ITYPE} == TYPETEXT) 
+#if({ITYPE} == TYPETEXT)
           call MPI_BCAST(ilen,1,MPI_INTEGER,ios%CompMaster, ios%my_comm , mpierr)
 #endif
 
@@ -356,15 +402,15 @@ CONTAINS
 
 
     if(File%iosystem%IOProc) then
-       select case (iotype) 
+       select case (iotype)
 #ifdef _PNETCDF
        case(pio_iotype_pnetcdf)
           ierr = nfmpi_get_var_all(File%fh, varid, ival, isize, {MPITYPE})
 #endif
 #ifdef  _NETCDF
-       case(pio_iotype_netcdf4p, pio_iotype_netcdf4c)
+       case(pio_iotype_netcdf4p)
              ierr = nf90_get_var(File%fh, varid, ival)
-       case(pio_iotype_netcdf)
+       case(pio_iotype_netcdf, pio_iotype_netcdf4c)
           ! Only io proc 0 will do reading
           if (File%iosystem%io_rank == 0) then
              ierr = nf90_get_var(File%fh, varid, ival)
@@ -383,7 +429,7 @@ CONTAINS
        call CheckMPIReturn(subName, mpierr)
     end if
 #ifdef TIMING
-    call t_stopf("pio_get_var_{DIMS}d_{TYPE}")
+    call t_stopf("PIO:pio_get_var_{DIMS}d_{TYPE}")
 #endif
   end function get_var_{DIMS}d_{TYPE}
 
@@ -392,10 +438,10 @@ CONTAINS
 !! @ingroup PIO_get_var
 !! @brief Writes an netcdf attribute to a file
 !! @details
-!! @param File @copydoc file_desc_t
-!! @param vardesc @copydoc var_desc_t
+!! @param File @ref file_desc_t
+!! @param vardesc @ref var_desc_t
 !! @param ival : The value for the netcdf metadata
-!! @retval ierr @copydoc error_return
+!! @retval ierr @ref error_return
 !<
   integer function get_var_vdesc_{DIMS}d_{TYPE} (File,vardesc, ival) result(ierr)
     type (File_desc_t), intent(in) :: File

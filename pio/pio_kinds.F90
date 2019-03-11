@@ -1,5 +1,10 @@
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
+!>
+!! @file pio_kinds.F90
+!! @brief basic data types
+!!
+!! $Revision$
+!! $LastChangedDate$
+!<
  module pio_kinds
 
 !BOP
@@ -27,7 +32,6 @@
 ! !DEFINED PARAMETERS:
 
    integer, parameter, public ::          &
-      char_len  = 360                    ,&
       log_kind  = kind(.true.)           ,&
       int_kind  = kind(1)                ,&
       i4        = selected_int_kind(6)   ,&
