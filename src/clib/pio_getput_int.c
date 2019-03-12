@@ -1366,7 +1366,11 @@ int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 	if (!(startp = malloc(ndims * sizeof(PIO_Offset))))
 	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 	if (!(countp = malloc(ndims * sizeof(PIO_Offset))))
+        {
+            free(startp);
 	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        }
+
 
         /* Set up start array. */
         for (int d = 0; d < ndims; d++)
@@ -1374,19 +1378,33 @@ int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 
         /* Get the dimids for this var. */
         if ((ierr = PIOc_inq_vardimid(ncid, varid, dimid)))
+        {
+            free(startp);
+            free(countp);
             return check_netcdf(file, ierr, __FILE__, __LINE__);
+        }
 
         /* Count array are the dimlens. */
         for (int d = 0; d < ndims; d++)
+        {
             if ((ierr = PIOc_inq_dimlen(ncid, dimid[d], &countp[d])))
+            {
+                free(startp);
+                free(countp);
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
+            }
+        }
 
     }
 
+    /* Call the vars function. */
     ierr = PIOc_put_vars_tc(ncid, varid, startp, countp, NULL, xtype, op);
-    if (startp != NULL)
+
+    /* Free any allocated resources. */
+    if (startp)
 	free(startp);
-    if (countp != NULL)
+    if (countp)
 	free(countp);
+
     return ierr;
 }
