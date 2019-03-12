@@ -14,7 +14,7 @@ module swap mpt openmpi/3.1.0
 module load git/2.10.2
 module load cmake/3.12.1
 module load netcdf/4.6.1
-export PNETCDF=/glade/u/home/jedwards/pnetcdf/df0b42f19/gnu/8.1.0/openmpi/3.1.0
+module load pnetcdf/1.10.0
 
 export CC=mpicc
 export FC=mpif90

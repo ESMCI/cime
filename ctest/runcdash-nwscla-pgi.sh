@@ -10,7 +10,7 @@ fi
 module reset
 module unload netcdf
 module swap intel pgi/17.9
-module swap mpt mpt/2.18
+module swap mpt mpt/2.19
 module load git/2.10.2
 module load cmake/3.12.1
 module load netcdf-mpi/4.6.1
