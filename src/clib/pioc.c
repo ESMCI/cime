@@ -21,6 +21,12 @@ extern int blocksize;
 /* Used when assiging decomposition IDs. */
 int pio_next_ioid = 512;
 
+struct sort_map{
+    int remap;
+    PIO_Offset map;
+};
+
+
 /**
  * Check to see if PIO has been initialized.
  *
@@ -362,39 +368,18 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
     return PIO_NOERR;
 }
 
-void pio_map_sort(const PIO_Offset *map, int *remap, int maplen)
+int compare( const void* a, const void* b)
 {
-    bool switched=false;
-    do
-    {
-	switched = false;
-	for(int i=1; i<maplen; i++)
-	{
-	    if (map[remap[i-1]] > map[remap[i]])
-	    {
-		int remaptemp = remap[i];
-		remap[i] = remap[i-1];
-		remap[i-1] = remaptemp;
-		switched = true;
-	    }
-	}
-    }
-    while(switched);
-/*
-    for(int i=maplen-1; i>=0; i--)
-    {
-	for(int j = 1; j<=i; j++)
-	{
-	    if (map[remap[j-1]] > map[remap[j]])
-	    {
-		int tmp = remap[j-1];
-		remap[j-1] = remap[j];
-		remap[j] = tmp;
-	    }
-	}
-    }
-*/
+     struct sort_map l_a = * ( (struct sort_map *) a );
+     struct sort_map l_b = * ( (struct sort_map *) b );
+
+     if ( l_a.map < l_b.map )
+	 return -1;
+     else if ( l_a.map > l_b.map )
+	 return 1;
+     return 0;
 }
+
 
 
 /**
@@ -535,21 +520,31 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     for (int m = 0; m < maplen; m++)
     {
 	if(m > 0 && compmap[m] > 0 && compmap[m] < compmap[m-1])
+	{
 	    iodesc->needssort = true;
-        LOG((4, "compmap[%d] = %d", m, compmap[m]));
+            LOG((2, "compmap[%d] = %ld compmap[%d]= %ld", m, compmap[m], m-1, compmap[m-1]));
+	    break;
+	}
     }
     if (iodesc->needssort){
+	struct sort_map *tmpsort;
+
+	if (!(tmpsort = malloc(sizeof(struct sort_map) * maplen)))
+	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 	if (!(iodesc->remap = malloc(sizeof(int) * maplen)))
 	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 	for (int m=0; m < maplen; m++)
-	    iodesc->remap[m] = m;
-	pio_map_sort(compmap, iodesc->remap, maplen);
+	{
+	    tmpsort[m].remap = m;
+	    tmpsort[m].map = compmap[m];
+	}
+	qsort( tmpsort, maplen, sizeof(struct sort_map), compare );
 	for (int m=0; m < maplen; m++)
-	    iodesc->map[m] = compmap[iodesc->remap[m]];
-	for (int m=1; m < maplen; m++)
-	    if (iodesc->map[m] < iodesc->map[m-1])
-		printf("%d: compmap[%d] %lld map[%d] %lld remap[%d] %d\n",ios->comp_rank, m,
-                       compmap[m], m, iodesc->map[m], m, iodesc->remap[m]);
+	{
+	    iodesc->map[m] = compmap[tmpsort[m].remap];
+	    iodesc->remap[m] = tmpsort[m].remap;
+	}
+	free(tmpsort);
     }
     else
     {

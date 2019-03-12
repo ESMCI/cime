@@ -103,7 +103,7 @@ program pioperformance
     rearrangers(1)=1
     rearrangers(2)=2
   endif
-!  i = pio_set_log_level(2)
+  i = pio_set_log_level(2)
   do i=1,max_decomp_files
      if(len_trim(decompfile(i))==0) exit
      if(mype == 0) print *, ' Testing decomp: ',trim(decompfile(i))
@@ -240,9 +240,9 @@ contains
              print *,'iotype=',piotypes(k)
           endif
 !          if(iotype==PIO_IOTYPE_PNETCDF) then
-!             mode = PIO_64BIT_DATA
+             mode = PIO_64BIT_DATA
 !          else
-             mode = 0
+!             mode = 0
 !          endif
           do rearrtype=1,2
              rearr = rearrangers(rearrtype)
