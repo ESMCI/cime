@@ -23,16 +23,16 @@ before_script:
 env:
   global:
     - CC=mpicc
-    - FC=mpif90
+    - FC=mpifort
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
   
 script:
-  - autoreconf -i
-  - ./configure
-  - make -j distcheck
-  - make -j distclean
+#  - autoreconf -i
+#  - ./configure
+#  - make -j distcheck
+#  - make -j distclean
   - rm -rf build
   - mkdir build
   - cd build
