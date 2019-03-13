@@ -17,13 +17,13 @@ before_install:
 
 before_script:
   - export CC=mpicc
-  - export FC=mpifort
+  - export FC=mpif90
   - export CPPFLAGS='-I/usr/include'
 
 env:
   global:
     - CC=mpicc
-    - FC=mpifort
+    - FC=mpif90
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
