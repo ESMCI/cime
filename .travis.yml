@@ -17,6 +17,7 @@ before_install:
 
 before_script:
   - export CC=mpicc
+  - export FC=mpifort
   - export CPPFLAGS='-I/usr/include'
 
 env:
