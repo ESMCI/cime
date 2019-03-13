@@ -25,11 +25,9 @@ env:
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
-
+  
 script:
   - autoreconf -i
   - ./configure
   - make -j distcheck
-
-branch:
-  - master
+ 
