@@ -22,6 +22,7 @@ before_script:
 env:
   global:
     - CC=mpicc
+    - FC=mpifort
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
@@ -30,4 +31,10 @@ script:
   - autoreconf -i
   - ./configure
   - make -j distcheck
+  - make -j distclean
+  - rm -rf build
+  - mkdir build
+  - cd build
+  - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DWITH_PNETCDF=Off ..
+  - make
  
