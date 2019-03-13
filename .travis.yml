@@ -22,7 +22,7 @@ before_script:
 env:
   global:
     - CC=mpicc
-    - FC=mpifc
+    - FC=mpif90
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
