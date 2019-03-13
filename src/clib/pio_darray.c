@@ -11,7 +11,7 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
-
+#include <uthash.h>
 /* 10MB default limit. */
 PIO_Offset pio_buffer_size_limit = PIO_BUFFER_SIZE;
 
@@ -619,6 +619,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     bufsize totfree;       /* Amount of free space in the buffer. */
     bufsize maxfree;       /* Max amount of free space in buffer. */
 #endif
+    int hashid;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
     int ierr = PIO_NOERR;      /* Return code. */
     size_t io_data_size;          /* potential size of data on io task */
@@ -673,22 +674,20 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Move to end of list or the entry that matches this ioid. */
-    for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
-        if (wmb->ioid == ioid && wmb->recordvar == vdesc->rec_var)
-            break;
-    LOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
+    hashid = ioid*10 + vdesc->rec_var;
+    HASH_FIND_INT( file->buffer, &hashid, wmb);
+    if (wmb)
+      LOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
 
     /* If we did not find an existing wmb entry, create a new wmb. */
-    if (wmb->ioid != ioid || wmb->recordvar != vdesc->rec_var)
+    if (!wmb)
     {
         /* Allocate a buffer. */
-        if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
+        if (!(wmb = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Set pointer to newly allocated buffer and initialize.*/
-        wmb = wmb->next;
         wmb->recordvar = vdesc->rec_var;
-        wmb->next = NULL;
         wmb->ioid = ioid;
         wmb->num_arrays = 0;
         wmb->arraylen = arraylen;
@@ -696,6 +695,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         wmb->data = NULL;
         wmb->frame = NULL;
         wmb->fillvalue = NULL;
+	wmb->htid = hashid;
+	HASH_ADD_INT( file->buffer, htid, wmb );
     }
     LOG((2, "wmb->num_arrays = %d arraylen = %d iodesc->mpitype_size = %d\n",
          wmb->num_arrays, arraylen, iodesc->mpitype_size));

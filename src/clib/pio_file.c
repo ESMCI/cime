@@ -5,7 +5,7 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
-
+#include <uthash.h>
 /* This is the next ncid that will be used when a file is opened or
    created. We start at 16 so that it will be easy for us to notice
    that it's not netcdf (starts at 4), pnetcdf (starts at 0) or
@@ -386,25 +386,17 @@ int PIOc_sync(int ncid)
             wmulti_buffer *wmb, *twmb;
 
             LOG((3, "PIOc_sync checking buffers"));
-            wmb = &file->buffer;
-            while (wmb)
-            {
+	    HASH_ITER(hh, file->buffer, wmb, twmb)
+	      {  
                 /* If there are any data arrays waiting in the
                  * multibuffer, flush it. */
                 if (wmb->num_arrays > 0)
                     flush_buffer(ncid, wmb, true);
-                twmb = wmb;
-                wmb = wmb->next;
-                if (twmb == &file->buffer)
-                {
-                    twmb->ioid = -1;
-                    twmb->next = NULL;
-                }
-                else
-                {
-                    brel(twmb);
-                }
-            }
+		HASH_DEL(file->buffer, wmb);
+		brel(wmb);
+                
+	      }
+	    file->buffer = NULL;
         }
     }
 

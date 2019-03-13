@@ -1755,7 +1755,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     file->fh = -1;
     file->iosystem = ios;
     file->iotype = *iotype;
-    file->buffer.ioid = -1;
+    file->buffer = NULL;
     file->writable = 1;
 
     /* Set to true if this task should participate in IO (only true for

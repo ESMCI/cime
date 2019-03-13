@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <string.h> /* memcpy */
 #include <mpi.h>
+#include <uthash.h>
 
 #ifdef _NETCDF
 #include <netcdf.h>
@@ -144,8 +145,8 @@ typedef struct var_desc_t
     /** The size in bytes of a datum of MPI type mpitype. */
     int mpi_type_size;
 
-    /** Pointer to next var in list. */
-    struct var_desc_t *next;
+    UT_hash_handle hh;
+
 } var_desc_t;
 
 /**
@@ -380,8 +381,8 @@ typedef struct io_desc_t
      * group. */
     MPI_Comm subset_comm;
 
-    /** Pointer to the next io_desc_t in the list. */
-    struct io_desc_t *next;
+    UT_hash_handle hh;
+
 } io_desc_t;
 
 /**
@@ -528,8 +529,9 @@ typedef struct wmulti_buffer
     /** Pointer to the data. */
     void *data;
 
-    /** Pointer to the next multi-buffer in the list. */
-    struct wmulti_buffer *next;
+  /** uthash handle for hash of buffers **/
+  int htid;
+  UT_hash_handle hh;
 } wmulti_buffer;
 
 /**
@@ -563,7 +565,7 @@ typedef struct file_desc_t
 
     /** The wmulti_buffer is used to aggregate multiple variables with
      * the same communication pattern prior to a write. */
-    struct wmulti_buffer buffer;
+    struct wmulti_buffer *buffer;
 
     /** Data buffer for this file. */
     void *iobuf;
@@ -571,8 +573,8 @@ typedef struct file_desc_t
     /** PIO data type. */
     int pio_type;
 
-    /** Pointer to the next file_desc_t in the list of open files. */
-    struct file_desc_t *next;
+    /* hash table entry */
+    UT_hash_handle hh;
 
     /** True if this task should participate in IO (only true for one
      * task with netcdf serial files. */
