@@ -2047,9 +2047,11 @@ void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
     int mpierr; /* Return code for MPI calls. */
 
     assert(iodesc);
-
-    if ((mpierr = MPI_Type_size(iodesc->mpitype, &tsize)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if(iodesc->mpitype == MPI_DATATYPE_NULL)
+	tsize = 0;
+    else
+	if ((mpierr = MPI_Type_size(iodesc->mpitype, &tsize)))
+	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     cbuf = NULL;
     ibuf = NULL;
     if (iodesc->ndof > 0)

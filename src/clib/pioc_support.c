@@ -691,8 +691,11 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     (*iodesc)->mpitype = mpi_type;
 
     /* Get the size of the type. */
-    if ((mpierr = MPI_Type_size((*iodesc)->mpitype, &(*iodesc)->mpitype_size)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (mpi_type == MPI_DATATYPE_NULL)
+	(*iodesc)->mpitype_size = 0;
+    else
+	if ((mpierr = MPI_Type_size((*iodesc)->mpitype, &(*iodesc)->mpitype_size)))
+	    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Initialize some values in the struct. */
     (*iodesc)->maxregions = 1;
@@ -2077,8 +2080,11 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
             return pio_err(NULL, file, ret, __FILE__, __LINE__);
 
         /* Get the size of the MPI type. */
-        if ((mpierr = MPI_Type_size((*mpi_type)[v], &(*mpi_type_size)[v])))
-            return check_mpi2(NULL, file, mpierr, __FILE__, __LINE__);
+	if ((*mpi_type)[v] == MPI_DATATYPE_NULL)
+	    (*mpi_type_size)[v] = 0;
+	else
+	    if ((mpierr = MPI_Type_size((*mpi_type)[v], &(*mpi_type_size)[v])))
+		return check_mpi2(NULL, file, mpierr, __FILE__, __LINE__);
 
         /* What are the dimids associated with this var? */
         if (var_ndims)
