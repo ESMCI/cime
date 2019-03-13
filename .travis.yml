@@ -29,13 +29,11 @@ env:
     - LDFLAGS='-L/usr/lib'
   
 script:
-#  - autoreconf -i
-#  - ./configure
-#  - make -j distcheck
-#  - make -j distclean
+  - pwd
   - rm -rf build
   - mkdir build
   - cd build
   - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DWITH_PNETCDF=Off -DPIO_ENABLE_TIMING=Off ..
   - make VERBOSE=1
+  
  
