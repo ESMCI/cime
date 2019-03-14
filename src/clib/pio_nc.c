@@ -2045,10 +2045,13 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         /* Get the MPI type corresponding with the PIO type. */
         if ((ierr = find_mpi_type(xtype, &mpi_type, NULL)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-        
+
         /* Get the size of the MPI type. */
-        if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+	if(mpi_type == MPI_DATATYPE_NULL)
+	    mpi_type_size = 0;
+	else
+	    if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size)))
+		return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
         /* How many unlimited dims are present in the file? */
         if ((ierr = PIOc_inq_unlimdims(ncid, &nunlimdims, NULL)))
