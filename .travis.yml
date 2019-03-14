@@ -29,7 +29,9 @@ env:
     - LDFLAGS='-L/usr/lib'
   
 script:
-  - pwd
+  - autoreconf -i
+  - ./configure
+  - make -j distcheck
   - rm -rf build
   - mkdir build
   - cd build
