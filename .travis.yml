@@ -23,7 +23,14 @@ before_script:
   - export CC=mpicc
   - export FC=mpif90
   - export CPPFLAGS='-I/usr/include'
-
+  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.0.tar.gz 
+  - tar -xzvf pnetcdf-1.11.0.tar.gz
+  - ls -l
+  - pushd pnetcdf-1.11.0
+  - ./configure --prefix=/usr
+  - make
+  - sudo make install
+  - popd
 env:
   global:
     - CC=mpicc
