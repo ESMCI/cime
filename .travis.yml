@@ -38,6 +38,6 @@ script:
   - make tests VERBOSE=1
   - cd tests/cunit
   - mpiexec -n 4 ./test_darray
-  
+  - make test
   
  
