@@ -450,7 +450,7 @@ CONTAINS
     integer, intent(in) :: start(:)
     integer, intent(in) :: count(:)
     integer, intent(in) :: nstrs
-    character, intent(out) :: ival(*)
+    character(len=*), intent(out) :: ival(*)
     integer :: j
     integer(C_SIZE_T), allocatable :: cstart(:), ccount(:)
     integer :: i, ndims
