@@ -539,11 +539,10 @@ int test_iotypes(int my_rank)
  */
 int check_strerror_netcdf(int my_rank)
 {
-#define NUM_NETCDF_TRIES 4
-    int errcode[NUM_NETCDF_TRIES] = {PIO_EBADID, NC4_LAST_ERROR - 10, 0, 1};
+#define NUM_NETCDF_TRIES 3
+    int errcode[NUM_NETCDF_TRIES] = {PIO_EBADID, 0, 1};
     const char *expected[NUM_NETCDF_TRIES] = {"NetCDF: Not a valid ID",
-                                              "Unknown Error: Unrecognized error code", "No error",
-                                              nc_strerror(1)};
+                                              "No error", nc_strerror(1)};
     int ret;
 
     if ((ret = check_error_strings(my_rank, NUM_NETCDF_TRIES, errcode, expected)))
