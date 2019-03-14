@@ -36,8 +36,6 @@ script:
   - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DWITH_PNETCDF=Off -DPIO_ENABLE_TIMING=Off ..
   - make VERBOSE=1
   - make tests VERBOSE=1
-  - cd tests/cunit
-  - mpiexec -n 4 ./test_darray
   - make test
   
  
