@@ -27,7 +27,7 @@ before_script:
   - tar -xzvf pnetcdf-1.11.0.tar.gz
   - ls -l
   - pushd pnetcdf-1.11.0
-  - ./configure --prefix=/usr
+  - ./configure --prefix=/usr --enable-shared
   - make
   - sudo make install
   - popd
@@ -46,7 +46,7 @@ script:
   - rm -rf build
   - mkdir build
   - cd build
-  - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DWITH_PNETCDF=Off -DPIO_ENABLE_TIMING=Off ..
+  - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
   - make VERBOSE=1
   - make tests VERBOSE=1
   - make test
