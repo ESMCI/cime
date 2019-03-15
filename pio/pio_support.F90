@@ -11,6 +11,15 @@
 !! Code added as a work around for poor rsend performance on cray systems with
 !! Gemini interconnect
 !<
+#ifdef BGP
+#define BGx
+#endif
+#ifdef BGL
+#define BGx
+#endif
+#ifdef BGQ
+#define BGx
+#endif
 #ifdef _NO_MPI_RSEND
 #define MPI_RSEND MPI_SEND
 #define mpi_rsend mpi_send
@@ -33,9 +42,7 @@ module pio_support
   public :: pio_readdof
   public :: pio_writedof
   public :: pio_fc_gather_offset
-#ifdef NO_MPI2
-  public :: MPI_TYPE_CREATE_INDEXED_BLOCK
-#endif
+
 
 
   logical, public :: Debug=.FALSE.
@@ -48,6 +55,11 @@ module pio_support
 contains
 
   subroutine piodie (file,line, msg, ival1, msg2, ival2, msg3, ival3, mpirank)
+#ifdef CPRINTEL
+  ! tracebackqq uses optional arguments, so *must* have an explicit
+  ! interface.
+  use ifcore, only: tracebackqq
+#endif
     !-----------------------------------------------------------------------
     ! Purpose:
     !
@@ -73,7 +85,7 @@ contains
 
     character(len=*), parameter :: subName=modName//'::pio_die'
     integer :: ierr, myrank=-1
-    
+
     if(present(mpirank)) myrank=mpirank
 
     if (present(ival3)) then
@@ -95,14 +107,21 @@ contains
     endif
 
 
-#if defined(CPRXLF) && !defined(BGL) && !defined(BGP)
+#if defined(CPRXLF) && !defined(BGx)
   close(5)    ! needed to prevent batch jobs from hanging in xl__trbk
   call xl__trbk()
+#elif defined(CPRINTEL)
+
+
+  ! An exit code of -1 is a special value that prevents this subroutine
+  ! from aborting the run.
+  call tracebackqq(user_exit_code=-1)
+
 #endif
 
-    ! passing an argument of 1 to mpi_abort will lead to a STOPALL output 
+    ! passing an argument of 1 to mpi_abort will lead to a STOPALL output
     ! error code of 257
-    call mpi_abort (MPI_COMM_WORLD, 1, ierr)  
+    call mpi_abort (MPI_COMM_WORLD, 1, ierr)
 
 #ifdef CPRNAG
     stop
@@ -261,7 +280,7 @@ contains
     ! Author: T Craig
     !
     ! Change History
-    ! 
+    !
     !-----------------------------------------------------------------------
     ! $Id$
     !-----------------------------------------------------------------------
@@ -350,25 +369,6 @@ contains
 
   end subroutine pio_readdof
 
-#ifdef NO_MPI2
-
-  subroutine MPI_TYPE_CREATE_INDEXED_BLOCK(count, blen, disp, oldtype, newtype, ierr)
-    integer, intent(in)  :: count
-    integer, intent(in)  :: blen
-    integer, intent(in)  :: disp(:)
-    integer, intent(in)  :: oldtype
-    integer, intent(out) :: newtype
-    integer :: ierr
-
-    integer :: dblens(count)
-
-    dblens = blen
-#ifndef _MPISERIAL
-    call mpi_type_indexed(count, dblens, disp, oldtype, newtype, ierr)
-#endif
-  end subroutine MPI_TYPE_CREATE_INDEXED_BLOCK
-#endif
-
 !
 !========================================================================
 !
@@ -377,25 +377,25 @@ contains
                                   recvbuf, recvcnt, recvtype, &
                                   root, comm, flow_cntl )
 
-!----------------------------------------------------------------------- 
-! 
-!> Purpose: 
-!!   Gather collective with additional flow control, so as to 
-!!   be more robust when used with high process counts. 
+!-----------------------------------------------------------------------
+!
+!> Purpose:
+!!   Gather collective with additional flow control, so as to
+!!   be more robust when used with high process counts.
 !!
-!! Method: 
-!!   If flow_cntl optional parameter 
+!! Method:
+!!   If flow_cntl optional parameter
 !!     < 0: use MPI_Gather
-!!     >= 0: use point-to-point with handshaking messages and 
-!!           preposting receive requests up to 
-!!           max(min(1,flow_cntl),max_gather_block_size) 
+!!     >= 0: use point-to-point with handshaking messages and
+!!           preposting receive requests up to
+!!           max(min(1,flow_cntl),max_gather_block_size)
 !!           ahead if optional flow_cntl parameter is present.
 !!           Otherwise, fc_gather_flow_cntl is used in its place.
 !!     Default value is 64.
-!! 
+!!
 !! Author of original version:  P. Worley
 !! Ported from CAM: P. Worley, Jan 2010
-!< 
+!<
 !-----------------------------------------------------------------------
 
 !-----------------------------------------------------------------------
@@ -437,8 +437,8 @@ contains
 
    integer :: rcvid(max_gather_block_size)  ! receive request ids
 
-   integer :: ier                           ! return error status    
-   integer :: status(MPI_STATUS_SIZE)       ! MPI status 
+   integer :: ier                           ! return error status
+   integer :: status(MPI_STATUS_SIZE)       ! MPI status
 
 !
 !-------------------------------------------------------------------------------------
@@ -460,7 +460,7 @@ contains
    endif
 
    if (fc_gather) then
- 
+
       ! Determine task id and size of communicator
       call mpi_comm_rank (comm, mytask, ier)
       call mpi_comm_size (comm, nprocs, ier)
@@ -492,7 +492,7 @@ contains
                   call mpi_irecv ( recvbuf(displs+1), recvcnt, &
                                    recvtype, p, mtag, comm, rcvid(head), &
                                    ier )
-                  call mpi_send ( hs, 1, recvtype, p, mtag, comm, ier )
+                  call mpi_send ( hs, 1, MPI_INTEGER, p, mtag, comm, ier )
                end if
             end if
          end do
@@ -511,7 +511,7 @@ contains
       else
 
          if (sendcnt > 0) then
-            call mpi_recv  ( hs, 1, sendtype, root, mtag, comm, &
+            call mpi_recv  ( hs, 1, MPI_INTEGER, root, mtag, comm, &
                              status, ier )
             call mpi_rsend ( sendbuf, sendcnt, sendtype, root, mtag, &
                              comm, ier )
@@ -521,7 +521,7 @@ contains
       call CheckMPIReturn(subName,ier)
 
    else
- 
+
       call mpi_gather (sendbuf, sendcnt, sendtype, &
                        recvbuf, recvcnt, recvtype, &
                        root, comm, ier)

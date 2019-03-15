@@ -25,7 +25,7 @@ subroutine pio_callback_handler(iosystem, msg)
 
   call mpi_bcast(fh, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
   file=> lookupfile(fh)
-  
+
 
   select case(msg)
   case (PIO_MSG_CLOSE_FILE)
@@ -33,7 +33,7 @@ subroutine pio_callback_handler(iosystem, msg)
      call pio_closefile(file)
      deallocate(file)
   case (PIO_MSG_DEF_DIM)
-     ierr = pio_def_dim(file, name, len, id)   
+     ierr = pio_def_dim(file, name, len, id)
   case (PIO_MSG_DEF_VAR)
      ierr = pio_def_var(file, name, type, dimids, vardesc)
   case (PIO_MSG_ENDDEF)
@@ -70,7 +70,7 @@ subroutine pio_callback_handler(iosystem, msg)
      call pio_syncfile(file)
   case default
      print *, 'PIO Got unrecognized message ', msg, ierr
-     call piodie(__PIO_FILE__,__LINE__)  
+     call piodie(__PIO_FILE__,__LINE__)
   end select
 
 end subroutine pio_callback_handler
@@ -100,7 +100,6 @@ end subroutine freedecomp_handler
 
 subroutine create_file_handler(iosystem)
   use pio, only : iosystem_desc_t, file_desc_t, pio_createfile
-  use pio_kinds, only : char_len
   use pio_msg_mod, only : add_to_file_list
   use pio_support, only : debugAsync
 #ifndef NO_MPIMOD
@@ -114,19 +113,21 @@ subroutine create_file_handler(iosystem)
 
   integer :: ierr
   integer :: iotype, amode
-  
-  character(len=char_len) :: fname
+  integer :: namelen
+  character(len=:), allocatable :: fname
   type(file_desc_t), pointer :: file
-  
-  call mpi_bcast(fname, char_len, mpi_character, iosystem%compmaster, iosystem%intercomm, ierr)
+
+  call mpi_bcast(namelen, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
+  allocate(character(len=namelen):: fname )
+  call mpi_bcast(fname, namelen, mpi_character, iosystem%compmaster, iosystem%intercomm, ierr)
   call mpi_bcast(iotype, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
-  
+
   call mpi_bcast(amode, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
 
   allocate(file)
-  
-  ierr= pio_createfile(iosystem, file, iotype, trim(fname), amode )
 
+  ierr= pio_createfile(iosystem, file, iotype, trim(fname), amode )
+  deallocate(fname)
   call add_to_file_list(file)
   if(Debugasync) print *,__PIO_FILE__,__LINE__,file%fh
 
@@ -149,20 +150,24 @@ subroutine open_file_handler(iosystem)
 
   integer :: ierr
   integer :: iotype, amode
-  
-  character(len=char_len) :: fname
+
+  character(len=:), allocatable :: fname
   type(file_desc_t), pointer :: file
-  
-  call mpi_bcast(fname, char_len, mpi_character, iosystem%compmaster, iosystem%intercomm, ierr)
+  integer :: namelen
+
+
+  call mpi_bcast(namelen, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
+  allocate(character(len=namelen):: fname )
+  call mpi_bcast(fname, namelen, mpi_character, iosystem%compmaster, iosystem%intercomm, ierr)
 
   call mpi_bcast(iotype, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
-  
+
   call mpi_bcast(amode, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
 
   allocate(file)
-  
-  ierr= pio_openfile(iosystem, file, iotype, trim(fname), amode)
 
+  ierr= pio_openfile(iosystem, file, iotype, trim(fname), amode)
+  deallocate(fname)
   call add_to_file_list(file)
   if(Debugasync) print *,__PIO_FILE__,__LINE__,file%fh
 
@@ -191,14 +196,14 @@ subroutine initdecomp_dof_handler(iosystem)
 
   call mpi_bcast(basepiotype, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
   call mpi_bcast(dims_size, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
-  call mpi_bcast(dims(1:dims_size), dims_size, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)  
-  
+  call mpi_bcast(dims(1:dims_size), dims_size, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
+
   allocate(iodesc)
 
   compdof=0
   call add_to_iodesc_list(iodesc)
 
-  call mpi_bcast(iodesc%async_id, 1, mpi_integer, iosystem%iomaster, iosystem%intercomm, ierr)  
+  call mpi_bcast(iodesc%async_id, 1, mpi_integer, iosystem%iomaster, iosystem%intercomm, ierr)
 
   call pio_initdecomp(iosystem, basepiotype, dims(1:dims_size), compdof, iodesc)
 
@@ -226,7 +231,7 @@ subroutine writedarray_handler(iosystem)
   integer(i4) :: fillval_int, aint(1)
   real(r4) :: fillval_real, areal(1)
   real(r8) :: fillval_double, adouble(1)
-  
+
 
   call mpi_bcast(fh, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
   call mpi_bcast(v%varid, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
@@ -237,7 +242,7 @@ subroutine writedarray_handler(iosystem)
   call mpi_bcast(fillv, 1, mpi_integer , iosystem%compmaster, iosystem%intercomm, ierr)
 
   file=> lookupfile(fh)
-  if(debugasync) print *,__FILE__,__LINE__,v%varid,iod_id
+  if(debugasync) print *,__PIO_FILE__,__LINE__,v%varid,iod_id
   iodesc => lookupiodesc(iod_id)
 #ifndef _MPISERIAL
   select case(type)
@@ -291,8 +296,8 @@ subroutine readdarray_handler(iosystem)
   real(r4) :: areal(1)
   real(r8) :: adouble(1)
 
-  if(debugasync) print *,__FILE__,__LINE__
-  
+  if(debugasync) print *,__PIO_FILE__,__LINE__
+
   call mpi_bcast(fh, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
   call mpi_bcast(v%varid, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
   call mpi_bcast(v%rec, 1, mpi_integer, iosystem%compmaster, iosystem%intercomm, ierr)
@@ -301,7 +306,7 @@ subroutine readdarray_handler(iosystem)
 
   file=> lookupfile(fh)
 
-  if(debugasync) print *,__FILE__,__LINE__,iod_id, type
+  if(debugasync) print *,__PIO_FILE__,__LINE__,iod_id, type
 
   iodesc => lookupiodesc(iod_id)
 #ifndef _MPISERIAL
@@ -325,12 +330,12 @@ subroutine seterrorhandling_handler(ios)
   implicit none
 #ifdef NO_MPIMOD
   include 'mpif.h' !_EXTERNAL
-#endif 
+#endif
   type(iosystem_desc_t), intent(inout) :: ios
   integer :: method, ierr
 
   call mpi_bcast(method, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
-  
+
   call pio_seterrorhandling(ios, method)
 
 end subroutine seterrorhandling_handler
@@ -349,15 +354,15 @@ subroutine string_handler_for_att(file, varid, name, strlen, msg)
 
   if(msg==PIO_MSG_GETATT) then
      if(Debugasync) print *,__PIO_FILE__,__LINE__, varid, name
-     ierr = pio_get_att(file, varid, name, str )  
+     ierr = pio_get_att(file, varid, name, str )
      if(Debugasync) print *,__PIO_FILE__,__LINE__, str
   else
-     ierr = pio_put_att(file, varid, name, str )  
+     ierr = pio_put_att(file, varid, name, str )
   end if
 end subroutine string_handler_for_att
 
 subroutine att_handler(ios, msg)
-  
+
   use pio, only : iosystem_desc_t, file_desc_t, pio_get_att, pio_max_name, pio_put_att
   use pio_kinds, only : i4, r4, r8
   use pio_msg_mod, only : lookupfile, pio_msg_putatt, pio_msg_getatt
@@ -380,7 +385,7 @@ subroutine att_handler(ios, msg)
   integer(i4) :: ivar
 
   if(Debugasync) print *,__PIO_FILE__,__LINE__
-  
+
   call mpi_bcast(fh, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
   call mpi_bcast(varid, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
   call mpi_bcast(itype, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
@@ -389,7 +394,7 @@ subroutine att_handler(ios, msg)
   if(Debugasync) print *,__PIO_FILE__,__LINE__, itype,nlen
 
   file=> lookupfile(fh)
-  
+
   select case(itype)
   case (TYPETEXT)
      call mpi_bcast(strlen, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
@@ -414,13 +419,13 @@ subroutine att_handler(ios, msg)
         ierr = pio_put_att(file, varid, name(1:nlen), ivar)
      end if
   end select
-  
+
 end subroutine att_handler
 
 
 
 subroutine att_1d_handler(ios, msg)
-  
+
   use pio, only : iosystem_desc_t, file_desc_t, pio_get_att, pio_max_name, pio_put_att
   use pio_kinds, only : i4, r4, r8
   use pio_msg_mod, only : lookupfile, pio_msg_getatt_1d, pio_msg_putatt_1d
@@ -442,7 +447,7 @@ subroutine att_1d_handler(ios, msg)
   real(r4), allocatable :: rvar(:)
   real(r8), allocatable :: dvar(:)
   integer(i4), allocatable :: ivar(:)
-  
+
   call mpi_bcast(fh, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
   call mpi_bcast(varid, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
   call mpi_bcast(itype, 1, mpi_integer, ios%compmaster, ios%intercomm, ierr)
@@ -451,7 +456,7 @@ subroutine att_1d_handler(ios, msg)
   call MPI_BCAST(clen,1,MPI_INTEGER,ios%CompMaster, ios%intercomm , ierr)
 
   file=> lookupfile(fh)
-  
+
   select case(itype)
   case (TYPEREAL)
      allocate(rvar(clen))
@@ -478,7 +483,7 @@ subroutine att_1d_handler(ios, msg)
      end if
      deallocate(ivar)
   end select
-  
+
 end subroutine att_1d_handler
 
 

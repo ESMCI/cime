@@ -28,7 +28,7 @@ export PIOARCH
 ifeq ($(findstring BG,$(CPPDEFS)),BG)
   SRCS_C = topology.c
 else
-  SRCS_C =  
+  SRCS_C =
 endif
 
 SRCS_FC =  pio.F90 \
@@ -108,7 +108,7 @@ ppsrc: $(PP_SRC)
 
 %$(DEPSUF): %.F90
 	@echo 'Making dependencies for' $< '-->' $@
-	@$(AWK) -f $(FDEPENDS) -v NAME=$(basename $<) -v SUF=$(suffix $<) $< > $@
+	#@$(AWK) -f $(FDEPENDS) -v NAME=$(basename $<) -v SUF=$(suffix $<) $< > $@
 
 
 SRCS_CPP=
@@ -121,7 +121,7 @@ SRCS_CPP=
 %.f90 : %.F90
 	$(CPP) $< -o  $@
 
-$(TEMPSRCFC): 
+$(TEMPSRCFC):
 	$(PERL) $(GENF90)/genf90.pl $< > $*.F90
 
 
@@ -139,7 +139,7 @@ clean:
 predistclean: clean
 	$(RM) $(TEMPSRCFC)
 
-install: $(LIB)  
+install: $(LIB)
 	$(INSTALL) -d -m 755 $(INSTALL_LIB)
 	$(INSTALL) -d -m 755 $(INSTALL_INC)
 	$(INSTALL) -m 644 $(LIB) $(INSTALL_LIB)/$(LIB)
@@ -157,18 +157,20 @@ ifneq (0,$(LEVEL))
   include $(DEPENDS)
 endif
 
+piolib_mod.o : ionf_mod.o pio_mpi_utils.o calcdecomp.o
 alloc_mod.o : alloc_mod.F90
-box_rearrange.o : box_rearrange.F90
-iompi_mod.o : iompi_mod.F90
-piodarray.o : piodarray.F90
+box_rearrange.o : box_rearrange.F90 calcdisplace_mod.o pio_spmd_utils.o
+iompi_mod.o : iompi_mod.F90 pio_types.o alloc_mod.o
+piodarray.o : piodarray.F90 pio_kinds.o pio_support.o iompi_mod.o rearrange.o pionfwrite_mod.o pionfread_mod.o nf_mod.o
 pionfatt_mod.o : pionfatt_mod.F90
 pionfget_mod.o : pionfget_mod.F90
 pionfput_mod.o : pionfput_mod.F90
 pionfread_mod.o : pionfread_mod.F90
-pionfwrite_mod.o : pionfwrite_mod.F90
+pionfwrite_mod.o : pionfwrite_mod.F90 nf_mod.o pio_utils.o
 pio_support.o : pio_support.F90
-rearrange.o : rearrange.F90
-
+rearrange.o : rearrange.F90 box_rearrange.o
+pio.o : piodarray.o piolib_mod.o calcdecomp.o pionfatt_mod.o pionfget_mod.o pionfput_mod.o
+nf_mod.o : pio_utils.o pio_msg_mod.o
 alloc_mod.F90 : alloc_mod.F90.in
 box_rearrange.F90 : box_rearrange.F90.in
 iompi_mod.F90 : iompi_mod.F90.in
@@ -181,4 +183,3 @@ pionfwrite_mod.F90 : pionfwrite_mod.F90.in
 rearrange.F90 : rearrange.F90.in
 pio_spmd_utils.F90: pio_spmd_utils.F90.in
 pio_msg_getput_callbacks.F90 : pio_msg_getput_callbacks.F90.in
-
