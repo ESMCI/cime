@@ -2,4 +2,9 @@
 
 # Ed Hartnett
 
-SUBDIRS = clib
+# Does the user want to build fortran?
+if BUILD_FORTRAN
+FLIB = flib
+endif
+
+SUBDIRS = clib $(FLIB)

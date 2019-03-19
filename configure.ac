@@ -12,6 +12,9 @@ AC_CONFIG_MACRO_DIR([m4])
 # Find and learn about the C compiler.
 AC_PROG_CC
 
+# Find and learn about the Fortran compiler.
+AC_PROG_FC
+
 # Libtool initialisation.
 AC_PROG_LIBTOOL
 
@@ -111,6 +114,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
+          src/flib/Makefile
           tests/Makefile
           tests/cunit/Makefile
           examples/Makefile
