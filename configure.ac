@@ -107,6 +107,11 @@ fi
 #AC_CHECK_SIZEOF([MPI_Offset], [], [[#include <mpi.h>]])
 #AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
 
+AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)
+AC_CONFIG_FILES(src/flib/pionfatt_mod.F90:src/flib/pionfatt_mod.F90.in2)
+AC_CONFIG_FILES(src/flib/pionfget_mod.F90:src/flib/pionfget_mod.F90.in2)
+AC_CONFIG_FILES(src/flib/pionfput_mod.F90:src/flib/pionfput_mod.F90.in2)
+
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])
 
