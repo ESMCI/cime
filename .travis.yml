@@ -37,9 +37,9 @@ before_script:
   - make
   - sudo make install
   - popd
-  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.10.0.tar.gz 
-  - tar -xzvf pnetcdf-1.10.0.tar.gz
-  - pushd pnetcdf-1.10.0
+  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.9.0.tar.gz 
+  - tar -xzvf pnetcdf-1.9.0.tar.gz
+  - pushd pnetcdf-1.9.0
   - ./configure --prefix=/usr --enable-shared
   - make 
   - sudo make install
