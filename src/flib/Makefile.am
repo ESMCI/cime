@@ -13,14 +13,20 @@
 #libpiof_la_SOURCES = pio.F90
 
 # Build this uninstalled convenience library.
-noinst_LTLIBRARIES = libpio_kinds.la
+noinst_LTLIBRARIES = libpio_kinds.la libpio_support.la
+#libpiodarray.la libpionfatt.la libpionfput.la
 
-# The convenience library depends on its source.
+# The convenience libraries depends on their source.
 libpio_kinds_la_SOURCES = pio_kinds.F90
+libpio_support_la_SOURCES = pio_support.F90
 
-# Mod file depends on its o file, is built and then installed.
+# Each mod file depends on the .o file.
 pio_kinds.mod: pio_kinds.$(OBJEXT)
-BUILT_SOURCES = pio_kinds.mod
-include_HEADERS = pio_kinds.mod
+pio_support.mod: pio_support.$(OBJEXT)
+
+# Mod files are built and then installed as headers.
+MODFILES = pio_kinds.mod pio_support.mod
+BUILT_SOURCES = $(MODFILES)
+include_HEADERS = $(MODFILES)
 
 CLEANFILES = *.mod
