@@ -17,15 +17,15 @@
 
 # Build this uninstalled convenience library.
 noinst_LTLIBRARIES = libpio_types.la libpio_nf.la libpio_kinds.la	\
-libpio_support.la
-#libpiodarray.la libpionfatt.la libpionfput.la
+libpio_support.la libpiodarray.la
+#libpionfatt.la libpionfput.la
 
 # The convenience libraries depends on their source.
 libpio_types_la_SOURCES = pio_types.F90
 libpio_nf_la_SOURCES = pio_nf.F90
 libpio_kinds_la_SOURCES = pio_kinds.F90
 libpio_support_la_SOURCES = pio_support.F90
-#libpiodarray_la_SOURCES = piodarray.F90
+libpiodarray_la_SOURCES = piodarray.F90
 #libpionfatt_la_SOURCES = pionfatt.F90
 
 # Each mod file depends on the .o file.
@@ -33,11 +33,11 @@ pio_types.mod: pio_types.$(OBJEXT)
 pio_nf.mod: pio_nf.$(OBJEXT)
 pio_kinds.mod: pio_kinds.$(OBJEXT)
 pio_support.mod: pio_support.$(OBJEXT)
-#piodarray.mod: piodarray.$(OBJEXT)
+piodarray.mod: piodarray.$(OBJEXT)
 
 # Mod files are built and then installed as headers.
-MODFILES = pio_types.mod pio_nf.mod pio_kinds.mod pio_support.mod
-#piodarray.mod
+MODFILES = pio_types.mod pio_nf.mod pio_kinds.mod pio_support.mod	\
+piodarray.mod
 BUILT_SOURCES = $(MODFILES)
 include_HEADERS = $(MODFILES)
 
