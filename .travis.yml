@@ -23,9 +23,9 @@ before_script:
   - export CC=mpicc
   - export FC=mpif90
   - export CPPFLAGS='-I/usr/include'
-  - wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.5/src/hdf5-1.10.5.tar.gz
-  - tar -xzvf hdf5-1.10.5.tar.gz
-  - pushd hdf5-1.10.5
+  - wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.gz
+  - tar -xzvf hdf5-1.10.4.tar.gz
+  - pushd hdf5-1.10.4
   - ./configure --prefix=/usr --enable-parallel
   - make
   - sudo make install
