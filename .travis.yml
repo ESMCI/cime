@@ -2,6 +2,10 @@ language: c
 dist: trusty
 sudo: false
 
+branches:
+  only:
+  - master
+
 addons:
   apt:
     sources:
@@ -17,11 +21,20 @@ before_install:
 
 before_script:
   - export CC=mpicc
+  - export FC=mpif90
   - export CPPFLAGS='-I/usr/include'
-
+  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.0.tar.gz 
+  - tar -xzvf pnetcdf-1.11.0.tar.gz
+  - ls -l
+  - pushd pnetcdf-1.11.0
+  - ./configure --prefix=/usr --enable-shared
+  - make
+  - sudo make install
+  - popd
 env:
   global:
     - CC=mpicc
+    - FC=mpif90
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
@@ -30,4 +43,10 @@ script:
   - autoreconf -i
   - ./configure
   - make -j distcheck
- 
+  - rm -rf build
+  - mkdir build
+  - cd build
+  - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
+  - make VERBOSE=1
+  - make tests VERBOSE=1
+  - make test VERBOSE=1
