@@ -1225,9 +1225,9 @@ int inq_var_deflate_handler(iosystem_desc_t *ios)
     char shuffle_present;
     char deflate_present;
     char deflate_level_present;
-    int shuffle, *shufflep;
-    int deflate, *deflatep;
-    int deflate_level, *deflate_levelp;
+    int shuffle, *shufflep = NULL;
+    int deflate, *deflatep = NULL;
+    int deflate_level, *deflate_levelp = NULL;
     int mpierr;
 
     assert(ios);
@@ -2331,9 +2331,9 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
     int iosysid;
     int iotype;
     char size_present, nelems_present, preemption_present;
-    PIO_Offset size, *sizep;
-    PIO_Offset nelems, *nelemsp;
-    float preemption, *preemptionp;
+    PIO_Offset size, *sizep = NULL;
+    PIO_Offset nelems, *nelemsp = NULL;
+    float preemption, *preemptionp = NULL;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
 
     LOG((1, "get_chunk_cache_handler called"));
@@ -2384,9 +2384,9 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     char size_present, nelems_present, preemption_present;
-    PIO_Offset size, *sizep;
-    PIO_Offset nelems, *nelemsp;
-    float preemption, *preemptionp;
+    PIO_Offset size, *sizep = NULL;
+    PIO_Offset nelems, *nelemsp = NULL;
+    float preemption, *preemptionp = NULL;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
 
     LOG((1, "get_var_chunk_cache_handler called"));
