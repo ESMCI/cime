@@ -77,6 +77,14 @@
         return e;                                                       \
     } while (0)
 
+/** Handle non-MPI errors by finalizing the MPI library and goto
+ * exit. */
+#define BAIL(e) do {                                                     \
+        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
+        MPI_Finalize();                                                 \
+        goto exit;                                                      \
+    } while (0)
+
 /** Global err buffer for MPI. When there is an MPI error, this buffer
  * is used to store the error message that is associated with the MPI
  * error. */

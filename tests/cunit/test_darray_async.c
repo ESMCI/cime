@@ -61,24 +61,24 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
 {
     int ncid;
     int varid[NVAR] = {0, 1, 2, 3};
-    void *data_in;
-    void *data_in_norec;
+    void *data_in = NULL;
+    void *data_in_norec = NULL;
     PIO_Offset type_size;
     int ret;
 
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
-        ERR(ret);
+        BAIL(ret);
 
     /* Get the size of the type. */
     if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
-        ERR(ret);
+        BAIL(ret);
 
     /* Allocate memory to read data. */
     if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size * NREC)))
-        ERR(PIO_ENOMEM);
+        BAIL(PIO_ENOMEM);
     if (!(data_in_norec = malloc(LAT_LEN * LON_LEN * type_size)))
-        ERR(PIO_ENOMEM);
+        BAIL(PIO_ENOMEM);
 
     /* We have two sets of variables, those with unlimted, and those
      * without unlimited dimension. */
@@ -90,12 +90,12 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
         /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
          * 31, in each of three records. */
         if ((ret = PIOc_get_var(ncid, rec_varid, data_in)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Read the non-record data. The values we expect are: 10, 11, 20, 21, 30,
          * 31. */
         if ((ret = PIOc_get_var(ncid, norec_varid, data_in_norec)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Check the results. */
         for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
@@ -105,52 +105,52 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             {
             case PIO_BYTE:
                 if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_CHAR:
                 if (((char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_SHORT:
                 if (((short *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_INT:
                 if (((int *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_FLOAT:
                 if (((float *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_DOUBLE:
                 if (((double *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
 #ifdef _NETCDF4
             case PIO_UBYTE:
                 if (((unsigned char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_USHORT:
                 if (((unsigned short *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_UINT:
                 if (((unsigned int *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_INT64:
                 if (((long long *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_UINT64:
                 if (((unsigned long long *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
 #endif /* _NETCDF4 */
             default:
-                ERR(ERR_WRONG);
+                BAIL(ERR_WRONG);
             }
         }
 
@@ -161,65 +161,68 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             {
             case PIO_BYTE:
                 if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_CHAR:
                 if (((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_SHORT:
                 if (((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_INT:
                 if (((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_FLOAT:
                 if (((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_DOUBLE:
                 if (((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
 #ifdef _NETCDF4
             case PIO_UBYTE:
                 if (((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_USHORT:
                 if (((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_UINT:
                 if (((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_INT64:
                 if (((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
             case PIO_UINT64:
                 if (((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    ERR(ret);
+                    BAIL(ret);
                 break;
 #endif /* _NETCDF4 */
             default:
-                ERR(ERR_WRONG);
+                BAIL(ERR_WRONG);
             }
         }
     } /* next var set */
 
-    /* Free resources. */
-    free(data_in);
-    free(data_in_norec);
-
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
-        ERR(ret);
+        BAIL(ret);
 
-    return 0;
+exit:
+    /* Free resources. */
+    if (data_in)
+        free(data_in);
+    if (data_in_norec)
+        free(data_in_norec);
+
+    return ret;
 }
 
 /* Run a simple test using darrays with async. */
