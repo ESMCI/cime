@@ -38,6 +38,17 @@ if test "x$enable_logging" = xyes; then
    AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
 fi
 
+# Does the user want to disable pnetcdf?
+AC_MSG_CHECKING([whether pnetcdf is to be used])
+AC_ARG_ENABLE([pnetcdf],
+              [AS_HELP_STRING([--disable-pnetcdf],
+                              [Disable pnetcdf use.])])
+test "x$enable_pnetcdf" = xno || enable_pnetcdf=yes
+AC_MSG_RESULT([$enable_pnetcdf])
+if test "x$enable_logging" = xyes; then
+   AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
+fi
+
 # NetCDF (at least classic) is required for PIO to build.
 AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
 
@@ -66,6 +77,9 @@ AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the
 
 # Check for pnetcdf library.
 AC_CHECK_LIB([pnetcdf], [ncmpi_create], [], [])
+if test "x$ac_cv_lib_pnetcdf_ncmpi_create" = xno -a $enable_pnetcdf = yes; then
+   AC_MSG_ERROR([Pnetcdf not found. Set CPPFLAGS/LDFLAGS or use --disable-pnetcdf.])
+fi
 
 # If we have parallel-netcdf, then set these as well.
 if test x$ac_cv_lib_pnetcdf_ncmpi_create = xyes; then
