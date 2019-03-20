@@ -11,19 +11,19 @@
 #   FFLAGS
 #   AWK
 #   AR
+ifeq (,$(PIOARCH))
+  PIOARCH=conf
+endif
+include Makefile.$(PIOARCH)
+export PIOARCH
 
 RM=/bin/rm -f
 FDEPENDS=$(SRCDIR)/fdepends.awk
 DEPSUF = .d
 MODSUF = .mod
 CPPSUF = .f90
-GENF90 := ../bin
+GENF90 := $(SRCDIR)
 
-ifeq (,$(PIOARCH))
-  PIOARCH=conf
-endif
-include Makefile.$(PIOARCH)
-export PIOARCH
 
 ifeq ($(findstring BG,$(CPPDEFS)),BG)
   SRCS_C = topology.c
