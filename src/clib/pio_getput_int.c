@@ -866,8 +866,14 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
 
         /* Find the dimension lengths. */
         for (int d = 0; d < ndims; d++)
+        {
             if ((ierr = PIOc_inq_dimlen(ncid, dimids[d], &countp[d])))
+            {
+                free(startp);
+                free(countp);
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
+            }
+        }
 
         /* Set up start array. */
         for (int d = 0; d < ndims; d++)
