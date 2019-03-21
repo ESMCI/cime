@@ -330,10 +330,8 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
             blk_len = 1;
         }
     }
-    LOG((2, "bsize before last block %ld %d\n",bsize, blk_len));
     /* Handle the last block. */
     bsize = lgcd(bsize, blk_len);
-    LOG((2, "bsize after last block %ld %d\n",bsize, blk_len));
 
     return bsize;
 }
