@@ -122,9 +122,6 @@ main(int argc, char **argv)
      * example. */
     int ioproc_stride = 1;
 
-    /** Number of the aggregator? Always 0 in this example. */
-    int numAggregator = 0;
-
     /** Zero based rank of first processor to be used for I/O. */
     int ioproc_start = 0;
 

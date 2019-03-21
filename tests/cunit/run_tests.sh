@@ -1,3 +1,4 @@
+#!/bin/sh
 # This is a test script for PIO.
 # Ed Hartnett
 
@@ -5,7 +6,7 @@
 set -e
 
 # Stop loop if ctrl-c is pressed.
-trap exit SIGINT SIGTERM
+trap exit INT TERM
 
 printf 'running PIO tests...\n'
 
