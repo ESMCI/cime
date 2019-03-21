@@ -23,7 +23,6 @@ int blocksize = DEFAULT_BLOCKSIZE;
  * @param a
  * @param b
  * @returns greatest common divisor.
- * @author Jim Edwards
  */
 int gcd(int a, int b )
 {
@@ -39,7 +38,6 @@ int gcd(int a, int b )
  * @param a
  * @param b
  * @returns greates common divisor.
- * @author Jim Edwards
  */
 long long lgcd(long long a, long long b)
 {
@@ -49,12 +47,38 @@ long long lgcd(long long a, long long b)
 }
 
 /**
+ * Return the gcd of elements in an int array.
+ *
+ * @param nain length of the array
+ * @param ain an array of length nain
+ * @returns greatest common divisor.
+ */
+int gcd_array(int nain, int *ain)
+{
+    int i;
+    int bsize = 1;
+
+    for (i = 0; i < nain; i++)
+        if (ain[i] <= 1)
+            return bsize;
+
+    bsize = ain[0];
+    i = 1;
+    while (i < nain && bsize > 1)
+    {
+        bsize = gcd(bsize, ain[i]);
+        i++;
+    }
+
+    return bsize;
+}
+
+/**
  * Return the greatest common devisor of array ain as int_64.
  *
  * @param nain number of elements in ain.
  * @param ain array of length nain.
  * @returns GCD of elements in ain.
- * @author Jim Edwards
  */
 long long lgcd_array(int nain, long long *ain)
 {
@@ -85,7 +109,6 @@ long long lgcd_array(int nain, long long *ain)
  * @param rank IO rank of this task.
  * @param start pointer to PIO_Offset that will get the start value.
  * @param count pointer to PIO_Offset that will get the count value.
- * @author Jim Edwards
  */
 void compute_one_dim(int gdim, int ioprocs, int rank, PIO_Offset *start,
                      PIO_Offset *count)
@@ -126,14 +149,13 @@ void compute_one_dim(int gdim, int ioprocs, int rank, PIO_Offset *start,
 
 /**
  * Look for the largest block of data for io which can be expressed in
- * terms of start and count.
+ * terms of start and count (account for gaps).
  *
  * @param arrlen
  * @param arr_in
  * @returns the size of the block
- * @author Jim Edwards, Ed Hartnett
  */
-PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
+PIO_Offset GCDblocksize_gaps(int arrlen, const PIO_Offset *arr_in)
 {
     int numblks = 0;  /* Number of blocks. */
     int numtimes = 0; /* Number of times adjacent arr_in elements differ by != 1. */
@@ -144,19 +166,15 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
     PIO_Offset bsize;     /* Size of the block. */
     PIO_Offset bsizeg;    /* Size of gap block. */
     PIO_Offset blklensum; /* Sum of all block lengths. */
-    PIO_Offset *del_arr; /* Array of deltas between adjacent elements in arr_in. */
-    PIO_Offset *loc_arr;
+    PIO_Offset *del_arr = NULL; /* Array of deltas between adjacent elements in arr_in. */
 
     /* Check inputs. */
     pioassert(arrlen > 0 && arr_in, "invalid input", __FILE__, __LINE__);
 
-    /* Allocate arrays. */
-    if (!(loc_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
-        return PIO_ENOMEM;
-    if (!(del_arr = malloc(sizeof(PIO_Offset) * (arrlen - 1))))
+    if (arrlen > 1)
     {
-        free(loc_arr);
-        return PIO_ENOMEM;
+        if (!(del_arr = malloc((arrlen - 1) * sizeof(PIO_Offset))))
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     }
 
     /* Count the number of contiguous blocks in arr_in. If any if
@@ -170,9 +188,9 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
             numtimes++;
             if ( i > 0 && del_arr[i - 1] > 1)
             {
-                free(loc_arr);
                 free(del_arr);
-                return 1;
+                del_arr = NULL;
+                return(1);
             }
         }
     }
@@ -204,7 +222,13 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
             numgaps = ii;
         }
 
+        /* If numblks > 1 then arrlen must be > 1 */
+        PIO_Offset *loc_arr = calloc(arrlen - 1, sizeof(PIO_Offset));
+        if (!loc_arr)
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
         j = 0;
+        /* If numblks > 1 then n must be <= (arrlen - 1) */
         for (int i = 0; i < n; i++)
             loc_arr[i] = 1;
 
@@ -212,13 +236,23 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
             if(del_arr[i] != 1)
                 loc_arr[j++] = i;
 
-        blk_len[0] = loc_arr[0];
+        /* This is handled differently from the Fortran version in PIO1,
+         * since array index is 1-based in Fortran and 0-based in C.
+         * Original Fortran code: blk_len(1) = loc_arr(1)
+         * Converted C code (incorrect): blk_len[0] = loc_arr[0];
+         * Converted C code (correct): blk_len[0] = loc_arr[0] + 1;
+         * For example, if loc_arr[0] is 2, the first block actually
+         * has 3 elements with indices 0, 1 and 2. */
+        blk_len[0] = loc_arr[0] + 1;
         blklensum = blk_len[0];
+        /* If numblks > 1 then numblks must be <= arrlen */
         for(int i = 1; i < numblks - 1; i++)
         {
             blk_len[i] = loc_arr[i] - loc_arr[i - 1];
             blklensum += blk_len[i];
         }
+        free(loc_arr);
+        loc_arr = NULL;
         blk_len[numblks - 1] = arrlen - blklensum;
 
         /* Get the GCD in blk_len array. */
@@ -239,8 +273,66 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
             bsize = lgcd(bsize, arr_in[0]);
     }
 
-    free(loc_arr);
     free(del_arr);
+    del_arr = NULL;
+
+    return bsize;
+}
+
+/**
+ * Look for the largest block of data for io which can be expressed in
+ * terms of start and count (ignore gaps).
+ *
+ * @param arrlen
+ * @param arr_in
+ * @returns the size of the block
+ */
+PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
+{
+    /* Check inputs. */
+    pioassert(arrlen > 0 && arr_in && arr_in[0] >= 0, "invalid input", __FILE__, __LINE__);
+
+    /* If theres is only one contiguous block with length 1,
+     * the result must be 1 and we can return. */
+    if (arrlen == 1)
+        return 1;
+
+    /* We can use the array length as the initial value. 
+     * Suppose we have n contiguous blocks with lengths
+     * b1, b2, ..., bn, then gcd(b1, b2, ..., bn) =
+     * gcd(b1 + b2 + ... + bn, b1, b2, ..., bn) =
+     * gcd(arrlen, b1, b2, ..., bn) */
+    PIO_Offset bsize = arrlen;
+
+    /* The minimum length of a block is 1. */
+    PIO_Offset blk_len = 1;
+
+    for (int i = 0; i < arrlen - 1; i++)
+    {
+        pioassert(arr_in[i + 1] >= 0, "invalid input", __FILE__, __LINE__);
+
+        if ((arr_in[i + 1] - arr_in[i]) == 1)
+        {
+            /* Still in a contiguous block. */
+            blk_len++;
+        }
+        else
+        {
+            /* The end of a block has been reached. */
+            if (blk_len == 1)
+                return 1;
+
+            bsize = lgcd(bsize, blk_len);
+            if (bsize == 1)
+              return 1;
+
+            /* Continue to find next block. */
+            blk_len = 1;
+        }
+    }
+
+    /* Handle the last block. */
+    bsize = lgcd(bsize, blk_len);
 
     return bsize;
 }
@@ -259,12 +351,11 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
  * @param count array of length ndims with data count values.
  * @param num_aiotasks the number of IO tasks used(?)
  * @returns 0 for success, error code otherwise.
- * @author Jim Edwards
  */
 int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
                       int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks)
 {
-    int minbytes;
+    int minbytes; 
     int maxbytes;
     int minblocksize; /* Like minbytes, but in data elements. */
     int basesize;     /* Size in bytes of base data type. */
@@ -431,6 +522,6 @@ int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_proc
 
     /* Return the number of IO procs used to the caller. */
     *num_aiotasks = use_io_procs;
-
+    
     return PIO_NOERR;
 }
