@@ -36,11 +36,12 @@ env:
     - CC=mpicc
     - FC=mpif90
     - CPPFLAGS='-I/usr/include'
-    - CFLAGS='-std=c99 -fsanitize=address -fno-omit-frame-pointer'
+    - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
   
 script:
   - autoreconf -i
+  - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
   - ./configure
   - make -j distcheck
   - rm -rf build
