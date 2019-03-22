@@ -3,4 +3,9 @@
 
 # Ed Hartnett
 
-SUBDIRS = cunit
+# Does the user want to build fortran?
+if BUILD_FORTRAN
+UNIT = unit
+endif
+
+SUBDIRS = cunit ${UNIT}

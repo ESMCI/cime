@@ -137,5 +137,6 @@ AC_OUTPUT(Makefile
           src/flib/Makefile
           tests/Makefile
           tests/cunit/Makefile
+          tests/unit/Makefile
           examples/Makefile
           examples/c/Makefile)
