@@ -36,7 +36,7 @@ env:
     - CC=mpicc
     - FC=mpif90
     - CPPFLAGS='-I/usr/include'
-    - CFLAGS='-std=c99'
+    - CFLAGS='-std=c99 -fsanitize=address -fno-omit-frame-pointer'
     - LDFLAGS='-L/usr/lib'
   
 script:
