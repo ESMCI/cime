@@ -62,6 +62,63 @@ int my_type[NTYPE] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
 /* Names of the dimensions. */
 char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"time", "vert_level", "lat", "lon"};
 
+int
+check_4d_vars(int my_rank, int ncid, int *varid_4d)
+{
+    void *data_in2 = NULL;
+    int expected_int_4d[VERT_LEN * LAT_LEN * LON_LEN] = {1, 0, 2, 1, 2, 1, 3, 2, 3, 2, 4, 3};
+    float expected_float_4d[VERT_LEN * LAT_LEN * LON_LEN] = {1, 0, 2, 1.5, 2, 1, 3, 2.5, 3, 2, 4, 3.5};
+    int ret;
+
+    for (int v = 0; v < NUM_4D_VARS; v++)
+    {
+        int xtype;
+        PIO_Offset size;
+
+        /* Get the type of the 4d var. */
+        if ((ret = PIOc_inq_vartype(ncid, varid_4d[v], &xtype)))
+            BAIL(ret);
+
+        /* Get the size of this type. */
+        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &size)))
+            BAIL(ret);
+
+        /* Allocate memory for data. */
+        if (!(data_in2 = malloc(size * VERT_LEN * LAT_LEN * LON_LEN * NREC)))
+            BAIL(PIO_ENOMEM);
+
+        /* Read the data. */
+        if ((ret = PIOc_get_var(ncid, varid_4d[v], data_in2)))
+            BAIL(ret);
+
+        /* Check each element of data. */
+        for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+        {
+            switch (xtype)
+            {
+            case PIO_INT:
+                if (((int *)data_in2)[r] != expected_int_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
+                    BAIL(ERR_WRONG);
+                break;
+            case PIO_FLOAT:
+                if (((float *)data_in2)[r] != expected_float_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
+                    BAIL(ERR_WRONG);
+                break;
+            default:
+                BAIL(ERR_WRONG);
+            }
+        }
+        free(data_in2);
+        data_in2 = NULL;
+    }
+
+exit:
+    if (data_in2)
+        free(data_in2);
+
+    return ret;
+}
+
 /* Check the file that was created in this test. */
 int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                       int *rec_varid, int *norec_varid, int num_types, int *varid_4d)
@@ -88,10 +145,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                                                              9223372036854775827ULL, 9223372036854775828ULL,
                                                              9223372036854775837ULL, 9223372036854775838ULL};
 #endif /* _NETCDF4 */
-    int expected_int_4d[VERT_LEN * LAT_LEN * LON_LEN] = {1, 0, 2, 1, 2, 1, 3, 2, 3, 2, 4, 3};
-    float expected_float_4d[VERT_LEN * LAT_LEN * LON_LEN] = {1, 0, 2, 1.5, 2, 1, 3, 2.5, 3, 2, 4, 3.5};
     void *data_in = NULL;
-    void *data_in2 = NULL;
     void *norec_data_in = NULL;
 
     /* Reopen the file. */
@@ -238,57 +292,24 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             }
         }
 
+        /* Free memory. */
+        free(data_in);
+        data_in = NULL;
+        free(norec_data_in);
+        norec_data_in = NULL;
+
         /* Check the 4D vars. */
-        for (int v = 0; v < NUM_4D_VARS; v++)
-        {
-            int xtype;
-            PIO_Offset size;
-
-            /* Get the type of the 4d var. */
-            if ((ret = PIOc_inq_vartype(ncid, varid_4d[v], &xtype)))
-                BAIL(ret);
-
-            /* Get the size of this type. */
-            if ((ret = PIOc_inq_type(ncid, xtype, NULL, &size)))
-                BAIL(ret);
-
-            /* Allocate memory for data. */
-            if (!(data_in2 = malloc(size * VERT_LEN * LAT_LEN * LON_LEN * NREC)))
-                BAIL(PIO_ENOMEM);
-
-            /* Read the data. */
-            if ((ret = PIOc_get_var(ncid, varid_4d[v], data_in2)))
-                BAIL(ret);
-
-            /* Check each element of data. */
-            for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
-            {
-                switch (xtype)
-                {
-                case PIO_INT:
-                    if (((int *)data_in2)[r] != expected_int_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
-                        BAIL(ERR_WRONG);
-                    break;
-                case PIO_FLOAT:
-                    if (((float *)data_in2)[r] != expected_float_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
-                        BAIL(ERR_WRONG);
-                    break;
-                default:
-                    BAIL(ERR_WRONG);
-                }
-            }
-        }
+        if ((ret = check_4d_vars(my_rank, ncid, varid_4d)))
+            BAIL(ret);
     }
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
-        BAIL(ret);
+        ERR(ret);
 
 exit:
     if (data_in)
         free(data_in);
-    if (data_in2)
-        free(data_in2);
     if (norec_data_in)
         free(norec_data_in);
     return ret;
