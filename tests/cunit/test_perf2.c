@@ -8,6 +8,7 @@
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
+#include <sys/time.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
@@ -159,9 +160,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
+        struct timeval starttime, endtime;
+        long long startt, endt;
+        long long delta;
+
         /* Create the filename. */
         /* sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
         sprintf(filename, "data__iotype_.nc");
+
+        /* Start the clock. */
+        gettimeofday(&starttime, NULL);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -203,6 +211,17 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
+        /* Stop the clock. */
+        gettimeofday(&endtime, NULL);
+
+        /* Compute the time delta */
+        startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+        endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+        delta = (endt - startt)/NUM_TIMESTEPS;
+        /* if (!my_rank) */
+        /*     printf("%d\t%d\t%d\t%d\t%lld\n", rearranger, fmt, pio_type, test_multi, */
+        /*            delta); */
 
         /* Reopen the file. */
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))

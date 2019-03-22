@@ -880,8 +880,8 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
         if (!fp)
             pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-        fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes, ndims);
-
+        if (fscanf(fp,"version %d npes %d ndims %d\n", &rversno, &rnpes, ndims) != 3)
+            pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
         if (rversno != VERSNO)
             return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
@@ -895,20 +895,23 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
         if (!(tdims = calloc(*ndims, sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int i = 0; i < *ndims; i++)
-            fscanf(fp,"%d ", tdims + i);
+            if (fscanf(fp,"%d ", tdims + i) != 1)
+                pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if ((mpierr = MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
         for (int i = 0; i < rnpes; i++)
         {
-            fscanf(fp, "%d %lld", &j, &maplen);
+            if (fscanf(fp, "%d %lld", &j, &maplen) != 2)
+                pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
             if (j != i)  // Not sure how this could be possible
                 return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             for (j = 0; j < maplen; j++)
-                fscanf(fp, "%lld ", tmap+j);
+                if (fscanf(fp, "%lld ", tmap + j) != 1)
+                    pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
             if (i > 0)
             {

@@ -2076,7 +2076,6 @@ void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
     if (!(wall = bget(2 * 4 * log2 * sizeof(double))))
         return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
     double mintime;
-    int k = 0;
 
     if ((mpierr = MPI_Barrier(mycomm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
