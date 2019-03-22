@@ -9,3 +9,5 @@ UNIT = unit
 endif
 
 SUBDIRS = cunit ${UNIT}
+
+EXTRA_DIST = CMakeLists.txt

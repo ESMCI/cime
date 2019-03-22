@@ -8,3 +8,5 @@ FLIB = flib
 endif
 
 SUBDIRS = clib $(FLIB)
+
+EXTRA_DIST = CMakeLists.txt
