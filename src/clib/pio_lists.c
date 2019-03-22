@@ -23,18 +23,12 @@ static file_desc_t *current_file = NULL;
  */
 void pio_add_to_file_list(file_desc_t *file)
 {
-    file_desc_t *cfile;
-
     assert(file);
-
-    /* Get a pointer to the global list of files. */
-    cfile = pio_file_list;
 
     /* Keep a global pointer to the current file. */
     current_file = file;
 
-    /* If there is nothing in the list, then file will be the first
-     * entry. Otherwise, move to end of the list. */
+    /* Add file to list. */
     HASH_ADD_INT(pio_file_list, pio_ncid, file);
 }
 
@@ -279,10 +273,10 @@ int pio_delete_iodesc_from_list(int ioid)
     io_desc_t *ciodesc;
 
     ciodesc = pio_get_iodesc_from_id(ioid);
-    if(ciodesc)
+    if (ciodesc)
     {
 	HASH_DEL(pio_iodesc_list, ciodesc);
-	if (current_iodesc = ciodesc)
+	if (current_iodesc == ciodesc)
 	    current_iodesc = pio_iodesc_list;
 	free(ciodesc);
 	return PIO_NOERR;
@@ -367,7 +361,6 @@ int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
 int delete_var_desc(int varid, var_desc_t **varlist)
 {
     var_desc_t *v;
-    var_desc_t *prev = NULL;
     int ret;
 
     /* Check inputs. */
