@@ -3,11 +3,8 @@
 
 # Ed Hartnett 3/22/19
 
-# Link to our assembled library.
-AM_LDFLAGS = ${top_builddir}/src/clib/libpio.la
-AM_CPPFLAGS = -I$(top_srcdir)/src/flib
-AM_CPPFLAGS += "-D_NETCDF -D_NETCDF4 -D_PETCDF"
-LDADD = ${top_builddir}/src/clib/libpiof.la
+# Put together AM_CPPFLAGS and AM_LDFLAGS.
+include $(top_srcdir)/set_flags.am
 
 # # Build the test for make check.
 # check_PROGRAMS = pio_unit_test_driver

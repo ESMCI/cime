@@ -7,4 +7,4 @@ SUBDIRS = src tests examples
 # Look in the m4 directory for autotools stuff.
 ACLOCAL_AMFLAGS= -I m4
 
-EXTRA_DIST = CMakeLists.txt
+EXTRA_DIST = CMakeLists.txt set_flags.am
