@@ -133,11 +133,11 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 ERR(ret);
 
             int *fvp_int = NULL;
-            float *fvp_float = NULL;
+            /* float *fvp_float = NULL; */
             if (use_fv)
             {
                 fvp_int = &custom_fillvalue_int;
-                fvp_float = &custom_fillvalue_float;
+                /* fvp_float = &custom_fillvalue_float; */
             }
 
             /* Write the data. */
@@ -148,13 +148,16 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                                          fvp_int)))
                 ERR(ret);
 
-            /* This should not work since we cannot mix record and not record vars */
+            /* This should not work since we cannot mix record and not
+             * record vars. */
 	    int frame[NUM_VAR] = {0, 0, 0};
 
             if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
                                         frame, NULL, 0) != PIO_EVARDIMMISMATCH)
                 ERR(ERR_WRONG);
-	    /* This should work since int and float are the same size and both are record vars */
+
+	    /* This should work since int and float are the same size
+             * and both are record vars. */
             if ((ret = PIOc_write_darray_multi(ncid, varid+1, ioid, NUM_VAR-1, arraylen * (NUM_VAR-1), test_data_float,
 					       frame, NULL, 0)))
                 ERR(ret);
