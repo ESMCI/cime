@@ -138,5 +138,6 @@ AC_OUTPUT(Makefile
           tests/Makefile
           tests/cunit/Makefile
           tests/unit/Makefile
+          tests/general/Makefile
           examples/Makefile
           examples/c/Makefile)
