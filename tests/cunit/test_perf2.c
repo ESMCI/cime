@@ -125,9 +125,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = EXPECTED_MAPLEN;
-    struct timeval starttime, endtime;
-    long long startt, endt;
-    long long delta;
     int int_fillvalue = NC_FILL_INT;
     void *fillvalue = NULL;
     int *test_data;
@@ -163,6 +160,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
+        struct timeval starttime, endtime;
+        long long startt, endt;
+        long long delta;
+
         /* Create the filename. */
         /* sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
         sprintf(filename, "data__iotype_.nc");

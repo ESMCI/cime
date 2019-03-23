@@ -41,8 +41,10 @@ env:
   
 script:
   - autoreconf -i
+  - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
   - ./configure
   - make -j distcheck
+  - export CFLAGS='-std=c99'
   - rm -rf build
   - mkdir build
   - cd build
