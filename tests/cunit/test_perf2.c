@@ -219,9 +219,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
         delta = (endt - startt)/NUM_TIMESTEPS;
-        /* if (!my_rank) */
-        /*     printf("%d\t%d\t%d\t%d\t%lld\n", rearranger, fmt, pio_type, test_multi, */
-        /*            delta); */
+        if (!my_rank)
+            printf("%d\t%lld\n", fmt, delta);
 
         /* Reopen the file. */
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
