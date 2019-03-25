@@ -526,7 +526,8 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 	    break;
 	}
     }
-    if (iodesc->needssort){
+    if (iodesc->needssort)
+    {
 	struct sort_map *tmpsort;
 
 	if (!(tmpsort = malloc(sizeof(struct sort_map) * maplen)))
