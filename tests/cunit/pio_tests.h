@@ -75,7 +75,7 @@
         MPI_Error_string(e, err_buffer, &resultlen);                    \
         fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
         MPI_Finalize();                                                 \
-        ret = NC_EMPI;                                                  \
+        ret = NC_EIO;                                                  \
         goto exit;                                                      \
     } while (0)
 
