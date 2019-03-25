@@ -234,6 +234,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
     PIO_Offset elements_per_pe = LAT_LEN;
     PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
+    void *my_data_multi;
     int ret;
 
     sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
@@ -241,7 +242,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, piotype, NDIM2, &dim_len[1], elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
-        ERR(ret);
+        BAIL(ret);
 
     /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
@@ -255,7 +256,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid2)))
-        ERR(ret);
+        BAIL(ret);
 
     /* Test each available iotype. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
@@ -266,7 +267,6 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
         int varid[NVAR];
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
-        void *my_data_multi;
         void *my_data_norec;
         signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
         char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
@@ -353,7 +353,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
             break;
 #endif /* _NETCDF4 */
         default:
-            ERR(ERR_WRONG);
+            BAIL(ERR_WRONG);
         }
 
         /* Create sample output file. */
@@ -361,119 +361,123 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
                 piotype);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Find the size of the type. */
         if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Create the data for the darray_multi call by making two
          * copies of the data. */
         if (!(my_data_multi = malloc(2 * type_size * elements_per_pe)))
-            ERR(PIO_ENOMEM);
+            BAIL(PIO_ENOMEM);
         memcpy(my_data_multi, my_data, type_size * elements_per_pe);
         memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * elements_per_pe);
 
         /* Define dimensions. */
         for (int d = 0; d < NDIM3; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
-                ERR(ret);
+                BAIL(ret);
 
         /* Define variables. */
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME2, piotype, NDIM3, dimid, &varid[1])))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1],
                                 &varid[2])))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME2, piotype, NDIM2, &dimid[1],
                                 &varid[3])))
-            ERR(ret);
+            BAIL(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Set the record number for the record vars. */
         if ((ret = PIOc_setframe(ncid, varid[0], 0)))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_setframe(ncid, varid[1], 0)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Write some data to the record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Write some data to the non-record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_norec, NULL)))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_norec, NULL)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Sync the file. */
         if ((ret = PIOc_sync(ncid)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Increment the record number for the record vars. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_advanceframe(ncid, varid[1])))
-            ERR(ret);
+            BAIL(ret);
 
         /* Write another record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Sync the file. */
         if ((ret = PIOc_sync(ncid)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Increment the record number for the record var. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_advanceframe(ncid, varid[1])))
-            ERR(ret);
+            BAIL(ret);
 
         /* Write a third record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Increment the record number for the record var. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
-            ERR(ret);
+            BAIL(ret);
         if ((ret = PIOc_advanceframe(ncid, varid[1])))
-            ERR(ret);
+            BAIL(ret);
 
         /* Write a forth record, using darray_multi(). */
         int frame[2] = {3, 3};
         if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 2, elements_per_pe, my_data_multi, frame, NULL, 0)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            BAIL(ret);
 
         /* Free resources. */
         free(my_data_multi);
+        my_data_multi = NULL;
 
         /* Check the file for correctness. */
         if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank, piotype)))
-            ERR(ret);
+            BAIL(ret);
 
     } /* next iotype */
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
+        BAIL(ret);
 
-    return 0;
+exit:
+    if (my_data_multi)
+        free(my_data_multi);
+    return ret;
 }
 
 /* Run Tests for pio_spmd.c functions. */
