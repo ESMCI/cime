@@ -11,7 +11,12 @@ trap exit INT TERM
 printf 'running PIO tests...\n'
 
 PIO_TESTS='pio_init_finalize pio_file_simple_tests pio_file_fail '\
-'ncdf_simple_tests'
+'ncdf_simple_tests ncdf_get_put ncdf_fail ncdf_inq pio_rearr '\
+'pio_decomp_tests pio_decomp_tests_1d '\
+'pio_decomp_tests_2d pio_decomp_tests_3d pio_decomp_frame_tests '\
+'pio_decomp_fillval pio_iosystem_tests pio_iosystem_tests2 '\
+'pio_iosystem_tests3'
+# pio_rearr_opts pio_rearr_opts2
 
 success1=true
 for TEST in $PIO_TESTS
