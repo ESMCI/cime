@@ -15,13 +15,12 @@ AM_CPPFLAGS += -I${top_builddir}/tests/general/util
 SRCDIRS = util
 
 # Build the test for make check.
-check_PROGRAMS = pio_init_finalize #pio_file_simple_tests
+check_PROGRAMS = pio_init_finalize pio_file_simple_tests	\
+pio_file_fail ncdf_simple_tests
 pio_init_finalize_SOURCES = pio_init_finalize.F90
-# pio_init_finalize_LDADD = util/libpio_tutil.la	\
-# ${top_builddir}/src/flib/libpiof.la		\
-# ${top_builddir}/src/clib/libpio.la
-
-
+pio_file_simple_tests_SOURCES = pio_file_simple_tests.F90
+pio_file_fail_SOURCES = pio_file_fail.F90
+ncdf_simple_tests_SOURCES = ncdf_simple_tests.F90
 
 # Tests will run from a bash script.
 TESTS = run_tests.sh
