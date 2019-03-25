@@ -533,7 +533,10 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 	if (!(tmpsort = malloc(sizeof(struct sort_map) * maplen)))
 	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 	if (!(iodesc->remap = malloc(sizeof(int) * maplen)))
+        {
+            free(tmpsort);
 	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        }
 	for (int m=0; m < maplen; m++)
 	{
 	    tmpsort[m].remap = m;
