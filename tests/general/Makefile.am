@@ -16,7 +16,7 @@ ${top_builddir}/src/clib/libpio.la
 AM_CPPFLAGS += -I${top_builddir}/tests/general/util
 
 # There is a test utility mod file in this subdir which must be built.
-SRCDIRS = util
+SRCDIRS = util .
 
 # Build this uninstalled convenience library.
 noinst_LTLIBRARIES = libpio_rearr_opts.la
