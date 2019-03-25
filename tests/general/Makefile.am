@@ -1,13 +1,13 @@
 ## This is the automake file for building the Fortran general tests
 ## for the PIO library.
 
-# Ed Hartnett 3/22/19
+# Ed Hartnett 3/25/19
 
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
-# # Build the test for make check.
-# check_PROGRAMS = pio_unit_test_driver
+# Build the test for make check.
+#check_PROGRAMS = pio_unit_test_driver
 # pio_unit_test_driver_SOURCES = driver.F90
 # pio_unit_test_driver_LDADD = libglobal_vars.la libncdf_tests.la	\
 # libbasic_tests.la ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpio.la
