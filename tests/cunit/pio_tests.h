@@ -76,7 +76,7 @@
         fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
         MPI_Finalize();                                                 \
         ret = NC_EMPI;                                                  \
-        goto ecit;                                                      \
+        goto exit;                                                      \
     } while (0)
 
 /** Handle non-MPI errors by finalizing the MPI library and exiting

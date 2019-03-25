@@ -479,18 +479,18 @@ int test_expand_region()
 }
 
 /* Test define_iodesc_datatypes() function. */
-int test_define_iodesc_datatypes()
+int test_define_iodesc_datatypes(int my_rank)
 {
 #define NUM_REARRANGERS 2
     int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+    io_desc_t iodesc;
     int mpierr;
-    int ret;
+    int ret = PIO_NOERR;
 
     /* Run the functon. */
     for (int r = 0; r < NUM_REARRANGERS; r++)
     {
         iosystem_desc_t ios;
-        io_desc_t iodesc;
 
         /* Set up test for IO task with BOX rearranger to create one type. */
         ios.ioproc = 1; /* this is IO proc. */
@@ -500,15 +500,21 @@ int test_define_iodesc_datatypes()
         iodesc.nrecvs = 1; /* Number of types created. */
         iodesc.mpitype = MPI_INT;
         iodesc.stype = NULL; /* Array of MPI types will be created here. */
+        iodesc.rcount = NULL;
+        iodesc.rfrom = NULL;
+        iodesc.rindex = NULL;
+        iodesc.scount = NULL;
+        iodesc.sindex = NULL;
+        iodesc.rtype = NULL;
 
         /* Allocate space for arrays in iodesc that will be filled in
          * define_iodesc_datatypes(). */
         if (!(iodesc.rcount = malloc(iodesc.nrecvs * sizeof(int))))
-            return PIO_ENOMEM;
+            BAIL(PIO_ENOMEM);
         if (!(iodesc.rfrom = malloc(iodesc.nrecvs * sizeof(int))))
-            return PIO_ENOMEM;
+            BAIL(PIO_ENOMEM);
         if (!(iodesc.rindex = malloc(1 * sizeof(PIO_Offset))))
-            return PIO_ENOMEM;
+            BAIL(PIO_ENOMEM);
         iodesc.rindex[0] = 0;
         iodesc.rcount[0] = 1;
 
@@ -541,16 +547,60 @@ int test_define_iodesc_datatypes()
             MPIERR(mpierr);
 
         /* Free resources. */
-        free(iodesc.rtype);
-        free(iodesc.sindex);
-        free(iodesc.scount);
-        free(iodesc.stype);
-        free(iodesc.rcount);
-        free(iodesc.rfrom);
-        free(iodesc.rindex);
+        if (iodesc.rtype)
+        {
+            free(iodesc.rtype);
+            iodesc.rtype = NULL;
+        }
+        if (iodesc.sindex)
+        {
+            free(iodesc.sindex);
+            iodesc.sindex = NULL;
+        }
+        if (iodesc.scount)
+        {
+            free(iodesc.scount);
+            iodesc.scount = NULL;
+        }
+        if (iodesc.stype)
+        {
+            free(iodesc.stype);
+            iodesc.stype = NULL;
+        }
+        if (iodesc.rcount)
+        {
+            free(iodesc.rcount);
+            iodesc.rcount = NULL;
+        }
+        if (iodesc.rfrom)
+        {
+            free(iodesc.rfrom);
+            iodesc.rfrom = NULL;
+        }
+        if (iodesc.rindex)
+        {
+            free(iodesc.rindex);
+            iodesc.rindex = NULL;
+        }
     }
 
-    return 0;
+exit:
+    if (iodesc.rtype)
+        free(iodesc.rtype);
+    if (iodesc.sindex)
+        free(iodesc.sindex);
+    if (iodesc.scount)
+        free(iodesc.scount);
+    if (iodesc.stype)
+        free(iodesc.stype);
+    if (iodesc.rcount)
+        free(iodesc.rcount);
+    if (iodesc.rfrom)
+        free(iodesc.rfrom);
+    if (iodesc.rindex)
+        free(iodesc.rindex);
+
+    return ret;
 }
 
 /* Test the compute_counts() function with the box rearranger. */
@@ -1188,7 +1238,7 @@ int run_no_iosys_tests(int my_rank, MPI_Comm test_comm)
     if ((ret = test_create_mpi_datatypes()))
         return ret;
 
-    if ((ret = test_define_iodesc_datatypes()))
+    if ((ret = test_define_iodesc_datatypes(my_rank)))
         return ret;
 
     if ((ret = test_compare_offsets()))
