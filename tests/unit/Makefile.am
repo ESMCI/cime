@@ -22,10 +22,10 @@ libncdf_tests_la_SOURCES = ncdf_tests.F90
 libbasic_tests_la_SOURCES = basic_tests.F90
 
 # Tests will run from a bash script.
-#TESTS = run_tests.sh
+TESTS = run_tests.sh
 
 # Distribute the test script.
-EXTRA_DIST = CMakeLists.txt #run_tests.sh
+EXTRA_DIST = CMakeLists.txt run_tests.sh
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log
