@@ -6,24 +6,19 @@
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
+AM_CPPFLAGS += -I${top_builddir}/tests/general/util
+
 SRCDIRS = util
 
 # Build the test for make check.
-# check_PROGRAMS = pio_init_finalize
-# pio_init_finalize_SOURCES = pio_init_finalize.F90 util/pio_tutil.F90
-# pio_init_finalize_LDADD = ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpio.la
-
-# Build these uninstalled convenience libraries.
-# noinst_LTLIBRARIES = libglobal_vars.la libncdf_tests.la	\
-# libbasic_tests.la
-
-# # The convenience libraries depends on their source.
-# libglobal_vars_la_SOURCES = global_vars.F90
-# libncdf_tests_la_SOURCES = ncdf_tests.F90
-# libbasic_tests_la_SOURCES = basic_tests.F90
+check_PROGRAMS = pio_init_finalize
+pio_init_finalize_SOURCES = pio_init_finalize.F90
+pio_init_finalize_LDADD = util/libpio_tutil.la	\
+${top_builddir}/src/flib/libpiof.la		\
+${top_builddir}/src/clib/libpio.la
 
 # Tests will run from a bash script.
-#TESTS = run_tests.sh
+TESTS = run_tests.sh
 
 # Distribute the test script.
 EXTRA_DIST = CMakeLists.txt run_tests.sh ncdf_fail.F90.in2		\
