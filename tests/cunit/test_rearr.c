@@ -506,6 +506,7 @@ int test_define_iodesc_datatypes(int my_rank)
         iodesc.scount = NULL;
         iodesc.sindex = NULL;
         iodesc.rtype = NULL;
+        iodesc.stype = NULL;
 
         /* Allocate space for arrays in iodesc that will be filled in
          * define_iodesc_datatypes(). */
@@ -524,9 +525,9 @@ int test_define_iodesc_datatypes(int my_rank)
         int num_send_types = iodesc.rearranger == PIO_REARR_BOX ? ios.num_iotasks : 1;
 
         if (!(iodesc.sindex = malloc(num_send_types * sizeof(PIO_Offset))))
-            return PIO_ENOMEM;
+            BAIL(PIO_ENOMEM);
         if (!(iodesc.scount = malloc(num_send_types * sizeof(int))))
-            return PIO_ENOMEM;
+            BAIL(PIO_ENOMEM);
         for (int st = 0; st < num_send_types; st++)
         {
             iodesc.sindex[st] = 0;
@@ -540,11 +541,11 @@ int test_define_iodesc_datatypes(int my_rank)
         /* We created send types, so free them. */
         for (int st = 0; st < num_send_types; st++)
             if ((mpierr = MPI_Type_free(&iodesc.stype[st])))
-                MPIERR(mpierr);
+                MPIBAIL(mpierr);
 
         /* We created one receive type, so free it. */
         if ((mpierr = MPI_Type_free(&iodesc.rtype[0])))
-            MPIERR(mpierr);
+            MPIBAIL(mpierr);
 
         /* Free resources. */
         if (iodesc.rtype)
