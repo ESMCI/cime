@@ -15,7 +15,7 @@ AM_CPPFLAGS = -D_NETCDF -D_NETCDF4 -D_PETCDF
 libpiof_la_LDFLAGS = -version-info 1:0:0
 
 # The library soure files.
-libpiof_la_LIBADD = libpio_types.la libpio_nf.la libpio_kinds.la	\
+libpiof_la_LIBADD = libpio_nf.la libpio_kinds.la	\
 libpio_support.la libpiodarray.la libpionfatt.la libpionfget.la		\
 libpionfput.la libpiolib_mod.la libpio.la
 
