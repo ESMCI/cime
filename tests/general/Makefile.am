@@ -6,6 +6,8 @@
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
+SRCDIRS = util
+
 # Build the test for make check.
 # check_PROGRAMS = pio_init_finalize
 # pio_init_finalize_SOURCES = pio_init_finalize.F90 util/pio_tutil.F90
