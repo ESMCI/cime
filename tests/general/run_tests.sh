@@ -10,7 +10,7 @@ trap exit INT TERM
 
 printf 'running PIO tests...\n'
 
-PIO_TESTS='pio_init_finalize'
+PIO_TESTS='pio_init_finalize pio_file_simple_tests'
 
 success1=true
 for TEST in $PIO_TESTS

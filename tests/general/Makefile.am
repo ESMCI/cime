@@ -6,16 +6,22 @@
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
+LDADD = util/libpio_tutil.la	\
+${top_builddir}/src/flib/libpiof.la		\
+${top_builddir}/src/clib/libpio.la
+
 AM_CPPFLAGS += -I${top_builddir}/tests/general/util
 
 SRCDIRS = util
 
 # Build the test for make check.
-check_PROGRAMS = pio_init_finalize
+check_PROGRAMS = pio_init_finalize #pio_file_simple_tests
 pio_init_finalize_SOURCES = pio_init_finalize.F90
-pio_init_finalize_LDADD = util/libpio_tutil.la	\
-${top_builddir}/src/flib/libpiof.la		\
-${top_builddir}/src/clib/libpio.la
+# pio_init_finalize_LDADD = util/libpio_tutil.la	\
+# ${top_builddir}/src/flib/libpiof.la		\
+# ${top_builddir}/src/clib/libpio.la
+
+
 
 # Tests will run from a bash script.
 TESTS = run_tests.sh

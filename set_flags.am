@@ -7,6 +7,3 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 AM_CPPFLAGS += "-D_NETCDF -D_NETCDF4 -D_PETCDF"
 
-# Link to our assembled libraries, C and Fortran.
-AM_LDFLAGS = ${top_builddir}/src/clib/libpio.la
-LDADD = ${top_builddir}/src/clib/libpiof.la
