@@ -3,6 +3,9 @@
 
 # Ed Hartnett 3/20/19
 
+# Parallel builds don't currently work in this directory.
+.NOTPARALLEL:
+
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
