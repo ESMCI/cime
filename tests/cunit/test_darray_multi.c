@@ -84,7 +84,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int ncid2;             /* The ncid of the re-opened netCDF file. */
     int varid[NVAR];       /* The IDs of the netCDF varables. */
     int other_varid;       /* The IDs of a var of different type. */
-    int wrong_varid[NVAR]; /* These will not work. */
     PIO_Offset arraylen = 4; /* Amount of data from each task. */
     void *fillvalue;       /* Pointer to fill value. */
     void *test_data;       /* Pointer to test data we will write. */
@@ -278,14 +277,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
                 int frame[NVAR] = {0, 0, 0};
                 int flushtodisk = test_multi;
-
-                /* This will not work, because we mix var types. */
-                wrong_varid[0] = varid[0];
-                wrong_varid[1] = varid[1];
-                wrong_varid[0] = other_varid;
-//                if (PIOc_write_darray_multi(ncid, wrong_varid, ioid, NVAR, arraylen, test_data, frame,
-//                                            fillvalue, flushtodisk) != PIO_EINVAL)
-//                    ERR(ERR_WRONG);
 
                 /* Write the data with the _multi function. */
                 if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, NVAR, arraylen, test_data, frame,
