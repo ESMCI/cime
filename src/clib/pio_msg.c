@@ -2151,7 +2151,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
 
     /* Get decomposition information. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if ((mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
