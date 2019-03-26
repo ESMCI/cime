@@ -4,6 +4,7 @@
 #
 
 # Set the CPPFLAGS.
-AM_CPPFLAGS = -I$(top_srcdir)/src/flib
-AM_CPPFLAGS += "-D_NETCDF -D_NETCDF4 -D_PETCDF"
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib -D_NETCDF
 
+AM_CPPFLAGS += -D_PETCDF
+AM_CPPFLAGS += -D_NETCDF4

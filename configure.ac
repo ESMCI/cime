@@ -58,9 +58,7 @@ AC_ARG_ENABLE([pnetcdf],
                               [Disable pnetcdf use.])])
 test "x$enable_pnetcdf" = xno || enable_pnetcdf=yes
 AC_MSG_RESULT([$enable_pnetcdf])
-if test "x$enable_logging" = xyes; then
-   AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
-fi
+AM_CONDITIONAL(BUILD_PNETCDF, [test "x$enable_pnetcdf" = xyes])
 
 # NetCDF (at least classic) is required for PIO to build.
 AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
@@ -110,6 +108,7 @@ AC_MSG_RESULT([${have_netcdf_par}])
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
 fi
+AM_CONDITIONAL(BUILD_NETCDF4, [test "x$have_netcdf_par" = xyes])
 
 # Not working for some reason, so I will just set it...
 AC_CHECK_TYPE([MPI_Offset], [], [], [#include <mpi.h>])
