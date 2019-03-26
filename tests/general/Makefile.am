@@ -14,7 +14,7 @@ ${top_builddir}/src/flib/libpiof.la		\
 ${top_builddir}/src/clib/libpio.la
 
 # There is a test utility mod file in this subdir which must be built.
-SRCDIRS = util
+SUBDIRS = util
 
 # Build these uninstalled convenience libraries.
 noinst_LTLIBRARIES = libpio_tutil.la libpio_rearr_opts.la
