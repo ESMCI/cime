@@ -28,7 +28,7 @@ libbasic_tests_la_SOURCES = basic_tests.F90
 TESTS = run_tests.sh
 
 # Distribute the test script.
-EXTRA_DIST = CMakeLists.txt run_tests.sh
+EXTRA_DIST = CMakeLists.txt run_tests.sh input.nl
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log
