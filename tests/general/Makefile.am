@@ -63,16 +63,31 @@ pio_iosystem_tests3_SOURCES = pio_iosystem_tests3.F90
 # Tests will run from a bash script.
 TESTS = run_tests.sh
 
+%.F90: %.F90.in
+	util/pio_tf_f90gen.pl --annotate-source --out=$@ $<
+
+ncdf_fail.F90: ncdf_fail.F90.in
+ncdf_get_put.F90: ncdf_get_put.F90.in
+ncdf_inq.F90: ncdf_inq.F90.in
+ncdf_simple_tests.F90:ncdf_simple_tests.F90.in
+pio_decomp_fillval.F90:pio_decomp_fillval.F90.in
+pio_decomp_frame_tests.F90:pio_decomp_frame_tests.F90.in
+pio_decomp_tests_1d.F90:pio_decomp_tests_1d.F90.in
+pio_decomp_tests_2d.F90:pio_decomp_tests_2d.F90.in
+pio_decomp_tests_3d.F90:pio_decomp_tests_3d.F90.in
+pio_decomp_tests.F90:pio_decomp_tests.F90.in
+pio_file_fail.F90:pio_file_fail.F90.in
+pio_file_simple_tests.F90:pio_file_simple_tests.F90.in
+pio_init_finalize.F90:pio_init_finalize.F90.in
+pio_iosystem_tests2.F90:pio_iosystem_tests2.F90.in
+pio_iosystem_tests3.F90:pio_iosystem_tests3.F90.in
+pio_iosystem_tests.F90:pio_iosystem_tests.F90.in
+pio_rearr.F90:pio_rearr.F90.in
+pio_rearr_opts2.F90:pio_rearr_opts2.F90.in
+pio_rearr_opts.F90:pio_rearr_opts.F90.in
+
 # Distribute the test script.
-EXTRA_DIST = CMakeLists.txt run_tests.sh ncdf_fail.F90.in2		\
-ncdf_get_put.F90.in2 ncdf_inq.F90.in2 ncdf_simple_tests.F90.in2		\
-pio_decomp_fillval.F90.in2 pio_decomp_frame_tests.F90.in2		\
-pio_decomp_tests_1d.F90.in2 pio_decomp_tests_2d.F90.in2			\
-pio_decomp_tests_3d.F90.in2 pio_decomp_tests.F90.in2			\
-pio_file_fail.F90.in2 pio_file_simple_tests.F90.in2			\
-pio_init_finalize.F90.in2 pio_iosystem_tests2.F90.in2			\
-pio_iosystem_tests3.F90.in2 pio_iosystem_tests.F90.in2			\
-pio_rearr.F90.in2 pio_rearr_opts2.F90.in2 pio_rearr_opts.F90.in2
+EXTRA_DIST = CMakeLists.txt run_tests.sh
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
