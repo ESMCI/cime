@@ -87,7 +87,15 @@ pio_rearr_opts2.F90:pio_rearr_opts2.F90.in
 pio_rearr_opts.F90:pio_rearr_opts.F90.in
 
 # Distribute the test script.
-EXTRA_DIST = CMakeLists.txt run_tests.sh
+EXTRA_DIST = CMakeLists.txt run_tests.sh ncdf_fail.F90.in		\
+ncdf_get_put.F90.in ncdf_inq.F90.in ncdf_simple_tests.F90.in		\
+pio_decomp_fillval.F90.in pio_decomp_frame_tests.F90.in			\
+pio_decomp_tests_1d.F90.in pio_decomp_tests_2d.F90.in			\
+pio_decomp_tests_3d.F90.in pio_decomp_tests.F90.in pio_fail.F90.in	\
+pio_file_fail.F90.in pio_file_simple_tests.F90.in			\
+pio_init_finalize.F90.in pio_iosystem_tests2.F90.in			\
+pio_iosystem_tests3.F90.in pio_iosystem_tests.F90.in pio_rearr.F90.in	\
+pio_rearr_opts2.F90.in pio_rearr_opts.F90.in
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
