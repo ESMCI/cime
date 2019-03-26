@@ -1101,15 +1101,15 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
     if (!(sbuf = calloc(4, sizeof(int))))
         BAIL(PIO_ENOMEM);
     if (!(rbuf = calloc(4, sizeof(int))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
 
     /* Allocate IO system info struct for this test. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
 
     /* Allocate IO desc struct for this test. */
     if (!(iodesc = calloc(1, sizeof(io_desc_t))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
 
     ios->ioproc = 1;
     ios->io_rank = my_rank;
@@ -1149,17 +1149,17 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
     ios->num_comptasks = 4;
     ios->num_uniontasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        BAIL(PIO_ENOMEM);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
     if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        BAIL(PIO_ENOMEM);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->compranks[i] = i;
 
     /* This is how we allocate a region. */
     if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
-        return ret;
+        BAIL(ret);
     ior1->next = NULL;
     if (my_rank == 0)
         ior1->count[0] = 8;
@@ -1172,20 +1172,20 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
 
     /* Run the function to test. */
     if ((ret = rearrange_io2comp(ios, iodesc, sbuf, rbuf)))
-        return ret;
+        BAIL(ret);
 
     /* We created send types, so free them. */
     for (int st = 0; st < num_send_types; st++)
         if (iodesc->stype[st] != PIO_DATATYPE_NULL)
             if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
-                MPIERR(mpierr);
+                MPIBAIL(mpierr);
 
     /* We created one receive type, so free it. */
     if (iodesc->rtype)
         for (int r = 0; r < iodesc->nrecvs; r++)
             if (iodesc->rtype[r] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(&iodesc->rtype[r])))
-                    MPIERR(mpierr);
+                    MPIBAIL(mpierr);
 
 exit:
     /* Free resources allocated in library code. */
