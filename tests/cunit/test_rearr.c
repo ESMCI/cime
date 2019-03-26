@@ -1085,11 +1085,11 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 /* Test function rearrange_io2comp. */
 int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
 {
-    iosystem_desc_t *ios;
-    io_desc_t *iodesc;
+    iosystem_desc_t *ios = NULL;
+    io_desc_t *iodesc = NULL;
     void *sbuf = NULL;
     void *rbuf = NULL;
-    io_region *ior1;
+    io_region *ior1 = NULL;
     int maplen = 2;
     PIO_Offset compmap[2] = {1, 0};
     const int gdimlen[NDIM1] = {8};
@@ -1099,7 +1099,7 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
 
     /* Allocate some space for data. */
     if (!(sbuf = calloc(4, sizeof(int))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
     if (!(rbuf = calloc(4, sizeof(int))))
         return PIO_ENOMEM;
 
@@ -1187,27 +1187,40 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
                 if ((mpierr = MPI_Type_free(&iodesc->rtype[r])))
                     MPIERR(mpierr);
 
+exit:
     /* Free resources allocated in library code. */
-    free(iodesc->rtype);
-    free(iodesc->sindex);
-    free(iodesc->scount);
-    free(iodesc->stype);
-    free(iodesc->rcount);
-    free(iodesc->rfrom);
-    free(iodesc->rindex);
+    if (iodesc)
+    {
+        free(iodesc->rtype);
+        free(iodesc->sindex);
+        free(iodesc->scount);
+        free(iodesc->stype);
+        free(iodesc->rcount);
+        free(iodesc->rfrom);
+        free(iodesc->rindex);
+    }
 
     /* Free resources from test. */
-    free(ior1->start);
-    free(ior1->count);
-    free(ior1);
-    free(ios->ioranks);
-    free(ios->compranks);
-    free(iodesc);
-    free(ios);
-    free(sbuf);
-    free(rbuf);
+    if (ior1->start)
+        free(ior1->start);
+    if (ior1->count)
+        free(ior1->count);
+    if (ior1)
+        free(ior1);
+    if (ios->ioranks)
+        free(ios->ioranks);
+    if (ios->compranks)
+        free(ios->compranks);
+    if (iodesc)
+        free(iodesc);
+    if (ios)
+        free(ios);
+    if (sbuf)
+        free(sbuf);
+    if (rbuf)
+        free(rbuf);
 
-    return 0;
+    return ret;
 }
 
 /* These tests do not need an iosysid. */
