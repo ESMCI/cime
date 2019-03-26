@@ -9,22 +9,28 @@
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
-LDADD = util/libpio_tutil.la	\
+LDADD = libpio_tutil.la	\
 ${top_builddir}/src/flib/libpiof.la		\
 ${top_builddir}/src/clib/libpio.la
 
-AM_CPPFLAGS += -I${top_builddir}/tests/general/util
-
 # There is a test utility mod file in this subdir which must be built.
-SRCDIRS = util .
+#SRCDIRS = util
 
-# Build this uninstalled convenience library.
-noinst_LTLIBRARIES = libpio_rearr_opts.la
+# Build these uninstalled convenience libraries.
+noinst_LTLIBRARIES = libpio_tutil.la libpio_rearr_opts.la
 
 # The convenience libraries depends on their source.
+libpio_tutil_la_SOURCES = pio_tutil.F90 # configure copies this from util dir.
 libpio_rearr_opts_la_SOURCES = pio_rearr_opts.F90
+
+# Each mod file depends on the .o file.
+pio_tutil.mod: pio_tutil.$(OBJEXT)
 pio_rearr_opts_tgv.mod: pio_rearr_opts.$(OBJEXT)
-BUILT_SOURCES = pio_rearr_opts_tgv.mod
+
+# Some mods are dependant on other mods in this dir.
+pio_rearr_opts.$(OBJEXT): pio_tutil.mod
+
+BUILT_SOURCES = pio_tutil.mod pio_rearr_opts_tgv.mod
 
 # Build the test for make check.
 check_PROGRAMS = pio_init_finalize pio_file_simple_tests	\
