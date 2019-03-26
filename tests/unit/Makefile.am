@@ -31,4 +31,4 @@ TESTS = run_tests.sh
 EXTRA_DIST = CMakeLists.txt run_tests.sh input.nl
 
 # Clean up files produced during testing.
-CLEANFILES = *.nc *.log
+CLEANFILES = *.nc *.log *.mod

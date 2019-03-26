@@ -75,4 +75,4 @@ pio_iosystem_tests3.F90.in2 pio_iosystem_tests.F90.in2			\
 pio_rearr.F90.in2 pio_rearr_opts2.F90.in2 pio_rearr_opts.F90.in2
 
 # Clean up files produced during testing.
-CLEANFILES = *.nc *.log
+CLEANFILES = *.nc *.log *.mod

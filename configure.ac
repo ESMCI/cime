@@ -146,7 +146,7 @@ AC_CONFIG_FILES(tests/general/pio_rearr_opts2.F90:tests/general/pio_rearr_opts2.
 AC_CONFIG_FILES(tests/general/pio_rearr_opts.F90:tests/general/pio_rearr_opts.F90.in2)
 AC_CONFIG_FILES(tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90)
 
-AC_CONFIG_LINKS([tests/general/unit/input.nl:tests/general/unit/input.nl])
+AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])
