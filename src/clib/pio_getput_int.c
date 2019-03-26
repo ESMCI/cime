@@ -862,7 +862,10 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
 	if (!(startp = malloc(ndims * sizeof(PIO_Offset))))
 	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 	if (!(countp = malloc(ndims * sizeof(PIO_Offset))))
+        {
+            free(startp);
 	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        }
 
         /* Find the dimension lengths. */
         for (int d = 0; d < ndims; d++)
@@ -886,9 +889,9 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
     }
 
     ierr = PIOc_get_vars_tc(ncid, varid, startp, countp, NULL, xtype, buf);
-    if(startp != NULL)
+    if (startp)
 	free(startp);
-    if(countp != NULL)
+    if (countp)
 	free(countp);
     return ierr;
 
