@@ -42,8 +42,10 @@ env:
 script:
   - autoreconf -i
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
-  - export FFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
-  - ./configure
+  - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
+  - export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer'
+  - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran'
+  - ./configure --enable-fortran
   - make -j distcheck
   - rm -rf build
   - mkdir build

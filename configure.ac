@@ -12,6 +12,9 @@ AC_CONFIG_MACRO_DIR([m4])
 # Find and learn about the C compiler.
 AC_PROG_CC
 
+# Find and learn about the Fortran compiler.
+AC_PROG_FC
+
 # Libtool initialisation.
 AC_PROG_LIBTOOL
 
@@ -38,6 +41,16 @@ if test "x$enable_logging" = xyes; then
    AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
 fi
 
+
+# Does the user want to enable Fortran library?
+AC_MSG_CHECKING([whether Fortran library should be build])
+AC_ARG_ENABLE([fortran],
+              [AS_HELP_STRING([--enable-fortran],
+                              [build the PIO Fortran library.])])
+test "x$enable_fortran" = xyes || enable_fortran=no
+AC_MSG_RESULT([$enable_fortran])
+AM_CONDITIONAL(BUILD_FORTRAN, [test "x$enable_fortran" = xyes])
+
 # Does the user want to disable pnetcdf?
 AC_MSG_CHECKING([whether pnetcdf is to be used])
 AC_ARG_ENABLE([pnetcdf],
@@ -45,15 +58,10 @@ AC_ARG_ENABLE([pnetcdf],
                               [Disable pnetcdf use.])])
 test "x$enable_pnetcdf" = xno || enable_pnetcdf=yes
 AC_MSG_RESULT([$enable_pnetcdf])
-if test "x$enable_logging" = xyes; then
-   AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
-fi
+AM_CONDITIONAL(BUILD_PNETCDF, [test "x$enable_pnetcdf" = xyes])
 
 # NetCDF (at least classic) is required for PIO to build.
 AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
-
-# Is parallel-netcdf library available?
-#AC_DEFINE([_PNETCDF], [1], [parallel-netcdf library available])
 
 # The PIO version, again.
 AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
@@ -100,6 +108,7 @@ AC_MSG_RESULT([${have_netcdf_par}])
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
 fi
+AM_CONDITIONAL(BUILD_NETCDF4, [test "x$have_netcdf_par" = xyes])
 
 # Not working for some reason, so I will just set it...
 AC_CHECK_TYPE([MPI_Offset], [], [], [#include <mpi.h>])
@@ -112,6 +121,15 @@ fi
 #AC_CHECK_SIZEOF([MPI_Offset], [], [[#include <mpi.h>]])
 #AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
 
+AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)
+AC_CONFIG_FILES(src/flib/pionfatt_mod.F90:src/flib/pionfatt_mod.F90.in2)
+AC_CONFIG_FILES(src/flib/pionfget_mod.F90:src/flib/pionfget_mod.F90.in2)
+AC_CONFIG_FILES(src/flib/pionfput_mod.F90:src/flib/pionfput_mod.F90.in2)
+
+AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
+
+AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
+
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])
 
@@ -119,7 +137,11 @@ AC_CONFIG_HEADERS([config.h])
 AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
+          src/flib/Makefile
           tests/Makefile
           tests/cunit/Makefile
+          tests/unit/Makefile
+          tests/general/Makefile
+          tests/general/util/Makefile
           examples/Makefile
           examples/c/Makefile)
