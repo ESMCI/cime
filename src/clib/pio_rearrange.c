@@ -338,7 +338,11 @@ int create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
         if (mcount[i] > 0)
         {
             int len = mcount[i] / blocksize;
-            int displace[len];
+            int *displace;
+
+            if (!(displace = malloc(sizeof(int) * len)))
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
             LOG((3, "blocksize = %d i = %d mcount[%d] = %d len = %d", blocksize, i, i,
                  mcount[i], len));
             if (blocksize == 1)
@@ -376,8 +380,11 @@ int create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
             LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
                  "mpitype = %d", len, blocksize, mpitype));
             /* Create an indexed datatype with constant-sized blocks. */
-            if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
-                                                        mpitype, &mtype[i])))
+            mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
+                                                   mpitype, &mtype[i]);
+
+            free(displace);
+            if (mpierr)
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
             if (mtype[i] == PIO_DATATYPE_NULL)
