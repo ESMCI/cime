@@ -1974,7 +1974,7 @@ int check_unlim_use(int ncid)
 int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec_var,
                       int **pio_type, int **pio_type_size, MPI_Datatype **mpi_type, int **mpi_type_size)
 {
-    int nunlimdims;        /* The number of unlimited dimensions. */
+    int nunlimdims = 0;        /* The number of unlimited dimensions. */
     int unlimdimid;
     int *unlimdimids;
     int mpierr;
