@@ -693,8 +693,9 @@ int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, i
                      const PIO_Offset *compmap, int *ioidp, int rearranger,
                      const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
-    PIO_Offset compmap_1_based[maplen];
+    PIO_Offset *compmap_1_based;
     int *rearrangerp = NULL;
+    int ret;
 
     LOG((1, "PIOc_init_decomp iosysid = %d pio_type = %d ndims = %d maplen = %d",
          iosysid, pio_type, ndims, maplen));
@@ -702,6 +703,10 @@ int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, i
     /* If the user specified a non-default rearranger, use it. */
     if (rearranger)
         rearrangerp = &rearranger;
+
+    /* Allocate storage for compmap that's one-based. */
+    if (!(compmap_1_based = malloc(sizeof(PIO_Offset) * maplen)))
+        return PIO_ENOMEM;
 
     /* Add 1 to all elements in compmap. */
     for (int e = 0; e < maplen; e++)
@@ -711,8 +716,12 @@ int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, i
     }
 
     /* Call the legacy version of the function. */
-    return PIOc_InitDecomp(iosysid, pio_type, ndims, gdimlen, maplen, compmap_1_based,
-                           ioidp, rearrangerp, iostart, iocount);
+    ret = PIOc_InitDecomp(iosysid, pio_type, ndims, gdimlen, maplen, compmap_1_based,
+                          ioidp, rearrangerp, iostart, iocount);
+
+    free(compmap_1_based);
+
+    return ret;
 }
 
 /**

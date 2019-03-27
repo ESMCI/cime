@@ -1154,7 +1154,10 @@ int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm 
     /* Now initialize the iodesc on each task for this decomposition. */
     if (!ret)
     {
-        PIO_Offset compmap[task_maplen[my_rank]];
+        PIO_Offset *compmap;
+
+        if (!(compmap = malloc(sizeof(PIO_Offset) * task_maplen[my_rank])))
+            return PIO_ENOMEM;
 
         /* Copy array into PIO_Offset array. Make it 1 based. */
         for (int e = 0; e < task_maplen[my_rank]; e++)
@@ -1163,6 +1166,8 @@ int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm 
         /* Initialize the decomposition. */
         ret = PIOc_InitDecomp(iosysid, pio_type, ndims, global_dimlen, task_maplen[my_rank],
                               compmap, ioidp, NULL, NULL, NULL);
+
+        free(compmap);
     }
 
     /* Free resources. */

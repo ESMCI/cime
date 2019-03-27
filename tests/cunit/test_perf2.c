@@ -33,8 +33,8 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 256
-#define Y_DIM_LEN 256
+#define X_DIM_LEN 512
+#define Y_DIM_LEN 512
 #define Z_DIM_LEN 64
 
 /* This is the length of the map for each task. */
