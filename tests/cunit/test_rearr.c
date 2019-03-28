@@ -872,7 +872,7 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
 
     /* Check some results. */
     if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen ||
-        iodesc->llen != my_rank ? 0 : 8 || !iodesc->needsfill)
+        (iodesc->llen != my_rank ? 0 : 8) || !iodesc->needsfill)
         return ERR_WRONG;
 
     for (int i = 0; i < ios->num_iotasks; i++)
@@ -961,11 +961,11 @@ int test_default_subset_partition(MPI_Comm test_comm, int my_rank)
 int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 {
     iosystem_desc_t *ios;
-    io_desc_t *iodesc;
+    io_desc_t *iodesc = NULL;
     void *sbuf = NULL;
     void *rbuf = NULL;
     int nvars = 1;
-    io_region *ior1;
+    io_region *ior1 = NULL;
     int maplen = 2;
     PIO_Offset compmap[2] = {1, 0};
     const int gdimlen[NDIM1] = {8};
@@ -975,17 +975,17 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 
     /* Allocate some space for data. */
     if (!(sbuf = calloc(4, sizeof(int))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
     if (!(rbuf = calloc(4, sizeof(int))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
 
     /* Allocate IO system info struct for this test. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
 
     /* Allocate IO desc struct for this test. */
     if (!(iodesc = calloc(1, sizeof(io_desc_t))))
-        return PIO_ENOMEM;
+        BAIL(PIO_ENOMEM);
 
     ios->ioproc = 1;
     ios->compproc = 1;
@@ -1021,17 +1021,17 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     ios->union_rank = my_rank;
     ios->num_comptasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        BAIL(PIO_ENOMEM);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
     if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        BAIL(PIO_ENOMEM);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->compranks[i] = i;
 
     /* This is how we allocate a region. */
     if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
-        return ret;
+        BAIL(ret);
     ior1->next = NULL;
     if (my_rank == 0)
         ior1->count[0] = 8;
@@ -1040,46 +1040,63 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 
     /* Create the box rearranger. */
     if ((ret = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
-        return ret;
+        BAIL(ret);
 
     /* Run the function to test. */
     if ((ret = rearrange_comp2io(ios, iodesc, sbuf, rbuf, nvars)))
-        return ret;
+        BAIL(ret);
 
     /* We created send types, so free them. */
     for (int st = 0; st < num_send_types; st++)
         if (iodesc->stype[st] != PIO_DATATYPE_NULL)
             if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
-                MPIERR(mpierr);
+                MPIBAIL(mpierr);
 
     /* We created one receive type, so free it. */
     if (iodesc->rtype)
         for (int r = 0; r < iodesc->nrecvs; r++)
             if (iodesc->rtype[r] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(&iodesc->rtype[r])))
-                    MPIERR(mpierr);
+		    MPIBAIL(mpierr);
 
+exit:
     /* Free resources allocated in library code. */
-    free(iodesc->rtype);
-    free(iodesc->sindex);
-    free(iodesc->scount);
-    free(iodesc->stype);
-    free(iodesc->rcount);
-    free(iodesc->rfrom);
-    free(iodesc->rindex);
+    if (iodesc->rtype)
+	free(iodesc->rtype);
+    if (iodesc->sindex)
+	free(iodesc->sindex);
+    if (iodesc->scount)
+	free(iodesc->scount);
+    if (iodesc->stype)
+	free(iodesc->stype);
+    if (iodesc->rcount)
+	free(iodesc->rcount);
+    if (iodesc->rfrom)
+	free(iodesc->rfrom);
+    if (iodesc->rindex)
+	free(iodesc->rindex);
 
     /* Free resources from test. */
-    free(ior1->start);
-    free(ior1->count);
-    free(ior1);
-    free(ios->ioranks);
-    free(ios->compranks);
-    free(iodesc);
-    free(ios);
-    free(sbuf);
-    free(rbuf);
+    if (ior1)
+    {
+	free(ior1->start);
+	free(ior1->count);
+	free(ior1);
+    }
+    if (ios)
+    {
+	free(ios->ioranks);
+	free(ios->compranks);
+	free(ios);
+    }
+    if (iodesc)
+	free(iodesc);
+    if (sbuf)
+	free(sbuf);
+    if (rbuf)
+	free(rbuf);
 
-    return 0;
+    return ret;
 }
 
 /* Test function rearrange_io2comp. */
