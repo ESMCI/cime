@@ -33,8 +33,8 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 256
-#define Y_DIM_LEN 256
+#define X_DIM_LEN 512
+#define Y_DIM_LEN 512
 #define Z_DIM_LEN 64
 
 /* This is the length of the map for each task. */
@@ -113,10 +113,11 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
  * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
+ * @param rearranger the rearranger in use.
  * @returns 0 for success, error code otherwise.
  */
 int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                int provide_fill)
+                int provide_fill, int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -220,7 +221,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
         delta = (endt - startt)/NUM_TIMESTEPS;
         if (!my_rank)
-            printf("%d\t%lld\n", fmt, delta);
+            printf("%d\t%d\t%d\t%lld\n", rearranger, provide_fill, fmt, delta);
 
         /* Reopen the file. */
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
@@ -382,7 +383,8 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
     {
         /* Run a simple darray test. */
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, provide_fill)))
+        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
+                               provide_fill, rearranger)))
             return ret;
     }
 
@@ -423,6 +425,10 @@ int main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
+
+        if (!my_rank)
+            printf("rearr\tfill\tformat\ttime\n");
+
 
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
