@@ -276,11 +276,8 @@ int main(int argc, char **argv)
 {
     int my_rank;
     int ntasks;
-    int num_flavors;         /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm;      /* A communicator for this test. */
     int ioid;
-    int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret;                 /* Return code. */
 
     /* Initialize test. */
@@ -297,7 +294,9 @@ int main(int argc, char **argv)
         int iosysid;              /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int ret;                  /* Return code. */
+	int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
+	int num_flavors;         /* Number of PIO netCDF flavors in this build. */
+	int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
 
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
