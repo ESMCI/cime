@@ -238,7 +238,6 @@ int main(int argc, char **argv)
     int ntasks;         /* Number of processors involved in current execution. */
     MPI_Comm test_comm; /* Communicator for tasks running tests. */
     int mpierr;         /* Return code from MPI functions. */
-    int verbose = 0;    /* Non-zero to turn on printf statements. */
     int ret;            /* Return code from function calls. */
 
     /* Initialize MPI. */
@@ -246,10 +245,10 @@ int main(int argc, char **argv)
         MPIERR(ret);
 
     /* Learn my rank and the total number of processors. */
-    if ((ret = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
-        MPIERR(ret);
-    if ((ret = MPI_Comm_size(MPI_COMM_WORLD, &ntasks)))
-        MPIERR(ret);
+    if ((mpierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
+        MPIERR(mpierr);
+    if ((mpierr = MPI_Comm_size(MPI_COMM_WORLD, &ntasks)))
+        MPIERR(mpierr);
 
     /* Get test_comm. */
     if ((ret = get_test_comm(my_rank, ntasks, TARGET_NTASKS, TARGET_NTASKS, &test_comm)))
@@ -275,6 +274,7 @@ int main(int argc, char **argv)
         MPI_Comm union_comm[COMPONENT_COUNT];
         MPI_Comm intercomm[COMPONENT_COUNT];
         int in_cmp[COMPONENT_COUNT] = {0, 0};    /* Is this process in this computation component? */
+	int verbose = 0;    /* Non-zero to turn on printf statements. */
         
         /* Create group for world. */
         if ((ret = MPI_Comm_group(test_comm, &world_group)))
@@ -411,23 +411,25 @@ int main(int argc, char **argv)
         } /* next computation component. */
 
         /* Now launch IO message processing on the IO task. */
-        int comproot[COMPONENT_COUNT] = {1, 1};
         if (in_io)
+	{
+	    int comproot[COMPONENT_COUNT] = {1, 1};
+	    
             if ((ret = msg_handler(verbose, my_rank, 0, COMPONENT_COUNT, union_comm, comp_comm,
                                    comproot, io_comm)))
                 ERR(ret);
+	}
 
         /* Send exit messages. */
         if (!in_io)
         {
             for (int cmp = 0; cmp < COMPONENT_COUNT; cmp++)
             {
-            
-                int msg = MSG_EXIT;
-                int ioroot = 0;
-
                 if (in_cmp[cmp])
                 {
+		    int ioroot = 0;
+		    int msg = MSG_EXIT;
+		    
                     if (verbose)
                         printf("my_rank %d sending exit message on union_comm %d\n", my_rank, union_comm[cmp]);
                     if ((mpierr = MPI_Send(&msg, 1, MPI_INT, ioroot, 1, union_comm[cmp])))
