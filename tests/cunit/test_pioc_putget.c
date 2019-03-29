@@ -777,15 +777,10 @@ int test_read_att(int ncid, int *varid, int flavor)
     char text_in[ATT_LEN];
     signed char byte_array_in[ATT_LEN];
     short short_array_in[ATT_LEN];
-    unsigned char ubyte_array_in[ATT_LEN];
     int int_array_in[ATT_LEN];
     long int long_array_in[ATT_LEN];
     float float_array_in[ATT_LEN];
     double double_array_in[ATT_LEN];
-    unsigned short ushort_array_in[ATT_LEN];
-    unsigned int uint_array_in[ATT_LEN];
-    long long int64_array_in[ATT_LEN];
-    unsigned long long uint64_array_in[ATT_LEN];
     int x;
     int ret;
 
@@ -823,6 +818,12 @@ int test_read_att(int ncid, int *varid, int flavor)
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
+      unsigned char ubyte_array_in[ATT_LEN];
+      unsigned short ushort_array_in[ATT_LEN];
+      unsigned int uint_array_in[ATT_LEN];
+      long long int64_array_in[ATT_LEN];
+      unsigned long long uint64_array_in[ATT_LEN];
+      
         if ((ret = PIOc_get_att_uchar(ncid, varid[7], UCHAR_ATT_NAME, ubyte_array_in)))
             return ret;
         if ((ret = PIOc_get_att_ushort(ncid, varid[8], USHORT_ATT_NAME, ushort_array_in)))

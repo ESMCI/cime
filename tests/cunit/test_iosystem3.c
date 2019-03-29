@@ -56,7 +56,8 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
         return ret;
 
     /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename), filename)))
+    if ((ret = PIOc_put_att_text(ncid, varid, attname, strnlen(filename, PIO_TF_MAX_STR_LEN),
+				 filename)))
         return ret;
 
     /* End define mode. */
@@ -93,11 +94,11 @@ int check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
 
     /* Check the attribute. Null terminating byte deliberately ignored
      * to match fortran code. */
-    if (!(att_data = malloc(strlen(filename) * sizeof(char))))
+    if (!(att_data = malloc(strnlen(filename, PIO_TF_MAX_STR_LEN) * sizeof(char))))
         return PIO_ENOMEM;
     if ((ret = PIOc_get_att(ncid, varid, attname, att_data)))
         return ret;
-    if (strncmp(att_data, filename, strlen(filename)))
+    if (strncmp(att_data, filename, strnlen(filename, PIO_TF_MAX_STR_LEN)))
         return ERR_WRONG;
     free(att_data);
 
@@ -142,10 +143,7 @@ int main(int argc, char **argv)
     MPI_Comm overlap_comm = MPI_COMM_NULL; /* Communicator for tasks 0, 1, 2. */
     int even_rank = -1, overlap_rank = -1; /* Tasks rank in communicator. */
     int even_size = 0, overlap_size = 0; /* Size of communicator. */
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm;
-    int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
     int ret; /* Return code. */
 
     /* Initialize test. */
@@ -157,6 +155,10 @@ int main(int argc, char **argv)
      * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
+      int num_flavors; /* Number of PIO netCDF flavors in this build. */
+      int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+      int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+      
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
