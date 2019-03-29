@@ -29,7 +29,7 @@
  * corresponding to this index.
  * @author Jim Edwards
  */
-void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
+inline void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
                      PIO_Offset *dim_list)
 {
     /* Check inputs. */
@@ -199,7 +199,7 @@ PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offs
  * @returns the local array index.
  * @author Jim Edwards
  */
-PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count)
+inline PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count)
 {
     PIO_Offset lindex = 0;
     PIO_Offset stride = 1;
