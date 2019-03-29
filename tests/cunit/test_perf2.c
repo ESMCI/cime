@@ -122,36 +122,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
-    int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
-    int ret;       /* Return code. */
     PIO_Offset arraylen = EXPECTED_MAPLEN;
     int int_fillvalue = NC_FILL_INT;
     void *fillvalue = NULL;
     int *test_data;
-    int *test_data2;
-    int *test_data_in;
+    int ret;       /* Return code. */
 
     if (!(test_data = malloc(sizeof(int) * arraylen)))
         ERR(PIO_ENOMEM);
-    if (!(test_data2 = malloc(sizeof(int) * arraylen)))
-    {
-        free(test_data);
-        ERR(PIO_ENOMEM);
-    }
-    if (!(test_data_in = malloc(sizeof(int) * arraylen)))
-    {
-        free(test_data);
-        free(test_data2);
-        ERR(PIO_ENOMEM);
-    }
-
-    /* Initialize some data. */
-    for (int f = 0; f < arraylen; f++)
-    {
-        test_data[f] = my_rank * 10 + f;
-        test_data2[f] = 2 * (my_rank * 10 + f);
-    }
 
     /* Are we providing a fill value? */
     if (provide_fill)
@@ -168,9 +147,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         /* Create the filename. */
         /* sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
         sprintf(filename, "data__iotype_.nc");
-
-        /* Start the clock. */
-        gettimeofday(&starttime, NULL);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -193,28 +169,31 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* Set the value of the record dimension. */
-        if ((ret = PIOc_setframe(ncid, varid, 0)))
-            ERR(ret);
+        /* Start the clock. */
+        gettimeofday(&starttime, NULL);
 
-        /* Write the data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
-            ERR(ret);
+        for (int t = 0; t < NUM_TIMESTEPS; t++)
+        {
+            /* Initialize some data. */
+            for (int f = 0; f < arraylen; f++)
+                test_data[f] = (my_rank * 10 + f) * t;
 
-        /* Set the value of the record dimension to the second record. */
-        if ((ret = PIOc_setframe(ncid, varid, 1)))
-            ERR(ret);
+            /* Set the value of the record dimension. */
+            if ((ret = PIOc_setframe(ncid, varid, t)))
+                ERR(ret);
 
-        /* Write the data for the second record. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data2, fillvalue)))
-            ERR(ret);
+            /* Write the data. */
+            if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
+                ERR(ret);
+
+        }
+
+        /* Stop the clock. */
+        gettimeofday(&endtime, NULL);
 
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
-
-        /* Stop the clock. */
-        gettimeofday(&endtime, NULL);
 
         /* Compute the time delta */
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
@@ -222,45 +201,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         delta = (endt - startt)/NUM_TIMESTEPS;
         if (!my_rank)
             printf("%d\t%d\t%d\t%lld\n", rearranger, provide_fill, fmt, delta);
-
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
-
-        /* Set the value of the record dimension. */
-        if ((ret = PIOc_setframe(ncid2, varid, 0)))
-            ERR(ret);
-
-        /* Read the data. */
-        if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
-            ERR(ret);
-
-        /* Check the results. */
-        for (int f = 0; f < arraylen; f++)
-            if (test_data_in[f] != test_data[f])
-                return ERR_WRONG;
-
-        /* Set the value of the record dimension to the second record. */
-        if ((ret = PIOc_setframe(ncid2, varid, 1)))
-            ERR(ret);
-
-        /* Read the data. */
-        if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
-            ERR(ret);
-
-        /* Check the results. */
-        for (int f = 0; f < arraylen; f++)
-            if (test_data_in[f] != test_data2[f])
-                return ERR_WRONG;
-
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid2)))
-            ERR(ret);
     }
 
     free(test_data);
-    free(test_data2);
-    free(test_data_in);
 
     return PIO_NOERR;
 }
