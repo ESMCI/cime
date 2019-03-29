@@ -281,19 +281,21 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                            int rearranger, MPI_Comm test_comm)
 {
-    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int ioid2;             /* ID for decomposition we will create from file. */
-    char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
-    char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
-    int fortran_order_in; /* Indicates fortran vs. c order. */
-    int ret;              /* Return code. */
 
     /* Use PIO to create the decomp file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
+	int ioid2;             /* ID for decomposition we will create from file. */
+	char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
+	char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
+	char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
+	int fortran_order_in; /* Indicates fortran vs. c order. */
+	int ret;              /* Return code. */
+
         /* Create the filename. */
-        sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
+        snprintf(filename, PIO_MAX_NAME, "decomp_%s_iotype_%d.nc", TEST_NAME,
+		 flavor[fmt]);
 
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
             return ret;
