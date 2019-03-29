@@ -2,16 +2,16 @@
 <config_batch version="1.0.0">
   <!--
      File:    config_batch.xml
-     Purpose: abstract out the parts of run scripts that are different, and use this configuration to 
-     create cesm run scripts from a single template.  
+     Purpose: abstract out the parts of run scripts that are different, and use this configuration to
+     create cesm run scripts from a single template.
 
-     batch_system:     the batch system type and version 
-     batch_query:      the batch query command for each batch system. 
-     batch_redirect:   Whether a redirect character is needed to submit jobs. 
-     batch_directive:  The string that prepends a batch directive for the batch system. 
+     batch_system:     the batch system type and version
+     batch_query:      the batch query command for each batch system.
+     batch_redirect:   Whether a redirect character is needed to submit jobs.
+     batch_directive:  The string that prepends a batch directive for the batch system.
      jobid_pattern:    A perl regular expression used to filter out the returned job id from a
-                       queue submission. 
-     depend_pattern:   
+                       queue submission.
+     depend_pattern:
     -->
   <batch_system type="template" version="x.y">
     <batch_query args=""></batch_query>
@@ -78,9 +78,7 @@
     <directives>
       <directive> -N {{ job_id }}</directive>
       <directive> -q {{ queue }}</directive>
-      <directive> -l walltime={{ wall_time }}</directive>
       <directive default="n"> -r {{ rerunnable }} </directive>
-      <!-- <directive> -j oe {{ output_error_path }} </directive> -->
       <directive> -j oe </directive>
       <directive default="ae"  > -m {{ mail_options }} </directive>
       <directive> -V </directive>
@@ -106,10 +104,6 @@
        <directive> --exclusive                        </directive>
      </directives>
    </batch_system>
-
-
-
-
 
   <!-- babbage is PBS -->
   <batch_system MACH="babbage" version="x.y">
@@ -140,6 +134,15 @@
     </directives>
    </batch_system>
 
+  <batch_system MACH="cheyenne" version="x.y">
+    <directives>
+      <directive> -l walltime={{ walltime }}</directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ MAX_TASKS_PER_NODE }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
+<!--      <directive> -l select={{ num_nodes }}:ncpus={{ MAX_TASKS_PER_NODE }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:walltime={{ walltime }}</directive> -->
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+    </directives>
+   </batch_system>
+
   <!-- brutus is PBS -->
   <batch_system MACH="brutus" version="x.y">
     <directives>
@@ -153,7 +156,7 @@
 	    <directive>-l mppwidth={{ mppwidth }}</directive>
         <directive default="/bin/bash" > -S {{ shell }} </directive>
       </directives>
-    </batch_system> 
+    </batch_system>
 
     <!-- eos is PBS -->
     <batch_system MACH="eos" version="x.y">
@@ -164,7 +167,7 @@
       <directive>-l  nodes={{ num_nodes }}</directive>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
-   </batch_system> 
+   </batch_system>
 
   <!-- erebus is PBS -->
   <batch_system MACH="erebus" version="x.y">
@@ -288,4 +291,3 @@
   </batch_system>
 
 </config_batch>
-
