@@ -137,6 +137,7 @@
   <batch_system MACH="cheyenne" version="x.y">
     <directives>
       <directive> -l walltime={{ walltime }}</directive>
+      <directive> -A {{ project }}</directive>
       <directive> -l select={{ num_nodes }}:ncpus={{ MAX_TASKS_PER_NODE }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
 <!--      <directive> -l select={{ num_nodes }}:ncpus={{ MAX_TASKS_PER_NODE }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:walltime={{ walltime }}</directive> -->
       <directive default="/bin/bash" > -S {{ shell }} </directive>
