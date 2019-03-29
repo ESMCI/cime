@@ -539,7 +539,6 @@
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">256M</env>
-      <env name="TMPDIR">/glade/scratch/$USER</env>
       <env name="MPI_TYPE_DEPTH">16</env>
       <env name="MPI_IB_CONGESTED">1</env>
       <env name="MPI_USE_ARRAY"/>
