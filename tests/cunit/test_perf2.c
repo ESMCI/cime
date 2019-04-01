@@ -11,10 +11,10 @@
 #include <sys/time.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 4
+#define TARGET_NTASKS 16
 
 /* The minimum number of tasks this test should run on. */
-#define MIN_NTASKS 4
+#define MIN_NTASKS TARGET_NTASKS
 
 /* The name of this test. */
 #define TEST_NAME "test_perf2"
@@ -35,7 +35,7 @@
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 512
 #define Y_DIM_LEN 512
-#define Z_DIM_LEN 64
+#define Z_DIM_LEN 512
 
 /* This is the length of the map for each task. */
 #define EXPECTED_MAPLEN (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / TARGET_NTASKS)
@@ -176,7 +176,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         {
             /* Initialize some data. */
             for (int f = 0; f < arraylen; f++)
-                test_data[f] = (my_rank * 10 + f) * t;
+                test_data[f] = (my_rank * 10 + f) + t * 1000;
 
             /* Set the value of the record dimension. */
             if ((ret = PIOc_setframe(ncid, varid, t)))
