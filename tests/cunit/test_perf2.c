@@ -145,8 +145,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         long long delta;
 
         /* Create the filename. */
-        /* sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
-        sprintf(filename, "data__iotype_.nc");
+        sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt],
+                rearranger);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
