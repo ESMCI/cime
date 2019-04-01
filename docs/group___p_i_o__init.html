@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PIO
-   &#160;<span id="projectnumber">2.4.0</span>
+   &#160;<span id="projectnumber">2.4.1</span>
    </div>
   </td>
  </tr>
@@ -78,12 +78,6 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga2a34f801ef28767ad58b04cf99ebb207"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__init.html#ga2a34f801ef28767ad58b04cf99ebb207">piolib_mod::init_intercom</a> (component_count, peer_comm, comp_comms, io_comm, iosystem)</td></tr>
 <tr class="memdesc:ga2a34f801ef28767ad58b04cf99ebb207"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the pio subsystem.  <a href="group___p_i_o__init.html#ga2a34f801ef28767ad58b04cf99ebb207">More...</a><br /></td></tr>
 <tr class="separator:ga2a34f801ef28767ad58b04cf99ebb207"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga479a1d9fe2edfc7ca321a1b482fe0211"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211">PIOc_Init_Intracomm</a> (MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr, int *iosysidp)</td></tr>
-<tr class="memdesc:ga479a1d9fe2edfc7ca321a1b482fe0211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Library initialization used when IO tasks are a subset of compute tasks.  <a href="#ga479a1d9fe2edfc7ca321a1b482fe0211">More...</a><br /></td></tr>
-<tr class="separator:ga479a1d9fe2edfc7ca321a1b482fe0211"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga017725f65a38a40963ac6936bbe7b5e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__init.html#ga017725f65a38a40963ac6936bbe7b5e9">PIOc_init_async</a> (MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count, int *num_procs_per_comp, int **proc_list, MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int rearranger, int *iosysidp)</td></tr>
-<tr class="memdesc:ga017725f65a38a40963ac6936bbe7b5e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Library initialization used when IO tasks are distinct from compute tasks.  <a href="#ga017725f65a38a40963ac6936bbe7b5e9">More...</a><br /></td></tr>
-<tr class="separator:ga017725f65a38a40963ac6936bbe7b5e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>initializes the pio subsystem </p>
@@ -243,206 +237,10 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="ga017725f65a38a40963ac6936bbe7b5e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga017725f65a38a40963ac6936bbe7b5e9">&#9670;&nbsp;</a></span>PIOc_init_async()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_init_async </td>
-          <td>(</td>
-          <td class="paramtype">MPI_Comm&#160;</td>
-          <td class="paramname"><em>world</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_io_procs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>io_proc_list</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>component_count</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>num_procs_per_comp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int **&#160;</td>
-          <td class="paramname"><em>proc_list</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">MPI_Comm *&#160;</td>
-          <td class="paramname"><em>user_io_comm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">MPI_Comm *&#160;</td>
-          <td class="paramname"><em>user_comp_comm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rearranger</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>iosysidp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Library initialization used when IO tasks are distinct from compute tasks. </p>
-<p>This is a collective call. Input parameters are read on comp_rank=0 values on other tasks are ignored. This variation of PIO_init sets up a distinct set of tasks to handle IO, these tasks do not return from this call. Instead they go to an internal loop and wait to receive further instructions from the computational tasks.</p>
-<h2>Sequence of Events to do Asynch I/O </h2>
-<p>Here is the sequence of events that needs to occur when an IO operation is called from the collection of compute tasks. I'm going to use pio_put_var because write_darray has some special characteristics that make it a bit more complicated...</p>
-<p>Compute tasks call pio_put_var with an integer argument</p>
-<p>The MPI_Send sends a message from comp_rank=0 to io_rank=0 on union_comm (a comm defined as the union of io and compute tasks) msg is an integer which indicates the function being called, in this case the msg is PIO_MSG_PUT_VAR_INT</p>
-<p>The iotasks now know what additional arguments they should expect to receive from the compute tasks, in this case a file handle, a variable id, the length of the array and the array itself.</p>
-<p>The iotasks now have the information they need to complete the operation and they call the pio_put_var routine. (In pio1 this bit of code is in pio_get_put_callbacks.F90.in)</p>
-<p>After the netcdf operation is completed (in the case of an inq or get operation) the result is communicated back to the compute tasks.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">world</td><td>the communicator containing all the available tasks.</td></tr>
-    <tr><td class="paramname">num_io_procs</td><td>the number of processes for the IO component.</td></tr>
-    <tr><td class="paramname">io_proc_list</td><td>an array of lenth num_io_procs with the processor number for each IO processor. If NULL then the IO processes are assigned starting at processes 0.</td></tr>
-    <tr><td class="paramname">component_count</td><td>number of computational components</td></tr>
-    <tr><td class="paramname">num_procs_per_comp</td><td>an array of int, of length component_count, with the number of processors in each computation component.</td></tr>
-    <tr><td class="paramname">proc_list</td><td>an array of arrays containing the processor numbers for each computation component. If NULL then the computation components are assigned processors sequentially starting with processor num_io_procs.</td></tr>
-    <tr><td class="paramname">user_io_comm</td><td>pointer to an MPI_Comm. If not NULL, it will get an MPI duplicate of the IO communicator. (It is a full duplicate and later must be freed with MPI_Free() by the caller.)</td></tr>
-    <tr><td class="paramname">user_comp_comm</td><td>pointer to an array of pointers to MPI_Comm; the array is of length component_count. If not NULL, it will get an MPI duplicate of each computation communicator. (These are full duplicates and each must later be freed with MPI_Free() by the caller.)</td></tr>
-    <tr><td class="paramname">rearranger</td><td>the default rearranger to use for decompositions in this IO system. Only PIO_REARR_BOX is supported for async. Support for PIO_REARR_SUBSET will be provided in a future version.</td></tr>
-    <tr><td class="paramname">iosysidp</td><td>pointer to array of length component_count that gets the iosysid for each component.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>PIO_NOERR on success, error code otherwise.</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Ed Hartnett </dd></dl>
-
-</div>
-</div>
-<a id="ga479a1d9fe2edfc7ca321a1b482fe0211"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga479a1d9fe2edfc7ca321a1b482fe0211">&#9670;&nbsp;</a></span>PIOc_Init_Intracomm()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_Init_Intracomm </td>
-          <td>(</td>
-          <td class="paramtype">MPI_Comm&#160;</td>
-          <td class="paramname"><em>comp_comm</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_iotasks</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>stride</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>base</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>rearr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>iosysidp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Library initialization used when IO tasks are a subset of compute tasks. </p>
-<p>This function creates an MPI intracommunicator between a set of IO tasks and one or more sets of computational tasks.</p>
-<p>The caller must create all comp_comm and the io_comm MPI communicators before calling this function.</p>
-<p>Internally, this function does the following:</p>
-<ul>
-<li>
-Initialize logging system (if PIO_ENABLE_LOGGING is set). </li>
-<li>
-Allocates and initializes the <a class="el" href="structiosystem__desc__t.html" title="IO system descriptor structure. ">iosystem_desc_t</a> struct (ios). </li>
-<li>
-MPI duplicated user comp_comm to ios-&gt;comp_comm and ios-&gt;union_comm. </li>
-<li>
-Set ios-&gt;my_comm to be ios-&gt;comp_comm. (Not an MPI duplication.) </li>
-<li>
-Find MPI rank in comp_comm, determine ranks of IO tasks, determine whether this task is one of the IO tasks. </li>
-<li>
-Identify the root IO tasks. </li>
-<li>
-Create MPI groups for IO tasks, and for computation tasks. </li>
-<li>
-On IO tasks, create an IO communicator (ios-&gt;io_comm). </li>
-<li>
-Assign an iosystemid, and put this <a class="el" href="structiosystem__desc__t.html" title="IO system descriptor structure. ">iosystem_desc_t</a> into the list of open iosystems. </li>
-<li>
-Initialize the bget buffer, unless PIO_USE_MALLOC was used. </li>
-</ul>
-<p>When complete, there are three MPI communicators (ios-&gt;comp_comm, ios-&gt;union_comm, and ios-&gt;io_comm) that must be freed by MPI.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">comp_comm</td><td>the MPI_Comm of the compute tasks. </td></tr>
-    <tr><td class="paramname">num_iotasks</td><td>the number of io tasks to use. </td></tr>
-    <tr><td class="paramname">stride</td><td>the offset between io tasks in the comp_comm. </td></tr>
-    <tr><td class="paramname">base</td><td>the comp_comm index of the first io task. </td></tr>
-    <tr><td class="paramname">rearr</td><td>the rearranger to use by default, this may be overriden in the PIO_init_decomp(). The rearranger is not used until the decomposition is initialized. </td></tr>
-    <tr><td class="paramname">iosysidp</td><td>index of the defined system descriptor. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, otherwise a PIO error code.</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 8 2019 13:02:31 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 1 2019 08:48:42 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

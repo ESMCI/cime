@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PIO
-   &#160;<span id="projectnumber">2.4.0</span>
+   &#160;<span id="projectnumber">2.4.1</span>
    </div>
   </td>
  </tr>
@@ -60,163 +60,20 @@ $(function() {
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#func-members">Functions/Subroutines</a>  </div>
   <div class="headertitle">
 <div class="title">error_methods</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions/Subroutines</h2></td></tr>
-<tr class="memitem:gad96ab117379dea9b8e477ccb1d37801c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__error__method.html#gad96ab117379dea9b8e477ccb1d37801c">PIOc_Set_File_Error_Handling</a> (int ncid, int method)</td></tr>
-<tr class="memdesc:gad96ab117379dea9b8e477ccb1d37801c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the error handling method to be used for subsequent pio library calls, returns the previous method setting.  <a href="#gad96ab117379dea9b8e477ccb1d37801c">More...</a><br /></td></tr>
-<tr class="separator:gad96ab117379dea9b8e477ccb1d37801c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac76c32bb1d06beeaabf003c1a12fc7a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__error__method.html#gac76c32bb1d06beeaabf003c1a12fc7a4">PIOc_Set_IOSystem_Error_Handling</a> (int iosysid, int method)</td></tr>
-<tr class="memdesc:gac76c32bb1d06beeaabf003c1a12fc7a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the error handling method used for subsequent calls.  <a href="#gac76c32bb1d06beeaabf003c1a12fc7a4">More...</a><br /></td></tr>
-<tr class="separator:gac76c32bb1d06beeaabf003c1a12fc7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac4d7bb3ea04026a1269a0e87608d13f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__error__method.html#gac4d7bb3ea04026a1269a0e87608d13f3">PIOc_set_iosystem_error_handling</a> (int iosysid, int method, int *old_method)</td></tr>
-<tr class="memdesc:gac4d7bb3ea04026a1269a0e87608d13f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the error handling method used for subsequent calls for this IO system.  <a href="#gac4d7bb3ea04026a1269a0e87608d13f3">More...</a><br /></td></tr>
-<tr class="separator:gac4d7bb3ea04026a1269a0e87608d13f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The three types of error handling methods are:</p><ul>
 <li>PIO_INTERNAL_ERROR : abort on error from any task</li>
 <li>PIO_BCAST_ERROR : broadcast an error from io_rank 0 to all tasks in comm</li>
 <li>PIO_RETURN_ERROR : do nothing - allow the user to handle it</li>
 </ul>
 <p>Use this instead of ios to set error handling for the library. </p>
-<h2 class="groupheader">Function/Subroutine Documentation</h2>
-<a id="gad96ab117379dea9b8e477ccb1d37801c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad96ab117379dea9b8e477ccb1d37801c">&#9670;&nbsp;</a></span>PIOc_Set_File_Error_Handling()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_Set_File_Error_Handling </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ncid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>method</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the error handling method to be used for subsequent pio library calls, returns the previous method setting. </p>
-<p>Note that this changes error handling for the IO system that was used when this file was opened. Other files opened with the same IO system will also he affected by this call. This function is supported but deprecated. New code should use <a class="el" href="group___p_i_o__error__method.html#gac4d7bb3ea04026a1269a0e87608d13f3" title="Set the error handling method used for subsequent calls for this IO system. ">PIOc_set_iosystem_error_handling()</a>. This method has no way to return an error, so any failure will result in MPI_Abort.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ncid</td><td>the ncid of an open file </td></tr>
-    <tr><td class="paramname">method</td><td>the error handling method </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>old error handler</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards </dd></dl>
-
-</div>
-</div>
-<a id="gac76c32bb1d06beeaabf003c1a12fc7a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac76c32bb1d06beeaabf003c1a12fc7a4">&#9670;&nbsp;</a></span>PIOc_Set_IOSystem_Error_Handling()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_Set_IOSystem_Error_Handling </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>iosysid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>method</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the error handling method used for subsequent calls. </p>
-<p>This function is deprecated. New code should use <a class="el" href="group___p_i_o__error__method.html#gac4d7bb3ea04026a1269a0e87608d13f3" title="Set the error handling method used for subsequent calls for this IO system. ">PIOc_set_iosystem_error_handling()</a>. This method has no way to return an error, so any failure will result in MPI_Abort.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">iosysid</td><td>the IO system ID </td></tr>
-    <tr><td class="paramname">method</td><td>the error handling method </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>old error handler</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards </dd></dl>
-
-</div>
-</div>
-<a id="gac4d7bb3ea04026a1269a0e87608d13f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac4d7bb3ea04026a1269a0e87608d13f3">&#9670;&nbsp;</a></span>PIOc_set_iosystem_error_handling()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_set_iosystem_error_handling </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>iosysid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>method</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>old_method</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the error handling method used for subsequent calls for this IO system. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">iosysid</td><td>the IO system ID. Passing PIO_DEFAULT instead changes the default error handling for the library. </td></tr>
-    <tr><td class="paramname">method</td><td>the error handling method </td></tr>
-    <tr><td class="paramname">old_method</td><td>pointer to int that will get old method. Ignored if NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise.</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 8 2019 13:02:31 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 1 2019 08:48:42 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['gcd',['gcd',['../pioc__sc_8c.html#af23d9d3b957105f099417c29e1404852',1,'pioc_sc.c']]],
-  ['gcdblocksize',['GCDblocksize',['../pioc__sc_8c.html#a1e828814e18fec67a056c843f7bd1356',1,'pioc_sc.c']]],
   ['get_5fatt_5f1d_5fdouble',['get_att_1d_double',['../group___p_i_o__get__att.html#ga64ae018a86f73e2233fb529aeedc69f5',1,'pionfatt_mod']]],
   ['get_5fatt_5f1d_5fint',['get_att_1d_int',['../group___p_i_o__get__att.html#gabadfae5ddbea347a04216177c3845ae5',1,'pionfatt_mod']]],
   ['get_5fatt_5f1d_5freal',['get_att_1d_real',['../group___p_i_o__get__att.html#ga44f647b79782857c24a7c71dcd9cc9e6',1,'pionfatt_mod']]],

@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PIO
-   &#160;<span id="projectnumber">2.4.0</span>
+   &#160;<span id="projectnumber">2.4.1</span>
    </div>
   </td>
  </tr>
@@ -81,14 +81,11 @@ $(function() {
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;mpi.h&gt;</code><br />
-<code>#include &lt;<a class="el" href="pio_8h_source.html">pio.h</a>&gt;</code><br />
+<code>#include &lt;pio.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for example1.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="example1_8c__incl.png" border="0" usemap="#example1_8c" alt=""/></div>
-<map name="example1_8c" id="example1_8c">
-<area shape="rect" id="node8" href="pio_8h.html" title="Public headers for the PIO C interface. " alt="" coords="293,80,343,107"/>
-</map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -428,10 +425,10 @@ data:</pre><pre>foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45
 <p>Zero based rank of first processor to be used for I/O.</p>
 <p>The dimension ID.</p>
 <p>Array index per processing unit. This is the number of elements of the data array that will be handled by each processor. In this example there are 16 data elements. If the example is run on 4 processors, then arrIdxPerPe will be 4.</p>
-<p>The ID for the parallel I/O system. It is set by <a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a>. It references an internal structure containing the general IO subsystem data and MPI structure. It is passed to <a class="el" href="group___p_i_o__finalize.html#ga04e150e10a29f037979dc2eaa872bdb5" title="Clean up internal data structures, free MPI resources, and exit the pio library. ">PIOc_finalize()</a> to free associated resources, after all I/O, but before MPI_Finalize is called.</p>
+<p>The ID for the parallel I/O system. It is set by PIOc_Init_Intracomm(). It references an internal structure containing the general IO subsystem data and MPI structure. It is passed to PIOc_finalize() to free associated resources, after all I/O, but before MPI_Finalize is called.</p>
 <p>The ncid of the netCDF file created in this example.</p>
 <p>The ID of the netCDF varable in the example file.</p>
-<p>The I/O description ID as passed back by <a class="el" href="group___p_i_o__initdecomp.html#ga56c119d47d1082df044968f80acbe265" title="Initialize the decomposition used with distributed arrays. ">PIOc_InitDecomp()</a> and freed in PIOc_freedecomp().</p>
+<p>The I/O description ID as passed back by PIOc_InitDecomp() and freed in PIOc_freedecomp().</p>
 <p>A buffer for sample data. The size of this array will vary depending on how many processors are involved in the execution of the example code. It's length will be the same as elements_per_pe.</p>
 <p>A 1-D array which holds the decomposition mapping for this example. The size of this array will vary depending on how many processors are involved in the execution of the example code. It's length will be the same as elements_per_pe.</p>
 <p>Test filename.</p>
@@ -478,7 +475,7 @@ data:</pre><pre>foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 8 2019 13:02:30 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 1 2019 08:48:42 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PIO
-   &#160;<span id="projectnumber">2.4.0</span>
+   &#160;<span id="projectnumber">2.4.1</span>
    </div>
   </td>
  </tr>
@@ -84,9 +84,6 @@ integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__dimlen.html#ga9de8a61d0a0ec84c4e2b22d6f1407e96">pio_nf::inq_dimlen_id_long</a> (ncid, dimid, len)</td></tr>
 <tr class="memdesc:ga9de8a61d0a0ec84c4e2b22d6f1407e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information about the length of a particular dimension in netcdf file. <br /></td></tr>
 <tr class="separator:ga9de8a61d0a0ec84c4e2b22d6f1407e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadd004af4a485f2fcfd1a818ed6a81fb1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__dimlen.html#gadd004af4a485f2fcfd1a818ed6a81fb1">PIOc_inq_dimlen</a> (int ncid, int dimid, PIO_Offset *lenp)</td></tr>
-<tr class="memdesc:gadd004af4a485f2fcfd1a818ed6a81fb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the length of a dimension.  <a href="#gadd004af4a485f2fcfd1a818ed6a81fb1">More...</a><br /></td></tr>
-<tr class="separator:gadd004af4a485f2fcfd1a818ed6a81fb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -125,7 +122,7 @@ integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <p>Get information about the length of a particular dimension in netcdf file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
+    <tr><td class="paramname">File</td><td></td></tr>
     <tr><td class="paramname">dimid</td><td>: The netcdf dimension ID. </td></tr>
     <tr><td class="paramname">len</td><td>: The length of the dimesion. </td></tr>
   </table>
@@ -140,56 +137,10 @@ integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 </div>
 </div>
-<a id="gadd004af4a485f2fcfd1a818ed6a81fb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadd004af4a485f2fcfd1a818ed6a81fb1">&#9670;&nbsp;</a></span>PIOc_inq_dimlen()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_inq_dimlen </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ncid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>dimid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">PIO_Offset *&#160;</td>
-          <td class="paramname"><em>lenp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Find the length of a dimension. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ncid</td><td>the ncid of an open file. </td></tr>
-    <tr><td class="paramname">dimid</td><td>the dimension ID. </td></tr>
-    <tr><td class="paramname">lenp</td><td>a pointer that gets the length of the dimension. Igorned if NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 8 2019 13:02:31 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 1 2019 08:48:42 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
