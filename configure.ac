@@ -7,9 +7,9 @@ AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
 # The PIO version, again.
-AC_DEFINE([VERSION_MAJOR], [2], [PIO major version])
-AC_DEFINE([VERSION_MINOR], [4], [PIO minor version])
-AC_DEFINE([VERSION_PATCH], [1], [PIO patch version])
+AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
+AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
+AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
 
 # Once more for the documentation.
 AC_SUBST([VERSION_MAJOR], [2])

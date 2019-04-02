@@ -1231,7 +1231,7 @@ int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmo
 
     /* Write an attribute with the version of this file. */
     char version[PIO_MAX_NAME + 1];
-    sprintf(version, "%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+    sprintf(version, "%d.%d.%d", PIO_VERSION_MAJOR, PIO_VERSION_MINOR, PIO_VERSION_PATCH);
     if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_VERSION_ATT_NAME,
                                  strlen(version) + 1, version)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
