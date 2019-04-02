@@ -1,5 +1,13 @@
 var searchData=
 [
-  ['blocksize',['blocksize',['../pioc_8c.html#a75e9073defcedf91712de41e4ac14800',1,'blocksize():&#160;pioc_sc.c'],['../pioc__sc_8c.html#a75e9073defcedf91712de41e4ac14800',1,'blocksize():&#160;pioc_sc.c']]],
-  ['buffer',['buffer',['../structfile__desc__t.html#a9509da72bd6b683459f67d860414883a',1,'file_desc_t']]]
+  ['calculate_5fvalue',['calculate_value',['../example2_8c.html#adc94683e96f58797755afd533c093c45',1,'example2.c']]],
+  ['community_20atmosphere_20model_20_28cam_29',['Community Atmosphere Model (CAM)',['../_c_a_mexample.html',1,'examp']]],
+  ['check_5ffile',['check_file',['../example1_8c.html#a68a3f52d3825a0739cf5e076cfbebd9a',1,'check_file(int ntasks, char *filename):&#160;example1.c'],['../example2_8c.html#a68a3f52d3825a0739cf5e076cfbebd9a',1,'check_file(int ntasks, char *filename):&#160;example2.c']]],
+  ['checkmpireturn',['checkmpireturn',['../pio__support_8_f90.html#ac7968ba27902096f4dd743d468f25274',1,'pio_support']]],
+  ['chunksize',['chunksize',['../example2_8c.html#ac370740bf1adc58a8c18773ffd823ebf',1,'example2.c']]],
+  ['cleanup',['cleanup',['../structpioexample_1_1pioexampleclass.html#a98dc8381c73aa16077022c2601af502a',1,'pioexample::pioexampleclass']]],
+  ['closefile',['closefile',['../structpioexample_1_1pioexampleclass.html#ad8d27e01569f9dfd28876febc5d42638',1,'pioexample::pioexampleclass::closefile()'],['../group___p_i_o__closefile.html#gabd36983797d48236a8d610b58a7c3aa8',1,'piolib_mod::closefile()']]],
+  ['compdof',['compdof',['../structpioexample_1_1pioexampleclass.html#a543d2bef96e9ef2817838921a3e17fd8',1,'pioexample::pioexampleclass']]],
+  ['createdecomp',['createdecomp',['../structpioexample_1_1pioexampleclass.html#a6a47fedad0fe0d131fd0305e25b26546',1,'pioexample::pioexampleclass']]],
+  ['createfile',['createfile',['../structpioexample_1_1pioexampleclass.html#ac1010cbbdf5cd79112bab8e3dbd5dfdf',1,'pioexample::pioexampleclass::createfile()'],['../group___p_i_o__createfile.html#ga359c93e9d4f79c37d488f00535122177',1,'piolib_mod::createfile()']]]
 ];

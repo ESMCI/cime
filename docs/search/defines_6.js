@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['var_5fname',['VAR_NAME',['../example1_8c.html#a73de0b1772c59096554d6a846feff376',1,'VAR_NAME():&#160;example1.c'],['../example2_8c.html#a73de0b1772c59096554d6a846feff376',1,'VAR_NAME():&#160;example2.c']]]
+  ['x_5fdim_5flen',['X_DIM_LEN',['../example2_8c.html#ab9c24d600c2a3b13b5e96029500fca22',1,'example2.c']]]
 ];

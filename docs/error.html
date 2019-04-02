@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">PIO
-   &#160;<span id="projectnumber">2.4.0</span>
+   &#160;<span id="projectnumber">2.4.1</span>
    </div>
   </td>
  </tr>
@@ -65,7 +65,16 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>By default, PIO handles errors internally by printing a string describing the error and then calling mpi_abort. Application developers can change this behaivior with a call to <a class="el" href="group___p_i_o__seterrorhandling.html">PIO_seterrorhandling</a></p>
-<pre class="fragment"></pre><p>The three types of error handling methods are:</p><ul>
+<pre class="fragment"> call pio_seterrorhandling(File, PIO_BCAST_ERROR)
+ ierr =  pio_inq_varid(File, 'U', uid)
+ call pio_seterrorhandling(File, PIO_INTERNAL_ERROR)
+ if(ierr/= PIO_NOERR) then
+   write(stderr,*) 'Variable U not found on input file, setting to 0'
+   U=0
+ else
+   ...
+ endif
+</pre><p>The three types of error handling methods are:</p><ul>
 <li>PIO_INTERNAL_ERROR : abort on error from any task</li>
 <li>PIO_BCAST_ERROR : broadcast an error from io_rank 0 to all tasks in comm</li>
 <li>PIO_RETURN_ERROR : do nothing - allow the user to handle it</li>
@@ -74,7 +83,7 @@ $(function() {
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 8 2019 13:02:31 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 1 2019 08:48:42 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

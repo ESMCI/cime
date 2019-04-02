@@ -6,6 +6,16 @@ AC_INIT(pio, 2.4.1)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
+# The PIO version, again.
+AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
+AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
+AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
+
+# Once more for the documentation.
+AC_SUBST([VERSION_MAJOR], [2])
+AC_SUBST([VERSION_MINOR], [4])
+AC_SUBST([VERSION_PATCH], [1])
+
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -41,7 +51,6 @@ if test "x$enable_logging" = xyes; then
    AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
 fi
 
-
 # Does the user want to enable Fortran library?
 AC_MSG_CHECKING([whether Fortran library should be build])
 AC_ARG_ENABLE([fortran],
@@ -60,13 +69,31 @@ test "x$enable_pnetcdf" = xno || enable_pnetcdf=yes
 AC_MSG_RESULT([$enable_pnetcdf])
 AM_CONDITIONAL(BUILD_PNETCDF, [test "x$enable_pnetcdf" = xyes])
 
+# Does the user want to build documentation?
+AC_MSG_CHECKING([whether documentation should be build (requires doxygen)])
+AC_ARG_ENABLE([docs],
+              [AS_HELP_STRING([--enable-docs],
+                              [enable building of documentation with doxygen.])])
+test "x$enable_docs" = xyes || enable_docs=no
+AC_MSG_RESULT([$enable_docs])
+AM_CONDITIONAL(BUILD_DOCS, [test "x$enable_docs" = xyes])
+
+# Is doxygen installed?
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+if test -z "$DOXYGEN" -a test "x$enable_docs" = xyes; then
+   AC_MSG_ERROR([Doxygen not found but --enable-docs used.])
+fi
+
+# If building docs, process Doxyfile.in into Doxyfile.
+if test "x$enable_docs" = xyes; then
+   AC_SUBST([CMAKE_CURRENT_SOURCE_DIR], ["."])
+   AC_SUBST([CMAKE_BINARY_DIR], [".."])
+   AC_SUBST([C_SRC_FILES], ["../src/clib/pio_nc4.c"])
+   AC_CONFIG_FILES([doc/Doxyfile])
+fi
+
 # NetCDF (at least classic) is required for PIO to build.
 AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
-
-# The PIO version, again.
-AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
-AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
-AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
 
 # ????
 AC_DEFINE([CPRGNU], [1], [defined by CMake build])
@@ -143,5 +170,6 @@ AC_OUTPUT(Makefile
           tests/unit/Makefile
           tests/general/Makefile
           tests/general/util/Makefile
+          doc/Makefile
           examples/Makefile
           examples/c/Makefile)
