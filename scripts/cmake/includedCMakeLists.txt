@@ -1,10 +1,13 @@
 #
 # This main CMakeLists.txt is written to be included from either
-# the top level of CIME or the top level of ACME. The required
-# CIME_REL_DIR variable is set in CIME to be "." and in ACME
+# the top level of CIME or the top level of E3SM. The required
+# CIME_REL_DIR variable is set in CIME to be "." and in E3SM
 # to be "cime".  Except for this misdirection, this is meant
 # to be the full-functioning top-level CMakeLists.txt file
 # [Andy, 10/4/16]
+#
+# Turning it over to Jim Foucar
+# [A. Steyer, April 2019]
 #
 
 cmake_minimum_required(VERSION 2.7)
@@ -13,7 +16,10 @@ INCLUDE(ExternalProject)
 PROJECT(CIME Fortran C)
 message("XXX ${NETCDF_PATH}")
 message("XXY ${FFLAGS}")
-set(CMAKE_Fortran_FLAGS ${FFLAGS})
+SET(CMAKE_C_FLAGS ${CFLAGS})
+SET(CMAKE_Fortran_FLAGS ${FFLAGS})
+# the fortran format is "FREE" to make sure that the atmosphere physics, chemistry, etc can compile
+set(CMAKE_Fortran_FORMAT "FREE")
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 ADD_DEFINITIONS(${CPPDEFS})
@@ -35,16 +41,23 @@ SET(CIME_NetCDF_DIR "${NetCDF_PATH}" CACHE PATH "Install location of NetCDF. Def
 SET(CIME_PNetCDF_DIR "${PNetCDF_PATH}" CACHE PATH "Install location of PNETCDF. Default set by CIME.")
 SET(GENF90_PATH "${CIME_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Default set by CIME")
 
+SET(E3SM_BUILD ON)
+
 MESSAGE("----------------------------------------------")
 MESSAGE("Building with CMake with CIME in: ${CIME_DIR}")
 MESSAGE("----------------------------------------------\n")
 
 # Path to CIME/cime dir (either standalone or within CIME)
-SET(PIO_VERSION 1)
-SET(PIO_REL_DIR src/externals/pio${PIO_VERSION})
+# WHICH_PIO was originally called PIO_VERSION, but this caused a bunch of annoying
+# warnings due to CMake's treatment of version variables
+SET(WHICH_PIO 1)
+SET(PIO_REL_DIR src/externals/pio${WHICH_PIO})
 SET(USER_CMAKE_MODULE_PATH ${CIME_DIR}/${PIO_REL_DIR}/../pio2/cmake;${CIME_DIR}/src/CMake)
 SET(CMAKE_C_FLAGS ${CFLAGS})
 SET(CMAKE_Fortran_FLAGS ${FFLAGS})
+SET(CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/lib/include)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 SET(PIO_ENABLE_TESTS OFF)
 
 # note that what letters in netcdf and pnetcdf are capital or lower case can cause errors
@@ -80,13 +93,16 @@ SET(GPTL_BINARY_DIR ${CIME_BINARY_DIR}/${GPTL_REL_DIR})
 SET(PIO_BINARY_DIR ${CIME_BINARY_DIR}/${PIO_REL_DIR})
 SET(SEQ_BINARY_DIR ${CIME_BINARY_DIR}/${SEQ_REL_DIR})
 SET(SHR_BINARY_DIR ${CIME_BINARY_DIR}/${SHR_UTIL_REL_DIR})
+SET(SHR_SYS_BINARY_DIR ${CIME_BINARY_DIR}/${SHR_UTIL_REL_DIR})
+SET(SHR_CAL_BINARY_DIR ${CIME_BINARY_DIR}/${SHR_UTIL_REL_DIR})
 SET(ESMF_BINARY_DIR ${CIME_BINARY_DIR}/${ESMF_REL_DIR})
 SET(STREAMS_BINARY_DIR ${CIME_BINARY_DIR}/${STREAMS_REL_DIR})
 SET(DRIVER_BINARY_DIR ${CIME_BINARY_DIR}/${DRIVER_REL_DIR})
 
+
 # Need include from source dir, not build dir like usual
 INCLUDE_DIRECTORIES(${SHR_DIR}/include)
-IF( ${PIO_VERSION} EQUAL 1)
+IF( ${WHICH_PIO} EQUAL 1)
   INCLUDE_DIRECTORIES(${PIO_BINARY_DIR}/pio)
 ELSE()
   INCLUDE_DIRECTORIES(${PIO_BINARY_DIR}/src/clib ${PIO_BINARY_DIR}/src/flib )
@@ -94,10 +110,9 @@ ENDIF()
 
 MESSAGE("\nConfiguring libraries, utils, share, driver:")
 
-#IF( MPILIB STREQUAL "mpi-serial")
+# IF( MPILIB STREQUAL "mpi-serial")
 # ADD_SUBDIRECTORY(${CIME_DIR}/${MPISERIAL_REL_DIR})
-#ENDIF()
-
+# ENDIF()
 
 ADD_SUBDIRECTORY(${CIME_DIR}/${MPEU_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${MCT_REL_DIR})
@@ -108,17 +123,25 @@ ADD_SUBDIRECTORY(${CIME_DIR}/${ESMF_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${STREAMS_REL_DIR})
 ADD_SUBDIRECTORY(${CIME_DIR}/${SEQ_REL_DIR})
 ADD_SUBDIRECTORY(${DRIVER_DIR})
-#
 
 MESSAGE("\nConfiguring Components:")
-ADD_SUBDIRECTORY(${ATM_DIR})
-ADD_SUBDIRECTORY(${OCN_DIR})
-ADD_SUBDIRECTORY(${WAV_DIR})
-ADD_SUBDIRECTORY(${GLC_DIR})
-ADD_SUBDIRECTORY(${ICE_DIR})
-ADD_SUBDIRECTORY(${ROF_DIR})
-ADD_SUBDIRECTORY(${LND_DIR})
-ADD_SUBDIRECTORY(${ESP_DIR})
+ADD_SUBDIRECTORY(${ATM_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_ATM}) # ${ATM_BINARY_DIR})
+ADD_SUBDIRECTORY(${OCN_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_OCN})
+ADD_SUBDIRECTORY(${WAV_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_WAV})
+ADD_SUBDIRECTORY(${GLC_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_GLC})
+ADD_SUBDIRECTORY(${ICE_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_ICE})
+ADD_SUBDIRECTORY(${ROF_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_ROF})
+ADD_SUBDIRECTORY(${LND_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_LND})
+ADD_SUBDIRECTORY(${ESP_DIR} ${PROJECT_BINARY_DIR}/src/components/${CIME_ESP})
+
+SET(LND_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_LND})
+SET(ATM_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_ATM})
+SET(ICE_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_ICE})
+SET(OCN_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_OCN})
+SET(WAV_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_WAV})
+SET(ESP_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_ESP})
+SET(ROF_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_ROF})
+SET(GLC_BINARY_DIR ${CMAKE_BINARY_DIR}/src/components/${CIME_GLC})
 
 
 MESSAGE("\nAdding executables:")
@@ -150,25 +173,12 @@ MESSAGE("   + CompMod:")
 ADD_LIBRARY(compmod ${DRIVER_DIR}/cime_comp_mod.F90)
 ADD_DEPENDENCIES(compmod driver)
 
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-MESSAGE("${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
-MESSAGE("HEY")
 
-
-TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod
-                      ${CIME_LND} ${CIME_OCN} ${CIME_ICE} ${CIME_GLC}
-                      ${CIME_ATM} ${CIME_ROF} ${CIME_WAV} ${CIME_ESP}
-                      driver shr seq shrcal gptl esmf streams mct mpeu shrsys
-                      pio)
+MESSAGE(" + The whole coupled model")
+TARGET_LINK_LIBRARIES(${MODEL}.exe  compmod driver
+                       ${CIME_OCN}  ${CIME_GLC} ${CIME_ROF} ${CIME_WAV} 
+                       ${CIME_ESP} ${CIME_LND} ${CIME_ICE} ${CIME_ATM}
+                       shr streams seq shrcal esmf
+                       shrsys gptl mct mpeu pio)
 
 MESSAGE("\nAnd CMake says...:")

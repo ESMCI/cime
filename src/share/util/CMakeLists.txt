@@ -77,7 +77,7 @@ ENDFOREACH()
                            shr_abort_mod.F90 shr_ncread_mod.F90 shr_map_mod.F90)
 
   ADD_LIBRARY (shrsys ${SHR_SYS_SOURCE} ${TEMPSRCF90})
-  ADD_DEPENDENCIES(shrsys  PIO)
+  ADD_DEPENDENCIES(shrsys pio)
 
   #Later, build these files, teasing out circular directory dependencies
   FILE(GLOB SHR_CAL_SOURCE

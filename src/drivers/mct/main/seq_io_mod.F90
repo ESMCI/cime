@@ -1452,7 +1452,7 @@ contains
     call seq_comm_setptrs(CPLID,iam=iam)
 
     if (lwhead) then
-       rcode = pio_def_dim(cpl_io_file(lfile_ind),'time',PIO_UNLIMITED,dimid(1))
+!       rcode = pio_def_dim(cpl_io_file(lfile_ind),'time',PIO_UNLIMITED,dimid(1))
        rcode = pio_def_var(cpl_io_file(lfile_ind),'time',PIO_DOUBLE,dimid,varid)
        rcode = pio_put_att(cpl_io_file(lfile_ind),varid,'units',trim(time_units))
        lcalendar = shr_cal_calendarName(time_cal,trap=.false.)

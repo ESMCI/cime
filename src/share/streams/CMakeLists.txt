@@ -14,5 +14,5 @@ INCLUDE_DIRECTORIES (
       ${MPEU_BINARY_DIR}
       )
 ADD_LIBRARY (streams ${STREAMS_SOURCE})
-ADD_DEPENDENCIES(streams shrsys shrcal seq gptl PIO)
+ADD_DEPENDENCIES(streams shrsys shrcal seq gptl pio)
 
