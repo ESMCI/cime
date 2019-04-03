@@ -1,5 +1,0 @@
-[SubmitOptions]
-mail_user = 'random_arguments_here.%j'
-mail_type = fail
-batch_args = 'random_arguments_here.%j'
-
