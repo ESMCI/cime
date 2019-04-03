@@ -807,14 +807,10 @@ endif
 ifeq ($(USE_SHARED_CLM),FALSE)
   LNDOBJDIR = $(EXEROOT)/lnd/obj
   LNDLIBDIR=$(LIBROOT)
-  ifeq ($(COMP_LND),clm)
-    LNDLIB := libclm.a
-  else
-    LNDLIB := liblnd.a
-  endif
+  LNDLIB := liblnd.a
   INCLDIR += -I$(LNDOBJDIR)
 else
-  LNDLIB := libclm.a
+  LNDLIB := liblnd.a
   LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/clm/obj
   LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/lib
   INCLDIR += -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
