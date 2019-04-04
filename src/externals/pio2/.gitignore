@@ -27,4 +27,5 @@ build/
 .libs/
 m4/
 *.nc
-*.log
+
+

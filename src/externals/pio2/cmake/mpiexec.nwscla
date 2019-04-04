@@ -8,4 +8,5 @@
 
 NP=$1
 shift
-mpirun -np $NP $@
+
+mpiexec_mpt -n $NP $@

@@ -10,7 +10,6 @@
  * processors.
  */
 
-#include "config.h"
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -564,7 +563,6 @@ int main(int argc, char* argv[])
 {
     /* Parse command line. */
     int c, verbose = 0;
-    int ret;
     while ((c = getopt(argc, argv, "v")) != -1)
 	switch (c)
 	{
@@ -575,15 +573,11 @@ int main(int argc, char* argv[])
             break;
 	}
 
-
-    /* Change error handling so we can test inval parameters. */
-    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
-        return ret;
-
     struct examplePioClass* pioExInst = epc_new(verbose);
     
 #ifdef TIMING    
     /* Initialize the GPTL timing library. */
+    int ret;
     if ((ret = GPTLinitialize ()))
       return ret;
 #endif    

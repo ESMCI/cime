@@ -205,13 +205,15 @@ def load_balancing_submit(compset, res, pesfile, mpilib, compiler, project, mach
                           extra_options_file, test_id, force_purge, test_root):
 ################################################################################
     # Read in list of pes from given file
-    expect(os.access(pesfile, os.R_OK), 'ERROR: File %s not found', pesfile)
-
+    if not os.access(pesfile, os.R_OK):
+        logger.critical('ERROR: File %s not found', pesfile)
+        raise SystemExit(1)
     logger.info('Reading XML file %s. Searching for pesize entries:', pesfile)
     try:
         pesobj = Pes(pesfile)
     except ParseError:
-        expect(False, 'ERROR: File %s not parseable', pesfile)
+        logger.critical('ERROR: File %s not parseable', pesfile)
+        raise SystemExit(1)
 
     pesize_list = []
     grid_nodes = pesobj.get_children("grid")
@@ -227,7 +229,9 @@ def load_balancing_submit(compset, res, pesfile, mpilib, compiler, project, mach
                     logger.critical('pesize %s duplicated in file %s', pesize, pesfile)
                 pesize_list.append(pesize)
 
-    expect(pesize_list, 'ERROR: No grid entries found in pes file {}'.format(pesfile))
+    if not pesize_list:
+        logger.critical('ERROR: No grid entries found in pes file %s', pesfile)
+        raise SystemExit(1)
 
     machobj = Machines(machine=machine)
     if test_root is None:

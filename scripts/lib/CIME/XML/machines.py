@@ -159,10 +159,10 @@ class Machines(GenericXML):
         >>> machobj = Machines(machine="melvin")
         >>> machobj.get_machine_name()
         'melvin'
-        >>> machobj.set_machine("trump") # doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> machobj.set_machine("trump")
         Traceback (most recent call last):
         ...
-        CIMEError: ERROR: No machine trump found
+        SystemExit: ERROR: No machine trump found
         """
         if machine == "Query":
             self.machine = machine
@@ -190,6 +190,12 @@ class Machines(GenericXML):
             node = self.get_optional_child(name, root=self.machine_node, attributes=attributes)
             if node is not None:
                 value = self.text(node)
+
+        if value is None:
+            # if all else fails
+            #pylint: disable=assignment-from-none
+            value = GenericXML.get_value(self, name)
+
         if resolved:
             if value is not None:
                 value = self.get_resolved_value(value)
@@ -328,9 +334,7 @@ class Machines(GenericXML):
                 print("      max_tasks/node ",self.text(max_tasks_per_node))
 
     def return_values(self):
-        """ return a dictionary of machine info
-        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html
-        """
+        # return a dictionary of machine info
         machines = self.get_children("machine")
         mach_dict = dict()
         logger.debug("Machines return values")

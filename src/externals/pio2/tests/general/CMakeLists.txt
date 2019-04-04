@@ -45,10 +45,6 @@ if (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
   #        PRIVATE -mismatch_all)
 endif ()
 
-if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-     set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
-endif()
-
 #==============================================================================
 #  DEFINE THE TARGETS AND TESTS
 #==============================================================================

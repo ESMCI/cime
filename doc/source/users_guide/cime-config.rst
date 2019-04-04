@@ -16,15 +16,15 @@ CIME recognizes a user-created custom configuration directory, ``$HOME/.cime``. 
 
   * ``PROJECT=<account number>``
 
-    Used to specify a project id for compute accounting and directory permissions when on a batch system.
+    This is your project account code for batch submission and/or directory priveleges
 
   * ``CHARGE_ACCOUNT=<account number>``
 
-    Used to override the accounting (only) aspect of PROJECT
+    An alternative to PROJECT for batch charging>
 
   * ``MAIL_USER=<email address>``
 
-    Used to request a non-default email for batch summary output
+    Used request a non-default email for batch summary output
 
   * ``MAIL_TYPE=[never,all,begin,fail,end]``
 

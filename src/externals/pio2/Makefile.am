@@ -1,8 +1,4 @@
-# This is part of PIO. It creates the main Makefile.
 
-# Ed Hartnett
-
-SUBDIRS = src tests examples
-
-# Look in the m4 directory for autotools stuff.
+SUBDIRS = src tests
+#Recommended by libtoolize 
 ACLOCAL_AMFLAGS= -I m4

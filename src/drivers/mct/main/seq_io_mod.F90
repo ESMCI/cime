@@ -376,7 +376,7 @@ contains
   ! !INTERFACE: ------------------------------------------------------------------
 
   subroutine seq_io_write_av(filename,gsmap,AV,dname,whead,wdata,nx,ny,nt,fillval,pre,tavg,&
-       use_float, file_ind, scolumn)
+       use_float, file_ind)
 
     ! !INPUT/OUTPUT PARAMETERS:
     implicit none
@@ -394,7 +394,6 @@ contains
     logical,optional,intent(in) :: tavg     ! is this a tavg
     logical,optional,intent(in) :: use_float ! write output as float rather than double
     integer,optional,intent(in) :: file_ind
-    logical,optional,intent(in) :: scolumn ! single column model flag
 
     !EOP
 
@@ -422,7 +421,6 @@ contains
     character(*),parameter :: subName = '(seq_io_write_av) '
     integer, pointer :: Dof(:)
     integer :: lfile_ind
-    logical :: lcolumn
 
     real(r8), allocatable :: tmpdata(:)
 
@@ -442,10 +440,8 @@ contains
 
     lwhead = .true.
     lwdata = .true.
-    lcolumn = .false.
     if (present(whead)) lwhead = whead
     if (present(wdata)) lwdata = wdata
-    if (present(scolumn)) lcolumn = scolumn
 
     if (.not.lwhead .and. .not.lwdata) then
        ! should we write a warning?
@@ -479,7 +475,7 @@ contains
     if (present(ny)) then
        if (ny /= 0) lny = ny
     endif
-    if (lnx*lny /= ng .and. .not. lcolumn) then 
+    if (lnx*lny /= ng) then
        if(iam==0) write(logunit,*) subname,' ERROR: grid2d size not consistent ',ng,lnx,lny,trim(dname)
        call shr_sys_abort(subname//'ERROR: grid2d size not consistent ')
     endif
@@ -566,7 +562,7 @@ contains
   ! !INTERFACE: ------------------------------------------------------------------
 
   subroutine seq_io_write_avs(filename,gsmap,AVS,dname,whead,wdata,nx,ny,nt,fillval,pre,tavg,&
-       use_float,file_ind,scolumn)
+       use_float,file_ind)
 
     ! !INPUT/OUTPUT PARAMETERS:
     implicit none
@@ -584,7 +580,6 @@ contains
     logical,optional,intent(in) :: tavg     ! is this a tavg
     logical,optional,intent(in) :: use_float ! write output as float rather than double
     integer,optional,intent(in) :: file_ind
-    logical,optional,intent(in) :: scolumn ! single column model flag
 
     !EOP
 
@@ -615,7 +610,6 @@ contains
     integer, pointer :: Dof(:)
     integer, pointer :: Dofn(:)
     integer :: lfile_ind
-    logical :: lcolumn
 
     !-------------------------------------------------------------------------------
     !
@@ -633,10 +627,8 @@ contains
 
     lwhead = .true.
     lwdata = .true.
-    lcolumn = .false. 
     if (present(whead)) lwhead = whead
     if (present(wdata)) lwdata = wdata
-    if (present(scolumn)) lcolumn = scolumn
 
     if (.not.lwhead .and. .not.lwdata) then
        ! should we write a warning?
@@ -674,7 +666,7 @@ contains
     if (present(ny)) then
        if (ny /= 0) lny = ny
     endif
-    if (lnx*lny /= ng .and. .not. lcolumn) then 
+    if (lnx*lny /= ng) then
        if(iam==0) write(logunit,*) subname,' ERROR: grid2d size not consistent ',ng,lnx,lny,trim(dname)
        call shr_sys_abort(subname//' ERROR: grid2d size not consistent ')
     endif
@@ -792,7 +784,7 @@ contains
   ! !INTERFACE: ------------------------------------------------------------------
 
   subroutine seq_io_write_avscomp(filename, comp, flow, dname, &
-       whead, wdata, nx, ny, nt, fillval, pre, tavg, use_float, file_ind, scolumn)
+       whead, wdata, nx, ny, nt, fillval, pre, tavg, use_float, file_ind)
 
     ! !INPUT/OUTPUT PARAMETERS:
     implicit none
@@ -810,7 +802,6 @@ contains
     logical          ,optional,intent(in) :: tavg      ! is this a tavg
     logical          ,optional,intent(in) :: use_float ! write output as float rather than double
     integer          ,optional,intent(in) :: file_ind
-    logical          ,optional,intent(in) :: scolumn    ! single column model flag 
 
     !EOP
 
@@ -844,7 +835,6 @@ contains
     integer, pointer         :: Dof(:)
     integer, pointer         :: Dofn(:)
     integer                  :: lfile_ind
-    logical                  :: lcolumn
 
     !-------------------------------------------------------------------------------
     !
@@ -862,10 +852,8 @@ contains
 
     lwhead = .true.
     lwdata = .true.
-    lcolumn = .false. 
     if (present(whead)) lwhead = whead
     if (present(wdata)) lwdata = wdata
-    if (present(scolumn)) lcolumn = scolumn
     frame = -1
     if (present(nt)) then
        frame = nt
@@ -905,7 +893,7 @@ contains
     if (present(ny)) then
        if (ny /= 0) lny = ny
     endif
-    if (lnx*lny /= ng .and. .not. lcolumn) then
+    if (lnx*lny /= ng) then
        if(iam==0) then
           write(logunit,*) subname,' ERROR: grid2d size not consistent ',&
                ng,lnx,lny,trim(dname)

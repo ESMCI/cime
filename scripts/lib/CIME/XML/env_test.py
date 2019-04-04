@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 class EnvTest(EnvBase):
     # pylint: disable=unused-argument
-    def __init__(self, case_root=None, infile="env_test.xml", components=None, read_only=False):
+    def __init__(self, case_root=None, infile="env_test.xml", components=None):
         """
         initialize an object interface to file env_test.xml in the case directory
         """
-        EnvBase.__init__(self, case_root, infile, read_only=read_only)
+        EnvBase.__init__(self, case_root, infile)
 
     def add_test(self,testnode):
         self.add_child(testnode)

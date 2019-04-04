@@ -4,11 +4,9 @@ CIME HOMME test. This class inherits from SystemTestsCommon
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-from CIME.utils import append_testlog, SharedArea
+from CIME.utils import append_testlog
 from CIME.test_status import *
-
 import shutil
-from distutils import dir_util
 
 logger = logging.getLogger(__name__)
 
@@ -28,18 +26,14 @@ class HOMME(SystemTestsCommon):
             mach     = self._case.get_value("MACH")
             procs    = self._case.get_value("TOTALPES")
             exeroot  = self._case.get_value("EXEROOT")
-            baseline = self._case.get_value("BASELINE_ROOT")
+            baselinedir = self._case.get_value("BASELINE_ROOT")
+            basegen  = self._case.get_value("BASEGEN_CASE")
             basecmp  = self._case.get_value("BASECMP_CASE")
-            compare  = self._case.get_value("COMPARE_BASELINE")
+            generate = self._case.get_value("GENERATE_BASELINE")
             gmake    = self._case.get_value("GMAKE")
             cprnc    = self._case.get_value("CCSM_CPRNC")
 
-            if compare:
-                basename = basecmp
-                baselinedir = baseline
-            else:
-                basename = ""
-                baselinedir = exeroot
+            basename = basegen if generate else basecmp
 
             cmake_cmd = "cmake -C {0}/components/homme/cmake/machineFiles/{1}.cmake -DUSE_NUM_PROCS={2} {0}/components/homme -DHOMME_BASELINE_DIR={3}/{4} -DCPRNC_DIR={5}/..".format(srcroot, mach, procs, baselinedir, basename, cprnc)
 
@@ -69,15 +63,13 @@ class HOMME(SystemTestsCommon):
                 if os.path.isdir(full_baseline_dir):
                     shutil.rmtree(full_baseline_dir)
 
-                with SharedArea():
-                    dir_util.copy_tree(os.path.join(exeroot, "tests", "baseline"), full_baseline_dir, preserve_mode=False)
+                shutil.copytree(os.path.join(exeroot, "tests", "baseline"), full_baseline_dir)
 
         elif compare:
             stat = run_cmd("{} -j 4 check".format(gmake), arg_stdout=log, combine_output=True, from_dir=exeroot)[0]
 
         else:
             stat = run_cmd("{} -j 4 baseline".format(gmake), arg_stdout=log, combine_output=True, from_dir=exeroot)[0]
-            stat = run_cmd("{} -j 4 check".format(gmake), arg_stdout=log, combine_output=True, from_dir=exeroot)[0]
 
         # Add homme.log output to TestStatus.log so that it can
         # appear on the dashboard. Otherwise, the TestStatus.log

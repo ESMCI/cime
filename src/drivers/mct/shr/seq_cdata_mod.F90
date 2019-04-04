@@ -1,7 +1,6 @@
 module seq_cdata_mod
 
   use shr_kind_mod     , only: r8=> shr_kind_r8
-  use shr_kind_mod     , only: CL => SHR_KIND_CL
   use shr_sys_mod      , only: shr_sys_flush
   use shr_sys_mod      , only: shr_sys_abort
   use seq_infodata_mod , only: seq_infodata_type
@@ -16,7 +15,7 @@ module seq_cdata_mod
   ! Public interfaces
   !--------------------------------------------------------------------------
   public :: seq_cdata_setptrs
-  public :: seq_cdata_init
+  public :: seq_cdata_init    ! only used by xxx_comp_esm.F90 for data models
 
   !--------------------------------------------------------------------------
   ! Public data
@@ -30,8 +29,6 @@ module seq_cdata_mod
      type(mct_gGrid)         ,pointer :: dom => null()      ! domain info
      type(mct_gsMap)         ,pointer :: gsMap => null()    ! decomp info
      type(seq_infodata_type) ,pointer :: infodata => null() ! Input init object
-     character(len=CL)       ,pointer :: resume_filename => null() ! filename used by pause/resume processing
-     logical                          :: post_assim         ! post assimilation
   end type seq_cdata
 
   public seq_cdata
@@ -40,7 +37,7 @@ module seq_cdata_mod
 contains
   !==============================================================================
 
-  subroutine seq_cdata_setptrs(cdata, ID, mpicom, dom, gsMap, infodata, name, post_assimilation, resume_filename)
+  subroutine seq_cdata_setptrs(cdata, ID, mpicom, dom, gsMap, infodata, name)
 
     !-----------------------------------------------------------------------
     !
@@ -52,27 +49,23 @@ contains
     type(mct_gsMap)         ,optional,pointer :: gsMap      ! decomp
     type(seq_infodata_type) ,optional,pointer :: infodata   ! INIT object
     character(len=*)        ,optional         :: name       ! name
-    logical                 ,optional         :: post_assimilation ! Restart is post assimilation
-     character(len=*)       ,optional,pointer :: resume_filename ! filename used by pause/resume processing
     !
     ! Local variables
     character(*),parameter :: subName = '(seq_cdata_setptrs) '
     !-----------------------------------------------------------------------
 
-    if (present(name              )) name              =  cdata%name
-    if (present(ID                )) ID                =  cdata%ID
-    if (present(mpicom            )) mpicom            =  cdata%mpicom
-    if (present(post_assimilation )) post_assimilation =  cdata%post_assim
-    if (present(resume_filename   )) resume_filename   => cdata%resume_filename
-    if (present(dom               )) dom               => cdata%dom
-    if (present(gsMap             )) gsMap             => cdata%gsMap
-    if (present(infodata          )) infodata          => cdata%infodata
+    if (present(name     )) name     =  cdata%name
+    if (present(ID       )) ID       =  cdata%ID
+    if (present(mpicom   )) mpicom   =  cdata%mpicom
+    if (present(dom      )) dom      => cdata%dom
+    if (present(gsMap    )) gsMap    => cdata%gsMap
+    if (present(infodata )) infodata => cdata%infodata
 
   end subroutine seq_cdata_setptrs
 
-  !============================================================================
+  !===============================================================================
 
-  subroutine seq_cdata_init(cdata,ID, name, dom, gsMap, infodata, post_assim)
+  subroutine seq_cdata_init(cdata,ID,dom,gsMap,infodata,name)
 
     !-----------------------------------------------------------------------
     ! Description
@@ -80,14 +73,13 @@ contains
     ! xxx_comp_esmf.F90 interfaces
     !
     ! Arguments
-
+    implicit none
     type(seq_cdata)         ,intent(inout)       :: cdata      ! initialized
     integer                 ,intent(in)          :: ID         ! component id
-    character(len=*)        ,intent(in),optional :: name       ! component name
     type(mct_gGrid)         ,intent(in),target   :: dom        ! domain
     type(mct_gsMap)         ,intent(in),target   :: gsMap      ! decomp
     type(seq_infodata_type) ,intent(in),target   :: infodata   ! INIT object
-    logical                 ,intent(in)          :: post_assim
+    character(len=*)        ,intent(in),optional :: name       ! user defined name
     !
     ! Local variables
     !
@@ -103,15 +95,11 @@ contains
     else
        cdata%name   =  'undefined'
     endif
-    cdata%ID              =  ID
-    cdata%mpicom          =  mpicom
-    cdata%dom             => dom
-    cdata%gsMap           => gsMap
-    cdata%infodata        => infodata
-    cdata%post_assim      =  post_assim
-
-    allocate(cdata%resume_filename)
-    cdata%resume_filename =  ''
+    cdata%ID       =  ID
+    cdata%mpicom   =  mpicom
+    cdata%dom      => dom
+    cdata%gsMap    => gsMap
+    cdata%infodata => infodata
 
   end subroutine seq_cdata_init
 

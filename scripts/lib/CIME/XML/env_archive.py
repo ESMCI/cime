@@ -9,12 +9,12 @@ logger = logging.getLogger(__name__)
 # pylint: disable=super-init-not-called
 class EnvArchive(ArchiveBase,EnvBase):
 
-    def __init__(self, case_root=None, infile="env_archive.xml", read_only=False):
+    def __init__(self, case_root=None, infile="env_archive.xml"):
         """
         initialize an object interface to file env_archive.xml in the case directory
         """
         schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_archive.xsd")
-        EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
+        EnvBase.__init__(self, case_root, infile, schema=schema)
 
     def get_entries(self):
         return self.get_children('comp_archive_spec')

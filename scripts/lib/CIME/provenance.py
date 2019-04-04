@@ -5,7 +5,7 @@ Library for saving build/run provenance.
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import touch, gzip_existing_file, SharedArea, convert_to_babylonian_time, get_current_commit, indent_string, run_cmd, run_cmd_no_fail, safe_copy
+from CIME.utils import touch, gzip_existing_file, SharedArea, copy_umask, convert_to_babylonian_time, get_current_commit, indent_string, run_cmd, run_cmd_no_fail
 
 import tarfile, getpass, signal, glob, shutil, sys
 
@@ -23,9 +23,7 @@ def _get_batch_job_id_for_syslog(case):
             return os.environ["SLURM_JOB_ID"]
         elif mach in ['mira', 'theta']:
             return os.environ["COBALT_JOBID"]
-        elif mach in ['summit']:
-            return os.environ["LSB_JOBID"]
-    except KeyError:
+    except:
         pass
 
     return None
@@ -47,7 +45,7 @@ def _save_build_provenance_e3sm(case, lid):
     if os.path.exists(headfile_prov):
         os.remove(headfile_prov)
     if os.path.exists(headfile):
-        safe_copy(headfile, headfile_prov, preserve_meta=False)
+        copy_umask(headfile, headfile_prov)
 
     # Save SourceMods
     sourcemods = os.path.join(caseroot, "SourceMods")
@@ -197,13 +195,6 @@ def _save_prerun_timing_e3sm(case, lid):
                 full_cmd = cmd + " " + filename
                 run_cmd_no_fail(full_cmd + "." + lid, from_dir=full_timing_dir)
                 gzip_existing_file(os.path.join(full_timing_dir, filename + "." + lid))
-        elif mach == "summit":
-            for cmd, filename in [("bjobs -u all >", "bjobsu_all"),
-                                  ("bjobs -r -u all -o 'jobid slots exec_host' >", "bjobsru_allo"),
-                                  ("bjobs -l -UF %s >" % job_id, "bjobslUF_jobid")]:
-                full_cmd = cmd + " " + filename
-                run_cmd_no_fail(full_cmd + "." + lid, from_dir=full_timing_dir)
-                gzip_existing_file(os.path.join(full_timing_dir, filename + "." + lid))
 
     # copy/tar SourceModes
     source_mods_dir = os.path.join(caseroot, "SourceMods")
@@ -230,7 +221,7 @@ def _save_prerun_timing_e3sm(case, lid):
         ]
     for glob_to_copy in globs_to_copy:
         for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
-            safe_copy(item, os.path.join(case_docs, "{}.{}".format(os.path.basename(item).lstrip("."), lid)), preserve_meta=False)
+            copy_umask(item, os.path.join(case_docs, "{}.{}".format(os.path.basename(item).lstrip("."), lid)))
 
     # Copy some items from build provenance
     blddir_globs_to_copy = [
@@ -239,7 +230,7 @@ def _save_prerun_timing_e3sm(case, lid):
         ]
     for blddir_glob_to_copy in blddir_globs_to_copy:
         for item in glob.glob(os.path.join(blddir, blddir_glob_to_copy)):
-            safe_copy(item, os.path.join(full_timing_dir, os.path.basename(item) + "." + lid), preserve_meta=False)
+            copy_umask(item, os.path.join(full_timing_dir, os.path.basename(item) + "." + lid))
 
     # Save state of repo
     from_repo = cimeroot if os.path.exists(os.path.join(cimeroot, ".git")) else os.path.dirname(cimeroot)
@@ -352,7 +343,7 @@ def _save_postrun_timing_e3sm(case, lid):
                 os.remove(syslog_jobid_path)
 
     # copy timings
-    safe_copy("%s.tar.gz" % rundir_timing_dir, full_timing_dir, preserve_meta=False)
+    copy_umask("%s.tar.gz" % rundir_timing_dir, full_timing_dir)
 
     #
     # save output files and logs
@@ -369,13 +360,10 @@ def _save_postrun_timing_e3sm(case, lid):
             globs_to_copy.append("%s*cobaltlog" % job_id)
         elif mach in ["edison", "cori-haswell", "cori-knl"]:
             globs_to_copy.append("%s*run*%s" % (case.get_value("CASE"), job_id))
-        elif mach == "summit":
-            globs_to_copy.append("e3sm.stderr.%s" % job_id)
-            globs_to_copy.append("e3sm.stdout.%s" % job_id)
 
     globs_to_copy.append("logs/run_environment.txt.{}".format(lid))
-    globs_to_copy.append(os.path.join(rundir, "e3sm.log.{}.gz".format(lid)))
-    globs_to_copy.append(os.path.join(rundir, "cpl.log.{}.gz".format(lid)))
+    globs_to_copy.append("logs/e3sm.log.{}.gz".format(lid))
+    globs_to_copy.append("logs/cpl.log.{}.gz".format(lid))
     globs_to_copy.append("timing/*.{}*".format(lid))
     globs_to_copy.append("CaseStatus")
 
@@ -384,9 +372,9 @@ def _save_postrun_timing_e3sm(case, lid):
             basename = os.path.basename(item)
             if basename != timing_saved_file:
                 if lid not in basename and not basename.endswith(".gz"):
-                    safe_copy(item, os.path.join(full_timing_dir, "{}.{}".format(basename, lid)), preserve_meta=False)
+                    copy_umask(item, os.path.join(full_timing_dir, "{}.{}".format(basename, lid)))
                 else:
-                    safe_copy(item, full_timing_dir, preserve_meta=False)
+                    copy_umask(item, full_timing_dir)
 
     # zip everything
     for root, _, files in os.walk(full_timing_dir):
@@ -435,24 +423,22 @@ def get_recommended_test_time_based_on_past(baseline_root, test, raw=False):
                     best_walltime += _GLOBAL_WIGGLE
 
                 return convert_to_babylonian_time(best_walltime)
-        except Exception:
+        except:
             # We NEVER want a failure here to kill the run
-            logger.warning("Failed to read test time: {}".format(sys.exc_info()[1]))
+            logger.warning("Failed to read test time: {}".format(sys.exc_info()[0]))
 
     return None
 
 def save_test_time(baseline_root, test, time_seconds):
     if baseline_root is not None:
         try:
-            with SharedArea():
-                the_dir  = os.path.join(baseline_root, _WALLTIME_BASELINE_NAME, test)
-                if not os.path.exists(the_dir):
-                    os.makedirs(the_dir)
+            the_dir  = os.path.join(baseline_root, _WALLTIME_BASELINE_NAME, test)
+            if not os.path.exists(the_dir):
+                os.makedirs(the_dir)
 
-                the_path = os.path.join(the_dir, _WALLTIME_FILE_NAME)
-                with open(the_path, "a") as fd:
-                    fd.write("{}\n".format(int(time_seconds)))
-
-        except Exception:
+            the_path = os.path.join(the_dir, _WALLTIME_FILE_NAME)
+            with open(the_path, "a") as fd:
+                fd.write("{}\n".format(int(time_seconds)))
+        except:
             # We NEVER want a failure here to kill the run
-            logger.warning("Failed to store test time: {}".format(sys.exc_info()[1]))
+            logger.warning("Failed to store test time: {}".format(sys.exc_info()[0]))

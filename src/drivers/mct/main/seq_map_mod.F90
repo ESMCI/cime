@@ -812,16 +812,18 @@ contains
     !
     ! Local variables
     !
+    type(mct_sMatp)        :: sMatp ! sMat
     type(mct_aVect)        :: avp_i , avp_o
     integer(IN)            :: j,kf
     integer(IN)            :: lsize_i,lsize_o
     real(r8)               :: normval
-    character(CX)          :: lrList,appnd
+    character(CX)          :: lrList
     logical                :: lnorm
     character(*),parameter :: subName = '(seq_map_avNormArr) '
     character(len=*),parameter :: ffld = 'norm8wt'  ! want something unique
     !-----------------------------------------------------
 
+    sMatp   = mapper%sMatp
     lsize_i = mct_aVect_lsize(av_i)
     lsize_o = mct_aVect_lsize(av_o)
 
@@ -830,26 +832,28 @@ contains
        lnorm = norm
     endif
 
+    if (present(norm_i) .and..not.lnorm) then
+       write(logunit,*) subname,' ERROR: norm_i and norm = false'
+       call shr_sys_abort(subname//' ERROR norm_i and norm = false')
+    endif
+
     if (present(norm_i)) then
-       if (.not.lnorm) call shr_sys_abort(subname//' ERROR norm_i and norm = false')
-       if (size(norm_i) /= lsize_i) call shr_sys_abort(subname//' ERROR size(norm_i) ne lsize_i')
+       if (size(norm_i) /= lsize_i) then
+          write(logunit,*) subname,' ERROR: size(norm_i) ne lsize_i ',size(norm_i),lsize_i
+          call shr_sys_abort(subname//' ERROR size(norm_i) ne lsize_i')
+       endif
     endif
 
     !--- create temporary avs for mapping ---
 
-    if (lnorm .or. present(norm_i)) then
-       appnd = ':'//ffld
-    else
-       appnd = ''
-    endif
     if (present(rList)) then
-       call mct_aVect_init(avp_i, rList=trim( rList)//trim(appnd), lsize=lsize_i)
-       call mct_aVect_init(avp_o, rList=trim( rList)//trim(appnd), lsize=lsize_o)
+       call mct_aVect_init(avp_i, rList=trim( rList)//':'//ffld, lsize=lsize_i)
+       call mct_aVect_init(avp_o, rList=trim( rList)//':'//ffld, lsize=lsize_o)
     else
-       lrList = mct_aVect_exportRList2c(av_i)
-       call mct_aVect_init(avp_i, rList=trim(lrList)//trim(appnd), lsize=lsize_i)
-       lrList = mct_aVect_exportRList2c(av_o)
-       call mct_aVect_init(avp_o, rList=trim(lrList)//trim(appnd), lsize=lsize_o)
+       lrList = trim(mct_aVect_exportRList2c(av_i))
+       call mct_aVect_init(avp_i, rList=trim(lrList)//':'//ffld, lsize=lsize_i)
+       lrList = trim(mct_aVect_exportRList2c(av_o))
+       call mct_aVect_init(avp_o, rList=trim(lrList)//':'//ffld, lsize=lsize_o)
     endif
 
     !--- copy av_i to avp_i and set ffld value to 1.0
@@ -857,18 +861,15 @@ contains
     !--- this will do the right thing for the norm_i normalization
 
     call mct_aVect_copy(aVin=av_i, aVout=avp_i, VECTOR=mct_usevector)
-    if (lnorm .or. present(norm_i)) then
-       kf = mct_aVect_indexRA(avp_i,ffld)
-       do j = 1,lsize_i
-          avp_i%rAttr(kf,j) = 1.0_r8
-       enddo
+    kf = mct_aVect_indexRA(avp_i,ffld)
+    do j = 1,lsize_i
+       avp_i%rAttr(kf,j) = 1.0_r8
+    enddo
 
-       if (present(norm_i)) then
-          !$omp simd
-          do j = 1,lsize_i
-             avp_i%rAttr(:,j) = avp_i%rAttr(:,j)*norm_i(j)
-          enddo
-       endif
+    if (present(norm_i)) then
+       do j = 1,lsize_i
+          avp_i%rAttr(:,j) = avp_i%rAttr(:,j)*norm_i(j)
+       enddo
     endif
 
     !--- map ---
@@ -877,15 +878,14 @@ contains
        call shr_sys_abort(subname//' ERROR: esmf SMM not supported')
     else
        ! MCT based SMM
-       call mct_sMat_avMult(avp_i, mapper%sMatp, avp_o, VECTOR=mct_usevector)
+       call mct_sMat_avMult(avp_i, sMatp, avp_o, VECTOR=mct_usevector)
     endif
 
     !--- renormalize avp_o by mapped norm_i  ---
 
     if (lnorm) then
-       kf = mct_aVect_indexRA(avp_o,ffld)
-       !$omp simd
        do j = 1,lsize_o
+          kf = mct_aVect_indexRA(avp_o,ffld)
           normval = avp_o%rAttr(kf,j)
           if (normval /= 0.0_r8) then
              normval = 1.0_r8/normval

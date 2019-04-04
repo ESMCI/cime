@@ -36,3 +36,4 @@ class TestCaseFake(unittest.TestCase):
         self.assertEqual(new_caseroot, clone.get_value('CASEROOT'))
         self.assertEqual(os.path.join(new_caseroot, 'run'),
                          clone.get_value('RUNDIR'))
+
