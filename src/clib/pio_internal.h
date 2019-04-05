@@ -373,6 +373,7 @@ extern "C" {
  * async is being used. */
 enum PIO_MSG
 {
+    PIO_MSG_NULL,
     PIO_MSG_OPEN_FILE,
     PIO_MSG_CREATE_FILE,
     PIO_MSG_INQ_ATT,

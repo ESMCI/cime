@@ -2501,7 +2501,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
                      MPI_Comm io_comm)
 {
     iosystem_desc_t *my_iosys;
-    int msg = 0;
+    int msg = PIO_MSG_NULL, messages[component_count];
     MPI_Request req[component_count];
     MPI_Status status;
     int index;
@@ -2521,7 +2521,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         {
             my_iosys = iosys[cmp];
             LOG((1, "about to call MPI_Irecv union_comm = %d", my_iosys->union_comm));
-            if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
+            if ((mpierr = MPI_Irecv(&(messages[cmp]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
                                     my_iosys->union_comm, &req[cmp])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((1, "MPI_Irecv req[%d] = %d", cmp, req[cmp]));
@@ -2545,6 +2545,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
+	    msg = messages[index];
             for (int c = 0; c < component_count; c++)
                 LOG((3, "req[%d] = %d", c, req[c]));
         }
@@ -2731,7 +2732,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             my_iosys = iosys[index];
             LOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
                  index, my_iosys->comproot, my_iosys->union_comm));
-            if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
+            if ((mpierr = MPI_Irecv(&(messages[index]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
                                     &req[index])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d", index, req[index]));
@@ -2739,7 +2740,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
 
         LOG((3, "pio_msg_handler2 done msg = %d open_components = %d",
              msg, open_components));
-
+	msg = PIO_MSG_NULL;
         /* If there are no more open components, exit. */
         if (finalize)
         {
