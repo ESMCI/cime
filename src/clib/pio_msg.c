@@ -2521,7 +2521,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         {
             my_iosys = iosys[cmp];
             LOG((1, "about to call MPI_Irecv union_comm = %d", my_iosys->union_comm));
-            if ((mpierr = MPI_Irecv(messages+cmp, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
+            if ((mpierr = MPI_Irecv(&(messages[cmp]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
                                     my_iosys->union_comm, &req[cmp])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((1, "MPI_Irecv req[%d] = %d", cmp, req[cmp]));
@@ -2732,7 +2732,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             my_iosys = iosys[index];
             LOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
                  index, my_iosys->comproot, my_iosys->union_comm));
-            if ((mpierr = MPI_Irecv(messages+index, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
+            if ((mpierr = MPI_Irecv(&(messages[index]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
                                     &req[index])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d", index, req[index]));
