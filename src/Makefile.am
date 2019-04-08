@@ -7,6 +7,10 @@ if BUILD_FORTRAN
 FLIB = flib
 endif
 
-SUBDIRS = clib $(FLIB)
+if USE_GPTL
+GPTL = gptl
+endif
+
+SUBDIRS = clib ${GPTL} $(FLIB)
 
 EXTRA_DIST = CMakeLists.txt
