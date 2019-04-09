@@ -30,7 +30,7 @@ pioperformance_SOURCES = pioperformance.F90
 # Tests will run from a bash script.
 #TESTS = run_tests.sh
 
-EXTRA_DIST = CMakeLists.txt gensimple.pl
+EXTRA_DIST = CMakeLists.txt gensimple.pl Pioperformance.md
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
