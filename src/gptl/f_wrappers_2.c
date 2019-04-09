@@ -7,50 +7,102 @@
 #include "private.h" /* MAX_CHARS, bool */
 #include "gptl.h"    /* function prototypes and HAVE_MPI logic*/
 
-#if ( defined FORTRANCAPS )
-
-#define gptlevent_name_to_code GPTLEVENT_NAME_TO_CODE
-#define gptlevent_code_to_name GPTLEVENT_CODE_TO_NAME
-
-#elif ( defined INCLUDE_CMAKE_FCI )
-
-#define gptlevent_name_to_code      FCI_GLOBAL(gptlevent_name_to_code,GPTLEVENT_NAME_TO_CODE)
-#define gptlevent_code_to_name      FCI_GLOBAL(gptlevent_code_to_name,GPTLEVENT_CODE_TO_NAME)
-#elif ( defined FORTRANUNDERSCORE )
-
 #define gptlevent_name_to_code gptlevent_name_to_code_
 #define gptlevent_code_to_name gptlevent_code_to_name_
-
-#elif ( defined FORTRANDOUBLEUNDERSCORE )
-
-#define gptlevent_name_to_code gptlevent_name_to_code__
-#define gptlevent_code_to_name gptlevent_code_to_name__
-
-#endif
+#define gptlpr_set_append gptlpr_set_append_
+#define gptlpr_query_append gptlpr_query_append_
+#define gptlpr_set_write gptlpr_set_write_
+#define gptlpr_query_write gptlpr_query_write_
 
 /*
 ** Local function prototypes
 */
 
+int gptlpr_set_append (void);
+int gptlpr_query_append (void);
+int gptlpr_set_write (void);
+int gptlpr_query_write (void);
+static int pr_append;
+
 #ifdef HAVE_PAPI
 /* int gptl_papilibraryinit (void); */
 int gptlevent_name_to_code (const char *str, int *code, int nc);
 int gptlevent_code_to_name (int *code, char *str, int nc);
+
+/** GPTL_PAPIlibraryinit: Call PAPI_library_init if necessary
+**
+** Return value: 0 (success) or GPTLerror (failure)
+*/
+
+int GPTL_PAPIlibraryinit ()
+{
+  int ret;
+
+  if ((ret = PAPI_is_initialized ()) == PAPI_NOT_INITED) {
+    if ((ret = PAPI_library_init (PAPI_VER_CURRENT)) != PAPI_VER_CURRENT) {
+      fprintf (stderr, "GPTL_PAPIlibraryinit: ret=%d PAPI_VER_CURRENT=%d\n",
+	       ret, (int) PAPI_VER_CURRENT);
+      return GPTLerror ("GPTL_PAPIlibraryinit: PAPI_library_init failure:%s\n",
+			PAPI_strerror (ret));
+    }
+  }
+  return 0;
+}
+
 #endif
+
+/*
+** GPTLpr_set_append: set GPTLpr_file and GPTLpr_summary_file
+** to use append mode
+*/
+
+int GPTLpr_set_append (void)
+{
+  pr_append = true;
+  return 0;
+}
+
+/*
+** GPTLpr_query_append: query whether GPTLpr_file and GPTLpr_summary_file
+** use append mode
+*/
+
+int GPTLpr_query_append (void)
+{
+  if (pr_append)
+    return 1;
+  else
+    return 0;
+}
+
+/*
+** GPTLpr_set_write: set GPTLpr_file and GPTLpr_summary_file
+** to use write mode
+*/
+
+int GPTLpr_set_write (void)
+{
+  pr_append = false;
+  return 0;
+}
+
+/*
+** GPTLpr_query_write: query whether GPTLpr_file and GPTLpr_summary_file
+** use write mode
+*/
+
+int GPTLpr_query_write (void)
+{
+  if (pr_append)
+    return 0;
+  else
+    return 1;
+}
+
 
 /*
 ** Fortran wrapper functions start here
 */
-
-int gptlinitialize (void)
-{
-  return GPTLinitialize ();
-}
-
-int gptlfinalize (void)
-{
-  return GPTLfinalize ();
-}
 
 int gptlpr_set_append (void)
 {
@@ -70,261 +122,6 @@ int gptlpr_set_write (void)
 int gptlpr_query_write (void)
 {
   return GPTLpr_set_append ();
-}
-
-int gptlpr (int *procid)
-{
-  return GPTLpr (*procid);
-}
-
-int gptlpr_file (char *file, int nc1)
-{
-  char *locfile;
-  int ret;
-
-  if ( ! (locfile = (char *) malloc (nc1+1)))
-    return GPTLerror ("gptlpr_file: malloc error\n");
-
-  snprintf (locfile, nc1+1, "%s", file);
-
-  ret = GPTLpr_file (locfile);
-  free (locfile);
-  return ret;
-}
-
-int gptlpr_summary (int *fcomm)
-{
-#ifdef HAVE_MPI
-  MPI_Comm ccomm;
-#ifdef HAVE_COMM_F2C
-  ccomm = MPI_Comm_f2c (*fcomm);
-#else
-  /* Punt and try just casting the Fortran communicator */
-  ccomm = (MPI_Comm) *fcomm;
-#endif
-#else
-  int ccomm = 0;
-#endif 
-
-  return GPTLpr_summary (ccomm);
-}
-
-int gptlpr_summary_file (int *fcomm, char *file, int nc1)
-{
-  char *locfile;
-  int ret;
-
-#ifdef HAVE_MPI
-  MPI_Comm ccomm;
-#ifdef HAVE_COMM_F2C
-  ccomm = MPI_Comm_f2c (*fcomm);
-#else
-  /* Punt and try just casting the Fortran communicator */
-  ccomm = (MPI_Comm) *fcomm;
-#endif
-#else
-  int ccomm = 0;
-#endif 
-
-  if ( ! (locfile = (char *) malloc (nc1+1)))
-    return GPTLerror ("gptlpr_summary_file: malloc error\n");
-
-  snprintf (locfile, nc1+1, "%s", file);
-
-  ret = GPTLpr_summary_file (ccomm, locfile);
-  free (locfile);
-  return ret;
-}
-
-int gptlbarrier (int *fcomm, char *name, int nc1)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-#ifdef HAVE_MPI
-  MPI_Comm ccomm;
-#ifdef HAVE_COMM_F2C
-  ccomm = MPI_Comm_f2c (*fcomm);
-#else
-  /* Punt and try just casting the Fortran communicator */
-  ccomm = (MPI_Comm) *fcomm;
-#endif
-#else
-  int ccomm = 0;
-#endif 
-
-  numchars = MIN (nc1, MAX_CHARS);
-  strncpy (cname, name, numchars);
-  cname[numchars] = '\0';
-  return GPTLbarrier (ccomm, cname);
-}
-
-int gptlreset (void)
-{
-  return GPTLreset();
-}
-
-int gptlstamp (double *wall, double *usr, double *sys)
-{
-  return GPTLstamp (wall, usr, sys);
-}
-
-int gptlstart (char *name, int nc1)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  numchars = MIN (nc1, MAX_CHARS);
-  strncpy (cname, name, numchars);
-  cname[numchars] = '\0';
-  return GPTLstart (cname);
-}
-
-int gptlstart_handle (char *name, void **handle, int nc1)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  if (*handle) {
-    cname[0] = '\0';
-  } else {
-    numchars = MIN (nc1, MAX_CHARS);
-    strncpy (cname, name, numchars);
-    cname[numchars] = '\0';
-  }
-  return GPTLstart_handle (cname, handle);
-}
-
-int gptlstop (char *name, int nc1)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  numchars = MIN (nc1, MAX_CHARS);
-  strncpy (cname, name, numchars);
-  cname[numchars] = '\0';
-  return GPTLstop (cname);
-}
-
-int gptlstop_handle (char *name, void **handle, int nc1)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  if (*handle) {
-    cname[0] = '\0';
-  } else {
-    numchars = MIN (nc1, MAX_CHARS);
-    strncpy (cname, name, numchars);
-    cname[numchars] = '\0';
-  }
-  return GPTLstop_handle (cname, handle);
-}
-
-int gptlsetoption (int *option, int *val)
-{
-  return GPTLsetoption (*option, *val);
-}
-
-int gptlenable (void)
-{
-  return GPTLenable ();
-}
-
-int gptldisable (void)
-{
-  return GPTLdisable ();
-}
-
-int gptlsetutr (int *option)
-{
-  return GPTLsetutr (*option);
-}
-
-int gptlquery (const char *name, int *t, int *count, int *onflg, double *wallclock, 
-	       double *usr, double *sys, long long *papicounters_out, int *maxcounters, 
-	       int nc)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  numchars = MIN (nc, MAX_CHARS);
-  strncpy (cname, name, numchars);
-  cname[numchars] = '\0';
-  return GPTLquery (cname, *t, count, onflg, wallclock, usr, sys, papicounters_out, *maxcounters);
-}
-
-int gptlquerycounters (const char *name, int *t, long long *papicounters_out, int nc)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  numchars = MIN (nc, MAX_CHARS);
-  strncpy (cname, name, numchars);
-  cname[numchars] = '\0';
-  return GPTLquerycounters (cname, *t, papicounters_out);
-}
-
-int gptlget_wallclock (const char *name, int *t, double *value, int nc)
-{
-  char cname[MAX_CHARS+1];
-  int numchars;
-
-  numchars = MIN (nc, MAX_CHARS);
-  strncpy (cname, name, numchars);
-  cname[numchars] = '\0';
-
-  return GPTLget_wallclock (cname, *t, value);
-}
-
-int gptlget_eventvalue (const char *timername, const char *eventname, int *t, double *value, 
-			int nc1, int nc2)
-{
-  char ctimername[MAX_CHARS+1];
-  char ceventname[MAX_CHARS+1];
-  int numchars;
-
-  numchars = MIN (nc1, MAX_CHARS);
-  strncpy (ctimername, timername, numchars);
-  ctimername[numchars] = '\0';
-
-  numchars = MIN (nc2, MAX_CHARS);
-  strncpy (ceventname, eventname, numchars);
-  ceventname[numchars] = '\0';
-
-  return GPTLget_eventvalue (ctimername, ceventname, *t, value);
-}
-
-int gptlget_nregions (int *t, int *nregions)
-{
-  return GPTLget_nregions (*t, nregions);
-}
-
-int gptlget_regionname (int *t, int *region, char *name, int nc)
-{
-  int n;
-  int ret;
-
-  ret = GPTLget_regionname (*t, *region, name, nc);
-  /* Turn nulls into spaces for fortran */
-  for (n = 0; n < nc; ++n)
-    if (name[n] == '\0')
-      name[n] = ' ';
-  return ret;
-}
-
-int gptlget_memusage (int *size, int *rss, int *share, int *text, int *datastack)
-{
-  return GPTLget_memusage (size, rss, share, text, datastack);
-}
-
-int gptlprint_memusage (const char *str, int nc)
-{
-  char cname[128+1];
-  int numchars = MIN (nc, 128);
-
-  strncpy (cname, str, numchars);
-  cname[numchars] = '\0';
-  return GPTLprint_memusage (cname);
 }
 
 #ifdef HAVE_PAPI
@@ -364,11 +161,12 @@ int gptlevent_code_to_name (int *code, char *str, int nc)
   }
   return 0;
 }
+
 #else
 
 int gptl_papilibraryinit (void)
 {
-  return GPTL_PAPIlibraryinit ();
+  return 0;
 }
 
 int gptlevent_name_to_code (const char *str, int *code, int nc)
