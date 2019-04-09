@@ -10,7 +10,7 @@ noinst_LTLIBRARIES = libperf_utils.la libperf_mod.la
 
 # The convenience libraries depends on their source.
 libperf_utils_la_SOURCES = perf_utils.F90
-libperf_mod_la_SOURCES = perf_mod.F90
+libperf_mod_la_SOURCES = perf_mod.F90 f_wrappers_2.c
 
 # Each mod file depends on the .o file.
 perf_utils.mod: perf_utils.$(OBJEXT)

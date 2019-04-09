@@ -172,6 +172,30 @@ if test "x$enable_timing" = xyes; then
                             [AC_MSG_ERROR([Can't find or link to the GPTL Fortran library.])])
       AC_LANG_POP([Fortran])
    fi
+
+   # Check for papi library.
+   AC_CHECK_LIB([papi], [PAPI_library_init])
+   AC_MSG_CHECKING([whether system can support PAPI])
+   have_papi=no
+   if test "x$ac_cv_lib_papi_PAPI_library_init" = xyes; then
+      # If we have PAPI library, check /proc/sys/kernel/perf_event_paranoid
+      # to see if we have permissions.
+      if test -f /proc/sys/kernel/perf_event_paranoid; then
+         if test `cat /proc/sys/kernel/perf_event_paranoid` != 1; then
+            AC_MSG_ERROR([PAPI library found, but /proc/sys/kernel/perf_event_paranoid != 1
+                                               try sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'])
+         fi
+      fi
+      AC_DEFINE([HAVE_PAPI], [1], [PAPI library is present and usable])
+      have_papi=yes
+   fi
+   AC_MSG_RESULT($have_papi)
+
+   # We must have papi to build pioperformance with timing.
+   if test "x$have_papi" = xno; then
+      AC_MSG_ERROR([PAPI library not found, but is required if enable-timing is used.])
+   fi
+   AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 fi
 
 AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)
