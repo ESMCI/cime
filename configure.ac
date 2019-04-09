@@ -195,8 +195,8 @@ if test "x$enable_timing" = xyes; then
    if test "x$have_papi" = xno; then
       AC_MSG_ERROR([PAPI library not found, but is required if enable-timing is used.])
    fi
-   AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 fi
+AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 
 AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)
 AC_CONFIG_FILES(src/flib/pionfatt_mod.F90:src/flib/pionfatt_mod.F90.in2)
