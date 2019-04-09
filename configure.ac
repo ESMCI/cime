@@ -51,6 +51,18 @@ if test "x$enable_logging" = xyes; then
    AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
 fi
 
+# Does the user want to enable timing?
+AC_MSG_CHECKING([whether GPTL timing library is used])
+AC_ARG_ENABLE([timing],
+              [AS_HELP_STRING([--enable-timing],
+                              [enable use of the GPTL timing library.])])
+test "x$enable_timing" = xyes || enable_timing=no
+AC_MSG_RESULT([$enable_timing])
+if test "x$enable_timing" = xyes; then
+   AC_DEFINE([TIMING], 1, [If true, use GPTL timing library.])
+fi
+AM_CONDITIONAL(USE_GPTL, [test "x$enable_timing" = xyes])
+
 # Does the user want to enable Fortran library?
 AC_MSG_CHECKING([whether Fortran library should be build])
 AC_ARG_ENABLE([fortran],
@@ -148,6 +160,44 @@ fi
 #AC_CHECK_SIZEOF([MPI_Offset], [], [[#include <mpi.h>]])
 #AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
 
+# If we want the timing library, we must find it.
+if test "x$enable_timing" = xyes; then
+   AC_CHECK_HEADERS([gptl.h])
+   AC_CHECK_LIB([gptl], [GPTLinitialize], [],
+                        [AC_MSG_ERROR([Can't find or link to the GPTL library.])])
+   if test "x$enable_fortran" = xyes; then
+      AC_LANG_PUSH([Fortran])
+#      AC_CHECK_HEADERS([gptl.inc])
+      AC_CHECK_LIB([gptlf], [gptlstart], [],
+                            [AC_MSG_ERROR([Can't find or link to the GPTL Fortran library.])])
+      AC_LANG_POP([Fortran])
+   fi
+
+   # Check for papi library.
+   AC_CHECK_LIB([papi], [PAPI_library_init])
+   AC_MSG_CHECKING([whether system can support PAPI])
+   have_papi=no
+   if test "x$ac_cv_lib_papi_PAPI_library_init" = xyes; then
+      # If we have PAPI library, check /proc/sys/kernel/perf_event_paranoid
+      # to see if we have permissions.
+      if test -f /proc/sys/kernel/perf_event_paranoid; then
+         if test `cat /proc/sys/kernel/perf_event_paranoid` != 1; then
+            AC_MSG_ERROR([PAPI library found, but /proc/sys/kernel/perf_event_paranoid != 1
+                                               try sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'])
+         fi
+      fi
+      AC_DEFINE([HAVE_PAPI], [1], [PAPI library is present and usable])
+      have_papi=yes
+   fi
+   AC_MSG_RESULT($have_papi)
+
+   # We must have papi to build pioperformance with timing.
+   if test "x$have_papi" = xno; then
+      AC_MSG_ERROR([PAPI library not found, but is required if enable-timing is used.])
+   fi
+fi
+AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
+
 AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)
 AC_CONFIG_FILES(src/flib/pionfatt_mod.F90:src/flib/pionfatt_mod.F90.in2)
 AC_CONFIG_FILES(src/flib/pionfget_mod.F90:src/flib/pionfget_mod.F90.in2)
@@ -165,11 +215,13 @@ AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
           src/flib/Makefile
+          src/gptl/Makefile
           tests/Makefile
           tests/cunit/Makefile
           tests/unit/Makefile
           tests/general/Makefile
           tests/general/util/Makefile
+          tests/performance/Makefile
           doc/Makefile
           examples/Makefile
           examples/c/Makefile)

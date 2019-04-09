@@ -8,8 +8,11 @@
 if BUILD_FORTRAN
 UNIT = unit
 GENERAL = general
+if USE_GPTL
+PERFORMANCE = performance
+endif
 endif
 
-SUBDIRS = cunit ${UNIT} ${GENERAL}
+SUBDIRS = cunit ${UNIT} ${GENERAL} ${PERFORMANCE}
 
 EXTRA_DIST = CMakeLists.txt
