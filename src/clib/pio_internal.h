@@ -249,6 +249,8 @@ extern "C" {
     /* Flush contents of multi-buffer to disk. */
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);
 
+    int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc);
+
     /* Compute the size that the IO tasks will need to hold the data. */
     int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
 
