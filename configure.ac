@@ -163,7 +163,15 @@ fi
 # If we want the timing library, we must find it.
 if test "x$enable_timing" = xyes; then
    AC_CHECK_HEADERS([gptl.h])
-   AC_CHECK_LIB([gptl], [GPTLinitialize], [], [AC_MSG_ERROR([Can't find or link to the GPTL library.])])
+   AC_CHECK_LIB([gptl], [GPTLinitialize], [],
+                        [AC_MSG_ERROR([Can't find or link to the GPTL library.])])
+   if test "x$enable_fortran" = xyes; then
+      AC_LANG_PUSH([Fortran])
+#      AC_CHECK_HEADERS([gptl.inc])
+      AC_CHECK_LIB([gptlf], [gptlstart], [],
+                            [AC_MSG_ERROR([Can't find or link to the GPTL Fortran library.])])
+      AC_LANG_POP([Fortran])
+   fi
 fi
 
 AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)

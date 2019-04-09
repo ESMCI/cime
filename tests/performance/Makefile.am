@@ -9,12 +9,21 @@
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
 
-LDADD = libpio_tutil.la	\
+# Link to test util library and PIO Fortran and C libs.
+LDADD = $(top_builddir)/src/gptl/libperf_mod.la	\
+$(top_builddir)/src/gptl/libperf_utils.la	\
+${top_builddir}/tests/general/libpio_tutil.la	\
 ${top_builddir}/src/flib/libpiof.la		\
 ${top_builddir}/src/clib/libpio.la
 
+# Find perf_mod and perf_util.
+AM_CPPFLAGS += -I$(top_builddir)/src/gptl
+
+# Find pio_tutil.mod
+AM_CPPFLAGS += -I$(top_builddir)/tests/general
+
 # Build the test for make check.
-bin_PROGRAMS = pioperformance
+check_PROGRAMS = pioperformance
 
 pioperformance_SOURCES = pioperformance.F90
 
