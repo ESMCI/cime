@@ -38,7 +38,8 @@ They call init_ideal_dof which internally generates a dof as follows:
     endif
     
 The size of the variable is npes*varsize where varsize can be set in
-the namelist.
+the namelist. varsize is the variable array size per task. You can add
+variables by changing nvars in the namelist.
 
 When this is run, output like the following will appear:
 
