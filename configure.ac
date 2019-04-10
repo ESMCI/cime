@@ -192,9 +192,9 @@ if test "x$enable_timing" = xyes; then
    AC_MSG_RESULT($have_papi)
 
    # We must have papi to build pioperformance with timing.
-   if test "x$have_papi" = xno; then
-      AC_MSG_ERROR([PAPI library not found, but is required if enable-timing is used.])
-   fi
+   dnl if test "x$have_papi" = xno; then
+   dnl    AC_MSG_ERROR([PAPI library not found, but is required if enable-timing is used.])
+   dnl fi
 fi
 AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 
