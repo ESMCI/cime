@@ -44,7 +44,6 @@ SRCS_FC =  pio.F90 \
             pio_msg_mod.F90 \
 	    calcdisplace_mod.F90 \
 	    pio_msg_callbacks.F90 \
-            pio_support.F90 \
             C_interface_mod.F90
 
 ifeq (yes,$(USE_COMPRESSION))
@@ -52,6 +51,7 @@ SRCS_FC += piovdc.F90
 endif
 
 TEMPLATES_FC = pionfatt_mod.F90.in \
+	        pio_support.F90.in \
 	        pionfread_mod.F90.in \
                 pionfwrite_mod.F90.in \
                 pionfput_mod.F90.in \
@@ -158,7 +158,7 @@ ifneq (0,$(LEVEL))
 endif
 
 piolib_mod.o : ionf_mod.o pio_mpi_utils.o calcdecomp.o
-alloc_mod.o : alloc_mod.F90
+alloc_mod.o : alloc_mod.F90 pio_support.o
 box_rearrange.o : box_rearrange.F90 calcdisplace_mod.o pio_spmd_utils.o
 iompi_mod.o : iompi_mod.F90 pio_types.o alloc_mod.o
 piodarray.o : piodarray.F90 pio_kinds.o pio_support.o iompi_mod.o rearrange.o pionfwrite_mod.o pionfread_mod.o nf_mod.o
@@ -183,3 +183,4 @@ pionfwrite_mod.F90 : pionfwrite_mod.F90.in
 rearrange.F90 : rearrange.F90.in
 pio_spmd_utils.F90: pio_spmd_utils.F90.in
 pio_msg_getput_callbacks.F90 : pio_msg_getput_callbacks.F90.in
+pio_support.F90 : pio_support.F90.in
