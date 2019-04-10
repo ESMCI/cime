@@ -23,9 +23,9 @@ AM_CPPFLAGS += -I$(top_builddir)/src/gptl
 AM_CPPFLAGS += -I$(top_builddir)/tests/general
 
 # Build the test for make check.
-check_PROGRAMS = pioperformance
+check_PROGRAMS = pioperf
 
-pioperformance_SOURCES = pioperformance.F90
+pioperf_SOURCES = pioperformance.F90
 
 # Tests will run from a bash script.
 #TESTS = run_tests.sh
