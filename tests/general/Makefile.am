@@ -60,8 +60,10 @@ pio_iosystem_tests_SOURCES = pio_iosystem_tests.F90
 pio_iosystem_tests2_SOURCES = pio_iosystem_tests2.F90
 pio_iosystem_tests3_SOURCES = pio_iosystem_tests3.F90
 
+if RUN_TESTS
 # Tests will run from a bash script.
 TESTS = run_tests.sh
+endif # RUN_TESTS
 
 %.F90: %.F90.in
 	util/pio_tf_f90gen.pl --annotate-source --out=$@ $<

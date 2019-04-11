@@ -27,8 +27,10 @@ check_PROGRAMS = pioperf
 
 pioperf_SOURCES = pioperformance.F90
 
+if RUN_TESTS
 # Tests will run from a bash script.
 TESTS = run_tests.sh
+endif # RUN_TESTS
 
 EXTRA_DIST = CMakeLists.txt gensimple.pl Pioperformance.md pioperf.nl	\
 run_tests.sh
