@@ -2,19 +2,19 @@
 ## Ed Hartnett 8/16/17
 
 # Initialize autoconf and automake.
-AC_INIT(pio, 2.4.1)
+AC_INIT(pio, 2.4.2-development)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
 # The PIO version, again.
 AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
 AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
-AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
+AC_DEFINE([PIO_VERSION_PATCH], [2], [PIO patch version])
 
 # Once more for the documentation.
 AC_SUBST([VERSION_MAJOR], [2])
 AC_SUBST([VERSION_MINOR], [4])
-AC_SUBST([VERSION_PATCH], [1])
+AC_SUBST([VERSION_PATCH], [2])
 
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
@@ -63,8 +63,15 @@ if test "x$enable_timing" = xyes; then
 fi
 AM_CONDITIONAL(USE_GPTL, [test "x$enable_timing" = xyes])
 
+# Does the user want to disable papi?
+AC_MSG_CHECKING([whether PAPI should be enabled (if enable-timing is used)])
+AC_ARG_ENABLE([papi], [AS_HELP_STRING([--disable-papi],
+              [disable PAPI library use])])
+test "x$enable_papi" = xno || enable_papi=yes
+AC_MSG_RESULT($enable_papi)
+
 # Does the user want to enable Fortran library?
-AC_MSG_CHECKING([whether Fortran library should be build])
+AC_MSG_CHECKING([whether Fortran library should be built])
 AC_ARG_ENABLE([fortran],
               [AS_HELP_STRING([--enable-fortran],
                               [build the PIO Fortran library.])])
@@ -92,7 +99,7 @@ AM_CONDITIONAL(BUILD_DOCS, [test "x$enable_docs" = xyes])
 
 # Is doxygen installed?
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
-if test -z "$DOXYGEN" -a test "x$enable_docs" = xyes; then
+if test -z "$DOXYGEN" -a "x$enable_docs" = xyes; then
    AC_MSG_ERROR([Doxygen not found but --enable-docs used.])
 fi
 
@@ -177,24 +184,21 @@ if test "x$enable_timing" = xyes; then
    AC_CHECK_LIB([papi], [PAPI_library_init])
    AC_MSG_CHECKING([whether system can support PAPI])
    have_papi=no
-   if test "x$ac_cv_lib_papi_PAPI_library_init" = xyes; then
-      # If we have PAPI library, check /proc/sys/kernel/perf_event_paranoid
-      # to see if we have permissions.
-      if test -f /proc/sys/kernel/perf_event_paranoid; then
-         if test `cat /proc/sys/kernel/perf_event_paranoid` != 1; then
-            AC_MSG_ERROR([PAPI library found, but /proc/sys/kernel/perf_event_paranoid != 1
-                                               try sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'])
+   if test $enable_papi = yes; then
+      if test "x$ac_cv_lib_papi_PAPI_library_init" = xyes; then
+         # If we have PAPI library, check /proc/sys/kernel/perf_event_paranoid
+         # to see if we have permissions.
+         if test -f /proc/sys/kernel/perf_event_paranoid; then
+            if test `cat /proc/sys/kernel/perf_event_paranoid` != 1; then
+               AC_MSG_ERROR([PAPI library found, but /proc/sys/kernel/perf_event_paranoid != 1
+                                                  try sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'])
+            fi
          fi
+         AC_DEFINE([HAVE_PAPI], [1], [PAPI library is present and usable])
+         have_papi=yes
       fi
-      AC_DEFINE([HAVE_PAPI], [1], [PAPI library is present and usable])
-      have_papi=yes
    fi
    AC_MSG_RESULT($have_papi)
-
-   # We must have papi to build pioperformance with timing.
-   if test "x$have_papi" = xno; then
-      AC_MSG_ERROR([PAPI library not found, but is required if enable-timing is used.])
-   fi
 fi
 AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 
