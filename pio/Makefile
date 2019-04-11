@@ -17,7 +17,7 @@ FDEPENDS=$(SRCDIR)/fdepends.awk
 DEPSUF = .d
 MODSUF = .mod
 CPPSUF = .f90
-GENF90 := ../bin
+GENF90=$(SRCDIR)/
 
 ifeq (,$(PIOARCH))
   PIOARCH=conf
@@ -85,7 +85,7 @@ LIB= libpio.a
 LEVEL=0
 
 
-all: depends
+all:
 	@$(MAKE) LEVEL=1 $(LIB)
 
 
@@ -153,9 +153,9 @@ startandcount: calcdecomp.F90
 # Automatically generated module dependencies
 #
 
-ifneq (0,$(LEVEL))
-  include $(DEPENDS)
-endif
+#ifneq (0,$(LEVEL))
+#  include $(DEPENDS)
+#endif
 
 piolib_mod.o : ionf_mod.o pio_mpi_utils.o calcdecomp.o
 alloc_mod.o : alloc_mod.F90
