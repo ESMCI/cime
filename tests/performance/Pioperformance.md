@@ -2,7 +2,7 @@
 
 To run pioperformance you need a dof input file. I have a whole repo
 of them here:
-https://svn-ccsm-piodecomps.cgd.ucar.edu/trunk
+<https://svn-ccsm-piodecomps.cgd.ucar.edu/trunk>
 
 You need an input namelist:
 
@@ -59,5 +59,4 @@ When this is run, output like the following will appear:
 These are read and write rates in units of MB/s for Box and Subset
 rearrangers - the time measured is from the call to readdof or
 writedof to the completion of the close (since writes are buffered the
-close needs to be included) .
-
+close needs to be included).

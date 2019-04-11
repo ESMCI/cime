@@ -71,7 +71,7 @@ test "x$enable_papi" = xno || enable_papi=yes
 AC_MSG_RESULT($enable_papi)
 
 # Does the user want to enable Fortran library?
-AC_MSG_CHECKING([whether Fortran library should be build])
+AC_MSG_CHECKING([whether Fortran library should be built])
 AC_ARG_ENABLE([fortran],
               [AS_HELP_STRING([--enable-fortran],
                               [build the PIO Fortran library.])])
