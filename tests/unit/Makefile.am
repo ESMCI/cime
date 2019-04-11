@@ -24,8 +24,10 @@ libglobal_vars_la_SOURCES = global_vars.F90
 libncdf_tests_la_SOURCES = ncdf_tests.F90
 libbasic_tests_la_SOURCES = basic_tests.F90
 
+if RUN_TESTS
 # Tests will run from a bash script.
 TESTS = run_tests.sh
+endif # RUN_TESTS
 
 # Distribute the test script.
 EXTRA_DIST = CMakeLists.txt run_tests.sh input.nl

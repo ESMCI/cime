@@ -21,8 +21,10 @@ test_darray_async test_darray_async_many test_darray_2sync		\
 test_async_multicomp test_async_multi2 test_async_manyproc		\
 test_darray_fill test_decomp_frame test_perf2
 
+if RUN_TESTS
 # Tests will run from a bash script.
 TESTS = run_tests.sh
+endif # RUN_TESTS
 
 # Source code for each test.
 test_intercomm2_SOURCES = test_intercomm2.c test_common.c pio_tests.h

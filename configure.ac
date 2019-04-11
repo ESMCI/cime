@@ -70,6 +70,14 @@ AC_ARG_ENABLE([papi], [AS_HELP_STRING([--disable-papi],
 test "x$enable_papi" = xno || enable_papi=yes
 AC_MSG_RESULT($enable_papi)
 
+# Does the user want to disable test runs?
+AC_MSG_CHECKING([whether test runs should be enabled for make check])
+AC_ARG_ENABLE([test-runs], [AS_HELP_STRING([--disable-test-runs],
+              [disable running run_test.sh test scripts for make check. Tests will still be built.])])
+test "x$enable_test_runs" = xno || enable_test_runs=yes
+AC_MSG_RESULT($enable_test_runs)
+AM_CONDITIONAL(RUN_TESTS, [test "x$enable_test_runs" = xyes])
+
 # Does the user want to enable Fortran library?
 AC_MSG_CHECKING([whether Fortran library should be built])
 AC_ARG_ENABLE([fortran],
