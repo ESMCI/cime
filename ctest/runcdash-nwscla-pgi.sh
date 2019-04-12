@@ -28,10 +28,10 @@ fi
 cd "$PIO_DASHBOARD_ROOT"
 
 if [ ! -d src ]; then
-  git clone --branch develop https://github.com/PARALLELIO/ParallelIO src
+  git clone  https://github.com/PARALLELIO/ParallelIO src
 fi
 cd src
-git checkout develop
-git pull origin develop
+git checkout master
+git pull origin master
 
 ctest -S CTestScript.cmake,${model} -VV
