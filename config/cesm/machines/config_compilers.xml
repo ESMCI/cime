@@ -262,36 +262,6 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
-<compiler MACH="vilje">
-  <NETCDF_PATH>$(NETCDF_ROOT)</NETCDF_PATH>
-  <PNETCDF_PATH>$(NETCDF_ROOT)</PNETCDF_PATH>
-  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
-    <append MODEL="micom"> -r8 </append>
-  </FFLAGS>
-  <SLIBS>
-    <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
-  </SLIBS>
-</compiler>
-
-<compiler MACH="nebula">
-  <NETCDF_PATH>$(NETCDF_DIR)</NETCDF_PATH>
-  <PNETCDF_PATH>$(PNETCDF_DIR)</PNETCDF_PATH>
-  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
-  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
-    <append MODEL="micom"> -r8 </append>
-  </FFLAGS>
-  <MPICC> mpiicc </MPICC>
-  <SLIBS>
-    <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
-  </SLIBS>
-</compiler>
-
-
 <compiler COMPILER="nag">
   <CFLAGS>
     <base> -std=gnu99 </base>
@@ -1207,6 +1177,20 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="vilje">
+  <NETCDF_PATH>$(NETCDF_ROOT)</NETCDF_PATH>
+  <PNETCDF_PATH>$(NETCDF_ROOT)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <SLIBS>
+    <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="fram">
   <CPPDEFS>
    <append> -D$(OS) </append>
@@ -1229,6 +1213,21 @@ using a fortran linker.
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
     <append>-mkl=sequential -lnetcdff -lnetcdf</append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="nebula">
+  <NETCDF_PATH>$(NETCDF_DIR)</NETCDF_PATH>
+  <PNETCDF_PATH>$(PNETCDF_DIR)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <MPICC> mpiicc </MPICC>
+  <SLIBS>
+    <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
 </compiler>
 
