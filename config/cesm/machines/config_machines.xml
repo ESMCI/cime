@@ -2267,6 +2267,8 @@ This allows using a different mpirun command to launch unit tests
     <DIN_LOC_ROOT>/cluster/shared/noresm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>/cluster/work/users/$USER/archive/$CASE</DOUT_S_ROOT>
+    <DOUT_L_ROOT>/projects/NS2345K/noresm/cases</DOUT_L_ROOT>
+    <DOUT_L_HOSTNAME>login.nird.sigma2.no</DOUT_L_HOSTNAME>
     <!--DOUT_L_MSROOT>UNSET</DOUT_L_MSROOT-->
     <BASELINE_ROOT>UNSET</BASELINE_ROOT>
     <CCSM_CPRNC>UNSET</CCSM_CPRNC>

@@ -1009,7 +1009,8 @@ class Case(object):
                     os.path.join(toolsdir, "xmlchange"),
                     os.path.join(toolsdir, "xmlquery"),
                     os.path.join(toolsdir, "pelayout"),
-                    os.path.join(toolsdir, "noresm2netcdf4.sh"))
+                    os.path.join(toolsdir, "noresm2netcdf4.sh"),
+                    os.path.join(toolsdir, "noresm_l_archive.bash"))
         try:
             for exefile in exefiles:
                 destfile = os.path.join(self._caseroot,os.path.basename(exefile))

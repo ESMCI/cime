@@ -1877,6 +1877,22 @@
     <desc>Root directory for short term archiving. This directory must be visible to compute nodes.</desc>
   </entry>
 
+  <entry id="DOUT_L_ROOT">
+    <type>char</type>
+    <default_value>UNSET</default_value>
+    <group>run_dout</group>
+    <file>env_run.xml</file>
+    <desc>Root directory for long term archiving.</desc>
+  </entry>
+
+  <entry id="DOUT_L_HOSTNAME">
+    <type>char</type>
+    <default_value>UNSET</default_value>
+    <group>run_dout</group>
+    <file>env_run.xml</file>
+    <desc>hostname for longterm archiving.</desc>
+  </entry>
+
   <entry id="MPI_RUN_COMMAND">
     <type>char</type>
     <default_value>UNSET</default_value>
