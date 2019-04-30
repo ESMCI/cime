@@ -66,18 +66,18 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p>PIO is a software interface layer designed to encapsolate the complexities of parallel IO and make it easier to replace the lower level software backend. It currently supports <a href="http://www.unidata.ucar.edu/software/netcdf/docs/html_guide/index.html#user_guide">netcdf </a> and <a href="http://trac.mcs.anl.gov/projects/parallel-netcdf">pnetcdf </a>.</p>
 <p>Basic description of how to optimize IO in a parallel environment...</p>
-<p>PIO calls are collective. A MPI communicator is set in a call to <a class="el" href="group___p_i_o__init.html">PIO_init</a> and all tasks associated with that communicator must participate in all subsequent calls to PIO. An application can make multiple calls to <a class="el" href="group___p_i_o__init.html">PIO_init</a> in order to support multiple MPI communicators.</p>
-<p>Begin by checking out a copy from <a href="https://github.com/PARALLELIO/ParallelIO">gitHub</a> and installing on your system as per the instructions in the <a class="el" href="install.html">Installation</a> document. Take a look at examples of PIO usage in both complex and simple test programs in the <a class="el" href="examp.html">Examples</a> document. Finally, read through the <a class="el" href="faq.html">FAQ</a> to see if any remaining questions can be answered.</p>
+<p>PIO calls are collective. A MPI communicator is set in a call to <a class="el" href="group___p_i_o__init.html">PIO_init</a> and all tasks associated with that communicator must participate in all subsequent calls to PIO. An application can make multiple calls to PIO_init() in order to support multiple MPI communicators.</p>
+<p>Begin by getting and unpacking the most recent release of PIO from <a href="https://github.com/PARALLELIO/ParallelIO/releases">gitHub</a> and installing on your system as per the instructions in the <a class="el" href="install.html">Installation</a> document. Take a look at examples of PIO usage in both complex and simple test programs in the [Examples](<a class="el" href="examp.html">Examples</a>) document. Finally, read through the <a class="el" href="faq.html">FAQ</a> to see if any remaining questions can be answered.</p>
 <h3>Using PIO has three basic steps.</h3>
 <ol type="1">
 <li>Your program should call the <a class="el" href="group___p_i_o__init.html">PIO_init</a> function, and provide the MPI communicator (and the rank within that communicator) of the calling task. This call initializes an IO system type structure that will be used in subsequent file and decomposition functions.</li>
 <li>You can open a file for reading or writing with a call to <a class="el" href="group___p_i_o__createfile.html">PIO_createfile</a> or <a class="el" href="group___p_i_o__openfile.html">PIO_openfile</a>. In this call you will specify the file type: pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4c or pio_iotype_netcdf4p; along with the file name and optionally the netcdf mode.</li>
-<li>Finally, you can read or write decomposed data to the output file. You must describe the mapping between the organization of data in the file and that same data in the application space. This is done in a call to <a class="el" href="group___p_i_o__initdecomp.html">PIO_initdecomp</a>. In the simplest call to this function, a one dimensional integer array is passed from each task, the values in the array represent the offset from the beginning of the array on file. (what happens next?) </li>
+<li>Finally, you can read or write decomposed data to the output file. You must describe the mapping between the organization of data in the file and that same data in the application space. This is done in a call to <a class="el" href="group___p_i_o__initdecomp.html">PIO_initdecomp</a>. In the simplest call to this function, a one dimensional integer array is passed from each task, the values in the array represent the offset from the beginning of the array on file. </li>
 </ol>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:17 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 30 2019 10:14:35 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

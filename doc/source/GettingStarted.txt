@@ -27,7 +27,7 @@ href=http://www.unidata.ucar.edu/software/netcdf/docs/html_guide/index.html#user
 netcdf </a> and <a
 href=http://trac.mcs.anl.gov/projects/parallel-netcdf> pnetcdf </a>.
 
-Basic description of how to optimize IO in a parallel environment...
+Basic description of how to optimize IO in a parallel environment:
 
 PIO calls are collective.  A MPI communicator is set in a call to \ref
 PIO_init and all tasks associated with that communicator must
