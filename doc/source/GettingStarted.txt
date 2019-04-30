@@ -32,7 +32,7 @@ Basic description of how to optimize IO in a parallel environment...
 PIO calls are collective.  A MPI communicator is set in a call to \ref
 PIO_init and all tasks associated with that communicator must
 participate in all subsequent calls to PIO.  An application can make
-multiple calls to \ref PIO_init in order to support multiple MPI
+multiple calls to PIO_init() in order to support multiple MPI
 communicators.
 
 Begin by getting and unpacking the most recent release of PIO from

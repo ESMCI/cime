@@ -20,7 +20,7 @@ cdash site at [http://my.cdash.org/index.php?project=PIO](http://my.cdash.org/in
 
 ## Dependencies
 
-PIO can use NetCDF (version 4.3.3+) and/or PnetCDF (version 1.6.0+)
+PIO can use NetCDF (version 4.6.1+) and/or PnetCDF (version 1.9.0+)
 for I/O. NetCDF may be built with or without netCDF-4 features. NetCDF
 is required for PIO, PnetCDF is optional.
 
@@ -28,6 +28,19 @@ Ideally, the NetCDF version should be built with MPI, which requires that it
 be linked with an MPI-enabled version of HDF5.  Optionally, NetCDF can be 
 built with DAP support, which introduces a dependency on CURL.  Additionally,
 HDF5, itself, introduces dependencies on LIBZ and (optionally) SZIP.
+
+## Building PIO
+
+To build PIO, unpack the distribution tarball and do:
+
+```
+CC=mpicc FC=mpif90 ./configure --enable-fortran && make check install
+```
+
+For a full description of the available options and flags, try:
+```
+./configure --help
+```
 
 ## Configuring with CMake
 
@@ -88,7 +101,7 @@ If you wish to install PIO in a safe location for use later with other
 software, you may set the `CMAKE_INSTALL_PREFIX` variable to point to the
 desired install location.
 
-## Building
+### Building
 
 Once you have successfully configured PIO with CMake in a build directory.
 From within the build directory, build PIO with:
@@ -99,7 +112,7 @@ make
 
 This will build the `pioc` and `piof` libraries.
 
-## Testing
+### Testing
 
 If you desire to do testing, and `PIO_ENABLE_TESTS=ON` (which is the default
 setting), you may build the test executables with:
@@ -136,7 +149,7 @@ job submission script.  It is important to understand, however, that `ctest` its
 will preface all of the test executable commands with the appropriate `mpirun`/`mpiexec`/`runjob`/etc.
 Hence, you should not further preface the `ctest` command with these MPI launchers.
 
-## Installing
+### Installing
 
 Once you have built the PIO libraries, you may install them in the location
 specified by the `CMAKE_INSTALL_PREFIX`.  To do this, simply type:
