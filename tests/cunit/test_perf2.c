@@ -11,7 +11,7 @@
 #include <sys/time.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 16
+#define TARGET_NTASKS 1024
 
 /* The minimum number of tasks this test should run on. */
 #define MIN_NTASKS TARGET_NTASKS
@@ -20,7 +20,7 @@
 #define TEST_NAME "test_perf2"
 
 /* Number of processors that will do IO. */
-#define NUM_IO_PROCS 1
+#define NUM_IO_PROCS 128
 
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
@@ -379,7 +379,7 @@ int main(int argc, char **argv)
         {
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
+            if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
 
