@@ -71,9 +71,9 @@ John M. Dennis </dd>
 Mariana Vertenstein </dd>
 <dd>
 Edward Hartnett</dd></dl>
-<p>The Parallel IO libraries (PIO) are high-level parallel I/O C and Fortran libraries for structured grid applications. PIO provides a netCDF-like API, and allows users to designate some subset of processors to perform IO. Computational code calls netCDF-like functions to read and write data, and PIO uses the IO processors to perform all necessary IO.</p>
-<p>PIO also supports the creation of multiple computation components, each containing many processors, and one shared set of IO processors. The computational components can perform write operation asynchronously, and the IO processors will take care of all storage interaction.</p>
-<p>This user's guide provides information about the PIO library and examples on how it can be used. Please watch the PIO GitHub site [<a href="https://github.com/NCAR/ParallelIO">https://github.com/NCAR/ParallelIO</a>] for announcements and new releases.</p>
+<p>The Parallel I/O (PIO) library has been developed over several years to improve the ability of component models of the Community Earth System Model (CESM) to perform I/O. We believe that the interface is sufficiently general to be useful to a broader spectrum of applications. The focus of development has been on backend tools that use the NetCDF file format. PIO currently supports NetCDF and PnetCDF as backend libraries, both can be linked and used with runtime options controlling which is used for a given file.</p>
+<p>PIO2 represents a significant rewrite of the PIO library and includes a C API as well as the original F90 API. A new decomposition strategy has been introduced which gives the user more ability to tune io communications.</p>
+<p>This user's guide provides information about the PIO library and examples on how it can be used. Please review the ChangeLog that is included with the distribution for up-to-date release information.</p>
 <ul>
 <li><a class="el" href="intro.html">Introduction</a></li>
 <li><a class="el" href="install.html">Installing PIO</a></li>
@@ -89,7 +89,7 @@ Edward Hartnett</dd></dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 30 2019 10:14:36 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 19 2019 14:00:19 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
