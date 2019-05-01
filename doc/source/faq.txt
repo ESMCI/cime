@@ -25,7 +25,7 @@
 Note that num_iotasks is the maximum number of IO tasks to use for an IO operation.   The size of the field being read or written along with the tunable blocksize parameter, \ref PIO_set_blocksize, determines the actual number of tasks used for a given IO operation.
 </dd>
 <dt>How do I test if PIO is installed and working correctly? </dt> 
-    <dd>The PIO Library distribution contains a testpio subdirectory with a number of programs to test the PIO library. Please see the \ref examp page for details. </dd>
+    <dd>The PIO Library distribution contains tests for PIO. They are run my 'make check'. The tests use mpiexec to run tests on 4, 8, or 16 processors. </dd>
 
 </dl>
 */

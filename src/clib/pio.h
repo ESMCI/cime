@@ -410,7 +410,7 @@ typedef struct iosystem_desc_t
     MPI_Comm comp_comm;
 
     /** This is an MPI inter communicator between IO communicator and
-     * computation communicator. */
+     * computation communicator, only used for async mode. */
     MPI_Comm intercomm;
 
     /** This is a copy (but not an MPI copy) of either the comp (for
