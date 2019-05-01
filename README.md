@@ -69,4 +69,3 @@ CC=mpicc FC=mpif90 cmake [-DOPTION1=value1 -DOPTION2=value2 ...] /path/to/pio/so
 
 Full instructions for the cmake build can be found in the installation
 documentation.
-
