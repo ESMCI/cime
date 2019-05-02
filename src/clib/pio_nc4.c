@@ -346,7 +346,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *ch
  * @param varid the ID of the variable to set chunksizes for.
  * @param storagep pointer to int which will be set to either
  * NC_CONTIGUOUS or NC_CHUNKED.
- * @param chunksizep pointer to memory where chunksizes will be
+ * @param chunksizesp pointer to memory where chunksizes will be
  * set. There are the same number of chunksizes as there are
  * dimensions.
  * @return PIO_NOERR for success, otherwise an error code.
