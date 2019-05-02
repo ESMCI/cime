@@ -11,7 +11,7 @@
 #include <sys/time.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 1024
+#define TARGET_NTASKS 16
 
 /* The minimum number of tasks this test should run on. */
 #define MIN_NTASKS TARGET_NTASKS
@@ -20,7 +20,7 @@
 #define TEST_NAME "test_perf2"
 
 /* Number of processors that will do IO. */
-#define NUM_IO_PROCS 128
+#define NUM_IO_PROCS 1
 
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
@@ -33,9 +33,9 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 512
-#define Y_DIM_LEN 512
-#define Z_DIM_LEN 512
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
+#define Z_DIM_LEN 64
 
 /* This is the length of the map for each task. */
 #define EXPECTED_MAPLEN (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / TARGET_NTASKS)
@@ -112,12 +112,13 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param ntasks number of tasks in test_comm.
  * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
  * @param rearranger the rearranger in use.
  * @returns 0 for success, error code otherwise.
  */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                int provide_fill, int rearranger)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
+                int my_rank, int ntasks, int provide_fill, int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -143,6 +144,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         struct timeval starttime, endtime;
         long long startt, endt;
         long long delta;
+        float num_megabytes = 0;
+        float delta_in_sec;
+        float mb_per_sec;
 
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt],
@@ -186,6 +190,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
                 ERR(ret);
 
+            num_megabytes += (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(1024*1024);
         }
 
         /* Stop the clock. */
@@ -199,8 +204,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
         delta = (endt - startt)/NUM_TIMESTEPS;
+        delta_in_sec = (float)delta / 1000000;
+        mb_per_sec = num_megabytes / delta_in_sec;
         if (!my_rank)
-            printf("%d\t%d\t%d\t%lld\n", rearranger, provide_fill, fmt, delta);
+            printf("%d\t%d\t%d\t%8.3f\t%8.3f\t%8.3f\n", rearranger,
+                   provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
     }
 
     free(test_data);
@@ -300,13 +308,14 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
  * @param num_flavors number of available iotypes in the build.
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
+ * @param ntasks number of tasks in test_comm.
  * @param rearranger the rearranger to use (PIO_REARR_BOX or
  * PIO_REARR_SUBSET).
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise.
  */
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    int rearranger, MPI_Comm test_comm)
+                    int ntasks, int rearranger, MPI_Comm test_comm)
 {
     int ioid;
     int my_test_size;
@@ -329,7 +338,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     {
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
-                               provide_fill, rearranger)))
+                               ntasks, provide_fill, rearranger)))
             return ret;
     }
 
@@ -372,7 +381,8 @@ int main(int argc, char **argv)
             ERR(ret);
 
         if (!my_rank)
-            printf("rearr\tfill\tformat\ttime\n");
+            printf("rearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+                   "performance(MB/s)\n");
 
 
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
@@ -385,7 +395,7 @@ int main(int argc, char **argv)
 
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
-                                       rearranger[r], test_comm)))
+                                       ntasks, rearranger[r], test_comm)))
                 return ret;
 
             /* Finalize PIO system. */
