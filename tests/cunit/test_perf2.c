@@ -37,9 +37,6 @@
 #define Y_DIM_LEN 128
 #define Z_DIM_LEN 64
 
-/* This is the length of the map for each task. */
-#define EXPECTED_MAPLEN (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / TARGET_NTASKS)
-
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
 
@@ -124,7 +121,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     int dimids[NDIM];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
-    PIO_Offset arraylen = EXPECTED_MAPLEN;
+    PIO_Offset arraylen = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks);
     int int_fillvalue = NC_FILL_INT;
     void *fillvalue = NULL;
     int *test_data;
@@ -224,13 +221,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param ntasks number of tasks in test_comm.
  * @param rearranger the rearranger to use (PIO_REARR_BOX or
  * PIO_REARR_SUBSET).
  * @param test_comm the MPI communicator for this test.
  * @returns 0 for success, error code otherwise.
  */
-int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                           int rearranger, MPI_Comm test_comm)
+int
+test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
+                       int my_rank, int ntasks, int rearranger,
+                       MPI_Comm test_comm)
 {
 
     /* Use PIO to create the decomp file in each of the four
@@ -260,6 +260,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         {
             iosystem_desc_t *ios;
             io_desc_t *iodesc;
+            int expected_maplen = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks);
 
             /* Get the IO system info. */
             if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -268,8 +269,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Get the IO desc, which describes the decomposition. */
             if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                 return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
-            if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN || iodesc->ndims != NDIM3 ||
-                iodesc->ndof != EXPECTED_MAPLEN)
+            if (iodesc->ioid != ioid2 || iodesc->maplen != expected_maplen || iodesc->ndims != NDIM3 ||
+                iodesc->ndof != expected_maplen)
                 return ERR_WRONG;
             if (iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
                 iodesc->needsfill || iodesc->mpitype != MPI_INT)
@@ -282,7 +283,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 return ERR_WRONG;
             if (rearranger == PIO_REARR_SUBSET)
             {
-                if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != TARGET_NTASKS)
+                if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != ntasks)
                     return ERR_WRONG;
             }
             else
@@ -325,12 +326,12 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
         MPIERR(ret);
 
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
+    if ((ret = create_decomposition_3d(ntasks, my_rank, iosysid, &ioid)))
         return ret;
 
     /* Test decomposition read/write. */
     if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
-                                      rearranger, test_comm)))
+                                      ntasks, rearranger, test_comm)))
         return ret;
 
     /* Test with/without providing a fill value to PIOc_write_darray(). */
@@ -358,15 +359,13 @@ int main(int argc, char **argv)
     int ret;         /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, -1, &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, ntasks,
+                              ntasks, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
-    /* Only do something on max_ntasks tasks. */
-    if (my_rank < TARGET_NTASKS)
     {
         int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
         int iosysid;  /* The ID for the parallel I/O system. */
@@ -403,7 +402,7 @@ int main(int argc, char **argv)
                 return ret;
 
         } /* next rearranger */
-    } /* endif my_rank < TARGET_NTASKS */
+    }
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
