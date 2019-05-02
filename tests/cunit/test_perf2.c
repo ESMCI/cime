@@ -19,9 +19,6 @@
 /* The name of this test. */
 #define TEST_NAME "test_perf2"
 
-/* Number of processors that will do IO. */
-#define NUM_IO_PROCS 1
-
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
@@ -110,12 +107,14 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
  * @param ntasks number of tasks in test_comm.
+ * @param num_io_procs number of IO processors.
  * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
  * @param rearranger the rearranger in use.
  * @returns 0 for success, error code otherwise.
  */
 int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
-                int my_rank, int ntasks, int provide_fill, int rearranger)
+                int my_rank, int ntasks, int num_io_procs, int provide_fill,
+                int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -204,7 +203,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         delta_in_sec = (float)delta / 1000000;
         mb_per_sec = num_megabytes / delta_in_sec;
         if (!my_rank)
-            printf("%d\t%d\t%d\t%8.3f\t%8.3f\t%8.3f\n", rearranger,
+            printf("%d\t%d\t%d\t%d\t%8.3f\t%8.3f\t%8.3f\n", num_io_procs, rearranger,
                    provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
     }
 
@@ -310,13 +309,15 @@ test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
  * @param ntasks number of tasks in test_comm.
+ * @param num_io_procs number of IO procs used.
  * @param rearranger the rearranger to use (PIO_REARR_BOX or
  * PIO_REARR_SUBSET).
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise.
  */
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    int ntasks, int rearranger, MPI_Comm test_comm)
+                    int ntasks, int num_io_procs, int rearranger,
+                    MPI_Comm test_comm)
 {
     int ioid;
     int my_test_size;
@@ -339,7 +340,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     {
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
-                               ntasks, provide_fill, rearranger)))
+                               ntasks, num_io_procs, provide_fill, rearranger)))
             return ret;
     }
 
@@ -359,8 +360,8 @@ int main(int argc, char **argv)
     int ret;         /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, ntasks,
-                              ntasks, -1, &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 4,
+                              0, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -373,6 +374,7 @@ int main(int argc, char **argv)
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
         int num_flavors; /* Number of PIO netCDF flavors in this build. */
         int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+        int num_io_procs; /* Number of processors that will do IO. */
         int ret;      /* Return code. */
 
         /* Figure out iotypes. */
@@ -380,21 +382,23 @@ int main(int argc, char **argv)
             ERR(ret);
 
         if (!my_rank)
-            printf("rearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+            printf("io_procs\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
                    "performance(MB/s)\n");
 
+        /* How many processors for IO? */
+        num_io_procs = 1;
 
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride,
+            if ((ret = PIOc_Init_Intracomm(test_comm, num_io_procs, ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
 
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
-                                       ntasks, rearranger[r], test_comm)))
+                                       ntasks, num_io_procs, rearranger[r], test_comm)))
                 return ret;
 
             /* Finalize PIO system. */
@@ -402,7 +406,7 @@ int main(int argc, char **argv)
                 return ret;
 
         } /* next rearranger */
-    }
+    } 
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
