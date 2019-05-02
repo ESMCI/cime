@@ -30,8 +30,8 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 512
-#define Y_DIM_LEN 512
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
 #define Z_DIM_LEN 128
 
 /* The number of timesteps of data to write. */
@@ -147,9 +147,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         float delta_in_sec;
         float mb_per_sec;
 
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt],
-                rearranger);
+        /* Create the filename. Use the same filename for all, so we
+         * don't waste disk space. */
+        /* sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt], */
+        /*         rearranger); */
+        sprintf(filename, "data_%s.nc", TEST_NAME);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -235,9 +237,8 @@ test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
                        MPI_Comm test_comm)
 {
 
-    /* Use PIO to create the decomp file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+    for (int fmt = 0; fmt < 1; fmt++)
     {
 	int ioid2;             /* ID for decomposition we will create from file. */
 	char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
@@ -400,8 +401,6 @@ int main(int argc, char **argv)
 
     for (i = 0; i < num_io_tests; i++)
     {
-        if (!my_rank)
-            printf("num_io_tests! %d\n", num_io_tests);
         /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
         for (r = 0; r < 1; r++)
         {
