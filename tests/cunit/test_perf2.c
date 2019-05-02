@@ -30,12 +30,12 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
-#define Z_DIM_LEN 64
+#define X_DIM_LEN 512
+#define Y_DIM_LEN 512
+#define Z_DIM_LEN 128
 
 /* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 2
+#define NUM_TIMESTEPS 10
 
 /* The name of the variable in the netCDF output files. */
 #define VAR_NAME "foo"
@@ -43,6 +43,9 @@
 /* Test with and without specifying a fill value to
  * PIOc_write_darray(). */
 #define NUM_TEST_CASES_FILLVALUE 2
+
+/* How many different number of IO tasks to check? */
+#define MAX_IO_TESTS 5
 
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
@@ -203,8 +206,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         delta_in_sec = (float)delta / 1000000;
         mb_per_sec = num_megabytes / delta_in_sec;
         if (!my_rank)
-            printf("%d\t%d\t%d\t%d\t%8.3f\t%8.3f\t%8.3f\n", num_io_procs, rearranger,
-                   provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
+            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
+                   rearranger, provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
     }
 
     free(test_data);
@@ -357,48 +360,60 @@ int main(int argc, char **argv)
     int my_rank;
     int ntasks;
     MPI_Comm test_comm; /* A communicator for this test. */
-    int ret;         /* Return code. */
+    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+    int iosysid;  /* The ID for the parallel I/O system. */
+    int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
+    int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    int num_io_procs[MAX_IO_TESTS] = {1, 4, 16, 64, 128}; /* Number of processors that will do IO. */
+    int num_io_tests; /* How many different num IO procs to try? */
+    int r, i;
+    int ret;      /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 4,
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 1,
                               0, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+        ERR(ret);
+
+    if (!my_rank)
+        printf("ntasks\tnio\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+               "performance(MB/s)\n");
+
+    /* How many processors for IO? */
+    num_io_tests = 1;
+    if (ntasks >= 32)
+        num_io_tests = 2;
+    if (ntasks >= 64)
+        num_io_tests = 3;
+    if (ntasks >= 128)
+        num_io_tests = 4;
+    if (ntasks >= 512)
+        num_io_tests = 5;
+
+    for (i = 0; i < num_io_tests; i++)
     {
-        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-        int iosysid;  /* The ID for the parallel I/O system. */
-        int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-        int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int num_flavors; /* Number of PIO netCDF flavors in this build. */
-        int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-        int num_io_procs; /* Number of processors that will do IO. */
-        int ret;      /* Return code. */
-
-        /* Figure out iotypes. */
-        if ((ret = get_iotypes(&num_flavors, flavor)))
-            ERR(ret);
-
         if (!my_rank)
-            printf("io_procs\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
-                   "performance(MB/s)\n");
-
-        /* How many processors for IO? */
-        num_io_procs = 1;
-
-        for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+            printf("num_io_tests! %d\n", num_io_tests);
+        /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
+        for (r = 0; r < 1; r++)
         {
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, num_io_procs, ioproc_stride,
+            if ((ret = PIOc_Init_Intracomm(test_comm, num_io_procs[i], ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
 
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
-                                       ntasks, num_io_procs, rearranger[r], test_comm)))
+                                       ntasks, num_io_procs[i], rearranger[r], test_comm)))
                 return ret;
 
             /* Finalize PIO system. */
@@ -406,7 +421,10 @@ int main(int argc, char **argv)
                 return ret;
 
         } /* next rearranger */
-    } 
+    } /* next num io procs */
+
+    if (!my_rank)
+        printf("finalizing io_test!\n");
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
