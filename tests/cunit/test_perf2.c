@@ -30,9 +30,9 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 1024
-#define Y_DIM_LEN 1024
-#define Z_DIM_LEN 128
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
+#define Z_DIM_LEN 16
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
