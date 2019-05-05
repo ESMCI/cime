@@ -11,16 +11,13 @@
 #include <sys/time.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 1024
+#define TARGET_NTASKS 16
 
 /* The minimum number of tasks this test should run on. */
 #define MIN_NTASKS TARGET_NTASKS
 
 /* The name of this test. */
 #define TEST_NAME "test_perf2"
-
-/* Number of processors that will do IO. */
-#define NUM_IO_PROCS 128
 
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
@@ -33,15 +30,12 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 512
-#define Y_DIM_LEN 512
-#define Z_DIM_LEN 512
-
-/* This is the length of the map for each task. */
-#define EXPECTED_MAPLEN (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / TARGET_NTASKS)
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
+#define Z_DIM_LEN 16
 
 /* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 2
+#define NUM_TIMESTEPS 10
 
 /* The name of the variable in the netCDF output files. */
 #define VAR_NAME "foo"
@@ -49,6 +43,9 @@
 /* Test with and without specifying a fill value to
  * PIOc_write_darray(). */
 #define NUM_TEST_CASES_FILLVALUE 2
+
+/* How many different number of IO tasks to check? */
+#define MAX_IO_TESTS 5
 
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
@@ -112,18 +109,21 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param ntasks number of tasks in test_comm.
+ * @param num_io_procs number of IO processors.
  * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
  * @param rearranger the rearranger in use.
  * @returns 0 for success, error code otherwise.
  */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                int provide_fill, int rearranger)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
+                int my_rank, int ntasks, int num_io_procs, int provide_fill,
+                int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
-    PIO_Offset arraylen = EXPECTED_MAPLEN;
+    PIO_Offset arraylen = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks);
     int int_fillvalue = NC_FILL_INT;
     void *fillvalue = NULL;
     int *test_data;
@@ -143,10 +143,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         struct timeval starttime, endtime;
         long long startt, endt;
         long long delta;
+        float num_megabytes = 0;
+        float delta_in_sec;
+        float mb_per_sec;
 
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt],
-                rearranger);
+        /* Create the filename. Use the same filename for all, so we
+         * don't waste disk space. */
+        /* sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt], */
+        /*         rearranger); */
+        sprintf(filename, "data_%s.nc", TEST_NAME);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -186,6 +191,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
                 ERR(ret);
 
+            num_megabytes += (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(1024*1024);
         }
 
         /* Stop the clock. */
@@ -199,8 +205,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
         delta = (endt - startt)/NUM_TIMESTEPS;
+        delta_in_sec = (float)delta / 1000000;
+        mb_per_sec = num_megabytes / delta_in_sec;
         if (!my_rank)
-            printf("%d\t%d\t%d\t%lld\n", rearranger, provide_fill, fmt, delta);
+            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
+                   rearranger, provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
     }
 
     free(test_data);
@@ -216,18 +225,20 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param ntasks number of tasks in test_comm.
  * @param rearranger the rearranger to use (PIO_REARR_BOX or
  * PIO_REARR_SUBSET).
  * @param test_comm the MPI communicator for this test.
  * @returns 0 for success, error code otherwise.
  */
-int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                           int rearranger, MPI_Comm test_comm)
+int
+test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
+                       int my_rank, int ntasks, int rearranger,
+                       MPI_Comm test_comm)
 {
 
-    /* Use PIO to create the decomp file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+    for (int fmt = 0; fmt < 1; fmt++)
     {
 	int ioid2;             /* ID for decomposition we will create from file. */
 	char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
@@ -252,6 +263,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         {
             iosystem_desc_t *ios;
             io_desc_t *iodesc;
+            int expected_maplen = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks);
 
             /* Get the IO system info. */
             if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -260,8 +272,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Get the IO desc, which describes the decomposition. */
             if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                 return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
-            if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN || iodesc->ndims != NDIM3 ||
-                iodesc->ndof != EXPECTED_MAPLEN)
+            if (iodesc->ioid != ioid2 || iodesc->maplen != expected_maplen || iodesc->ndims != NDIM3 ||
+                iodesc->ndof != expected_maplen)
                 return ERR_WRONG;
             if (iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
                 iodesc->needsfill || iodesc->mpitype != MPI_INT)
@@ -274,7 +286,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 return ERR_WRONG;
             if (rearranger == PIO_REARR_SUBSET)
             {
-                if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != TARGET_NTASKS)
+                if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != ntasks)
                     return ERR_WRONG;
             }
             else
@@ -300,13 +312,16 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
  * @param num_flavors number of available iotypes in the build.
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
+ * @param ntasks number of tasks in test_comm.
+ * @param num_io_procs number of IO procs used.
  * @param rearranger the rearranger to use (PIO_REARR_BOX or
  * PIO_REARR_SUBSET).
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise.
  */
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    int rearranger, MPI_Comm test_comm)
+                    int ntasks, int num_io_procs, int rearranger,
+                    MPI_Comm test_comm)
 {
     int ioid;
     int my_test_size;
@@ -316,12 +331,12 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
         MPIERR(ret);
 
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
+    if ((ret = create_decomposition_3d(ntasks, my_rank, iosysid, &ioid)))
         return ret;
 
     /* Test decomposition read/write. */
     if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
-                                      rearranger, test_comm)))
+                                      ntasks, rearranger, test_comm)))
         return ret;
 
     /* Test with/without providing a fill value to PIOc_write_darray(). */
@@ -329,7 +344,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     {
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
-                               provide_fill, rearranger)))
+                               ntasks, num_io_procs, provide_fill, rearranger)))
             return ret;
     }
 
@@ -346,46 +361,58 @@ int main(int argc, char **argv)
     int my_rank;
     int ntasks;
     MPI_Comm test_comm; /* A communicator for this test. */
-    int ret;         /* Return code. */
+    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+    int iosysid;  /* The ID for the parallel I/O system. */
+    int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
+    int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    int num_io_procs[MAX_IO_TESTS] = {1, 4, 16, 64, 128}; /* Number of processors that will do IO. */
+    int num_io_tests; /* How many different num IO procs to try? */
+    int r, i;
+    int ret;      /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, -1, &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 1,
+                              0, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
-    /* Only do something on max_ntasks tasks. */
-    if (my_rank < TARGET_NTASKS)
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+        ERR(ret);
+
+    if (!my_rank)
+        printf("ntasks\tnio\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+               "performance(MB/s)\n");
+
+    /* How many processors for IO? */
+    num_io_tests = 1;
+    if (ntasks >= 32)
+        num_io_tests = 2;
+    if (ntasks >= 64)
+        num_io_tests = 3;
+    if (ntasks >= 128)
+        num_io_tests = 4;
+    if (ntasks >= 512)
+        num_io_tests = 5;
+
+    for (i = 0; i < num_io_tests; i++)
     {
-        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-        int iosysid;  /* The ID for the parallel I/O system. */
-        int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-        int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int num_flavors; /* Number of PIO netCDF flavors in this build. */
-        int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-        int ret;      /* Return code. */
-
-        /* Figure out iotypes. */
-        if ((ret = get_iotypes(&num_flavors, flavor)))
-            ERR(ret);
-
-        if (!my_rank)
-            printf("rearr\tfill\tformat\ttime\n");
-
-
-        for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+        /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
+        for (r = 0; r < 1; r++)
         {
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, ioproc_stride,
+            if ((ret = PIOc_Init_Intracomm(test_comm, num_io_procs[i], ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
 
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
-                                       rearranger[r], test_comm)))
+                                       ntasks, num_io_procs[i], rearranger[r], test_comm)))
                 return ret;
 
             /* Finalize PIO system. */
@@ -393,7 +420,10 @@ int main(int argc, char **argv)
                 return ret;
 
         } /* next rearranger */
-    } /* endif my_rank < TARGET_NTASKS */
+    } /* next num io procs */
+
+    if (!my_rank)
+        printf("finalizing io_test!\n");
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))

@@ -186,7 +186,9 @@ int get_iotype_name(int iotype, char *name)
  * @param my_rank pointer that gets this tasks rank.
  * @param ntasks pointer that gets the number of tasks in WORLD
  * communicator.
- * @param target_ntasks the number of tasks this test needs to run.
+ * @param min_ntasks the min number of tasks this test needs to run.
+ * @param max_ntasks the max number of tasks this test needs to run. 0
+ * means no max.
  * @param log_level PIOc_set_log_level() will be called with this value.
  * @param comm a pointer to an MPI communicator that will be created
  * for this test and contain target_ntasks tasks from WORLD.
@@ -220,7 +222,7 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
                 min_ntasks);
         return ERR_AWFUL;
     }
-    else if (*ntasks > max_ntasks)
+    else if (max_ntasks && *ntasks > max_ntasks)
     {
         /* If more tasks are available than we need for this test,
          * create a communicator with exactly the number of tasks we
