@@ -1333,7 +1333,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int *iosysidp)
 {
     int my_rank;          /* Rank of this task. */
-    int *my_proc_list[component_count];   /* Array of arrays of procs for comp components. */
+    int **my_proc_list;   /* Array of arrays of procs for comp components. */
     int my_io_proc_list[num_io_procs]; /* List of processors in IO component. */
     int mpierr;           /* Return code from MPI functions. */
     int ret;              /* Return code. */
@@ -1342,6 +1342,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp ||
         (rearranger != PIO_REARR_BOX))
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    my_proc_list = (int**) malloc(component_count * sizeof(int*));
 
     /* Turn on the logging system for PIO. */
     pio_init_logging();
@@ -1640,6 +1642,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     /* Free the arrays of processor numbers. */
     for (int cmp = 0; cmp < component_count; cmp++)
         free(my_proc_list[cmp]);
+
+    free(my_proc_list);
 
     /* Free MPI groups. */
     if ((ret = MPI_Group_free(&io_group)))
