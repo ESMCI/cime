@@ -6,7 +6,6 @@ AC_INIT(pio, 2.4.2)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
-
 # The PIO version, again.
 AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
 AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
@@ -20,14 +19,14 @@ AC_SUBST([VERSION_PATCH], [2])
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
 
+# Libtool initialisation.
+LT_INIT
+
 # Find and learn about the C compiler.
 AC_PROG_CC
 
 # Find and learn about the Fortran compiler.
 AC_PROG_FC
-
-# Libtool initialisation.
-AC_PROG_LIBTOOL
 
 # Always use malloc in autotools builds.
 AC_DEFINE([PIO_USE_MALLOC], [1], [use malloc for memory])
