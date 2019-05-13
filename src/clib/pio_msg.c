@@ -2060,7 +2060,9 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&maplen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    PIO_Offset compmap[maplen];
+    PIO_Offset *compmap;
+    if (!(compmap = malloc(maplen * sizeof(PIO_Offset))))
+        return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if ((mpierr = MPI_Bcast(compmap, maplen, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -2102,6 +2104,8 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
                     iostartp, iocountp);
 
     LOG((1, "PIOc_InitDecomp returned"));
+
+    free(compmap);
     return PIO_NOERR;
 }
 

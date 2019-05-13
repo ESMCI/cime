@@ -8,6 +8,7 @@
 #include <pio.h>
 #include <pio_tests.h>
 #include <pio_internal.h>
+#include <sys/time.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
@@ -35,15 +36,15 @@
 #define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 2
-#define Y_DIM_LEN 3
-#define Z_DIM_LEN 16
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
+#define Z_DIM_LEN 124
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 3
 
 /* Name of record test var. */
-#define REC_VAR_NAME "surface_temperature"
+#define REC_VAR_NAME "Duncan_McCloud_of_the_clan_McCloud"
 
 char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 
@@ -96,8 +97,8 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
 
 /* Run a simple test using darrays with async. */
 int
-run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
-                      MPI_Comm comp_comm, int num_flavors, int *flavor, int piotype)
+run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, MPI_Comm test_comm,
+                      MPI_Comm comp_comm, int *flavor, int piotype)
 {
     int ioid3;
     int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
@@ -112,23 +113,25 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
     if ((ret = create_decomposition_3d(ntasks - niotasks, my_rank, iosysid, &ioid3)))
         return ret;
 
-    /* Test each available iotype. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
         PIO_Offset type_size;
         int dimid[NDIM4];
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
-        int my_data_int[elements_per_pe2];
+        int *my_data_int;
         int d, t;
+
+        if (!(my_data_int = malloc(elements_per_pe2 * sizeof(int))))
+            BAIL(PIO_ENOMEM);
 
         for (d = 0; d < elements_per_pe2; d++)
             my_data_int[d] = my_rank;
 
         /* Create sample output file. */
-        sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
-                piotype);
+        /* sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt], */
+        /*         piotype); */
+        sprintf(data_filename, "data_%s.nc", TEST_NAME);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
             BAIL(ret);
@@ -171,7 +174,9 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             BAIL(ret);
-    } /* next iotype */
+
+        free(my_data_int);
+    }
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid3)))
@@ -179,6 +184,12 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
 exit:
     return ret;
 }
+
+/* Initialize with task 0 as IO task, tasks 1-3 as a
+ * computation component. */
+#define NUM_IO_PROCS 1
+#define NUM_COMPUTATION_PROCS 3
+#define COMPONENT_COUNT 1
 
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
@@ -188,6 +199,13 @@ int main(int argc, char **argv)
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
+    int iosysid;
+
+    int num_computation_procs = NUM_COMPUTATION_PROCS;
+    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
+    int niotasks = NUM_IO_PROCS;
+    int mpierr;
     int ret;     /* Return code. */
 
     /* Initialize test. */
@@ -201,50 +219,68 @@ int main(int argc, char **argv)
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
 
+
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        int iosysid;
+        struct timeval starttime, endtime;
+        long long startt, endt;
+        long long delta;
+        float num_megabytes;
+        float delta_in_sec;
+        float mb_per_sec;
 
-        /* Initialize with task 0 as IO task, tasks 1-3 as a
-         * computation component. */
-#define NUM_IO_PROCS 1
-#define NUM_COMPUTATION_PROCS 3
-#define COMPONENT_COUNT 1
-        int num_computation_procs = NUM_COMPUTATION_PROCS;
-        MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
-        MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
-        int mpierr;
-
+        /* Start the clock. */
+        if (!my_rank)
         {
-            if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                                       &num_computation_procs, NULL, &io_comm, comp_comm,
-                                       PIO_REARR_BOX, &iosysid)))
-                ERR(ERR_INIT);
+            gettimeofday(&starttime, NULL);
+            startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+        }
 
-            /* This code runs only on computation components. */
-            if (my_rank)
-            {
-                /* Run the simple darray async test. */
-                if ((ret = run_darray_async_test(iosysid, my_rank, ntasks, test_comm,
-                                                 comp_comm[0], num_flavors, flavor,
-                                                 PIO_INT)))
-                    return ret;
+        if ((ret = PIOc_init_async(test_comm, niotasks, NULL, COMPONENT_COUNT,
+                                   &num_computation_procs, NULL, &io_comm, comp_comm,
+                                   PIO_REARR_BOX, &iosysid)))
+            ERR(ERR_INIT);
 
-                /* Finalize PIO system. */
-                if ((ret = PIOc_finalize(iosysid)))
-                    return ret;
+        /* This code runs only on computation components. */
+        if (my_rank)
+        {
+            /* Run the simple darray async test. */
+            if ((ret = run_darray_async_test(iosysid, fmt, my_rank, ntasks, test_comm,
+                                             comp_comm[0], flavor, PIO_INT)))
+                return ret;
 
-                /* Free the computation conomponent communicator. */
-                if ((mpierr = MPI_Comm_free(comp_comm)))
-                    MPIERR(mpierr);
-            }
-            else
-            {
-                /* Free the IO communicator. */
-                if ((mpierr = MPI_Comm_free(&io_comm)))
-                    MPIERR(mpierr);
-            }
-        } /* next type */
-    } /* endif my_rank < TARGET_NTASKS */
+            /* Finalize PIO system. */
+            if ((ret = PIOc_finalize(iosysid)))
+                return ret;
+
+            /* Free the computation conomponent communicator. */
+            if ((mpierr = MPI_Comm_free(comp_comm)))
+                MPIERR(mpierr);
+        }
+        else
+        {
+            /* Free the IO communicator. */
+            if ((mpierr = MPI_Comm_free(&io_comm)))
+                MPIERR(mpierr);
+        }
+
+        if (!my_rank)
+        {
+            /* Stop the clock. */
+            gettimeofday(&endtime, NULL);
+
+            /* Compute the time delta */
+            endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+            delta = (endt - startt)/NUM_TIMESTEPS;
+            delta_in_sec = (float)delta / 1000000;
+            num_megabytes = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * NUM_TIMESTEPS *
+                             sizeof(int))/(1024*1024);
+            mb_per_sec = num_megabytes / delta_in_sec;
+            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, niotasks,
+                   1, 0, fmt, delta_in_sec, num_megabytes, mb_per_sec);
+        }
+
+    } /* next fmt */
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))

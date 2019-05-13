@@ -194,12 +194,12 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             num_megabytes += (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(1024*1024);
         }
 
-        /* Stop the clock. */
-        gettimeofday(&endtime, NULL);
-
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
+        /* Stop the clock. */
+        gettimeofday(&endtime, NULL);
 
         /* Compute the time delta */
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
