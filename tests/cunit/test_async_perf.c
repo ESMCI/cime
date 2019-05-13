@@ -18,14 +18,14 @@
 /* The name of this test. */
 #define TEST_NAME "test_async_perf"
 
-/* For 1-D use. */
-#define NDIM1 1
-
 /* For 2-D use. */
 #define NDIM2 2
 
 /* For 3-D use. */
 #define NDIM3 3
+
+/* For 4-D use. */
+#define NDIM3 4
 
 /* For maplens of 2. */
 #define MAPLEN2 2
@@ -56,7 +56,7 @@
 #define NOREC_VAR_NAME "surface_height"
 #define NOREC_VAR_NAME2 "surface_height2"
 
-char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
+char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 
 /* Length of the dimension. */
 #define LEN3 3
@@ -110,7 +110,7 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
 {
     int ioid;
     int ioid3;
-    int dim_len[NDIM3] = {NC_UNLIMITED, 2, 3};
+    int dim_len[NDIM4] = {NC_UNLIMITED, 2, 3};
     PIO_Offset elements_per_pe = LAT_LEN;
     PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
