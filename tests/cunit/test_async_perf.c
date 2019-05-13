@@ -63,176 +63,6 @@ char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 
 #define NUM_VAR_SETS 2
 
-/* Check the file that was created in this test. */
-int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
-                      int piotype)
-{
-    int ncid;
-    int varid[NVAR] = {0, 1, 2, 3};
-    void *data_in = NULL;
-    void *data_in_norec = NULL;
-    PIO_Offset type_size;
-    int ret;
-
-    /* Reopen the file. */
-    if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
-        BAIL(ret);
-
-    /* Get the size of the type. */
-    if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
-        BAIL(ret);
-
-    /* Allocate memory to read data. */
-    if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size * NREC)))
-        BAIL(PIO_ENOMEM);
-    if (!(data_in_norec = malloc(LAT_LEN * LON_LEN * type_size)))
-        BAIL(PIO_ENOMEM);
-
-    /* We have two sets of variables, those with unlimted, and those
-     * without unlimited dimension. */
-    for (int vs = 0; vs < NUM_VAR_SETS; vs++)
-    {
-        int rec_varid = vs ? varid[0] : varid[1];
-        int norec_varid = vs ? varid[2] : varid[3];
-
-        /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
-         * 31, in each of three records. */
-        if ((ret = PIOc_get_var(ncid, rec_varid, data_in)))
-            BAIL(ret);
-
-        /* Read the non-record data. The values we expect are: 10, 11, 20, 21, 30,
-         * 31. */
-        if ((ret = PIOc_get_var(ncid, norec_varid, data_in_norec)))
-            BAIL(ret);
-
-        /* Check the results. */
-        for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
-        {
-            int tmp_r = r % (LAT_LEN * LON_LEN);
-            switch (piotype)
-            {
-            case PIO_BYTE:
-                if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_CHAR:
-                if (((char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_SHORT:
-                if (((short *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_INT:
-                if (((int *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_FLOAT:
-                if (((float *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_DOUBLE:
-                if (((double *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-#ifdef _NETCDF4
-            case PIO_UBYTE:
-                if (((unsigned char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_USHORT:
-                if (((unsigned short *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_UINT:
-                if (((unsigned int *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_INT64:
-                if (((long long *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-            case PIO_UINT64:
-                if (((unsigned long long *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
-                    BAIL(ret);
-                break;
-#endif /* _NETCDF4 */
-            default:
-                BAIL(ERR_WRONG);
-            }
-        }
-
-        /* Check the results. */
-        for (int r = 0; r < LAT_LEN * LON_LEN; r++)
-        {
-            switch (piotype)
-            {
-            case PIO_BYTE:
-                if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_CHAR:
-                if (((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_SHORT:
-                if (((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_INT:
-                if (((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_FLOAT:
-                if (((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_DOUBLE:
-                if (((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-#ifdef _NETCDF4
-            case PIO_UBYTE:
-                if (((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_USHORT:
-                if (((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_UINT:
-                if (((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_INT64:
-                if (((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-            case PIO_UINT64:
-                if (((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                    BAIL(ret);
-                break;
-#endif /* _NETCDF4 */
-            default:
-                BAIL(ERR_WRONG);
-            }
-        }
-    } /* next var set */
-
-    /* Close the file. */
-    if ((ret = PIOc_closefile(ncid)))
-        BAIL(ret);
-
-exit:
-    /* Free resources. */
-    if (data_in)
-        free(data_in);
-    if (data_in_norec)
-        free(data_in_norec);
-
-    return ret;
-}
-
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
  * concerned with 3 dimensions - we ignore the unlimited dimension.
@@ -322,32 +152,8 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
         void *my_data_norec;
-        signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
         int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        double my_data_double[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-#ifdef _NETCDF4
-        unsigned char my_data_ubyte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        unsigned short my_data_ushort[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        unsigned int my_data_uint[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        long long my_data_int64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-#endif /* _NETCDF4 */
-        signed char my_data_byte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        char my_data_char_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        short my_data_short_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
         int my_data_int_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        float my_data_float_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        double my_data_double_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-#ifdef _NETCDF4
-        unsigned char my_data_ubyte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        unsigned short my_data_ushort_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        unsigned int my_data_uint_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        long long my_data_int64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        unsigned long long my_data_uint64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-#endif /* _NETCDF4 */
 
         /* Only netCDF-4 can handle extended types. */
         if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
@@ -357,58 +163,8 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (piotype == PIO_BYTE || piotype == PIO_CHAR))
             continue;
 
-        /* Select the correct data to write, depending on type. */
-        switch (piotype)
-        {
-        case PIO_BYTE:
-            my_data = my_data_byte;
-            my_data_norec = my_data_byte_norec;
-            break;
-        case PIO_CHAR:
-            my_data = my_data_char;
-            my_data_norec = my_data_char_norec;
-            break;
-        case PIO_SHORT:
-            my_data = my_data_short;
-            my_data_norec = my_data_short_norec;
-            break;
-        case PIO_INT:
-            my_data = my_data_int;
-            my_data_norec = my_data_int_norec;
-            break;
-        case PIO_FLOAT:
-            my_data = my_data_float;
-            my_data_norec = my_data_float_norec;
-            break;
-        case PIO_DOUBLE:
-            my_data = my_data_double;
-            my_data_norec = my_data_double_norec;
-            break;
-#ifdef _NETCDF4
-        case PIO_UBYTE:
-            my_data = my_data_ubyte;
-            my_data_norec = my_data_ubyte_norec;
-            break;
-        case PIO_USHORT:
-            my_data = my_data_ushort;
-            my_data_norec = my_data_ushort_norec;
-            break;
-        case PIO_UINT:
-            my_data = my_data_uint;
-            my_data_norec = my_data_uint_norec;
-            break;
-        case PIO_INT64:
-            my_data = my_data_int64;
-            my_data_norec = my_data_int64_norec;
-            break;
-        case PIO_UINT64:
-            my_data = my_data_uint64;
-            my_data_norec = my_data_uint64_norec;
-            break;
-#endif /* _NETCDF4 */
-        default:
-            BAIL(ERR_WRONG);
-        }
+        my_data = my_data_int;
+        my_data_norec = my_data_int_norec;
 
         /* Create sample output file. */
         sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
@@ -499,17 +255,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
             BAIL(ret);
 
-        /* Increment the record number for the record var. */
-        if ((ret = PIOc_advanceframe(ncid, varid[0])))
-            BAIL(ret);
-        if ((ret = PIOc_advanceframe(ncid, varid[1])))
-            BAIL(ret);
-
-        /* Write a forth record, using darray_multi(). */
-        int frame[2] = {3, 3};
-        if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 2, elements_per_pe, my_data_multi, frame, NULL, 0)))
-            BAIL(ret);
-
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             BAIL(ret);
@@ -517,11 +262,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         /* Free resources. */
         free(my_data_multi);
         my_data_multi = NULL;
-
-        /* Check the file for correctness. */
-        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank, piotype)))
-            BAIL(ret);
-
     } /* next iotype */
 
     /* Free the decomposition. */
@@ -579,8 +319,6 @@ int main(int argc, char **argv)
         MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
         int mpierr;
 
-        /* Run the test for each data type. */
-        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
             if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                        &num_computation_procs, NULL, &io_comm, comp_comm,
@@ -593,7 +331,7 @@ int main(int argc, char **argv)
                 /* Run the simple darray async test. */
                 if ((ret = run_darray_async_test(iosysid, my_rank, ntasks, test_comm,
                                                  comp_comm[0], num_flavors, flavor,
-                                                 test_type[t])))
+                                                 PIO_INT)))
                     return ret;
 
                 /* Finalize PIO system. */
