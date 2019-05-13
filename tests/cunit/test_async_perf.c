@@ -1,33 +1,38 @@
 /*
- * Tests for performance of PIO async mode.
+ * This program tests darrays with async.
  *
  * @author Ed Hartnett
- * @date 2/21/17
+ * @date 5/4/17
  */
 #include <config.h>
 #include <pio.h>
-#include <pio_internal.h>
 #include <pio_tests.h>
-#include <sys/time.h>
+#include <pio_internal.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 16
+#define TARGET_NTASKS 4
 
 /* The minimum number of tasks this test should run on. */
-#define MIN_NTASKS TARGET_NTASKS
+#define MIN_NTASKS 1
 
 /* The name of this test. */
 #define TEST_NAME "test_async_perf"
 
-/* Number of computational components to create. */
-#define COMPONENT_COUNT 1
+/* For 1-D use. */
+#define NDIM1 1
 
-/* The number of dimensions in the example data. In this test, we
- * are using three-dimensional data. */
-#define NDIM 4
+/* For 2-D use. */
+#define NDIM2 2
 
-/* But sometimes we need arrays of the non-record dimensions. */
+/* For 3-D use. */
 #define NDIM3 3
+
+/* For maplens of 2. */
+#define MAPLEN2 2
+
+/* Lengths of non-unlimited dimensions. */
+#define LAT_LEN 2
+#define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 128
@@ -37,27 +42,196 @@
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
 
-/* The name of the variable in the netCDF output files. */
-#define VAR_NAME "foo"
+/* Number of vars in test file. */
+#define NVAR 4
 
-/* Test with and without specifying a fill value to
- * PIOc_write_darray(). */
-#define NUM_TEST_CASES_FILLVALUE 2
+/* Number of records written for record var. */
+#define NREC 4
 
-/* How many different number of IO tasks to check? */
-#define MAX_IO_TESTS 5
+/* Name of record test var. */
+#define REC_VAR_NAME "surface_temperature"
+#define REC_VAR_NAME2 "surface_temperature2"
 
-/* The dimension names. */
-char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
+/* Name of non-record test var. */
+#define NOREC_VAR_NAME "surface_height"
+#define NOREC_VAR_NAME2 "surface_height2"
 
-/* Length of the dimensions in the sample data. */
-int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
+char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 
-#define DIM_NAME "dim"
-#define NDIM1 1
+/* Length of the dimension. */
+#define LEN3 3
 
-/* Run test for each of the rearrangers. */
-#define NUM_REARRANGERS_TO_TEST 2
+#define NUM_VAR_SETS 2
+
+/* Check the file that was created in this test. */
+int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
+                      int piotype)
+{
+    int ncid;
+    int varid[NVAR] = {0, 1, 2, 3};
+    void *data_in = NULL;
+    void *data_in_norec = NULL;
+    PIO_Offset type_size;
+    int ret;
+
+    /* Reopen the file. */
+    if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
+        BAIL(ret);
+
+    /* Get the size of the type. */
+    if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
+        BAIL(ret);
+
+    /* Allocate memory to read data. */
+    if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size * NREC)))
+        BAIL(PIO_ENOMEM);
+    if (!(data_in_norec = malloc(LAT_LEN * LON_LEN * type_size)))
+        BAIL(PIO_ENOMEM);
+
+    /* We have two sets of variables, those with unlimted, and those
+     * without unlimited dimension. */
+    for (int vs = 0; vs < NUM_VAR_SETS; vs++)
+    {
+        int rec_varid = vs ? varid[0] : varid[1];
+        int norec_varid = vs ? varid[2] : varid[3];
+
+        /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
+         * 31, in each of three records. */
+        if ((ret = PIOc_get_var(ncid, rec_varid, data_in)))
+            BAIL(ret);
+
+        /* Read the non-record data. The values we expect are: 10, 11, 20, 21, 30,
+         * 31. */
+        if ((ret = PIOc_get_var(ncid, norec_varid, data_in_norec)))
+            BAIL(ret);
+
+        /* Check the results. */
+        for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+        {
+            int tmp_r = r % (LAT_LEN * LON_LEN);
+            switch (piotype)
+            {
+            case PIO_BYTE:
+                if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_CHAR:
+                if (((char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_SHORT:
+                if (((short *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_INT:
+                if (((int *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_FLOAT:
+                if (((float *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_DOUBLE:
+                if (((double *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+#ifdef _NETCDF4
+            case PIO_UBYTE:
+                if (((unsigned char *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_USHORT:
+                if (((unsigned short *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_UINT:
+                if (((unsigned int *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_INT64:
+                if (((long long *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+            case PIO_UINT64:
+                if (((unsigned long long *)data_in)[r] != (tmp_r/2 + 1) * 10 + tmp_r % 2)
+                    BAIL(ret);
+                break;
+#endif /* _NETCDF4 */
+            default:
+                BAIL(ERR_WRONG);
+            }
+        }
+
+        /* Check the results. */
+        for (int r = 0; r < LAT_LEN * LON_LEN; r++)
+        {
+            switch (piotype)
+            {
+            case PIO_BYTE:
+                if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_CHAR:
+                if (((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_SHORT:
+                if (((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_INT:
+                if (((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_FLOAT:
+                if (((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_DOUBLE:
+                if (((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+#ifdef _NETCDF4
+            case PIO_UBYTE:
+                if (((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_USHORT:
+                if (((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_UINT:
+                if (((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_INT64:
+                if (((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+            case PIO_UINT64:
+                if (((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    BAIL(ret);
+                break;
+#endif /* _NETCDF4 */
+            default:
+                BAIL(ERR_WRONG);
+            }
+        }
+    } /* next var set */
+
+    /* Close the file. */
+    if ((ret = PIOc_closefile(ncid)))
+        BAIL(ret);
+
+exit:
+    /* Free resources. */
+    if (data_in)
+        free(data_in);
+    if (data_in_norec)
+        free(data_in_norec);
+
+    return ret;
+}
 
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
@@ -99,284 +273,292 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
     return 0;
 }
 
-/**
- * Test the darray functionality. Create a netCDF file with 4
- * dimensions and 1 PIO_INT variable, and use darray to write some
- * data.
- *
- * @param iosysid the IO system ID.
- * @param ioid the ID of the decomposition.
- * @param num_flavors the number of IOTYPES available in this build.
- * @param flavor array of available iotypes.
- * @param my_rank rank of this task.
- * @param ntasks number of tasks in test_comm.
- * @param num_io_procs number of IO processors.
- * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
- * @param rearranger the rearranger in use.
- * @returns 0 for success, error code otherwise.
- */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
-                int my_rank, int ntasks, int num_io_procs, int provide_fill,
-                int rearranger)
+/* Run a simple test using darrays with async. */
+int
+run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
+                      MPI_Comm comp_comm, int num_flavors, int *flavor, int piotype)
 {
-    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int dimids[NDIM];      /* The dimension IDs. */
-    int ncid;      /* The ncid of the netCDF file. */
-    int varid;     /* The ID of the netCDF varable. */
-    PIO_Offset arraylen = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks);
-    int int_fillvalue = NC_FILL_INT;
-    void *fillvalue = NULL;
-    int *test_data;
-    int ret;       /* Return code. */
+    int ioid;
+    int ioid3;
+    int dim_len[NDIM3] = {NC_UNLIMITED, 2, 3};
+    PIO_Offset elements_per_pe = LAT_LEN;
+    PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
+    char decomp_filename[PIO_MAX_NAME + 1];
+    void *my_data_multi;
+    int ret;
 
-    if (!(test_data = malloc(sizeof(int) * arraylen)))
-        ERR(PIO_ENOMEM);
+    sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
 
-    /* Are we providing a fill value? */
-    if (provide_fill)
-        fillvalue = &int_fillvalue;
+    /* Create the PIO decomposition for this test. */
+    if ((ret = PIOc_init_decomp(iosysid, piotype, NDIM2, &dim_len[1], elements_per_pe,
+                                compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
+        BAIL(ret);
 
-    /* Use PIO to create the example file in each of the four
-     * available ways. */
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition_3d(ntasks, my_rank, iosysid, &ioid3)))
+        return ret;
+
+    /* Write the decomp file (on appropriate tasks). */
+    if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
+        return ret;
+
+    int fortran_order;
+    int ioid2;
+    if ((ret = PIOc_read_nc_decomp(iosysid, decomp_filename, &ioid2, comp_comm,
+                                   PIO_INT, NULL, NULL, &fortran_order)))
+        return ret;
+
+    /* Free the decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid2)))
+        BAIL(ret);
+
+    /* Test each available iotype. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        struct timeval starttime, endtime;
-        long long startt, endt;
-        long long delta;
-        float num_megabytes = 0;
-        float delta_in_sec;
-        float mb_per_sec;
+        int ncid;
+        PIO_Offset type_size;
+        int dimid[NDIM3];
+        int varid[NVAR];
+        char data_filename[PIO_MAX_NAME + 1];
+        void *my_data;
+        void *my_data_norec;
+        signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        double my_data_double[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+#ifdef _NETCDF4
+        unsigned char my_data_ubyte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned short my_data_ushort[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned int my_data_uint[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        long long my_data_int64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+#endif /* _NETCDF4 */
+        signed char my_data_byte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        char my_data_char_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        short my_data_short_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        int my_data_int_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        float my_data_float_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        double my_data_double_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+#ifdef _NETCDF4
+        unsigned char my_data_ubyte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        unsigned short my_data_ushort_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        unsigned int my_data_uint_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        long long my_data_int64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+        unsigned long long my_data_uint64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+#endif /* _NETCDF4 */
 
-        /* Create the filename. Use the same filename for all, so we
-         * don't waste disk space. */
-        /* sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt], */
-        /*         rearranger); */
-        sprintf(filename, "data_%s.nc", TEST_NAME);
+        /* Only netCDF-4 can handle extended types. */
+        if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+            continue;
 
-        /* Create the netCDF output file. */
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-            ERR(ret);
+        /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (piotype == PIO_BYTE || piotype == PIO_CHAR))
+            continue;
 
-        /* Turn on fill mode. */
-        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
-            ERR(ret);
+        /* Select the correct data to write, depending on type. */
+        switch (piotype)
+        {
+        case PIO_BYTE:
+            my_data = my_data_byte;
+            my_data_norec = my_data_byte_norec;
+            break;
+        case PIO_CHAR:
+            my_data = my_data_char;
+            my_data_norec = my_data_char_norec;
+            break;
+        case PIO_SHORT:
+            my_data = my_data_short;
+            my_data_norec = my_data_short_norec;
+            break;
+        case PIO_INT:
+            my_data = my_data_int;
+            my_data_norec = my_data_int_norec;
+            break;
+        case PIO_FLOAT:
+            my_data = my_data_float;
+            my_data_norec = my_data_float_norec;
+            break;
+        case PIO_DOUBLE:
+            my_data = my_data_double;
+            my_data_norec = my_data_double_norec;
+            break;
+#ifdef _NETCDF4
+        case PIO_UBYTE:
+            my_data = my_data_ubyte;
+            my_data_norec = my_data_ubyte_norec;
+            break;
+        case PIO_USHORT:
+            my_data = my_data_ushort;
+            my_data_norec = my_data_ushort_norec;
+            break;
+        case PIO_UINT:
+            my_data = my_data_uint;
+            my_data_norec = my_data_uint_norec;
+            break;
+        case PIO_INT64:
+            my_data = my_data_int64;
+            my_data_norec = my_data_int64_norec;
+            break;
+        case PIO_UINT64:
+            my_data = my_data_uint64;
+            my_data_norec = my_data_uint64_norec;
+            break;
+#endif /* _NETCDF4 */
+        default:
+            BAIL(ERR_WRONG);
+        }
 
-        /* Define netCDF dimensions and variable. */
-        for (int d = 0; d < NDIM; d++)
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                ERR(ret);
+        /* Create sample output file. */
+        sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
+                piotype);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
+                                   NC_CLOBBER)))
+            BAIL(ret);
 
-        /* Define a variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
-            ERR(ret);
+        /* Find the size of the type. */
+        if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
+            BAIL(ret);
+
+        /* Create the data for the darray_multi call by making two
+         * copies of the data. */
+        if (!(my_data_multi = malloc(2 * type_size * elements_per_pe)))
+            BAIL(PIO_ENOMEM);
+        memcpy(my_data_multi, my_data, type_size * elements_per_pe);
+        memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * elements_per_pe);
+
+        /* Define dimensions. */
+        for (int d = 0; d < NDIM3; d++)
+            if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
+                BAIL(ret);
+
+        /* Define variables. */
+        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
+            BAIL(ret);
+        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME2, piotype, NDIM3, dimid, &varid[1])))
+            BAIL(ret);
+        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1],
+                                &varid[2])))
+            BAIL(ret);
+        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME2, piotype, NDIM2, &dimid[1],
+                                &varid[3])))
+            BAIL(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
+            BAIL(ret);
 
-        /* Start the clock. */
-        gettimeofday(&starttime, NULL);
+        /* Set the record number for the record vars. */
+        if ((ret = PIOc_setframe(ncid, varid[0], 0)))
+            BAIL(ret);
+        if ((ret = PIOc_setframe(ncid, varid[1], 0)))
+            BAIL(ret);
 
-        for (int t = 0; t < NUM_TIMESTEPS; t++)
-        {
-            /* Initialize some data. */
-            for (int f = 0; f < arraylen; f++)
-                test_data[f] = (my_rank * 10 + f) + t * 1000;
+        /* Write some data to the record vars. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            BAIL(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+            BAIL(ret);
 
-            /* Set the value of the record dimension. */
-            if ((ret = PIOc_setframe(ncid, varid, t)))
-                ERR(ret);
+        /* Write some data to the non-record vars. */
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_norec, NULL)))
+            BAIL(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_norec, NULL)))
+            BAIL(ret);
 
-            /* Write the data. */
-            if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
-                ERR(ret);
+        /* Sync the file. */
+        if ((ret = PIOc_sync(ncid)))
+            BAIL(ret);
 
-            num_megabytes += (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(1024*1024);
-        }
+        /* Increment the record number for the record vars. */
+        if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            BAIL(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[1])))
+            BAIL(ret);
 
-        /* Stop the clock. */
-        gettimeofday(&endtime, NULL);
+        /* Write another record. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            BAIL(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+            BAIL(ret);
 
-        /* Close the netCDF file. */
+        /* Sync the file. */
+        if ((ret = PIOc_sync(ncid)))
+            BAIL(ret);
+
+        /* Increment the record number for the record var. */
+        if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            BAIL(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[1])))
+            BAIL(ret);
+
+        /* Write a third record. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            BAIL(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+            BAIL(ret);
+
+        /* Increment the record number for the record var. */
+        if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            BAIL(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[1])))
+            BAIL(ret);
+
+        /* Write a forth record, using darray_multi(). */
+        int frame[2] = {3, 3};
+        if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 2, elements_per_pe, my_data_multi, frame, NULL, 0)))
+            BAIL(ret);
+
+        /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            BAIL(ret);
 
-        /* Compute the time delta */
-        startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
-        endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-        delta = (endt - startt)/NUM_TIMESTEPS;
-        delta_in_sec = (float)delta / 1000000;
-        mb_per_sec = num_megabytes / delta_in_sec;
-        if (!my_rank)
-            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
-                   rearranger, provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
-    }
+        /* Free resources. */
+        free(my_data_multi);
+        my_data_multi = NULL;
 
-    free(test_data);
+        /* Check the file for correctness. */
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank, piotype)))
+            BAIL(ret);
 
-    return PIO_NOERR;
-}
+    } /* next iotype */
 
-/**
- * Test the decomp read/write functionality.
- *
- * @param iosysid the IO system ID.
- * @param ioid the ID of the decomposition.
- * @param num_flavors the number of IOTYPES available in this build.
- * @param flavor array of available iotypes.
- * @param my_rank rank of this task.
- * @param ntasks number of tasks in test_comm.
- * @param rearranger the rearranger to use (PIO_REARR_BOX or
- * PIO_REARR_SUBSET).
- * @param test_comm the MPI communicator for this test.
- * @returns 0 for success, error code otherwise.
- */
-int
-test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
-                       int my_rank, int ntasks, int rearranger,
-                       MPI_Comm test_comm)
-{
-
-    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-    for (int fmt = 0; fmt < 1; fmt++)
-    {
-	int ioid2;             /* ID for decomposition we will create from file. */
-	char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-	char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
-	char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
-	int fortran_order_in; /* Indicates fortran vs. c order. */
-	int ret;              /* Return code. */
-
-        /* Create the filename. */
-        snprintf(filename, PIO_MAX_NAME, "decomp_%s_iotype_%d.nc", TEST_NAME,
-		 flavor[fmt]);
-
-        if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
-            return ret;
-
-        /* Read the data. */
-        if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, PIO_INT,
-                                       title_in, history_in, &fortran_order_in)))
-            return ret;
-
-        /* Check the results. */
-        {
-            iosystem_desc_t *ios;
-            io_desc_t *iodesc;
-            int expected_maplen = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks);
-
-            /* Get the IO system info. */
-            if (!(ios = pio_get_iosystem_from_id(iosysid)))
-                return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-
-            /* Get the IO desc, which describes the decomposition. */
-            if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
-                return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
-            if (iodesc->ioid != ioid2 || iodesc->maplen != expected_maplen || iodesc->ndims != NDIM3 ||
-                iodesc->ndof != expected_maplen)
-                return ERR_WRONG;
-            if (iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
-                iodesc->needsfill || iodesc->mpitype != MPI_INT)
-                return ERR_WRONG;
-            for (int e = 0; e < iodesc->maplen; e++)
-                if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)
-                    return ERR_WRONG;
-            if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN ||
-                iodesc->dimlen[2] != Z_DIM_LEN)
-                return ERR_WRONG;
-            if (rearranger == PIO_REARR_SUBSET)
-            {
-                if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != ntasks)
-                    return ERR_WRONG;
-            }
-            else
-            {
-                /* I haven't figured out yet what these should be for
-                 * the box rearranger. */
-                /* printf("iodesc->nrecv = %d iodesc->num_aiotasks = %d\n", iodesc->nrecvs, */
-                /*        iodesc->num_aiotasks); */
-            }
-        }
-
-        /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid2)))
-            ERR(ret);
-    }
-    return PIO_NOERR;
-}
-
-/**
- * Run all the tests.
- *
- * @param iosysid the IO system ID.
- * @param num_flavors number of available iotypes in the build.
- * @param flavor pointer to array of the available iotypes.
- * @param my_rank rank of this task.
- * @param ntasks number of tasks in test_comm.
- * @param num_io_procs number of IO procs used.
- * @param rearranger the rearranger to use (PIO_REARR_BOX or
- * PIO_REARR_SUBSET).
- * @param test_comm the communicator the test is running on.
- * @returns 0 for success, error code otherwise.
- */
-int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    int ntasks, int num_io_procs, int rearranger,
-                    MPI_Comm test_comm)
-{
-    int ioid;
-    int my_test_size;
-    int ret; /* Return code. */
-
-    if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
-        MPIERR(ret);
-
-    /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_3d(ntasks, my_rank, iosysid, &ioid)))
-        return ret;
-
-    /* Test decomposition read/write. */
-    if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
-                                      ntasks, rearranger, test_comm)))
-        return ret;
-
-    /* Test with/without providing a fill value to PIOc_write_darray(). */
-    for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
-    {
-        /* Run a simple darray test. */
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
-                               ntasks, num_io_procs, provide_fill, rearranger)))
-            return ret;
-    }
-
-    /* Free the PIO decomposition. */
+    /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
+        BAIL(ret);
 
-    return PIO_NOERR;
+    /* Free the decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid3)))
+        BAIL(ret);
+exit:
+    if (my_data_multi)
+        free(my_data_multi);
+    return ret;
 }
 
-/* Run tests for darray functions. */
+/* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
-    int my_rank;
-    int ntasks;
-    MPI_Comm test_comm; /* A communicator for this test. */
-    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-    int iosysid;  /* The ID for the parallel I/O system. */
-    int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-    int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+    int my_rank; /* Zero-based rank of processor. */
+    int ntasks;  /* Number of processors involved in current execution. */
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    int num_io_procs[MAX_IO_TESTS] = {1, 4, 16, 64, 128}; /* Number of processors that will do IO. */
-    int num_io_tests; /* How many different num IO procs to try? */
-    int r, i;
-    int ret;      /* Return code. */
+    MPI_Comm test_comm; /* A communicator for this test. */
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 11
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+#else
+#define NUM_TYPES_TO_TEST 6
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
+    int ret;     /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 1,
-                              0, -1, &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
-
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
@@ -384,51 +566,58 @@ int main(int argc, char **argv)
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
 
-    if (!my_rank)
-        printf("ntasks\tnio\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
-               "performance(MB/s)\n");
-
-    /* How many processors for IO? */
-    num_io_tests = 1;
-    if (ntasks >= 32)
-        num_io_tests = 2;
-    if (ntasks >= 64)
-        num_io_tests = 3;
-    if (ntasks >= 128)
-        num_io_tests = 4;
-    if (ntasks >= 512)
-        num_io_tests = 5;
-
-    for (i = 0; i < num_io_tests; i++)
     {
-        /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
-        for (r = 0; r < 1; r++)
+        int iosysid;
+
+        /* Initialize with task 0 as IO task, tasks 1-3 as a
+         * computation component. */
+#define NUM_IO_PROCS 1
+#define NUM_COMPUTATION_PROCS 3
+#define COMPONENT_COUNT 1
+        int num_computation_procs = NUM_COMPUTATION_PROCS;
+        MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+        MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
+        int mpierr;
+
+        /* Run the test for each data type. */
+        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
-            /* Initialize the PIO IO system. This specifies how
-             * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, num_io_procs[i], ioproc_stride,
-                                           ioproc_start, rearranger[r], &iosysid)))
-                return ret;
+            if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                                       &num_computation_procs, NULL, &io_comm, comp_comm,
+                                       PIO_REARR_BOX, &iosysid)))
+                ERR(ERR_INIT);
 
-            /* Run tests. */
-            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
-                                       ntasks, num_io_procs[i], rearranger[r], test_comm)))
-                return ret;
+            /* This code runs only on computation components. */
+            if (my_rank)
+            {
+                /* Run the simple darray async test. */
+                if ((ret = run_darray_async_test(iosysid, my_rank, ntasks, test_comm,
+                                                 comp_comm[0], num_flavors, flavor,
+                                                 test_type[t])))
+                    return ret;
 
-            /* Finalize PIO system. */
-            if ((ret = PIOc_finalize(iosysid)))
-                return ret;
+                /* Finalize PIO system. */
+                if ((ret = PIOc_finalize(iosysid)))
+                    return ret;
 
-        } /* next rearranger */
-    } /* next num io procs */
-
-    if (!my_rank)
-        printf("finalizing io_test!\n");
+                /* Free the computation conomponent communicator. */
+                if ((mpierr = MPI_Comm_free(comp_comm)))
+                    MPIERR(mpierr);
+            }
+            else
+            {
+                /* Free the IO communicator. */
+                if ((mpierr = MPI_Comm_free(&io_comm)))
+                    MPIERR(mpierr);
+            }
+        } /* next type */
+    } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
+
     return 0;
 }
