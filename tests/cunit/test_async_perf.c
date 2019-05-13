@@ -35,8 +35,8 @@
 #define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
+#define X_DIM_LEN 2
+#define Y_DIM_LEN 3
 #define Z_DIM_LEN 16
 
 /* The number of timesteps of data to write. */
@@ -56,7 +56,8 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
  * between the 4 tasks. For the purposes of decomposition we are only
  * concerned with 3 dimensions - we ignore the unlimited dimension.
  *
- * @param ntasks the number of available tasks
+ * @param ntasks the number of available tasks (tasks doing
+ * computation).
  * @param my_rank rank of this task.
  * @param iosysid the IO system ID.
  * @param dim_len an array of length 3 with the dimension sizes.
@@ -68,6 +69,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
     int dim_len_3d[NDIM3] = {X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
+    int my_proc_rank = my_rank - 1;
     int ret;
 
     /* How many data elements per task? */
@@ -79,7 +81,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
 
     /* Describe the decomposition. */
     for (int i = 0; i < elements_per_pe; i++)
-        compdof[i] = my_rank * elements_per_pe + i;
+        compdof[i] = my_proc_rank * elements_per_pe + i;
 
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
@@ -97,38 +99,18 @@ int
 run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
                       MPI_Comm comp_comm, int num_flavors, int *flavor, int piotype)
 {
-    int ioid;
     int ioid3;
-    int dim_len[NDIM4] = {NC_UNLIMITED, 2, 3, Z_DIM_LEN};
-    PIO_Offset elements_per_pe = LAT_LEN;
-    PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
+    int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
+    PIO_Offset elements_per_pe2 = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / 3;
     char decomp_filename[PIO_MAX_NAME + 1];
+    int niotasks = 1;
     int ret;
 
     sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
 
-    /* Create the PIO decomposition for this test. */
-    if ((ret = PIOc_init_decomp(iosysid, piotype, NDIM2, &dim_len[1], elements_per_pe,
-                                compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
-        BAIL(ret);
-
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_3d(ntasks, my_rank, iosysid, &ioid3)))
+    if ((ret = create_decomposition_3d(ntasks - niotasks, my_rank, iosysid, &ioid3)))
         return ret;
-
-    /* Write the decomp file (on appropriate tasks). */
-    if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
-        return ret;
-
-    int fortran_order;
-    int ioid2;
-    if ((ret = PIOc_read_nc_decomp(iosysid, decomp_filename, &ioid2, comp_comm,
-                                   PIO_INT, NULL, NULL, &fortran_order)))
-        return ret;
-
-    /* Free the decomposition. */
-    if ((ret = PIOc_freedecomp(iosysid, ioid2)))
-        BAIL(ret);
 
     /* Test each available iotype. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
@@ -138,19 +120,11 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         int dimid[NDIM4];
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
-        void *my_data;
-        int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        int t;
+        int my_data_int[elements_per_pe2];
+        int d, t;
 
-        /* Only netCDF-4 can handle extended types. */
-        if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
-            continue;
-
-        /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (piotype == PIO_BYTE || piotype == PIO_CHAR))
-            continue;
-
-        my_data = my_data_int;
+        for (d = 0; d < elements_per_pe2; d++)
+            my_data_int[d] = my_rank;
 
         /* Create sample output file. */
         sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
@@ -169,7 +143,7 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
                 BAIL(ret);
 
         /* Define variables. */
-        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid)))
+        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM4, dimid, &varid)))
             BAIL(ret);
 
         /* End define mode. */
@@ -183,7 +157,8 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
                 BAIL(ret);
 
             /* Write some data to the record vars. */
-            if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, my_data, NULL)))
+            if ((ret = PIOc_write_darray(ncid, varid, ioid3, elements_per_pe2,
+                                         my_data_int, NULL)))
                 BAIL(ret);
 
             /* Sync the file. */
@@ -197,10 +172,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         if ((ret = PIOc_closefile(ncid)))
             BAIL(ret);
     } /* next iotype */
-
-    /* Free the decomposition. */
-    if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        BAIL(ret);
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid3)))
