@@ -25,7 +25,7 @@
 #define NDIM3 3
 
 /* For 4-D use. */
-#define NDIM3 4
+#define NDIM4 4
 
 /* For maplens of 2. */
 #define MAPLEN2 2
@@ -42,19 +42,8 @@
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 3
 
-/* Number of vars in test file. */
-#define NVAR 4
-
-/* Number of records written for record var. */
-#define NREC 4
-
 /* Name of record test var. */
 #define REC_VAR_NAME "surface_temperature"
-#define REC_VAR_NAME2 "surface_temperature2"
-
-/* Name of non-record test var. */
-#define NOREC_VAR_NAME "surface_height"
-#define NOREC_VAR_NAME2 "surface_height2"
 
 char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 
@@ -110,7 +99,7 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
 {
     int ioid;
     int ioid3;
-    int dim_len[NDIM4] = {NC_UNLIMITED, 2, 3};
+    int dim_len[NDIM4] = {NC_UNLIMITED, 2, 3, Z_DIM_LEN};
     PIO_Offset elements_per_pe = LAT_LEN;
     PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
@@ -146,7 +135,7 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
     {
         int ncid;
         PIO_Offset type_size;
-        int dimid[NDIM3];
+        int dimid[NDIM4];
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
@@ -175,7 +164,7 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
             BAIL(ret);
 
         /* Define dimensions. */
-        for (int d = 0; d < NDIM3; d++)
+        for (int d = 0; d < NDIM4; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
                 BAIL(ret);
 
