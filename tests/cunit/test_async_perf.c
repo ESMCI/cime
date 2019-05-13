@@ -40,7 +40,7 @@
 #define Z_DIM_LEN 16
 
 /* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 10
+#define NUM_TIMESTEPS 3
 
 /* Number of vars in test file. */
 #define NVAR 4
@@ -147,10 +147,11 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         int ncid;
         PIO_Offset type_size;
         int dimid[NDIM3];
-        int varid[NVAR];
+        int varid;
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
         int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        int t;
 
         /* Only netCDF-4 can handle extended types. */
         if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
@@ -179,44 +180,29 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
                 BAIL(ret);
 
         /* Define variables. */
-        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
+        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid)))
             BAIL(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             BAIL(ret);
 
-        /* Set the record number for the record vars. */
-        if ((ret = PIOc_setframe(ncid, varid[0], 0)))
-            BAIL(ret);
+        for (t = 0; t < NUM_TIMESTEPS; t++)
+        {
+            /* Set the record number for the record vars. */
+            if ((ret = PIOc_setframe(ncid, varid, t)))
+                BAIL(ret);
 
-        /* Write some data to the record vars. */
-        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
+            /* Write some data to the record vars. */
+            if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, my_data, NULL)))
+                BAIL(ret);
 
-        /* Sync the file. */
-        if ((ret = PIOc_sync(ncid)))
-            BAIL(ret);
+            /* Sync the file. */
+            if ((ret = PIOc_sync(ncid)))
+                BAIL(ret);
 
-        /* Increment the record number for the record vars. */
-        if ((ret = PIOc_advanceframe(ncid, varid[0])))
-            BAIL(ret);
+        }
 
-        /* Write another record. */
-        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
-
-        /* Sync the file. */
-        if ((ret = PIOc_sync(ncid)))
-            BAIL(ret);
-
-        /* Increment the record number for the record var. */
-        if ((ret = PIOc_advanceframe(ncid, varid[0])))
-            BAIL(ret);
-
-        /* Write a third record. */
-        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
