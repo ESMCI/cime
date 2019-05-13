@@ -114,7 +114,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
     PIO_Offset elements_per_pe = LAT_LEN;
     PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
-    void *my_data_multi;
     int ret;
 
     sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
@@ -151,9 +150,7 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         int varid[NVAR];
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
-        void *my_data_norec;
         int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        int my_data_int_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
 
         /* Only netCDF-4 can handle extended types. */
         if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
@@ -164,7 +161,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
             continue;
 
         my_data = my_data_int;
-        my_data_norec = my_data_int_norec;
 
         /* Create sample output file. */
         sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
@@ -177,13 +173,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
             BAIL(ret);
 
-        /* Create the data for the darray_multi call by making two
-         * copies of the data. */
-        if (!(my_data_multi = malloc(2 * type_size * elements_per_pe)))
-            BAIL(PIO_ENOMEM);
-        memcpy(my_data_multi, my_data, type_size * elements_per_pe);
-        memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * elements_per_pe);
-
         /* Define dimensions. */
         for (int d = 0; d < NDIM3; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
@@ -191,14 +180,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
 
         /* Define variables. */
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
-            BAIL(ret);
-        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME2, piotype, NDIM3, dimid, &varid[1])))
-            BAIL(ret);
-        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1],
-                                &varid[2])))
-            BAIL(ret);
-        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME2, piotype, NDIM2, &dimid[1],
-                                &varid[3])))
             BAIL(ret);
 
         /* End define mode. */
@@ -208,19 +189,9 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         /* Set the record number for the record vars. */
         if ((ret = PIOc_setframe(ncid, varid[0], 0)))
             BAIL(ret);
-        if ((ret = PIOc_setframe(ncid, varid[1], 0)))
-            BAIL(ret);
 
         /* Write some data to the record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
-        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
-
-        /* Write some data to the non-record vars. */
-        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_norec, NULL)))
-            BAIL(ret);
-        if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_norec, NULL)))
             BAIL(ret);
 
         /* Sync the file. */
@@ -230,13 +201,9 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         /* Increment the record number for the record vars. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
             BAIL(ret);
-        if ((ret = PIOc_advanceframe(ncid, varid[1])))
-            BAIL(ret);
 
         /* Write another record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
-        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
             BAIL(ret);
 
         /* Sync the file. */
@@ -246,22 +213,14 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
         /* Increment the record number for the record var. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
             BAIL(ret);
-        if ((ret = PIOc_advanceframe(ncid, varid[1])))
-            BAIL(ret);
 
         /* Write a third record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            BAIL(ret);
-        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
             BAIL(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             BAIL(ret);
-
-        /* Free resources. */
-        free(my_data_multi);
-        my_data_multi = NULL;
     } /* next iotype */
 
     /* Free the decomposition. */
@@ -272,8 +231,6 @@ run_darray_async_test(int iosysid, int my_rank, int ntasks, MPI_Comm test_comm,
     if ((ret = PIOc_freedecomp(iosysid, ioid3)))
         BAIL(ret);
 exit:
-    if (my_data_multi)
-        free(my_data_multi);
     return ret;
 }
 
@@ -285,14 +242,6 @@ int main(int argc, char **argv)
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
-#ifdef _NETCDF4
-#define NUM_TYPES_TO_TEST 11
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
-                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
-#else
-#define NUM_TYPES_TO_TEST 6
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
-#endif /* _NETCDF4 */
     int ret;     /* Return code. */
 
     /* Initialize test. */
