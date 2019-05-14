@@ -232,6 +232,10 @@ int main(int argc, char **argv)
     if (ntasks >= 512)
         num_io_tests = 5;
 
+    if (!my_rank)
+        printf("ntasks\tnio\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+               "performance(MB/s)\n");
+
     for (niotest = 0; niotest < num_io_tests; niotest++)
     {
         for (fmt = 0; fmt < num_flavors; fmt++)
@@ -300,7 +304,7 @@ int main(int argc, char **argv)
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 
-    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
+    /* printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME); */
 
     return 0;
 }
