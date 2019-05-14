@@ -36,9 +36,9 @@
 #define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
-#define Z_DIM_LEN 128
+#define X_DIM_LEN 4
+#define Y_DIM_LEN 4
+#define Z_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 3
@@ -261,7 +261,7 @@ int main(int argc, char **argv)
                 ERR(ERR_INIT);
 
             /* This code runs only on computation components. */
-            if (my_rank)
+            if (my_rank >= num_io_procs[niotest])
             {
                 /* Run the simple darray async test. */
                 if ((ret = run_darray_async_test(iosysid, fmt, my_rank, ntasks, num_io_procs[niotest],
@@ -298,14 +298,14 @@ int main(int argc, char **argv)
                 printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs[niotest],
                        1, 0, fmt, delta_in_sec, num_megabytes, mb_per_sec);
             }
+
         } /* next fmt */
     } /* next niotest */
 
+    /* printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME); */
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
-
-    /* printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME); */
 
     return 0;
 }
