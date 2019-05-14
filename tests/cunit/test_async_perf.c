@@ -49,6 +49,8 @@
 /* How many different number of IO tasks to check? */
 #define MAX_IO_TESTS 5
 
+#define COMPONENT_COUNT 1
+
 char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 
 /* Length of the dimension. */
@@ -68,27 +70,29 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
+int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid, PIO_Offset *elements_per_pe)
 {
-    PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
+    PIO_Offset my_elem_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
     int dim_len_3d[NDIM3] = {X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
     int my_proc_rank = my_rank - 1;
     int ret;
 
     /* How many data elements per task? */
-    elements_per_pe = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks;
+    my_elem_per_pe = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks;
+    if (elements_per_pe)
+        *elements_per_pe = my_elem_per_pe;
 
     /* Allocate space for the decomposition array. */
-    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+    if (!(compdof = malloc(my_elem_per_pe * sizeof(PIO_Offset))))
         return PIO_ENOMEM;
 
     /* Describe the decomposition. */
-    for (int i = 0; i < elements_per_pe; i++)
-        compdof[i] = my_proc_rank * elements_per_pe + i;
+    for (int i = 0; i < my_elem_per_pe; i++)
+        compdof[i] = my_proc_rank * my_elem_per_pe + i;
 
     /* Create the PIO decomposition for this test. */
-    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, my_elem_per_pe,
                                 compdof, ioid, 0, NULL, NULL)))
         ERR(ret);
 
@@ -105,14 +109,15 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
 {
     int ioid3;
     int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
-    PIO_Offset elements_per_pe2 = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / 3;
+    PIO_Offset elements_per_pe2;
     char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
 
     sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
 
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_3d(ntasks - niotasks, my_rank, iosysid, &ioid3)))
+    if ((ret = create_decomposition_3d(ntasks - niotasks, my_rank, iosysid, &ioid3,
+                                       &elements_per_pe2)))
         return ret;
 
     {
@@ -187,12 +192,6 @@ exit:
     return ret;
 }
 
-/* Initialize with task 0 as IO task, tasks 1-3 as a
- * computation component. */
-#define NUM_IO_PROCS 1
-#define NUM_COMPUTATION_PROCS 3
-#define COMPONENT_COUNT 1
-
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -202,7 +201,7 @@ int main(int argc, char **argv)
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
     int iosysid;
-    int num_computation_procs = NUM_COMPUTATION_PROCS;
+    int num_computation_procs;
     MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
     MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
     int num_io_procs[MAX_IO_TESTS] = {1, 4, 16, 64, 128}; /* Number of processors that will do IO. */
@@ -238,6 +237,8 @@ int main(int argc, char **argv)
 
     for (niotest = 0; niotest < num_io_tests; niotest++)
     {
+        num_computation_procs = ntasks - num_io_procs[niotest];
+
         for (fmt = 0; fmt < num_flavors; fmt++)
         {
             struct timeval starttime, endtime;
