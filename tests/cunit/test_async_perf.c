@@ -97,14 +97,13 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
 
 /* Run a simple test using darrays with async. */
 int
-run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, MPI_Comm test_comm,
-                      MPI_Comm comp_comm, int *flavor, int piotype)
+run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotasks,
+                      MPI_Comm test_comm, MPI_Comm comp_comm, int *flavor, int piotype)
 {
     int ioid3;
     int dim_len[NDIM4] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
     PIO_Offset elements_per_pe2 = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / 3;
     char decomp_filename[PIO_MAX_NAME + 1];
-    int niotasks = 1;
     int ret;
 
     sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
@@ -200,7 +199,6 @@ int main(int argc, char **argv)
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
     int iosysid;
-
     int num_computation_procs = NUM_COMPUTATION_PROCS;
     MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
     MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
@@ -245,8 +243,8 @@ int main(int argc, char **argv)
         if (my_rank)
         {
             /* Run the simple darray async test. */
-            if ((ret = run_darray_async_test(iosysid, fmt, my_rank, ntasks, test_comm,
-                                             comp_comm[0], flavor, PIO_INT)))
+            if ((ret = run_darray_async_test(iosysid, fmt, my_rank, ntasks, niotasks,
+                                             test_comm, comp_comm[0], flavor, PIO_INT)))
                 return ret;
 
             /* Finalize PIO system. */
