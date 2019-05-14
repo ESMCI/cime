@@ -46,6 +46,9 @@
 /* Name of record test var. */
 #define REC_VAR_NAME "Duncan_McCloud_of_the_clan_McCloud"
 
+/* How many different number of IO tasks to check? */
+#define MAX_IO_TESTS 5
+
 char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 
 /* Length of the dimension. */
@@ -202,13 +205,14 @@ int main(int argc, char **argv)
     int num_computation_procs = NUM_COMPUTATION_PROCS;
     MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
     MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
-    int niotasks = NUM_IO_PROCS;
+    int num_io_procs[MAX_IO_TESTS] = {1, 4, 16, 64, 128}; /* Number of processors that will do IO. */
+    int num_io_tests; /* How many different num IO procs to try? */
     int mpierr;
+    int fmt, niotest;
     int ret;     /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, -1, &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 1, 0, -1, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
@@ -217,68 +221,80 @@ int main(int argc, char **argv)
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
 
+    /* How many processors for IO? */
+    num_io_tests = 1;
+    if (ntasks >= 32)
+        num_io_tests = 2;
+    if (ntasks >= 64)
+        num_io_tests = 3;
+    if (ntasks >= 128)
+        num_io_tests = 4;
+    if (ntasks >= 512)
+        num_io_tests = 5;
 
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    for (niotest = 0; niotest < num_io_tests; niotest++)
     {
-        struct timeval starttime, endtime;
-        long long startt, endt;
-        long long delta;
-        float num_megabytes;
-        float delta_in_sec;
-        float mb_per_sec;
-
-        /* Start the clock. */
-        if (!my_rank)
+        for (fmt = 0; fmt < num_flavors; fmt++)
         {
-            gettimeofday(&starttime, NULL);
-            startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
-        }
+            struct timeval starttime, endtime;
+            long long startt, endt;
+            long long delta;
+            float num_megabytes;
+            float delta_in_sec;
+            float mb_per_sec;
 
-        if ((ret = PIOc_init_async(test_comm, niotasks, NULL, COMPONENT_COUNT,
-                                   &num_computation_procs, NULL, &io_comm, comp_comm,
-                                   PIO_REARR_BOX, &iosysid)))
-            ERR(ERR_INIT);
+            /* Start the clock. */
+            if (!my_rank)
+            {
+                gettimeofday(&starttime, NULL);
+                startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
+            }
 
-        /* This code runs only on computation components. */
-        if (my_rank)
-        {
-            /* Run the simple darray async test. */
-            if ((ret = run_darray_async_test(iosysid, fmt, my_rank, ntasks, niotasks,
-                                             test_comm, comp_comm[0], flavor, PIO_INT)))
-                return ret;
+            if ((ret = PIOc_init_async(test_comm, num_io_procs[niotest], NULL, COMPONENT_COUNT,
+                                       &num_computation_procs, NULL, &io_comm, comp_comm,
+                                       PIO_REARR_BOX, &iosysid)))
+                ERR(ERR_INIT);
 
-            /* Finalize PIO system. */
-            if ((ret = PIOc_finalize(iosysid)))
-                return ret;
+            /* This code runs only on computation components. */
+            if (my_rank)
+            {
+                /* Run the simple darray async test. */
+                if ((ret = run_darray_async_test(iosysid, fmt, my_rank, ntasks, num_io_procs[niotest],
+                                                 test_comm, comp_comm[0], flavor, PIO_INT)))
+                    return ret;
 
-            /* Free the computation conomponent communicator. */
-            if ((mpierr = MPI_Comm_free(comp_comm)))
-                MPIERR(mpierr);
-        }
-        else
-        {
-            /* Free the IO communicator. */
-            if ((mpierr = MPI_Comm_free(&io_comm)))
-                MPIERR(mpierr);
-        }
+                /* Finalize PIO system. */
+                if ((ret = PIOc_finalize(iosysid)))
+                    return ret;
 
-        if (!my_rank)
-        {
-            /* Stop the clock. */
-            gettimeofday(&endtime, NULL);
+                /* Free the computation conomponent communicator. */
+                if ((mpierr = MPI_Comm_free(comp_comm)))
+                    MPIERR(mpierr);
+            }
+            else
+            {
+                /* Free the IO communicator. */
+                if ((mpierr = MPI_Comm_free(&io_comm)))
+                    MPIERR(mpierr);
+            }
 
-            /* Compute the time delta */
-            endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-            delta = (endt - startt)/NUM_TIMESTEPS;
-            delta_in_sec = (float)delta / 1000000;
-            num_megabytes = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * NUM_TIMESTEPS *
-                             sizeof(int))/(1024*1024);
-            mb_per_sec = num_megabytes / delta_in_sec;
-            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, niotasks,
-                   1, 0, fmt, delta_in_sec, num_megabytes, mb_per_sec);
-        }
+            if (!my_rank)
+            {
+                /* Stop the clock. */
+                gettimeofday(&endtime, NULL);
 
-    } /* next fmt */
+                /* Compute the time delta */
+                endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
+                delta = (endt - startt)/NUM_TIMESTEPS;
+                delta_in_sec = (float)delta / 1000000;
+                num_megabytes = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * NUM_TIMESTEPS *
+                                 sizeof(int))/(1024*1024);
+                mb_per_sec = num_megabytes / delta_in_sec;
+                printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs[niotest],
+                       1, 0, fmt, delta_in_sec, num_megabytes, mb_per_sec);
+            }
+        } /* next fmt */
+    } /* next niotest */
 
     /* Finalize the MPI library. */
     if ((ret = pio_test_finalize(&test_comm)))
