@@ -1,5 +1,5 @@
 /*
- * This program tests darrays with async.
+ * This program tests performance of darray writes with async.
  *
  * @author Ed Hartnett
  * @date 5/4/17
