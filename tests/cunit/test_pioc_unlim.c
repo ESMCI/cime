@@ -236,7 +236,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     int ncid;
     int varid;
     int my_test_size;
-    char filename[NC_MAX_NAME + 1];
+    char filename[PIO_MAX_NAME + 1];
     int ret; /* Return code. */
 
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))

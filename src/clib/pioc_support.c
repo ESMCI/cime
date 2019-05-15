@@ -63,11 +63,11 @@ int PIOc_strerror(int pioerr, char *errmsg)
         strcpy(errmsg, "No error");
 #if defined(_NETCDF)
     else if (pioerr <= NC2_ERR && pioerr >= NC4_LAST_ERROR)     /* NetCDF error? */
-        strncpy(errmsg, nc_strerror(pioerr), NC_MAX_NAME);
+        strncpy(errmsg, nc_strerror(pioerr), PIO_MAX_NAME);
 #endif /* endif defined(_NETCDF) */
 #if defined(_PNETCDF)
     else if (pioerr > PIO_FIRST_ERROR_CODE)     /* pNetCDF error? */
-        strncpy(errmsg, ncmpi_strerror(pioerr), NC_MAX_NAME);
+        strncpy(errmsg, ncmpi_strerror(pioerr), PIO_MAX_NAME);
 #endif /* defined( _PNETCDF) */
     else
         /* Handle PIO errors. */
@@ -129,7 +129,7 @@ int PIOc_set_log_level(int level)
 void pio_init_logging(void)
 {
 #if PIO_ENABLE_LOGGING
-    char log_filename[NC_MAX_NAME];
+    char log_filename[PIO_MAX_NAME];
 
     if (!LOG_FILE)
     {
@@ -990,9 +990,9 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * @param cmode for PIOc_create(). Will be bitwise or'd with NC_WRITE.
  * @param ioid the ID of the IO description.
  * @param title optial title attribute for the file. Must be less than
- * NC_MAX_NAME + 1 if provided. Ignored if NULL.
+ * PIO_MAX_NAME + 1 if provided. Ignored if NULL.
  * @param history optial history attribute for the file. Must be less
- * than NC_MAX_NAME + 1 if provided. Ignored if NULL.
+ * than PIO_MAX_NAME + 1 if provided. Ignored if NULL.
  * @param fortran_order set to non-zero if fortran array ordering is
  * used, or to zero if C array ordering is used.
  * @returns 0 for success, error code otherwise.
@@ -1093,10 +1093,10 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
  * @param comm an MPI communicator.
  * @param pio_type the PIO type to be used as the type for the data.
  * @param title pointer that will get optial title attribute for the
- * file. Will be less than NC_MAX_NAME + 1 if provided. Ignored if
+ * file. Will be less than PIO_MAX_NAME + 1 if provided. Ignored if
  * NULL.
  * @param history pointer that will get optial history attribute for
- * the file. Will be less than NC_MAX_NAME + 1 if provided. Ignored if
+ * the file. Will be less than PIO_MAX_NAME + 1 if provided. Ignored if
  * NULL.
  * @param fortran_order pointer that gets set to 1 if fortran array
  * ordering is used, or to zero if C array ordering is used.
@@ -1281,8 +1281,8 @@ int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmo
     for (int b = 0; b < bt_size; b++)
         if (strlen(bt_strings[b]) > max_bt_size)
             max_bt_size = strlen(bt_strings[b]);
-    if (max_bt_size > NC_MAX_NAME)
-        max_bt_size = NC_MAX_NAME;
+    if (max_bt_size > PIO_MAX_NAME)
+        max_bt_size = PIO_MAX_NAME;
 
     /* Copy the backtrace into one long string. */
     char full_bt[max_bt_size * bt_size + bt_size + 1];
@@ -1453,7 +1453,7 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
         *max_maplen = max_maplen_in;
 
     /* Read title attribute, if it is in the file. */
-    char title_in[NC_MAX_NAME + 1];
+    char title_in[PIO_MAX_NAME + 1];
     ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_TITLE_ATT_NAME, title_in);
     if (ret == PIO_NOERR)
     {
@@ -1471,7 +1471,7 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Read history attribute, if it is in the file. */
-    char history_in[NC_MAX_NAME + 1];
+    char history_in[PIO_MAX_NAME + 1];
     ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_HISTORY_ATT_NAME, history_in);
     if (ret == PIO_NOERR)
     {
@@ -1489,7 +1489,7 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Read source attribute. */
-    char source_in[NC_MAX_NAME + 1];
+    char source_in[PIO_MAX_NAME + 1];
     if ((ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_SOURCE_ATT_NAME, source_in)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     if (source)
@@ -1751,7 +1751,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* User must provide valid input for these parameters. */
-    if (!ncidp || !iotype || !filename || strlen(filename) > NC_MAX_NAME)
+    if (!ncidp || !iotype || !filename || strlen(filename) > PIO_MAX_NAME)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* A valid iotype must be specified. */

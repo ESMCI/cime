@@ -264,7 +264,7 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
 
 /**
  * Fill start/count arrays for write_darray_multi_par(). This is an
- * internal funciton.
+ * internal function.
  *
  * @param ndims the number of dims in the decomposition.
  * @param fndims the number of dims in the file.

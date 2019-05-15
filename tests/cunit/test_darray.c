@@ -212,7 +212,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 }
                 else
                 {
-                    int varid_big = NC_MAX_VARS + TEST_VAL_42;
+                    int varid_big = PIO_MAX_VARS + TEST_VAL_42;
 
                     /* These will not work. */
                     if (PIOc_write_darray_multi(ncid + TEST_VAL_42, &varid, ioid, 1, arraylen, test_data, &frame,
@@ -338,7 +338,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 {
 #define NUM_TYPES_TO_TEST 3
     int ioid;
-    char filename[NC_MAX_NAME + 1];
+    char filename[PIO_MAX_NAME + 1];
     int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
