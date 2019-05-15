@@ -30,9 +30,9 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
-#define Z_DIM_LEN 16
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
+#define Z_DIM_LEN 256
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
@@ -429,6 +429,6 @@ int main(int argc, char **argv)
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 
-    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
+    /* printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME); */
     return 0;
 }
