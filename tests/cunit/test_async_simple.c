@@ -90,8 +90,8 @@ int main(int argc, char **argv)
 
                 for (int sample = 0; sample < NUM_SAMPLES; sample++)
                 {
-                    char filename[NC_MAX_NAME + 1]; /* Test filename. */
-                    char iotype_name[NC_MAX_NAME + 1];
+                    char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+                    char iotype_name[PIO_MAX_NAME + 1];
 
                     /* Create a filename. */
                     if ((ret = get_iotype_name(flavor[flv], iotype_name)))

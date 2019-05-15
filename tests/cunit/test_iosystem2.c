@@ -190,7 +190,13 @@ int main(int argc, char **argv)
                 ERR(ret);
             if ((ret = PIOc_closefile(ncid2)))
                 ERR(ret);
+
+            /* Wait for everyone to finish. */
+            if ((ret = MPI_Barrier(test_comm)))
+                MPIERR(ret);
+
         } /* next iotype */
+
         if ((ret = MPI_Comm_free(&newcomm)))
             MPIERR(ret);
 

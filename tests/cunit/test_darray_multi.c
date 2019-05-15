@@ -392,7 +392,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
 #endif /* _NETCDF4 */
     int ioid;
-    char filename[NC_MAX_NAME + 1];
+    char filename[PIO_MAX_NAME + 1];
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
 
