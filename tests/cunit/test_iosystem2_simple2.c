@@ -76,12 +76,12 @@ int main(int argc, char **argv)
 
         for (int flv = 0; flv < num_flavors; flv++)
         {
-            char filename[NUM_SAMPLES][NC_MAX_NAME + 1]; /* Test filename. */
+            char filename[NUM_SAMPLES][PIO_MAX_NAME + 1]; /* Test filename. */
             int sample_ncid[NUM_SAMPLES];
 
             for (int sample = 0; sample < NUM_SAMPLES; sample++)
             {
-                char iotype_name[NC_MAX_NAME + 1];
+                char iotype_name[PIO_MAX_NAME + 1];
 
                 /* Create a filename. */
                 if ((ret = get_iotype_name(flavor[flv], iotype_name)))
