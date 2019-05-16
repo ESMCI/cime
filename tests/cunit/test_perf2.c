@@ -32,7 +32,7 @@
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 1024
 #define Y_DIM_LEN 1024
-#define Z_DIM_LEN 256
+#define Z_DIM_LEN 128
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
