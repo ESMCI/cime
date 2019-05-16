@@ -340,33 +340,16 @@ void pioassert(_Bool expression, const char *msg, const char *fname, int line)
  * Handle MPI errors. An error message is sent to stderr, then the
  * check_netcdf() function is called with PIO_EIO.
  *
+ * @param ios pointer to the iosystem_info_t. May be NULL.
  * @param file pointer to the file_desc_t info. Ignored if NULL.
  * @param mpierr the MPI return code to handle
  * @param filename the name of the code file where error occured.
  * @param line the line of code where error occured.
  * @return PIO_NOERR for no error, otherwise PIO_EIO.
+ * @author Ed Hartnett
  */
-int check_mpi(file_desc_t *file, int mpierr, const char *filename,
-              int line)
-{
-    return check_mpi2(NULL, file, mpierr, filename, line);
-}
-
-/**
- * Handle MPI errors. An error message is sent to stderr, then the
- * check_netcdf() function is called with PIO_EIO. This version of the
- * function accepts an ios parameter, for the (rare) occasions where
- * we have an ios but not a file.
- *
- * @param ios pointer to the iosystem_info_t. May be NULL.
- * @param file pointer to the file_desc_t info. May be NULL.
- * @param mpierr the MPI return code to handle
- * @param filename the name of the code file where error occured.
- * @param line the line of code where error occured.
- * @return PIO_NOERR for no error, otherwise PIO_EIO.
- */
-int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr,
-               const char *filename, int line)
+int check_mpi(iosystem_desc_t *ios, file_desc_t *file, int mpierr,
+              const char *filename, int line)
 {
     if (mpierr)
     {
@@ -695,7 +678,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
 	(*iodesc)->mpitype_size = 0;
     else
 	if ((mpierr = MPI_Type_size((*iodesc)->mpitype, &(*iodesc)->mpitype_size)))
-	    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+	    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Initialize some values in the struct. */
     (*iodesc)->maxregions = 1;
@@ -776,10 +759,10 @@ int PIOc_freedecomp(int iosysid, int ioid)
         /* Handle MPI errors. */
         LOG((3, "handline error mpierr %d ios->comproot %d", mpierr, ios->comproot));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr2, __FILE__, __LINE__);
         LOG((3, "handline error mpierr2 %d", mpierr2));
         if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     }
 
     LOG((3, "freeing map, dimlen"));
@@ -801,7 +784,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
         for (int i = 0; i < iodesc->nrecvs; i++)
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(&iodesc->rtype[i])))
-                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
         free(iodesc->rtype);
     }
@@ -812,7 +795,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
         for (int i = 0; i < iodesc->num_stypes; i++)
             if (iodesc->stype[i] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(iodesc->stype + i)))
-                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
         iodesc->num_stypes = 0;
         free(iodesc->stype);
@@ -839,7 +822,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
 
     if (iodesc->rearranger == PIO_REARR_SUBSET)
         if ((mpierr = MPI_Comm_free(&iodesc->subset_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     return pio_delete_iodesc_from_list(ioid);
 }
@@ -873,9 +856,9 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     if ((mpierr = MPI_Comm_size(comm, &npes)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Comm_rank(comm, &myrank)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     if (myrank == 0)
     {
@@ -892,9 +875,9 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
             return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if ((mpierr = MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(ndims, 1, MPI_INT, 0, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         if (!(tdims = calloc(*ndims, sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int i = 0; i < *ndims; i++)
@@ -902,7 +885,7 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
                 pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if ((mpierr = MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
         for (int i = 0; i < rnpes; i++)
         {
@@ -919,9 +902,9 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
             if (i > 0)
             {
                 if ((mpierr = MPI_Send(&maplen, 1, PIO_OFFSET, i, i + npes, comm)))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
                 if ((mpierr = MPI_Send(tmap, maplen, PIO_OFFSET, i, i, comm)))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
                 free(tmap);
             }
             else
@@ -935,22 +918,22 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
     else
     {
         if ((mpierr = MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(ndims, 1, MPI_INT, 0, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         if (!(tdims = calloc(*ndims, sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
         if (myrank < rnpes)
         {
             if ((mpierr = MPI_Recv(&maplen, 1, PIO_OFFSET, 0, myrank + npes, comm, &status)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             if ((mpierr = MPI_Recv(tmap, maplen, PIO_OFFSET, 0, myrank, comm, &status)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             *map = tmap;
         }
         else
@@ -1038,12 +1021,12 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
      * task_maplen array on all tasks. */
     if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT,
                                 ios->comp_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Find the max maplen. */
     if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX,
                                 ios->comp_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((3, "max_maplen = %d", max_maplen));
 
     if (!(full_map = malloc(sizeof(int) * ios->num_comptasks * max_maplen)))
@@ -1064,7 +1047,7 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     /* Gather my_map from all computation tasks and fill the full_map array. */
     if ((mpierr = MPI_Allgather(my_map, max_maplen, MPI_INT, full_map, max_maplen,
                                 MPI_INT, ios->comp_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     free(my_map);
 
@@ -1132,9 +1115,9 @@ int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm 
 
     /* Get the communicator size and task rank. */
     if ((mpierr = MPI_Comm_size(comm, &size)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Comm_rank(comm, &my_rank)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "size = %d my_rank = %d", size, my_rank));
 
     /* Read the file. This allocates three arrays that we have to
@@ -1628,9 +1611,9 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
     LOG((1, "PIOc_writemap file = %s ndims = %d maplen = %d", file, ndims, maplen));
 
     if ((mpierr = MPI_Comm_size(comm, &npes)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Comm_rank(comm, &myrank)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "npes = %d myrank = %d", npes, myrank));
 
     /* Allocate memory for the nmaplen. */
@@ -1639,7 +1622,7 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if ((mpierr = MPI_Gather(&maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     /* Only rank 0 writes the file. */
     if (myrank == 0)
@@ -1668,9 +1651,9 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
             nmap = (PIO_Offset *)malloc(nmaplen[i] * sizeof(PIO_Offset));
 
             if ((mpierr = MPI_Send(&i, 1, MPI_INT, i, npes + i, comm)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             if ((mpierr = MPI_Recv(nmap, nmaplen[i], PIO_OFFSET, i, i, comm, &status)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             LOG((2,"MPI_Recv map complete"));
 
             fprintf(fp, "%d %lld\n", i, nmaplen[i]);
@@ -1693,10 +1676,10 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
     {
         LOG((2,"ready to MPI_Recv..."));
         if ((mpierr = MPI_Recv(&i, 1, MPI_INT, 0, npes+myrank, comm, &status)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         LOG((2,"MPI_Recv got %d", i));
         if ((mpierr = MPI_Send(map, maplen, PIO_OFFSET, 0, myrank, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         LOG((2,"MPI_Send map complete"));
     }
 
@@ -1810,9 +1793,9 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
         /* Handle MPI errors. */
         LOG((2, "handling mpi errors mpierr = %d", mpierr));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this task is in the IO component, do the IO. */
@@ -1851,7 +1834,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
 
     /* If there was an error, free the memory we allocated and handle error. */
     if (ierr)
@@ -1862,7 +1845,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Broadcast writablility to all tasks. */
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
 
     /* Broadcast next ncid to all tasks from io root, necessary
      * because files may be opened on mutilple iosystems, causing the
@@ -1872,7 +1855,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     {
         LOG((3, "createfile bcasting pio_next_ncid %d", pio_next_ncid));
         if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
         LOG((3, "createfile bcast pio_next_ncid %d", pio_next_ncid));
     }
 
@@ -2095,7 +2078,7 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
 	    (*mpi_type_size)[v] = 0;
 	else
 	    if ((mpierr = MPI_Type_size((*mpi_type)[v], &(*mpi_type_size)[v])))
-		return check_mpi2(NULL, file, mpierr, __FILE__, __LINE__);
+		return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
 
         /* What are the dimids associated with this var? */
         if (var_ndims)
@@ -2247,9 +2230,9 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
@@ -2364,7 +2347,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 	LOG((2, "Bcasting error code ierr %d ios->ioroot %d ios->my_comm %d",
 	     ierr, ios->ioroot, ios->my_comm));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     LOG((2, "Bcast openfile_retry error code ierr = %d", ierr));
 
     /* If there was an error, free allocated memory and deal with the error. */
@@ -2376,18 +2359,18 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Broadcast writability to all tasks. */
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
 
     /* Broadcast some values to all tasks from io root. */
     if (ios->async)
     {
         LOG((3, "open bcasting pio_next_ncid %d ios->ioroot %d", pio_next_ncid, ios->ioroot));
         if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
     if ((mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
 
     /* Non io tasks need to allocate to store info about variables. */
     if (nvars && !rec_var)
@@ -2406,15 +2389,15 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     if (nvars)
     {
         if ((mpierr = MPI_Bcast(rec_var, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(pio_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(pio_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(mpi_type, nvars*(int)(sizeof(MPI_Datatype)/sizeof(int)), MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(mpi_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
     /* Create the ncid that the user will see. This is necessary
@@ -2544,9 +2527,9 @@ int pioc_change_def(int ncid, int is_enddef)
         /* Handle MPI errors. */
         LOG((3, "pioc_change_def handling MPI errors"));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            check_mpi(file, mpierr2, __FILE__, __LINE__);
+            check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
@@ -2579,7 +2562,7 @@ int pioc_change_def(int ncid, int is_enddef)
     /* Broadcast and check the return code. */
     LOG((3, "pioc_change_def bcasting return code ierr = %d", ierr));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
     LOG((3, "pioc_change_def succeeded"));

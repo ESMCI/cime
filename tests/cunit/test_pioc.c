@@ -550,9 +550,7 @@ int check_strerror_netcdf(int my_rank)
 
     /* When called with a code of 0, these functions should do nothing
      * and return 0. */
-    if (check_mpi(NULL, 0, __FILE__, __LINE__))
-        ERR(ERR_WRONG);
-    if (check_mpi2(NULL, NULL, 0, __FILE__, __LINE__))
+    if (check_mpi(NULL, NULL, 0, __FILE__, __LINE__))
         ERR(ERR_WRONG);
     if (pio_err(NULL, NULL, 0, __FILE__, __LINE__))
         ERR(ERR_WRONG);
@@ -560,15 +558,6 @@ int check_strerror_netcdf(int my_rank)
         ERR(ERR_WRONG);
     if (check_netcdf2(NULL, NULL, 0, __FILE__, __LINE__))
         ERR(ERR_WRONG);
-
-    /* When called with other error messages, these functions should
-     * return PIO_EIO. */
-    /* if (check_mpi(NULL, MPI_ERR_OTHER, __FILE__, __LINE__) != PIO_EIO) */
-    /*     ERR(ERR_WRONG); */
-    /* This returns the correct result, but prints a confusing error
-     * message during the test run, so I'll leave it commented out. */
-    /* if (check_mpi(NULL, MPI_ERR_UNKNOWN, __FILE__, __LINE__) != PIO_EIO) */
-    /*     ERR(ERR_WRONG); */
 
     return PIO_NOERR;
 }

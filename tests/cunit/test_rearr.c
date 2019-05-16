@@ -872,7 +872,7 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
 
     /* Check some results. */
     if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen ||
-        (iodesc->llen != my_rank ? 0 : 8) || !iodesc->needsfill)
+        (iodesc->llen != (my_rank ? 0 : 8)) || !iodesc->needsfill)
         return ERR_WRONG;
 
     for (int i = 0; i < ios->num_iotasks; i++)
