@@ -1254,13 +1254,16 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         /* Free malloced resources. */
         if (ndims && !stride_present)
            free(fake_stride);
+
+        if (ierr)
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
     }
 
     /* Broadcast and check the return code. */
-    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
-    if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+    /* if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm))) */
+    /*     return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
+    /* if (ierr) */
+    /*     return check_netcdf(file, ierr, __FILE__, __LINE__); */
     LOG((2, "PIOc_put_vars_tc bcast netcdf return code %d complete", ierr));
 
     return PIO_NOERR;
