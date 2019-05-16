@@ -110,11 +110,8 @@ extern "C" {
     void pioassert(bool exp, const char *msg, const char *fname, int line);
 
     /* Check the return code from an MPI function call. */
-    int check_mpi(file_desc_t *file, int mpierr, const char *filename, int line);
-
-    /* Check the return code from an MPI function call. */
-    int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr, const char *filename,
-                   int line);
+    int check_mpi(iosystem_desc_t *ios, file_desc_t *file, int mpierr, const char *filename,
+                  int line);
 
     /* Check the return code from a netCDF call. */
     int check_netcdf(file_desc_t *file, int status, const char *fname, int line);

@@ -13,8 +13,8 @@
  * rearranger is used. */
 #define DEFAULT_BLOCKSIZE 1024
 
-/** The target blocksize for each io task when the box rearranger is
- * used. */
+/** The target blocksize in bytes for each io task when the box
+ * rearranger is used. */
 int blocksize = DEFAULT_BLOCKSIZE;
 
 /**
@@ -37,7 +37,7 @@ int gcd(int a, int b )
  *
  * @param a
  * @param b
- * @returns greates common divisor.
+ * @returns greatest common divisor.
  */
 long long lgcd(long long a, long long b)
 {

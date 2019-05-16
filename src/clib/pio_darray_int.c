@@ -232,10 +232,10 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
             if((mpierr = MPI_Type_create_subarray(sa_ndims, gdims,
                                                   sacount, sastart,MPI_ORDER_C
                                                   ,iodesc->mpitype, subarray + true_rrcnt)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
             if((mpierr = MPI_Type_commit(subarray + true_rrcnt)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         }
 
 #if PIO_ENABLE_LOGGING
@@ -247,15 +247,15 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
 
     /* concatenate all MPI datatypes into filetype */
     if((mpierr = MPI_Type_create_struct(true_rrcnt, blocklengths, displacements, subarray, filetype)))
-	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+	return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     if((mpierr = MPI_Type_commit(filetype)))
-	return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+	return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     for( int rc=0; rc<true_rrcnt; rc++)
         if (subarray[rc] != MPI_DATATYPE_NULL && subarray[rc] != iodesc->mpitype &&
             (mpierr = MPI_Type_free(subarray + rc)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -593,19 +593,19 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                                 if (j > 0) { /* at least one vartypes[] is not NULL */
                                     /* concatenate non-NULL vartypes */
                                     if((mpierr = MPI_Type_create_struct(j, blocklens, var_offsets, vartypes, &filetype)))
-                                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                                        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
                                     if((mpierr = MPI_Type_commit(&filetype)))
-                                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                                        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
                                     /* free vartypes */
                                     for (i=j-1; i>0; i--) {
                                         if (vartypes[i] == vartypes[i-1]) continue;
                                         if((mpierr = MPI_Type_free(&vartypes[i])))
-                                            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                                            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
                                     }
                                     if((mpierr = MPI_Type_free(&vartypes[0])))
-                                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                                        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
                                 }
                                 else /* all vartypes[] are NULL */
                                     filetype = MPI_DATATYPE_NULL;
@@ -619,7 +619,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                             if(filetype != MPI_DATATYPE_NULL)
                             {
                                 if((mpierr = MPI_Type_free(&filetype)))
-				    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+				    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
                             }
                             vard_llen = 0; /* reset request size to 0 */
                             numReqs = 0;
@@ -785,12 +785,12 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
 
     /* Do a handshake. */
     if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Send local length of iobuffer for each field (all
      * fields are the same length). */
     if ((mpierr = MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((3, "sent llen = %d", llen));
 
     /* Send the number of data regions, the start/count for
@@ -799,16 +799,16 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
     {
         if ((mpierr = MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank + ios->num_iotasks,
                                ios->io_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Send(tmp_start, maxregions * fndims, MPI_OFFSET, 0,
                                ios->io_rank + 2 * ios->num_iotasks, ios->io_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0,
                                ios->io_rank + 3 * ios->num_iotasks, ios->io_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Send(iobuf, nvars * llen, iodesc->mpitype, 0,
                                ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "sent data for maxregions = %d", maxregions));
     }
 
@@ -885,13 +885,13 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
         {
             /* handshake - tell the sending task I'm ready */
             if ((mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm)))
-                return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
             /* Get length of iobuffer for each field on this
              * task (all fields are the same length). */
             if ((mpierr = MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm,
                                    &status)))
-                return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "received rlen = %d", rlen));
 
             /* Get the number of regions, the start/count
@@ -900,16 +900,16 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
             {
                 if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask + ios->num_iotasks,
                                        ios->io_comm, &status)))
-                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
                 if ((mpierr = MPI_Recv(tmp_start, rregions * fndims, MPI_OFFSET, rtask,
                                        rtask + 2 * ios->num_iotasks, ios->io_comm, &status)))
-                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
                 if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask,
                                        rtask + 3 * ios->num_iotasks, ios->io_comm, &status)))
-                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
                 if ((mpierr = MPI_Recv(iobuf, nvars * rlen, iodesc->mpitype, rtask,
                                        rtask + 4 * ios->num_iotasks, ios->io_comm, &status)))
-                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
                 LOG((3, "received data rregions = %d fndims = %d", rregions, fndims));
             }
         }
@@ -1314,7 +1314,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
 						vdesc->record, startlist, countlist, &filetype);
 		    ierr = ncmpi_get_vard_all(file->fh, vid, filetype, iobuf, iodesc->llen, iodesc->mpitype);
 		    if(filetype != MPI_DATATYPE_NULL && (mpierr = MPI_Type_free(&filetype)))
-			return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+			return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
 #else
                     /* Read a list of subarrays. */
@@ -1497,25 +1497,25 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         if (ios->io_rank > 0)
         {
             if ((mpierr = MPI_Send(&iodesc->llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
             LOG((3, "sent iodesc->llen = %d", iodesc->llen));
 
             if (iodesc->llen > 0)
             {
                 if ((mpierr = MPI_Send(&(iodesc->maxregions), 1, MPI_INT, 0,
                                        ios->num_iotasks + ios->io_rank, ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                 if ((mpierr = MPI_Send(tmp_count, iodesc->maxregions * fndims, MPI_OFFSET, 0,
                                        2 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                 if ((mpierr = MPI_Send(tmp_start, iodesc->maxregions * fndims, MPI_OFFSET, 0,
                                        3 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                 LOG((3, "sent iodesc->maxregions = %d tmp_count and tmp_start arrays", iodesc->maxregions));
 
                 if ((mpierr = MPI_Recv(iobuf, iodesc->llen, iodesc->mpitype, 0,
                                        4 * ios->num_iotasks + ios->io_rank, ios->io_comm, &status)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                 LOG((3, "received %d elements of data", iodesc->llen));
             }
         }
@@ -1533,20 +1533,20 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (rtask < ios->num_iotasks)
                 {
                     if ((mpierr = MPI_Recv(&tmp_bufsize, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status)))
-                        return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                     LOG((3, "received tmp_bufsize = %d", tmp_bufsize));
 
                     if (tmp_bufsize > 0)
                     {
                         if ((mpierr = MPI_Recv(&maxregions, 1, MPI_INT, rtask, ios->num_iotasks + rtask,
                                                ios->io_comm, &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                         if ((mpierr = MPI_Recv(this_count, maxregions * fndims, MPI_OFFSET, rtask,
                                                2 * ios->num_iotasks + rtask, ios->io_comm, &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                         if ((mpierr = MPI_Recv(this_start, maxregions * fndims, MPI_OFFSET, rtask,
                                                3 * ios->num_iotasks + rtask, ios->io_comm, &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
                         LOG((3, "received maxregions = %d this_count, this_start arrays ", maxregions));
                     }
                 }
@@ -1644,7 +1644,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (rtask < ios->num_iotasks && tmp_bufsize > 0)
                     if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->mpitype, rtask,
                                            4 * ios->num_iotasks + rtask, ios->io_comm)))
-                        return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
             }
         }
     }
@@ -1694,7 +1694,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         usage += addsize;
         if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &usage, 1,  MPI_OFFSET,  MPI_MAX,
                                     file->iosystem->io_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
     /* Keep track of the maximum usage. */
@@ -1806,10 +1806,10 @@ void cn_buffer_report(iosystem_desc_t *ios, bool collective)
         {
             LOG((3, "cn_buffer_report calling MPI_Reduce ios->comp_comm = %d", ios->comp_comm));
             if ((mpierr = MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios->comp_comm)))
-                check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "cn_buffer_report calling MPI_Reduce"));
             if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios->comp_comm)))
-                check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             if (ios->compmaster == MPI_ROOT)
             {
                 LOG((1, "Currently allocated buffer space %ld %ld", bget_mins[0], bget_maxs[0]));
@@ -2193,7 +2193,7 @@ int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
     LOG((3, "before allreaduce maxbytes = %d", maxbytes));
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
                                 ios->union_comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     LOG((3, "after allreaduce maxbytes = %d", maxbytes));
 
     /* Remember the result. */

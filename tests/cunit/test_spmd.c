@@ -61,7 +61,7 @@ int run_spmd_tests(MPI_Comm test_comm)
 
     /* Get the size of the int type for MPI. (Should always be 4.) */
     if ((mpierr = MPI_Type_size(MPI_INT, &type_size)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        MPIERR(mpierr);
     assert(type_size == sizeof(int));
 
     /* Initialize the arrays. */

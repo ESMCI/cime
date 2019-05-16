@@ -156,9 +156,9 @@ int PIOc_advanceframe(int ncid, int varid)
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+            check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* Increment the record number. */
@@ -219,9 +219,9 @@ int PIOc_setframe(int ncid, int varid, int frame)
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+            check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* Set the record dimension value for this variable. This will be
@@ -350,9 +350,9 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
 
             /* Handle MPI errors. */
             if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-                check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+                check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
             if (mpierr)
-                return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         }
 
     /* Return the current handler. */
@@ -497,9 +497,9 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* Allocate space for the iodesc info. This also allocates the
@@ -617,7 +617,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
          * of io tasks used may vary. */
         if ((mpierr = MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot,
                                 ios->my_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "iodesc->num_aiotasks = %d", iodesc->num_aiotasks));
 
         /* Compute the communications pattern for this decomposition. */
@@ -631,7 +631,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     {
         LOG((3, "createfile bcasting pio_next_ioid %d", pio_next_ioid));
         if ((mpierr = MPI_Bcast(&pio_next_ioid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "createfile bcast pio_next_ioid %d", pio_next_ioid));
     }
 
@@ -860,7 +860,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     /* Find the number of computation tasks. */
     if ((mpierr = MPI_Comm_size(comp_comm, &num_comptasks)))
-        return check_mpi2(NULL, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     /* Check the inputs. */
     if (!iosysidp || num_iotasks < 1 || num_iotasks * stride > num_comptasks)
@@ -889,11 +889,11 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Copy the computation communicator into comp_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->comp_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "union_comm = %d comp_comm = %d", ios->union_comm, ios->comp_comm));
 
     ios->my_comm = ios->comp_comm;
@@ -901,7 +901,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     /* Find MPI rank in comp_comm communicator. */
     if ((mpierr = MPI_Comm_rank(ios->comp_comm, &ios->comp_rank)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* With non-async, all tasks are part of computation component. */
     ios->compproc = true;
@@ -940,16 +940,16 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     /* Create a group for the computation tasks. */
     if ((mpierr = MPI_Comm_group(ios->comp_comm, &compgroup)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Create a group for the IO tasks. */
     if ((mpierr = MPI_Group_incl(compgroup, ios->num_iotasks, ios->ioranks,
                                  &iogroup)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Create an MPI communicator for the IO tasks. */
     if ((mpierr = MPI_Comm_create(ios->comp_comm, iogroup, &ios->io_comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Free the MPI groups. */
     if (compgroup != MPI_GROUP_NULL)
@@ -964,7 +964,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     if (ios->ioproc)
     {
         if ((mpierr = MPI_Comm_rank(ios->io_comm, &ios->io_rank)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     }
     else
         ios->io_rank = -1;
@@ -1055,12 +1055,12 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
     /* Make sure we have an info object. */
     if (ios->info == MPI_INFO_NULL)
         if ((mpierr = MPI_Info_create(&ios->info)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Set the MPI hint. */
     if (ios->ioproc)
         if ((mpierr = MPI_Info_set(ios->info, (char *)hint, (char *)hintval)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -1115,9 +1115,9 @@ int PIOc_finalize(int iosysid)
         /* Handle MPI errors. */
         LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "async errors bcast"));
     }
 
@@ -1361,7 +1361,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     /* Get rank of this task in world. */
     if ((ret = MPI_Comm_rank(world, &my_rank)))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
     /* Is this process in the IO component? */
     int pidx;
@@ -1380,7 +1380,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     /* Create group for world. */
     MPI_Group world_group;
     if ((ret = MPI_Comm_group(world, &world_group)))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
     LOG((3, "world group created"));
 
     /* We will create a group for the IO component. */
@@ -1398,12 +1398,12 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     /* Create a group for the IO component. */
     if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &io_group)))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
     LOG((3, "created IO group - io_group = %d MPI_GROUP_EMPTY = %d", io_group, MPI_GROUP_EMPTY));
 
     /* There is one shared IO comm. Create it. */
     if ((ret = MPI_Comm_create(world, io_group, &io_comm)))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
     LOG((3, "created io comm io_comm = %d", io_comm));
 
     /* Does the user want a copy of the IO communicator? */
@@ -1412,7 +1412,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         *user_io_comm = MPI_COMM_NULL;
         if (in_io)
             if ((mpierr = MPI_Comm_dup(io_comm, user_io_comm)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* For processes in the IO component, get their rank within the IO
@@ -1421,7 +1421,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     {
         LOG((3, "about to get io rank"));
         if ((ret = MPI_Comm_rank(io_comm, &io_rank)))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
         iomaster = !io_rank ? MPI_ROOT : MPI_PROC_NULL;
         LOG((3, "intracomm created for io_comm = %d io_rank = %d IO %s",
              io_comm, io_rank, iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
@@ -1470,7 +1470,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         /* Create a group for this component. */
         if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
                                   &group[cmp])))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((3, "created component MPI group - group[%d] = %d", cmp, group[cmp]));
 
         /* For all the computation components create a union group
@@ -1523,7 +1523,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* Create the union group. */
         if ((ret = MPI_Group_incl(world_group, nprocs_union, proc_list_union, &union_group[cmp])))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((3, "created union MPI_group - union_group[%d] = %d with %d procs", cmp,
              union_group[cmp], nprocs_union));
 
@@ -1532,18 +1532,18 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
          * call. */
         LOG((3, "creating intracomm cmp = %d from group[%d] = %d", cmp, cmp, group[cmp]));
         if ((ret = MPI_Comm_create(world, group[cmp], &my_iosys->comp_comm)))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
         if (in_cmp)
         {
             /* Does the user want a copy? */
             if (user_comp_comm)
                 if ((mpierr = MPI_Comm_dup(my_iosys->comp_comm, &user_comp_comm[cmp])))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
             /* Get the rank in this comp comm. */
             if ((ret = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
-                return check_mpi(NULL, ret, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
             /* Set comp_rank 0 to be the compmaster. It will have a
              * setting of MPI_ROOT, all other tasks will have a
@@ -1561,7 +1561,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         {
             LOG((3, "making a dup of io_comm = %d io_rank = %d", io_comm, io_rank));
             if ((ret = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
-                return check_mpi(NULL, ret, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
             LOG((3, "dup of io_comm = %d io_rank = %d", my_iosys->io_comm, io_rank));
             my_iosys->iomaster = iomaster;
             my_iosys->io_rank = io_rank;
@@ -1581,13 +1581,13 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
          * are part of the union_comm. */
         LOG((3, "before creating union_comm my_iosys->io_comm = %d group = %d", my_iosys->io_comm, union_group[cmp]));
         if ((ret = MPI_Comm_create(world, union_group[cmp], &my_iosys->union_comm)))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((3, "created union comm for cmp %d my_iosys->union_comm %d", cmp, my_iosys->union_comm));
 
         if (in_io || in_cmp)
         {
             if ((ret = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
-                return check_mpi(NULL, ret, __FILE__, __LINE__);
+                return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
             LOG((3, "my_iosys->union_rank %d", my_iosys->union_rank));
 
             /* Set my_comm to union_comm for async. */
@@ -1603,7 +1603,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                      "my_iosys->io_comm = %d", cmp, my_iosys->io_comm));
                 if ((ret = MPI_Intercomm_create(my_iosys->io_comm, 0, my_iosys->union_comm,
                                                 my_iosys->num_iotasks, cmp, &my_iosys->intercomm)))
-                    return check_mpi(NULL, ret, __FILE__, __LINE__);
+                    return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
             }
             else
             {
@@ -1612,7 +1612,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                      my_iosys->comp_comm));
                 if ((ret = MPI_Intercomm_create(my_iosys->comp_comm, 0, my_iosys->union_comm,
                                                 0, cmp, &my_iosys->intercomm)))
-                    return check_mpi(NULL, ret, __FILE__, __LINE__);
+                    return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
             }
             LOG((3, "intercomm created for cmp = %d", cmp));
         }
@@ -1637,7 +1637,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     /* Free resources if needed. */
     if (in_io)
         if ((mpierr = MPI_Comm_free(&io_comm)))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
     /* Free the arrays of processor numbers. */
     for (int cmp = 0; cmp < component_count; cmp++)
@@ -1647,18 +1647,18 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     /* Free MPI groups. */
     if ((ret = MPI_Group_free(&io_group)))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
     for (int cmp = 0; cmp < component_count; cmp++)
     {
         if ((ret = MPI_Group_free(&group[cmp])))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
         if ((ret = MPI_Group_free(&union_group[cmp])))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
     }
 
     if ((ret = MPI_Group_free(&world_group)))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
     LOG((2, "successfully done with PIO_Init_Async"));
     return PIO_NOERR;
