@@ -236,4 +236,5 @@ AC_OUTPUT(Makefile
           tests/performance/Makefile
           doc/Makefile
           examples/Makefile
-          examples/c/Makefile)
+          examples/c/Makefile
+          scripts/Makefile)
