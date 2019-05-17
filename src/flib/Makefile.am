@@ -43,20 +43,30 @@ libpio_la_SOURCES = pio.F90
 pionfatt_mod.F90: ${top_srcdir}/src/flib/pionfatt_mod.F90.in
 	${top_srcdir}/scripts/genf90.pl $< > $@
 
+piodarray.F90: piodarray.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+
+pionfget_mod.F90: pionfget_mod.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+
+pionfput_mod.F90: pionfput_mod.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+
 # Each mod file depends on the .o file.
 pio_kinds.mod: pio_kinds.$(OBJEXT)
 pio_types.mod: pio_types.$(OBJEXT)
 pio_support.mod: pio_support.$(OBJEXT)
 pio_nf.mod: pio_nf.$(OBJEXT)
-piodarray.mod: piodarray.$(OBJEXT)
+piodarray.mod: piodarray.F90 piodarray.$(OBJEXT)
 pionfatt_mod.mod: pionfatt_mod.F90 pionfatt_mod.$(OBJEXT)
-pionfget_mod.mod: pionfget_mod.$(OBJEXT)
-pionfput_mod.mod: pionfput_mod.$(OBJEXT)
+pionfget_mod.mod: pionfget_mod.F90 pionfget_mod.$(OBJEXT)
+pionfput_mod.mod: pionfput_mod.F90 pionfput_mod.$(OBJEXT)
 piolib_mod.mod: piolib_mod.$(OBJEXT)
 pio.mod: pio.$(OBJEXT)
 
 # Some mod files depend on other mod files.
-pio.$(OBJEXT): pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod pio_nf.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod pio_support.mod
+pio.$(OBJEXT): pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod \
+pio_nf.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod pio_support.mod
 
 # Mod files are built and then installed as headers.
 MODFILES = pio_kinds.mod pio_types.mod pio_support.mod pio_nf.mod	\
