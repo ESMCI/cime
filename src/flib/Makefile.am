@@ -38,17 +38,25 @@ libpionfput_la_SOURCES = pionfput_mod.F90
 libpiolib_mod_la_SOURCES = piolib_mod.F90
 libpio_la_SOURCES = pio.F90
 
+# These F90 files are generated from .F90.in files, using the script
+# genf90.pl.
+pionfatt_mod.F90: ${top_srcdir}/src/flib/pionfatt_mod.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+
 # Each mod file depends on the .o file.
 pio_kinds.mod: pio_kinds.$(OBJEXT)
 pio_types.mod: pio_types.$(OBJEXT)
 pio_support.mod: pio_support.$(OBJEXT)
 pio_nf.mod: pio_nf.$(OBJEXT)
 piodarray.mod: piodarray.$(OBJEXT)
-pionfatt_mod.mod: pionfatt_mod.$(OBJEXT)
+pionfatt_mod.mod: pionfatt_mod.F90 pionfatt_mod.$(OBJEXT)
 pionfget_mod.mod: pionfget_mod.$(OBJEXT)
 pionfput_mod.mod: pionfput_mod.$(OBJEXT)
 piolib_mod.mod: piolib_mod.$(OBJEXT)
 pio.mod: pio.$(OBJEXT)
+
+# Some mod files depend on other mod files.
+pio.$(OBJEXT): pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod pio_nf.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod pio_support.mod
 
 # Mod files are built and then installed as headers.
 MODFILES = pio_kinds.mod pio_types.mod pio_support.mod pio_nf.mod	\
@@ -59,4 +67,5 @@ include_HEADERS = $(MODFILES)
 
 CLEANFILES = *.mod
 
-EXTRA_DIST = CMakeLists.txt
+EXTRA_DIST = CMakeLists.txt piodarray.F90.in pionfatt_mod.F90.in	\
+pionfget_mod.F90.in pionfput_mod.F90.in
