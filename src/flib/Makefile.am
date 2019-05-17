@@ -40,16 +40,7 @@ libpio_la_SOURCES = pio.F90
 
 # These F90 files are generated from .F90.in files, using the script
 # genf90.pl.
-pionfatt_mod.F90: ${top_srcdir}/src/flib/pionfatt_mod.F90.in
-	${top_srcdir}/scripts/genf90.pl $< > $@
-
-piodarray.F90: piodarray.F90.in
-	${top_srcdir}/scripts/genf90.pl $< > $@
-
-pionfget_mod.F90: pionfget_mod.F90.in
-	${top_srcdir}/scripts/genf90.pl $< > $@
-
-pionfput_mod.F90: pionfput_mod.F90.in
+%.F90: %.in
 	${top_srcdir}/scripts/genf90.pl $< > $@
 
 # Each mod file depends on the .o file.
@@ -75,7 +66,8 @@ piolib_mod.mod pio.mod
 BUILT_SOURCES = $(MODFILES)
 include_HEADERS = $(MODFILES)
 
-CLEANFILES = *.mod
+CLEANFILES = *.mod piodarray.F90 pionfatt_mod.F90 pionfget_mod.F90	\
+pionfput_mod.F90
 
 EXTRA_DIST = CMakeLists.txt piodarray.F90.in pionfatt_mod.F90.in	\
 pionfget_mod.F90.in pionfput_mod.F90.in
