@@ -40,7 +40,13 @@ libpio_la_SOURCES = pio.F90
 
 # These F90 files are generated from .F90.in files, using the script
 # genf90.pl.
-%.F90: %.in
+piodarray.F90: piodarray.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+pionfatt_mod.F90: pionfatt_mod.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+pionfget_mod.F90: pionfget_mod.F90.in
+	${top_srcdir}/scripts/genf90.pl $< > $@
+pionfput_mod.F90: pionfput_mod.F90.in
 	${top_srcdir}/scripts/genf90.pl $< > $@
 
 # Each mod file depends on the .o file.
