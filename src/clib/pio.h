@@ -34,8 +34,13 @@
 #endif
 
 /** PIO_OFFSET is an integer type of size sufficient to represent the
- * size (in bytes) of the largest file supported by MPI. */
+ * size (in bytes) of the largest file supported by MPI. This is not
+ * actually used by the code. */
 #define PIO_OFFSET MPI_OFFSET
+
+/** PIO_OFFSET is defined as MPI_Offset, which is defined in
+ * pio_internal.h as long long. This is what is used throughout the C
+ * code. */
 #define PIO_Offset MPI_Offset
 
 /** The maximum number of variables allowed in a netCDF file. */
@@ -210,7 +215,7 @@ enum PIO_REARR_COMM_FC_DIR
     PIO_REARR_COMM_FC_2D_DISABLE
 };
 
-/* Constant to indicate unlimited requests. */
+/** Constant to indicate unlimited requests for the rearranger. */
 #define PIO_REARR_COMM_UNLIMITED_PEND_REQ -1
 
 /**
@@ -760,13 +765,16 @@ enum PIO_ERROR_HANDLERS
 #define PIO_EINDEP  (-203)
 #endif /* _PNETCDF */
 
-/** Define error codes for PIO. */
+/** The first error code for PIO. */
 #define PIO_FIRST_ERROR_CODE (-500)
+
+/** Bad IOTYPE error. */
 #define PIO_EBADIOTYPE  (-500)
-/** variable dimensions do not match in a multivar call */
+
+/** Variable dimensions do not match in a multivar call. */
 #define PIO_EVARDIMMISMATCH (-501)
 
-/** ??? */
+/** Request NULL. */
 #define PIO_REQ_NULL (NC_REQ_NULL-1)
 
 #if defined(__cplusplus)
@@ -818,11 +826,14 @@ extern "C" {
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
                         int rearranger, int *iosysidp);
 
-    int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
-                            MPI_Comm io_comm, int *iosysidp);
+    /* How many IO tasks in this iosysid? */
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);
+
+    /* Initialize PIO for intracomm mode. */
     int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                             int *iosysidp);
+
+    /* Shut down iosystem and free all associated resources. */
     int PIOc_finalize(int iosysid);
 
     /* Set error handling for entire io system. */
@@ -913,7 +924,6 @@ extern "C" {
                              int deflate_level);
     int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
                              int *deflate_levelp);
-    int PIOc_inq_var_szip(int ncid, int varid, int *options_maskp, int *pixels_per_blockp);
     int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunksizesp);
     int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp);
     int PIOc_def_var_endian(int ncid, int varid, int endian);

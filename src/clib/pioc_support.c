@@ -1710,7 +1710,7 @@ int PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * parameters are read on comp task 0 and ignored elsewhere.
  *
  * @param iosysid A defined pio system ID, obtained from
- * PIOc_Init_Intercomm() or PIOc_InitAsync().
+ * PIOc_Init_Intracomm() or PIOc_InitAsync().
  * @param ncidp A pointer that gets the ncid of the newly created
  * file.
  * @param iotype A pointer to a pio output format. Must be one of

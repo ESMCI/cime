@@ -1344,7 +1344,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     }
     if(ios->ioproc){
         /* Only I/O procs send sc_info messages */
-        int nmsgs = ios->num_iotasks;
         for (int i = 0; i < ios->num_comptasks; i++)
         {
             sendcounts[ios->compranks[i]] = sc_info_msg_sz;
