@@ -210,11 +210,6 @@ if test "x$enable_timing" = xyes; then
 fi
 AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 
-AC_CONFIG_FILES(src/flib/piodarray.F90:src/flib/piodarray.F90.in2)
-#AC_CONFIG_FILES(src/flib/pionfatt_mod.F90:src/flib/pionfatt_mod.F90.in2)
-AC_CONFIG_FILES(src/flib/pionfget_mod.F90:src/flib/pionfget_mod.F90.in2)
-AC_CONFIG_FILES(src/flib/pionfput_mod.F90:src/flib/pionfput_mod.F90.in2)
-
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
