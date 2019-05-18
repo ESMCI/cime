@@ -50,56 +50,57 @@
 
 /** Used in the decomposition netCDF file. */
 
-/* Holds the version of the decomposition file. */
+/** Holds the version of the decomposition file. */
 #define DECOMP_VERSION_ATT_NAME "PIO_library_version"
 
-/* Holds the maximum length of any task map. */
+/** Holds the maximum length of any task map. */
 #define DECOMP_MAX_MAPLEN_ATT_NAME "max_maplen"
 
-/* Name of title attribute. */
+/** Name of title attribute in decomposition file. */
 #define DECOMP_TITLE_ATT_NAME "title"
 
-/* Name of history attribute. */
+/** Name of history attribute in decomposition file. */
 #define DECOMP_HISTORY_ATT_NAME "history"
 
-/* Name of source attribute. */
+/** Name of source attribute in decomposition file. */
 #define DECOMP_SOURCE_ATT_NAME "source"
 
-/* Name of array order (C or Fortran) attribute. */
+/** Name of array order (C or Fortran) attribute in decomposition
+ * file. */
 #define DECOMP_ORDER_ATT_NAME "array_order"
 
-/* Name of backtrace attribute. */
+/** Name of backtrace attribute in decomposition file. */
 #define DECOMP_BACKTRACE_ATT_NAME "backtrace"
 
-/* Name for the dim dim in decomp file. */
+/** Name for the dim dim in decomp file. */
 #define DECOMP_DIM_DIM "dims"
 
-/* Name for the npes dim in decomp file. */
+/** Name for the npes dim in decomp file. */
 #define DECOMP_TASK_DIM_NAME "task"
 
-/* Name for the npes dim in decomp file. */
+/** Name for the npes dim in decomp file. */
 #define DECOMP_MAPELEM_DIM_NAME "map_element"
 
+/** Name for the number of dimensions dim in decomp file. */
 #define DECOMP_NDIMS "ndims"
 
-/* Name of var in decomp file that holds global array sizes. */
+/** Name of var in decomp file that holds global array sizes. */
 #define DECOMP_GLOBAL_SIZE_VAR_NAME "global_size"
 
-/* Name of var in decomp file that holds the length of the map for
+/** Name of var in decomp file that holds the length of the map for
  * each task. */
 #define DECOMP_MAPLEN_VAR_NAME "maplen"
 
-/* Name of var in decomp file that holds map. */
+/** Name of var in decomp file that holds map. */
 #define DECOMP_MAP_VAR_NAME "map"
 
-/* String used to indicate a decomposition file is in C
+/** String used to indicate a decomposition file is in C
  * array-order. */
 #define DECOMP_C_ORDER_STR "C"
 
-/* String used to indicate a decomposition file is in Fortran
+/** String used to indicate a decomposition file is in Fortran
  * array-order. */
 #define DECOMP_FORTRAN_ORDER_STR "Fortran"
-
 
 /**
  * Variable description structure.
