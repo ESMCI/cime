@@ -84,6 +84,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga08732588a313c6130c840dbe70635d2f"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__def__dim.html#ga08732588a313c6130c840dbe70635d2f">pio_nf::def_dim_id</a> (ncid, name, len, dimid)</td></tr>
 <tr class="memdesc:ga08732588a313c6130c840dbe70635d2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the netcdf dimension.  <a href="group___p_i_o__def__dim.html#ga08732588a313c6130c840dbe70635d2f">More...</a><br /></td></tr>
 <tr class="separator:ga08732588a313c6130c840dbe70635d2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga19ec254c22fa1822aa86cf69a074c1af"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__def__dim.html#ga19ec254c22fa1822aa86cf69a074c1af">PIOc_def_dim</a> (int ncid, const char *name, <a class="el" href="pio_8h.html#a1225edb54e6d6de678bf675485549eb0">PIO_Offset</a> len, int *idp)</td></tr>
+<tr class="memdesc:ga19ec254c22fa1822aa86cf69a074c1af"><td class="mdescLeft">&#160;</td><td class="mdescRight">The PIO-C interface for the NetCDF function nc_def_dim.  <a href="#ga19ec254c22fa1822aa86cf69a074c1af">More...</a><br /></td></tr>
+<tr class="separator:ga19ec254c22fa1822aa86cf69a074c1af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>A set of functions to define dimensions and their attributes in NetCDF files. </p>
@@ -213,7 +216,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Defines the netcdf dimension. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td></td></tr>
+    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
     <tr><td class="paramname">name</td><td>: The name of the dimension to define </td></tr>
     <tr><td class="paramname">len</td><td>: The size of the dimension </td></tr>
     <tr><td class="paramname">dimid</td><td>: The dimension identifier </td></tr>
@@ -265,10 +268,62 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
+<a id="ga19ec254c22fa1822aa86cf69a074c1af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga19ec254c22fa1822aa86cf69a074c1af">&#9670;&nbsp;</a></span>PIOc_def_dim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PIOc_def_dim </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="pio_8h.html#a1225edb54e6d6de678bf675485549eb0">PIO_Offset</a>&#160;</td>
+          <td class="paramname"><em>len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>idp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The PIO-C interface for the NetCDF function nc_def_dim. </p>
+<p>This routine is called collectively by all tasks in the communicator ios.union_comm. For more information on the underlying NetCDF commmand please read about this function in the NetCDF documentation at: <a href="http://www.unidata.ucar.edu/software/netcdf/docs/group__dimensions.html">http://www.unidata.ucar.edu/software/netcdf/docs/group__dimensions.html</a></p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>the ncid of the open file, obtained from <a class="el" href="group___p_i_o__openfile.html#gae8e01fc5492663b46def2be31a95034c" title="Open an existing file using PIO library. ">PIOc_openfile()</a> or <a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a>. </td></tr>
+    <tr><td class="paramname">idp</td><td>a pointer that will get the id of the variable or attribute. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>PIO_NOERR for success, error code otherwise. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 18 2019 06:38:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

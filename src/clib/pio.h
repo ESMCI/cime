@@ -34,8 +34,12 @@
 #endif
 
 /** PIO_OFFSET is an integer type of size sufficient to represent the
- * size (in bytes) of the largest file supported by MPI. */
+ * size (in bytes) of the largest file supported by MPI. But this is
+ * not used much in the code. Instead, PIO_Offset is used. */
 #define PIO_OFFSET MPI_OFFSET
+
+/** MPI_Offset is defined in pio_internal.h as long long. This is what
+ * is used in the PIO C code. */
 #define PIO_Offset MPI_Offset
 
 /** The maximum number of variables allowed in a netCDF file. */
@@ -50,56 +54,57 @@
 
 /** Used in the decomposition netCDF file. */
 
-/* Holds the version of the decomposition file. */
+/** Holds the version of the decomposition file. */
 #define DECOMP_VERSION_ATT_NAME "PIO_library_version"
 
-/* Holds the maximum length of any task map. */
+/** Holds the maximum length of any task map. */
 #define DECOMP_MAX_MAPLEN_ATT_NAME "max_maplen"
 
-/* Name of title attribute. */
+/** Name of title attribute for decomposition files. */
 #define DECOMP_TITLE_ATT_NAME "title"
 
-/* Name of history attribute. */
+/** Name of history attribute for decomposition files. */
 #define DECOMP_HISTORY_ATT_NAME "history"
 
-/* Name of source attribute. */
+/** Name of source attribute for decomposition files. */
 #define DECOMP_SOURCE_ATT_NAME "source"
 
-/* Name of array order (C or Fortran) attribute. */
+/** Name of array order (C or Fortran) attribute for decomposition
+ * files. */
 #define DECOMP_ORDER_ATT_NAME "array_order"
 
-/* Name of backtrace attribute. */
+/** Name of backtrace attribute for decomposition files. */
 #define DECOMP_BACKTRACE_ATT_NAME "backtrace"
 
-/* Name for the dim dim in decomp file. */
+/** Name for the dim dim in decomp file. */
 #define DECOMP_DIM_DIM "dims"
 
-/* Name for the npes dim in decomp file. */
+/** Name for the npes dim in decomp file. */
 #define DECOMP_TASK_DIM_NAME "task"
 
-/* Name for the npes dim in decomp file. */
+/** Name for the npes dim in decomp file. */
 #define DECOMP_MAPELEM_DIM_NAME "map_element"
 
+/** Name for the number of dims dimention in decomposition file. */
 #define DECOMP_NDIMS "ndims"
 
-/* Name of var in decomp file that holds global array sizes. */
+/** Name of var in decomposition file that holds global array sizes. */
 #define DECOMP_GLOBAL_SIZE_VAR_NAME "global_size"
 
-/* Name of var in decomp file that holds the length of the map for
+/** Name of var in decomp file that holds the length of the map for
  * each task. */
 #define DECOMP_MAPLEN_VAR_NAME "maplen"
 
-/* Name of var in decomp file that holds map. */
+/** Name of var in decomp file that holds map. */
 #define DECOMP_MAP_VAR_NAME "map"
 
-/* String used to indicate a decomposition file is in C
+/** String used to indicate a decomposition file is in C
  * array-order. */
 #define DECOMP_C_ORDER_STR "C"
 
-/* String used to indicate a decomposition file is in Fortran
+/** String used to indicate a decomposition file is in Fortran
  * array-order. */
 #define DECOMP_FORTRAN_ORDER_STR "Fortran"
-
 
 /**
  * Variable description structure.
@@ -209,7 +214,7 @@ enum PIO_REARR_COMM_FC_DIR
     PIO_REARR_COMM_FC_2D_DISABLE
 };
 
-/* Constant to indicate unlimited requests. */
+/** Constant to indicate unlimited requests. */
 #define PIO_REARR_COMM_UNLIMITED_PEND_REQ -1
 
 /**
@@ -759,13 +764,16 @@ enum PIO_ERROR_HANDLERS
 #define PIO_EINDEP  (-203)
 #endif /* _PNETCDF */
 
-/** Define error codes for PIO. */
+/** This is the value of the first error code for PIO. */
 #define PIO_FIRST_ERROR_CODE (-500)
+
+/** IOTYPE error. */
 #define PIO_EBADIOTYPE  (-500)
-/** variable dimensions do not match in a multivar call */
+
+/** Variable dimensions do not match in a multivar call. */
 #define PIO_EVARDIMMISMATCH (-501)
 
-/** ??? */
+/** Request null. */
 #define PIO_REQ_NULL (NC_REQ_NULL-1)
 
 #if defined(__cplusplus)
