@@ -1484,7 +1484,10 @@ PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @param dimid the dimension ID.
+ * @param name the new name for the dimension.
+ * @return PIO_NOERR for success, error code otherwise. See
+ * PIOc_Set_File_Error_Handling().
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1571,7 +1574,9 @@ PIOc_rename_dim(int ncid, int dimid, const char *name)
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @param name the new name for the variable.
+ * @return PIO_NOERR for success, error code otherwise. See
+ * PIOc_Set_File_Error_Handling().
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1658,8 +1663,10 @@ PIOc_rename_var(int ncid, int varid, const char *name)
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
- * @return PIO_NOERR for success, error code otherwise.  See
- * PIOc_Set_File_Error_Handling
+ * @param name the name of the attribute.
+ * @param newname the new name for the attribute.
+ * @return PIO_NOERR for success, error code otherwise. See
+ * PIOc_Set_File_Error_Handling().
  * @author Jim Edwards, Ed Hartnett
  */
 int

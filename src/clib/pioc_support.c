@@ -1740,7 +1740,7 @@ PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset maplen,
  * @param gdims an array of dimension ids
  * @param maplen the length of the map
  * @param map the map array
- * @param comm an MPI communicator.
+ * @param f90_comm an MPI communicator.
  * @returns 0 for success, error code otherwise.
  * @author Jim Edwards
  */
@@ -2201,12 +2201,12 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
  *
  * Input parameters are read on comp task 0 and ignored elsewhere.
  *
- * @param iosysid: A defined pio system descriptor (input)
- * @param ncidp: A pio file descriptor (output)
- * @param iotype: A pio output format (input)
- * @param filename: The filename to open
- * @param mode: The netcdf mode for the open operation
- * @param retry: non-zero to automatically retry with netCDF serial
+ * @param iosysid a defined pio system descriptor.
+ * @param ncidp a pio file descriptor.
+ * @param iotype a pio output format.
+ * @param filename the filename to open
+ * @param mode the netcdf mode for the open operation
+ * @param retry non-zero to automatically retry with netCDF serial
  * classic.
  *
  * @return 0 for success, error code otherwise.
@@ -2663,6 +2663,7 @@ iotype_is_valid(int iotype)
 /**
  * Set the rearranger options associated with an iosystem
  *
+ * @param iosysid a defined pio system descriptor.
  * @param comm_type Type of communication (pt2pt/coll) used
  * by the rearranger. See PIO_REARR_COMM_TYPE for more detail.
  * Possible values are :
@@ -2691,7 +2692,6 @@ iotype_is_valid(int iotype)
  * data, from io to compute processes
  * @param max_pend_req_i2c Maximum pending requests during
  * data rearragment from io processes to compute processes
- * @param iosysidp index of the defined system descriptor
  * @return 0 on success, otherwise a PIO error code.
  * @author Jayesh Krishna
  */
