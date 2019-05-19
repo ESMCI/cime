@@ -770,11 +770,10 @@ WARN_LOGFILE           =
 
 INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../doc/source \
                          @CMAKE_CURRENT_SOURCE_DIR@/../src/flib \
+                         @CMAKE_BINARY_DIR@/src/flib \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/c \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/f03 \
-                         @CMAKE_CURRENT_SOURCE_DIR@/../src/clib \
-                         @CMAKE_BINARY_DIR@/src/flib \
-			 @C_SRC_FILES@
+                         @CMAKE_CURRENT_SOURCE_DIR@/../src/clib 
 
 
 # This tag can be used to specify the character encoding of the source files
