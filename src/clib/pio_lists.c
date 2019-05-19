@@ -237,7 +237,7 @@ pio_num_iosystem(int *niosysid)
 /**
  * Add an iodesc.
  *
- * @param io_desc_t pointer to data to add to list.
+ * @param iodesc io_desc_t pointer to data to add to list.
  * @returns 0 for success, error code otherwise.
  * @author Jim Edwards, Ed Hartnett
  */
@@ -299,8 +299,9 @@ pio_delete_iodesc_from_list(int ioid)
  *
  * @param varid the varid of the variable.
  * @param rec_var non-zero if this is a record var.
+ * @param pio_type the PIO type.
  * @param pio_type_size size of the PIO type in bytes
- * @param mpi_type the MPI type
+ * @param mpi_type the MPI type.
  * @param mpi_type_size size of the MPI type in bytes.
  * @param varlist pointer to list to add to.
  * @returns 0 for success, error code otherwise.
