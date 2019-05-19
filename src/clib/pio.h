@@ -844,23 +844,43 @@ extern "C" {
     /* Set error handling for entire io system. */
     int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method);
 
+    /* Determine whether this is IO task. */
     int PIOc_iam_iotask(int iosysid, bool *ioproc);
+
+    /* What is the iorank? */
     int PIOc_iotask_rank(int iosysid, int *iorank);
+
+    /* Is this iosystem active? */
     int PIOc_iosystem_is_active(int iosysid, bool *active);
+
+    /* Is this IOTYPE available? */
     int PIOc_iotype_available(int iotype);
+
+    /* Set the options for the rearranger. */
     int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd,
                             bool enable_hs_c2i, bool enable_isend_c2i,
                             int max_pend_req_c2i,
                             bool enable_hs_i2c, bool enable_isend_i2c,
                             int max_pend_req_i2c);
-    /* Distributed data. */
+
+    /* Increment record number. */
     int PIOc_advanceframe(int ncid, int varid);
+
+    /* Set the record number. */
     int PIOc_setframe(int ncid, int varid, int frame);
+
+    /* Write a distributed array. */
     int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *array,
                           void *fillvalue);
+
+    /* Write multiple darrays. */
     int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars, PIO_Offset arraylen,
                                 void *array, const int *frame, void **fillvalue, bool flushtodisk);
+
+    /* Read distributed array. */
     int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *array);
+
+    /* Get size of local distributed array. */
     int PIOc_get_local_array_size(int ioid);
 
     /* Handling files. */
