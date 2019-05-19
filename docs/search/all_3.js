@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['darray_5fdata',['DARRAY_DATA',['../pio__darray_8c.html#a39e0b8106c05983fec7d71c188bc5cbc',1,'pio_darray.c']]],
+  ['darray_5ffill',['DARRAY_FILL',['../pio__darray_8c.html#a3cbe4eaef9f3dd377fc4ddff08c32d02',1,'pio_darray.c']]],
   ['data',['data',['../structwmulti__buffer.html#aa6079bff17b568dcb461f89faa4b09e1',1,'wmulti_buffer']]],
   ['databuffer',['databuffer',['../structpioexample_1_1pioexampleclass.html#a154ba5b20555c9ba1c8674c064f3f8fb',1,'pioexample::pioexampleclass']]],
   ['describing_20decompositions',['Describing decompositions',['../decomp.html',1,'']]],

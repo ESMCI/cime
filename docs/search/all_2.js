@@ -15,6 +15,7 @@ var searchData=
   ['cleanup',['cleanup',['../structpioexample_1_1pioexampleclass.html#a98dc8381c73aa16077022c2601af502a',1,'pioexample::pioexampleclass']]],
   ['close_5ffile_5fhandler',['close_file_handler',['../pio__msg_8c.html#ad16b1058ca8b9036818a974f028f4ac8',1,'pio_msg.c']]],
   ['closefile',['closefile',['../structpioexample_1_1pioexampleclass.html#ad8d27e01569f9dfd28876febc5d42638',1,'pioexample::pioexampleclass::closefile()'],['../group___p_i_o__closefile.html#gabd36983797d48236a8d610b58a7c3aa8',1,'piolib_mod::closefile()']]],
+  ['cn_5fbpool',['CN_bpool',['../pio__darray_8c.html#ad8ea77d66c23466b306a6d74e751bd9c',1,'CN_bpool():&#160;pio_darray.c'],['../pio__darray__int_8c.html#ad8ea77d66c23466b306a6d74e751bd9c',1,'CN_bpool():&#160;pio_darray.c']]],
   ['cn_5fbuffer_5freport',['cn_buffer_report',['../group___p_i_o__write__darray.html#ga35aea71e1d8cb61a1b6bffc6a15731af',1,'cn_buffer_report(iosystem_desc_t *ios, bool collective):&#160;pio_darray_int.c'],['../group___p_i_o__write__darray.html#ga35aea71e1d8cb61a1b6bffc6a15731af',1,'cn_buffer_report(iosystem_desc_t *ios, bool collective):&#160;pio_darray_int.c']]],
   ['comm_5ftype',['comm_type',['../structrearr__opt.html#a342fe712d7506465b38916591820ae7e',1,'rearr_opt']]],
   ['comp2io',['comp2io',['../structrearr__opt.html#aeca20bb690f07a0caa04c5f1ae95a256',1,'rearr_opt']]],

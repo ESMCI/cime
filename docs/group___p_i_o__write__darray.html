@@ -171,6 +171,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga54bb852697cc62d54b7528bc4cee47b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__write__darray.html#ga54bb852697cc62d54b7528bc4cee47b6">flush_buffer</a> (int ncid, <a class="el" href="structwmulti__buffer.html">wmulti_buffer</a> *wmb, bool flushtodisk)</td></tr>
 <tr class="memdesc:ga54bb852697cc62d54b7528bc4cee47b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush the buffer.  <a href="#ga54bb852697cc62d54b7528bc4cee47b6">More...</a><br /></td></tr>
 <tr class="separator:ga54bb852697cc62d54b7528bc4cee47b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8ae50e94f14e3b81ed3c694993695619"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__write__darray.html#ga8ae50e94f14e3b81ed3c694993695619">pio_sorted_copy</a> (const void *array, void *sortedarray, <a class="el" href="structio__desc__t.html">io_desc_t</a> *iodesc, int nvars, int direction)</td></tr>
+<tr class="memdesc:ga8ae50e94f14e3b81ed3c694993695619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort the contents of an array.  <a href="#ga8ae50e94f14e3b81ed3c694993695619">More...</a><br /></td></tr>
+<tr class="separator:ga8ae50e94f14e3b81ed3c694993695619"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The overloaded PIO_write_darray writes a distributed array to disk. </p>
@@ -452,6 +455,66 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section author"><dt>Author</dt><dd>Jim Edwards </dd></dl>
+
+</div>
+</div>
+<a id="ga8ae50e94f14e3b81ed3c694993695619"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8ae50e94f14e3b81ed3c694993695619">&#9670;&nbsp;</a></span>pio_sorted_copy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int pio_sorted_copy </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>sortedarray</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structio__desc__t.html">io_desc_t</a> *&#160;</td>
+          <td class="paramname"><em>iodesc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nvars</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sort the contents of an array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">array</td><td>pointer to the array </td></tr>
+    <tr><td class="paramname">sortedarray</td><td>pointer that gets the sorted array. </td></tr>
+    <tr><td class="paramname">iodesc</td><td>pointer to the iodesc. </td></tr>
+    <tr><td class="paramname">nvars</td><td>number of variables. </td></tr>
+    <tr><td class="paramname">direction</td><td>sort direction. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise.</dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Jim Edwards </dd></dl>
 
 </div>
@@ -2343,7 +2406,7 @@ Special buffer flush for pnetcdf. </li>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 18 2019 06:38:19 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 19 2019 07:35:50 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

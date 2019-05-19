@@ -1,14 +1,12 @@
 /**
  * @file
- * Internal PIO functions to get and put attributes and data
- * (excluding varm functions).
+ * Internal PIO functions to get and put attributes and data.
+ *
+ * @see https://github.com/NCAR/ParallelIO
  *
  * @author Ed Hartnett
- * @date  2016
- *
- * @see http://code.google.com/p/parallelio/
+ * @date 2016
  */
-
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
@@ -16,21 +14,23 @@
 /**
  * Write a netCDF attribute of any type, converting to any type.
  *
- * This routine is called collectively by all tasks in the communicator
- * ios.union_comm.
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
  * @param name the name of the attribute.
- * @param atttype the nc_type of the attribute.
+ * @param atttype the nc_type of the attribute in the file.
  * @param len the length of the attribute array.
+ * @param memtype the nc_type of the attribute data in memory.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
-                    PIO_Offset len, nc_type memtype, const void *op)
+int
+PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
+                PIO_Offset len, nc_type memtype, const void *op)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -236,7 +236,8 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
  * @return PIO_NOERR for success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void *ip)
+int
+PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void *ip)
 {
     iosystem_desc_t *ios;   /* Pointer to io system information. */
     file_desc_t *file;      /* Pointer to file information. */
@@ -483,8 +484,9 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
-                     const PIO_Offset *stride, nc_type xtype, void *buf)
+int
+PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+                 const PIO_Offset *stride, nc_type xtype, void *buf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -625,7 +627,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if (ios->ioproc)
     {
 
-       LOG((2, "file->iotype = %d xtype = %d file->do_io = %d", file->iotype, xtype, file->do_io));
+        LOG((2, "file->iotype = %d xtype = %d file->do_io = %d", file->iotype, xtype, file->do_io));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
@@ -789,8 +791,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
-                     void *buf)
+int
+PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
+                 void *buf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -822,15 +825,13 @@ int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype
  *
  * @param ncid identifies the netCDF file
  * @param varid the variable ID number
- * @param index an array of start indicies (must have same number of
- * entries as variable has dimensions). If NULL, indices of 0 will be
- * used.
  * @param xtype the netcdf type of the variable.
  * @param buf pointer that will get the data.
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
+int
+PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -859,12 +860,12 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
         int dimids[ndims];
         if ((ierr = PIOc_inq_vardimid(ncid, varid, dimids)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
-	if (!(startp = malloc(ndims * sizeof(PIO_Offset))))
-	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-	if (!(countp = malloc(ndims * sizeof(PIO_Offset))))
+        if (!(startp = malloc(ndims * sizeof(PIO_Offset))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        if (!(countp = malloc(ndims * sizeof(PIO_Offset))))
         {
             free(startp);
-	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         }
 
         /* Find the dimension lengths. */
@@ -890,9 +891,9 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
 
     ierr = PIOc_get_vars_tc(ncid, varid, startp, countp, NULL, xtype, buf);
     if (startp)
-	free(startp);
+        free(startp);
     if (countp)
-	free(countp);
+        free(countp);
     return ierr;
 
 }
@@ -933,8 +934,9 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
-                     const PIO_Offset *stride, nc_type xtype, const void *buf)
+int
+PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+                 const PIO_Offset *stride, nc_type xtype, const void *buf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;  /* Pointer to file information. */
@@ -1061,19 +1063,19 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-       if (ndims)
-       {
-          if (!stride_present)
-          {
-             LOG((2, "stride not present"));
-             if (!(fake_stride = malloc(ndims * sizeof(PIO_Offset))))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-             for (int d = 0; d < ndims; d++)
-                fake_stride[d] = 1;
-          }
-          else
-             fake_stride = (PIO_Offset *)stride;
-       }
+        if (ndims)
+        {
+            if (!stride_present)
+            {
+                LOG((2, "stride not present"));
+                if (!(fake_stride = malloc(ndims * sizeof(PIO_Offset))))
+                    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+                for (int d = 0; d < ndims; d++)
+                    fake_stride[d] = 1;
+            }
+            else
+                fake_stride = (PIO_Offset *)stride;
+        }
 
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
@@ -1253,7 +1255,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         /* Free malloced resources. */
         if (ndims && !stride_present)
-           free(fake_stride);
+            free(fake_stride);
 
         if (ierr)
             return check_netcdf(file, ierr, __FILE__, __LINE__);
@@ -1298,8 +1300,9 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
-                     const void *op)
+int
+PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
+                 const void *op)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1349,7 +1352,8 @@ int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
+int
+PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1375,12 +1379,12 @@ int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
     if (ndims)
     {
         int dimid[ndims];
-	if (!(startp = malloc(ndims * sizeof(PIO_Offset))))
-	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-	if (!(countp = malloc(ndims * sizeof(PIO_Offset))))
+        if (!(startp = malloc(ndims * sizeof(PIO_Offset))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        if (!(countp = malloc(ndims * sizeof(PIO_Offset))))
         {
             free(startp);
-	    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         }
 
 
@@ -1414,9 +1418,9 @@ int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 
     /* Free any allocated resources. */
     if (startp)
-	free(startp);
+        free(startp);
     if (countp)
-	free(countp);
+        free(countp);
 
     return ierr;
 }

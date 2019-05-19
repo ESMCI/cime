@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['darray_5fdata',['DARRAY_DATA',['../pio__darray_8c.html#a39e0b8106c05983fec7d71c188bc5cbc',1,'pio_darray.c']]],
+  ['darray_5ffill',['DARRAY_FILL',['../pio__darray_8c.html#a3cbe4eaef9f3dd377fc4ddff08c32d02',1,'pio_darray.c']]],
   ['decomp_5fbacktrace_5fatt_5fname',['DECOMP_BACKTRACE_ATT_NAME',['../pio_8h.html#a47738ade7edcd4f2c042f1db9122caf0',1,'pio.h']]],
   ['decomp_5fc_5forder_5fstr',['DECOMP_C_ORDER_STR',['../pio_8h.html#ae777e38649b5ac2013cc19558fdd0848',1,'pio.h']]],
   ['decomp_5fdim_5fdim',['DECOMP_DIM_DIM',['../pio_8h.html#a9bfacaf5f6ca99b712f9171a830f3eeb',1,'pio.h']]],

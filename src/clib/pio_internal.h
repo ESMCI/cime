@@ -4,7 +4,7 @@
  * @author Jim Edwards, Ed Hartnett
  * @date  2014
  *
- * @see http://code.google.com/p/parallelio/
+ * @see https://github.com/NCAR/ParallelIO
  */
 
 #ifndef __PIO_INTERNAL__
@@ -12,14 +12,25 @@
 
 #include <config.h>
 #include <pio.h>
+#include <bget.h>
+#include <limits.h>
+#include <math.h>
+#ifdef TIMING
+#include <gptl.h>
+#endif
+#include <assert.h>
 
 /* These are the sizes of types in netCDF files. Do not replace these
  * constants with sizeof() calls for C types. They are not the
  * same. Even on a system where sizeof(short) is 4, the size of a
  * short in a netCDF file is 2 bytes. */
+/** Size (in bytes) of a char in a netCDF file. */
 #define NETCDF_CHAR_SIZE 1
+/** Size (in bytes) of a short in a netCDF file. */
 #define NETCDF_SHORT_SIZE 2
+/** Size (in bytes) of a int or float in a netCDF file. */
 #define NETCDF_INT_FLOAT_SIZE 4
+/** Size (in bytes) of a long long int or double in a netCDF file. */
 #define NETCDF_DOUBLE_INT64_SIZE 8
 
 /* It seems that some versions of openmpi fail to define
@@ -30,6 +41,7 @@
 #endif
 #endif
 #ifndef MPI_Offset
+/** This is the type used for PIO_Offset. */
 #define MPI_Offset long long
 #endif
 
@@ -40,14 +52,6 @@
 #else
 #define PIO_DATATYPE_NULL MPI_DATATYPE_NULL
 #endif
-
-#include <bget.h>
-#include <limits.h>
-#include <math.h>
-#ifdef TIMING
-#include <gptl.h>
-#endif
-#include <assert.h>
 
 #if PIO_ENABLE_LOGGING
 void pio_log(int severity, const char *fmt, ...);

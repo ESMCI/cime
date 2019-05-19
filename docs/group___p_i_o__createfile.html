@@ -260,7 +260,7 @@ Functions/Subroutines</h2></td></tr>
 <p>This is an internal function that is called by both <a class="el" href="pio_8h.html#ad31670417f971b11f52c8d919d738778" title="Open a new file using pio. ">PIOc_create()</a> and <a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a>. Input parameters are read on comp task 0 and ignored elsewhere.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">iosysid</td><td>A defined pio system ID, obtained from PIOc_Init_Intercomm() or PIOc_InitAsync(). </td></tr>
+    <tr><td class="paramname">iosysid</td><td>A defined pio system ID, obtained from <a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a> or PIOc_InitAsync(). </td></tr>
     <tr><td class="paramname">ncidp</td><td>A pointer that gets the ncid of the newly created file. </td></tr>
     <tr><td class="paramname">iotype</td><td>A pointer to a pio output format. Must be one of PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF, PIO_IOTYPE_NETCDF4C, or PIO_IOTYPE_NETCDF4P. </td></tr>
     <tr><td class="paramname">filename</td><td>The filename to create. </td></tr>
@@ -268,14 +268,15 @@ Functions/Subroutines</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise.</dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Ed Hartnett </dd></dl>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat May 18 2019 06:38:19 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun May 19 2019 07:35:50 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
