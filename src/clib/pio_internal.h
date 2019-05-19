@@ -77,7 +77,7 @@ void pio_log(int severity, const char *fmt, ...);
 /** Block size of gathers. */
 #define MAX_GATHER_BLOCK_SIZE 0
 
-/* Request allocation size. */
+/** Request allocation size. */
 #define PIO_REQUEST_ALLOC_CHUNK 16
 
 /** This is needed to handle _long() functions. It may not be used as
