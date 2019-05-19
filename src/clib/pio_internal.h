@@ -111,9 +111,6 @@ extern "C" {
     int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fname,
                 int line);
 
-    /* Check return from MPI function and print error message. */
-    void CheckMPIReturn(int ierr, const char *file, int line);
-
     /* Print error message and abort. */
     void piodie(const char *msg, const char *fname, int line);
 

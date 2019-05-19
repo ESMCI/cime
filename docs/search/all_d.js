@@ -126,6 +126,7 @@ var searchData=
   ['pio_5frearrangers',['PIO_REARRANGERS',['../pio_8h.html#ab0dd70fbaba2863ad8194ff3ad0b3153',1,'pio.h']]],
   ['pio_5fredef',['PIO_redef',['../group___p_i_o__redef.html',1,'']]],
   ['pio_5freq_5fnull',['PIO_REQ_NULL',['../pio_8h.html#ab22134cf9085018192e54db9e2fcc944',1,'pio.h']]],
+  ['pio_5frequest_5falloc_5fchunk',['PIO_REQUEST_ALLOC_CHUNK',['../pio__internal_8h.html#ad680c10eae49078f9d360cdfe69ee2e0',1,'pio_internal.h']]],
   ['pio_5freturn_5ferror',['PIO_RETURN_ERROR',['../pio_8h.html#a982191cb68f550f75091a40c3a133189a7d2f63c829077ee9e25bf4bd48ae1937',1,'pio.h']]],
   ['pio_5fset_5fblocksize',['pio_set_blocksize',['../group___p_i_o__set__blocksize.html#ga58a49dfda66ba8c28e6558f6754704fc',1,'pio::pio_set_blocksize()'],['../group___p_i_o__set__blocksize.html',1,'(Global Namespace)']]],
   ['pio_5fset_5fhint',['PIO_set_hint',['../group___p_i_o__set__hint.html',1,'']]],
