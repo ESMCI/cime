@@ -11,5 +11,6 @@ var searchData=
   ['pio_5fmax_5fvars',['PIO_MAX_VARS',['../pio_8h.html#adbc8561902f84b31e4b10157ea0be817',1,'pio.h']]],
   ['pio_5foffset',['PIO_OFFSET',['../pio_8h.html#a14497592730ea1a88cd1dbc53239dd59',1,'PIO_OFFSET():&#160;pio.h'],['../pio_8h.html#a1225edb54e6d6de678bf675485549eb0',1,'PIO_Offset():&#160;pio.h']]],
   ['pio_5frearr_5fcomm_5funlimited_5fpend_5freq',['PIO_REARR_COMM_UNLIMITED_PEND_REQ',['../pio_8h.html#a6d7754fb8c0e0df7339312e938946478',1,'pio.h']]],
-  ['pio_5freq_5fnull',['PIO_REQ_NULL',['../pio_8h.html#ab22134cf9085018192e54db9e2fcc944',1,'pio.h']]]
+  ['pio_5freq_5fnull',['PIO_REQ_NULL',['../pio_8h.html#ab22134cf9085018192e54db9e2fcc944',1,'pio.h']]],
+  ['pio_5frequest_5falloc_5fchunk',['PIO_REQUEST_ALLOC_CHUNK',['../pio__internal_8h.html#ad680c10eae49078f9d360cdfe69ee2e0',1,'pio_internal.h']]]
 ];

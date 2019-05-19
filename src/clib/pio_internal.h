@@ -77,7 +77,7 @@ void pio_log(int severity, const char *fmt, ...);
 /** Block size of gathers. */
 #define MAX_GATHER_BLOCK_SIZE 0
 
-/* Request allocation size. */
+/** Request allocation size. */
 #define PIO_REQUEST_ALLOC_CHUNK 16
 
 /** This is needed to handle _long() functions. It may not be used as
@@ -111,14 +111,11 @@ extern "C" {
     int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fname,
                 int line);
 
-    /* Check return from MPI function and print error message. */
-    void CheckMPIReturn(int ierr, const char *file, int line);
-
     /* Print error message and abort. */
     void piodie(const char *msg, const char *fname, int line);
 
     /* Assert that an expression is true. */
-    void pioassert(bool exp, const char *msg, const char *fname, int line);
+    void pioassert(_Bool expression, const char *msg, const char *fname, int line);
 
     /* Check the return code from an MPI function call. */
     int check_mpi(iosystem_desc_t *ios, file_desc_t *file, int mpierr, const char *filename,
@@ -226,9 +223,6 @@ extern "C" {
 
     /* Free a region list. */
     void free_region_list(io_region *top);
-
-    /* Compare sets of rearranger options. */
-    bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_opts);
 
     /* Check and reset, if needed, rearranger opts to default values. */
     int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt);
