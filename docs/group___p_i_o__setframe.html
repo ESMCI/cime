@@ -75,10 +75,59 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga2c5966f917968c675e6c734c3ddbe565"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__setframe.html#ga2c5966f917968c675e6c734c3ddbe565">piolib_mod::setframe</a> (file, vardesc, frame)</td></tr>
 <tr class="memdesc:ga2c5966f917968c675e6c734c3ddbe565"><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the record dimension of a variable in a netcdf format file or the block address in a binary file  <a href="group___p_i_o__setframe.html#ga2c5966f917968c675e6c734c3ddbe565">More...</a><br /></td></tr>
 <tr class="separator:ga2c5966f917968c675e6c734c3ddbe565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga630e7798172acacbaf43e596b237f418"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__setframe.html#ga630e7798172acacbaf43e596b237f418">PIOc_setframe</a> (int ncid, int varid, int frame)</td></tr>
+<tr class="memdesc:ga630e7798172acacbaf43e596b237f418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the unlimited dimension of the given variable.  <a href="#ga630e7798172acacbaf43e596b237f418">More...</a><br /></td></tr>
+<tr class="separator:ga630e7798172acacbaf43e596b237f418"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>sets the unlimited dimension for netcdf file </p>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
+<a id="ga630e7798172acacbaf43e596b237f418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga630e7798172acacbaf43e596b237f418">&#9670;&nbsp;</a></span>PIOc_setframe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PIOc_setframe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>varid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the unlimited dimension of the given variable. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>the ncid of the file. </td></tr>
+    <tr><td class="paramname">varid</td><td>the varid of the variable </td></tr>
+    <tr><td class="paramname">frame</td><td>the value of the unlimited dimension. In c 0 for the first record, 1 for the second </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>PIO_NOERR for no error, or error code.</dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
+
+</div>
+</div>
 <a id="ga2c5966f917968c675e6c734c3ddbe565"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga2c5966f917968c675e6c734c3ddbe565">&#9670;&nbsp;</a></span>setframe()</h2>
 
@@ -114,7 +163,7 @@ Functions/Subroutines</h2></td></tr>
 <p>sets the record dimension of a variable in a netcdf format file or the block address in a binary file </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vardesc</td><td></td></tr>
+    <tr><td class="paramname">vardesc</td><td>Variable description structure.</td></tr>
     <tr><td class="paramname">frame</td><td>: frame number to set </td></tr>
   </table>
   </dd>
@@ -125,7 +174,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 18 2019 06:38:19 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

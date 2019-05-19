@@ -41,6 +41,7 @@
 /** PIO_OFFSET is defined as MPI_Offset, which is defined in
  * pio_internal.h as long long. This is what is used throughout the C
  * code. */
+
 #define PIO_Offset MPI_Offset
 
 /** The maximum number of variables allowed in a netCDF file. */
@@ -75,6 +76,7 @@
 #define DECOMP_ORDER_ATT_NAME "array_order"
 
 /** Name of backtrace attribute in decomposition file. */
+
 #define DECOMP_BACKTRACE_ATT_NAME "backtrace"
 
 /** Name for the dim dim in decomp file. */
@@ -774,7 +776,7 @@ enum PIO_ERROR_HANDLERS
 /** Variable dimensions do not match in a multivar call. */
 #define PIO_EVARDIMMISMATCH (-501)
 
-/** Request NULL. */
+/** Request null. */
 #define PIO_REQ_NULL (NC_REQ_NULL-1)
 
 #if defined(__cplusplus)

@@ -75,6 +75,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga0145a80fb028e8f80fa545dd45bdf2bf"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__natts.html#ga0145a80fb028e8f80fa545dd45bdf2bf">pio_nf::inq_natts_id</a> (ncid, natts)</td></tr>
 <tr class="memdesc:ga0145a80fb028e8f80fa545dd45bdf2bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information about the number of global attributes in a file or group.  <a href="group___p_i_o__inq__natts.html#ga0145a80fb028e8f80fa545dd45bdf2bf">More...</a><br /></td></tr>
 <tr class="separator:ga0145a80fb028e8f80fa545dd45bdf2bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga64ac5f3a5565ec08d222b27fcb3b180c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__natts.html#ga64ac5f3a5565ec08d222b27fcb3b180c">PIOc_inq_natts</a> (int ncid, int *ngattsp)</td></tr>
+<tr class="memdesc:ga64ac5f3a5565ec08d222b27fcb3b180c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find out how many global attributes are defined in a file.  <a href="#ga64ac5f3a5565ec08d222b27fcb3b180c">More...</a><br /></td></tr>
+<tr class="separator:ga64ac5f3a5565ec08d222b27fcb3b180c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -107,7 +110,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Get information about the number of global attributes in a file or group. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td></td></tr>
+    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
     <tr><td class="paramname">natts</td><td>: The number of attributes in the file. </td></tr>
   </table>
   </dd>
@@ -151,10 +154,49 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
+<a id="ga64ac5f3a5565ec08d222b27fcb3b180c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga64ac5f3a5565ec08d222b27fcb3b180c">&#9670;&nbsp;</a></span>PIOc_inq_natts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PIOc_inq_natts </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>ngattsp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find out how many global attributes are defined in a file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>the ncid of the open file. </td></tr>
+    <tr><td class="paramname">nattsp</td><td>a pointer that will get the number of attributes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 18 2019 06:38:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -80,12 +80,16 @@ $(function() {
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;mpi.h&gt;</code><br />
-<code>#include &lt;pio.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="pio_8h_source.html">pio.h</a>&gt;</code><br />
 <code>#include &lt;math.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for example2.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="example2_8c__incl.png" border="0" usemap="#example2_8c" alt=""/></div>
+<map name="example2_8c" id="example2_8c">
+<area shape="rect" id="node7" href="pio_8h.html" title="Public headers for the PIO C interface. " alt="" coords="284,80,335,107"/>
+<area shape="rect" id="node10" href="uthash_8h_source.html" title="uthash.h" alt="" coords="384,155,456,181"/>
+</map>
 </div>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -185,13 +189,13 @@ Variables</h2></td></tr>
 <tr class="memitem:aeb75303058f3be9b462de7ba3f6b03a7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="example2_8c.html#aeb75303058f3be9b462de7ba3f6b03a7">resultlen</a></td></tr>
 <tr class="memdesc:aeb75303058f3be9b462de7ba3f6b03a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the length of the most recent MPI error message, stored int the global error string.  <a href="#aeb75303058f3be9b462de7ba3f6b03a7">More...</a><br /></td></tr>
 <tr class="separator:aeb75303058f3be9b462de7ba3f6b03a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e2919e1371b6f55efc820db00024ef3"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="example2_8c.html#a9e2919e1371b6f55efc820db00024ef3">dim_name</a> [<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][NC_MAX_NAME+1] = {&quot;timestep&quot;, &quot;x&quot;, &quot;y&quot;}</td></tr>
-<tr class="memdesc:a9e2919e1371b6f55efc820db00024ef3"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimension names.  <a href="#a9e2919e1371b6f55efc820db00024ef3">More...</a><br /></td></tr>
-<tr class="separator:a9e2919e1371b6f55efc820db00024ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ff6a13fe5da4f73ddbd691b94aaec9a"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="example2_8c.html#a2ff6a13fe5da4f73ddbd691b94aaec9a">dim_name</a> [<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][PIO_MAX_NAME+1] = {&quot;timestep&quot;, &quot;x&quot;, &quot;y&quot;}</td></tr>
+<tr class="memdesc:a2ff6a13fe5da4f73ddbd691b94aaec9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimension names.  <a href="#a2ff6a13fe5da4f73ddbd691b94aaec9a">More...</a><br /></td></tr>
+<tr class="separator:a2ff6a13fe5da4f73ddbd691b94aaec9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cdd029eb53af7edd1f798d8d2425b2b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="example2_8c.html#a0cdd029eb53af7edd1f798d8d2425b2b">dim_len</a> [<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>] = {NC_UNLIMITED, <a class="el" href="example2_8c.html#ab9c24d600c2a3b13b5e96029500fca22">X_DIM_LEN</a>, Y_DIM_LEN}</td></tr>
 <tr class="memdesc:a0cdd029eb53af7edd1f798d8d2425b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Length of the dimensions in the sample data.  <a href="#a0cdd029eb53af7edd1f798d8d2425b2b">More...</a><br /></td></tr>
 <tr class="separator:a0cdd029eb53af7edd1f798d8d2425b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac370740bf1adc58a8c18773ffd823ebf"><td class="memItemLeft" align="right" valign="top">PIO_Offset&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="example2_8c.html#ac370740bf1adc58a8c18773ffd823ebf">chunksize</a> [<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>] = {2, <a class="el" href="example2_8c.html#ab9c24d600c2a3b13b5e96029500fca22">X_DIM_LEN</a>/2, Y_DIM_LEN/2}</td></tr>
+<tr class="memitem:ac370740bf1adc58a8c18773ffd823ebf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="pio_8h.html#a1225edb54e6d6de678bf675485549eb0">PIO_Offset</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="example2_8c.html#ac370740bf1adc58a8c18773ffd823ebf">chunksize</a> [<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>] = {2, <a class="el" href="example2_8c.html#ab9c24d600c2a3b13b5e96029500fca22">X_DIM_LEN</a>/2, Y_DIM_LEN/2}</td></tr>
 <tr class="memdesc:ac370740bf1adc58a8c18773ffd823ebf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Length of chunksizes to use in netCDF-4 files.  <a href="#ac370740bf1adc58a8c18773ffd823ebf">More...</a><br /></td></tr>
 <tr class="separator:ac370740bf1adc58a8c18773ffd823ebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -607,10 +611,10 @@ data:</pre><pre>foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45
 <p>Specifies the flavor of netCDF output format.</p>
 <p>The dimension IDs.</p>
 <p>Array index per processing unit. This is the number of elements of the data array that will be handled by each processor. In this example there are 16 data elements. If the example is run on 4 processors, then arrIdxPerPe will be 4.</p>
-<p>The ID for the parallel I/O system. It is set by PIOc_Init_Intracomm(). It references an internal structure containing the general IO subsystem data and MPI structure. It is passed to PIOc_finalize() to free associated resources, after all I/O, but before MPI_Finalize is called.</p>
+<p>The ID for the parallel I/O system. It is set by <a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a>. It references an internal structure containing the general IO subsystem data and MPI structure. It is passed to <a class="el" href="group___p_i_o__finalize.html#ga04e150e10a29f037979dc2eaa872bdb5" title="Clean up internal data structures, free MPI resources, and exit the pio library. ">PIOc_finalize()</a> to free associated resources, after all I/O, but before MPI_Finalize is called.</p>
 <p>The ncid of the netCDF file created in this example.</p>
 <p>The ID of the netCDF varable in the example file.</p>
-<p>The I/O description ID as passed back by PIOc_InitDecomp() and freed in PIOc_freedecomp().</p>
+<p>The I/O description ID as passed back by <a class="el" href="group___p_i_o__initdecomp.html#ga56c119d47d1082df044968f80acbe265" title="Initialize the decomposition used with distributed arrays. ">PIOc_InitDecomp()</a> and freed in <a class="el" href="pio_8h.html#a6416ad3c81a99f31f8f55e857acd697e" title="Free a decomposition map. ">PIOc_freedecomp()</a>.</p>
 <p>A buffer for sample data. The size of this array will vary depending on how many processors are involved in the execution of the example code. It's length will be the same as elements_per_pe.</p>
 <p>A buffer for reading data back from the file. The size of this array will vary depending on how many processors are involved in the execution of the example code. It's length will be the same as elements_per_pe.</p>
 <p>A 1-D array which holds the decomposition mapping for this example. The size of this array will vary depending on how many processors are involved in the execution of the example code. It's length will be the same as elements_per_pe.</p>
@@ -626,7 +630,7 @@ data:</pre><pre>foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">PIO_Offset chunksize[<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>] = {2, <a class="el" href="example2_8c.html#ab9c24d600c2a3b13b5e96029500fca22">X_DIM_LEN</a>/2, Y_DIM_LEN/2}</td>
+          <td class="memname"><a class="el" href="pio_8h.html#a1225edb54e6d6de678bf675485549eb0">PIO_Offset</a> chunksize[<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>] = {2, <a class="el" href="example2_8c.html#ab9c24d600c2a3b13b5e96029500fca22">X_DIM_LEN</a>/2, Y_DIM_LEN/2}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -651,14 +655,14 @@ data:</pre><pre>foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45
 
 </div>
 </div>
-<a id="a9e2919e1371b6f55efc820db00024ef3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e2919e1371b6f55efc820db00024ef3">&#9670;&nbsp;</a></span>dim_name</h2>
+<a id="a2ff6a13fe5da4f73ddbd691b94aaec9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ff6a13fe5da4f73ddbd691b94aaec9a">&#9670;&nbsp;</a></span>dim_name</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char dim_name[<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][NC_MAX_NAME+1] = {&quot;timestep&quot;, &quot;x&quot;, &quot;y&quot;}</td>
+          <td class="memname">char dim_name[<a class="el" href="example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3">NDIM</a>][PIO_MAX_NAME+1] = {&quot;timestep&quot;, &quot;x&quot;, &quot;y&quot;}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -703,7 +707,7 @@ data:</pre><pre>foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:17 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 18 2019 06:38:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

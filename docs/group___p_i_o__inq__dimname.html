@@ -75,6 +75,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:gaaa1bffec058f66099981fb42139d2c79"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__dimname.html#gaaa1bffec058f66099981fb42139d2c79">pio_nf::inq_dimname_id</a> (ncid, dimid, name)</td></tr>
 <tr class="memdesc:gaaa1bffec058f66099981fb42139d2c79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information about the name of of a dimension.  <a href="group___p_i_o__inq__dimname.html#gaaa1bffec058f66099981fb42139d2c79">More...</a><br /></td></tr>
 <tr class="separator:gaaa1bffec058f66099981fb42139d2c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga68d9e59e6a5460d461d46f3cf62f195d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__dimname.html#ga68d9e59e6a5460d461d46f3cf62f195d">PIOc_inq_dimname</a> (int ncid, int dimid, char *name)</td></tr>
+<tr class="memdesc:ga68d9e59e6a5460d461d46f3cf62f195d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the name of a dimension.  <a href="#ga68d9e59e6a5460d461d46f3cf62f195d">More...</a><br /></td></tr>
+<tr class="separator:ga68d9e59e6a5460d461d46f3cf62f195d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -113,7 +116,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Get information about the name of of a dimension. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td></td></tr>
+    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
     <tr><td class="paramname">dimid</td><td>: The netcdf dimension ID. </td></tr>
     <tr><td class="paramname">len</td><td>: The length of the dimesion. </td></tr>
   </table>
@@ -164,10 +167,56 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
+<a id="ga68d9e59e6a5460d461d46f3cf62f195d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga68d9e59e6a5460d461d46f3cf62f195d">&#9670;&nbsp;</a></span>PIOc_inq_dimname()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PIOc_inq_dimname </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dimid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find the name of a dimension. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>the ncid of an open file. </td></tr>
+    <tr><td class="paramname">dimid</td><td>the dimension ID. </td></tr>
+    <tr><td class="paramname">name</td><td>a pointer that gets the name of the dimension. Igorned if NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:17 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 18 2019 06:38:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
