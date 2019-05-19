@@ -34,12 +34,14 @@
 #endif
 
 /** PIO_OFFSET is an integer type of size sufficient to represent the
- * size (in bytes) of the largest file supported by MPI. But this is
- * not used much in the code. Instead, PIO_Offset is used. */
+ * size (in bytes) of the largest file supported by MPI. This is not
+ * actually used by the code. */
 #define PIO_OFFSET MPI_OFFSET
 
-/** MPI_Offset is defined in pio_internal.h as long long. This is what
- * is used in the PIO C code. */
+/** PIO_OFFSET is defined as MPI_Offset, which is defined in
+ * pio_internal.h as long long. This is what is used throughout the C
+ * code. */
+
 #define PIO_Offset MPI_Offset
 
 /** The maximum number of variables allowed in a netCDF file. */
@@ -60,20 +62,21 @@
 /** Holds the maximum length of any task map. */
 #define DECOMP_MAX_MAPLEN_ATT_NAME "max_maplen"
 
-/** Name of title attribute for decomposition files. */
+/** Name of title attribute in decomposition file. */
 #define DECOMP_TITLE_ATT_NAME "title"
 
-/** Name of history attribute for decomposition files. */
+/** Name of history attribute in decomposition file. */
 #define DECOMP_HISTORY_ATT_NAME "history"
 
-/** Name of source attribute for decomposition files. */
+/** Name of source attribute in decomposition file. */
 #define DECOMP_SOURCE_ATT_NAME "source"
 
-/** Name of array order (C or Fortran) attribute for decomposition
- * files. */
+/** Name of array order (C or Fortran) attribute in decomposition
+ * file. */
 #define DECOMP_ORDER_ATT_NAME "array_order"
 
-/** Name of backtrace attribute for decomposition files. */
+/** Name of backtrace attribute in decomposition file. */
+
 #define DECOMP_BACKTRACE_ATT_NAME "backtrace"
 
 /** Name for the dim dim in decomp file. */
@@ -85,10 +88,10 @@
 /** Name for the npes dim in decomp file. */
 #define DECOMP_MAPELEM_DIM_NAME "map_element"
 
-/** Name for the number of dims dimention in decomposition file. */
+/** Name for the number of dimensions dim in decomp file. */
 #define DECOMP_NDIMS "ndims"
 
-/** Name of var in decomposition file that holds global array sizes. */
+/** Name of var in decomp file that holds global array sizes. */
 #define DECOMP_GLOBAL_SIZE_VAR_NAME "global_size"
 
 /** Name of var in decomp file that holds the length of the map for
@@ -214,7 +217,7 @@ enum PIO_REARR_COMM_FC_DIR
     PIO_REARR_COMM_FC_2D_DISABLE
 };
 
-/** Constant to indicate unlimited requests. */
+/** Constant to indicate unlimited requests for the rearranger. */
 #define PIO_REARR_COMM_UNLIMITED_PEND_REQ -1
 
 /**
@@ -764,10 +767,10 @@ enum PIO_ERROR_HANDLERS
 #define PIO_EINDEP  (-203)
 #endif /* _PNETCDF */
 
-/** This is the value of the first error code for PIO. */
+/** The first error code for PIO. */
 #define PIO_FIRST_ERROR_CODE (-500)
 
-/** IOTYPE error. */
+/** Bad IOTYPE error. */
 #define PIO_EBADIOTYPE  (-500)
 
 /** Variable dimensions do not match in a multivar call. */
@@ -825,11 +828,14 @@ extern "C" {
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
                         int rearranger, int *iosysidp);
 
-    int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
-                            MPI_Comm io_comm, int *iosysidp);
+    /* How many IO tasks in this iosysid? */
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);
+
+    /* Initialize PIO for intracomm mode. */
     int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                             int *iosysidp);
+
+    /* Shut down iosystem and free all associated resources. */
     int PIOc_finalize(int iosysid);
 
     /* Set error handling for entire io system. */
@@ -920,7 +926,6 @@ extern "C" {
                              int deflate_level);
     int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
                              int *deflate_levelp);
-    int PIOc_inq_var_szip(int ncid, int varid, int *options_maskp, int *pixels_per_blockp);
     int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunksizesp);
     int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp);
     int PIOc_def_var_endian(int ncid, int varid, int endian);
