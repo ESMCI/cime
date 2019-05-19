@@ -45,9 +45,10 @@
 #define MPI_Offset long long
 #endif
 
+/** Some MPI implementations do not allow passing MPI_DATATYPE_NULL to
+ * comm functions even though the send or recv length is 0, in these
+ * cases we use MPI_CHAR */
 #if defined(MPT_VERSION) || defined(OPEN_MPI)
-/* Some MPI implementations do not allow passing MPI_DATATYPE_NULL to comm functions
- * even though the send or recv length is 0, in these cases we use MPI_CHAR */
 #define PIO_DATATYPE_NULL MPI_CHAR
 #else
 #define PIO_DATATYPE_NULL MPI_DATATYPE_NULL
@@ -57,20 +58,26 @@
 void pio_log(int severity, const char *fmt, ...);
 #define LOG(e) pio_log e
 #else
+/** Logging macro for debugging. */
 #define LOG(e)
 #endif /* PIO_ENABLE_LOGGING */
 
+/** Find maximum. */
 #define max(a,b)                                \
     ({ __typeof__ (a) _a = (a);                 \
         __typeof__ (b) _b = (b);                \
         _a > _b ? _a : _b; })
 
+/** Find minimum. */
 #define min(a,b)                                \
     ({ __typeof__ (a) _a = (a);                 \
         __typeof__ (b) _b = (b);                \
         _a < _b ? _a : _b; })
 
+/** Block size of gathers. */
 #define MAX_GATHER_BLOCK_SIZE 0
+
+/* Request allocation size. */
 #define PIO_REQUEST_ALLOC_CHUNK 16
 
 /** This is needed to handle _long() functions. It may not be used as
