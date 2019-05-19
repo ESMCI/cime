@@ -78,6 +78,9 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga49d231e0b02a956c32e50b27f2a505be"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__varnatts.html#ga49d231e0b02a956c32e50b27f2a505be">pio_nf::inq_varnatts_id</a> (ncid, varid, natts)</td></tr>
 <tr class="memdesc:ga49d231e0b02a956c32e50b27f2a505be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets metadata information for netcdf file.  <a href="group___p_i_o__inq__varnatts.html#ga49d231e0b02a956c32e50b27f2a505be">More...</a><br /></td></tr>
 <tr class="separator:ga49d231e0b02a956c32e50b27f2a505be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9fd7594665cdf752b57fcabf17b743c0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__varnatts.html#ga9fd7594665cdf752b57fcabf17b743c0">PIOc_inq_varnatts</a> (int ncid, int varid, int *nattsp)</td></tr>
+<tr class="memdesc:ga9fd7594665cdf752b57fcabf17b743c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the number of attributes associated with a variable.  <a href="#ga9fd7594665cdf752b57fcabf17b743c0">More...</a><br /></td></tr>
+<tr class="separator:ga9fd7594665cdf752b57fcabf17b743c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -116,8 +119,8 @@ Functions/Subroutines</h2></td></tr>
 <p>Gets metadata information for netcdf file. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td></td></tr>
-    <tr><td class="paramname">vardesc</td><td></td></tr>
+    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
+    <tr><td class="paramname">vardesc</td><td>Variable description structure.</td></tr>
     <tr><td class="paramname">type</td><td>: The type of variable </td></tr>
   </table>
   </dd>
@@ -203,10 +206,56 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
+<a id="ga9fd7594665cdf752b57fcabf17b743c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9fd7594665cdf752b57fcabf17b743c0">&#9670;&nbsp;</a></span>PIOc_inq_varnatts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int PIOc_inq_varnatts </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ncid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>varid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>nattsp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find the number of attributes associated with a variable. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ncid</td><td>the ncid of the open file. </td></tr>
+    <tr><td class="paramname">varid</td><td>the variable ID. </td></tr>
+    <tr><td class="paramname">nattsp</td><td>a pointer that will get the number of attriburtes. Ignored if NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>PIO_NOERR for success, error code otherwise. </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 19 2019 14:00:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat May 18 2019 06:38:18 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
