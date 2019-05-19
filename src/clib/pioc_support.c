@@ -1199,7 +1199,8 @@ PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm comm
     return ret;
 }
 
-/* Write the decomp information in netCDF. This is an internal
+/**
+ * Write the decomp information in netCDF. This is an internal
  * function.
  *
  * @param ios pointer to io system info.
@@ -1385,7 +1386,8 @@ pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, 
     return PIO_NOERR;
 }
 
-/* Read the decomp information from a netCDF decomp file. This is an
+/**
+ * Read the decomp information from a netCDF decomp file. This is an
  * internal function.
  *
  * @param iosysid the IO system ID.

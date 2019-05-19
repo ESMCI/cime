@@ -21,7 +21,8 @@ static file_desc_t *current_file = NULL;
  * @param file pointer to the file_desc_t struct for the new file.
  * @author Jim Edwards
  */
-void pio_add_to_file_list(file_desc_t *file)
+void
+pio_add_to_file_list(file_desc_t *file)
 {
     assert(file);
 
@@ -43,7 +44,8 @@ void pio_add_to_file_list(file_desc_t *file)
  * @returns 0 for success, error code otherwise.
  * @author Ed Hartnett
  */
-int pio_get_file(int ncid, file_desc_t **cfile1)
+int
+pio_get_file(int ncid, file_desc_t **cfile1)
 {
     file_desc_t *cfile = NULL;
 
@@ -57,7 +59,7 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     if (current_file && current_file->pio_ncid == ncid)
         cfile = current_file;
     else
-	HASH_FIND_INT(pio_file_list, &ncid, cfile);
+        HASH_FIND_INT(pio_file_list, &ncid, cfile);
 
     /* If not found, return error. */
     if (!cfile)
@@ -85,7 +87,8 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
  * @returns 0 for success, error code otherwise
  * @author Jim Edwards, Ed Hartnett
  */
-int pio_delete_file_from_list(int ncid)
+int
+pio_delete_file_from_list(int ncid)
 {
     file_desc_t *cfile = NULL;
     int ret;
@@ -94,24 +97,24 @@ int pio_delete_file_from_list(int ncid)
     if (current_file && current_file->pio_ncid == ncid)
         cfile = current_file;
     else
-	HASH_FIND_INT(pio_file_list, &ncid, cfile);
+        HASH_FIND_INT(pio_file_list, &ncid, cfile);
 
     if (cfile)
     {
-	HASH_DEL(pio_file_list, cfile);
+        HASH_DEL(pio_file_list, cfile);
 
-	if (current_file == cfile)
-	    current_file = pio_file_list;
+        if (current_file == cfile)
+            current_file = pio_file_list;
 
-	/* Free the varlist entries for this file. */
-	while (cfile->varlist)
-	    if ((ret = delete_var_desc(cfile->varlist->varid, &cfile->varlist)))
-		return pio_err(NULL, cfile, ret, __FILE__, __LINE__);
+        /* Free the varlist entries for this file. */
+        while (cfile->varlist)
+            if ((ret = delete_var_desc(cfile->varlist->varid, &cfile->varlist)))
+                return pio_err(NULL, cfile, ret, __FILE__, __LINE__);
 
-	/* Free the memory used for this file. */
-	free(cfile);
+        /* Free the memory used for this file. */
+        free(cfile);
 
-	return PIO_NOERR;
+        return PIO_NOERR;
     }
 
     /* No file was found. */
@@ -125,7 +128,8 @@ int pio_delete_file_from_list(int ncid)
  * @returns 0 on success, error code otherwise
  * @author Jim Edwards
  */
-int pio_delete_iosystem_from_list(int piosysid)
+int
+pio_delete_iosystem_from_list(int piosysid)
 {
     iosystem_desc_t *ciosystem, *piosystem = NULL;
 
@@ -155,7 +159,8 @@ int pio_delete_iosystem_from_list(int piosysid)
  * @returns 0 on success, error code otherwise
  * @author Jim Edwards
  */
-int pio_add_to_iosystem_list(iosystem_desc_t *ios)
+int
+pio_add_to_iosystem_list(iosystem_desc_t *ios)
 {
     iosystem_desc_t *cios;
     int i = 1;
@@ -189,7 +194,8 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
  * @returns pointer to iosystem_desc_t, or NULL if not found.
  * @author Jim Edwards
  */
-iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
+iosystem_desc_t *
+pio_get_iosystem_from_id(int iosysid)
 {
     iosystem_desc_t *ciosystem;
 
@@ -209,7 +215,8 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
  * @returns 0 for success.
  * @author Jim Edwards
  */
-int pio_num_iosystem(int *niosysid)
+int
+pio_num_iosystem(int *niosysid)
 {
     int count = 0;
 
@@ -234,7 +241,8 @@ int pio_num_iosystem(int *niosysid)
  * @returns 0 for success, error code otherwise.
  * @author Jim Edwards, Ed Hartnett
  */
-int pio_add_to_iodesc_list(io_desc_t *iodesc)
+int
+pio_add_to_iodesc_list(io_desc_t *iodesc)
 {
     HASH_ADD_INT(pio_iodesc_list, ioid, iodesc);
     current_iodesc = iodesc;
@@ -248,15 +256,16 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
  * @returns pointer to the iodesc struc.
  * @author Jim Edwards
  */
-io_desc_t *pio_get_iodesc_from_id(int ioid)
+io_desc_t *
+pio_get_iodesc_from_id(int ioid)
 {
     io_desc_t *ciodesc=NULL;
     if (current_iodesc && current_iodesc->ioid == ioid)
-	ciodesc = current_iodesc;
+        ciodesc = current_iodesc;
     else
     {
-	HASH_FIND_INT(pio_iodesc_list, &ioid, ciodesc);
-	current_iodesc = ciodesc;
+        HASH_FIND_INT(pio_iodesc_list, &ioid, ciodesc);
+        current_iodesc = ciodesc;
     }
     return ciodesc;
 }
@@ -268,18 +277,19 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int pio_delete_iodesc_from_list(int ioid)
+int
+pio_delete_iodesc_from_list(int ioid)
 {
     io_desc_t *ciodesc;
 
     ciodesc = pio_get_iodesc_from_id(ioid);
     if (ciodesc)
     {
-	HASH_DEL(pio_iodesc_list, ciodesc);
-	if (current_iodesc == ciodesc)
-	    current_iodesc = pio_iodesc_list;
-	free(ciodesc);
-	return PIO_NOERR;
+        HASH_DEL(pio_iodesc_list, ciodesc);
+        if (current_iodesc == ciodesc)
+            current_iodesc = pio_iodesc_list;
+        free(ciodesc);
+        return PIO_NOERR;
     }
     return PIO_EBADID;
 }
@@ -289,12 +299,16 @@ int pio_delete_iodesc_from_list(int ioid)
  *
  * @param varid the varid of the variable.
  * @param rec_var non-zero if this is a record var.
+ * @param pio_type_size size of the PIO type in bytes
+ * @param mpi_type the MPI type
+ * @param mpi_type_size size of the MPI type in bytes.
  * @param varlist pointer to list to add to.
  * @returns 0 for success, error code otherwise.
  * @author Ed Hartnett
  */
-int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, MPI_Datatype mpi_type,
-                   int mpi_type_size, var_desc_t **varlist)
+int
+add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size,
+               MPI_Datatype mpi_type, int mpi_type_size, var_desc_t **varlist)
 {
     var_desc_t *var_desc;
 
@@ -328,7 +342,8 @@ int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, MPI_
  * @returns 0 for success, error code otherwise.
  * @author Ed Hartnett
  */
-int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
+int
+get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
 {
     var_desc_t *my_var=NULL;
 
@@ -358,7 +373,8 @@ int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
  * @returns 0 on success, error code otherwise.
  * @author Ed Hartnett
  */
-int delete_var_desc(int varid, var_desc_t **varlist)
+int
+delete_var_desc(int varid, var_desc_t **varlist)
 {
     var_desc_t *v;
     int ret;
@@ -371,7 +387,7 @@ int delete_var_desc(int varid, var_desc_t **varlist)
         return PIO_ENOTVAR;
 
     if ((ret = get_var_desc( varid, varlist, &v)))
-	return ret;
+        return ret;
 
     HASH_DEL(*varlist, v);
 
