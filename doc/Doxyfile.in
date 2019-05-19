@@ -769,11 +769,10 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../doc/source \
-                         @CMAKE_CURRENT_SOURCE_DIR@/../src/flib \
-                         @CMAKE_BINARY_DIR@/src/flib \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/c \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/f03 \
-                         @CMAKE_CURRENT_SOURCE_DIR@/../src/clib 
+			 @C_SRC_FILES@ \
+			 @FORTRAN_SRC_FILES@
 
 
 # This tag can be used to specify the character encoding of the source files

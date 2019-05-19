@@ -128,7 +128,13 @@ fi
 if test "x$enable_docs" = xyes; then
    AC_SUBST([CMAKE_CURRENT_SOURCE_DIR], ["."])
    AC_SUBST([CMAKE_BINARY_DIR], [".."])
-   AC_SUBST([C_SRC_FILES], ["../src/clib/pio_nc4.c"])
+   if test "x$enable_developer_docs" = xyes; then
+   AC_SUBST([C_SRC_FILES], ["../src/clib"])
+   AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib"])
+   else
+   AC_SUBST([C_SRC_FILES], ["../src/clib/pio_nc4.c ../src/clib/pio_darray.c ../src/clib/pio_get_nc.c ../src/clib/pio_put_nc.c"])
+   AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib/piodarray.F90 ../src/flib/piolib_mod.F90 ../src/flib/pio_nf.F90"])
+   fi
    AC_CONFIG_FILES([doc/Doxyfile])
 fi
 
