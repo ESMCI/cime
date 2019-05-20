@@ -2,7 +2,6 @@
 !>
 !! @file
 !! @brief Read and write routines for decomposed data.
-!<
 module piodarray
   use pio_types, only : file_desc_t, io_desc_t, var_desc_t
   use pio_kinds, only : i4, r4, r8, pio_offset_kind
@@ -88,7 +87,7 @@ end interface
 
 
 contains
-
+  !> Set buffer size limit.
   subroutine pio_set_buffer_size_limit(limit)
     integer(PIO_OFFSET_KIND), intent(in) :: limit
     integer(PIO_OFFSET_KIND) :: oldval
@@ -107,6 +106,7 @@ contains
   end subroutine pio_set_buffer_size_limit
 
 ! TYPE real,int,double
+  !> 1D write_darray for type {TYPE}.
   subroutine write_darray_1d_cinterface_{TYPE} (File,varDesc,ioDesc, arraylen, array, iostat, fillval)
     use iso_c_binding
     ! !DESCRIPTION:
@@ -151,6 +151,7 @@ contains
   end subroutine write_darray_1d_cinterface_{TYPE}
 
 ! TYPE real,int,double
+  !> 1D write_darray_multi for type {TYPE}.
   subroutine write_darray_multi_1d_cinterface_{TYPE} (File,varDesc,ioDesc,nvars,arraylen, array, iostat, fillval)
     use iso_c_binding
     ! !DESCRIPTION:
@@ -373,7 +374,7 @@ contains
   end subroutine read_darray_{DIMS}d_{TYPE}
 
 ! TYPE real,int,double
-
+  !> Internal read_darray for type {TYPE}
   subroutine read_darray_internal_{TYPE} (ncid, varid, ioid, alen, array, iostat)
     use iso_c_binding
     ! !DESCRIPTION:

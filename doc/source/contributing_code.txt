@@ -50,7 +50,7 @@ add to it, carefully.
 <li>Use spaces not tabs.
 <li>4 spaces is the unit of intendation.
 <li>Indentation as defined by the "linux" style in emacs (see below).
-<li>Use spaces around most operators (=+-*/) not pointer or prefix/postfile (*++--)
+<li>Use spaces around most operators (= + - * /) not pointer or prefix/postfile (* ++ --)
 <li>Spaces after most keywords (if, for, while, etc.)
 <li>No spaces after function name.
 </ul>
@@ -227,14 +227,14 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-#ifdef _PNETCDF
+\#ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
             ierr = ncmpi_inq_attname(file->fh, varid, attnum, name);
-#endif /* _PNETCDF */
-#ifdef _NETCDF
+\#endif /* _PNETCDF */
+\#ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
             ierr = nc_inq_attname(file->fh, varid, attnum, name);
-#endif /* _NETCDF */
+\#endif /* _NETCDF */
         LOG((2, "PIOc_inq_attname netcdf call returned %d", ierr));
     }
 
