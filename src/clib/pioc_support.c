@@ -537,7 +537,7 @@ pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fname,
  * @param ios pointer to the IO system info, used for error
  * handling. Ignored if NULL.
  * @param ndims the number of dimensions for the data in this region.
- * @param a pointer that gets a pointer to the newly allocated
+ * @param regionp a pointer that gets a pointer to the newly allocated
  * io_region struct.
  * @returns 0 for success, error code otherwise.
  * @author Jim Edwards
@@ -1199,7 +1199,8 @@ PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm comm
     return ret;
 }
 
-/* Write the decomp information in netCDF. This is an internal
+/**
+ * Write the decomp information in netCDF. This is an internal
  * function.
  *
  * @param ios pointer to io system info.
@@ -1385,7 +1386,8 @@ pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, 
     return PIO_NOERR;
 }
 
-/* Read the decomp information from a netCDF decomp file. This is an
+/**
+ * Read the decomp information from a netCDF decomp file. This is an
  * internal function.
  *
  * @param iosysid the IO system ID.
@@ -2738,7 +2740,7 @@ PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
  * Note that memory is allocated for my_proc_list. This must be freed
  * by the caller.
  *
- * @param num_io_proc the number of IO processes.
+ * @param num_io_procs the number of IO processes.
  * @param component_count the number of computational components.
  * @param num_procs_per_comp array (length component_count) which
  * contains the number of processes to assign to each computation
@@ -2746,7 +2748,7 @@ PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
  * @param proc_list array (length component count) of arrays (length
  * num_procs_per_comp_array[cmp]) which contain the list of processes
  * for each computation component. May be NULL.
- * @param array (length component count) of arrays (length
+ * @param my_proc_list array (length component count) of arrays (length
  * num_procs_per_comp_array[cmp]) which will get the list of processes
  * for each computation component.
  * @returns 0 for success, error code otherwise

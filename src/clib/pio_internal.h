@@ -224,13 +224,6 @@ extern "C" {
     /* Free a region list. */
     void free_region_list(io_region *top);
 
-    /* Check and reset, if needed, rearranger opts to default values. */
-    int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt);
-
-    /* Compare rearranger flow control options. */
-    bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
-                                const rearr_comm_fc_opt_t *exp_opt);
-
     /* Create a subset rearranger. */
     int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap, const int *gsize,
                                 int ndim, io_desc_t *iodesc);
