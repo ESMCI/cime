@@ -128,12 +128,16 @@ fi
 if test "x$enable_docs" = xyes; then
    AC_SUBST([CMAKE_CURRENT_SOURCE_DIR], ["."])
    AC_SUBST([CMAKE_BINARY_DIR], [".."])
+   if test "x$enable_fortran" = xno; then
+      AC_MSG_ERROR([--enable-fortran is required for documentation builds.])
+   fi
    if test "x$enable_developer_docs" = xyes; then
-   AC_SUBST([C_SRC_FILES], ["../src/clib"])
-   AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib"])
+      AC_SUBST([C_SRC_FILES], ["../src/clib"])
+      AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib"])
    else
-   AC_SUBST([C_SRC_FILES], ["../src/clib/pio_nc4.c ../src/clib/pio_darray.c ../src/clib/pio_get_nc.c ../src/clib/pio_put_nc.c"])
-   AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib/piodarray.F90 ../src/flib/piolib_mod.F90 ../src/flib/pio_nf.F90"])
+      AC_SUBST([C_SRC_FILES], ["../src/clib/pio_nc.c ../src/clib/pio_nc4.c ../src/clib/pio_darray.c ../src/clib/pio_get_nc.c ../src/clib/pio_put_nc.c ../src/clib/pioc_support.c ../src/clib/pioc.c ../src/clib/pio_file.c ../src/clib/pio.h"])
+      AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib"])
+#      AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib/pio_types.F90 ../src/flib/piodarray.F90 ../src/flib/piolib_mod.F90 ../src/flib/pio_nf.F90"])
    fi
    AC_CONFIG_FILES([doc/Doxyfile])
 fi

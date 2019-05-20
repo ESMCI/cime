@@ -281,7 +281,7 @@ contains
 !! @ingroup PIO_inquire_dimension
 !! @brief  Get information about a particular dimension in netcdf file
 !! @details
-!! @param ncid : A netcdf file descriptor returned by \ref PIO_openfile or \ref PIO_createfile.
+!! @param file : A netcdf file descriptor returned by \ref PIO_openfile or \ref PIO_createfile.
 !! @param dimid : The netcdf dimension ID.
 !! @param name : The name of the dimension.
 !! @param len : The length of the dimesions name.
@@ -390,7 +390,7 @@ contains
 !! @details
 !! @param File @copydoc file_desc_t
 !! @param dimid : The netcdf dimension ID.
-!! @param len : The length of the dimesion.
+!! @param name : The name of the dimesion.
 !! @retval ierr @copydoc error_return
 !<
   integer function inq_dimname_desc(File                    , dimid, name) result(ierr)
@@ -813,7 +813,7 @@ contains
 !! @ingroup PIO_inquire_variable
 !! @brief Inquires if a NetCDF variable is present and returns its attributes
 !! @details
-!! @param ncid : A netcdf file descriptor returned by \ref PIO_openfile or \ref PIO_createfile.
+!! @param file : A netcdf file descriptor returned by \ref PIO_openfile or \ref PIO_createfile.
 !! @param vardesc @copydoc var_desc_t
 !! @param name : The name of the variable
 !! @param xtype : The type of the variable

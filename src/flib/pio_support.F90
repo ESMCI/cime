@@ -20,9 +20,9 @@ module pio_support
   public :: pio_writedof
   public :: replace_c_null
 
-  logical, public :: Debug=.FALSE.
-  logical, public :: DebugIO=.FALSE.
-  logical, public :: DebugAsync=.FALSE.
+  logical, public :: Debug=.FALSE.            !< debug mode
+  logical, public :: DebugIO=.FALSE.          !< IO debug mode
+  logical, public :: DebugAsync=.FALSE.       !< async debug mode
   integer,private,parameter :: versno = 1001
 
   character(len=*), parameter :: modName='pio_support'

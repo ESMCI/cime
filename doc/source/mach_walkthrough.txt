@@ -170,7 +170,7 @@ Download a copy of the PIO source into a sub-directory of your working directory
 
 It is not necessary to edit your .soft file on Mira inorder to build PIO. Execute the following commands to temporarily load packages into your softenv. These packages use the IBM/XL compiler.<br>
   %> soft add +mpiwrapper-xl (or switch from the default in your softenv)<br>
-  %> soft add @ibm-compilers-2015-02<br>
+  %> soft add \@ibm-compilers-2015-02<br>
   %> soft add +cmake<br>
   %> soft add +git<br>
 
@@ -374,7 +374,7 @@ found.
 <pre>cd hdf5-1.10.1
 CC=mpicc ./configure --with-zlib=/usr/local/zlib-1.2.11_mpich-3.2 --with-szlib=/usr/local/szip-2.1_mpich-3.2 --prefix=/usr/local/hdf5-1.10.1_mpich-3.2 --enable-parallel
 make all check
-sudo PATH=$PATH:/usr/local/bin make install
+sudo PATH=$PATH:/usr/local/bin make install</pre>
 
 <li>Installing NetCDF-4 C Library
 

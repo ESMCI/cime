@@ -4,9 +4,8 @@
  * @author Jim Edwards
  * @date  2014
  *
- * @see http://code.google.com/p/parallelio/
+ * @see https://github.com/NCAR/ParallelIO
  */
-
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
@@ -18,14 +17,14 @@ int default_error_handler = PIO_INTERNAL_ERROR;
  * used (see pio_sc.c). */
 extern int blocksize;
 
-/* Used when assiging decomposition IDs. */
+/** Used when assiging decomposition IDs. */
 int pio_next_ioid = 512;
 
-struct sort_map{
+/** Sort map. */
+struct sort_map {
     int remap;
     PIO_Offset map;
 };
-
 
 /**
  * Check to see if PIO has been initialized.
@@ -36,7 +35,8 @@ struct sort_map{
  * @returns 0 on success, error code otherwise
  * @author Jim Edwards
  */
-int PIOc_iosystem_is_active(int iosysid, bool *active)
+int
+PIOc_iosystem_is_active(int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
 
@@ -61,7 +61,8 @@ int PIOc_iosystem_is_active(int iosysid, bool *active)
  * @returns 1 if file is open, 0 otherwise.
  * @author Jim Edwards
  */
-int PIOc_File_is_Open(int ncid)
+int
+PIOc_File_is_Open(int ncid)
 {
     file_desc_t *file;
 
@@ -88,7 +89,8 @@ int PIOc_File_is_Open(int ncid)
  * @ingroup PIO_error_method
  * @author Jim Edwards
  */
-int PIOc_Set_File_Error_Handling(int ncid, int method)
+int
+PIOc_Set_File_Error_Handling(int ncid, int method)
 {
     file_desc_t *file;
     int oldmethod;
@@ -119,7 +121,8 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
  * @returns 0 on success, error code otherwise
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_advanceframe(int ncid, int varid)
+int
+PIOc_advanceframe(int ncid, int varid)
 {
     iosystem_desc_t *ios;     /* Pointer to io system information. */
     file_desc_t *file;        /* Pointer to file information. */
@@ -179,7 +182,8 @@ int PIOc_advanceframe(int ncid, int varid)
  * @ingroup PIO_setframe
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_setframe(int ncid, int varid, int frame)
+int
+PIOc_setframe(int ncid, int varid, int frame)
 {
     iosystem_desc_t *ios;     /* Pointer to io system information. */
     file_desc_t *file;        /* Pointer to file information. */
@@ -240,7 +244,8 @@ int PIOc_setframe(int ncid, int varid, int frame)
  * @returns 0 on success, error code otherwise
  * @author Ed Hartnett
  */
-int PIOc_get_numiotasks(int iosysid, int *numiotasks)
+int
+PIOc_get_numiotasks(int iosysid, int *numiotasks)
 {
     iosystem_desc_t *ios;
 
@@ -260,7 +265,8 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
  * @returns the size of the array.
  * @author Jim Edwards
  */
-int PIOc_get_local_array_size(int ioid)
+int
+PIOc_get_local_array_size(int ioid)
 {
     io_desc_t *iodesc;
 
@@ -282,7 +288,8 @@ int PIOc_get_local_array_size(int ioid)
  * @ingroup PIO_error_method
  * @author Jim Edwards
  */
-int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
+int
+PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 {
     iosystem_desc_t *ios;
     int oldmethod;
@@ -312,7 +319,8 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  * @ingroup PIO_error_method
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
+int
+PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
 {
     iosystem_desc_t *ios = NULL;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
@@ -368,16 +376,25 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
     return PIO_NOERR;
 }
 
-int compare( const void* a, const void* b)
+/**
+ * Compare.
+ *
+ * @param a pointer to a
+ * @param b pointer to b
+ * @return -1 if a.map < b.map, 1 if a.map > b.map, 0 if equal
+ * @author Jim Edwards
+ */
+int
+compare( const void* a, const void* b)
 {
-     struct sort_map l_a = * ( (struct sort_map *) a );
-     struct sort_map l_b = * ( (struct sort_map *) b );
+    struct sort_map l_a = * ( (struct sort_map *) a );
+    struct sort_map l_b = * ( (struct sort_map *) b );
 
-     if ( l_a.map < l_b.map )
-	 return -1;
-     else if ( l_a.map > l_b.map )
-	 return 1;
-     return 0;
+    if ( l_a.map < l_b.map )
+        return -1;
+    else if ( l_a.map > l_b.map )
+        return 1;
+    return 0;
 }
 
 
@@ -426,9 +443,10 @@ int compare( const void* a, const void* b)
  * @ingroup PIO_initdecomp
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
-                    const PIO_Offset *compmap, int *ioidp, const int *rearranger,
-                    const PIO_Offset *iostart, const PIO_Offset *iocount)
+int
+PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
+                const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     io_desc_t *iodesc;     /* The IO description. */
@@ -519,43 +537,43 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     iodesc->remap = NULL;
     for (int m = 0; m < maplen; m++)
     {
-	if(m > 0 && compmap[m] > 0 && compmap[m] < compmap[m-1])
-	{
-	    iodesc->needssort = true;
+        if(m > 0 && compmap[m] > 0 && compmap[m] < compmap[m-1])
+        {
+            iodesc->needssort = true;
             LOG((2, "compmap[%d] = %ld compmap[%d]= %ld", m, compmap[m], m-1, compmap[m-1]));
-	    break;
-	}
+            break;
+        }
     }
     if (iodesc->needssort)
     {
-	struct sort_map *tmpsort;
+        struct sort_map *tmpsort;
 
-	if (!(tmpsort = malloc(sizeof(struct sort_map) * maplen)))
-	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-	if (!(iodesc->remap = malloc(sizeof(int) * maplen)))
+        if (!(tmpsort = malloc(sizeof(struct sort_map) * maplen)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        if (!(iodesc->remap = malloc(sizeof(int) * maplen)))
         {
             free(tmpsort);
-	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         }
-	for (int m=0; m < maplen; m++)
-	{
-	    tmpsort[m].remap = m;
-	    tmpsort[m].map = compmap[m];
-	}
-	qsort( tmpsort, maplen, sizeof(struct sort_map), compare );
-	for (int m=0; m < maplen; m++)
-	{
-	    iodesc->map[m] = compmap[tmpsort[m].remap];
-	    iodesc->remap[m] = tmpsort[m].remap;
-	}
-	free(tmpsort);
+        for (int m=0; m < maplen; m++)
+        {
+            tmpsort[m].remap = m;
+            tmpsort[m].map = compmap[m];
+        }
+        qsort( tmpsort, maplen, sizeof(struct sort_map), compare );
+        for (int m=0; m < maplen; m++)
+        {
+            iodesc->map[m] = compmap[tmpsort[m].remap];
+            iodesc->remap[m] = tmpsort[m].remap;
+        }
+        free(tmpsort);
     }
     else
     {
-	for (int m=0; m < maplen; m++)
-	{
-	    iodesc->map[m] = compmap[m];
-	}
+        for (int m=0; m < maplen; m++)
+        {
+            iodesc->map[m] = compmap[m];
+        }
     }
     /* Remember the dim sizes. */
     if (!(iodesc->dimlen = malloc(sizeof(int) * ndims)))
@@ -689,9 +707,10 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
  * @ingroup PIO_initdecomp
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
-                     const PIO_Offset *compmap, int *ioidp, int rearranger,
-                     const PIO_Offset *iostart, const PIO_Offset *iocount)
+int
+PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
+                 const PIO_Offset *compmap, int *ioidp, int rearranger,
+                 const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     PIO_Offset *compmap_1_based;
     int *rearrangerp = NULL;
@@ -741,8 +760,9 @@ int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, i
  * @ingroup PIO_initdecomp
  * @author Jim Edwards
  */
-int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
-                       const long int *start, const long int *count, int *ioidp)
+int
+PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
+                   const long int *start, const long int *count, int *ioidp)
 
 {
     iosystem_desc_t *ios;
@@ -844,8 +864,9 @@ int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
  * @ingroup PIO_init
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
-                        int rearr, int *iosysidp)
+int
+PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
+                    int rearr, int *iosysidp)
 {
     iosystem_desc_t *ios;
     int ustride;
@@ -998,10 +1019,11 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
  * @returns 0 for success, error code otherwise
  * @author Jim Edwards
  */
-int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
-                                 const int num_iotasks, const int stride,
-                                 const int base, const int rearr,
-                                 rearr_opt_t *rearr_opts, int *iosysidp)
+int
+PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
+                             const int num_iotasks, const int stride,
+                             const int base, const int rearr,
+                             rearr_opt_t *rearr_opts, int *iosysidp)
 {
     int ret = PIO_NOERR;
     ret = PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks,
@@ -1037,7 +1059,8 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
+int
+PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
 {
     iosystem_desc_t *ios;
     int mpierr; /* Return value for MPI calls. */
@@ -1074,7 +1097,8 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
  * @ingroup PIO_finalize
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_finalize(int iosysid)
+int
+PIOc_finalize(int iosysid)
 {
     iosystem_desc_t *ios;
     int niosysid;          /* The number of currently open IO systems. */
@@ -1184,7 +1208,8 @@ int PIOc_finalize(int iosysid)
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  * @author Jim Edwards
  */
-int PIOc_iam_iotask(int iosysid, bool *ioproc)
+int
+PIOc_iam_iotask(int iosysid, bool *ioproc)
 {
     iosystem_desc_t *ios;
 
@@ -1207,7 +1232,8 @@ int PIOc_iam_iotask(int iosysid, bool *ioproc)
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  * @author Jim Edwards
  */
-int PIOc_iotask_rank(int iosysid, int *iorank)
+int
+PIOc_iotask_rank(int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
 
@@ -1227,7 +1253,8 @@ int PIOc_iotask_rank(int iosysid, int *iorank)
  * @returns 1 if iotype is in build, 0 if not.
  * @author Jim Edwards
  */
-int PIOc_iotype_available(int iotype)
+int
+PIOc_iotype_available(int iotype)
 {
     switch(iotype)
     {
@@ -1327,10 +1354,11 @@ int PIOc_iotype_available(int iotype)
  * @ingroup PIO_init
  * @author Ed Hartnett
  */
-int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
-                    int component_count, int *num_procs_per_comp, int **proc_list,
-                    MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int rearranger,
-                    int *iosysidp)
+int
+PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
+                int component_count, int *num_procs_per_comp, int **proc_list,
+                MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int rearranger,
+                int *iosysidp)
 {
     int my_rank;          /* Rank of this task. */
     int **my_proc_list;   /* Array of arrays of procs for comp components. */
@@ -1672,7 +1700,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
  * @ingroup PIO_set_blocksize
  * @author Jim Edwards
  */
-int PIOc_set_blocksize(int newblocksize)
+int
+PIOc_set_blocksize(int newblocksize)
 {
     if (newblocksize > 0)
         blocksize = newblocksize;

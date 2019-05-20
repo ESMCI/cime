@@ -102,16 +102,16 @@ module pio_types
 !!   - PIO_iotype_netcdf4p : parallel read/write of NETCDF4 (HDF5) files
 !>
     integer(i4), public, parameter ::  &
-        PIO_iotype_pnetcdf = 1, &   ! parallel read/write of pNetCDF files
-        PIO_iotype_netcdf  = 2, &   ! serial read/write of NetCDF file using 'base_node'
-        PIO_iotype_netcdf4c = 3, &  ! netcdf4 (hdf5 format) file opened for compression (serial write access only)
-        PIO_iotype_netcdf4p = 4    ! netcdf4 (hdf5 format) file opened in parallel (all netcdf4 files for read will be opened this way)
+        PIO_iotype_pnetcdf = 1, &   !< parallel read/write of pNetCDF files
+        PIO_iotype_netcdf  = 2, &   !< serial read/write of NetCDF file using 'base_node'
+        PIO_iotype_netcdf4c = 3, &  !< netcdf4 (hdf5 format) file opened for compression (serial write access only)
+        PIO_iotype_netcdf4p = 4     !< netcdf4 (hdf5 format) file opened in parallel (all netcdf4 files for read will be opened this way)
 
 
 ! These are for backward compatability and should not be used or expanded upon
     integer(i4), public, parameter ::                       &
-        iotype_pnetcdf = PIO_iotype_pnetcdf,                &
-        iotype_netcdf  = PIO_iotype_netcdf
+        iotype_pnetcdf = PIO_iotype_pnetcdf,                & !< pnetcdf iotype
+        iotype_netcdf  = PIO_iotype_netcdf                    !< netcdf iotype
 
 
 !>
@@ -124,8 +124,8 @@ module pio_types
 !! -  PIO_rearr_subset : Use a PIO internal subsetting rearrangement
 !>
 
-    integer(i4), public, parameter :: PIO_rearr_box =  1
-    integer(i4), public, parameter :: PIO_rearr_subset =  2
+    integer(i4), public, parameter :: PIO_rearr_box =  1    !< box rearranger
+    integer(i4), public, parameter :: PIO_rearr_subset =  2 !< subset rearranger
 
 !>
 !! @public
@@ -136,9 +136,9 @@ module pio_types
 !!  - PIO_BCAST_ERROR     : broadcast an error from io_rank 0 to all tasks in comm
 !!  - PIO_RETURN_ERROR    : do nothing - allow the user to handle it
 !<
-  integer(i4), public, parameter :: PIO_INTERNAL_ERROR = -51
-  integer(i4), public, parameter :: PIO_BCAST_ERROR = -52
-  integer(i4), public, parameter :: PIO_RETURN_ERROR = -53
+  integer(i4), public, parameter :: PIO_INTERNAL_ERROR = -51 !< abort on error from any task
+  integer(i4), public, parameter :: PIO_BCAST_ERROR = -52    !< broadcast an error
+  integer(i4), public, parameter :: PIO_RETURN_ERROR = -53   !< do nothing
 
 !>
 !! @public
@@ -146,7 +146,7 @@ module pio_types
 !! @details
 !! Use this instead of ios to set error handling for the library.
 !<
-  integer(i4), public, parameter :: PIO_DEFAULT = -1
+  integer(i4), public, parameter :: PIO_DEFAULT = -1 !< default error handler
 
 !>
 !! @public
@@ -173,69 +173,69 @@ module pio_types
 !<
 #ifdef _PNETCDF
 #include <pnetcdf.inc>   /* _EXTERNAL */
-   integer, public, parameter :: PIO_global = nf_global
-   integer, public, parameter :: PIO_unlimited = nf_unlimited
-   integer, public, parameter :: PIO_double = nf_double
-   integer, public, parameter :: PIO_real   = nf_real
-   integer, public, parameter :: PIO_int    = nf_int
-   integer, public, parameter :: PIO_char   = nf_char
-   integer, public, parameter :: PIO_noerr  = nf_noerr
-   integer, public, parameter :: PIO_WRITE  = nf_write
-   integer, public, parameter :: PIO_nowrite  = nf_nowrite
-   integer, public, parameter :: PIO_CLOBBER = nf_clobber
-   integer, public, parameter :: PIO_NOCLOBBER = nf_NOclobber
-   integer, public, parameter :: PIO_NOFILL = nf_nofill
-   integer, public, parameter :: PIO_MAX_NAME = nf_max_name
-   integer, public, parameter :: PIO_MAX_VAR_DIMS = min(6,nf_max_var_dims)
-   integer, public, parameter :: PIO_64BIT_OFFSET = nf_64bit_offset
-   integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data
-   integer, public, parameter :: PIO_FILL_INT = nf_fill_int;
-   real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;
-   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double;
+   integer, public, parameter :: PIO_global = nf_global       !< global atts
+   integer, public, parameter :: PIO_unlimited = nf_unlimited !< unlimited dimension
+   integer, public, parameter :: PIO_double = nf_double       !< double type
+   integer, public, parameter :: PIO_real   = nf_real         !< real type
+   integer, public, parameter :: PIO_int    = nf_int          !< int type
+   integer, public, parameter :: PIO_char   = nf_char         !< char type
+   integer, public, parameter :: PIO_noerr  = nf_noerr        !< no error
+   integer, public, parameter :: PIO_WRITE  = nf_write        !< read-write
+   integer, public, parameter :: PIO_nowrite  = nf_nowrite    !< read-only
+   integer, public, parameter :: PIO_CLOBBER = nf_clobber     !< clobber existing file
+   integer, public, parameter :: PIO_NOCLOBBER = nf_NOclobber !< do not clobber existing file
+   integer, public, parameter :: PIO_NOFILL = nf_nofill       !< do not use fill values
+   integer, public, parameter :: PIO_MAX_NAME = nf_max_name   !< max name len
+   integer, public, parameter :: PIO_MAX_VAR_DIMS = min(6,nf_max_var_dims) !< max dims for a var
+   integer, public, parameter :: PIO_64BIT_OFFSET = nf_64bit_offset        !< 64bit offset format
+   integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data            !< CDF5 format
+   integer, public, parameter :: PIO_FILL_INT = nf_fill_int;               !< int fill value
+   real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;              !< float fill value
+   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double; !< double fill value
 
 #else
 #ifdef _NETCDF
 #include <netcdf.inc>   /* _EXTERNAL */
-   integer, public, parameter :: PIO_global = nf_global
-   integer, public, parameter :: PIO_unlimited = nf_unlimited
-   integer, public, parameter :: PIO_double = nf_double
-   integer, public, parameter :: PIO_real   = nf_real
-   integer, public, parameter :: PIO_int    = nf_int
-   integer, public, parameter :: PIO_char   = nf_char
-   integer, public, parameter :: PIO_noerr  = nf_noerr
-   integer, public, parameter :: PIO_WRITE  = nf_write
-   integer, public, parameter :: PIO_nowrite = nf_nowrite
-   integer, public, parameter :: PIO_CLOBBER = nf_clobber
-   integer, public, parameter :: PIO_NOCLOBBER = nf_NOclobber
-   integer, public, parameter :: PIO_NOFILL = nf_nofill
-   integer, public, parameter :: PIO_MAX_NAME = nf_max_name
-   integer, public, parameter :: PIO_MAX_VAR_DIMS = min(6,nf_max_var_dims)
-   integer, public, parameter :: PIO_64BIT_OFFSET = nf_64bit_offset
-   integer, public, parameter :: PIO_64BIT_DATA = 0
-   integer, public, parameter :: PIO_FILL_INT = nf_fill_int;
-   real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;
-   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double;
+   integer, public, parameter :: PIO_global = nf_global       !< global atts
+   integer, public, parameter :: PIO_unlimited = nf_unlimited !< unlimited dimension
+   integer, public, parameter :: PIO_double = nf_double       !< double type
+   integer, public, parameter :: PIO_real   = nf_real         !< real type
+   integer, public, parameter :: PIO_int    = nf_int          !< int type
+   integer, public, parameter :: PIO_char   = nf_char         !< char type
+   integer, public, parameter :: PIO_noerr  = nf_noerr        !< no error
+   integer, public, parameter :: PIO_WRITE  = nf_write        !< read-write
+   integer, public, parameter :: PIO_nowrite = nf_nowrite     !< read-only
+   integer, public, parameter :: PIO_CLOBBER = nf_clobber     !< clobber existing file
+   integer, public, parameter :: PIO_NOCLOBBER = nf_NOclobber !< do not clobber existing file
+   integer, public, parameter :: PIO_NOFILL = nf_nofill       !< do not use fill values
+   integer, public, parameter :: PIO_MAX_NAME = nf_max_name   !< max name len
+   integer, public, parameter :: PIO_MAX_VAR_DIMS = min(6,nf_max_var_dims) !< max dims for a var
+   integer, public, parameter :: PIO_64BIT_OFFSET = nf_64bit_offset        !< 64bit offset format
+   integer, public, parameter :: PIO_64BIT_DATA = 0                        !< CDF5 format
+   integer, public, parameter :: PIO_FILL_INT = nf_fill_int;               !< int fill value
+   real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;              !< float fill value
+   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double; !< double fill value
 #else
-   integer, public, parameter :: PIO_global = 0
-   integer, public, parameter :: PIO_double = 6
-   integer, public, parameter :: PIO_real   = 5
-   integer, public, parameter :: PIO_int    = 4
-   integer, public, parameter :: PIO_char   = 2
-   integer, public, parameter :: PIO_noerr  = 0
-   integer, public, parameter :: PIO_MAX_NAME = 25
-   integer, public, parameter :: PIO_MAX_VAR_DIMS = 6
-   integer, public, parameter :: PIO_CLOBBER = 10
-   integer, public, parameter :: PIO_NOCLOBBER = 11
-   integer, public, parameter :: PIO_WRITE = 20
-   integer, public, parameter :: PIO_NOWRITE = 21
-   integer, public, parameter :: PIO_64BIT_OFFSET = 0
-   integer, public, parameter :: PIO_64BIT_DATA = 0
-   integer, public, parameter :: PIO_FILL_INT = -2147483647;
-   real, public, parameter :: PIO_FILL_FLOAT =  9.9692099683868690e+36;
-   double precision, public, parameter :: PIO_FILL_DOUBLE = 9.9692099683868690e+36;
+   integer, public, parameter :: PIO_global = 0  !< global atts
+   integer, public, parameter :: PIO_double = 6  !< double type
+   integer, public, parameter :: PIO_real   = 5  !< real type
+   integer, public, parameter :: PIO_int    = 4  !< int type
+   integer, public, parameter :: PIO_char   = 2  !< char type
+   integer, public, parameter :: PIO_noerr  = 0  !< no error
+   integer, public, parameter :: PIO_MAX_NAME = 25    !< max name len
+   integer, public, parameter :: PIO_MAX_VAR_DIMS = 6 !< max dims for a var
+   integer, public, parameter :: PIO_CLOBBER = 10     !< clobber existing file
+   integer, public, parameter :: PIO_NOCLOBBER = 11   !< do not clobber existing file
+   integer, public, parameter :: PIO_WRITE = 20       !< read-write
+   integer, public, parameter :: PIO_NOWRITE = 21     !< read-only
+   integer, public, parameter :: PIO_64BIT_OFFSET = 0 !< 64bit offset format
+   integer, public, parameter :: PIO_64BIT_DATA = 0   !< CDF5 format
+   integer, public, parameter :: PIO_FILL_INT = -2147483647;  !< int fill value
+   real, public, parameter :: PIO_FILL_FLOAT =  9.9692099683868690e+36; !< float fill value
+   double precision, public, parameter :: PIO_FILL_DOUBLE = 9.9692099683868690e+36; !< double fill value
 #endif
 #endif
-   integer, public, parameter :: PIO_num_OST =  16
+   integer, public, parameter :: PIO_num_OST =  16 !< num ost
 
 !>
 !! @defgroup PIO_rearr_comm_t PIO_rearr_comm_t
@@ -282,7 +282,7 @@ module pio_types
       integer(c_int) :: max_pend_req         ! Maximum pending requests
     end type PIO_rearr_comm_fc_opt_t
 
-    integer, public, parameter :: PIO_REARR_COMM_UNLIMITED_PEND_REQ = -1
+    integer, public, parameter :: PIO_REARR_COMM_UNLIMITED_PEND_REQ = -1 !< unlimited requests
 !>
 !! @defgroup PIO_rearr_options PIO_rearr_options
 !! @brief Type that defines the PIO rearranger options

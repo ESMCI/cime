@@ -691,6 +691,7 @@ PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
+ * @param name pointer taht gets the name of the dimension.
  * @param idp a pointer that will get the id of the variable or attribute.
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
  * @author Jim Edwards, Ed Hartnett
@@ -1974,6 +1975,8 @@ PIOc_redef(int ncid)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
+ * @param name name of the dimension.
+ * @param len length of the dimension.
  * @param idp a pointer that will get the id of the variable or attribute.
  * @return PIO_NOERR for success, error code otherwise.
  * @author Jim Edwards, Ed Hartnett
@@ -2064,8 +2067,11 @@ PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
- * @param varidp a pointer that will get the variable id
+ * @param name the variable name.
+ * @param xtype the PIO_TYPE of the variable.
+ * @param ndims the number of dimensions.
+ * @param dimidsp pointer to array of dimension IDs.
+ * @param varidp a pointer that will get the variable ID.
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_def_var
  * @author Jim Edwards, Ed Hartnett
@@ -3123,7 +3129,6 @@ PIOc_put_att_ushort(int ncid, int varid, const char *name, nc_type xtype,
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
  * @param name the name of the attribute.
- * @param xtype the nc_type of the attribute.
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
