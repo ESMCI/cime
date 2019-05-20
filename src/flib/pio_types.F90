@@ -15,8 +15,8 @@ module pio_types
 #ifdef SEQUENCE
         sequence
 #endif
-        integer(i4) :: start
-        integer(i4) :: length
+        integer(i4) :: start  !< start
+        integer(i4) :: length !< length
     end type
 
     !------------------------------------
@@ -28,7 +28,7 @@ module pio_types
 !! @brief A defined PIO system descriptor created by @ref PIO_init (see pio_types)
 !<
     type, public :: IOSystem_desc_t
-        integer(kind=c_int) :: iosysid = -1
+        integer(kind=c_int) :: iosysid = -1 !< iosysid
      end type IOSystem_desc_t
 
 !>
@@ -52,8 +52,8 @@ module pio_types
 !!
 !>
     type, public :: File_desc_t
-       integer(kind=c_int) :: fh
-       type(iosystem_desc_t), pointer :: iosystem => null()
+       integer(kind=c_int) :: fh !< file handle
+       type(iosystem_desc_t), pointer :: iosystem => null() !< iosystem
     end type File_desc_t
 
 
@@ -75,7 +75,7 @@ module pio_types
 #ifdef SEQUENCE
         sequence
 #endif
-        integer(i4)         :: ioid
+        integer(i4)         :: ioid !< decomposition id
     end type
 
 !>
@@ -87,8 +87,8 @@ module pio_types
 #ifdef SEQUENCE
        sequence
 #endif
-       integer(i4) :: varID
-       integer(i4) :: ncid
+       integer(i4) :: varID !< variable id
+       integer(i4) :: ncid  !< file id
     end type Var_desc_t
 
 !>
@@ -121,9 +121,8 @@ module pio_types
 !! @details
 !!  - PIO_rearr_none : Do not use any form of rearrangement
 !!  - PIO_rearr_box : Use a PIO internal box rearrangement
-!! -  PIO_rearr_subset : Use a PIO internal subsetting rearrangement
-!>
-
+!!  - PIO_rearr_subset : Use a PIO internal subsetting rearrangement
+!<
     integer(i4), public, parameter :: PIO_rearr_box =  1    !< box rearranger
     integer(i4), public, parameter :: PIO_rearr_subset =  2 !< subset rearranger
 
@@ -277,9 +276,9 @@ module pio_types
 !!                    number of requests use PIO_REARR_COMM_UNLIMITED_PEND_REQ)
 !>
    type, bind(c), public :: PIO_rearr_comm_fc_opt_t
-      logical(c_bool) :: enable_hs            ! Enable handshake?
-      logical(c_bool) :: enable_isend         ! Enable isends?
-      integer(c_int) :: max_pend_req         ! Maximum pending requests
+      logical(c_bool) :: enable_hs            !< Enable handshake?
+      logical(c_bool) :: enable_isend         !< Enable isends?
+      integer(c_int) :: max_pend_req          !< Maximum pending requests
     end type PIO_rearr_comm_fc_opt_t
 
     integer, public, parameter :: PIO_REARR_COMM_UNLIMITED_PEND_REQ = -1 !< unlimited requests
@@ -289,13 +288,14 @@ module pio_types
 !! @details
 !!  - comm_type : @copydoc PIO_rearr_comm_t
 !!  - fcd : @copydoc PIO_rearr_comm_dir
-!!  - comm_fc_opts : @copydoc PIO_rearr_comm_fc_options
+!!  - comm_fc_opts_comp2io : @copydoc PIO_rearr_comm_fc_options
+!!  - comm_fc_opts_io2comp : @copydoc PIO_rearr_comm_fc_options
 !>
     type, bind(c), public :: PIO_rearr_opt_t
-      integer(c_int)                         :: comm_type
-      integer(c_int)                         :: fcd       ! Flow control direction
-      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_comp2io
-      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_io2comp
+      integer(c_int)                         :: comm_type !< comm type
+      integer(c_int)                         :: fcd       !< Flow control direction
+      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_comp2io !< comp2io
+      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_io2comp !< io2comp
     end type PIO_rearr_opt_t
 
     public :: PIO_rearr_comm_p2p, PIO_rearr_comm_coll,&

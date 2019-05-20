@@ -178,7 +178,7 @@ contains
 !! @details
 !! @param File @copydoc file_desc_t
 !! @param vardesc @copydoc var_desc_t
-!! @param start :
+!! @param index :
 !! @param ival : The value for the netcdf metadata
 !! @retval ierr @copydoc error_return
 !<
@@ -266,8 +266,7 @@ contains
 !! @ingroup PIO_put_var
 !! @brief Writes {TYPE} data to a netCDF variable.
 !! @details
-!! @param File @copydoc file_desc_t
-!! @param File : A file handle returne from \ref PIO_openfile or \ref PIO_createfile.
+!! @param ncid : The netcdf file id.
 !! @param varid : The netcdf variable identifier
 !! @param ival : The data to write.
 !! @retval ierr @copydoc error_return

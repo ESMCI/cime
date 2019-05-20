@@ -114,10 +114,10 @@
  */
 typedef struct var_desc_t
 {
-    /* Variable ID. */
+    /** Variable ID. */
     int varid;
 
-    /* Non-zero if this is a record var (i.e. uses unlimited
+    /** Non-zero if this is a record var (i.e. uses unlimited
      * dimension). */
     int rec_var;
 
@@ -131,7 +131,7 @@ typedef struct var_desc_t
     /** Number of requests pending with pnetcdf. */
     int nreqs;
 
-    /* Holds the fill value of this var. */
+    /** Holds the fill value of this var. */
     void *fillvalue;
 
     /** Non-zero if fill mode is turned on for this var. */
@@ -153,6 +153,7 @@ typedef struct var_desc_t
     /** The size in bytes of a datum of MPI type mpitype. */
     int mpi_type_size;
 
+    /** Hash table entry. */
     UT_hash_handle hh;
 
 } var_desc_t;
@@ -277,9 +278,10 @@ typedef struct io_desc_t
     PIO_Offset *map;
 
     /** If the map passed in is not monotonically increasing
-     *	then map is sorted and remap is an array of original
+     *  then map is sorted and remap is an array of original
      * indices of map. */
 
+    /** Remap. */
     int *remap;
 
     /** Number of tasks involved in the communication between comp and
@@ -389,6 +391,7 @@ typedef struct io_desc_t
      * group. */
     MPI_Comm subset_comm;
 
+    /** Hash table entry. */
     UT_hash_handle hh;
 
 } io_desc_t;
@@ -537,9 +540,11 @@ typedef struct wmulti_buffer
     /** Pointer to the data. */
     void *data;
 
-  /** uthash handle for hash of buffers **/
-  int htid;
-  UT_hash_handle hh;
+    /** uthash handle for hash of buffers */
+    int htid;
+
+    /** Hash table entry. */
+    UT_hash_handle hh;
 } wmulti_buffer;
 
 /**
@@ -581,7 +586,7 @@ typedef struct file_desc_t
     /** PIO data type. */
     int pio_type;
 
-    /* hash table entry */
+    /** Hash table entry. */
     UT_hash_handle hh;
 
     /** True if this task should participate in IO (only true for one

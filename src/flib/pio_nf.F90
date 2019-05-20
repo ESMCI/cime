@@ -1057,7 +1057,7 @@ contains
 !! @details
 !! @param File @copydoc file_desc_t
 !! @param vardesc @copydoc var_desc_t
-!! @param type : The type of variable
+!! @param natts : The number of atts
 !! @retval ierr @copydoc error_return
 !<
   integer function inq_varnatts_desc(File                   ,vardesc,natts) result(ierr)
@@ -1114,7 +1114,9 @@ contains
 !! @details
 !! @param File @copydoc file_desc_t
 !! @param vardesc @copydoc var_desc_t
-!! @param type : The type of variable
+!! @param shuffle : Value of shuffle
+!! @param deflate : Status of deflate
+!! @param deflate_level : Level of deflate
 !! @retval ierr @copydoc error_return
 !<
   integer function inq_var_deflate_desc(File, vardesc, shuffle, deflate, &

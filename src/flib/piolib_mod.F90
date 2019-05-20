@@ -377,7 +377,8 @@ contains
 !! @brief set the pio error handling method for a file
 !!
 !! @param file @copydoc file_desc_t
-!! @param method :
+!! @param method : error handling method
+!! @param oldmethod : old error handling method
 !! @copydoc PIO_error_method
 !<
   subroutine seterrorhandlingfile(file, method, oldmethod)
@@ -394,6 +395,7 @@ contains
 !! @param iosystem : a defined pio system descriptor, see PIO_types
 !! @param method :
 !! @copydoc PIO_error_method
+!! @param oldmethod : old error handling method
 !<
   subroutine seterrorhandlingiosystem(iosystem, method, oldmethod)
     type(iosystem_desc_t), intent(inout) :: iosystem
@@ -409,6 +411,7 @@ contains
 !! @param iosysid : a pio system ID (pass PIO_DEFAULT to change the global default error handling)
 !! @param method :
 !! @copydoc PIO_error_method
+!! @param oldmethod : old error handling method
 !<
   subroutine seterrorhandlingiosysid(iosysid, method, oldmethod)
     integer, intent(in) :: iosysid

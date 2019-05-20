@@ -228,7 +228,7 @@ PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
- * @param chunksizep an array of chunksizes. Must have a chunksize for
+ * @param chunksizesp an array of chunksizes. Must have a chunksize for
  * every variable dimension.
  * @return PIO_NOERR for success, otherwise an error code.
  * @author Ed Hartnett
@@ -482,9 +482,7 @@ PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizes
  *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
- * @param storage NC_CONTIGUOUS or NC_CHUNKED.
- * @param chunksizep an array of chunksizes. Must have a chunksize for
- * every variable dimension.
+ * @param endian NC_ENDIAN_NATIVE, NC_ENDIAN_LITTLE, or NC_ENDIAN_BIG.
  * @return PIO_NOERR for success, otherwise an error code.
  * @ingroup PIO_def_var
  * @author Ed Hartnett
@@ -651,6 +649,7 @@ PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * variable documentation</a> for details about the operation of this
  * function.
  *
+ * @param iosysid the IO system ID.
  * @param iotype the iotype of files to be created or opened.
  * @param size size of file cache.
  * @param nelems number of elements in file cache.
@@ -752,6 +751,7 @@ PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems
  * attempts to choose sensible chunk sizes by default, but for best
  * performance check chunking against access patterns.
  *
+ * @param iosysid the IO system ID.
  * @param iotype the iotype of files to be created or opened.
  * @param sizep gets the size of file cache.
  * @param nelemsp gets the number of elements in file cache.
@@ -873,9 +873,9 @@ PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nel
  *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
- * @param storage NC_CONTIGUOUS or NC_CHUNKED.
- * @param chunksizep an array of chunksizes. Must have a chunksize for
- * every variable dimension.
+ * @param size the size in bytes for the cache.
+ * @param nelems the number of elements in the cache.
+ * @param preemption the cache preemption value.
  * @return PIO_NOERR for success, otherwise an error code.
  * @ingroup PIO_def_var
  * @author Ed Hartnett

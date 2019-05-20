@@ -153,9 +153,9 @@ contains
   !! @brief Writes an netcdf attribute to a file
   !! @details
   !! @param File @copydoc file_desc_t
-  !! @param varid : The netcdf variable identifier
+  !! @param vdesc : The netcdf variable descriptor
   !! @param name : name of the attribute to add
-  !! @param var : The value for the netcdf attribute
+  !! @param values : The value for the netcdf attribute
   !! @retval ierr @copydoc error_return
   !<
   integer function put_att_desc_{TYPE} (File, vdesc, name, values) result(ierr)
@@ -271,7 +271,7 @@ contains
   !! @ingroup PIO_put_att
   !! @brief Writes an netcdf attribute to a file
   !! @details
-  !! @param File @copydoc file_desc_t
+  !! @param ncid @copydoc file_desc_t
   !! @param varid : The netcdf variable identifier
   !! @param name : name of the attribute to add
   !! @param values : The value for the netcdf attribute
@@ -312,7 +312,7 @@ contains
   !! @param File @copydoc file_desc_t
   !! @param varDesc @copydoc var_desc_t
   !! @param name : name of the attribute to add
-  !! @param var : The value for the netcdf attribute
+  !! @param values : The value for the netcdf attribute
   !! @retval ierr @copydoc error_return
   !<
   integer function put_att_1d_desc_{TYPE} (File,varDesc,name,values) result(ierr)
@@ -390,7 +390,7 @@ contains
   !! @ingroup PIO_get_att
   !! @brief Reads an netcdf attribute from a  file
   !! @details
-  !! @param File @copydoc file_desc_t
+  !! @param ncid : The netcdf file ID
   !! @param varid : The netcdf variable identifier
   !! @param name : name of the attribute to get
   !! @param values : The value for the netcdf attribute
