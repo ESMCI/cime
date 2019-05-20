@@ -2,30 +2,30 @@
 
 <config_machines>
 
-<!--  
+<!--
 
  ===============================================================
- COMPILER and COMPILERS 
+ COMPILER and COMPILERS
  ===============================================================
- If a machine supports multiple compilers - then 
+ If a machine supports multiple compilers - then
   - the settings for COMPILERS should reflect the supported compilers
     as a comma separated string
-  - the setting for COMPILER should be the default compiler 
+  - the setting for COMPILER should be the default compiler
     (which is one of the values in COMPILERS)
-   
+
  ===============================================================
  MPILIB and MPILIBS
  ===============================================================
- If a machine supports only one MPILIB is supported - then 
- the setting for  MPILIB and MPILIBS should be blank ("")   
+ If a machine supports only one MPILIB is supported - then
+ the setting for  MPILIB and MPILIBS should be blank ("")
  If a machine supports multiple mpi libraries (e.g. mpich and openmpi)
   - the settings for MPILIBS should reflect the supported mpi libraries
     as a comma separated string
 
- The default settings for COMPILERS and MPILIBS is blank (in config_machines.xml)  
+ The default settings for COMPILERS and MPILIBS is blank (in config_machines.xml)
 
  Normally variable substitutions are not made until the case scripts are run, however variables
- of the form $ENV{VARIABLE_NAME} are substituted in create_newcase from the environment 
+ of the form $ENV{VARIABLE_NAME} are substituted in create_newcase from the environment
  variable of the same name if it exists.
 
  ===============================================================
@@ -37,36 +37,36 @@
  should be set to TRUE for the given machine.
 
  ===============================================================
- batch_system 
+ batch_system
  ===============================================================
- The batch_system and associated tags are meant for configuring batch systems and 
- queues across machines.  The batch_system tag denotes the name for a particular 
- batch system, these can either be shared between one or more machines, or can be 
- defined for a specific machine if need be.  
- queues: 
- one or more queues can be defined per batch_system. if the attribute default="true" 
+ The batch_system and associated tags are meant for configuring batch systems and
+ queues across machines.  The batch_system tag denotes the name for a particular
+ batch system, these can either be shared between one or more machines, or can be
+ defined for a specific machine if need be.
+ queues:
+ one or more queues can be defined per batch_system. if the attribute default="true"
  is used, then that queue will be used by default. Alternatively, multiple queues can
  be used.  The following variables can be used to choose a queue :
- walltimemin: Giving the minimum amount of walltime for the queue. 
- walltimemax: The maximum amount of walltime for a queue. 
- jobmin:      The minimum node count required to use this queue. 
- jobmax:      The maximum node count required to use this queue. 
+ walltimemin: Giving the minimum amount of walltime for the queue.
+ walltimemax: The maximum amount of walltime for a queue.
+ jobmin:      The minimum node count required to use this queue.
+ jobmax:      The maximum node count required to use this queue.
 
- walltimes:  
- Denotes the walltimes that can be used for a particular machine. 
+ walltimes:
+ Denotes the walltimes that can be used for a particular machine.
  walltime: as before, if default="true" is defined, this walltime will be used
- by default. 
- Alternatively, ccsm_estcost must be used to choose the queue based on the estimated cost of the run. 
+ by default.
+ Alternatively, ccsm_estcost must be used to choose the queue based on the estimated cost of the run.
 
- mpirun: the mpirun command that will be used to actually launch the model.  
- The attributes used to choose the mpirun command are: 
+ mpirun: the mpirun command that will be used to actually launch the model.
+ The attributes used to choose the mpirun command are:
 
- mpilib: can either be 'default' the name of an mpi library, or a compiler name so one can choose the mpirun 
-         based on the mpi library in use. 
+ mpilib: can either be 'default' the name of an mpi library, or a compiler name so one can choose the mpirun
+         based on the mpi library in use.
 
-   the 'executable' tag must have arguments required for the chosen mpirun, as well as the executable name. 
+   the 'executable' tag must have arguments required for the chosen mpirun, as well as the executable name.
 
- 
+
 -->
 <machine MACH="userdefined">
         <DESC>User Defined Machine</DESC>                                 <!-- can be anything -->
@@ -83,10 +83,10 @@
         <DOUT_L_MSROOT>USERDEFINED_optional_run</DOUT_L_MSROOT>           <!-- complete path to a long term archiving directory -->
         <CCSM_BASELINE>USERDEFINED_optional_run</CCSM_BASELINE>           <!-- where the cesm testing scripts write and read baseline results -->
         <CCSM_CPRNC>USERDEFINED_optional_test</CCSM_CPRNC>                <!-- path to the cprnc tool used to compare netcdf history files in testing -->
-        <BATCHQUERY>USERDEFINED_optional_run</BATCHQUERY> 
+        <BATCHQUERY>USERDEFINED_optional_run</BATCHQUERY>
         <BATCHSUBMIT>USERDEFINED_optional_run</BATCHSUBMIT>
         <BATCHREDIRECT></BATCHREDIRECT>
-        <SUPPORTED_BY>USERDEFINED_optional</SUPPORTED_BY>                 
+        <SUPPORTED_BY>USERDEFINED_optional</SUPPORTED_BY>
         <GMAKE_J>1</GMAKE_J>
         <MAX_TASKS_PER_NODE>USERDEFINED_required_build</MAX_TASKS_PER_NODE>
 </machine>
@@ -255,6 +255,64 @@
            <executable></executable>
          </mpirun>
 </machine>
+
+<machine MACH="cheyenne">
+        <DESC>NCAR SGI platform, os is Linux, 36 pes/node, batch system is PBS</DESC>
+        <OS>LINUX</OS>
+        <COMPILERS>intel,gnu</COMPILERS>
+        <MPILIBS>mpt,openmpi</MPILIBS>
+        <CESMSCRATCHROOT>/glade/scratch/$USER</CESMSCRATCHROOT>
+        <RUNDIR>$CESMSCRATCHROOT/$CASE/run</RUNDIR>
+        <EXEROOT>$CESMSCRATCHROOT/$CASE/bld</EXEROOT>
+        <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
+        <DIN_LOC_ROOT_CLMFORC>$ENV{CESMROOT}/lmwg</DIN_LOC_ROOT_CLMFORC>
+        <DOUT_S_ROOT>$CESMSCRATCHROOT/archive/$CASE</DOUT_S_ROOT>
+        <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>
+        <CCSM_BASELINE>$ENV{CESMDATAROOT}/ccsm_baselines</CCSM_BASELINE>
+        <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cime/tools/cprnc/cprnc.cheyenne</CCSM_CPRNC>
+        <PERL5LIB>/usr/lib/perl5/vendor_perl/5.18.2:/usr/lib/perl5/5.18.2</PERL5LIB>
+        <BATCHQUERY>qstat</BATCHQUERY>
+        <BATCHSUBMIT>qsub</BATCHSUBMIT>
+        <BATCHREDIRECT>&lt; </BATCHREDIRECT>
+        <SUPPORTED_BY>cseg</SUPPORTED_BY>
+        <GMAKE_J>8</GMAKE_J>
+        <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
+        <PES_PER_NODE>36</PES_PER_NODE>
+        <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+        <batch_system type="pbs" version="">
+        <queues>
+          <queue walltimemax="6:00" jobmin="0" jobmax="16384">share</queue>
+          <queue walltimemax="12:00" jobmin="0" jobmax="16384" default="true">economy</queue>
+          <queue walltimemax="12:00" jobmin="0" jobmax="16384" default="true">premium</queue>
+          <queue walltimemax="12:00" jobmin="0" jobmax="16384" default="true">regular</queue>
+        </queues>
+        <walltimes>
+          <walltime default="true">2:00</walltime>
+          <walltime ccsm_estcost="-1">2:00</walltime>
+          <walltime ccsm_estcost="0">4:00</walltime>
+          <walltime ccsm_estcost="1">8:00</walltime>
+        </walltimes>
+      </batch_system>
+      <mpirun mpilib="mpt" threaded="false">
+        <executable>mpiexec_mpt -np {{ num_tasks }} -p "%g:"</executable>
+      </mpirun>
+      <mpirun mpilib="mpt" threaded="true">
+        <executable>mpiexec_mpt -np {{ num_tasks }} -p "%g:" omplace -tm open64 </executable>
+      </mpirun>
+      <mpirun mpilib="openmpi">
+        <executable>mpirun -np {{ num_tasks }}</executable>
+      </mpirun>
+      <mpirun mpilib="default" threaded="false">
+        <executable>mpiexec_mpt -np {{ num_tasks }} -p "%g:"</executable>
+      </mpirun>
+      <mpirun mpilib="default" threaded="true">
+        <executable>mpiexec_mpt -np {{ num_tasks }} -p "%g:" omplace -tm open64 </executable>
+      </mpirun>
+      <mpirun compiler="gnu">
+        <executable>mpirun -np {{ num_tasks }}</executable>
+      </mpirun>
+</machine>
+
 
 <machine MACH="eastwind">
          <DESC>PNL IBM Xeon cluster, os is Linux (pgi), batch system is SLURM</DESC>
@@ -472,7 +530,7 @@
          <mpirun mpilib="mpi-serial">
            <executable></executable>
          </mpirun>
-         
+
 </machine>
 
 <machine MACH="goldbach">
@@ -792,7 +850,7 @@
                <arg name="num_tasks"> -n {{ num_tasks }}</arg>
                <arg name="locargs">  $LOCARGS</arg>
                <arg name="bg_threadlayout"> --envs BG_THREADLAYOUT=1</arg>
-               <arg name="omp_stacksize"> --envs OMP_STACKSIZE=32M</arg> 
+               <arg name="omp_stacksize"> --envs OMP_STACKSIZE=32M</arg>
                <arg name="thread_count"> --envs OMP_NUM_THREADS={{ thread_count }}</arg>
                <arg name="colon">:</arg>
              </arguments>
@@ -831,7 +889,7 @@
     <executable></executable>
   </mpirun>
   <mpirun mpilib="default">
-    <executable>mpiexec_mpt</executable>  
+    <executable>mpiexec_mpt</executable>
     <arguments>
       <arg name="mpi">--mpi=none</arg>
       <arg name="num_tasks">-n={{ num_tasks }}</arg>
@@ -960,7 +1018,7 @@
              </arguments>
            </mpirun>
          </batch_system>
-         
+
 </machine>
 
 <machine MACH="pleiades-ivy">
@@ -1066,7 +1124,7 @@
               <queue walltimemax="24:00" default="true">batch</queue>
               <queue walltimemax="24:00">debug</queue>
             </queues>
-            <walltimes> 
+            <walltimes>
               <walltime default="true">00:45:00</walltime>
               <walltime ccsm_estcost="1">02:00:00</walltime>
             </walltimes>
@@ -1080,7 +1138,7 @@
                 <arg name="thread_count"> -d {{ thread_count }}</arg>
              </arguments>
          </mpirun>
-         
+
 </machine>
 
 <machine MACH="yellowstone">
@@ -1094,11 +1152,11 @@
         <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
         <DIN_LOC_ROOT_CLMFORC>$ENV{CESMROOT}/lmwg</DIN_LOC_ROOT_CLMFORC>
         <DOUT_S_ROOT>$CESMSCRATCHROOT/archive/$CASE</DOUT_S_ROOT>
-        <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>              
-        <CCSM_BASELINE>$ENV{CESMDATAROOT}/ccsm_baselines</CCSM_BASELINE>                   
+        <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>
+        <CCSM_BASELINE>$ENV{CESMDATAROOT}/ccsm_baselines</CCSM_BASELINE>
         <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cprnc/cprnc</CCSM_CPRNC>
         <PERL5LIB>/glade/apps/opt/perlmods/lib64/perl5:/glade/apps/opt/perlmods/share/perl5</PERL5LIB>
-        <BATCHQUERY>bjobs -w</BATCHQUERY>                                                                     
+        <BATCHQUERY>bjobs -w</BATCHQUERY>
         <BATCHSUBMIT>bsub</BATCHSUBMIT>
         <BATCHREDIRECT>&lt; </BATCHREDIRECT>
         <SUPPORTED_BY>cseg</SUPPORTED_BY>
@@ -1145,10 +1203,10 @@
         <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
         <DIN_LOC_ROOT_CLMFORC>$ENV{CESMROOT}/lmwg</DIN_LOC_ROOT_CLMFORC>
         <DOUT_S_ROOT>/glade/scratch/$CCSMUSER/archive/$CASE</DOUT_S_ROOT>
-        <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>              
-        <CCSM_BASELINE>$ENV{CESMDATAROOT}/ccsm_baselines</CCSM_BASELINE>                   
+        <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>
+        <CCSM_BASELINE>$ENV{CESMDATAROOT}/ccsm_baselines</CCSM_BASELINE>
         <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cprnc/cprnc</CCSM_CPRNC>
-        <BATCHQUERY>bjobs -w</BATCHQUERY>                                                                     
+        <BATCHQUERY>bjobs -w</BATCHQUERY>
         <BATCHSUBMIT>bsub &lt;</BATCHSUBMIT>
 		<BATCHREDIRECT></BATCHREDIRECT>
         <SUPPORTED_BY>srinathv -at- ucar.edu</SUPPORTED_BY>
