@@ -11,7 +11,12 @@
 
 #include <execinfo.h>
 
+/** This is used with text decomposition files. */
 #define VERSNO 2001
+
+/** In decomposition files, backtraces are included. This is the max
+ * number of trace levels that will be used. */
+#define MAX_BACKTRACE 10
 
 /* Some logging constants. */
 #if PIO_ENABLE_LOGGING
@@ -1293,7 +1298,6 @@ pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, 
 
     /* Write an attribute with the stack trace. This can be helpful
      * for debugging. */
-#define MAX_BACKTRACE 10
     void *bt[MAX_BACKTRACE];
     size_t bt_size;
     char **bt_strings;

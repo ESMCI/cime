@@ -277,7 +277,8 @@ contains
 !! @brief advances the record dimension of a variable in a netcdf format file
 !!  or the block address in a binary file
 !! @details
-!! @param[in,out] vardesc @copybrief var_desc_t
+!! @param File @copydoc file_desc_t
+!! @param vardesc @copybrief var_desc_t
 !<
   subroutine advanceframe(file, vardesc)
     type(file_desc_t), intent(in) :: file
@@ -301,6 +302,7 @@ contains
 !! @brief sets the record dimension of a variable in a netcdf format file
 !! or the block address in a binary file
 !! @details
+!! @param File @copydoc file_desc_t
 !! @param vardesc @copydoc var_desc_t
 !! @param frame   : frame number to set
 !<
@@ -731,10 +733,11 @@ contains
 !! @param dims An array of the global length of each dimesion of the variable(s)
 !! @param compdof Mapping of the storage order for the computational decomposition to its memory order
 !! @param iodesc @copydoc iodesc_generate
+!! @param rearr rearranger
 !! @param iostart   The start index for the block-cyclic io decomposition
 !! @param iocount   The count for the block-cyclic io decomposition
 !<
-  subroutine PIO_initdecomp_dof_i4(iosystem,basepiotype,dims,compdof, iodesc, rearr, iostart, iocount)
+  subroutine PIO_initdecomp_dof_i4(iosystem, basepiotype, dims, compdof, iodesc, rearr, iostart, iocount)
     type (iosystem_desc_t), intent(inout) :: iosystem
     integer(i4), intent(in)           :: basepiotype
     integer(i4), intent(in)          :: compdof(:)   ! global degrees of freedom for computational decomposition
@@ -825,6 +828,7 @@ contains
   end subroutine PIO_initdecomp_internal
 
 
+!> I8 version of PIO_initdecomp_dof_i4.
   subroutine PIO_initdecomp_dof_i8(iosystem,basepiotype,dims,compdof, iodesc, rearr, iostart, iocount)
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in)           :: basepiotype
@@ -865,6 +869,7 @@ contains
 !! @param rearr @copydoc PIO_rearr_method
 !! @param iosystem a derived type which can be used in subsequent pio operations (defined in PIO_types).
 !! @param base @em optional argument can be used to offset the first io task - default base is task 1.
+!! @param rearr_opts the rearranger options.
 !<
   subroutine init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
@@ -1150,7 +1155,6 @@ contains
 !! @param hint  the string name of the hint to define
 !! @param hintval  the string value to set the hint to
 !! @retval ierr @copydoc  error_return
-!<
   subroutine PIO_set_hint(iosystem, hint, hintval)
     type (iosystem_desc_t), intent(inout)  :: iosystem  ! io descriptor to initalize
     character(len=*), intent(in) :: hint, hintval
@@ -1220,6 +1224,7 @@ contains
 
    end subroutine getnumiotasks
 
+   !> Is an iotype available?
    logical function pio_iotype_available( iotype) result(available)
      integer, intent(in) :: iotype
      interface
@@ -1444,10 +1449,7 @@ contains
   end subroutine closefile
 
 
-  !******************************
-  ! read_ascii
-  !
-
+  !> read_ascii
   subroutine read_ascii(rank,iobuf,size)
 
     integer, intent(in) :: rank

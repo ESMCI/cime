@@ -31,8 +31,9 @@
  * @ingroup PIO_def_var
  * @author Ed Hartnett
  */
-int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
-                         int deflate_level)
+int
+PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
+                     int deflate_level)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -121,8 +122,9 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * @ingroup PIO_inq_var
  * @author Ed Hartnett
  */
-int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
-                         int *deflate_levelp)
+int
+PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
+                     int *deflate_levelp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -231,7 +233,8 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
  * @return PIO_NOERR for success, otherwise an error code.
  * @author Ed Hartnett
  */
-int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunksizesp)
+int
+PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunksizesp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -353,7 +356,8 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *ch
  * @ingroup PIO_inq_var
  * @author Ed Hartnett
  */
-int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp)
+int
+PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -485,7 +489,8 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
  * @ingroup PIO_def_var
  * @author Ed Hartnett
  */
-int PIOc_def_var_endian(int ncid, int varid, int endian)
+int
+PIOc_def_var_endian(int ncid, int varid, int endian)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -561,7 +566,8 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
  * @ingroup PIO_inq_var
  * @author Ed Hartnett
  */
-int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
+int
+PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -653,8 +659,9 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * @ingroup PIO_def_var
  * @author Ed Hartnett
  */
-int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
-                         float preemption)
+int
+PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
+                     float preemption)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ierr;              /* Return code from function calls. */
@@ -753,8 +760,9 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset ne
  * @ingroup PIO_def_var
  * @author Ed Hartnett
  */
-int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nelemsp,
-                         float *preemptionp)
+int
+PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nelemsp,
+                     float *preemptionp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ierr;              /* Return code from function calls. */
@@ -872,8 +880,9 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
  * @ingroup PIO_def_var
  * @author Ed Hartnett
  */
-int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
-                             float preemption)
+int
+PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
+                         float preemption)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -958,8 +967,9 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
  * @ingroup PIO_inq_var
  * @author Ed Hartnett
  */
-int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
-                             float *preemptionp)
+int
+PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
+                         float *preemptionp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
