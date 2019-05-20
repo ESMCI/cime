@@ -755,7 +755,7 @@ PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int m
  * dimensions.
  * @param start start array
  * @param count count array
- * @param pointer that gets the IO ID.
+ * @param ioidp pointer that gets the IO ID.
  * @returns 0 for success, error code otherwise
  * @ingroup PIO_initdecomp
  * @author Jim Edwards

@@ -1040,7 +1040,7 @@ PIOc_inq_varnatts(int ncid, int varid, int *nattsp)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
+ * @param name the variable name.
  * @param varidp a pointer that will get the variable id
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
  * @author Jim Edwards, Ed Hartnett
@@ -1298,6 +1298,7 @@ PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep)
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
  * @param attnum the attribute ID.
+ * @param name the name of the attribute.
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
  * @author Jim Edwards, Ed Hartnett
  */
@@ -2278,7 +2279,7 @@ PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param fill_mode fill mode for this variable (NC_FILL or NC_NOFILL)
- * @param fill_value pointer to the fill value to be used if fill_mode is set to NC_FILL.
+ * @param fill_valuep pointer to the fill value to be used if fill_mode is set to NC_FILL.
  * @return PIO_NOERR for success, otherwise an error code.
  * @ingroup PIO_def_var
  * @author Jim Edwards, Ed Hartnett
