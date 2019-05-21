@@ -16,7 +16,7 @@
     - \ref PIO_read_darray
     - \ref PIO_write_darray
   \section utility Utility routines
-    - \ref PIO_set_hint
+    - \ref PIO_set_hint_grp
     - \ref PIO_setframe
     - \ref PIO_advanceframe
     - \ref PIO_setdebuglevel
@@ -41,7 +41,7 @@
     - \ref PIO_inq_attname
     - \ref PIO_inq_att
     - \ref PIO_inq_attlen
-    - \ref PIO_inq_var
+    - \ref PIO_inquire_variable
     - \ref PIO_inq_varid
     - \ref PIO_inq_varname
     - \ref PIO_inq_vartype
