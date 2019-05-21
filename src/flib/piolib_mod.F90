@@ -1,5 +1,4 @@
 #define __PIO_FILE__ "piolib_mod.f90"
-#define debug_rearr 0
 !>
 !! @file
 !! @brief Initialization Routines for PIO
