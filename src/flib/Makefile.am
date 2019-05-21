@@ -72,8 +72,26 @@ piolib_mod.mod pio.mod
 BUILT_SOURCES = $(MODFILES)
 include_HEADERS = $(MODFILES)
 
+# Doxygen does not cope well with pre-processor use in Fortran. So
+# create .f90 files from .F90 files by running the C
+# pre-processor. These will only be used by doxygen when --enable-docs
+# is used at configure.
+if BUILD_DOCS
+BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 pionfput_mod.f90
+piodarray.f90: piodarray.F90
+	$(CC) -E $< > $@
+piolib_mod.f90: piolib_mod.F90
+	$(CC) -E $< > $@
+pionfatt_mod.f90: pionfatt_mod.F90
+	$(CC) -E $< > $@
+pionfget_mod.f90: pionfget_mod.F90
+	$(CC) -E $< > $@
+pionfput_mod.f90: pionfput_mod.F90
+	$(CC) -E $< > $@
+endif
+
 CLEANFILES = *.mod piodarray.F90 pionfatt_mod.F90 pionfget_mod.F90	\
-pionfput_mod.F90
+pionfput_mod.F90 *.f90
 
 EXTRA_DIST = CMakeLists.txt piodarray.F90.in pionfatt_mod.F90.in	\
 pionfget_mod.F90.in pionfput_mod.F90.in

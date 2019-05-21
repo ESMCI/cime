@@ -337,7 +337,6 @@ contains
 
   end function put_att_1d_vid_{TYPE}
 
-
   !>
   !! @public
   !! @ingroup PIO_get_att

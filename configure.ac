@@ -136,7 +136,7 @@ if test "x$enable_docs" = xyes; then
       AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib"])
    else
       AC_SUBST([C_SRC_FILES], ["../src/clib/pio_nc.c ../src/clib/pio_nc4.c ../src/clib/pio_darray.c ../src/clib/pio_get_nc.c ../src/clib/pio_put_nc.c ../src/clib/pioc_support.c ../src/clib/pioc.c ../src/clib/pio_file.c ../src/clib/pio.h"])
-      AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib"])
+      AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib/piodarray.f90  ../src/flib/pio.F90  ../src/flib/pio_kinds.F90  ../src/flib/piolib_mod.f90  ../src/flib/pionfatt_mod.f90  ../src/flib/pio_nf.F90  ../src/flib/pionfget_mod.f90  ../src/flib/pionfput_mod.f90  ../src/flib/pio_support.F90  ../src/flib/pio_types.F90"])
 #      AC_SUBST([FORTRAN_SRC_FILES], ["../src/flib/pio_types.F90 ../src/flib/piodarray.F90 ../src/flib/piolib_mod.F90 ../src/flib/pio_nf.F90"])
    fi
    AC_CONFIG_FILES([doc/Doxyfile])

@@ -1,6 +1,4 @@
 #define __PIO_FILE__ "piolib_mod.f90"
-#define debug_rearr 0
-
 !>
 !! @file
 !! @brief Initialization Routines for PIO
@@ -437,7 +435,7 @@ contains
 !>
 !! @public
 !! @ingroup PIO_initdecomp
-!! @brief Implements the @ref decomp_bc for PIO_initdecomp
+!! @brief Implements the block-cyclic decomposition for PIO_initdecomp
 !! @details  This provides the ability to describe a computational
 !! decomposition in PIO that has a block-cyclic form.  That is
 !! something that can be described using start and count arrays.
@@ -721,11 +719,12 @@ contains
 !>
 !! @public
 !! @ingroup PIO_initdecomp
-!! @brief Implements the @ref decomp_dof for PIO_initdecomp (previous name: \b initdecomp_1dof_nf_box)
+!! @brief Implements the degrees of freedom decomposition for
+!! PIO_initdecomp (previous name: \b initdecomp_1dof_nf_box)
 !! @details  This provides the ability to describe a computational
 !! decomposition in PIO using degrees of freedom method. This is
 !! a decomposition that can not be easily described using a start
-!! and count method (see @ref decomp_dof).
+!! and count method.
 !! Optional parameters for this subroutine allows for the specififcation of
 !! io decomposition using iostart and iocount arrays.  If iostart
 !! and iocount arrays are not specified by the user, and rearrangement
@@ -1151,7 +1150,7 @@ contains
 
 !>
 !! @public
-!! @defgroup PIO_set_hint  PIO_set_hint
+!! @defgroup PIO_set_hint_grp  PIO_set_hint
 !! @brief set file system hints using mpi_info_set
 !! @details This is a collective call which expects the following parameters:
 !! @param iosystem @copydoc io_desc_t
