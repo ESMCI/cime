@@ -5,11 +5,9 @@
 EXTRA_DIST = CMakeLists.txt customdoxygen.css Doxyfile.in	\
 DoxygenLayout.xml doxygen.sty
 
-# simple doxygen target
+# Run doxygen, then confirm warning log file is empty.
 all:
 	doxygen Doxyfile
+	[ ! -s doxywarn.log ]
 
-# clean up the extras including doxygen
-#clean-local:
-#	cd ${top_srcdir}
-#	rm -rf doxygen
+CLEANFILES = *.log

@@ -77,7 +77,7 @@ include_HEADERS = $(MODFILES)
 # pre-processor. These will only be used by doxygen when --enable-docs
 # is used at configure.
 if BUILD_DOCS
-BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 pionfput_mod.f90
+BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 pionfput_mod.f90 pionfatt_mod_2.f90 pionfget_mod_2.f90
 piodarray.f90: piodarray.F90
 	$(CC) -E $< > $@
 piolib_mod.f90: piolib_mod.F90
@@ -88,6 +88,67 @@ pionfget_mod.f90: pionfget_mod.F90
 	$(CC) -E $< > $@
 pionfput_mod.f90: pionfput_mod.F90
 	$(CC) -E $< > $@
+
+# Unfortunately the genf90.pl script which generates these fortran
+# files has no way of handling doxygen documentation. So use sed to
+# insert some documentation lines to suppress warnings.
+pionfatt_mod_2.f90: pionfatt_mod.f90
+	sed -e '/^  integer function put_att_desc_real.*/i !> put real att' \
+            -e '/^  integer function put_att_desc_double.*/i !> put double att' \
+            -e '/^  integer function put_att_desc_int.*/i !> put int att' \
+            -e '/^  integer function put_att_vid_text.*/i !> put text att' \
+            -e '/^  integer function put_att_vid_real.*/i !> put real att' \
+            -e '/^  integer function put_att_vid_double.*/i !> put double att' \
+            -e '/^  integer function put_att_vid_int.*/i !> put int att' \
+            -e '/^  integer function put_att_id_int.*/i !> put int att' \
+            -e '/^  integer function put_att_id_real.*/i !> put att' \
+            -e '/^  integer function put_att_id_double.*/i !> put att' \
+            -e '/^  integer function put_att_id_text.*/i !> put att' \
+            -e '/^  integer function put_att_1d_id_text.*/i !> put att' \
+            -e '/^  integer function put_att_1d_id_text_internal.*/i !> put att' \
+            -e '/^  integer function get_att_id_text.*/i !> get att' \
+            -e '/^  integer function put_att_1d_id_internal_real.*/i !> att' \
+            -e '/^  integer function put_att_1d_id_internal_double.*/i !> att' \
+            -e '/^  integer function put_att_1d_id_internal_int.*/i !> att' \
+            -e '/^  integer function put_att_1d_vid_text.*/i !> att' \
+            -e '/^  integer function put_att_1d_vid_real.*/i !> att' \
+            -e '/^  integer function put_att_1d_vid_double.*/i !> att' \
+            -e '/^  integer function put_att_1d_vid_int.*/i !> att' \
+            -e '/^  integer function get_att_desc_real.*/i !> att' \
+            -e '/^  integer function get_att_desc_double.*/i !> att' \
+            -e '/^  integer function get_att_desc_int.*/i !> att' \
+            -e '/^  integer function get_att_desc_1d_real.*/i !> att' \
+            -e '/^  integer function get_att_desc_1d_double.*/i !> att' \
+            -e '/^  integer function get_att_id_real.*/i !> att' \
+            -e '/^  integer function get_att_id_double.*/i !> att' \
+            -e '/^  integer function get_att_text.*/i !> att' \
+            -e '/^  integer function get_att_real.*/i !> att' \
+            -e '/^  integer function get_att_double.*/i !> att' \
+            -e '/^  integer function get_att_int.*/i !> att' \
+            -e '/^  integer function get_att_1d_id_real.*/i !> att' \
+            -e '/^  integer function get_att_1d_id_int.*/i !> att' \
+            -e '/^  integer function get_att_1d_id_double.*/i !> att' \
+            -e '/^     integer(C_INT) function PIOc_get_att_double.*/i !> att' \
+            -e '/^  integer function pioc_get_att_float.*/i !> att' \
+            -e '/^  integer function pioc_get_att_int.*/i !> att' \
+            -e '/^  integer function pioc_get_att_text.*/i !> att' \
+            -e '/^  integer function pioc_put_att_double.*/i !> att' \
+            -e '/^  integer function pioc_put_att_float.*/i !> att' \
+            -e '/^  integer function pioc_put_att_int.*/i !> att' \
+            -e '/^  integer function pioc_put_att_text.*/i !> att' \
+            $< > $@
+pionfget_mod_2.f90: pionfget_mod.f90
+	sed -e '/^  integer function get_var1_id_real.*/i !> var' \
+            -e '/^  integer function get_var1_id_double.*/i !> var' \
+            -e '/^  integer function get_var1_id_text.*/i !> var' \
+            -e '/^  integer function get_var_0d_real.*/i !> var' \
+            -e '/^  integer function get_var_0d_double.*/i !> var' \
+            -e '/^  integer function get_var_1d_text.*/i !> var' \
+            -e '/^  integer function get_vara_real_internal.*/i !> var' \
+            -e '/^  integer function get_vara_double_internal.*/i !> var' \
+            -e '/^  integer function get_vara_text_internal.*/i !> var' \
+            -e '/^  integer function get_var_1d_int.*/i !> var' \
+            $< > $@
 endif
 
 CLEANFILES = *.mod piodarray.F90 pionfatt_mod.F90 pionfget_mod.F90	\
