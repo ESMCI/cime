@@ -1525,7 +1525,7 @@ contains
     attname  = 'So_bldepth'
     call metadata_set(attname, longname, stdname, units)
 
-    if (trim(cime_model) == 'cesm' .and. flds_co2g) then
+    !if (trim(cime_model) == 'cesm' .and. flds_co2g) then
 
       ! Melt rate
       call seq_flds_add(o2x_fluxes,"Fogo_mr")
@@ -1665,7 +1665,7 @@ contains
       attname  = 'So_s'
       call metadata_set(attname, longname, stdname, units)
 
-    endif
+    !endif
 
     call seq_flds_add(xao_states,"So_fswpen")
     call seq_flds_add(o2x_states,"So_fswpen")
