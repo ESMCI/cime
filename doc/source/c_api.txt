@@ -1,21 +1,21 @@
- /*!  \page api PIO C Interface
+ /*!  \page c_api PIO C Interface
   This is a list of all user interface routines:
 
-  \section api_fileops PIO file Operations
-     - \ref PIO_openfile
-     - \ref PIO_createfile
-     - \ref PIO_syncfile
-     - \ref PIO_closefile
-  \section api_system PIO startup and shutdown routines
+  \section api_fileops_c PIO file Operations
+     - \ref PIO_open_file_c
+     - \ref PIO_create_file_c
+     - \ref PIO_sync_file_c
+     - \ref PIO_close_file_c
+  \section api_system_c PIO startup and shutdown routines
      - \ref PIO_init
      - \ref PIO_finalize
-  \section api_decomp PIO decomposition routines
+  \section api_decomp_c PIO decomposition routines
     - \ref PIO_initdecomp
     - \ref PIO_freedecomp
-  \section readwrite Reading and Writing distributed variables
+  \section readwrite_c Reading and Writing distributed variables
     - \ref PIO_read_darray
     - \ref PIO_write_darray
-  \section utility Utility routines
+  \section utility_c Utility routines
     - \ref PIO_set_hint_grp
     - \ref PIO_setframe
     - \ref PIO_advanceframe
@@ -24,19 +24,19 @@
     - \ref PIO_get_local_array_size
     - \ref PIO_getnumiotasks
     - \ref PIO_set_blocksize
-  \section netcdf NetCDF format specific routines 
+  \section netcdf_c NetCDF format specific routines 
      Also see: http://www.unidata.ucar.edu/software/netcdf/docs/
-     \subsection putget Reading/Writing netcdf metadata  
+     \subsection putget_c Reading/Writing netcdf metadata  
          - \ref PIO_get_att
          - \ref PIO_put_att
          - \ref PIO_get_var
          - \ref PIO_put_var
-     \subsection utilnc Netcdf utility routines
+     \subsection utilnc_c Netcdf utility routines
     - \ref PIO_enddef
     - \ref PIO_redef
     - \ref PIO_def_dim 
     - \ref PIO_def_var
-     \subsection inqnc NetCDF file inquiry routines
+     \subsection inqnc_c NetCDF file inquiry routines
     - \ref PIO_inquire
     - \ref PIO_inq_attname
     - \ref PIO_inq_att
