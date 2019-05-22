@@ -1185,6 +1185,7 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 -xAVX </append>
     <append MODEL="micom"> -r8 </append>
+    <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
@@ -1196,7 +1197,7 @@ using a fortran linker.
    <append> -D$(OS) </append>
   </CPPDEFS>
   <FFLAGS>
-   <append> -xCORE-AVX2 </append>
+   <append> -xCORE-AVX2 -no-fma </append>
   </FFLAGS>
   <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
   <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
