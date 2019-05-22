@@ -6,6 +6,7 @@
 check: all
 all:
 	doxygen Doxyfile
+	cat doxywarn.log
 	[ ! -s doxywarn.log ]
 
 SUBDIRS = source

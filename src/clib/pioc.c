@@ -10,6 +10,13 @@
 #include <pio.h>
 #include <pio_internal.h>
 
+/**
+ * @defgroup PIO_init_c Initialize the IO System
+ * @defgroup PIO_finalize_c Shut Down the IO System
+ * @defgroup PIO_initdecomp_c Initialize a Decomposition
+ * @defgroup PIO_freedecomp_c Free a Decomposition
+ */
+
 /** The default error handler used when iosystem cannot be located. */
 int default_error_handler = PIO_INTERNAL_ERROR;
 
@@ -440,7 +447,7 @@ compare( const void* a, const void* b)
  * rearranger is used. If NULL and SUBSET rearranger is used, the
  * iostarts are generated.
  * @returns 0 on success, error code otherwise
- * @ingroup PIO_initdecomp
+ * @ingroup PIO_initdecomp_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -704,7 +711,7 @@ PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int ma
  * @param iocount An array of count values for block cyclic
  * decompositions. If NULL ???
  * @returns 0 on success, error code otherwise
- * @ingroup PIO_initdecomp
+ * @ingroup PIO_initdecomp_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -757,7 +764,7 @@ PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int m
  * @param count count array
  * @param ioidp pointer that gets the IO ID.
  * @returns 0 for success, error code otherwise
- * @ingroup PIO_initdecomp
+ * @ingroup PIO_initdecomp_c
  * @author Jim Edwards
  */
 int
@@ -861,7 +868,7 @@ PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
  * until the decomposition is initialized.
  * @param iosysidp index of the defined system descriptor.
  * @return 0 on success, otherwise a PIO error code.
- * @ingroup PIO_init
+ * @ingroup PIO_init_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1094,7 +1101,7 @@ PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
  *
  * @param iosysid: the io system ID provided by PIOc_Init_Intracomm().
  * @returns 0 for success or non-zero for error.
- * @ingroup PIO_finalize
+ * @ingroup PIO_finalize_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1351,7 +1358,7 @@ PIOc_iotype_available(int iotype)
  * gets the iosysid for each component.
  *
  * @return PIO_NOERR on success, error code otherwise.
- * @ingroup PIO_init
+ * @ingroup PIO_init_c
  * @author Ed Hartnett
  */
 int

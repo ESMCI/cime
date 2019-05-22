@@ -1,14 +1,14 @@
  /*!  \page api PIO Fortran Interface
   This is a list of all user interface routines:
 
+  \section api_system PIO startup and shutdown routines
+     - \ref PIO_init
+     - \ref PIO_finalize
   \section api_fileops PIO file Operations
      - \ref PIO_openfile
      - \ref PIO_createfile
      - \ref PIO_syncfile
      - \ref PIO_closefile
-  \section api_system PIO startup and shutdown routines
-     - \ref PIO_init
-     - \ref PIO_finalize
   \section api_decomp PIO decomposition routines
     - \ref PIO_initdecomp
     - \ref PIO_freedecomp

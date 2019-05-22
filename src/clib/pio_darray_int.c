@@ -318,7 +318,7 @@ int get_vard_mpidatatype(io_desc_t *iodesc, MPI_Offset gdim0, PIO_Offset unlimdi
  * @param count an already-allocated array which gets the count
  * values.
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Ed Hartnett
  */
 int
@@ -394,7 +394,7 @@ find_start_count(int ndims, int fndims, var_desc_t *vdesc,
  * @param frame the record dimension for each of the nvars variables
  * in iobuf. NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -745,7 +745,7 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
  * fndims * maxregions. This array will get the count values for all
  * regions.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_read_darray
+ * @ingroup PIO_read_darray_c
  * @author Jim Edwards, Ed Hartnett
  **/
 int
@@ -813,7 +813,7 @@ find_all_start_count(io_region *region, int maxregions, int fndims,
  * than IO task 0. It is called by write_darray_multi_serial().
  *
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -893,7 +893,7 @@ send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset llen,
  * less than blocksize*numiotasks then some iotasks will have a NULL
  * iobuf.
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1053,7 +1053,7 @@ recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
  * @param frame the record dimension for each of the nvars variables
  * in iobuf. NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1146,7 +1146,7 @@ write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *v
  * less than blocksize*numiotasks then some iotasks will have a NULL
  * iobuf.
  * @return 0 on success, error code otherwise.
- * @ingroup PIO_read_darray
+ * @ingroup PIO_read_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1419,7 +1419,7 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
  * less than blocksize * numiotasks then some iotasks will have a NULL
  * iobuf.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_read_darray
+ * @ingroup PIO_read_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1716,7 +1716,7 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
  * @param force true to force the flushing of the buffer
  * @param addsize additional size to add to buffer (in bytes)
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1837,7 +1837,7 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
  *
  * @param ios pointer to the IO system structure
  * @param collective true if collective report is desired
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards
  */
 void
@@ -1887,7 +1887,7 @@ cn_buffer_report(iosystem_desc_t *ios, bool collective)
  * non zero), this function does nothing.
  *
  * @param ios pointer to the IO system structure.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards
  */
 void
@@ -1914,7 +1914,7 @@ free_cn_buffer_pool(iosystem_desc_t *ios)
  * @param wmb pointer to the wmulti_buffer structure.
  * @param flushtodisk if true, then flush data to disk.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1977,7 +1977,7 @@ flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  * @param nvars number of variables.
  * @param direction sort direction.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards
  */
 int

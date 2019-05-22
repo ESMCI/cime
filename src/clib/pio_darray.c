@@ -13,6 +13,11 @@
 #include <pio_internal.h>
 #include <uthash.h>
 
+/**
+ * @defgroup PIO_read_darray_c Reading a Variable into Distributes Arrays
+ * @defgroup PIO_write_darray_c Writing Distributes Arrays into a Variable
+ */
+
 /** 10MB default limit. */
 PIO_Offset pio_buffer_size_limit = PIO_BUFFER_SIZE;
 
@@ -103,7 +108,7 @@ PIOc_set_buffer_size_limit(PIO_Offset limit)
  * the fill value to be used for missing data.
  * @param flushtodisk non-zero to cause buffers to be flushed to disk.
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -412,7 +417,7 @@ PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
  * @param fillvalue Pointer that will get the fill value.
  *
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Ed Hartnett
  */
 static int
@@ -514,7 +519,7 @@ pio_inq_var_fill_expected(int ncid, int varid, int pio_type, PIO_Offset type_siz
  * @param varid the variable ID.
  * @param vdesc pointer to var_desc_t info for this var.
  * @returns 0 for success, non-zero error code for failure.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Ed Hartnett
  */
 int
@@ -608,7 +613,7 @@ find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
  * @param fillvalue pointer to the fill value to be used for missing
  * data.
  * @returns 0 for success, non-zero error code for failure.
- * @ingroup PIO_write_darray
+ * @ingroup PIO_write_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -854,7 +859,7 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
  * pointer to the distributed portion of the array that is on this
  * processor.
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_read_darray
+ * @ingroup PIO_read_darray_c
  * @author Jim Edwards, Ed Hartnett
  */
 int

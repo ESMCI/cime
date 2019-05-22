@@ -1,20 +1,20 @@
  /*!  \page c_api PIO C Interface
   This is a list of all user interface routines:
 
-  \section api_fileops_c PIO file Operations
+  \section api_system_c PIO Startup and Shutdown
+     - \ref PIO_init_c
+     - \ref PIO_finalize_c
+  \section api_fileops_c PIO File Operations
      - \ref PIO_open_file_c
      - \ref PIO_create_file_c
      - \ref PIO_sync_file_c
      - \ref PIO_close_file_c
-  \section api_system_c PIO startup and shutdown routines
-     - \ref PIO_init
-     - \ref PIO_finalize
-  \section api_decomp_c PIO decomposition routines
-    - \ref PIO_initdecomp
-    - \ref PIO_freedecomp
-  \section readwrite_c Reading and Writing distributed variables
-    - \ref PIO_read_darray
-    - \ref PIO_write_darray
+  \section api_decomp_c PIO Decompositions
+    - \ref PIO_initdecomp_c
+    - \ref PIO_freedecomp_c
+  \section readwrite_c Reading and Writing Distributed Arrays
+    - \ref PIO_read_darray_c
+    - \ref PIO_write_darray_c
   \section utility_c Utility routines
     - \ref PIO_set_hint_grp
     - \ref PIO_setframe
