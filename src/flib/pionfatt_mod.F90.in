@@ -47,10 +47,10 @@ module pionfatt_mod
   !! @brief Reads  an netcdf attribute from a file
   !<
 
+  !> @cond doxygen_cant_handle_so_exclude
   private :: modName
   character(len=*), parameter :: modName='pionfatt_mod'
   interface
-     !> @brief Write a netCDF text attribute.
      integer(C_INT) function PIOc_put_att_text (ncid, varid, name, len, op) &
           bind(C,name="PIOc_put_att_text")
        use iso_c_binding
@@ -143,7 +143,7 @@ module pionfatt_mod
        real(C_DOUBLE), intent(out)   :: op
      end function PIOc_get_att_double
   end interface
-
+  !> @endcond
 
 contains
 

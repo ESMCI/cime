@@ -1151,7 +1151,8 @@ contains
 !>
 !! @public
 !! @defgroup PIO_set_hint_grp  PIO_set_hint
-!! @brief set file system hints using mpi_info_set
+
+!> @brief set file system hints using mpi_info_set
 !! @details This is a collective call which expects the following parameters:
 !! @param iosystem @copydoc io_desc_t
 !! @param hint  the string name of the hint to define
