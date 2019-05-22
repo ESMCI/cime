@@ -15,6 +15,7 @@
  * @defgroup PIO_finalize_c Shut Down the IO System
  * @defgroup PIO_initdecomp_c Initialize a Decomposition
  * @defgroup PIO_freedecomp_c Free a Decomposition
+ * @defgroup PIO_setframe_c Set the Record Number
  */
 
 /** The default error handler used when iosystem cannot be located. */
@@ -126,6 +127,7 @@ PIOc_Set_File_Error_Handling(int ncid, int method)
  * @param ncid the ncid of the open file
  * @param varid the variable ID
  * @returns 0 on success, error code otherwise
+ * @ingroup PIO_setframe_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -186,7 +188,7 @@ PIOc_advanceframe(int ncid, int varid)
  * @param frame the value of the unlimited dimension.  In c 0 for the
  * first record, 1 for the second
  * @return PIO_NOERR for no error, or error code.
- * @ingroup PIO_setframe
+ * @ingroup PIO_setframe_c
  * @author Jim Edwards, Ed Hartnett
  */
 int

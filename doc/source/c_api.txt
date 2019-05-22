@@ -15,15 +15,14 @@
   \section readwrite_c Reading and Writing Distributed Arrays
     - \ref PIO_read_darray_c
     - \ref PIO_write_darray_c
-  \section utility_c Utility routines
-    - \ref PIO_set_hint_grp
-    - \ref PIO_setframe
-    - \ref PIO_advanceframe
-    - \ref PIO_setdebuglevel
-    - \ref PIO_seterrorhandling
-    - \ref PIO_get_local_array_size
-    - \ref PIO_getnumiotasks
-    - \ref PIO_set_blocksize
+    - \ref PIO_setframe_c
+  \section utility_c Utility 
+    - \ref PIO_set_hint_grp_c
+    - \ref PIO_setdebuglevel_c
+    - \ref PIO_seterrorhandling_c
+    - \ref PIO_get_local_array_size_c
+    - \ref PIO_getnumiotasks_c
+    - \ref PIO_set_blocksize_c
   \section netcdf_c NetCDF format specific routines 
      Also see: http://www.unidata.ucar.edu/software/netcdf/docs/
      \subsection putget_c Reading/Writing netcdf metadata  
