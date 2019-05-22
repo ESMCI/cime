@@ -227,7 +227,7 @@ $(function() {
 <p class="startli">Softenv packages and environment variables</p>
 <p>It is not necessary to edit your .soft file on Mira inorder to build PIO. Execute the following commands to temporarily load packages into your softenv. These packages use the IBM/XL compiler.<br />
  %&gt; soft add +mpiwrapper-xl (or switch from the default in your softenv)<br />
- %&gt; soft add -compilers-2015-02<br />
+ %&gt; soft add @ibm-compilers-2015-02<br />
  %&gt; soft add +cmake<br />
  %&gt; soft add +git<br />
 </p>
@@ -411,29 +411,36 @@ sudo make install </pre><p class="endli"></p>
 <p>Build with: </p><pre>cd hdf5-1.10.1
 CC=mpicc ./configure --with-zlib=/usr/local/zlib-1.2.11_mpich-3.2 --with-szlib=/usr/local/szip-2.1_mpich-3.2 --prefix=/usr/local/hdf5-1.10.1_mpich-3.2 --enable-parallel
 make all check
-sudo PATH=$PATH:/usr/local/bin make install</pre><pre></pre></li>
+sudo PATH=$PATH:/usr/local/bin make install</pre><p class="endli"></p>
+</li>
 <li>
-<pre>Installing NetCDF-4 C Library</pre><pre></pre><pre>Download the netcdf C library from the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">NetCDF download
-page</a>. Untar with: <pre>tar zxf netcdf-c-4.5.0-rc1.tar.gz</pre></pre><pre></pre><pre>Build with:
-<pre>cd netcdf-c-4.5.0-rc1
+<p class="startli">Installing NetCDF-4 C Library</p>
+<p></p>
+<p>Download the netcdf C library from the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">NetCDF download page</a>. Untar with: </p><pre>tar zxf netcdf-c-4.5.0-rc1.tar.gz</pre><p></p>
+<p>Build with: </p><pre>cd netcdf-c-4.5.0-rc1
 CPPFLAGS='-I/usr/local/zlib-1.2.11_mpich-3.2 -I/usr/local/szip-2.1_mpich-3.2/include -I/usr/local/hdf5-1.10.1_mpich-3.2/include' LDFLAGS='-L/usr/local/zlib-1.2.11_mpich-3.2/lib -L/usr/local/szip-2.1_mpich-3.2/lib -L/usr/local/hdf5-1.10.1_mpich-3.2/lib' CC=mpicc ./configure --enable-parallel-tests --prefix=/usr/local/netcdf-4.4.1_mpich-3.2
 make all check
-sudo make install </pre></pre><pre></pre><pre>Note that you may not build netCDF with it's built-in
-parallel-netCDF support, if you are also planning to use the
-parallel-netCDF library with PIO. For PIO, parallel-netCDF must be
-installed independently of netCDF.</pre><pre></pre></li>
+sudo make install </pre><p></p>
+<p>Note that you may not build netCDF with it's built-in parallel-netCDF support, if you are also planning to use the parallel-netCDF library with PIO. For PIO, parallel-netCDF must be installed independently of netCDF.</p>
+<p class="endli"></p>
+</li>
 <li>
-<pre>Installing NetCDF-4 Fortran Library</pre><pre></pre><pre>Download the netcdf Fortran library from the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">NetCDF download
-page</a>. Untar
-with: <pre>tar zxf netcdf-fortran-4.4.4.tar.gz</pre></pre><pre></pre><pre>Build with:
-<pre>cd netcdf-fortran-4.4.4
+<p class="startli">Installing NetCDF-4 Fortran Library</p>
+<p></p>
+<p>Download the netcdf Fortran library from the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">NetCDF download page</a>. Untar with: </p><pre>tar zxf netcdf-fortran-4.4.4.tar.gz</pre><p></p>
+<p>Build with: </p><pre>cd netcdf-fortran-4.4.4
 CC=mpicc LD_LIBRARY_PATH=/usr/local/netcdf-4.4.1_mpich-3.2/lib FC=mpifort CPPFLAGS=-I/usr/local/netcdf-4.4.1_mpich-3.2/include LDFLAGS=-L/usr/local/netcdf-4.4.1_mpich-3.2/lib ./configure --enable-parallel-tests --prefix=/usr/local/netcdf-fortran-4.4.4_c_4.4.1_mpich-3.2
 make all
-sudo make install </pre></pre><pre></pre><pre>Note that make check did not work because of a failure in a
-test. This has been reported to the netCDF team.</pre><pre></pre></li>
+sudo make install </pre><p></p>
+<p>Note that make check did not work because of a failure in a test. This has been reported to the netCDF team.</p>
+<p class="endli"></p>
+</li>
 <li>
-<pre>Installing ParallelIO Library</pre><pre></pre><pre>Clone the ParallelIO library.</pre><pre></pre><pre>Create a build directory and run cmake.
-<pre>
+<p class="startli">Installing ParallelIO Library</p>
+<p></p>
+<p>Clone the ParallelIO library.</p>
+<p></p>
+<p>Create a build directory and run cmake. </p><pre>
 cd ParallelIO
 mkdir build
 cd build
@@ -441,31 +448,42 @@ CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1_mpich-3.2 -DNe
 make
 make check
 sudo make install
-</pre></pre><pre></pre><pre>When debugging build issues, it's helpful to be able to do a clean
-build from the command line, including tests:</pre><pre><pre>
+</pre><p></p>
+<p>When debugging build issues, it's helpful to be able to do a clean build from the command line, including tests:</p>
+<pre>
 cd build
 rm -rf * &amp;&amp; CFLAGS='-Wall -g' FFLAGS=-g CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1_mpich-3.2 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.4_c_4.4.1_mpich-3.2 -DPnetCDF_PATH=/usr/local/pnetcdf-1.8.1_mpich-3.2 -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On .. &amp;&amp; make VERBOSE=1 all tests check
-</pre></pre><pre></pre><pre>To build with address sanitizer:</pre><pre><pre>
+</pre><p></p>
+<p>To build with address sanitizer:</p>
+<pre>
 rm -rf * &amp;&amp; CFLAGS='-Wall -g  -fsanitize=address -fno-omit-frame-pointer' FFLAGS='-g  -fsanitize=address -fno-omit-frame-pointer' CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1_mpich-3.2 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.4_c_4.4.1_mpich-3.2 -DPnetCDF_PATH=/usr/local/pnetcdf-1.8.1_mpich-3.2 -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On .. &amp;&amp; make VERBOSE=1 all tests check
-</pre></pre><pre></pre><pre>Note the optional CFLAGS=-g which allows the use of a debugger
-with this code. Also note the optional VERBOSE=1 provided to make,
-which causes the build commands to be made visible.</pre><pre></pre><pre>Note also the -DPIO_ENABLE_LOGGING=On which is helpful for debugging but should probably not be used in production builds.</pre><pre></pre></li>
+</pre><p></p>
+<p>Note the optional CFLAGS=-g which allows the use of a debugger with this code. Also note the optional VERBOSE=1 provided to make, which causes the build commands to be made visible.</p>
+<p></p>
+<p>Note also the -DPIO_ENABLE_LOGGING=On which is helpful for debugging but should probably not be used in production builds.</p>
+<p class="endli"></p>
+</li>
 <li>
-<pre>Building PIO with autotools.</pre><pre></pre><pre>To build the PIO library with autotools, clone the repo and use a command like this:</pre><pre><pre>
+<p class="startli">Building PIO with autotools.</p>
+<p></p>
+<p>To build the PIO library with autotools, clone the repo and use a command like this:</p>
+<pre>
 autoreconf -i &amp;&amp; LD_LIBRARY_PATH=/usr/local/netcdf-4.4.1_mpich-3.2/lib CC=mpicc CFLAGS='-g' CPPFLAGS='-I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure &amp;&amp; make check
-</pre></pre><pre></pre><pre>To build with debug logging and the address sanitizer for memory checking (debugging builds only!):</pre><pre><pre>
+</pre><p></p>
+<p>To build with debug logging and the address sanitizer for memory checking (debugging builds only!):</p>
+<pre>
 autoreconf -i &amp;&amp; LD_LIBRARY_PATH=/usr/local/netcdf-4.4.1_mpich-3.2/lib CC=mpicc CFLAGS='-g -fsanitize=address -fno-omit-frame-pointer' CPPFLAGS='-I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure --enable-logging &amp;&amp; make check
- </pre></pre><pre></pre></li>
+ </pre><p class="endli"></p>
+</li>
 <li>
-<pre>Building and Running Performance Tests</pre><pre></pre><pre>Download a decomp file from our <a href="http://parallelio.googlecode.com/svn/perfdecomps/trunk/30/">google
-code page</a>. You can use any of those files, save them to
-build/test/performance. (These instructions were tested with the first
-one in the list.)</pre><pre></pre><pre>Create a namelist file, named "pioperf.nl". Save this file in the
-subdirectory (note that it is in the BUILD directory):
-<pre>
+<p class="startli">Building and Running Performance Tests</p>
+<p></p>
+<p>Download a decomp file from our <a href="http://parallelio.googlecode.com/svn/perfdecomps/trunk/30/">google code page</a>. You can use any of those files, save them to build/test/performance. (These instructions were tested with the first one in the list.)</p>
+<p></p>
+<p>Create a namelist file, named "pioperf.nl". Save this file in the subdirectory (note that it is in the BUILD directory): </p><pre>
 build/tests/performance/
-</pre></pre><pre></pre><pre>The contents of the namelist file should look like:
-<pre>
+</pre><p></p>
+<p>The contents of the namelist file should look like: </p><pre>
 &amp;pioperf
 decompfile = "/u/sciteam/thayerca/scratch/pio_work/piodecomp30tasks01dims06.dat"
 pio_typenames = 'pnetcdf'
@@ -473,25 +491,30 @@ niotasks = 30
 rearrangers = 1
 nvars = 2
 /
-</pre></pre><pre></pre><pre>You should change the path to your decomp file to wherever you
-saved it. You can add items to the list to run more tests, so, for
-instance, to test all of the types of io, your pio_typenames would
-look like: pio_typenames = 'pnetcdf','netcdf','netcdf4p','netcdf4c'</pre><pre></pre><pre>HDF5 is netcdf4p, and Parallel-Netcdf is pnetcdf.</pre><pre></pre><pre>Example to test with different numbers of tasks, you could do:
-niotasks = 30,15,5</pre><pre></pre><pre>Example to test with both of the rearranger algorithms:
-rearrangers = 1,2</pre><pre></pre><pre>Example to test with different numbers of variables:
-nvars = 8,5,3,2</pre><pre></pre><pre>Once you have your decomp file and your namelist set up, run like this:</pre><pre><pre>
+</pre><p></p>
+<p>You should change the path to your decomp file to wherever you saved it. You can add items to the list to run more tests, so, for instance, to test all of the types of io, your pio_typenames would look like: pio_typenames = 'pnetcdf','netcdf','netcdf4p','netcdf4c'</p>
+<p></p>
+<p>HDF5 is netcdf4p, and Parallel-Netcdf is pnetcdf.</p>
+<p></p>
+<p>Example to test with different numbers of tasks, you could do: niotasks = 30,15,5</p>
+<p></p>
+<p>Example to test with both of the rearranger algorithms: rearrangers = 1,2</p>
+<p></p>
+<p>Example to test with different numbers of variables: nvars = 8,5,3,2</p>
+<p></p>
+<p>Once you have your decomp file and your namelist set up, run like this:</p>
+<pre>
 mpiexec -n 30 ./pioperf
-</pre></pre><pre></pre><pre>If you run the most basic performance tests (as in the first
-pioperf.nl example), this script should only take a few minutes (less
-than 5) to complete. The output and results will be written to your
-pioperf.o$PBS_JOBID file. Adding more iotypes and rearrangers and
-variables to these tests will increase the time significantly.</pre><pre></pre></li>
+</pre><p></p>
+<p>If you run the most basic performance tests (as in the first pioperf.nl example), this script should only take a few minutes (less than 5) to complete. The output and results will be written to your pioperf.o$PBS_JOBID file. Adding more iotypes and rearrangers and variables to these tests will increase the time significantly.</p>
+<p class="endli"></p>
+</li>
 </ol>
-<pre><em>Last updated: 05-16-2016</em>
-</pre></div></div><!-- contents -->
+<p><em>Last updated: 05-16-2016</em> </p>
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

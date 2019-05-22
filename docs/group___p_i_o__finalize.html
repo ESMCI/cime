@@ -75,9 +75,6 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga01570706db6f1c5e61087045d558e9df"><td class="memItemLeft" align="right" valign="top">subroutine&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__finalize.html#ga01570706db6f1c5e61087045d558e9df">piolib_mod::finalize</a> (iosystem, ierr)</td></tr>
 <tr class="memdesc:ga01570706db6f1c5e61087045d558e9df"><td class="mdescLeft">&#160;</td><td class="mdescRight">finalizes the pio subsystem.  <a href="group___p_i_o__finalize.html#ga01570706db6f1c5e61087045d558e9df">More...</a><br /></td></tr>
 <tr class="separator:ga01570706db6f1c5e61087045d558e9df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga04e150e10a29f037979dc2eaa872bdb5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__finalize.html#ga04e150e10a29f037979dc2eaa872bdb5">PIOc_finalize</a> (int iosysid)</td></tr>
-<tr class="memdesc:ga04e150e10a29f037979dc2eaa872bdb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up internal data structures, free MPI resources, and exit the pio library.  <a href="#ga04e150e10a29f037979dc2eaa872bdb5">More...</a><br /></td></tr>
-<tr class="separator:ga04e150e10a29f037979dc2eaa872bdb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Shuts down and cleans up any memory associated with the pio library. </p>
@@ -124,38 +121,10 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="ga04e150e10a29f037979dc2eaa872bdb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga04e150e10a29f037979dc2eaa872bdb5">&#9670;&nbsp;</a></span>PIOc_finalize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_finalize </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>iosysid</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Clean up internal data structures, free MPI resources, and exit the pio library. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">iosysid</td><td>the io system ID provided by <a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 for success or non-zero for error.</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

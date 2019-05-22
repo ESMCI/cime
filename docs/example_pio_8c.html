@@ -86,8 +86,7 @@ Include dependency graph for examplePio.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="example_pio_8c__incl.png" border="0" usemap="#example_pio_8c" alt=""/></div>
 <map name="example_pio_8c" id="example_pio_8c">
-<area shape="rect" id="node8" href="pio_8h.html" title="Public headers for the PIO C interface. " alt="" coords="377,80,427,107"/>
-<area shape="rect" id="node11" href="uthash_8h_source.html" title="uthash.h" alt="" coords="477,155,549,181"/>
+<area shape="rect" id="node8" href="pio_8h.html" title="Public headers for the PIO C interface. " alt="" coords="343,80,394,107"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -173,7 +172,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Clean up allocated resources. </p>
-<p>This function frees the memory used in this example. It calls the ParallelIO library function <a class="el" href="pio_8h.html#a6416ad3c81a99f31f8f55e857acd697e" title="Free a decomposition map. ">PIOc_freedecomp()</a> to free decomposition resources. Then calles <a class="el" href="group___p_i_o__finalize.html#ga04e150e10a29f037979dc2eaa872bdb5" title="Clean up internal data structures, free MPI resources, and exit the pio library. ">PIOc_finalize()</a> and MPI_finalize() to free library resources.</p>
+<p>This function frees the memory used in this example. It calls the ParallelIO library function <a class="el" href="group___p_i_o__freedecomp__c.html#ga6416ad3c81a99f31f8f55e857acd697e" title="Free a decomposition map. ">PIOc_freedecomp()</a> to free decomposition resources. Then calles <a class="el" href="group___p_i_o__finalize__c.html#ga04e150e10a29f037979dc2eaa872bdb5" title="Clean up internal data structures, free MPI resources, and exit the pio library. ">PIOc_finalize()</a> and MPI_finalize() to free library resources.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">this</td><td>Pointer to self. </td></tr>
@@ -206,7 +205,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Closes the netCDF file. </p>
-<p>Uses the <a class="el" href="pio_8h.html#aee37be8734afcb8ee94088dc287c341b" title="Close a file previously opened with PIO. ">PIOc_closefile()</a> function to close the netCDF sample file written by this example.</p>
+<p>Uses the <a class="el" href="group___p_i_o__close__file__c.html#gaee37be8734afcb8ee94088dc287c341b" title="Close a file previously opened with PIO. ">PIOc_closefile()</a> function to close the netCDF sample file written by this example.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">this</td><td>Pointer to self. </td></tr>
@@ -240,7 +239,7 @@ Functions</h2></td></tr>
 
 <p>Create the decomposition. </p>
 <p>This function is called as part of the creation of a sample data file for this example.</p>
-<p>Uses <a class="el" href="group___p_i_o__initdecomp.html#ga56c119d47d1082df044968f80acbe265" title="Initialize the decomposition used with distributed arrays. ">PIOc_InitDecomp()</a> to initalize the decomposition for this example. The arguments are:</p><ul>
+<p>Uses <a class="el" href="group___p_i_o__initdecomp__c.html#ga56c119d47d1082df044968f80acbe265" title="Initialize the decomposition used with distributed arrays. ">PIOc_InitDecomp()</a> to initalize the decomposition for this example. The arguments are:</p><ul>
 <li>the ID of the IO system, obtained from PIOc_init_intracomm().</li>
 <li>the NetCDF type of the sample data - in this case a 4-byte integer.</li>
 <li>the number of dimensions (1).</li>
@@ -299,14 +298,14 @@ rank: 3 length: 4 [13, 14, 15, 16]
 
 <p>Create the netCDF file. </p>
 <p>This function is called as part of the creation of a sample data file for this example.</p>
-<p>Uses the function <a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a> to create the netCDF output file. The format of the file is created in accordance with the iotype member variable, which specifies one of the following values:</p>
+<p>Uses the function <a class="el" href="group___p_i_o__create__file__c.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a> to create the netCDF output file. The format of the file is created in accordance with the iotype member variable, which specifies one of the following values:</p>
 <ul>
 <li>PIO_IOTYPE_PNETCDF=1 Parallel Netcdf (parallel)</li>
 <li>PIO_IOTYPE_NETCDF=2 Netcdf3 Classic format (serial)</li>
 <li>PIO_IOTYPE_NETCDF4C=3 NetCDF4 (HDF5) compressed format (serial)</li>
 <li>PIO_IOTYPE_NETCDF4P=4 NetCDF4 (HDF5) parallel</li>
 </ul>
-<p>The <a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a> function has the following parameters:</p>
+<p>The <a class="el" href="group___p_i_o__create__file__c.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a> function has the following parameters:</p>
 <ul>
 <li>The IO system ID as set by PIOc_init_intracomm().</li>
 <li>A pointer which will get the ncid of this file when it is created.</li>
@@ -347,8 +346,8 @@ rank: 3 length: 4 [13, 14, 15, 16]
 
 <p>Define netCDF metadata. </p>
 <p>This function is called as part of the creation of a sample data file for this example.</p>
-<p>It defines a dimension and a one-dimensional variable in the netCDF file using functions <a class="el" href="group___p_i_o__def__dim.html#ga19ec254c22fa1822aa86cf69a074c1af" title="The PIO-C interface for the NetCDF function nc_def_dim. ">PIOc_def_dim()</a> and <a class="el" href="group___p_i_o__def__var.html#ga70d1d5b2f5e828fed653ca87aacef16e" title="The PIO-C interface for the NetCDF function nc_def_var. ">PIOc_def_var()</a>. It then calls <a class="el" href="group___p_i_o__enddef.html#ga9967ed940ad4b735965a4abe35101709" title="The PIO-C interface for the NetCDF function nc_enddef. ">PIOc_enddef()</a> to end the define mode of the file.</p>
-<p>All of the functions take the pioFileDesc returned by <a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a>. This is the ncid of the netCDF file.</p>
+<p>It defines a dimension and a one-dimensional variable in the netCDF file using functions <a class="el" href="group___p_i_o__def__dim__c.html#ga19ec254c22fa1822aa86cf69a074c1af" title="The PIO-C interface for the NetCDF function nc_def_dim. ">PIOc_def_dim()</a> and <a class="el" href="group___p_i_o__def__var__c.html#ga70d1d5b2f5e828fed653ca87aacef16e" title="The PIO-C interface for the NetCDF function nc_def_var. ">PIOc_def_var()</a>. It then calls <a class="el" href="group___p_i_o__enddef__c.html#ga9967ed940ad4b735965a4abe35101709" title="The PIO-C interface for the NetCDF function nc_enddef. ">PIOc_enddef()</a> to end the define mode of the file.</p>
+<p>All of the functions take the pioFileDesc returned by <a class="el" href="group___p_i_o__create__file__c.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a>. This is the ncid of the netCDF file.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">this</td><td>Pointer to self. </td></tr>
@@ -397,7 +396,7 @@ rank: 3 length: 4 [13, 14, 15, 16]
 </div><div class="memdoc">
 
 <p>Error handling function. </p>
-<p>On error, process with rank zero will print error message, the netCDF file will be closed with <a class="el" href="pio_8h.html#aee37be8734afcb8ee94088dc287c341b" title="Close a file previously opened with PIO. ">PIOc_closefile()</a>, and MPI_Abort is called to end the example execution on all processes.</p>
+<p>On error, process with rank zero will print error message, the netCDF file will be closed with <a class="el" href="group___p_i_o__close__file__c.html#gaee37be8734afcb8ee94088dc287c341b" title="Close a file previously opened with PIO. ">PIOc_closefile()</a>, and MPI_Abort is called to end the example execution on all processes.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">this</td><td>Pointer to self. </td></tr>
@@ -434,7 +433,7 @@ rank: 3 length: 4 [13, 14, 15, 16]
 <p>Initialize libraries, create sample data. </p>
 <p>This function is called as part of the creation of a sample data file for this example.</p>
 <p>Ths funtion initializes MPI and the ParallelIO libraries. It sets up the ParallelIO library communicator. It also allocates memory for data used in this example, and assigns sample values to the data array that will be written.</p>
-<p>The ParallelIO communicator is set up with a call to <a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a>. This call takes the following parameters:</p>
+<p>The ParallelIO communicator is set up with a call to <a class="el" href="group___p_i_o__init__c.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a>. This call takes the following parameters:</p>
 <ul>
 <li>The MPI communicator specifying the invovled processors (MPI_COMM_WORLD, in this case, to use all processors).</li>
 <li>The number of I/O tasks. In this example there will be one I/O task for each process.</li>
@@ -510,7 +509,7 @@ rank: 3 length: 4 [13, 14, 15, 16]
 
 <p>Read the example data from the file. </p>
 <p>This function is called as part of the creation of a sample data file for this example.</p>
-<p>This function reads the data that has been written to the sample data file. The data are read with the <a class="el" href="group___p_i_o__read__darray.html#gaa4eb9375a17ec358a88c8e7e388880db" title="Read a field from a file to the IO library. ">PIOc_read_darray()</a> function.</p>
+<p>This function reads the data that has been written to the sample data file. The data are read with the <a class="el" href="group___p_i_o__read__darray__c.html#gaa4eb9375a17ec358a88c8e7e388880db" title="Read a field from a file to the IO library. ">PIOc_read_darray()</a> function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">this</td><td>Pointer to self. </td></tr>
@@ -544,7 +543,7 @@ rank: 3 length: 4 [13, 14, 15, 16]
 
 <p>Write the sample data to the file. </p>
 <p>This function is called as part of the creation of a sample data file for this example.</p>
-<p>The data are written with the <a class="el" href="group___p_i_o__write__darray.html#gaa40fae759a2a5e39cb7af9b6f024db8f" title="Write a distributed array to the output file. ">PIOc_write_darray()</a> function. After the write is complete, ensure the file is synced for all processes after the write.</p>
+<p>The data are written with the <a class="el" href="group___p_i_o__write__darray__c.html#gaa40fae759a2a5e39cb7af9b6f024db8f" title="Write a distributed array to the output file. ">PIOc_write_darray()</a> function. After the write is complete, ensure the file is synced for all processes after the write.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">this</td><td>Pointer to self. </td></tr>
@@ -628,7 +627,7 @@ data:</pre><pre>    foo = 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

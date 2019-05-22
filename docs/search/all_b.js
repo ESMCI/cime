@@ -1,14 +1,11 @@
 var searchData=
 [
+  ['ncid',['ncid',['../structpio__types_1_1var__desc__t.html#a3e627795ff0f730475b7e6e2b30a2670',1,'pio_types::var_desc_t']]],
   ['ndim',['NDIM',['../example1_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3',1,'NDIM():&#160;example1.c'],['../example2_8c.html#a2b1fd2d28c6a7d4a3f7027cc1b6466f3',1,'NDIM():&#160;example2.c']]],
   ['ndims',['ndims',['../structio__desc__t.html#a258b4083cf5f5afaf66abdbe3db01a89',1,'io_desc_t']]],
   ['ndof',['ndof',['../structio__desc__t.html#a66ce0ae69f67e84921bbf85508fd015f',1,'io_desc_t']]],
   ['needsfill',['needsfill',['../structio__desc__t.html#ae091e478cb04d7b108cb1e124c05355d',1,'io_desc_t']]],
   ['needssort',['needssort',['../structio__desc__t.html#ae7bcd6fa7805489017be40db33ce0c59',1,'io_desc_t']]],
-  ['netcdf_5fchar_5fsize',['NETCDF_CHAR_SIZE',['../pio__internal_8h.html#a38fc2e6a684bfdabf2c745c08c6bc02c',1,'pio_internal.h']]],
-  ['netcdf_5fdouble_5fint64_5fsize',['NETCDF_DOUBLE_INT64_SIZE',['../pio__internal_8h.html#ab657f41cd86d6bdb37be349e0c77e12e',1,'pio_internal.h']]],
-  ['netcdf_5fint_5ffloat_5fsize',['NETCDF_INT_FLOAT_SIZE',['../pio__internal_8h.html#a607a83a3995a7413e7b7352d4283a72f',1,'pio_internal.h']]],
-  ['netcdf_5fshort_5fsize',['NETCDF_SHORT_SIZE',['../pio__internal_8h.html#af4a3af20f8c0c263864d98483072d3ad',1,'pio_internal.h']]],
   ['next',['next',['../structio__region.html#a15971dd265f37af41a802fea02eea4e9',1,'io_region::next()'],['../structiosystem__desc__t.html#ad4885665a95c1c45ce592e180e127e34',1,'iosystem_desc_t::next()']]],
   ['niotasks',['niotasks',['../structpioexample_1_1pioexampleclass.html#aa1fa3c0e1f613c945576ea89b2dd08c3',1,'pioexample::pioexampleclass']]],
   ['nrecvs',['nrecvs',['../structio__desc__t.html#a5409346e91db139f59bd27d4ac91576c',1,'io_desc_t']]],

@@ -16,6 +16,12 @@
  * @defgroup PIO_initdecomp_c Initialize a Decomposition
  * @defgroup PIO_freedecomp_c Free a Decomposition
  * @defgroup PIO_setframe_c Set the Record Number
+ * @defgroup PIO_set_hint_c Set an MPI Hint
+ * @defgroup PIO_error_method_c Set the Error Handling
+ * @defgroup PIO_get_local_array_size_c Get the Local Array Size
+ * @defgroup PIO_iosystem_is_active_c Is this IO System Active?
+ * @defgroup PIO_getnumiotasks_c Get the Number of IO Tasks
+ * @defgroup PIO_set_blocksize_c Set the Blocksize
  */
 
 /** The default error handler used when iosystem cannot be located. */
@@ -41,6 +47,7 @@ struct sort_map {
  * @param active pointer that gets true if IO system is active, false
  * otherwise.
  * @returns 0 on success, error code otherwise
+ * @ingroup PIO_iosystem_is_active_c
  * @author Jim Edwards
  */
 int
@@ -67,6 +74,7 @@ PIOc_iosystem_is_active(int iosysid, bool *active)
  *
  * @param ncid the ncid of an open file
  * @returns 1 if file is open, 0 otherwise.
+ * @ingroup PIO_file_open_c
  * @author Jim Edwards
  */
 int
@@ -94,7 +102,7 @@ PIOc_File_is_Open(int ncid)
  * @param ncid the ncid of an open file
  * @param method the error handling method
  * @returns old error handler
- * @ingroup PIO_error_method
+ * @ingroup PIO_error_method_c
  * @author Jim Edwards
  */
 int
@@ -251,6 +259,7 @@ PIOc_setframe(int ncid, int varid, int frame)
  * @param numiotasks a pointer taht gets the number of IO
  * tasks. Ignored if NULL.
  * @returns 0 on success, error code otherwise
+ * @ingroup PIO_getnumiotasks_c
  * @author Ed Hartnett
  */
 int
@@ -272,6 +281,7 @@ PIOc_get_numiotasks(int iosysid, int *numiotasks)
  *
  * @param ioid IO descrption ID.
  * @returns the size of the array.
+ * @ingroup PIO_get_local_array_size_c
  * @author Jim Edwards
  */
 int
@@ -294,7 +304,7 @@ PIOc_get_local_array_size(int ioid)
  * @param iosysid the IO system ID
  * @param method the error handling method
  * @returns old error handler
- * @ingroup PIO_error_method
+ * @ingroup PIO_error_method_c
  * @author Jim Edwards
  */
 int
@@ -325,7 +335,7 @@ PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  * @param old_method pointer to int that will get old method. Ignored
  * if NULL.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_error_method
+ * @ingroup PIO_error_method_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -405,8 +415,6 @@ compare( const void* a, const void* b)
         return 1;
     return 0;
 }
-
-
 
 /**
  * Initialize the decomposition used with distributed arrays. The
@@ -1026,6 +1034,7 @@ PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
  * @param rearr_opts the rearranger options
  * @param iosysidp a pointer that gets the IO system ID
  * @returns 0 for success, error code otherwise
+ * @ingroup PIO_init_c
  * @author Jim Edwards
  */
 int
@@ -1066,6 +1075,7 @@ PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
  * @param hint the hint for MPI
  * @param hintval the value of the hint
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
+ * @ingroup PIO_set_hint_c
  * @author Jim Edwards, Ed Hartnett
  */
 int
@@ -1215,6 +1225,7 @@ PIOc_finalize(int iosysid)
  * @param ioproc a pointer that gets 1 if task is an IO task, 0
  * otherwise. Ignored if NULL.
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
+ * @ingroup PIO_iosystem_is_active_c
  * @author Jim Edwards
  */
 int
@@ -1239,6 +1250,7 @@ PIOc_iam_iotask(int iosysid, bool *ioproc)
  * @param iorank a pointer that gets the io rank, or -1 if task is not
  * in the IO communicator. Ignored if NULL.
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
+ * @ingroup PIO_iosystem_is_active_c
  * @author Jim Edwards
  */
 int
@@ -1706,7 +1718,7 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
  *
  * @param newblocksize the new blocksize.
  * @returns 0 for success.
- * @ingroup PIO_set_blocksize
+ * @ingroup PIO_set_blocksize_c
  * @author Jim Edwards
  */
 int

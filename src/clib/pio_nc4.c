@@ -28,7 +28,7 @@
  * @param deflate_level 1 to 9, with 1 being faster and 9 being more
  * compressed.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_def_var
+ * @ingroup PIO_def_var_c
  * @author Ed Hartnett
  */
 int
@@ -119,7 +119,7 @@ PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * level (from 1-9) if deflation is in use for this variable.  Ignored
  * if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_inq_var
+ * @ingroup PIO_inq_var_c
  * @author Ed Hartnett
  */
 int
@@ -210,7 +210,6 @@ PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
 }
 
 /**
- * @ingroup PIO_def_var
  * Set chunksizes for a variable.
  *
  * This function only applies to netCDF-4 files. When used with netCDF
@@ -231,6 +230,7 @@ PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
  * @param chunksizesp an array of chunksizes. Must have a chunksize for
  * every variable dimension.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_def_var_c
  * @author Ed Hartnett
  */
 int
@@ -353,7 +353,7 @@ PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunks
  * set. There are the same number of chunksizes as there are
  * dimensions.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_inq_var
+ * @ingroup PIO_inq_var_c
  * @author Ed Hartnett
  */
 int
@@ -484,7 +484,7 @@ PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizes
  * @param varid the ID of the variable to set chunksizes for.
  * @param endian NC_ENDIAN_NATIVE, NC_ENDIAN_LITTLE, or NC_ENDIAN_BIG.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_def_var
+ * @ingroup PIO_def_var_c
  * @author Ed Hartnett
  */
 int
@@ -561,7 +561,7 @@ PIOc_def_var_endian(int ncid, int varid, int endian)
  * @param endianp pointer to int which will be set to
  * endianness. Ignored if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_inq_var
+ * @ingroup PIO_inq_var_c
  * @author Ed Hartnett
  */
 int
@@ -655,7 +655,7 @@ PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * @param nelems number of elements in file cache.
  * @param preemption preemption setting for file cache.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_def_var
+ * @ingroup PIO_def_var_c
  * @author Ed Hartnett
  */
 int
@@ -757,7 +757,7 @@ PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems
  * @param nelemsp gets the number of elements in file cache.
  * @param preemptionp gets the preemption setting for file cache.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_def_var
+ * @ingroup PIO_def_var_c
  * @author Ed Hartnett
  */
 int
@@ -877,7 +877,7 @@ PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nel
  * @param nelems the number of elements in the cache.
  * @param preemption the cache preemption value.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_def_var
+ * @ingroup PIO_def_var_c
  * @author Ed Hartnett
  */
 int
@@ -964,7 +964,7 @@ PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems
  * @param nelemsp will get the number of elements in the cache. Ignored if NULL.
  * @param preemptionp will get the cache preemption value. Ignored if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
- * @ingroup PIO_inq_var
+ * @ingroup PIO_inq_var_c
  * @author Ed Hartnett
  */
 int

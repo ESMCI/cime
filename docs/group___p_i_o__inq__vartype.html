@@ -78,9 +78,6 @@ Functions/Subroutines</h2></td></tr>
 <tr class="memitem:ga2e31ee3f011c4de5de082add7c593c90"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__vartype.html#ga2e31ee3f011c4de5de082add7c593c90">pio_nf::inq_vartype_id</a> (ncid, varid, type)</td></tr>
 <tr class="memdesc:ga2e31ee3f011c4de5de082add7c593c90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets metadata information for netcdf file.  <a href="group___p_i_o__inq__vartype.html#ga2e31ee3f011c4de5de082add7c593c90">More...</a><br /></td></tr>
 <tr class="separator:ga2e31ee3f011c4de5de082add7c593c90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga55005fa698798142cd4a741c2daa4fb7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__vartype.html#ga55005fa698798142cd4a741c2daa4fb7">PIOc_inq_vartype</a> (int ncid, int varid, nc_type *xtypep)</td></tr>
-<tr class="memdesc:ga55005fa698798142cd4a741c2daa4fb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the type of a variable.  <a href="#ga55005fa698798142cd4a741c2daa4fb7">More...</a><br /></td></tr>
-<tr class="separator:ga55005fa698798142cd4a741c2daa4fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -206,56 +203,10 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="ga55005fa698798142cd4a741c2daa4fb7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga55005fa698798142cd4a741c2daa4fb7">&#9670;&nbsp;</a></span>PIOc_inq_vartype()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_inq_vartype </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ncid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>varid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">nc_type *&#160;</td>
-          <td class="paramname"><em>xtypep</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Find the type of a variable. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ncid</td><td>the ncid of the open file. </td></tr>
-    <tr><td class="paramname">varid</td><td>the variable ID. </td></tr>
-    <tr><td class="paramname">xtypep</td><td>a pointer that will get the type of the attribute. Ignored if NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>PIO_NOERR for success, error code otherwise. </dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

@@ -6,10 +6,14 @@
  * @date  2016
  * @see http://code.google.com/p/parallelio/
  */
-
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
+
+/**
+ * @addtogroup PIO_put_var_c Write Data to a Variable
+ * @{
+ */
 
 /**
  * Get strided, muti-dimensional subset of a text variable.
@@ -1220,3 +1224,7 @@ PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *co
 {
     return PIOc_put_vars_tc(ncid, varid, start, count, stride, NC_NAT, op);
 }
+
+/**
+ * @}
+ */

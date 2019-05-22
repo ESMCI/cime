@@ -1,16 +1,20 @@
 /**
  * @file
- * PIO functions to get data (excluding varm functions).
+ * PIO functions to get data.
  *
  * @author Ed Hartnett
  * @date  2016
  *
  * @see http://code.google.com/p/parallelio/
  */
-
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
+
+/**
+ * @addtogroup PIO_get_var_c Get Data from a Variable
+ * @{
+ */
 
 /**
  * Get strided, muti-dimensional subset of a text variable.
@@ -1169,3 +1173,7 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 {
     return PIOc_get_vars_tc(ncid, varid, start, count, stride, NC_NAT, buf);
 }
+
+/**
+ * @}
+ */

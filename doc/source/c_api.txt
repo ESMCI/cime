@@ -17,44 +17,28 @@
     - \ref PIO_write_darray_c
     - \ref PIO_setframe_c
   \section utility_c Utility 
-    - \ref PIO_set_hint_grp_c
-    - \ref PIO_setdebuglevel_c
-    - \ref PIO_seterrorhandling_c
+    - \ref PIO_set_hint_c
+    - \ref PIO_error_method_c
     - \ref PIO_get_local_array_size_c
     - \ref PIO_getnumiotasks_c
     - \ref PIO_set_blocksize_c
-  \section netcdf_c NetCDF format specific routines 
+  \section netcdf_c NetCDF-Like Functions
      Also see: http://www.unidata.ucar.edu/software/netcdf/docs/
-     \subsection putget_c Reading/Writing netcdf metadata  
-         - \ref PIO_get_att
-         - \ref PIO_put_att
-         - \ref PIO_get_var
-         - \ref PIO_put_var
-     \subsection utilnc_c Netcdf utility routines
-    - \ref PIO_enddef
-    - \ref PIO_redef
-    - \ref PIO_def_dim 
-    - \ref PIO_def_var
-     \subsection inqnc_c NetCDF file inquiry routines
-    - \ref PIO_inquire
-    - \ref PIO_inq_attname
-    - \ref PIO_inq_att
-    - \ref PIO_inq_attlen
-    - \ref PIO_inquire_variable
-    - \ref PIO_inq_varid
-    - \ref PIO_inq_varname
-    - \ref PIO_inq_vartype
-    - \ref PIO_inq_varndims
-    - \ref PIO_inq_vardimid
-    - \ref PIO_inq_varnatts
-    - \ref PIO_inq_dimid
-    - \ref PIO_inq_dimname
-    - \ref PIO_inq_dimlen
-    - \ref PIO_inq_ndims
-    - \ref PIO_inq_nvars
-    - \ref PIO_inq_natts
-    - \ref PIO_inquire_variable
-    - \ref PIO_inquire_dimension
-    - \ref PIO_inquire_dimension
+     \subsection utilnc_c File Operations
+       - \ref PIO_enddef_c
+       - \ref PIO_redef_c
+     \subsection write_metadata_c Writing Metadata   
+       - \ref PIO_def_dim_c
+       - \ref PIO_def_var_c
+       - \ref PIO_put_att_c
+     \subsection putget_c Reading/Writing Data
+       - \ref PIO_get_var_c
+       - \ref PIO_put_var_c
+     \subsection inqnc_c Learn about Files and Metadata
+       - \ref PIO_inq_c
+       - \ref PIO_get_att_c
+       - \ref PIO_inq_att_c
+       - \ref PIO_inq_var_c
+       - \ref PIO_inq_dim_c
 
 */
