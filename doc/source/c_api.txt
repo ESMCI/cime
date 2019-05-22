@@ -1,4 +1,4 @@
- /*!  \page api PIO Fortran Interface
+ /*!  \page api PIO C Interface
   This is a list of all user interface routines:
 
   \section api_fileops PIO file Operations

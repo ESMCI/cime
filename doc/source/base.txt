@@ -50,5 +50,6 @@ releases.
  - \ref examp
  - \ref faq
  - \ref api
+ - \ref c_api
  - \ref contributing_code
 */
