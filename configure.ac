@@ -1,7 +1,6 @@
 ## This is the autoconf file for the PIO library.
 ## Ed Hartnett 8/16/17
 
-
 # Initialize autoconf and automake.
 AC_INIT(pio, 2.4.2-development)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
