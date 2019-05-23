@@ -46,7 +46,8 @@ script:
   - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran'
-  - ./configure --enable-fortran
+  - ./configure --enable-fortran --enable-docs
+  - make
   - make -j distcheck
   - rm -rf build
   - mkdir build
