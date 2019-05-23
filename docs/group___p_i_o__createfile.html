@@ -69,15 +69,12 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions/Subroutines</h2></td></tr>
-<tr class="memitem:ga359c93e9d4f79c37d488f00535122177"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__createfile.html#ga359c93e9d4f79c37d488f00535122177">piolib_mod::createfile</a> (iosystem, file, iotype, fname, amode_in)</td></tr>
-<tr class="memdesc:ga359c93e9d4f79c37d488f00535122177"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a NetCDF or PNetCDF file using PIO.  <a href="group___p_i_o__createfile.html#ga359c93e9d4f79c37d488f00535122177">More...</a><br /></td></tr>
-<tr class="separator:ga359c93e9d4f79c37d488f00535122177"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaed31e065901c964d4224b3db61a30d5e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e">PIOc_createfile</a> (int iosysid, int *ncidp, int *iotype, const char *filename, int mode)</td></tr>
-<tr class="memdesc:gaed31e065901c964d4224b3db61a30d5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new file using pio.  <a href="#gaed31e065901c964d4224b3db61a30d5e">More...</a><br /></td></tr>
-<tr class="separator:gaed31e065901c964d4224b3db61a30d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafa48e273e52a910db01e01f0c538800d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__createfile.html#gafa48e273e52a910db01e01f0c538800d">PIOc_createfile_int</a> (int iosysid, int *ncidp, int *iotype, const char *filename, int mode)</td></tr>
 <tr class="memdesc:gafa48e273e52a910db01e01f0c538800d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new file using pio.  <a href="#gafa48e273e52a910db01e01f0c538800d">More...</a><br /></td></tr>
 <tr class="separator:gafa48e273e52a910db01e01f0c538800d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga359c93e9d4f79c37d488f00535122177"><td class="memItemLeft" align="right" valign="top">integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__createfile.html#ga359c93e9d4f79c37d488f00535122177">piolib_mod::createfile</a> (iosystem, file, iotype, fname, amode_in)</td></tr>
+<tr class="memdesc:ga359c93e9d4f79c37d488f00535122177"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a NetCDF or PNetCDF file using PIO.  <a href="group___p_i_o__createfile.html#ga359c93e9d4f79c37d488f00535122177">More...</a><br /></td></tr>
+<tr class="separator:ga359c93e9d4f79c37d488f00535122177"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -151,67 +148,6 @@ Functions/Subroutines</h2></td></tr>
 
 </div>
 </div>
-<a id="gaed31e065901c964d4224b3db61a30d5e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaed31e065901c964d4224b3db61a30d5e">&#9670;&nbsp;</a></span>PIOc_createfile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_createfile </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>iosysid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>ncidp</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>iotype</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>filename</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>mode</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a new file using pio. </p>
-<p>Input parameters are read on comp task 0 and ignored elsewhere. NOFILL mode will be turned on in all cases.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">iosysid</td><td>A defined pio system ID, obtained from PIOc_InitIntercomm() or PIOc_InitAsync(). </td></tr>
-    <tr><td class="paramname">ncidp</td><td>A pointer that gets the ncid of the newly created file. </td></tr>
-    <tr><td class="paramname">iotype</td><td>A pointer to a pio output format. Must be one of PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF, PIO_IOTYPE_NETCDF4C, or PIO_IOTYPE_NETCDF4P. </td></tr>
-    <tr><td class="paramname">filename</td><td>The filename to create. </td></tr>
-    <tr><td class="paramname">mode</td><td>The netcdf mode for the create operation. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 for success, error code otherwise.</dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 <a id="gafa48e273e52a910db01e01f0c538800d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gafa48e273e52a910db01e01f0c538800d">&#9670;&nbsp;</a></span>PIOc_createfile_int()</h2>
 
@@ -257,10 +193,10 @@ Functions/Subroutines</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Create a new file using pio. </p>
-<p>This is an internal function that is called by both <a class="el" href="pio_8h.html#ad31670417f971b11f52c8d919d738778" title="Open a new file using pio. ">PIOc_create()</a> and <a class="el" href="group___p_i_o__createfile.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a>. Input parameters are read on comp task 0 and ignored elsewhere.</p>
+<p>This is an internal function that is called by both <a class="el" href="group___p_i_o__create__file__c.html#ga639570c19eeee26c757f63d1765c124d" title="Open a new file using pio. ">PIOc_create()</a> and <a class="el" href="group___p_i_o__create__file__c.html#gaed31e065901c964d4224b3db61a30d5e" title="Create a new file using pio. ">PIOc_createfile()</a>. Input parameters are read on comp task 0 and ignored elsewhere.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">iosysid</td><td>A defined pio system ID, obtained from <a class="el" href="group___p_i_o__init.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a> or PIOc_InitAsync(). </td></tr>
+    <tr><td class="paramname">iosysid</td><td>A defined pio system ID, obtained from <a class="el" href="group___p_i_o__init__c.html#ga479a1d9fe2edfc7ca321a1b482fe0211" title="Library initialization used when IO tasks are a subset of compute tasks. ">PIOc_Init_Intracomm()</a> or PIOc_InitAsync(). </td></tr>
     <tr><td class="paramname">ncidp</td><td>A pointer that gets the ncid of the newly created file. </td></tr>
     <tr><td class="paramname">iotype</td><td>A pointer to a pio output format. Must be one of PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF, PIO_IOTYPE_NETCDF4C, or PIO_IOTYPE_NETCDF4P. </td></tr>
     <tr><td class="paramname">filename</td><td>The filename to create. </td></tr>
@@ -276,7 +212,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

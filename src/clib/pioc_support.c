@@ -757,6 +757,7 @@ free_region_list(io_region *top)
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition map to free.
  * @returns 0 for success, error code otherwise.
+ * @ingroup PIO_freedecomp_c
  * @author Jim Edwards
  */
 int

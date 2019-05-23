@@ -6,6 +6,14 @@
 #include <pio.h>
 #include <pio_internal.h>
 #include <uthash.h>
+
+/**
+ * @defgroup PIO_open_file_c Open a File
+ * @defgroup PIO_create_file_c Create a File
+ * @defgroup PIO_sync_file_c Sync a File
+ * @defgroup PIO_close_file_c Close a File
+ */
+
 /* This is the next ncid that will be used when a file is opened or
    created. We start at 16 so that it will be easy for us to notice
    that it's not netcdf (starts at 4), pnetcdf (starts at 0) or
@@ -27,7 +35,7 @@ int pio_next_ncid = 16;
  * @param filename : The filename to open
  * @param mode : The netcdf mode for the open operation
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_openfile
+ * @ingroup PIO_open_file_c
  * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
@@ -54,7 +62,7 @@ int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @param filename : The filename to open
  * @param mode : The netcdf mode for the open operation
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_openfile
+ * @ingroup PIO_open_file_c
  * @author Ed Hartnett
  */
 int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
@@ -75,7 +83,7 @@ int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @param mode The netcdf mode for the open operation
  * @param ncidp pointer to int where ncid will go
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_openfile
+ * @ingroup PIO_open_file_c
  * @author Ed Hartnett
  */
 int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
@@ -120,7 +128,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @param filename The filename to create.
  * @param mode The netcdf mode for the create operation.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_createfile
+ * @ingroup PIO_create_file_c
  * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
@@ -164,7 +172,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @param filename : The filename to open
  * @param ncidp : A pio file descriptor (output)
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_create
+ * @ingroup PIO_create_file_c
  * @author Ed Hartnett
  */
 int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
@@ -195,6 +203,7 @@ int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
  *
  * @param ncid: the file pointer
  * @returns PIO_NOERR for success, error code otherwise.
+ * @ingroup PIO_close_file_c
  * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_closefile(int ncid)
@@ -362,6 +371,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
  *
  * @param ncid the ncid of the file to sync.
  * @returns PIO_NOERR for success, error code otherwise.
+ * @ingroup PIO_sync_file_c
  * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_sync(int ncid)

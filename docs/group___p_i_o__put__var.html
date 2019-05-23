@@ -636,7 +636,7 @@ Functions/Subroutines</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
     <tr><td class="paramname">vardesc</td><td>Variable description structure.</td></tr>
-    <tr><td class="paramname">start</td><td>: </td></tr>
+    <tr><td class="paramname">index</td><td>: </td></tr>
     <tr><td class="paramname">ival</td><td>: The value for the netcdf metadata </td></tr>
   </table>
   </dd>
@@ -1909,8 +1909,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Writes double data to a netCDF variable. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
-    <tr><td class="paramname">File</td><td>: A file handle returne from <a class="el" href="group___p_i_o__openfile.html">PIO_openfile</a> or <a class="el" href="group___p_i_o__createfile.html">PIO_createfile</a>. </td></tr>
+    <tr><td class="paramname">ncid</td><td>: The netcdf file id. </td></tr>
     <tr><td class="paramname">varid</td><td>: The netcdf variable identifier </td></tr>
     <tr><td class="paramname">ival</td><td>: The data to write. </td></tr>
   </table>
@@ -1960,8 +1959,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Writes int data to a netCDF variable. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
-    <tr><td class="paramname">File</td><td>: A file handle returne from <a class="el" href="group___p_i_o__openfile.html">PIO_openfile</a> or <a class="el" href="group___p_i_o__createfile.html">PIO_createfile</a>. </td></tr>
+    <tr><td class="paramname">ncid</td><td>: The netcdf file id. </td></tr>
     <tr><td class="paramname">varid</td><td>: The netcdf variable identifier </td></tr>
     <tr><td class="paramname">ival</td><td>: The data to write. </td></tr>
   </table>
@@ -2011,8 +2009,7 @@ Functions/Subroutines</h2></td></tr>
 <p>Writes real data to a netCDF variable. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">File</td><td>File descriptor structure. This structure holds information associated with each open file </td></tr>
-    <tr><td class="paramname">File</td><td>: A file handle returne from <a class="el" href="group___p_i_o__openfile.html">PIO_openfile</a> or <a class="el" href="group___p_i_o__createfile.html">PIO_createfile</a>. </td></tr>
+    <tr><td class="paramname">ncid</td><td>: The netcdf file id. </td></tr>
     <tr><td class="paramname">varid</td><td>: The netcdf variable identifier </td></tr>
     <tr><td class="paramname">ival</td><td>: The data to write. </td></tr>
   </table>
@@ -5790,7 +5787,7 @@ Functions/Subroutines</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

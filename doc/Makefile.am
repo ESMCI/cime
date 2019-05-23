@@ -2,13 +2,16 @@
 
 # Ed Hartnett 4/1/19
 
-EXTRA_DIST = CMakeLists.txt customdoxygen.css Doxyfile.in	\
-DoxygenLayout.xml doxygen.sty
-
 # Run doxygen, then confirm warning log file is empty.
 check: all
 all:
 	doxygen Doxyfile
+	cat doxywarn.log
 	[ ! -s doxywarn.log ]
 
+SUBDIRS = source
+
 CLEANFILES = *.log
+
+EXTRA_DIST = CMakeLists.txt customdoxygen.css Doxyfile.in	\
+DoxygenLayout.xml doxygen.sty

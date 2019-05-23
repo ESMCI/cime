@@ -1,6 +1,3 @@
 <map id="pio_nc4.c" name="pio_nc4.c">
-<area shape="rect" id="node3" href="$pio_8h.html" title="Public headers for the PIO C interface. " alt="" coords="188,155,239,181"/>
-<area shape="rect" id="node11" href="$pio__internal_8h.html" title="Private headers and defines for the PIO C interface. " alt="" coords="248,80,347,107"/>
-<area shape="rect" id="node9" href="$uthash_8h_source.html" title="uthash.h" alt="" coords="141,229,213,256"/>
-<area shape="rect" id="node12" href="$bget_8h_source.html" title="bget.h" alt="" coords="444,155,503,181"/>
+<area shape="rect" id="node3" href="$pio_8h.html" title="Public headers for the PIO C interface. " alt="" coords="237,80,288,107"/>
 </map>

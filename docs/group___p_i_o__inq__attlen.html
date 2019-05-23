@@ -80,9 +80,6 @@ integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__attlen.html#ga255c1f853ccf17c0f7bac0c083391697">pio_nf::inq_attlen_id</a> (ncid, varid, name, len)</td></tr>
 <tr class="memdesc:ga255c1f853ccf17c0f7bac0c083391697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the attribute length. <br /></td></tr>
 <tr class="separator:ga255c1f853ccf17c0f7bac0c083391697"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac5b6d9b5314d88fee8a1c048a2aa5b13"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_i_o__inq__attlen.html#gac5b6d9b5314d88fee8a1c048a2aa5b13">PIOc_inq_attlen</a> (int ncid, int varid, const char *name, <a class="el" href="pio_8h.html#a1225edb54e6d6de678bf675485549eb0">PIO_Offset</a> *lenp)</td></tr>
-<tr class="memdesc:gac5b6d9b5314d88fee8a1c048a2aa5b13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the length of an attribute.  <a href="#gac5b6d9b5314d88fee8a1c048a2aa5b13">More...</a><br /></td></tr>
-<tr class="separator:gac5b6d9b5314d88fee8a1c048a2aa5b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function/Subroutine Documentation</h2>
@@ -143,63 +140,10 @@ integer function&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 </div>
 </div>
-<a id="gac5b6d9b5314d88fee8a1c048a2aa5b13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac5b6d9b5314d88fee8a1c048a2aa5b13">&#9670;&nbsp;</a></span>PIOc_inq_attlen()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int PIOc_inq_attlen </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ncid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>varid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="pio_8h.html#a1225edb54e6d6de678bf675485549eb0">PIO_Offset</a> *&#160;</td>
-          <td class="paramname"><em>lenp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the length of an attribute. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ncid</td><td>the ID of an open file. </td></tr>
-    <tr><td class="paramname">varid</td><td>the variable ID, or NC_GLOBAL for global attributes. </td></tr>
-    <tr><td class="paramname">name</td><td>the name of the attribute. </td></tr>
-    <tr><td class="paramname">lenp</td><td>a pointer that gets the lenght of the attribute array. Ignored if NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>PIO_NOERR for success, error code otherwise. </dd></dl>
-<dl class="section author"><dt>Author</dt><dd>Jim Edwards, Ed Hartnett </dd></dl>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun May 19 2019 07:57:01 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 22 2019 15:09:23 for PIO by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>
