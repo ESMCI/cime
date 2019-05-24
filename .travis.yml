@@ -11,7 +11,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - pkg-config netcdf-bin libnetcdf-dev openmpi-bin libopenmpi-dev gfortran
+    - pkg-config netcdf-bin libnetcdf-dev openmpi-bin libopenmpi-dev gfortran doxygen graphviz
 
 before_install:
   - test -n $CC && unset CC
@@ -40,12 +40,14 @@ env:
     - LDFLAGS='-L/usr/lib'
   
 script:
+  - ls -l /usr/include
   - autoreconf -i
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
   - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran'
-  - ./configure --enable-fortran
+  - ./configure --enable-fortran --enable-docs
+  - make
   - make -j distcheck
   - rm -rf build
   - mkdir build

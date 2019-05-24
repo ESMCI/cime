@@ -504,7 +504,6 @@ contains
 !! @ingroup PIO_initdecomp
 !! @brief A deprecated interface to the PIO_initdecomp method.
 !! @details
-!! @deprecated
 !! @param iosystem : a defined pio system descriptor, see PIO_types
 !! @param basepiotype : the type of variable(s) associated with this iodesc.
 !! @copydoc PIO_kinds
@@ -514,6 +513,7 @@ contains
 !! @param iodofr :
 !! @param iodofw :
 !! @param iodesc @copydoc iodesc_generate
+!! @deprecated
 !<
   subroutine initdecomp_2dof_bin_i4(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
@@ -554,7 +554,6 @@ contains
 !! @ingroup PIO_initdecomp
 !! @brief A deprecated interface to the PIO_initdecomp method.
 !! @details
-!! @deprecated
 !! @param iosystem : a defined pio system descriptor, see PIO_types
 !! @param basepiotype : the type of variable(s) associated with this iodesc.
 !! @copydoc PIO_kinds
@@ -563,6 +562,7 @@ contains
 !! @param compdof : mapping of the storage order of the variable to its memory order
 !! @param iodofr :
 !! @param iodesc @copydoc iodesc_generate
+!! @deprecated
 !<
   subroutine initdecomp_1dof_bin_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
@@ -604,7 +604,6 @@ contains
 !! @ingroup PIO_initdecomp
 !! @brief A deprecated interface to the PIO_initdecomp method.
 !! @details
-!! @deprecated
 !! @param iosystem : a defined pio system descriptor, see PIO_types
 !! @param basepiotype : the type of variable(s) associated with this iodesc.
 !! @copydoc PIO_kinds
@@ -616,6 +615,7 @@ contains
 !! @param start : used with count to give a block description of the shape of the data
 !! @param count :
 !! @param iodesc @copydoc iodesc_generate
+!! @deprecated
 !<
   subroutine initdecomp_2dof_nf_i4(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,start, count, iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
@@ -664,7 +664,6 @@ contains
 !! @ingroup PIO_initdecomp
 !! @brief A deprecated interface to the PIO_initdecomp method.
 !! @details
-!! @deprecated
 !! @param iosystem : a defined PIO system descriptor, see pio_types
 !! @param basepiotype : The type of variable(s) associated with this iodesc.
 !! @copydoc PIO_kinds
@@ -675,6 +674,7 @@ contains
 !! @param start :
 !! @param count :
 !! @param iodesc @copydoc iodesc_generate
+!! @deprecated
 !<
   subroutine initdecomp_1dof_nf_i4(iosystem,basepiotype,dims,lenblocks,compdof,iodof,start, count, iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
