@@ -1,4 +1,5 @@
-/** @file
+/**
+ * @file
  * Code to map IO to model decomposition.
  *
  * @author Jim Edwards
@@ -30,7 +31,7 @@
  * @author Jim Edwards
  */
 inline void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
-                     PIO_Offset *dim_list)
+                            PIO_Offset *dim_list)
 {
     /* Check inputs. */
     pioassert(ndims >= 0 && gdimlen && idx >= -1 && dim_list, "invalid input",
@@ -549,7 +550,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
 
     /* Check inputs. */
     pioassert(ios && iodesc && (iodesc->ndof == 0 ||
-	     (iodesc->ndof > 0 && dest_ioproc && dest_ioindex)) &&
+                                (iodesc->ndof > 0 && dest_ioproc && dest_ioindex)) &&
               iodesc->rearranger == PIO_REARR_BOX && ios->num_uniontasks > 0,
               "invalid input", __FILE__, __LINE__);
     LOG((1, "compute_counts ios->num_uniontasks = %d ios->compproc %d ios->ioproc %d",
@@ -566,8 +567,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     PIO_Offset *s2rindex = NULL;
     if (iodesc->ndof > 0)
     {
-	if (!(s2rindex = malloc(sizeof(PIO_Offset) * iodesc->ndof)))
-	    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        if (!(s2rindex = malloc(sizeof(PIO_Offset) * iodesc->ndof)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     }
     /* Allocate memory for the array of counts and init to zero. */
     if (!(iodesc->scount = calloc(ios->num_iotasks, sizeof(int))))
@@ -920,30 +921,30 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
      * each exchange.  */
     if(!ios->async || ios->compproc)
     {
-	for (int i = 0; i < niotasks; i++)
+        for (int i = 0; i < niotasks; i++)
         {
             int io_comprank = ios->ioranks[i];
             LOG((3, "ios->ioranks[%d] = %d", i, ios->ioranks[i]));
             if (iodesc->rearranger == PIO_REARR_SUBSET)
                 io_comprank = 0;
 
-	    LOG((3, "i = %d iodesc->scount[i] = %d", i, iodesc->scount[i]));
-	    if (iodesc->scount[i] > 0 && sbuf)
-	    {
-		LOG((3, "io task %d creating sendtypes[%d]", i, io_comprank));
-		sendcounts[io_comprank] = 1;
-		if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * iodesc->mpitype_size,
-						      iodesc->stype[i], &sendtypes[io_comprank])))
-		    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-		pioassert(sendtypes[io_comprank] != PIO_DATATYPE_NULL,  "bad mpi type", __FILE__, __LINE__);
+            LOG((3, "i = %d iodesc->scount[i] = %d", i, iodesc->scount[i]));
+            if (iodesc->scount[i] > 0 && sbuf)
+            {
+                LOG((3, "io task %d creating sendtypes[%d]", i, io_comprank));
+                sendcounts[io_comprank] = 1;
+                if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * iodesc->mpitype_size,
+                                                      iodesc->stype[i], &sendtypes[io_comprank])))
+                    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+                pioassert(sendtypes[io_comprank] != PIO_DATATYPE_NULL,  "bad mpi type", __FILE__, __LINE__);
 
-		if ((mpierr = MPI_Type_commit(&sendtypes[io_comprank])))
-		    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-	    }
-	    else
-	    {
-		sendcounts[io_comprank] = 0;
-	    }
+                if ((mpierr = MPI_Type_commit(&sendtypes[io_comprank])))
+                    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+            }
+            else
+            {
+                sendcounts[io_comprank] = 0;
+            }
         }
     }
 
@@ -1339,8 +1340,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
      * I/O task
      */
     for(int i=0; i<ios->num_uniontasks; i++){
-      sendcounts[i] = 0;
-      sdispls[i] = 0;
+        sendcounts[i] = 0;
+        sdispls[i] = 0;
     }
     if(ios->ioproc){
         /* Only I/O procs send sc_info messages */
@@ -1394,10 +1395,10 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
             PIO_Offset *start = &(sc_info_msg_recv[i * sc_info_msg_sz + 1]);
             PIO_Offset *count = &(sc_info_msg_recv[i * sc_info_msg_sz + 1 + ndims]);
 
-  #if PIO_ENABLE_LOGGING
+#if PIO_ENABLE_LOGGING
             for (int d = 0; d < ndims; d++)
                 LOG((3, "start[%d] = %lld count[%d] = %lld", d, start[d], d, count[d]));
-  #endif /* PIO_ENABLE_LOGGING */
+#endif /* PIO_ENABLE_LOGGING */
 
             /* For each element of the data array on the compute task,
              * find the IO task to send the data element to, and its
@@ -1484,11 +1485,26 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 }
 
 
-/* The box_rearrange_create algorithm optimized for the case where many
+/**
+ * The box_rearrange_create algorithm optimized for the case where many
  * iotasks have iomaplen == 0 (holes)
+ *
+ * @param ios pointer to the iosystem_desc_t struct.
+ * @param maplen the length of the map.
+ * @param compmap a 1 based array of offsets into the global space. A
+ * 0 in this array indicates a value which should not be transfered.
+ * @param gdimlen an array length ndims with the sizes of the global
+ * dimensions.
+ * @param ndims the number of dimensions.
+ * @param iodesc a pointer to the io_desc_t struct, which must be
+ * allocated before this function is called.
+ * @returns 0 on success, error code otherwise.
+ * @author Jim Edwards
  */
-int box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
-                         const int *gdimlen, int ndims, io_desc_t *iodesc)
+int box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
+                                    const PIO_Offset *compmap,
+                                    const int *gdimlen, int ndims,
+                                    io_desc_t *iodesc)
 {
     int ret;
 
@@ -2318,7 +2334,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
 
         /* Get the max maxholegridsize, and distribute it to all tasks
          * in the IO communicator. */
-	iodesc->maxholegridsize = iodesc->holegridsize;
+        iodesc->maxholegridsize = iodesc->holegridsize;
         if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &(iodesc->maxholegridsize), 1, MPI_INT,
                                     MPI_MAX, ios->io_comm)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -2384,10 +2400,10 @@ void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
 
     assert(iodesc);
     if(iodesc->mpitype == MPI_DATATYPE_NULL)
-	tsize = 0;
+        tsize = 0;
     else
-	if ((mpierr = MPI_Type_size(iodesc->mpitype, &tsize)))
-	    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Type_size(iodesc->mpitype, &tsize)))
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     cbuf = NULL;
     ibuf = NULL;
     if (iodesc->ndof > 0)
