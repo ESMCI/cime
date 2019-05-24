@@ -94,17 +94,17 @@ extern "C" {
     /** Used to sort map points in the subset rearranger. */
     typedef struct mapsort
     {
-        int rfrom;
-        PIO_Offset soffset;
-        PIO_Offset iomap;
+        int rfrom; /**< from */
+        PIO_Offset soffset; /**< ??? */
+        PIO_Offset iomap; /**< ??? */
     } mapsort;
 
     /** swapm defaults. */
     typedef struct pio_swapm_defaults
     {
-        int nreqs;
-        bool handshake;
-        bool isend;
+        int nreqs; /**< number of requests */
+        bool handshake; /**< handshake */
+        bool isend; /**< is end? */
     } pio_swapm_defaults;
 
     /* Handle an error in the PIO library. */
@@ -361,7 +361,7 @@ extern "C" {
     int pio_sorted_copy(const void *array, void *tmparray, io_desc_t *iodesc, int nvars, int direction);
 
     int PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
-			nc_type *xtypep, PIO_Offset *lenp);
+                        nc_type *xtypep, PIO_Offset *lenp);
 #if defined(__cplusplus)
 }
 #endif

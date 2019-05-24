@@ -817,6 +817,7 @@ RECURSIVE              = YES
 EXCLUDE                = gptl \
 		         @CMAKE_BINARY_DIR@/src/flib/*.dir \
 		         @CMAKE_BINARY_DIR@/src/flib/genf90 \
+       		         ../src/clib/uthash.h \
                          _UNUSED_
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or

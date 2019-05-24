@@ -425,7 +425,6 @@ int inq_dimid_handler(iosystem_desc_t *ios)
  * tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @param msg the message sent my the comp root task.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
  * @internal
@@ -477,7 +476,6 @@ int inq_att_handler(iosystem_desc_t *ios)
  * tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @param msg the message sent my the comp root task.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
  * @internal
@@ -522,7 +520,6 @@ int inq_attname_handler(iosystem_desc_t *ios)
  * tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @param msg the message sent my the comp root task.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
  * @internal
@@ -569,7 +566,6 @@ int inq_attid_handler(iosystem_desc_t *ios)
 /** Handle attribute operations. This code only runs on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @param msg the message sent my the comp root task.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
  * @internal
@@ -638,7 +634,6 @@ int att_put_handler(iosystem_desc_t *ios)
 /** Handle attribute operations. This code only runs on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @param msg the message sent my the comp root task.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
  * @internal
@@ -1413,6 +1408,7 @@ int advanceframe_handler(iosystem_desc_t *ios)
  * This function is run on the IO tasks to enddef a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
+ * @param msg the message sent my the comp root task.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
  * @internal

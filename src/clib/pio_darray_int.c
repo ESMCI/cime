@@ -1,4 +1,5 @@
-/** @file
+/**
+ * @file
  *
  * Private functions to help read and write distributed arrays in PIO.
  *
@@ -388,7 +389,8 @@ find_start_count(int ndims, int fndims, var_desc_t *vdesc,
  * that will be written to
  * @param nvars the number of variables to be written with this
  * decomposition.
- * @param vid: an array of the variable ids to be written.
+ * @param fndims number of dimensions of this var in the file.
+ * @param varids an array of the variable ids to be written.
  * @param iodesc pointer to the io_desc_t info.
  * @param fill Non-zero if this write is fill data.
  * @param frame the record dimension for each of the nvars variables
@@ -1047,6 +1049,7 @@ recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
  * that will be written to.
  * @param nvars the number of variables to be written with this
  * decomposition.
+ * @param fndims number of dims in the vars in the file.
  * @param varids an array of the variable ids to be written
  * @param iodesc pointer to the decomposition info.
  * @param fill Non-zero if this write is fill data.

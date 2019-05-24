@@ -3,11 +3,12 @@
 # Ed Hartnett 4/1/19
 
 # Run doxygen, then confirm warning log file is empty.
-check: all
 all:
 	doxygen Doxyfile
 	cat doxywarn.log
 	[ ! -s doxywarn.log ]
+
+check: all
 
 SUBDIRS = source
 
