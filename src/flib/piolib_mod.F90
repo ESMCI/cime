@@ -554,7 +554,6 @@ contains
 !! @ingroup PIO_initdecomp
 !! @brief A deprecated interface to the PIO_initdecomp method.
 !! @details
-!! @deprecated
 !! @param iosystem : a defined pio system descriptor, see PIO_types
 !! @param basepiotype : the type of variable(s) associated with this iodesc.
 !! @copydoc PIO_kinds
@@ -563,6 +562,7 @@ contains
 !! @param compdof : mapping of the storage order of the variable to its memory order
 !! @param iodofr :
 !! @param iodesc @copydoc iodesc_generate
+!! @deprecated
 !<
   subroutine initdecomp_1dof_bin_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
