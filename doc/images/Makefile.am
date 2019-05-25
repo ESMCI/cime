@@ -5,4 +5,4 @@
 # These are the images used in the documentation.
 EXTRA_DIST = block-cyclic.png block-cyclic-rearr.png dof.png	\
 dof-rearr.png PIO_Intercomm1.png PIO_Intracomm1.png		\
-PIO_Library_Architecture1.jpg
+PIO_Library_Architecture1.jpg PIO_Decomposition.png
