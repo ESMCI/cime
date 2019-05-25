@@ -10,7 +10,9 @@ all:
 
 check: all
 
-SUBDIRS = source
+# Include these subdirs to include the documention files in the
+# distribution.
+SUBDIRS = source images
 
 CLEANFILES = *.log
 

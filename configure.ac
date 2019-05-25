@@ -253,6 +253,7 @@ AC_OUTPUT(Makefile
           tests/performance/Makefile
           doc/Makefile
           doc/source/Makefile
+          doc/images/Makefile
           examples/Makefile
           examples/c/Makefile
           scripts/Makefile)
