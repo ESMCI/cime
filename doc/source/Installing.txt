@@ -177,9 +177,19 @@ immediately with:
 
 (similar to the typical `make check` Autotools target).
 
-*ANOTHER NOTE:* These tests are designed to run in parallel.
-If you are on one of the supported supercomputing platforms (i.e., NERSC, NWSC, ALCF, 
-etc.), then the `ctest` command will assume that the tests will be run in an appropriately configured and scheduled parallel job.  This can be done by requesting an interactive session from the login nodes and then running `ctest` from within the interactive terminal.  Alternatively, this can be done by running the `ctest` command from a job submission script.  It is important to understand, however, that `ctest` itself will preface all of the test executable commands with the appropriate `mpirun`/`mpiexec`/`runjob`/etc. Hence, you should not further preface the `ctest` command with these MPI launchers.
+*ANOTHER NOTE:* These tests are designed to run in parallel.  If you
+are on one of the supported supercomputing platforms (i.e., NERSC,
+NWSC, ALCF, etc.), then the `ctest` command will assume that the tests
+will be run in an appropriately configured and scheduled parallel job.
+This can be done by requesting an interactive session from the login
+nodes and then running `ctest` from within the interactive terminal.
+Alternatively, this can be done by running the `ctest` command from a
+job submission script.  It is important to understand, however, that
+`ctest` itself will preface all of the test executable commands with
+the appropriate `mpirun`/`mpiexec`/`runjob`/etc. Hence, you should not
+further preface the `ctest` command with these MPI launchers.
+
+ - @ref test
 
 ### Installing with CMake ###
 
