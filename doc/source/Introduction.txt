@@ -1,6 +1,6 @@
-\tableofcontents
+@tableofcontents
 
-/*! \page intro Introduction 
+/** @page intro Introduction 
 
 PIO is a software interface layer designed to encapsolate the
 complexities of parallel IO and make it easier to replace the lower
@@ -9,12 +9,14 @@ href=http://www.unidata.ucar.edu/software/netcdf/docs/html_guide/index.html#user
 netcdf </a> and <a
 href=http://trac.mcs.anl.gov/projects/parallel-netcdf> pnetcdf </a>.
 
+@image html PIO_Library_Architecture1.jpg
+
 Basic description of how to optimize IO in a parallel environment:
 
-PIO calls are collective.  A MPI communicator is set in a call to \ref
+PIO calls are collective.  A MPI communicator is set in a call to @ref
 PIO_init and all tasks associated with that communicator must
 participate in all subsequent calls to PIO.  An application can make
-multiple calls to \ref PIO_init in order to support multiple MPI
+multiple calls to @ref PIO_init in order to support multiple MPI
 communicators.
 
 Begin by getting and unpacking the most recent release of PIO from
@@ -27,13 +29,13 @@ any remaining questions can be answered.
 
 ### Using PIO has three basic steps. ###
 
-1. Your program should call the \ref PIO_init function, and provide
+1. Your program should call the @ref PIO_init function, and provide
 the MPI communicator (and the rank within that communicator) of the
 calling task. This call initializes an IO system type structure that
 will be used in subsequent file and decomposition functions.
 
-2. You can open a file for reading or writing with a call to \ref
-PIO_createfile or \ref PIO_openfile. In this call you will specify the
+2. You can open a file for reading or writing with a call to @ref
+PIO_createfile or @ref PIO_openfile. In this call you will specify the
 file type: pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4c
 or pio_iotype_netcdf4p; along with the file name and optionally the
 netcdf mode.
@@ -41,7 +43,7 @@ netcdf mode.
 3. Finally, you can read or write decomposed data to the output
 file. You must describe the mapping between the organization of data
 in the file and that same data in the application space.  This is done
-in a call to \ref PIO_initdecomp. In the simplest call to this
+in a call to @ref PIO_initdecomp. In the simplest call to this
 function, a one dimensional integer array is passed from each task,
 the values in the array represent the offset from the beginning of the
 array on file.
