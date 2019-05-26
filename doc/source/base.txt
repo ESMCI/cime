@@ -25,15 +25,8 @@ examples on how it can be used. Please watch the PIO GitHub site
 [https://github.com/NCAR/ParallelIO] for announcements and new
 releases.
 
- - @ref intro
  - @ref install
- - @ref mach_walkthrough
- - @ref decomp
- - @ref error
- - @ref test
- - @ref examp
- - @ref faq
+ - @ref users_guide
  - @ref api
  - @ref c_api
- - @ref contributing_code
 */

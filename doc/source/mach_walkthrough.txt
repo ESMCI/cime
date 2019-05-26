@@ -1,6 +1,8 @@
-/*! \page mach_walkthrough Install Walk-through
+/*! \page mach_walkthrough CMake Install Walk-through
 
-This document provides specific instructions for installing PIO using a variety of compilers on a few commonly used super computers. Click on the link below to go directly to the machine of interest.
+This document provides specific instructions for installing PIO using
+a variety of compilers on a few commonly used super computers. Click
+on the link below to go directly to the machine of interest.
 
 -    <a href="#Yellowstone">Yellowstone</a> (NCAR's 1.5-petaflop IBM Supercomputer)
 -    <a href="#Edison">Edison</a> (A NERSC Cray XC30 Supercomputer)
@@ -15,11 +17,16 @@ This document provides specific instructions for installing PIO using a variety 
 <ol>
 <li>Directory setup
 
-Download a copy of the PIO source into a sub-directory of your working directory (refered to here as the PIO_source directory). Create another sub-directory for the build (refered to here as the PIO_build directory) and 'cd' into it. 
+Download a copy of the PIO source into a sub-directory of your working
+directory (refered to here as the PIO_source directory). Create
+another sub-directory for the build (refered to here as the PIO_build
+directory) and 'cd' into it.
 
 <li>Modules
 
-Modules required for installation depend on your prefered compiler. Issue the commands below to set the module environment for building PIO on Yellowstone. 
+Modules required for installation depend on your prefered
+compiler. Issue the commands below to set the module environment for
+building PIO on Yellowstone.
 
 + Intel
 
