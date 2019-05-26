@@ -1,27 +1,11 @@
-/******************************************************************************
- *
- * 
- *
- * Copyright (C) 2009 
- *
- * Permission to use, copy, modify, and distribute this software and its
- * documentation under the terms of the GNU General Public License is hereby 
- * granted. No representations are made about the suitability of this software 
- * for any purpose. It is provided "as is" without express or implied warranty.
- * See the GNU General Public License for more details.
- *
- * Documents produced by Doxygen are derivative works derived from the
- * input used in their production; they are not affected by this license.
- *
- */ 
 /*! 
 
-\mainpage Parallel I/O Libraries (PIO)
+@mainpage Parallel I/O Libraries (PIO)
 
-\author Jim Edwards
-\author John M. Dennis
-\author Mariana Vertenstein
-\author Edward Hartnett
+@author Jim Edwards
+@author John M. Dennis
+@author Mariana Vertenstein
+@author Edward Hartnett
 
 The Parallel IO libraries (PIO) are high-level parallel I/O C and
 Fortran libraries for structured grid applications. PIO provides a
@@ -41,15 +25,15 @@ examples on how it can be used. Please watch the PIO GitHub site
 [https://github.com/NCAR/ParallelIO] for announcements and new
 releases.
 
- - \ref intro
- - \ref install
- - \ref mach_walkthrough
- - \ref decomp
- - \ref error
- - \ref test
- - \ref examp
- - \ref faq
- - \ref api
- - \ref c_api
- - \ref contributing_code
+ - @ref intro
+ - @ref install
+ - @ref mach_walkthrough
+ - @ref decomp
+ - @ref error
+ - @ref test
+ - @ref examp
+ - @ref faq
+ - @ref api
+ - @ref c_api
+ - @ref contributing_code
 */

@@ -1,4 +1,4 @@
-/*! \page contributing_code Guide for Contributors
+/*! @page contributing_code Guide for Contributors
 
 # Introduction #
 
@@ -118,33 +118,18 @@ all issues have been resolved.
 <ul>
 
 <li>Programmers begin work on a feature or fix by branching from
-develop.
+master.
 
-<li>When a branch is ready, it is submitted to code review.
+<li>When a branch is ready, it is submitted to code review via pull
+request. Travis CI testing is automatically run on the PR.
 
 <li>When code review is complete, and the changes are approved, the PR
-is merged into the develop branch.
+is merged into the master branch.
 
-<li>Mutliple merges into the develop branch may take place between
-test cycles. (???)
-
-<li>The develop branch is tested automatically by Jenkins.
-
-<li>The develop branch is tested periodically by CDash (every ~6
-hours).
-
-<li>After all jenkins and Cdash builds complete successfully, with all
-tests passing, and no warnings, the PR is merged into master by the
-integrator.
-
-<li>Multiple PRs may be merged to master between test cycles. (???)
+<li>The master branch is tested periodically by CDash (every ~6
+hours). Any test failures and the merge to master may be rolled back.
 
 <li>The branch is then deleted by whomever merged it to master.
-
-<li>The master branch is then tested on Jenkins.
-
-<li>The master branch is tested on CDash. Any test failures and the
-merge to master will be rolled back.
 
 </ul>
 
@@ -247,11 +232,4 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
 }
 </pre>
 
-## Further Information ##
-
-<p>For style issues not already covered in this document, see this <a
-href="https://www.kernel.org/doc/Documentation/CodingStyle">style
-guide</a>.
-
-_Last updated: 05-16-2016_
 */
