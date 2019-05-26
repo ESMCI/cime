@@ -8,9 +8,9 @@ examples on how it can be used. Please watch the PIO GitHub site
 releases.
 
  - @ref intro
+ - @ref iosystem
  - @ref decomp
  - @ref error
- - @ref test
  - @ref examp
  - @ref faq
  - @ref api
