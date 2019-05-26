@@ -1,6 +1,6 @@
 @tableofcontents
 
-/*! @page intro Introduction 
+/** @page intro Introduction 
 
 PIO is a software interface layer designed to encapsolate the
 complexities of parallel IO and make it easier to replace the lower

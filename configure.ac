@@ -104,7 +104,6 @@ AC_ARG_ENABLE([docs],
                               [enable building of documentation with doxygen.])])
 test "x$enable_docs" = xyes || enable_docs=no
 AC_MSG_RESULT([$enable_docs])
-AM_CONDITIONAL(BUILD_DOCS, [test "x$enable_docs" = xyes])
 
 # Does the user want to developer documentation?
 AC_MSG_CHECKING([whether PIO developer documentation should be build (only for PIO developers)])
@@ -118,6 +117,7 @@ AC_MSG_RESULT([$enable_developer_docs])
 if test "x$enable_developer_docs" = xyes; then
    enable_docs=yes
 fi
+AM_CONDITIONAL(BUILD_DOCS, [test "x$enable_docs" = xyes])
 
 # Is doxygen installed?
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
