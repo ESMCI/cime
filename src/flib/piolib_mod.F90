@@ -82,7 +82,7 @@ module piolib_mod
   end interface
 
 !>
-!! @defgroup PIO_createfile PIO_createfile
+!! @defgroup PIO_createfile Create a file for use with PIO
 !<
   interface PIO_createfile
      module procedure createfile

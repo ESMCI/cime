@@ -1774,7 +1774,7 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * @param filename The filename to create.
  * @param mode The netcdf mode for the create operation.
  * @returns 0 for success, error code otherwise.
- * @ingroup PIO_createfile
+ * @ingroup PIO_createfile_c
  * @author Ed Hartnett
  */
 int
@@ -2014,7 +2014,7 @@ check_unlim_use(int ncid)
  * caller.
  *
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_openfile
+ * @ingroup PIO_openfile_c
  * @author Ed Hartnett
  */
 int
@@ -2217,7 +2217,7 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
  * classic.
  *
  * @return 0 for success, error code otherwise.
- * @ingroup PIO_openfile
+ * @ingroup PIO_openfile_c
  * @author Jim Edwards, Ed Hartnett
  */
 int

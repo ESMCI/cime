@@ -12,16 +12,28 @@
 
 /**
  * @defgroup PIO_init_c Initialize the IO System
+ * Initialize the IOSystem, including specifying number of IO and computation tasks.
  * @defgroup PIO_finalize_c Shut Down the IO System
+ * Shut down an IOSystem, freeing all associated resources.
  * @defgroup PIO_initdecomp_c Initialize a Decomposition
+ * Intiailize a decomposition of data into distributed arrays.
  * @defgroup PIO_freedecomp_c Free a Decomposition
+ * Free a decomposition, and associated resources.
  * @defgroup PIO_setframe_c Set the Record Number
- * @defgroup PIO_set_hint_c Set an MPI Hint
- * @defgroup PIO_error_method_c Set the Error Handling
- * @defgroup PIO_get_local_array_size_c Get the Local Array Size
- * @defgroup PIO_iosystem_is_active_c Is this IO System Active?
- * @defgroup PIO_getnumiotasks_c Get the Number of IO Tasks
- * @defgroup PIO_set_blocksize_c Set the Blocksize
+ * Set the record number for a future call to PIOc_write_darray() or
+ * PIOc_read_darray().
+ * @defgroup PIO_set_hint_c Set a Hint
+ * Set an MPI Hint.
+ * @defgroup PIO_error_method_c Set Error Handling
+ * Set the error handling method in case error is encountered.
+ * @defgroup PIO_get_local_array_size_c Get the Local Size
+ * Get the local size of a distributed array.
+ * @defgroup PIO_iosystem_is_active_c Check IOSystem
+ * Is the IO system active?
+ * @defgroup PIO_getnumiotasks_c Get Number IO Tasks
+ * Get the Number of IO Tasks.
+ * @defgroup PIO_set_blocksize_c Set Blocksize
+ * Set the Blocksize.
  */
 
 /** The default error handler used when iosystem cannot be located. */
