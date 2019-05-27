@@ -67,84 +67,91 @@ module piolib_mod
   !  module variables
   !
   !-----------------------------------------------------------------------
-!>
-!! @defgroup PIO_openfile PIO_openfile
-!<
+  !>
+  !! @defgroup PIO_openfile PIO_openfile
+  !! Open an exist netCDF file.
+  !<
   interface PIO_openfile
      module procedure PIO_openfile
   end interface
 
-!>
-!! @defgroup PIO_syncfile PIO_syncfile
-!<
+  !>
+  !! @defgroup PIO_syncfile PIO_syncfile
+  !! Sync the file to disk, flushing all buffers.
+  !<
   interface PIO_syncfile
      module procedure syncfile
   end interface
 
-!>
-!! @defgroup PIO_createfile Create a file for use with PIO
-!<
+  !>
+  !! @defgroup PIO_createfile Create a file for use with PIO
+  !! Create a new netCDF file with PIO.
+  !<
   interface PIO_createfile
      module procedure createfile
   end interface
 
-!>
-!! @defgroup PIO_setframe PIO_setframe
-!! @brief sets the unlimited dimension for netcdf file
-!<
+  !>
+  !! @defgroup PIO_setframe PIO_setframe
+  !! Sets the record number for a future read/write of distributed
+  !! arrays (see @ref PIO_write_darray, @ref PIO_read_darray).
+  !<
   interface PIO_setframe
      module procedure setframe
   end interface
 
-!>
-!! @defgroup PIO_advanceframe PIO_advanceframe
-!<
+  !>
+  !! @defgroup PIO_advanceframe PIO_advanceframe
+  !! Increment the record number for a future read/write of distributed
+  !! arrays (see @ref PIO_write_darray, @ref PIO_read_darray).
+  !<
   interface PIO_advanceframe
      module procedure advanceframe
   end interface
 
-!>
-!! @defgroup PIO_closefile PIO_closefile
-!<
+  !>
+  !! @defgroup PIO_closefile PIO_closefile
+  !! Close an open file.
+  !<
   interface PIO_closefile
      module procedure closefile
   end interface
 
 
-!>
-!! @defgroup PIO_freedecomp PIO_freedecomp
-!! free memory associated with a io descriptor
-!<
+  !>
+  !! @defgroup PIO_freedecomp PIO_freedecomp
+  !! Free memory associated with a decomposition.
+  !<
   interface PIO_freedecomp
      module procedure freedecomp_ios
      module procedure freedecomp_file
   end interface
 
-!>
-!! @defgroup PIO_init PIO_init
-!! initializes the pio subsystem
-!<
+  !>
+  !! @defgroup PIO_init PIO_init
+  !! Initializes the PIO subsystem, creating a new IOSystem.
+  !<
   interface PIO_init
      module procedure init_intracom
      module procedure init_intercom
 
   end interface
 
-!>
-!! @defgroup PIO_finalize PIO_finalize
-!! Shuts down and cleans up any memory associated with the pio library.
-!<
+  !>
+  !! @defgroup PIO_finalize PIO_finalize
+  !! Shuts down an IOSystem and associated resources.
+  !<
   interface PIO_finalize
      module procedure finalize
   end interface
 
-!>
-!! @defgroup PIO_initdecomp PIO_initdecomp
-!! @brief PIO_initdecomp is an overload interface the models decomposition to pio.
-!! @details initdecomp_1dof_bin_i8, initdecomp_1dof_nf_i4, initdecomp_2dof_bin_i4,
-!! and initdecomp_2dof_nf_i4 are all depreciated, but supported for backwards
-!! compatibility.
-!<
+  !>
+  !! @defgroup PIO_initdecomp PIO_initdecomp
+  !! PIO_initdecomp is an overload interface the models decomposition to pio.
+  !! initdecomp_1dof_bin_i8, initdecomp_1dof_nf_i4, initdecomp_2dof_bin_i4,
+  !! and initdecomp_2dof_nf_i4 are all depreciated, but supported for backwards
+  !! compatibility.
+  !<
   interface PIO_initdecomp
      module procedure PIO_initdecomp_dof_i4  ! previous name: initdecomop_1dof_nf_box
      module procedure PIO_initdecomp_dof_i8  ! previous name: initdecomop_1dof_nf_box
@@ -160,14 +167,11 @@ module piolib_mod
 !     module procedure PIO_initdecomp_dof_dof
   end interface
 
-!>
-
-!>
-!! @defgroup PIO_getnumiotasks PIO_getnumiotasks
-!!  returns the actual number of IO-tasks used.  PIO
-!!  will reset the total number of IO-tasks if certain
-!!  conditions are meet
-!<
+  !>
+  !! @defgroup PIO_getnumiotasks PIO_getnumiotasks
+  !! Return the actual number of IO-tasks used. PIO will reset the
+  !! total number of IO-tasks if certain conditions are meet.
+  !<
   interface PIO_get_numiotasks
      module procedure getnumiotasks
   end interface
@@ -175,35 +179,36 @@ module piolib_mod
      module procedure getnumiotasks
   end interface
 
-!>
-!!  @defgroup PIO_setdebuglevel PIO_setdebuglevel
-!!  sets the level of debug information that pio will generate.
-!<
+  !>
+  !! @defgroup PIO_setdebuglevel PIO_setdebuglevel
+  !! Set the level of debug information that PIO will generate.
+  !<
   interface PIO_setdebuglevel
      module procedure setdebuglevel
   end interface
 
-!>
-!!  @defgroup PIO_seterrorhandling PIO_seterrorhandling
-!!  sets the form of error handling for pio.
-!!
-!! By default pio handles errors internally by printing a string
-!! describing the error and calling mpi_abort.  Application
-!! developers can change this behavior for calls to the underlying netcdf
-!! libraries with a call to PIO_seterrorhandling. For example if a
-!! developer wanted to see if an input netcdf format file contained the variable
-!! 'u' they might write the following
-!! @verbinclude errorhandle
-!<
+  !>
+  !! @defgroup PIO_seterrorhandling PIO_seterrorhandling
+  !! Set the form of error handling for PIO.
+  !!
+  !! By default pio handles errors internally by printing a string
+  !! describing the error and calling mpi_abort. Application
+  !! developers can change this behavior for calls to the underlying
+  !! netcdf libraries with a call to PIO_seterrorhandling. For example
+  !! if a developer wanted to see if an input netcdf format file
+  !! contained the variable 'u' they might write the following
+  !! @verbinclude errorhandle
+  !<
   interface PIO_seterrorhandling
      module procedure seterrorhandlingfile
      module procedure seterrorhandlingiosystem
      module procedure seterrorhandlingiosysid
   end interface
 
-!>
-!! @defgroup PIO_get_local_array_size PIO_get_local_array_size
-!<
+  !>
+  !! @defgroup PIO_get_local_array_size PIO_get_local_array_size
+  !! Get the local size of a distributed array.
+  !<
 
   !eoc
   !***********************************************************************
@@ -222,13 +227,12 @@ contains
 #define fptr(arg) arg
 !!$#endif
 
-!>
-!! @public
-!! @ingroup PIO_file_is_open
-!! @brief This logical function indicates if a file is open.
-!! @details
-!! @param File @copydoc file_desc_t
-!<
+  !>
+  !! @public
+  !! @ingroup PIO_file_is_open
+  !! This logical function indicates if a file is open.
+  !! @param File @copydoc file_desc_t
+  !<
   logical function PIO_FILE_IS_OPEN(File)
     type(file_desc_t), intent(in) :: file
     interface
@@ -248,14 +252,14 @@ contains
 
   end function PIO_FILE_IS_OPEN
 
-!>
-!! @public
-!! @ingroup PIO_get_local_array_size
-!! @brief This function returns the expected local size of an array associated with iodesc
-!! @details
-!! @param iodesc
-!! @copydoc io_desc_t
-!<
+  !>
+  !! @public
+  !! @ingroup PIO_get_local_array_size
+  !! Return the expected local size of an array associated with a
+  !! decomposition.
+  !! @param iodesc the decomposition.
+  !! @copydoc io_desc_t
+  !<
   integer function PIO_get_local_array_size(iodesc)
     type(io_desc_t), intent(in) :: iodesc
     interface
