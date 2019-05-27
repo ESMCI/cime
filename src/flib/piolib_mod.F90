@@ -1208,13 +1208,13 @@ contains
   end subroutine finalize
 
 
-!>
-!! @public
-!! @ingroup PIO_getnumiotasks
-!! @brief This returns the number of IO-tasks that PIO is using
-!! @param iosystem : a defined pio system descriptor, see PIO_types
-!! @param numiotasks : the number of IO-tasks
-!<
+  !>
+  !! @public
+  !! @ingroup PIO_getnumiotasks
+  !! @brief This returns the number of IO-tasks that PIO is using
+  !! @param iosystem : a defined pio system descriptor, see PIO_types
+  !! @param numiotasks : the number of IO-tasks
+  !<
    subroutine getnumiotasks(iosystem,numiotasks)
        type (iosystem_desc_t), intent(in) :: iosystem
        integer(i4), intent(out) :: numiotasks
