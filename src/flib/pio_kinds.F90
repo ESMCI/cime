@@ -1,22 +1,11 @@
 !>
-!! @file pio_kinds.F90
-!! @brief basic data types 
+!! @file
+!! This module defines default numerical data types for all common data
+!! types like integer, character, logical, real4 and real8.
 !!
 !<
  module pio_kinds
 
-!BOP
-! !MODULE: pio_kinds
-!
-! !DESCRIPTION:
-!  This module defines default numerical data types for all common data
-!  types like integer, character, logical, real4 and real8.
-!
-! !REVISION HISTORY:
-!  CVS:$Id: pio_kinds.F90,v 1.1.1.1 2006/07/31 16:15:30 dennis Exp $
-!  CVS:$Name:  $
-
-! !USES:
 !  uses mpi if available
 #ifndef NO_MPIMOD
    use mpi, only : MPI_OFFSET_KIND ! _EXTERNAL
@@ -44,11 +33,4 @@
 !> Byte size of the MPI_OFFSET type.
    integer, parameter, public :: PIO_OFFSET_KIND=MPI_OFFSET_KIND
 
-!EOP
-!BOC
-!EOC
-!***********************************************************************
-
  end module pio_kinds
-
-!|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

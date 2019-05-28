@@ -14,8 +14,10 @@
 #include <uthash.h>
 
 /**
- * @defgroup PIO_read_darray_c Reading a Variable into Distributes Arrays
- * @defgroup PIO_write_darray_c Writing Distributes Arrays into a Variable
+ * @defgroup PIO_read_darray_c Reading Distributes Arrays
+ * Read data from a netCDF file to a distributed array with the C API.
+ * @defgroup PIO_write_darray_c Writing Distributes Arrays
+ * Write data from a distributed array to a netCDF file with the C API.
  */
 
 /** 10MB default limit. */

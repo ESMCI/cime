@@ -19,21 +19,37 @@
 #include <pio_internal.h>
 
 /**
- * @defgroup PIO_inq_c Learn About File Contents
- * @defgroup PIO_typelen_c Learn Length of a Data Type
- * @defgroup PIO_inq_format_c Learn About File Binary Format
- * @defgroup PIO_inq_dim_c Learn About Dimensions
+ * @defgroup PIO_inq_c Learn About File
+ * Learn the number of variables, dimensions, and global atts, and the
+ * unlimited dimension.
+ * @defgroup PIO_typelen_c Learn Aboue a Data Type
+ * Learn the length of a data type.
+ * @defgroup PIO_inq_format_c Learn About Binary Format
+ * Learn about the binary format.
+ * @defgroup PIO_inq_dim_c Learn About a Dimension
+ * Learn dimension name and length.
  * @defgroup PIO_inq_var_c Learn About a Variable
+ * Learn variable name, dimensions, and type.
  * @defgroup PIO_inq_att_c Learn About an Attribute
+ * Learn length, type, and name of an attribute.
  * @defgroup PIO_rename_dim_c Rename a Dimension
+ * Rename a dimension.
  * @defgroup PIO_rename_var_c Rename a Variable
+ * Rename a variable.
  * @defgroup PIO_rename_att_c Rename an Attribute
+ * Rename an attribute.
  * @defgroup PIO_del_att_c Delete an Attribute
+ * Delete an attribute.
  * @defgroup PIO_set_fill_c Set Fill Value
+ * Set the fill value for a variable.
  * @defgroup PIO_enddef_c End Define Mode
+ * End define mode.
  * @defgroup PIO_redef_c Re-enter Define Mode
+ * Re-enter Define Mode.
  * @defgroup PIO_def_dim_c Define a Dimension
+ * Define a new dimension in the file.
  * @defgroup PIO_def_var_c Define a Variable
+ * Define a new variable in the file.
  */
 
 /**
