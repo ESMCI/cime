@@ -913,15 +913,15 @@ contains
   !! ignored. This variation of PIO_init sets up a distinct set of
   !! tasks to handle IO, these tasks do not return from this
   !! call. Instead they go to an internal loop and wait to receive
-  !! further instructions from the computational tasks
+  !! further instructions from the computational tasks.
   !!
   !! @param component_count The number of computational components to
-  !! associate with this IO component
+  !! associate with this IO component.
   !! @param peer_comm The communicator from which all other
-  !! communicator arguments are derived
+  !! communicator arguments are derived.
   !! @param comp_comms The computational communicator for each of the
-  !! computational components
-  !! @param io_comm The io communicator
+  !! computational components.
+  !! @param io_comm The io communicator.
   !! @param iosystem a derived type which can be used in subsequent
   !! pio operations (defined in PIO_types).
   !<
@@ -1141,15 +1141,16 @@ contains
   end subroutine init_intercom
 
   !>
-  !! @defgroup PIO_set_hint_grp  PIO_set_hint
+  !! @defgroup PIO_set_hint  PIO_set_hint
 
-  !> Set file system hints using mpi_info_set. This is a collective
-  !> call which expects the following parameters:
+  !> @ingroup PIO_set_hint
+  !! Set file system hints using mpi_info_set. This is a collective
+  !! call.
   !!
   !! @param iosystem @copydoc io_desc_t
-  !! @param hint  the string name of the hint to define
-  !! @param hintval  the string value to set the hint to
-  !! @retval ierr @copydoc  error_return
+  !! @param hint the string name of the hint to define
+  !! @param hintval the string value to set the hint to
+  !! @retval ierr @copydoc error_return
   subroutine PIO_set_hint(iosystem, hint, hintval)
     type (iosystem_desc_t), intent(inout)  :: iosystem  ! io descriptor to initalize
     character(len=*), intent(in) :: hint, hintval
@@ -1165,19 +1166,16 @@ contains
        end function PIOc_set_hint
     end interface
 
-
     ierr = PIOc_set_hint(iosystem%iosysid, hint, hintval)
-
 
   end subroutine PIO_set_hint
 
-
   !>
   !! @ingroup PIO_finalize
-  !! @brief finalizes the pio subsystem.
-  !! @details This is a collective call which expects the following parameters
-  !! @param iosystem : @copydoc io_desc_t
-  !! @retval ierr @copydoc  error_return
+  !! Finalizes an IO System. This is a collective call.
+  !!
+  !! @param iosystem @copydoc io_desc_t
+  !! @retval ierr @copydoc error_return
   !<
   subroutine finalize(iosystem,ierr)
      type (iosystem_desc_t), intent(inout) :: iosystem

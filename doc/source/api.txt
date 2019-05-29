@@ -16,7 +16,7 @@
     - \ref PIO_read_darray
     - \ref PIO_write_darray
   \section utility Utility routines
-    - \ref PIO_set_hint_grp
+    - \ref PIO_set_hint
     - \ref PIO_setframe
     - \ref PIO_advanceframe
     - \ref PIO_setdebuglevel
