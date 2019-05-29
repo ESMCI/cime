@@ -1,6 +1,6 @@
 !>
 !! @file
-!! @brief Derived datatypes and constants for PIO Fortran API
+!! Derived datatypes and constants for PIO Fortran API.
 !!
 !<
 module pio_types
@@ -23,7 +23,6 @@ module pio_types
     !  a file descriptor data structure
     !------------------------------------
 !>
-!! @public
 !! @struct iosystem_desc_t
 !! @brief A defined PIO system descriptor created by @ref PIO_init (see pio_types)
 !<
