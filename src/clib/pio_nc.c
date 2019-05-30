@@ -19,50 +19,50 @@
 #include <pio_internal.h>
 
 /**
- * @defgroup PIO_inq_c Learn About File
+ * @defgroup PIO_inq_c Learn About File in C
  * Learn the number of variables, dimensions, and global atts, and the
  * unlimited dimension.
  *
- * @defgroup PIO_typelen_c Learn Aboue a Data Type
+ * @defgroup PIO_typelen_c Learn Aboue a Data Type in C
  * Learn the length of a data type.
  *
- * @defgroup PIO_inq_format_c Learn About Binary Format
+ * @defgroup PIO_inq_format_c Learn About Binary Format in C
  * Learn about the binary format.
  *
- * @defgroup PIO_inq_dim_c Learn About a Dimension
+ * @defgroup PIO_inq_dim_c Learn About a Dimension in C
  * Learn dimension name and length.
  *
- * @defgroup PIO_inq_var_c Learn About a Variable
+ * @defgroup PIO_inq_var_c Learn About a Variable in C
  * Learn variable name, dimensions, and type.
  *
- * @defgroup PIO_inq_att_c Learn About an Attribute
+ * @defgroup PIO_inq_att_c Learn About an Attribute in C
  * Learn length, type, and name of an attribute.
  *
- * @defgroup PIO_rename_dim_c Rename a Dimension
+ * @defgroup PIO_rename_dim_c Rename a Dimension in C
  * Rename a dimension.
  *
- * @defgroup PIO_rename_var_c Rename a Variable
+ * @defgroup PIO_rename_var_c Rename a Variable in C
  * Rename a variable.
  *
- * @defgroup PIO_rename_att_c Rename an Attribute
+ * @defgroup PIO_rename_att_c Rename an Attribute in C
  * Rename an attribute.
  *
- * @defgroup PIO_del_att_c Delete an Attribute
+ * @defgroup PIO_del_att_c Delete an Attribute in C
  * Delete an attribute.
  *
- * @defgroup PIO_set_fill_c Set Fill Value
+ * @defgroup PIO_set_fill_c Set Fill Value in C
  * Set the fill value for a variable.
  *
- * @defgroup PIO_enddef_c End Define Mode
+ * @defgroup PIO_enddef_c End Define Mode in C
  * End define mode.
  *
- * @defgroup PIO_redef_c Re-enter Define Mode
+ * @defgroup PIO_redef_c Re-enter Define Mode in C
  * Re-enter Define Mode.
  *
- * @defgroup PIO_def_dim_c Define a Dimension
+ * @defgroup PIO_def_dim_c Define a Dimension in C
  * Define a new dimension in the file.
  *
- * @defgroup PIO_def_var_c Define a Variable
+ * @defgroup PIO_def_var_c Define a Variable in C
  * Define a new variable in the file.
  */
 

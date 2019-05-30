@@ -3,6 +3,60 @@
 !! Code to implement the classic netCDF Fortran API in PIO.
 !! @author Jim Edwards
 !<
+!>
+!! @defgroup PIO_inq_dimid PIO_inq_dimid
+!!
+!! @defgroup PIO_inquire_dimension PIO_inquire_dimension
+!!
+!! @defgroup PIO_inq_dimlen PIO_inq_dimlen
+!!
+!! @defgroup PIO_inq_dimname PIO_inq_dimname
+!!
+!! @defgroup PIO_inq_ndims PIO_inq_ndims
+!!
+!! @defgroup PIO_inq_nvars PIO_inq_nvars
+!!
+!! @defgroup PIO_inq_natts PIO_inq_natts
+!!
+!! @defgroup PIO_inq_unlimdim PIO_inq_unlimdim
+!!
+!! @defgroup PIO_inquire PIO_inquire
+!!
+!! @defgroup PIO_enddef PIO_enddef
+!!
+!! @defgroup PIO_redef PIO_redef
+!!
+!! @defgroup PIO_set_log_level PIO_set_log_level
+!!
+!! @defgroup PIO_strerror PIO_strerror
+!!
+!! @defgroup PIO_def_dim PIO_def_dim
+!!
+!! @defgroup PIO_inquire_variable PIO_inquire_variable
+!!
+!! @defgroup PIO_inq_vardimid PIO_inq_vardimid
+!!
+!! @defgroup PIO_inq_varndims PIO_inq_varndims
+!!
+!! @defgroup PIO_inq_vartype PIO_inq_vartype
+!!
+!!  @defgroup PIO_inq_varnatts PIO_inq_varnatts
+!!
+!!  @defgroup PIO_inq_var_deflate PIO_inq_var_deflate
+!!
+!! @defgroup PIO_inq_varname PIO_inq_varname
+!!
+!! @defgroup PIO_inq_varid PIO_inq_varid
+!!
+!! @defgroup PIO_inq_attlen PIO_inq_attlen
+!!
+!! @defgroup PIO_inq_att PIO_inq_att
+!!
+!! @defgroup PIO_inq_attname PIO_inq_attname
+!!
+!! @defgroup PIO_def_var PIO_def_var
+!!
+
 module pio_nf
 #ifdef TIMING
   use perf_mod           , only : t_startf, t_stopf      ! _EXTERNAL
@@ -236,9 +290,6 @@ module pio_nf
 contains
 
   !>
-  !! @defgroup PIO_inq_dimid PIO_inq_dimid
-  !<
-  !>
   !! @ingroup PIO_inq_dimid
   !! Returns the netcdf dimension id for the name.
   !!
@@ -280,9 +331,6 @@ contains
   end function inq_dimid_id
 
   !>
-  !! @defgroup PIO_inquire_dimension PIO_inquire_dimension
-  !<
-  !>
   !! @ingroup PIO_inquire_dimension
   !! Get information about a particular dimension in netcdf file.
   !!
@@ -321,9 +369,6 @@ contains
 
   end function inquire_dimension_id
 
-  !>
-  !! @defgroup PIO_inq_dimlen PIO_inq_dimlen
-  !<
   !>
   !! @ingroup PIO_inq_dimlen
   !! Get information about the length of a particular dimension in
@@ -393,9 +438,6 @@ contains
   end function inq_dimlen_id_long
 
   !>
-  !! @defgroup PIO_inq_dimname PIO_inq_dimname
-  !<
-  !>
   !! @ingroup PIO_inq_dimname
   !! Get information about the name of of a dimension.
   !!
@@ -438,9 +480,6 @@ contains
   end function inq_dimname_id
 
   !>
-  !! @defgroup PIO_inq_ndims PIO_inq_ndims
-  !<
-  !>
   !! @ingroup PIO_inq_ndims
   !! Get information about the number of dimensions of a file or
   !! group.
@@ -477,9 +516,6 @@ contains
   end function inq_ndims_id
 
   !>
-  !! @defgroup PIO_inq_nvars PIO_inq_nvars
-  !<
-  !>
   !! @ingroup PIO_inq_nvars
   !! Get information about the number of variables in a file or group.
   !!
@@ -513,9 +549,6 @@ contains
     ierr = PIOc_inq_nvars(ncid                              ,nvars)
   end function inq_nvars_id
 
-  !>
-  !! @defgroup PIO_inq_natts PIO_inq_natts
-  !<
   !>
   !! @ingroup PIO_inq_natts
   !! Get information about the number of global attributes in a file
@@ -553,9 +586,6 @@ contains
   end function inq_natts_id
 
   !>
-  !! @defgroup PIO_inq_unlimdim PIO_inq_unlimdim
-  !<
-  !>
   !! @ingroup PIO_inq_unlimdm
   !! Get information about the unlimited dimension in a file.
   !!
@@ -591,9 +621,6 @@ contains
     if(unlimdim>=0) unlimdim=unlimdim+1
   end function inq_unlimdim_id
 
-  !>
-  !! @defgroup PIO_inquire PIO_inquire
-  !<
   !>
   !! @ingroup PIO_inquire
   !! Gets metadata information for netcdf file.
@@ -640,9 +667,6 @@ contains
   end function inquire_id
 
   !>
-  !! @defgroup PIO_enddef PIO_enddef
-  !<
-  !>
   !! @ingroup PIO_enddef
   !! Exits netcdf define mode.
   !!
@@ -673,9 +697,6 @@ contains
   end function enddef_id
 
   !>
-  !! @defgroup PIO_redef PIO_redef
-  !<
-  !>
   !! @ingroup PIO_redef
   !! Exits netcdf define mode.
   !!
@@ -688,9 +709,6 @@ contains
     ierr = redef_id(file%fh)
   end function redef_desc
 
-  !>
-  !! @defgroup PIO_set_log_level
-  !<
   !>
   !! @ingroup PIO_set_log_level
   !! Sets the logging level. Only takes effect if PIO was built with
@@ -713,14 +731,12 @@ contains
   end function set_log_level
 
   !>
-  !! @defgroup PIO_strerror
-  !<
-  !>
   !! @ingroup PIO_strerror
   !! Returns a descriptive string for an error code.
   !!
-  !! @param errcode the error code
-  !! @retval a description of the error
+  !! @param errcode the error code.
+  !! @param errmsg the error message.
+  !! @retval 0 for success, error code otherwise.
   !! @author Jim Edwards
   !<
   integer function strerror(errcode, errmsg) result(ierr)
@@ -757,9 +773,6 @@ contains
     ierr = PIOc_redef(ncid)
   end function redef_id
 
-  !>
-  !! @defgroup PIO_def_dim PIO_def_dim
-  !! A set of functions to define dimensions and their attributes in
   !! NetCDF files.
   !<
   !>
@@ -837,11 +850,7 @@ contains
   end function def_dim_id
 
   !>
-  !! @defgroup PIO_inquire_variable PIO_inquire_variable
-  !<
-  !>
   !! @ingroup PIO_inquire_variable
-
   !! Inquires if a NetCDF variable is present and returns its
   !! attributes.
   !!
@@ -906,9 +915,6 @@ contains
     if(present(xtype)) ierr = pio_inq_vartype(ncid          , varid, xtype)
   end function inquire_variable_id
 
-  !>
-  !! @defgroup PIO_inq_vardimid PIO_inq_vardimid
-  !<
   !>
   !! @ingroup PIO_inq_vardimid
   !! Returns the dimids of the variable as an interger array.
@@ -978,9 +984,6 @@ contains
   end function inq_vardimid_id
 
   !>
-  !! @defgroup PIO_inq_varndims PIO_inq_varndims
-  !<
-  !>
   !! @ingroup PIO_inq_varndims
   !! Gets the number of dimension associated with a netcdf variable.
   !!
@@ -1034,9 +1037,6 @@ contains
     ierr = PIOc_inq_varndims(ncid                           ,varid-1,ndims)
   end function inq_varndims_id
 
-  !>
-  !! @defgroup PIO_inq_vartype PIO_inq_vartype
-  !<
   !>
   !! @ingroup PIO_inq_vartype
   !! Gets metadata information for netcdf file.
@@ -1094,9 +1094,6 @@ contains
   end function inq_vartype_id
 
   !>
-  !!  @defgroup PIO_inq_varnatts PIO_inq_varnatts
-  !<
-  !>
   !! @ingroup PIO_inq_varnatts
   !! Gets metadata information for netcdf file.
   !!
@@ -1152,9 +1149,6 @@ contains
     ierr = PIOc_inq_varnatts(ncid                           ,varid-1,natts)
   end function inq_varnatts_id
 
-  !>
-  !!  @defgroup PIO_inq_var_deflate PIO_inq_var_deflate
-  !<
   !>
   !! @ingroup PIO_inq_var_deflate
   !! Gets metadata information for netcdf file.
@@ -1224,9 +1218,6 @@ contains
   end function inq_var_deflate_id
 
   !>
-  !! @defgroup PIO_inq_varname
-  !<
-  !>
   !! @ingroup PIO_inq_varname
   !! Get the name associated with a variable.
   !!
@@ -1286,9 +1277,6 @@ contains
   end function inq_varname_id
 
   !>
-  !! @defgroup PIO_inq_varid
-  !<
-  !>
   !! @ingroup PIO_inq_varid
   !! Returns the ID of a netcdf variable given its name.
   !!
@@ -1347,9 +1335,6 @@ contains
     varid = varid+1
   end function inq_varid_id
 
-  !>
-  !! @defgroup PIO_inq_attlen
-  !<
   !>
   !! @ingroup PIO_inq_attlen
   !! Gets the attribute length.
@@ -1411,9 +1396,6 @@ contains
     ierr = PIOc_inq_attlen(ncid,varid-1,trim(name)//C_NULL_CHAR,len)
   end function inq_attlen_id
 
-  !>
-  !! @defgroup PIO_inq_att PIO_inq_att
-  !<
   !>
   !! @ingroup PIO_inq_att
   !! Gets information about attributes.
@@ -1490,9 +1472,6 @@ contains
   end function inq_att_id
 
   !>
-  !! @defgroup PIO_inq_attname
-  !<
-  !>
   !! @ingroup PIO_inq_attname
   !! Gets the name of an attribute.
   !! @author Jim Edwards
@@ -1549,9 +1528,6 @@ contains
 
   end function inq_attname_id
 
-  !>
-  !! @defgroup PIO_def_var PIO_def_var
-  !<
   !>
   !! @ingroup PIO_def_var
   !! Defines a netcdf variable.
