@@ -4,6 +4,10 @@
 !! @author Jim Edwards
 !<
 
+!>
+!! @defgroup PIO_set_blocksize PIO_set_blocksize
+!! Set the box rearranger blocksize.
+
 module pio
 ! Package all exposed variables and functions under one roof
 
@@ -77,10 +81,6 @@ module pio
   implicit none
   public
 contains
-  !>
-  !! @defgroup PIO_set_blocksize PIO_set_blocksize
-  !! Set the box rearranger blocksize.
-  !<
   !>
   !! @ingroup PIO_set_blocksize
   !! @brief Set the target blocksize for the box rearranger
