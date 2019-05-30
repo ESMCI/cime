@@ -286,7 +286,8 @@ contains
   !! @ingroup PIO_inquire_dimension
   !! Get information about a particular dimension in netcdf file.
   !!
-  !! @param file A netcdf file descriptor returned by \ref PIO_openfile or \ref PIO_createfile.
+  !! @param file A netcdf file descriptor returned by \ref
+  !! PIO_openfile or \ref PIO_createfile.
   !! @param dimid The netcdf dimension ID.
   !! @param name The name of the dimension.
   !! @param len The length of the dimesions name.
@@ -325,7 +326,8 @@ contains
   !<
   !>
   !! @ingroup PIO_inq_dimlen
-  !! Get information about the length of a particular dimension in netcdf file.
+  !! Get information about the length of a particular dimension in
+  !! netcdf file.
   !!
   !! @param File @copydoc file_desc_t
   !! @param dimid The netcdf dimension ID.
@@ -341,7 +343,8 @@ contains
   end function inq_dimlen_desc
   !>
   !! @ingroup PIO_inq_dimlen
-  !! Get information about the length of a particular dimension in netcdf file.
+  !! Get information about the length of a particular dimension in
+  !! netcdf file.
   !! @author Jim Edwards
   !<
   integer function inq_dimlen_desc_long(File                , dimid, len) result(ierr)
@@ -353,7 +356,8 @@ contains
 
   !>
   !! @ingroup PIO_inq_dimlen
-  !! Get information about the length of a particular dimension in netcdf file.
+  !! Get information about the length of a particular dimension in
+  !! netcdf file.
   !! @author Jim Edwards
   !<
   integer function inq_dimlen_id(ncid                       , dimid, len) result(ierr)
@@ -367,7 +371,8 @@ contains
 
   !>
   !! @ingroup PIO_inq_dimlen
-  !! Get information about the length of a particular dimension in netcdf file.
+  !! Get information about the length of a particular dimension in
+  !! netcdf file.
   !! @author Jim Edwards
   !<
   integer function inq_dimlen_id_long(ncid                  , dimid, len) result(ierr)
@@ -437,7 +442,8 @@ contains
   !<
   !>
   !! @ingroup PIO_inq_ndims
-  !! Get information about the number of dimensions of a file or group.
+  !! Get information about the number of dimensions of a file or
+  !! group.
   !!
   !! @param File @copydoc file_desc_t
   !! @param ndims The number of dimensions in the file.
@@ -452,7 +458,8 @@ contains
 
   !>
   !! @ingroup PIO_inq_ndims
-  !! Get information about the number of dimensions of a file or group.
+  !! Get information about the number of dimensions of a file or
+  !! group.
   !! @author Jim Edwards
   !<
   integer function inq_ndims_id(ncid                        , ndims) result(ierr)
@@ -511,7 +518,8 @@ contains
   !<
   !>
   !! @ingroup PIO_inq_natts
-  !! Get information about the number of global attributes in a file or group.
+  !! Get information about the number of global attributes in a file
+  !! or group.
   !!
   !! @param File @copydoc file_desc_t
   !! @param natts The number of attributes in the file.
@@ -526,7 +534,8 @@ contains
 
   !>
   !! @ingroup PIO_inq_natts
-  !! Get information about the number of global attributes in a file or group.
+  !! Get information about the number of global attributes in a file
+  !! or group.
   !! @author Jim Edwards
   !<
   integer function inq_natts_id(ncid                        , natts) result(ierr)
@@ -551,7 +560,8 @@ contains
   !! Get information about the unlimited dimension in a file.
   !!
   !! @param File @copydoc file_desc_t
-  !! @param unlimdim Pointer to the unlimted dimension. If no unlimited dimension, this will be -1.
+  !! @param unlimdim Pointer to the unlimted dimension. If no
+  !! unlimited dimension, this will be -1.
   !! @retval ierr @copydoc error_return
   !! @author Jim Edwards
   !<
@@ -589,9 +599,11 @@ contains
   !! Gets metadata information for netcdf file.
   !!
   !! @param File @copydoc file_desc_t
-  !! @param nDimensions  Number of dimensions defined for the netcdf file
+  !! @param nDimensions Number of dimensions defined for the netcdf
+  !! file
   !! @param nVariables Number of variables defined for the netcdf file
-  !! @param nAttributes Number of attributes defined for the netcdf file
+  !! @param nAttributes Number of attributes defined for the netcdf
+  !! file
   !! @param unlimitedDimID the Unlimited dimension ID
   !! @retval ierr @copydoc error_return
   !! @author Jim Edwards
@@ -747,7 +759,8 @@ contains
 
   !>
   !! @defgroup PIO_def_dim PIO_def_dim
-  !! A set of functions to define dimensions and their attributes in NetCDF files.
+  !! A set of functions to define dimensions and their attributes in
+  !! NetCDF files.
   !<
   !>
   !! @ingroup PIO_def_dim
@@ -828,14 +841,18 @@ contains
   !<
   !>
   !! @ingroup PIO_inquire_variable
-  !! Inquires if a NetCDF variable is present and returns its attributes.
+
+  !! Inquires if a NetCDF variable is present and returns its
+  !! attributes.
   !!
-  !! @param file A netcdf file descriptor returned by \ref PIO_openfile or \ref PIO_createfile.
+  !! @param file A netcdf file descriptor returned by \ref
+  !! PIO_openfile or \ref PIO_createfile.
   !! @param vardesc @copydoc var_desc_t
   !! @param name The name of the variable
   !! @param xtype The type of the variable
   !! @param ndims The number of dimensions for the variable.
-  !! @param dimids The dimension identifier returned by \ref PIO_def_dim
+  !! @param dimids The dimension identifier returned by \ref
+  !! PIO_def_dim
   !! @param natts Number of attributes associated with the variable
   !! @retval ierr @copydoc error_return
   !! @author Jim Edwards
@@ -853,7 +870,8 @@ contains
 
   !>
   !! @ingroup PIO_inquire_variable
-  !! Inquires if a NetCDF variable is present and returns its attributes.
+  !! Inquires if a NetCDF variable is present and returns its
+  !! attributes.
   !! @author Jim Edwards
   !<
   integer function inquire_variable_vid(file                , varid, name, xtype, ndims, dimids, natts) result(ierr)
@@ -869,7 +887,8 @@ contains
 
   !>
   !! @ingroup PIO_inquire_variable
-  !! Inquires if a NetCDF variable is present and returns its attributes.
+  !! Inquires if a NetCDF variable is present and returns its
+  !! attributes.
   !! @author Jim Edwards
   !<
   integer function inquire_variable_id(ncid                 , varid, name, xtype, ndims, dimids, natts) result(ierr)
@@ -892,11 +911,12 @@ contains
   !<
   !>
   !! @ingroup PIO_inq_vardimid
-  !! returns the dimids of the variable as an interger array.
+  !! Returns the dimids of the variable as an interger array.
   !!
   !! @param File @copydoc file_desc_t
   !! @param vardesc @copydoc var_desc_t
-  !! @param dimids The dimension identifier returned by \ref PIO_def_dim
+  !! @param dimids The dimension identifier returned by \ref
+  !! PIO_def_dim
   !! @retval ierr @copydoc error_return
   !! @author Jim Edwards
   !<
@@ -912,7 +932,7 @@ contains
 
   !>
   !! @ingroup PIO_inq_vardimid
-  !! returns the dimids of the variable as an interger array.
+  !! Returns the dimids of the variable as an interger array.
   !! @author Jim Edwards
   !<
   integer function inq_vardimid_vid(File                    ,varid,dimids) result(ierr)
@@ -927,7 +947,7 @@ contains
 
   !>
   !! @ingroup PIO_inq_vardimid
-  !! returns the dimids of the variable as an interger array.
+  !! Returns the dimids of the variable as an interger array.
   !! @author Jim Edwards
   !<
   integer function inq_vardimid_id(ncid                     ,varid,dimids) result(ierr)
