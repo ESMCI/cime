@@ -52,6 +52,7 @@ contains
   !! @param line Line number where it is called.
   !! @param msg,msg2,msg3,ival1,ival2,ival3,mpirank : Optional
   !! argument for error messages.
+  !! @author Jim Edwards
   !<
   subroutine piodie (file,line, msg, ival1, msg2, ival2, msg3, ival3, mpirank)
     implicit none
@@ -109,6 +110,7 @@ contains
   !! @param errcode MPI error code
   !! @param file The file where the error message originated.
   !! @param line The line number where the error message originated.
+  !! @author Jim Edwards
   !<
   subroutine CheckMPIreturn(locmesg, errcode, file, line)
 
