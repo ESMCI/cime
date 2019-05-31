@@ -19,51 +19,51 @@
 #include <pio_internal.h>
 
 /**
- * @defgroup PIO_inq_c Learn About File in C
+ * @defgroup PIO_inq_c Learn About File
  * Learn the number of variables, dimensions, and global atts, and the
- * unlimited dimension.
+ * unlimited dimension in C.
  *
- * @defgroup PIO_typelen_c Learn Aboue a Data Type in C
- * Learn the length of a data type.
+ * @defgroup PIO_typelen_c Learn Aboue a Data Type
+ * Learn the length of a data type in C.
  *
- * @defgroup PIO_inq_format_c Learn About Binary Format in C
- * Learn about the binary format.
+ * @defgroup PIO_inq_format_c Learn About Binary Format
+ * Learn about the binary format in C.
  *
- * @defgroup PIO_inq_dim_c Learn About a Dimension in C
- * Learn dimension name and length.
+ * @defgroup PIO_inq_dim_c Learn About a Dimension
+ * Learn dimension name and length in C.
  *
- * @defgroup PIO_inq_var_c Learn About a Variable in C
- * Learn variable name, dimensions, and type.
+ * @defgroup PIO_inq_var_c Learn About a Variable
+ * Learn variable name, dimensions, and type in C.
  *
- * @defgroup PIO_inq_att_c Learn About an Attribute in C
- * Learn length, type, and name of an attribute.
+ * @defgroup PIO_inq_att_c Learn About an Attribute
+ * Learn length, type, and name of an attribute in C.
  *
- * @defgroup PIO_rename_dim_c Rename a Dimension in C
- * Rename a dimension.
+ * @defgroup PIO_rename_dim_c Rename a Dimension
+ * Rename a dimension in C.
  *
- * @defgroup PIO_rename_var_c Rename a Variable in C
- * Rename a variable.
+ * @defgroup PIO_rename_var_c Rename a Variable
+ * Rename a variable in C.
  *
- * @defgroup PIO_rename_att_c Rename an Attribute in C
- * Rename an attribute.
+ * @defgroup PIO_rename_att_c Rename an Attribute
+ * Rename an attribute in C.
  *
- * @defgroup PIO_del_att_c Delete an Attribute in C
- * Delete an attribute.
+ * @defgroup PIO_del_att_c Delete an Attribute
+ * Delete an attribute in C.
  *
- * @defgroup PIO_set_fill_c Set Fill Value in C
- * Set the fill value for a variable.
+ * @defgroup PIO_set_fill_c Set Fill Value
+ * Set the fill value for a variable in C.
  *
- * @defgroup PIO_enddef_c End Define Mode in C
- * End define mode.
+ * @defgroup PIO_enddef_c End Define Mode
+ * End define mode in C.
  *
- * @defgroup PIO_redef_c Re-enter Define Mode in C
- * Re-enter Define Mode.
+ * @defgroup PIO_redef_c Re-enter Define Mode
+ * Re-enter Define Mode in C.
  *
- * @defgroup PIO_def_dim_c Define a Dimension in C
- * Define a new dimension in the file.
+ * @defgroup PIO_def_dim_c Define a Dimension
+ * Define a new dimension in the file in C.
  *
- * @defgroup PIO_def_var_c Define a Variable in C
- * Define a new variable in the file.
+ * @defgroup PIO_def_var_c Define a Variable
+ * Define a new variable in the file in C.
  */
 
 /**
@@ -2632,8 +2632,8 @@ PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
 }
 
 /**
- * @addtogroup PIO_get_att_c Get Attribute Values in C
- * Get the values stored in an attribute.
+ * @addtogroup PIO_get_att_c Get Attribute Values
+ * Get the values stored in an attribute in C.
  * @{
  */
 
@@ -2925,8 +2925,8 @@ PIOc_get_att_float(int ncid, int varid, const char *name, float *ip)
  */
 
 /**
- * @addtogroup PIO_put_att_c Write an Attribute in C
- * Create an attribute.
+ * @addtogroup PIO_put_att_c Write an Attribute
+ * Create an attribute in C.
  * @{
  */
 

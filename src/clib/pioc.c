@@ -11,40 +11,40 @@
 #include <pio_internal.h>
 
 /**
- * @defgroup PIO_init_c Initialize the IO System in C
+ * @defgroup PIO_init_c Initialize the IO System
  * Initialize the IOSystem, including specifying number of IO and
- * computation tasks.
+ * computation tasks in C.
  *
- * @defgroup PIO_finalize_c Shut Down the IO System in C
- * Shut down an IOSystem, freeing all associated resources.
+ * @defgroup PIO_finalize_c Shut Down the IO System
+ * Shut down an IOSystem, freeing all associated resources in C.
  *
  * @defgroup PIO_initdecomp_c Initialize a Decomposition
- * Intiailize a decomposition of data into distributed arrays.
+ * Intiailize a decomposition of data into distributed arrays in C.
  *
- * @defgroup PIO_freedecomp_c Free a Decomposition in C
- * Free a decomposition, and associated resources.
+ * @defgroup PIO_freedecomp_c Free a Decomposition
+ * Free a decomposition, and associated resources in C.
  *
- * @defgroup PIO_setframe_c Set the Record Number in C
+ * @defgroup PIO_setframe_c Set the Record Number
  * Set the record number for a future call to PIOc_write_darray() or
- * PIOc_read_darray().
+ * PIOc_read_darray() in C.
  *
- * @defgroup PIO_set_hint_c Set a Hint in C
- * Set an MPI Hint.
+ * @defgroup PIO_set_hint_c Set a Hint
+ * Set an MPI Hint in C.
  *
- * @defgroup PIO_error_method_c Set Error Handling in C
- * Set the error handling method in case error is encountered.
+ * @defgroup PIO_error_method_c Set Error Handling
+ * Set the error handling method in case error is encountered in C.
  *
- * @defgroup PIO_get_local_array_size_c Get the Local Size in C
- * Get the local size of a distributed array.
+ * @defgroup PIO_get_local_array_size_c Get the Local Size
+ * Get the local size of a distributed array in C.
  *
- * @defgroup PIO_iosystem_is_active_c Check IOSystem in C
- * Is the IO system active?
+ * @defgroup PIO_iosystem_is_active_c Check IOSystem
+ * Is the IO system active (in C)?
  *
- * @defgroup PIO_getnumiotasks_c Get Number IO Tasks in C
- * Get the Number of IO Tasks.
+ * @defgroup PIO_getnumiotasks_c Get Number IO Tasks
+ * Get the Number of IO Tasks in C.
  *
- * @defgroup PIO_set_blocksize_c Set Blocksize in C
- * Set the Blocksize.
+ * @defgroup PIO_set_blocksize_c Set Blocksize
+ * Set the Blocksize in C.
  */
 
 /** The default error handler used when iosystem cannot be located. */
