@@ -29,7 +29,16 @@
 !!  - PIO_INTERNAL_ERROR  : abort on error from any task
 !!  - PIO_BCAST_ERROR     : broadcast an error from io_rank 0 to all tasks in comm
 !!  - PIO_RETURN_ERROR    : do nothing - allow the user to handle it
-!<
+!>
+!! @defgroup error_return Error Return Codes
+!! The error return code (see @ref PIO_seterrorhandling).
+!!
+!! @defgroup PIO_kinds PIO Fortran Type Kinds
+!! PIO supports different kinds of Fortran types.
+!!  - PIO_double : 8-byte reals or double precision
+!!  - PIO_real : 4-byte reals
+!!  - PIO_int :  4-byte integers
+!!  - PIO_char : character
 !<
 
 module pio_types
@@ -131,20 +140,7 @@ module pio_types
   integer(i4), public, parameter :: PIO_BCAST_ERROR = -52    !< broadcast an error
   integer(i4), public, parameter :: PIO_RETURN_ERROR = -53   !< do nothing
 
-!>
-!! @public
-!! @defgroup PIO_error_method error_methods
-!! @details
-!! Use this instead of ios to set error handling for the library.
-!<
   integer(i4), public, parameter :: PIO_DEFAULT = -1 !< default error handler
-
-!>
-!! @public
-!! @defgroup error_return error return codes
-!! @brief : The error return code; ierr != PIO_noerr indicates
-!! an error. (see @ref PIO_seterrorhandling )
-!>
 
 !>
 !! @struct use_PIO_kinds
@@ -152,16 +148,6 @@ module pio_types
 !! @copydoc PIO_kinds
 !<
 
-!>
-!! @public
-!! @defgroup PIO_kinds PIO_kinds
-!! @brief The base types supported by PIO are:
-!! @details
-!!  - PIO_double : 8-byte reals or double precision
-!!  - PIO_real : 4-byte reals
-!!  - PIO_int :  4-byte integers
-!!  - PIO_char : character
-!<
 #ifdef _PNETCDF
 #include <pnetcdf.inc>   /* _EXTERNAL */
    integer, public, parameter :: PIO_global = nf_global       !< global atts
@@ -228,54 +214,35 @@ module pio_types
 #endif
    integer, public, parameter :: PIO_num_OST =  16 !< num ost
 
-!>
-!! @defgroup PIO_rearr_comm_t PIO_rearr_comm_t
-!! @public
-!! @brief The two choices for rearranger communication
-!! @details
-!!  - PIO_rearr_comm_p2p : Point to point
-!!  - PIO_rearr_comm_coll : Collective
-!>
     enum, bind(c)
       enumerator :: PIO_rearr_comm_p2p = 0
       enumerator :: PIO_rearr_comm_coll
     end enum
 
 !>
+!! @defgroup PIO_rearr_comm_t Rearranger Communication
+!! @public
+!! There are two choices for rearranger communication.
+!!  - PIO_rearr_comm_p2p : Point to point
+!!  - PIO_rearr_comm_coll : Collective
+!>
+!>
 !! @defgroup PIO_rearr_comm_dir PIO_rearr_comm_dir
 !! @public
-!! @brief The four choices for rearranger communication direction
-!! @details
+!! There are four choices for rearranger communication direction.
 !!  - PIO_rearr_comm_fc_2d_enable : COMM procs to IO procs and vice versa
 !!  - PIO_rearr_comm_fc_1d_comp2io: COMM procs to IO procs only
 !!  - PIO_rearr_comm_fc_1d_io2comp: IO procs to COMM procs only
 !!  - PIO_rearr_comm_fc_2d_disable: Disable flow control
-!>
-    enum, bind(c)
-      enumerator :: PIO_rearr_comm_fc_2d_enable = 0
-      enumerator :: PIO_rearr_comm_fc_1d_comp2io
-      enumerator :: PIO_rearr_comm_fc_1d_io2comp
-      enumerator :: PIO_rearr_comm_fc_2d_disable
-    end enum
-
-!>
-!! @defgroup PIO_rearr_comm_fc_options PIO_rearr_comm_fc_options
-!! @brief Type that defines the PIO rearranger options
-!! @details
+!!
+!! @defgroup PIO_rearr_comm_fc_options Rearranger Flow Control Options
+!! Type that defines the PIO rearranger options.
 !!  - enable_hs : Enable handshake (true/false)
 !!  - enable_isend : Enable Isends (true/false)
 !!  - max_pend_req : Maximum pending requests (To indicated unlimited
 !!                    number of requests use PIO_REARR_COMM_UNLIMITED_PEND_REQ)
-!>
-   type, bind(c), public :: PIO_rearr_comm_fc_opt_t
-      logical(c_bool) :: enable_hs            !< Enable handshake?
-      logical(c_bool) :: enable_isend         !< Enable isends?
-      integer(c_int) :: max_pend_req          !< Maximum pending requests
-    end type PIO_rearr_comm_fc_opt_t
-
-    integer, public, parameter :: PIO_REARR_COMM_UNLIMITED_PEND_REQ = -1 !< unlimited requests
-!>
-!! @defgroup PIO_rearr_options PIO_rearr_options
+!!
+!! @defgroup PIO_rearr_options Rearranger Options
 !! @brief Type that defines the PIO rearranger options
 !! @details
 !!  - comm_type : @copydoc PIO_rearr_comm_t
@@ -283,11 +250,25 @@ module pio_types
 !!  - comm_fc_opts_comp2io : @copydoc PIO_rearr_comm_fc_options
 !!  - comm_fc_opts_io2comp : @copydoc PIO_rearr_comm_fc_options
 !>
+    enum, bind(c)
+      enumerator :: PIO_rearr_comm_fc_2d_enable = 0 !< COMM procs to IO procs and vice versa.
+      enumerator :: PIO_rearr_comm_fc_1d_comp2io !< COMM procs to IO procs only.
+      enumerator :: PIO_rearr_comm_fc_1d_io2comp !< IO procs to COMM procs only.
+      enumerator :: PIO_rearr_comm_fc_2d_disable !< Disable flow control.
+    end enum
+
+   type, bind(c), public :: PIO_rearr_comm_fc_opt_t
+      logical(c_bool) :: enable_hs            !< Enable handshake.
+      logical(c_bool) :: enable_isend         !< Enable isends.
+      integer(c_int) :: max_pend_req          !< Maximum pending requests (PIO_REARR_COMM_UNLIMITED_PEND_REQ for unlimited).
+    end type PIO_rearr_comm_fc_opt_t
+
+    integer, public, parameter :: PIO_REARR_COMM_UNLIMITED_PEND_REQ = -1 !< unlimited requests
     type, bind(c), public :: PIO_rearr_opt_t
-      integer(c_int)                         :: comm_type !< comm type
-      integer(c_int)                         :: fcd       !< Flow control direction
-      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_comp2io !< comp2io
-      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_io2comp !< io2comp
+      integer(c_int)                         :: comm_type !< Rearranger communication.
+      integer(c_int)                         :: fcd       !< Communication direction.
+      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_comp2io !< The comp2io options.
+      type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_io2comp !< The io2comp options.
     end type PIO_rearr_opt_t
 
     public :: PIO_rearr_comm_p2p, PIO_rearr_comm_coll,&
