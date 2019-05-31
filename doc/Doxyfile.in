@@ -771,8 +771,8 @@ WARN_LOGFILE           = doxywarn.log
 INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/../doc/source \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/c \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/f03 \
-			 @C_SRC_FILES@ \
-			 @FORTRAN_SRC_FILES@
+			 @FORTRAN_SRC_FILES@ \
+			 @C_SRC_FILES@ 
 
 
 # This tag can be used to specify the character encoding of the source files

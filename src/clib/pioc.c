@@ -11,7 +11,7 @@
 #include <pio_internal.h>
 
 /**
- * @defgroup PIO_init_c Initialize the IO System
+ * @defgroup PIO_init_c Initialize the IO System in C
  * Initialize the IOSystem, including specifying number of IO and
  * computation tasks.
  *

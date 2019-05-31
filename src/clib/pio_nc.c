@@ -2632,7 +2632,8 @@ PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
 }
 
 /**
- * @addtogroup PIO_get_att_c Get Attribute Values
+ * @addtogroup PIO_get_att_c Get Attribute Values in C
+ * Get the values stored in an attribute.
  * @{
  */
 
@@ -2924,7 +2925,8 @@ PIOc_get_att_float(int ncid, int varid, const char *name, float *ip)
  */
 
 /**
- * @addtogroup PIO_put_att_c Write an Attribute
+ * @addtogroup PIO_put_att_c Write an Attribute in C
+ * Create an attribute.
  * @{
  */
 

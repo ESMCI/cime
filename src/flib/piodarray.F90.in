@@ -2,6 +2,15 @@
 !>
 !! @file
 !! Read and write routines for decomposed data.
+!>
+!! @defgroup PIO_write_darray Write from Distributed Arrays
+!! The overloaded PIO_write_darray writes a distributed array to
+!! disk in Fortran.
+!!
+!! @defgroup PIO_read_darray Read to Distributed Arrays
+!! The overloaded PIO_read_darray function reads a distributed array
+!! from disk in Fortran.
+!<
 module piodarray
   use pio_types, only : file_desc_t, io_desc_t, var_desc_t
   use pio_kinds, only : i4, r4, r8, pio_offset_kind
@@ -15,11 +24,6 @@ module piodarray
   private
   public :: pio_read_darray, pio_write_darray, pio_set_buffer_size_limit
 
-
-!>
-!! @defgroup PIO_write_darray PIO_write_darray
-!! The overloaded PIO_write_darray writes a distributed array to disk.
-!<
   interface PIO_write_darray
 ! TYPE real,int,double
 ! DIMS 1,2,3,4,5,6,7
@@ -28,11 +32,6 @@ module piodarray
      module procedure write_darray_multi_1d_{TYPE}
   end interface
 
-
-!>
-!! @defgroup PIO_read_darray PIO_read_darray
-!! The overloaded PIO_read_darray function reads a distributed array from disk.
-!<
   interface PIO_read_darray
 ! TYPE real,int,double
 ! DIMS 1,2,3,4,5,6,7

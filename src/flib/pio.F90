@@ -5,8 +5,8 @@
 !<
 
 !>
-!! @defgroup PIO_set_blocksize PIO_set_blocksize
-!! Set the box rearranger blocksize.
+!! @defgroup PIO_set_blocksize Box Rearranger Settings
+!! Set the box rearranger blocksize in Fortran.
 
 module pio
 ! Package all exposed variables and functions under one roof

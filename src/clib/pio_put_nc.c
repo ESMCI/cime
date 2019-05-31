@@ -11,7 +11,7 @@
 #include <pio_internal.h>
 
 /**
- * @addtogroup PIO_put_var_c Write Data to a Variable
+ * @addtogroup PIO_put_var_c Write Data to a Variable in C
  * @{
  */
 

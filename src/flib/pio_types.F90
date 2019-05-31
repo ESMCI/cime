@@ -3,6 +3,35 @@
 !! Derived datatypes and constants for PIO Fortran API.
 !!
 !<
+!>
+!! @private
+!! @defgroup iodesc_generate Creating Decompositions
+!! Create a decomposition of data from a variable to multiple
+!! computation tasks.
+!!
+!! @public
+!! @defgroup PIO_iotype PIO_iotype
+!! An integer parameter which controls the iotype.
+!!   - PIO_iotype_pnetcdf : parallel read/write of pNetCDF files (netcdf3)
+!!   - PIO_iotype_netcdf : serial read/write of NetCDF files using 'base_node' (netcdf3)
+!!   - PIO_iotype_netcdf4c : parallel read/serial write of NetCDF4 (HDF5) files with data compression
+!!   - PIO_iotype_netcdf4p : parallel read/write of NETCDF4 (HDF5) files
+!!
+!! @defgroup PIO_rearr_method Rearranger Methods
+!! Rearranger methods.
+!!  - PIO_rearr_none : Do not use any form of rearrangement
+!!  - PIO_rearr_box : Use a PIO internal box rearrangement
+!!  - PIO_rearr_subset : Use a PIO internal subsetting rearrangement
+!!
+!! @defgroup PIO_error_method Error Handling Methods
+!! The error handling setting controls what happens if errors are
+!! encountered by PIO. The three types of error handling methods are:
+!!  - PIO_INTERNAL_ERROR  : abort on error from any task
+!!  - PIO_BCAST_ERROR     : broadcast an error from io_rank 0 to all tasks in comm
+!!  - PIO_RETURN_ERROR    : do nothing - allow the user to handle it
+!<
+!<
+
 module pio_types
     use pio_kinds
     use iso_c_binding
@@ -57,14 +86,6 @@ module pio_types
 
 
 !>
-!! @private
-!! @defgroup iodesc_generate io descriptors, generating
-!! @brief The io descriptor structure in defined in this subroutine
-!! and subsequently used in @ref PIO_read_darray, @ref PIO_write_darray,
-!! @ref PIO_put_var, @ref PIO_get_var calls (see pio_types).
-!<
-
-!>
 !! @public
 !! @struct io_desc_t
 !! @brief  An io descriptor handle that is generated in @ref PIO_initdecomp
@@ -90,16 +111,6 @@ module pio_types
        integer(i4) :: ncid  !< file id
     end type Var_desc_t
 
-!>
-!! @defgroup PIO_iotype PIO_iotype
-!! @public
-!! @brief An integer parameter which controls the iotype
-!! @details
-!!   - PIO_iotype_pnetcdf : parallel read/write of pNetCDF files (netcdf3)
-!!   - PIO_iotype_netcdf : serial read/write of NetCDF files using 'base_node' (netcdf3)
-!!   - PIO_iotype_netcdf4c : parallel read/serial write of NetCDF4 (HDF5) files with data compression
-!!   - PIO_iotype_netcdf4p : parallel read/write of NETCDF4 (HDF5) files
-!>
     integer(i4), public, parameter ::  &
         PIO_iotype_pnetcdf = 1, &   !< parallel read/write of pNetCDF files
         PIO_iotype_netcdf  = 2, &   !< serial read/write of NetCDF file using 'base_node'
@@ -113,27 +124,9 @@ module pio_types
         iotype_netcdf  = PIO_iotype_netcdf                    !< netcdf iotype
 
 
-!>
-!! @defgroup PIO_rearr_method PIO_rearr_method
-!! @public
-!! @brief The three choices to control rearrangement are:
-!! @details
-!!  - PIO_rearr_none : Do not use any form of rearrangement
-!!  - PIO_rearr_box : Use a PIO internal box rearrangement
-!!  - PIO_rearr_subset : Use a PIO internal subsetting rearrangement
-!<
     integer(i4), public, parameter :: PIO_rearr_box =  1    !< box rearranger
     integer(i4), public, parameter :: PIO_rearr_subset =  2 !< subset rearranger
 
-!>
-!! @public
-!! @defgroup PIO_error_method error_methods
-!! @details
-!! The three types of error handling methods are:
-!!  - PIO_INTERNAL_ERROR  : abort on error from any task
-!!  - PIO_BCAST_ERROR     : broadcast an error from io_rank 0 to all tasks in comm
-!!  - PIO_RETURN_ERROR    : do nothing - allow the user to handle it
-!<
   integer(i4), public, parameter :: PIO_INTERNAL_ERROR = -51 !< abort on error from any task
   integer(i4), public, parameter :: PIO_BCAST_ERROR = -52    !< broadcast an error
   integer(i4), public, parameter :: PIO_RETURN_ERROR = -53   !< do nothing
