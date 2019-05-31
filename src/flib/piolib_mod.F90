@@ -4,6 +4,24 @@
 !! Initialization Routines for PIO.
 !!
 !<
+
+!>
+!! @defgroup PIO_openfile PIO_openfile
+!! @defgroup PIO_syncfile PIO_syncfile
+!! @defgroup PIO_createfile Create a File
+!! @defgroup PIO_setframe PIO_setframe
+!! @defgroup PIO_advanceframe PIO_advanceframe
+!! @defgroup PIO_closefile PIO_closefile
+!! @defgroup PIO_freedecomp PIO_freedecomp
+!! @defgroup PIO_init PIO_init
+!! @defgroup PIO_finalize PIO_finalize
+!! @defgroup PIO_initdecomp PIO_initdecomp
+!! @defgroup PIO_getnumiotasks PIO_getnumiotasks
+!! @defgroup PIO_setdebuglevel PIO_setdebuglevel
+!! @defgroup PIO_seterrorhandling PIO_seterrorhandling
+!! @defgroup PIO_get_local_array_size PIO_get_local_array_size
+!! @defgroup PIO_set_hint  PIO_set_hint
+
 module piolib_mod
   use iso_c_binding
   !--------------
@@ -65,7 +83,6 @@ module piolib_mod
   !
   !-----------------------------------------------------------------------
   !>
-  !! @defgroup PIO_openfile PIO_openfile
   !! Open an existing netCDF file.
   !<
   interface PIO_openfile
@@ -73,7 +90,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_syncfile PIO_syncfile
   !! Sync the file to disk, flushing all buffers.
   !<
   interface PIO_syncfile
@@ -81,7 +97,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_createfile Create a File
   !! Create a new netCDF file with PIO.
   !<
   interface PIO_createfile
@@ -89,7 +104,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_setframe PIO_setframe
   !! Sets the record number for a future read/write of distributed
   !! arrays (see @ref PIO_write_darray, @ref PIO_read_darray).
   !<
@@ -98,7 +112,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_advanceframe PIO_advanceframe
   !! Increment the record number for a future read/write of distributed
   !! arrays (see @ref PIO_write_darray, @ref PIO_read_darray).
   !<
@@ -107,7 +120,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_closefile PIO_closefile
   !! Close an open file.
   !<
   interface PIO_closefile
@@ -115,7 +127,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_freedecomp PIO_freedecomp
   !! Free memory associated with a decomposition.
   !<
   interface PIO_freedecomp
@@ -124,7 +135,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_init PIO_init
   !! Initializes the PIO subsystem, creating a new IOSystem.
   !<
   interface PIO_init
@@ -134,7 +144,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_finalize PIO_finalize
   !! Shuts down an IOSystem and associated resources.
   !<
   interface PIO_finalize
@@ -142,7 +151,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_initdecomp PIO_initdecomp
   !! PIO_initdecomp is an overload interface the models decomposition to pio.
   !! initdecomp_1dof_bin_i8, initdecomp_1dof_nf_i4, initdecomp_2dof_bin_i4,
   !! and initdecomp_2dof_nf_i4 are all depreciated, but supported for backwards
@@ -164,7 +172,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_getnumiotasks PIO_getnumiotasks
   !! Return the actual number of IO-tasks used. PIO will reset the
   !! total number of IO-tasks if certain conditions are meet.
   !<
@@ -176,7 +183,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_setdebuglevel PIO_setdebuglevel
   !! Set the level of debug information that PIO will generate.
   !<
   interface PIO_setdebuglevel
@@ -184,7 +190,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_seterrorhandling PIO_seterrorhandling
   !! Set the form of error handling for PIO.
   !!
   !! By default pio handles errors internally by printing a string
@@ -202,7 +207,6 @@ module piolib_mod
   end interface
 
   !>
-  !! @defgroup PIO_get_local_array_size PIO_get_local_array_size
   !! Get the local size of a distributed array.
   !<
 
@@ -1156,9 +1160,6 @@ contains
 #endif
 #endif
   end subroutine init_intercom
-
-  !>
-  !! @defgroup PIO_set_hint  PIO_set_hint
 
   !> @ingroup PIO_set_hint
   !! Set file system hints using mpi_info_set. This is a collective
