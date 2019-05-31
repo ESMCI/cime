@@ -8,14 +8,18 @@
 #include <uthash.h>
 
 /**
- * @defgroup PIO_open_file_c Open a File
+ * @defgroup PIO_open_file_c Open a File in C
  * Open an existing netCDF file with PIO with the C API.
- * @defgroup PIO_create_file_c Create a File
+ *
+ * @defgroup PIO_create_file_c Create a File in C
  * Create a new netCDF file with PIO with the C API.
- * @defgroup PIO_sync_file_c Sync a File
+ *
+ * @defgroup PIO_sync_file_c Sync a File in C
  * Flush buffers and sync data to disk with the C API.
- * @defgroup PIO_close_file_c Close a File
+ *
+ * @defgroup PIO_close_file_c Close a File in C
  * Close a file with the C API.
+ *
  */
 
 /* This is the next ncid that will be used when a file is opened or
