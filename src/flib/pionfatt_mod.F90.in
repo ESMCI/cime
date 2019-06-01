@@ -3,6 +3,15 @@
 !! @file
 !! @brief NetCDF attribute interface to PIO
 !<
+!>
+!!  @defgroup PIO_put_att Write Attributes
+!!  Writes an attribute to a file in Fortran.
+!<
+!>
+!! @defgroup PIO_get_att Read Attributes
+!! Reads an attribute from a file in Fortran.
+!<
+
 module pionfatt_mod
   use pio_kinds, only : r4, r8, i4, pio_offset_kind
   use pio_types
@@ -35,17 +44,6 @@ module pionfatt_mod
      ! TYPE real,int,double
      module procedure get_att_1d_{TYPE}, get_att_desc_1d_{TYPE}, get_att_1d_id_{TYPE}
   end interface
-
-  !>
-  !!  @public
-  !!  @defgroup PIO_put_att PIO_put_att
-  !!  @brief Writes an netcdf attribute to a file
-  !<
-  !>
-  !! @public
-  !! @defgroup PIO_get_att PIO_get_att
-  !! @brief Reads  an netcdf attribute from a file
-  !<
 
   !> @cond doxygen_cant_handle_so_exclude
   private :: modName

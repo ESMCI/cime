@@ -12,7 +12,8 @@
 #include <pio_internal.h>
 
 /**
- * @addtogroup PIO_get_var_c Get Data from a Variable
+ * @addtogroup PIO_get_var_c Read Data
+ * Read data from a variable in C.
  * @{
  */
 

@@ -6,21 +6,51 @@
 !<
 
 !>
-!! @defgroup PIO_openfile PIO_openfile
-!! @defgroup PIO_syncfile PIO_syncfile
+!! @defgroup PIO_openfile Open a File
+!! Open an existing netCDF file with PIO in Fortran.
+!!
+!! @defgroup PIO_syncfile Sync File
+!! Sync a file to disk, flushing all buffers in Fortran.
+!!
 !! @defgroup PIO_createfile Create a File
-!! @defgroup PIO_setframe PIO_setframe
-!! @defgroup PIO_advanceframe PIO_advanceframe
-!! @defgroup PIO_closefile PIO_closefile
-!! @defgroup PIO_freedecomp PIO_freedecomp
-!! @defgroup PIO_init PIO_init
-!! @defgroup PIO_finalize PIO_finalize
-!! @defgroup PIO_initdecomp PIO_initdecomp
-!! @defgroup PIO_getnumiotasks PIO_getnumiotasks
-!! @defgroup PIO_setdebuglevel PIO_setdebuglevel
-!! @defgroup PIO_seterrorhandling PIO_seterrorhandling
-!! @defgroup PIO_get_local_array_size PIO_get_local_array_size
-!! @defgroup PIO_set_hint  PIO_set_hint
+!! Create a new netCDF file in Fortran.
+!!
+!! @defgroup PIO_setframe Set Record Number
+!! Set the record number for distributed array reads/writes in
+!! Fortran.
+!!
+!! @defgroup PIO_closefile Close a File
+!! Close a netCDF file in Fortran.
+!!
+!! @defgroup PIO_freedecomp Free a Decomposition
+!! Free a decomposition, releasing all resources in Fortran.
+!!
+!! @defgroup PIO_init Initialize an IOSystem
+!! Create a new IO System, designating numbers of I/O and computation
+!! tasks in Fortran.
+!!
+!! @defgroup PIO_finalize Free an IOSystem
+!! Free an IO System, releasing all resources in Fortran.
+!!
+!! @defgroup PIO_initdecomp Define a Decomposition
+!! Define a new decomposition of variables to distributed arrays in
+!! Fortran.
+!!
+!! @defgroup PIO_getnumiotasks Get Number IO Tasks
+!! Get the number of IO tasks in Fortran.
+!!
+!! @defgroup PIO_setdebuglevel Internal Debug Settings for Fortran
+!! Set the debug level in Fortran.
+!!
+!! @defgroup PIO_seterrorhandling Error Handling for Fortran
+!! Set the behavior if an error is encountered in Fortran.
+!!
+!! @defgroup PIO_get_local_array_size Get Local Array Size
+!! Get the local size of the distributed array in a decomposition in
+!! Fortran.
+!!
+!! @defgroup PIO_set_hint Set MPI Hint
+!! Set the MPI hint in Fortran.
 
 module piolib_mod
   use iso_c_binding
@@ -28,8 +58,8 @@ module piolib_mod
   use pio_kinds
   !--------------
   use pio_types, only : file_desc_t, iosystem_desc_t, var_desc_t, io_desc_t, &
-        pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
-        pio_noerr, pio_rearr_subset, pio_rearr_opt_t
+       pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
+       pio_noerr, pio_rearr_subset, pio_rearr_opt_t
   !--------------
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
   use pio_nf, only : pio_set_log_level
@@ -70,10 +100,10 @@ module piolib_mod
        PIO_set_rearr_opts
 
 #ifdef MEMCHK
-!> this is an internal variable for memory leak debugging
-!! it is used when macro memchk is defined and it causes each task to print the
-!! memory resident set size anytime it changes within pio.
-!<
+  !> this is an internal variable for memory leak debugging
+  !! it is used when macro memchk is defined and it causes each task to print the
+  !! memory resident set size anytime it changes within pio.
+  !<
   integer :: lastrss=0
 #endif
 
@@ -87,21 +117,21 @@ module piolib_mod
   !<
   interface PIO_openfile
      module procedure PIO_openfile
-  end interface
+  end interface PIO_openfile
 
   !>
   !! Sync the file to disk, flushing all buffers.
   !<
   interface PIO_syncfile
      module procedure syncfile
-  end interface
+  end interface PIO_syncfile
 
   !>
   !! Create a new netCDF file with PIO.
   !<
   interface PIO_createfile
      module procedure createfile
-  end interface
+  end interface PIO_createfile
 
   !>
   !! Sets the record number for a future read/write of distributed
@@ -109,7 +139,7 @@ module piolib_mod
   !<
   interface PIO_setframe
      module procedure setframe
-  end interface
+  end interface PIO_setframe
 
   !>
   !! Increment the record number for a future read/write of distributed
@@ -117,14 +147,14 @@ module piolib_mod
   !<
   interface PIO_advanceframe
      module procedure advanceframe
-  end interface
+  end interface PIO_advanceframe
 
   !>
   !! Close an open file.
   !<
   interface PIO_closefile
      module procedure closefile
-  end interface
+  end interface PIO_closefile
 
   !>
   !! Free memory associated with a decomposition.
@@ -132,7 +162,7 @@ module piolib_mod
   interface PIO_freedecomp
      module procedure freedecomp_ios
      module procedure freedecomp_file
-  end interface
+  end interface PIO_freedecomp
 
   !>
   !! Initializes the PIO subsystem, creating a new IOSystem.
@@ -141,14 +171,14 @@ module piolib_mod
      module procedure init_intracom
      module procedure init_intercom
 
-  end interface
+  end interface PIO_init
 
   !>
   !! Shuts down an IOSystem and associated resources.
   !<
   interface PIO_finalize
      module procedure finalize
-  end interface
+  end interface PIO_finalize
 
   !>
   !! PIO_initdecomp is an overload interface the models decomposition to pio.
@@ -168,8 +198,8 @@ module piolib_mod
      module procedure initdecomp_2dof_bin_i4
      module procedure initdecomp_2dof_bin_i8
      module procedure PIO_initdecomp_bc
-!     module procedure PIO_initdecomp_dof_dof
-  end interface
+     !     module procedure PIO_initdecomp_dof_dof
+  end interface PIO_initdecomp
 
   !>
   !! Return the actual number of IO-tasks used. PIO will reset the
@@ -177,17 +207,17 @@ module piolib_mod
   !<
   interface PIO_get_numiotasks
      module procedure getnumiotasks
-  end interface
+  end interface PIO_get_numiotasks
   interface PIO_getnumiotasks
      module procedure getnumiotasks
-  end interface
+  end interface PIO_getnumiotasks
 
   !>
   !! Set the level of debug information that PIO will generate.
   !<
   interface PIO_setdebuglevel
      module procedure setdebuglevel
-  end interface
+  end interface PIO_setdebuglevel
 
   !>
   !! Set the form of error handling for PIO.
@@ -204,7 +234,7 @@ module piolib_mod
      module procedure seterrorhandlingfile
      module procedure seterrorhandlingiosystem
      module procedure seterrorhandlingiosysid
-  end interface
+  end interface PIO_seterrorhandling
 
   !>
   !! Get the local size of a distributed array.
@@ -242,14 +272,15 @@ contains
     end interface
     PIO_FILE_IS_OPEN = .false.
     if(associated(file%iosystem)) then
-      if(PIOc_File_is_Open(file%fh)==1) then
-        PIO_FILE_IS_OPEN = .true.
-      endif
+       if(PIOc_File_is_Open(file%fh)==1) then
+          PIO_FILE_IS_OPEN = .true.
+       endif
     endif
 
   end function PIO_FILE_IS_OPEN
 
   !>
+  !! @public
   !! @ingroup PIO_get_local_array_size
   !! Return the expected local size of an array associated with a
   !! decomposition.
@@ -271,7 +302,8 @@ contains
   end function PIO_get_local_array_size
 
   !>
-  !! @ingroup PIO_advanceframe
+  !! @public
+  !! @ingroup PIO_setframe
   !! Advance the record dimension of a variable in a netcdf format
   !! file.
   !!
@@ -296,6 +328,7 @@ contains
   end subroutine advanceframe
 
   !>
+  !! @public
   !! @ingroup PIO_setframe
   !! Set the record dimension of a variable in a netcdf format file
   !! or the block address in a binary file.
@@ -325,6 +358,8 @@ contains
   end subroutine setframe
 
   !>
+  !! @public
+  !! @public
   !! @ingroup PIO_setdebuglevel
   !! Set the level of debug information output to stdout by PIO.
   !!
@@ -365,12 +400,13 @@ contains
     end if
     ierr = PIO_set_log_level(level)
     if(ierr /= PIO_NOERR) then
-      ! This is not a fatal error
-      print *, __PIO_FILE__, __LINE__, "Setting log level failed, ierr =",ierr
+       ! This is not a fatal error
+       print *, __PIO_FILE__, __LINE__, "Setting log level failed, ierr =",ierr
     end if
   end subroutine setdebuglevel
 
   !>
+  !! @public
   !! @ingroup PIO_seterrorhandling
   !! Set the pio error handling method for a file.
   !!
@@ -388,6 +424,7 @@ contains
   end subroutine seterrorhandlingfile
 
   !>
+  !! @public
   !! @ingroup PIO_seterrorhandling
   !! Set the pio error handling method for a pio system.
   !! @param iosystem a defined pio system descriptor, see PIO_types
@@ -404,6 +441,7 @@ contains
   end subroutine seterrorhandlingiosystem
 
   !>
+  !! @public
   !! @ingroup PIO_seterrorhandling
   !! Set the pio error handling method for a pio system or globally.
   !!
@@ -435,6 +473,7 @@ contains
   end subroutine seterrorhandlingiosysid
 
   !>
+  !! @public
   !! @ingroup PIO_initdecomp
   !! Implements the block-cyclic decomposition for PIO_initdecomp.
   !! This provides the ability to describe a computational
@@ -536,7 +575,7 @@ contains
 
   end subroutine initdecomp_2dof_bin_i4
   subroutine initdecomp_2dof_bin_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,iodesc)
-!    use calcdisplace_mod, only : calcdisplace
+    !    use calcdisplace_mod, only : calcdisplace
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in)           :: basepiotype
     integer(i4), intent(in)           :: dims(:)
@@ -718,7 +757,6 @@ contains
 
   !>
   !! @ingroup PIO_initdecomp
-
   !! Implements the degrees of freedom decomposition for
   !! PIO_initdecomp(). This provides the ability to describe a
   !! computational decomposition in PIO using degrees of freedom
@@ -827,7 +865,7 @@ contains
             maplen, compdof, iodesc%ioid, crearr, C_LOC(cstart), C_LOC(ccount))
        deallocate(cstart, ccount)
     else
-        ierr = PIOc_InitDecomp(iosystem%iosysid, basepiotype, ndims, cdims, &
+       ierr = PIOc_InitDecomp(iosystem%iosysid, basepiotype, ndims, cdims, &
             maplen, compdof, iodesc%ioid, crearr, C_NULL_PTR, C_NULL_PTR)
     end if
 
@@ -862,6 +900,7 @@ contains
   end subroutine PIO_initdecomp_dof_i8
 
   !>
+  !! @public
   !! @ingroup PIO_init
   !! Initialize the pio subsystem. This is a collective call. Input
   !! parameters are read on comp_rank=0 values on other tasks are
@@ -908,7 +947,7 @@ contains
          integer(C_INT), value :: stride
          integer(C_INT), value :: base
          integer(C_INT), value :: rearr
-          type(pio_rearr_opt_t) :: rearr_opts
+         type(pio_rearr_opt_t) :: rearr_opts
          integer(C_INT) :: iosysidp
        end function PIOc_Init_Intracomm_from_F90
     end interface
@@ -927,6 +966,7 @@ contains
   end subroutine init_intracom
 
   !>
+  !! @public
   !! @ingroup PIO_init
   !! Initialize the pio subsystem. This is a collective call. Input
   !! parameters are read on comp_rank=0 values on other tasks are
@@ -969,7 +1009,7 @@ contains
 #endif
 #if defined(NO_MPI2) || defined(_MPISERIAL)
     call piodie( __PIO_FILE__,__LINE__, &
-     'The PIO async interface requires an MPI2 complient MPI library')
+         'The PIO async interface requires an MPI2 complient MPI library')
 #else
     do i=1,component_count
        iosystem(i)%error_handling = PIO_internal_error
@@ -1123,16 +1163,16 @@ contains
        call mpi_info_create(iosystem(i)%info,ierr)
        ! turn on mpi-io aggregation
        !DBG    print *,'PIO_init: before call to setnumagg'
-!       itmp = num_aggregator
-!       call mpi_bcast(itmp, 1, mpi_integer, 0, iosystem%union_comm, ierr)
-!       if(itmp .gt. 0) then
-!          write(cb_nodes,('(i5)')) itmp
-!#ifdef BGQ
-!          call PIO_set_hint(iosystem(i),"bgl_nodes_pset",trim(adjustl(cb_nodes)))
-!#else
-!          call PIO_set_hint(iosystem(i),"cb_nodes",trim(adjustl(cb_nodes)))
-!#endif
-!       endif
+       !       itmp = num_aggregator
+       !       call mpi_bcast(itmp, 1, mpi_integer, 0, iosystem%union_comm, ierr)
+       !       if(itmp .gt. 0) then
+       !          write(cb_nodes,('(i5)')) itmp
+       !#ifdef BGQ
+       !          call PIO_set_hint(iosystem(i),"bgl_nodes_pset",trim(adjustl(cb_nodes)))
+       !#else
+       !          call PIO_set_hint(iosystem(i),"cb_nodes",trim(adjustl(cb_nodes)))
+       !#endif
+       !       endif
 
 #ifdef PIO_GPFS_HINTS
        call PIO_set_hint(iosystem(i),"ibm_largeblock_io","true")
@@ -1161,7 +1201,9 @@ contains
 #endif
   end subroutine init_intercom
 
-  !> @ingroup PIO_set_hint
+  !>
+  !! @public
+  !! @ingroup PIO_set_hint
   !! Set file system hints using mpi_info_set. This is a collective
   !! call.
   !!
@@ -1190,6 +1232,7 @@ contains
   end subroutine PIO_set_hint
 
   !>
+  !! @public
   !! @ingroup PIO_finalize
   !! Finalizes an IO System. This is a collective call.
   !!
@@ -1198,8 +1241,8 @@ contains
   !! @author Jim Edwards
   !<
   subroutine finalize(iosystem,ierr)
-     type (iosystem_desc_t), intent(inout) :: iosystem
-     integer(i4), intent(out) :: ierr
+    type (iosystem_desc_t), intent(inout) :: iosystem
+    integer(i4), intent(out) :: ierr
     interface
        integer(C_INT) function PIOc_finalize(iosysid) &
             bind(C,name="PIOc_finalize")
@@ -1212,8 +1255,8 @@ contains
     endif
   end subroutine finalize
 
-
   !>
+  !! @public
   !! @ingroup PIO_getnumiotasks
   !! Return the number of IO-tasks that PIO is using.
   !!
@@ -1221,52 +1264,53 @@ contains
   !! @param numiotasks the number of IO-tasks
   !! @author Jim Edwards
   !<
-   subroutine getnumiotasks(iosystem,numiotasks)
-       type (iosystem_desc_t), intent(in) :: iosystem
-       integer(i4), intent(out) :: numiotasks
-       integer :: ierr
-       interface
-          integer(C_INT) function PIOc_get_numiotasks(iosysid,numiotasks) &
-               bind(C,name="PIOc_get_numiotasks")
-            use iso_c_binding
-            integer(C_INT), intent(in), value :: iosysid
-            integer(C_INT), intent(out) :: numiotasks
-          end function PIOc_get_numiotasks
-       end interface
-       ierr = PIOc_get_numiotasks(iosystem%iosysid, numiotasks)
+  subroutine getnumiotasks(iosystem,numiotasks)
+    type (iosystem_desc_t), intent(in) :: iosystem
+    integer(i4), intent(out) :: numiotasks
+    integer :: ierr
+    interface
+       integer(C_INT) function PIOc_get_numiotasks(iosysid,numiotasks) &
+            bind(C,name="PIOc_get_numiotasks")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: iosysid
+         integer(C_INT), intent(out) :: numiotasks
+       end function PIOc_get_numiotasks
+    end interface
+    ierr = PIOc_get_numiotasks(iosystem%iosysid, numiotasks)
 
-   end subroutine getnumiotasks
+  end subroutine getnumiotasks
 
-   !> Is an iotype available?
-   logical function pio_iotype_available( iotype) result(available)
-     integer, intent(in) :: iotype
-     interface
-        integer(C_INT) function PIOc_iotype_available(iotype) &
-             bind(C,name="PIOc_iotype_available")
-          use iso_c_binding
-          integer(C_INT), intent(in), value :: iotype
-        end function PIOc_iotype_available
-     end interface
-     available= (PIOc_iotype_available(iotype) == 1)
+  !> Is an iotype available?
+  logical function pio_iotype_available( iotype) result(available)
+    integer, intent(in) :: iotype
+    interface
+       integer(C_INT) function PIOc_iotype_available(iotype) &
+            bind(C,name="PIOc_iotype_available")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: iotype
+       end function PIOc_iotype_available
+    end interface
+    available= (PIOc_iotype_available(iotype) == 1)
 
-   end function pio_iotype_available
+  end function pio_iotype_available
 
-   !>
-   !! @ingroup PIO_createfile
-   !! Create a NetCDF file using PIO. Input parameters are read on
-   !! comp task 0 and ignored elsewhere.
-   !!
-   !! @param iosystem A defined PIO system descriptor created by a
-   !! call to @ref PIO_init (see PIO_init)
-   !! @param file The returned file descriptor
-   !! @param iotype @copydoc PIO_iotype
-   !! @param fname The name of the file to open
-   !! @param amode_in The NetCDF creation mode flag - NC_NOWRITE for
-   !! read-only access or NC_WRITE for read-write access.
-   !! @retval ierr @copydoc error_return
-   !! @author Jim Edwards
-   !<
-   integer function createfile(iosystem, file,iotype, fname, amode_in) result(ierr)
+  !>
+  !! @public
+  !! @ingroup PIO_createfile
+  !! Create a NetCDF file using PIO. Input parameters are read on
+  !! comp task 0 and ignored elsewhere.
+  !!
+  !! @param iosystem A defined PIO system descriptor created by a
+  !! call to @ref PIO_init (see PIO_init)
+  !! @param file The returned file descriptor
+  !! @param iotype @copydoc PIO_iotype
+  !! @param fname The name of the file to open
+  !! @param amode_in The NetCDF creation mode flag - NC_NOWRITE for
+  !! read-only access or NC_WRITE for read-write access.
+  !! @retval ierr @copydoc error_return
+  !! @author Jim Edwards
+  !<
+  integer function createfile(iosystem, file,iotype, fname, amode_in) result(ierr)
     type (iosystem_desc_t), intent(inout), target :: iosystem
     type (file_desc_t), intent(out) :: file
     integer, intent(in) :: iotype
@@ -1275,7 +1319,7 @@ contains
     integer :: mode
     interface
        integer(C_INT) function PIOc_createfile(iosysid, fh, iotype, fname,mode) &
-         bind(C,NAME='PIOc_createfile')
+            bind(C,NAME='PIOc_createfile')
          use iso_c_binding
          implicit none
          integer(c_int), value :: iosysid
@@ -1307,6 +1351,7 @@ contains
   end function createfile
 
   !>
+  !! @public
   !! @ingroup PIO_openfile
   !! Open an existing file using PIO. Input parameters are read on
   !! comp task 0 and ignored elsewhere.
@@ -1322,7 +1367,7 @@ contains
   !<
   integer function PIO_openfile(iosystem, file, iotype, fname,mode) result(ierr)
 
-!    use ifcore, only: tracebackqq
+    !    use ifcore, only: tracebackqq
     type (iosystem_desc_t), intent(inout), target :: iosystem
     type (file_desc_t), intent(out) :: file
     integer, intent(in) :: iotype
@@ -1331,7 +1376,7 @@ contains
     integer :: iorank
     interface
        integer(C_INT) function PIOc_openfile(iosysid, fh, iotype, fname,mode) &
-         bind(C,NAME='PIOc_openfile')
+            bind(C,NAME='PIOc_openfile')
          use iso_c_binding
          implicit none
          integer(c_int), value :: iosysid
@@ -1364,8 +1409,10 @@ contains
 
 
   !>
+  !! @public
   !! @ingroup PIO_syncfile
-  !! @brief synchronizing a file forces all writes to complete before the subroutine returns.
+  !! Synchronizing a file, forcing all writes to complete before the
+  !! subroutine returns.
   !!
   !! @param file @copydoc file_desc_t
   !! @author Jim Edwards
@@ -1388,6 +1435,7 @@ contains
 
 
   !>
+  !! @public
   !! @ingroup PIO_freedecomp
   !! @brief free all allocated storage associated with this decomposition
   !! @details
@@ -1414,9 +1462,10 @@ contains
 
 
   !>
+  !! @public
   !! @ingroup PIO_freedecomp
-  !! @brief free all allocated storage associated with this decomposition
-  !! @details
+  !! Free all allocated storage associated with this decomposition.
+  !!
   !! @param file @copydoc file_desc_t
   !! @param iodesc : @copydoc io_desc_t
   !! @retval ierr @copydoc error_return
@@ -1435,9 +1484,10 @@ contains
 
 
   !>
+  !! @public
   !! @ingroup PIO_closefile
-  !! @brief close a disk file
-  !! @details
+  !! Close a disk file.
+  !!
   !! @param file @copydoc file_desc_t
   !! @author Jim Edwards
   !<
@@ -1464,9 +1514,10 @@ contains
 
 
   !>
+  !! @public
   !! @ingroup PIO_deletefile
-  !! @brief Delete a file
-  !! @details
+  !! Delete a file.
+  !!
   !! @param ios a pio system handle
   !! @param fname a filename
   !! @author Jim Edwards
@@ -1489,6 +1540,7 @@ contains
   end subroutine pio_deletefile
 
   !>
+  !! @public
   !! @ingroup PIO_set_rearr_opts
   !! Set the rerranger options.
   !!
@@ -1507,10 +1559,10 @@ contains
   !! @author Jim Edwards
   !<
   function pio_set_rearr_opts(ios, comm_type, fcd,&
-                              enable_hs_c2i, enable_isend_c2i,&
-                              max_pend_req_c2i,&
-                              enable_hs_i2c, enable_isend_i2c,&
-                              max_pend_req_i2c) result(ierr)
+       enable_hs_c2i, enable_isend_c2i,&
+       max_pend_req_c2i,&
+       enable_hs_i2c, enable_isend_i2c,&
+       max_pend_req_i2c) result(ierr)
 
     type(iosystem_desc_t), intent(inout) :: ios
     integer, intent(in) :: comm_type, fcd
@@ -1519,34 +1571,33 @@ contains
     integer, intent(in) :: max_pend_req_c2i, max_pend_req_i2c
     integer :: ierr
     interface
-      integer(c_int) function PIOc_set_rearr_opts(iosysid, comm_type, fcd,&
-                                                  enable_hs_c2i, enable_isend_c2i,&
-                                                  max_pend_req_c2i,&
-                                                  enable_hs_i2c, enable_isend_i2c,&
-                                                  max_pend_req_i2c)&
-        bind(C,name="PIOc_set_rearr_opts")
-        use iso_c_binding
-        integer(C_INT), intent(in), value :: iosysid
-        integer(C_INT), intent(in), value :: comm_type
-        integer(C_INT), intent(in), value :: fcd
-        logical(C_BOOL), intent(in), value :: enable_hs_c2i
-        logical(C_BOOL), intent(in), value :: enable_isend_c2i
-        integer(C_INT), intent(in), value :: max_pend_req_c2i
-        logical(C_BOOL), intent(in), value :: enable_hs_i2c
-        logical(C_BOOL), intent(in), value :: enable_isend_i2c
-        integer(C_INT), intent(in), value :: max_pend_req_i2c
-      end function PIOc_set_rearr_opts
+       integer(c_int) function PIOc_set_rearr_opts(iosysid, comm_type, fcd,&
+            enable_hs_c2i, enable_isend_c2i,&
+            max_pend_req_c2i,&
+            enable_hs_i2c, enable_isend_i2c,&
+            max_pend_req_i2c)&
+            bind(C,name="PIOc_set_rearr_opts")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: iosysid
+         integer(C_INT), intent(in), value :: comm_type
+         integer(C_INT), intent(in), value :: fcd
+         logical(C_BOOL), intent(in), value :: enable_hs_c2i
+         logical(C_BOOL), intent(in), value :: enable_isend_c2i
+         integer(C_INT), intent(in), value :: max_pend_req_c2i
+         logical(C_BOOL), intent(in), value :: enable_hs_i2c
+         logical(C_BOOL), intent(in), value :: enable_isend_i2c
+         integer(C_INT), intent(in), value :: max_pend_req_i2c
+       end function PIOc_set_rearr_opts
     end interface
 
     ierr = PIOc_set_rearr_opts(ios%iosysid, comm_type, fcd,&
-                                logical(enable_hs_c2i, kind=c_bool),&
-                                logical(enable_isend_c2i, kind=c_bool),&
-                                max_pend_req_c2i,&
-                                logical(enable_hs_i2c, kind=c_bool),&
-                                logical(enable_isend_i2c, kind=c_bool),&
-                                max_pend_req_i2c)
+         logical(enable_hs_c2i, kind=c_bool),&
+         logical(enable_isend_c2i, kind=c_bool),&
+         max_pend_req_c2i,&
+         logical(enable_hs_i2c, kind=c_bool),&
+         logical(enable_isend_i2c, kind=c_bool),&
+         max_pend_req_i2c)
 
   end function pio_set_rearr_opts
-
 
 end module piolib_mod

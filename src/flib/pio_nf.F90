@@ -4,53 +4,34 @@
 !! @author Jim Edwards
 !<
 
-!> @defgroup PIO_inquire_dimension Learn About Dimension in Fortran
-!! Learn dimension name, ID, or length.
+!> @defgroup PIO_inquire_dimension Learn About Dimension
+!! Learn dimension name, ID, or length in Fortran.
 !!
-!! @defgroup PIO_inq_ndims PIO_inq_ndims
+!! @defgroup PIO_inquire Learn About a File
+!! Learn the number of variables, dimensions, global attributes, and
+!! the unlimited dimension ID in Fortran.
 !!
-!! @defgroup PIO_inq_nvars PIO_inq_nvars
+!! @defgroup PIO_enddef Define Mode
+!! End or re-enter define mode in Fortran.
 !!
-!! @defgroup PIO_inq_natts PIO_inq_natts
+!! @defgroup PIO_set_log_level Debug Logging
+!! Set debugging log level in Fortran.
 !!
-!! @defgroup PIO_inq_unlimdim PIO_inq_unlimdim
+!! @defgroup PIO_strerror Error Messages
+!! Get the error message from an error in Fortran.
 !!
-!! @defgroup PIO_inquire PIO_inquire
+!! @defgroup PIO_def_dim Define a Dimension
+!! Define a new dimension, with name and length in Fortran.
 !!
-!! @defgroup PIO_enddef PIO_enddef
+!! @defgroup PIO_inquire_variable Learn About a Variable
+!! Learn variable name, ID, type, dimensions, compression, chunking in
+!! Fortran.
 !!
-!! @defgroup PIO_redef PIO_redef
+!! @defgroup PIO_inq_att Learn About an Attribute
+!! Learn attribute name, number, type, size in Fortran.
 !!
-!! @defgroup PIO_set_log_level PIO_set_log_level
-!!
-!! @defgroup PIO_strerror PIO_strerror
-!!
-!! @defgroup PIO_def_dim PIO_def_dim
-!!
-!! @defgroup PIO_inquire_variable PIO_inquire_variable
-!!
-!! @defgroup PIO_inq_vardimid PIO_inq_vardimid
-!!
-!! @defgroup PIO_inq_varndims PIO_inq_varndims
-!!
-!! @defgroup PIO_inq_vartype PIO_inq_vartype
-!!
-!! @defgroup PIO_inq_varnatts PIO_inq_varnatts
-!!
-!! @defgroup PIO_inq_var_deflate PIO_inq_var_deflate
-!!
-!! @defgroup PIO_inq_varname PIO_inq_varname
-!!
-!! @defgroup PIO_inq_varid PIO_inq_varid
-!!
-!! @defgroup PIO_inq_attlen PIO_inq_attlen
-!!
-!! @defgroup PIO_inq_att PIO_inq_att
-!!
-!! @defgroup PIO_inq_attname PIO_inq_attname
-!!
-!! @defgroup PIO_def_var Define a Variable in Fortran
-!! Define a new variable.
+!! @defgroup PIO_def_var Define a Variable
+!! Define a new variable in Fortran.
 !<
 
 module pio_nf
@@ -495,7 +476,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_ndims
+  !! @ingroup PIO_inquire
   !! Get information about the number of dimensions of a file or
   !! group.
   !!
@@ -512,7 +493,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_ndims
+  !! @ingroup PIO_inquire
   !! Get information about the number of dimensions of a file or
   !! group.
   !! @author Jim Edwards
@@ -533,7 +514,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_nvars
+  !! @ingroup PIO_inquire
   !! Get information about the number of variables in a file or group.
   !!
   !! @param File @copydoc file_desc_t
@@ -548,7 +529,8 @@ contains
   end function inq_nvars_desc
 
   !>
-  !! @ingroup PIO_inq_nvars
+  !! @public
+  !! @ingroup PIO_inquire
   !! Get information about the number of variables in a file or group.
   !! @author Jim Edwards
   !<
@@ -568,7 +550,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_natts
+  !! @ingroup PIO_inquire
   !! Get information about the number of global attributes in a file
   !! or group.
   !!
@@ -585,7 +567,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_natts
+  !! @ingroup PIO_inquire
   !! Get information about the number of global attributes in a file
   !! or group.
   !! @author Jim Edwards
@@ -606,7 +588,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_unlimdm
+  !! @ingroup PIO_inquire
   !! Get information about the unlimited dimension in a file.
   !!
   !! @param File @copydoc file_desc_t
@@ -623,7 +605,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_inq_unlimdm
+  !! @ingroup PIO_inquire
   !! Get information about the unlimited dimension in a file.
   !! @author Jim Edwards
   !<
@@ -723,7 +705,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_redef
+  !! @ingroup PIO_enddef
   !! Exits netcdf define mode.
   !!
   !! @param File @copydoc file_desc_t
@@ -786,7 +768,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_redef
+  !! @ingroup PIO_enddef
   !! Wrapper for the C function \ref PIOc_redef .
   !! @author Jim Edwards
   !<
@@ -877,6 +859,7 @@ contains
   end function def_dim_id
 
   !>
+  !! @public
   !! @ingroup PIO_inquire_variable
   !! Inquires if a NetCDF variable is present and returns its
   !! attributes.
@@ -905,6 +888,7 @@ contains
   end function inquire_variable_desc
 
   !>
+  !! @public
   !! @ingroup PIO_inquire_variable
   !! Inquires if a NetCDF variable is present and returns its
   !! attributes.
@@ -922,6 +906,7 @@ contains
   end function inquire_variable_vid
 
   !>
+  !! @public
   !! @ingroup PIO_inquire_variable
   !! Inquires if a NetCDF variable is present and returns its
   !! attributes.
@@ -943,7 +928,8 @@ contains
   end function inquire_variable_id
 
   !>
-  !! @ingroup PIO_inq_vardimid
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Returns the dimids of the variable as an interger array.
   !!
   !! @param File @copydoc file_desc_t
@@ -964,7 +950,8 @@ contains
   end function inq_vardimid_desc
 
   !>
-  !! @ingroup PIO_inq_vardimid
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Returns the dimids of the variable as an interger array.
   !! @author Jim Edwards
   !<
@@ -979,7 +966,8 @@ contains
   end function inq_vardimid_vid
 
   !>
-  !! @ingroup PIO_inq_vardimid
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Returns the dimids of the variable as an interger array.
   !! @author Jim Edwards
   !<
@@ -1011,7 +999,8 @@ contains
   end function inq_vardimid_id
 
   !>
-  !! @ingroup PIO_inq_varndims
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets the number of dimension associated with a netcdf variable.
   !!
   !! @param File @copydoc file_desc_t
@@ -1030,7 +1019,8 @@ contains
   end function inq_varndims_desc
 
   !>
-  !! @ingroup PIO_inq_varndims
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets the number of dimension associated with a netcdf variable.
   !! @author Jim Edwards
   !<
@@ -1044,7 +1034,8 @@ contains
   end function inq_varndims_vid
 
   !>
-  !! @ingroup PIO_inq_varndims
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets the number of dimension associated with a netcdf variable.
   !! @author Jim Edwards
   !<
@@ -1065,7 +1056,8 @@ contains
   end function inq_varndims_id
 
   !>
-  !! @ingroup PIO_inq_vartype
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !!
   !! @param File @copydoc file_desc_t
@@ -1084,7 +1076,8 @@ contains
   end function inq_vartype_desc
 
   !>
-  !! @ingroup PIO_inq_vartype
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !! @author Jim Edwards
   !<
@@ -1098,7 +1091,8 @@ contains
   end function inq_vartype_vid
 
   !>
-  !! @ingroup PIO_inq_vartype
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !! @author Jim Edwards
   !<
@@ -1121,7 +1115,8 @@ contains
   end function inq_vartype_id
 
   !>
-  !! @ingroup PIO_inq_varnatts
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !!
   !! @param File @copydoc file_desc_t
@@ -1140,7 +1135,8 @@ contains
   end function inq_varnatts_desc
 
   !>
-  !! @ingroup PIO_inq_varnatts
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !! @author Jim Edwards
   !<
@@ -1154,7 +1150,8 @@ contains
   end function inq_varnatts_vid
 
   !>
-  !! @ingroup PIO_inq_varnatts
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !! @author Jim Edwards
   !<
@@ -1177,7 +1174,8 @@ contains
   end function inq_varnatts_id
 
   !>
-  !! @ingroup PIO_inq_var_deflate
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !!
   !! @param File @copydoc file_desc_t
@@ -1201,7 +1199,8 @@ contains
   end function inq_var_deflate_desc
 
   !>
-  !! @ingroup PIO_inq_var_deflate
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !! @author Jim Edwards
   !<
@@ -1217,7 +1216,8 @@ contains
   end function inq_var_deflate_vid
 
   !>
-  !! @ingroup PIO_inq_var_deflate
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Gets metadata information for netcdf file.
   !! @author Jim Edwards
   !<
@@ -1245,7 +1245,8 @@ contains
   end function inq_var_deflate_id
 
   !>
-  !! @ingroup PIO_inq_varname
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Get the name associated with a variable.
   !!
   !! @param File @copydoc file_desc_t
@@ -1265,7 +1266,8 @@ contains
   end function inq_varname_desc
 
   !>
-  !! @ingroup PIO_inq_varname
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Get the name associated with a variable.
   !! @author Jim Edwards
   !<
@@ -1280,7 +1282,8 @@ contains
   end function inq_varname_vid
 
   !>
-  !! @ingroup PIO_inq_varname
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Get the name associated with a variable.
   !! @author Jim Edwards
   !<
@@ -1304,7 +1307,8 @@ contains
   end function inq_varname_id
 
   !>
-  !! @ingroup PIO_inq_varid
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Returns the ID of a netcdf variable given its name.
   !!
   !! @param File @copydoc file_desc_t
@@ -1323,7 +1327,8 @@ contains
   end function inq_varid_desc
 
   !>
-  !! @ingroup PIO_inq_varid
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Returns the ID of a netcdf variable given its name.
   !! @author Jim Edwards
   !<
@@ -1337,7 +1342,8 @@ contains
   end function inq_varid_vid
 
   !>
-  !! @ingroup PIO_inq_varid
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Returns the ID of a netcdf variable given its name.
   !! @author Jim Edwards
   !<
@@ -1363,7 +1369,8 @@ contains
   end function inq_varid_id
 
   !>
-  !! @ingroup PIO_inq_attlen
+  !! @public
+  !! @ingroup PIO_inq_att
   !! Gets the attribute length.
   !!
   !! @param File @copydoc file_desc_t
@@ -1385,7 +1392,7 @@ contains
   end function inq_attlen_desc
 
   !>
-  !! @ingroup PIO_inq_attlen
+  !! @ingroup PIO_inq_att
   !! Gets the attribute length.
   !! @author Jim Edwards
   !<
@@ -1401,7 +1408,7 @@ contains
   end function inq_attlen_vid
 
   !>
-  !! @ingroup PIO_inq_attlen
+  !! @ingroup PIO_inq_att
   !! Gets the attribute length.
   !<
   integer function inq_attlen_id(ncid,varid,name,len) result(ierr)
@@ -1499,7 +1506,7 @@ contains
   end function inq_att_id
 
   !>
-  !! @ingroup PIO_inq_attname
+  !! @ingroup PIO_inq_att
   !! Gets the name of an attribute.
   !! @author Jim Edwards
   !<
@@ -1514,7 +1521,7 @@ contains
   end function inq_attname_desc
 
   !>
-  !! @ingroup PIO_inq_attname
+  !! @ingroup PIO_inq_att
   !! Gets the name of an attribute.
   !! @author Jim Edwards
   !<
@@ -1529,7 +1536,7 @@ contains
   end function inq_attname_vid
 
   !>
-  !! @ingroup PIO_inq_attname
+  !! @ingroup PIO_inq_att
   !! Gets the name of an attribute.
   !! @author Jim Edwards
   !<

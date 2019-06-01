@@ -8,17 +8,17 @@
 #include <uthash.h>
 
 /**
- * @defgroup PIO_open_file_c Open a File in C
- * Open an existing netCDF file with PIO with the C API.
+ * @defgroup PIO_open_file_c Open a File
+ * Open an existing netCDF file with PIO in C.
  *
- * @defgroup PIO_create_file_c Create a File in C
- * Create a new netCDF file with PIO with the C API.
+ * @defgroup PIO_create_file_c Create a File
+ * Create a new netCDF file with PIO in C.
  *
- * @defgroup PIO_sync_file_c Sync a File in C
- * Flush buffers and sync data to disk with the C API.
+ * @defgroup PIO_sync_file_c Sync a File
+ * Flush buffers and sync data to disk in C.
  *
- * @defgroup PIO_close_file_c Close a File in C
- * Close a file with the C API.
+ * @defgroup PIO_close_file_c Close a File
+ * Close a file in C.
  *
  */
 
