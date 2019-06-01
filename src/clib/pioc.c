@@ -1210,7 +1210,8 @@ PIOc_finalize(int iosysid)
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()
      * call. comp_comm and io_comm are MPI duplicates of the comms
-     * handed into init_intercomm. So they need to be freed by MPI. */
+     * handed into PIOc_init_async(). So they need to be freed by
+     * MPI. */
     if (ios->intercomm != MPI_COMM_NULL)
         MPI_Comm_free(&ios->intercomm);
     if (ios->union_comm != MPI_COMM_NULL)
@@ -1732,7 +1733,7 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if ((ret = MPI_Group_free(&world_group)))
         return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
-    LOG((2, "successfully done with PIO_Init_Async"));
+    LOG((2, "successfully done with PIOc_init_async"));
     return PIO_NOERR;
 }
 
