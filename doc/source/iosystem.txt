@@ -12,13 +12,13 @@ When the user program is complete, the IOSystem should be released by
 calling C function PIOc_finalize() or Fortran function piolib_mod::finalize()
 for each open IOSystem.
 
-@section intercomm_mode Intercomm Mode
+@section intracomm_mode Intracomm Mode
 
-@image html PIO_Intercomm1.png "PIO Intercomm Mode"
+@image html PIO_Intracomm1.png "PIO Intracomm Mode"
 
 @section async_mode Async Mode
 
-@image html PIO_Intracomm1.png "PIO Async Mode"
+@image html PIO_Async.png "PIO Async Mode"
 
 */
 

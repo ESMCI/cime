@@ -1,17 +1,54 @@
 @tableofcontents
 
-/** @page intro Introduction 
+/** @page intro Introduction
 
-PIO is a software interface layer designed to encapsolate the
-complexities of parallel IO and make it easier to replace the lower
-level software backend.  It currently supports <a
+Performing I/O is straightforward when a small number of processors
+are being used.
+
+@image html I_O_on_Few.png "I/O on One or a Few Processors"
+
+Parallel I/O does not scale to thousands of processors, because the
+parallel disk systems do not support the bandwitdh to allow thousands
+of processors to access the disk at the same time. As a result, most
+of the processors will have to wait to do I/O.
+
+An obvious solution is to designate a small number of processors to do
+I/O, and use the rest for computation.
+
+@image html I_O_on_Many_Intracomm.png "I/O on Many Processors Intracomm"
+
+PIO provides a netCDF-like API which provides this service. User code
+is written as if parallel I/O is being used from every processor, but,
+under the hood, PIO uses the I/O processors to do all data access.
+
+With Intracomm Mode, the I/O processors are a subset of the
+computational processors, and only one computational unit is
+supported. In Async Mode, the I/O processors are dedicated to I/O, and
+do not perform computation. Also, more than one computational unit may
+be designated.
+
+@image html I_O_on_Many_Async.png "I/O on Many Processors Async"
+
+The user initializes the PIO IO System, designating some processors
+for I/O, others for computation.
+
+PIO decompositions and distributed arrays allow the code to be written
+in terms of the local, distributed sub-array (see @ref decomp). PIO
+handles the stitching of all data into the correct global space in a
+netCDF variable.
+
+PIO also allows for the creation of multiple computational units. Each
+computational unit consists of many processors. I/O for all
+computational units is accomplished through one set of dedicated I/O
+processors (see @ref iosystem).
+
+PIO uses <a
 href=http://www.unidata.ucar.edu/software/netcdf/docs/html_guide/index.html#user_guide>
 netcdf </a> and <a
-href=http://trac.mcs.anl.gov/projects/parallel-netcdf> pnetcdf </a>.
+href=http://trac.mcs.anl.gov/projects/parallel-netcdf> pnetcdf</a> to
+read and write the netCDF files (see @ref install).
 
-@image html PIO_Library_Architecture1.jpg
-
-Basic description of how to optimize IO in a parallel environment:
+## Basic description of how to optimize IO in a parallel environment:
 
 PIO calls are collective.  A MPI communicator is set in a call to @ref
 PIO_init and all tasks associated with that communicator must
