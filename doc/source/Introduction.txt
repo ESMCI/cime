@@ -15,11 +15,19 @@ of the processors will have to wait to do I/O.
 An obvious solution is to designate a small number of processors to do
 I/O, and use the rest for computation.
 
-@image html I_O_on_Many.png "I/O on Many Processors"
+@image html I_O_on_Many_Intracomm.png "I/O on Many Processors Intracomm"
 
 PIO provides a netCDF-like API which provides this service. User code
 is written as if parallel I/O is being used from every processor, but,
 under the hood, PIO uses the I/O processors to do all data access.
+
+With Intracomm Mode, the I/O processors are a subset of the
+computational processors, and only one computational unit is
+supported. In Async Mode, the I/O processors are dedicated to I/O, and
+do not perform computation. Also, more than one computational unit may
+be designated.
+
+@image html I_O_on_Many_Async.png "I/O on Many Processors Async"
 
 The user initializes the PIO IO System, designating some processors
 for I/O, others for computation.
