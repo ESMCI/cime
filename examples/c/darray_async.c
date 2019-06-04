@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
 
         /* Finalize the IO system. Only call this from the computation tasks. */
         printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
-        if ((ret = PIOc_finalize(iosysid)))
+        if ((ret = PIOc_free_iosystem(iosysid)))
             ERR(ret);
     } /* endif comp_task */
 

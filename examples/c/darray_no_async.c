@@ -365,7 +365,7 @@ int main(int argc, char* argv[])
 
     /* Finalize the IO system. */
     printf("rank: %d Freeing PIO resources...\n", my_rank);
-    if ((ret = PIOc_finalize(iosysid)))
+    if ((ret = PIOc_free_iosystem(iosysid)))
         ERR(ret);
 
     /* Finalize the MPI library. */
