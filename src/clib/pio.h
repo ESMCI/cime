@@ -840,8 +840,11 @@ extern "C" {
     int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                             int *iosysidp);
 
-    /* Shut down iosystem and free all associated resources. */
+    /* Shut down an iosystem and free all associated resources. */
     int PIOc_finalize(int iosysid);
+
+    /* Shut down an iosystem and free all associated resources. */
+    int PIOc_free_iosystem(int iosysid);
 
     /* Set error handling for entire io system. */
     int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method);
