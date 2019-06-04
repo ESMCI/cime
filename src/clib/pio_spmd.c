@@ -373,6 +373,24 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 }
 
 /**
+ * Clean up internal data structures, and free MPI resources,
+ * associated with an IOSystem. This is the old name for
+ * PIOc_free_iosystem(). This function is maintained for backward
+ * compatibility. Use PIOc_free_iosystem() for new code.
+ *
+ * @param iosysid: the io system ID provided by PIOc_Init_Intracomm()
+ * or PIOc_init_async().
+ * @returns 0 for success or non-zero for error.
+ * @ingroup PIO_finalize_c
+ * @author Jim Edwards, Ed Hartnett
+ */
+int
+PIOc_finalize(int iosysid)
+{
+    return PIOc_free_iosystem(iosysid);
+}
+
+/**
  * Provides the functionality of MPI_Gatherv with flow control
  * options. This function is not currently used, but we hope it will
  * be useful in future optimizations.

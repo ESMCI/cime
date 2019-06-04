@@ -1138,7 +1138,7 @@ PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
  * or PIOc_init_async().
  * @returns 0 for success or non-zero for error.
  * @ingroup PIO_finalize_c
- * @author Ed Hartnett
+ * @author Jim Edwards, Ed Hartnett
  */
 int
 PIOc_free_iosystem(int iosysid)
@@ -1241,24 +1241,6 @@ PIOc_free_iosystem(int iosysid)
 
     LOG((2, "PIOc_finalize completed successfully"));
     return PIO_NOERR;
-}
-
-/**
- * Clean up internal data structures, and free MPI resources,
- * associated with an IOSystem. This is the old name for
- * PIOc_free_iosystem(). This function is maintained for backward
- * compatibility. Use PIOc_free_iosystem() for new code.
- *
- * @param iosysid: the io system ID provided by PIOc_Init_Intracomm()
- * or PIOc_init_async().
- * @returns 0 for success or non-zero for error.
- * @ingroup PIO_finalize_c
- * @author Jim Edwards, Ed Hartnett
- */
-int
-PIOc_finalize(int iosysid)
-{
-    return PIOc_free_iosystem(iosysid);
 }
 
 /**
