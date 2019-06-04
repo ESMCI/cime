@@ -362,7 +362,7 @@ int main(int argc, char **argv)
             } /* next fill value test case */
 
             /* Finalize PIO iosysid. */
-            if ((ret = PIOc_finalize(iosysid)))
+            if ((ret = PIOc_free_iosystem(iosysid)))
                 return ret;
         } /* next rearranger */
     } /* endif my_rank < TARGET_NTASKS */

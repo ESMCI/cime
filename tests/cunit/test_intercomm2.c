@@ -521,7 +521,7 @@ int main(int argc, char **argv)
             } /* next netcdf flavor */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-            if ((ret = PIOc_finalize(iosysid[my_comp_idx])))
+            if ((ret = PIOc_free_iosystem(iosysid[my_comp_idx])))
                 ERR(ret);
         }
     } /* my_rank < TARGET_NTASKS */

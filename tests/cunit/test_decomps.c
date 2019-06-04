@@ -420,7 +420,7 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* Finalize PIO systems. */
-                if ((ret = PIOc_finalize(iosysid)))
+                if ((ret = PIOc_free_iosystem(iosysid)))
                     ERR(ret);
             } /* next io test */
         } /* next rearranger */

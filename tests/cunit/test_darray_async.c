@@ -542,7 +542,7 @@ int main(int argc, char **argv)
                     return ret;
 
                 /* Finalize PIO system. */
-                if ((ret = PIOc_free_iosystem(iosysid)))
+                if ((ret = PIOc_free_iosystem (iosysid)))
                     return ret;
 
                 /* Free the computation conomponent communicator. */

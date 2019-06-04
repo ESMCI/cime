@@ -221,12 +221,12 @@ int main(int argc, char **argv)
             MPIERR(ret);
 
         /* Finalize PIO odd/even intracomm. */
-        if ((ret = PIOc_finalize(iosysid)))
+        if ((ret = PIOc_free_iosystem(iosysid)))
             ERR(ret);
 
 
         /* Finalize PIO world intracomm. */
-        if ((ret = PIOc_finalize(iosysid_world)))
+        if ((ret = PIOc_free_iosystem(iosysid_world)))
             ERR(ret);
     }/* my_rank < TARGET_NTASKS */
 

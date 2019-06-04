@@ -1,4 +1,4 @@
-/*
+ /*
  * This program tests some MPI functionality that is used in PIO. This
  * runs on three processors, and does the same MPI commands that are
  * done when async mode is used, with 1 IO task, and two computation
