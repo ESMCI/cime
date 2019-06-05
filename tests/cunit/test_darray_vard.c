@@ -52,6 +52,12 @@ char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 6
+#else
+#define NUM_TYPES_TO_TEST 6
+#endif /* _NETCDF4 */
+
 /**
  * Test the darray functionality. Create a netCDF file with 3
  * dimensions and 1 PIO_INT variable, and use darray to write some
@@ -288,11 +294,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm)
 {
-#define NUM_TYPES_TO_TEST 6
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_CHAR, PIO_BYTE, PIO_SHORT,
+#ifdef _NETCDF4
+   int pio_type[NUM_TYPES_TO_TEST] = {PIO_CHAR, PIO_BYTE, PIO_SHORT,
                                        PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#else
+   int pio_type[NUM_TYPES_TO_TEST] = {PIO_CHAR, PIO_BYTE, PIO_SHORT,
+                                       PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
+
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
     int ret; /* Return code. */
