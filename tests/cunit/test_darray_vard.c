@@ -146,22 +146,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 if ((ret = PIOc_enddef(ncid)))
                     ERR(ret);
 
-                /* Set the value of the record dimension. */
-                if ((ret = PIOc_setframe(ncid, varid, 0)))
-                    ERR(ret);
-
                 /* These should not work. */
-                if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID)
+                if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid, 0, test_data) != PIO_EBADID)
                     ERR(ERR_WRONG);
-                if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
+                if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0, test_data) != PIO_EBADID)
                     ERR(ERR_WRONG);
-                if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, fillvalue) != PIO_EINVAL)
-                    ERR(ERR_WRONG);
-                if (PIOc_write_darray(ncid, TEST_VAL_42, ioid, arraylen, test_data, fillvalue) != PIO_ENOTVAR)
+                if (PIOc_put_vard(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0, test_data) != PIO_ENOTVAR)
                     ERR(ERR_WRONG);
 
                 /* Write the data. */
-                if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
+                if ((ret = PIOc_put_vard(ncid, varid, ioid, 0, test_data)))
                     ERR(ret);
 
                 /* Close the netCDF file. */
