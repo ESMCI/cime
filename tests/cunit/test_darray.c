@@ -271,12 +271,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                                      test_data_in) != PIO_EBADID)
                     ERR(ERR_WRONG);
 
-                /* Set the record number. */
-                if ((ret = PIOc_setframe(ncid2, varid, 0)))
-                    ERR(ret);
+                /* /\* Set the record number. *\/ */
+                /* if ((ret = PIOc_setframe(ncid2, varid, 0))) */
+                /*     ERR(ret); */
+
+                /* /\* Read the data. *\/ */
+                /* if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in))) */
+                /*     ERR(ret); */
 
                 /* Read the data. */
-                if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
+                if ((ret = PIOc_get_vard(ncid2, varid, ioid, 0, (void *)test_data_in)))
                     ERR(ret);
 
                 /* Check the results. */

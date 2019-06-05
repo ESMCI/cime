@@ -34,7 +34,7 @@
 int PIOc_get_vard_text(int ncid, int varid, int decompid,
                        const PIO_Offset recnum, char *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_CHAR, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_CHAR, buf);
 }
 
 /**
@@ -54,7 +54,7 @@ int PIOc_get_vard_text(int ncid, int varid, int decompid,
 int PIOc_get_vard_uchar(int ncid, int varid, int decompid,
                         const PIO_Offset recnum, unsigned char *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_UBYTE, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_UBYTE, buf);
 }
 
 /**
@@ -74,7 +74,7 @@ int PIOc_get_vard_uchar(int ncid, int varid, int decompid,
 int PIOc_get_vard_schar(int ncid, int varid, int decompid,
                         const PIO_Offset recnum, signed char *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_BYTE, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_BYTE, buf);
 }
 
 /**
@@ -95,7 +95,7 @@ int PIOc_get_vard_schar(int ncid, int varid, int decompid,
 int PIOc_get_vard_ushort(int ncid, int varid, int decompid,
                          const PIO_Offset recnum, unsigned short *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_USHORT,
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_USHORT,
                             buf);
 }
 
@@ -116,28 +116,7 @@ int PIOc_get_vard_ushort(int ncid, int varid, int decompid,
 int PIOc_get_vard_short(int ncid, int varid, int decompid,
                         const PIO_Offset recnum, short *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_SHORT, buf);
-}
-
-/**
- * Get a muti-dimensional subset of a 64-bit integer variable.
- *
- * This routine is called collectively by all tasks in the
- * communicator ios.union_comm.
- *
- * @param ncid identifies the netCDF file
- * @param varid the variable ID number
- * @param decompid the decomposition ID.
- * @param recnum the record number.
- * @param buf pointer that will get the data.
- * @return PIO_NOERR on success, error code otherwise.
- * @author Ed Hartnett
- */
-int PIOc_get_vard_long(int ncid, int varid, int decompid,
-                       const PIO_Offset recnum, long *buf)
-{
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL,
-                            PIO_LONG_INTERNAL, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_SHORT, buf);
 }
 
 /**
@@ -157,7 +136,7 @@ int PIOc_get_vard_long(int ncid, int varid, int decompid,
 int PIOc_get_vard_uint(int ncid, int varid, int decompid,
                        const PIO_Offset recnum, unsigned int *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_UINT, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_UINT, buf);
 }
 
 /**
@@ -177,7 +156,7 @@ int PIOc_get_vard_uint(int ncid, int varid, int decompid,
 int PIOc_get_vard_int(int ncid, int varid, int decompid,
                       const PIO_Offset recnum, int *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_INT, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_INT, buf);
 }
 
 /**
@@ -197,7 +176,7 @@ int PIOc_get_vard_int(int ncid, int varid, int decompid,
 int PIOc_get_vard_float(int ncid, int varid, int decompid,
                         const PIO_Offset recnum, float *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_FLOAT, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_FLOAT, buf);
 }
 
 /**
@@ -217,7 +196,7 @@ int PIOc_get_vard_float(int ncid, int varid, int decompid,
 int PIOc_get_vard_double(int ncid, int varid, int decompid,
                          const PIO_Offset recnum, double *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_DOUBLE,
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_DOUBLE,
                             buf);
 }
 
@@ -239,7 +218,7 @@ int PIOc_get_vard_double(int ncid, int varid, int decompid,
 int PIOc_get_vard_ulonglong(int ncid, int varid, int decompid,
                             const PIO_Offset recnum, unsigned long long *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_UINT64,
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_UINT64,
                             buf);
 }
 
@@ -260,7 +239,7 @@ int PIOc_get_vard_ulonglong(int ncid, int varid, int decompid,
 int PIOc_get_vard_longlong(int ncid, int varid, int decompid,
                            const PIO_Offset recnum, long long *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_INT64, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_INT64, buf);
 }
 
 /**
@@ -278,10 +257,10 @@ int PIOc_get_vard_longlong(int ncid, int varid, int decompid,
  * @return PIO_NOERR on success, error code otherwise.
  * @author Ed Hartnett
  */
-int PIOc_get_vard(int ncid, int varid, int decompid,
-                  const PIO_Offset recnum, void *buf)
+int PIOc_get_vard(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                  void *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NULL, NC_NAT, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_NAT, buf);
 }
 
 

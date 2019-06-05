@@ -165,26 +165,26 @@ PIOc_put_vard_int(int ncid, int varid, int decompid, const PIO_Offset recnum,
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_INT, op);
 }
 
-/**
- * Get strided, muti-dimensional subset of a 64-bit integer variable.
- *
- * This routine is called collectively by all tasks in the
- * communicator ios.union_comm.
- *
- * @param ncid identifies the netCDF file
- * @param varid the variable ID number
- * @param decompid the decomposition ID.
- * @param recnum the record number.
- * @param op pointer to the data to be written.
- * @return PIO_NOERR on success, error code otherwise.
- * @author Ed Hartnett
- */
-int
-PIOc_put_vard_long(int ncid, int varid, int decompid, const PIO_Offset recnum,
-                   const long *op)
-{
-    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, PIO_LONG_INTERNAL, op);
-}
+/* /\** */
+/*  * Get strided, muti-dimensional subset of a 64-bit integer variable. */
+/*  * */
+/*  * This routine is called collectively by all tasks in the */
+/*  * communicator ios.union_comm. */
+/*  * */
+/*  * @param ncid identifies the netCDF file */
+/*  * @param varid the variable ID number */
+/*  * @param decompid the decomposition ID. */
+/*  * @param recnum the record number. */
+/*  * @param op pointer to the data to be written. */
+/*  * @return PIO_NOERR on success, error code otherwise. */
+/*  * @author Ed Hartnett */
+/*  *\/ */
+/* int */
+/* PIOc_put_vard_long(int ncid, int varid, int decompid, const PIO_Offset recnum, */
+/*                    const long *op) */
+/* { */
+/*     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, PIO_LONG_INTERNAL, op); */
+/* } */
 
 /**
  * Get strided, muti-dimensional subset of a floating point variable.
@@ -248,7 +248,7 @@ int
 PIOc_put_vard_double(int ncid, int varid, int decompid, const PIO_Offset recnum,
                      const double *op)
 {
-    return PIOc_put_vars_tc(ncid, varid, decompid, recnum, NC_DOUBLE, op);
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_DOUBLE, op);
 }
 
 /**
@@ -270,7 +270,7 @@ int
 PIOc_put_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recnum,
                         const unsigned long long *op)
 {
-    return PIOc_put_vars_tc(ncid, varid, decompid, recnum, NC_UINT64, op);
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UINT64, op);
 }
 
 /**

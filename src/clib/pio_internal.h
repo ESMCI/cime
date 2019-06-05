@@ -324,6 +324,8 @@ extern "C" {
     int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                          void *buf);
     int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf);
+    int PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                         nc_type xtype, void *buf);
 
     /* Generalized put functions. */
     int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
@@ -331,6 +333,8 @@ extern "C" {
     int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                          const void *op);
     int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op);
+    int PIOc_put_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                         nc_type xtype, const void *buf);
 
     /* An internal replacement for a function pnetcdf does not
      * have. */
