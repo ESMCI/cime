@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         } /* next iotype */
 
         /* Finalize PIO systems. */
-        if ((ret = PIOc_finalize(iosysid_world)))
+        if ((ret = PIOc_free_iosystem(iosysid_world)))
             ERR(ret);
     } /* my_rank < TARGET_NTASKS */
 
