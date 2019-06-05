@@ -1453,6 +1453,9 @@ PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
     var_desc_t *vdesc;     /* Pointer to var information. */
     int ret;
 
+    LOG((1, "PIOc_get_vard_tc ncid %d varid %d decompid %d recnum %d "
+         "xtype %d", ncid, varid, decompid, recnum, xtype));
+
     /* Get file info. */
     if ((ret = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
@@ -1465,6 +1468,7 @@ PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
     /* Get var info. */
     if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ret, __FILE__, __LINE__);
+    LOG((2, "vdesc->pio_type %d", vdesc->pio_type));
 
     /* Disallow type conversion for now. */
     if (xtype != NC_NAT && xtype != vdesc->pio_type)

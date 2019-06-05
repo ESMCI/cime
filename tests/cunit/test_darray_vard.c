@@ -227,9 +227,41 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 ERR(ret);
 
             /* Read the data. */
-            if ((ret = PIOc_get_vard(ncid2, varid, ioid, 0,
-                                     (void *)test_data_in)))
-                ERR(ret);
+            switch (pio_type)
+            {
+            case PIO_CHAR:
+                if ((ret = PIOc_get_vard_uchar(ncid2, varid, ioid, 0,
+                                               test_data_char_in)))
+                    ERR(ret);
+                break;
+            case PIO_BYTE:
+                if ((ret = PIOc_get_vard_schar(ncid2, varid, ioid, 0,
+                                               test_data_byte_in)))
+                    ERR(ret);
+                break;
+            case PIO_SHORT:
+                if ((ret = PIOc_get_vard_short(ncid2, varid, ioid, 0,
+                                               test_data_short_in)))
+                    ERR(ret);
+                break;
+            case PIO_INT:
+                if ((ret = PIOc_get_vard_int(ncid2, varid, ioid, 0,
+                                               test_data_int_in)))
+                    ERR(ret);
+                break;
+            case PIO_FLOAT:
+                if ((ret = PIOc_get_vard_float(ncid2, varid, ioid, 0,
+                                               test_data_float_in)))
+                    ERR(ret);
+                break;
+            case PIO_DOUBLE:
+                if ((ret = PIOc_get_vard_double(ncid2, varid, ioid, 0,
+                                               test_data_double_in)))
+                    ERR(ret);
+                break;
+            default:
+                ERR(ERR_WRONG);
+            }
 
             /* Check the results. */
             for (f = 0; f < arraylen; f++)
