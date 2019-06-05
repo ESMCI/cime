@@ -65,8 +65,8 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param pio_type the type of the data.
  * @returns 0 for success, error code otherwise.
  */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                int pio_type)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
+                int my_rank, int pio_type)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -78,6 +78,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     void *fillvalue;
     void *test_data;
     void *test_data_in;
+    short fillvalue_short = NC_FILL_SHORT;
+    short test_data_short[arraylen];
+    short test_data_short_in[arraylen];
     int fillvalue_int = NC_FILL_INT;
     int test_data_int[arraylen];
     int test_data_int_in[arraylen];
@@ -92,6 +95,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     /* Initialize some data. */
     for (f = 0; f < arraylen; f++)
     {
+        test_data_short[f] = my_rank + f;
         test_data_int[f] = my_rank * 10 + f;
         test_data_float[f] = my_rank * 10 + f + 0.5;
         test_data_double[f] = my_rank * 100000 + f + 0.5;
@@ -102,14 +106,20 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     for (fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Test with/without providing a fill value to PIOc_write_darray(). */
-        for (provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
+        for (provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE;
+             provide_fill++)
         {
             /* Create the filename. */
-            sprintf(filename, "data_%s_iotype_%d_pio_type_%d_provide_fill_%d.nc", TEST_NAME,
-                    flavor[fmt], pio_type, provide_fill);
+            sprintf(filename, "data_%s_iotype_%d_pio_type_%d_provide_fill_%d.nc",
+                    TEST_NAME, flavor[fmt], pio_type, provide_fill);
             /* Select the fill value and data. */
             switch (pio_type)
             {
+            case PIO_SHORT:
+                fillvalue = provide_fill ? &fillvalue_short : NULL;
+                test_data = test_data_short;
+                test_data_in = test_data_short_in;
+                break;
             case PIO_INT:
                 fillvalue = provide_fill ? &fillvalue_int : NULL;
                 test_data = test_data_int;
@@ -130,16 +140,19 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             }
 
             /* Create the netCDF output file. */
-            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename,
+                                       PIO_CLOBBER)))
                 ERR(ret);
 
             /* Define netCDF dimensions and variable. */
             for (d = 0; d < NDIM; d++)
-                if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                if ((ret = PIOc_def_dim(ncid, dim_name[d],
+                                        (PIO_Offset)dim_len[d], &dimids[d])))
                     ERR(ret);
 
             /* Define a variable. */
-            if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
+            if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids,
+                                    &varid)))
                 ERR(ret);
 
             /* End define mode. */
@@ -147,11 +160,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 ERR(ret);
 
             /* These should not work. */
-            if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid, 0, test_data) != PIO_EBADID)
+            if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid, 0,
+                              test_data) != PIO_EBADID)
                 ERR(ERR_WRONG);
-            if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0, test_data) != PIO_EBADID)
+            if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0,
+                              test_data) != PIO_EBADID)
                 ERR(ERR_WRONG);
-            if (PIOc_put_vard(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0, test_data) != PIO_ENOTVAR)
+            if (PIOc_put_vard(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0,
+                              test_data) != PIO_ENOTVAR)
                 ERR(ERR_WRONG);
 
             /* Write the data. */
@@ -163,7 +179,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 ERR(ret);
 
             /* Reopen the file. */
-            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename,
+                                     PIO_NOWRITE)))
                 ERR(ret);
 
             PIO_Offset dimlen;
@@ -174,13 +191,16 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 ERR(ERR_WRONG);
 
             /* These should not work. */
-            if ((ret = PIOc_get_vard(ncid2 + TEST_VAL_42, varid, ioid, 0, test_data_in)) != PIO_EBADID)
+            if ((ret = PIOc_get_vard(ncid2 + TEST_VAL_42, varid, ioid, 0,
+                                     test_data_in)) != PIO_EBADID)
                 ERR(ret);
-            if ((ret = PIOc_get_vard(ncid2, varid, ioid + TEST_VAL_42, 0, test_data_in)) != PIO_EBADID)
+            if ((ret = PIOc_get_vard(ncid2, varid, ioid + TEST_VAL_42, 0,
+                                     test_data_in)) != PIO_EBADID)
                 ERR(ret);
 
             /* Read the data. */
-            if ((ret = PIOc_get_vard(ncid2, varid, ioid, 0, (void *)test_data_in)))
+            if ((ret = PIOc_get_vard(ncid2, varid, ioid, 0,
+                                     (void *)test_data_in)))
                 ERR(ret);
 
             /* Check the results. */
@@ -188,6 +208,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             {
                 switch (pio_type)
                 {
+                case PIO_SHORT:
+                    if (test_data_short_in[f] != test_data_short[f])
+                        return ERR_WRONG;
+                    break;
                 case PIO_INT:
                     if (test_data_int_in[f] != test_data_int[f])
                         return ERR_WRONG;
@@ -205,9 +229,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 }
             }
 
-            /* Try to write, but it won't work, because we opened file read-only. */
+            /* Try to write, but it won't work, because we opened file
+             * read-only. */
             {
-                if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
+                if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data,
+                                      fillvalue) != PIO_EPERM)
                     ERR(ERR_WRONG);
             }
             /* Close the netCDF file. */
@@ -232,10 +258,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm)
 {
-#define NUM_TYPES_TO_TEST 3
+#define NUM_TYPES_TO_TEST 4
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
     int ret; /* Return code. */
@@ -243,16 +269,17 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     for (t = 0; t < NUM_TYPES_TO_TEST; t++)
     {
         /* This will be our file name for writing out decompositions. */
-        sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
-                *flavor, pio_type[t]);
+        sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
+                TEST_NAME, my_rank, *flavor, pio_type[t]);
 
         /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
-                                           &ioid, pio_type[t])))
+        if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid,
+                                           dim_len_2d, &ioid, pio_type[t])))
             return ret;
 
         /* Run a simple darray test. */
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t])))
+        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
+                               pio_type[t])))
             return ret;
 
         /* Free the PIO decomposition. */
@@ -280,15 +307,16 @@ int main(int argc, char **argv)
                               MIN_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
-    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT,
+                                                PIO_RETURN_ERROR, NULL)))
         return ret;
 
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
     {
         int iosysid;  /* The ID for the parallel I/O system. */
-        int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-        int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+        int ioproc_stride = 1;    /* Stride in rank between io tasks. */
+        int ioproc_start = 0;     /* Zero based rank of first I/O task. */
         int r;
         int ret;      /* Return code. */
 
@@ -300,12 +328,14 @@ int main(int argc, char **argv)
         {
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
-                                           ioproc_start, rearranger[r], &iosysid)))
+            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS,
+                                           ioproc_stride, ioproc_start,
+                                           rearranger[r], &iosysid)))
                 return ret;
 
             /* Run tests. */
-            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm)))
+            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
+                                       test_comm)))
                 return ret;
 
             /* Finalize PIO system. */
