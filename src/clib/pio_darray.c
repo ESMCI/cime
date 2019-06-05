@@ -853,12 +853,14 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
  *
  * @param ncid identifies the netCDF file
  * @param varid the variable ID to be read
- * @param ioid: the I/O description ID as passed back by
+ * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
- * @param arraylen: the length of the array to be read. This
- * is the length of the distrubited array. That is, the length of
- * the portion of the data that is on the processor.
- * @param array: pointer to the data to be read. This is a
+ * @param arraylen this parameter is ignored. Nominally it is the
+ * length of the array to be read. This is the length of the
+ * distrubited array. That is, the length of the portion of the data
+ * that is on the processor. This is already known because it is in
+ * the decomposition.
+ * @param array pointer to the data to be read. This is a
  * pointer to the distributed portion of the array that is on this
  * processor.
  * @return 0 for success, error code otherwise.
@@ -876,6 +878,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     size_t rlen = 0;       /* the length of data in iobuf. */
     int ierr;              /* Return code. */
     void *tmparray;        /* unsorted copy of array buf if required */
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);

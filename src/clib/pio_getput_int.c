@@ -1426,7 +1426,8 @@ PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 }
 /**
  * Internal PIO function which provides a type-neutral interface to
- * nc_get_vard.
+ * PIOc_get_vard() and related functions. This function gets
+ * distributed arrays of any type, converting them to any type.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -1447,12 +1448,23 @@ int
 PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
                  nc_type xtype, void *buf)
 {
+    int ret;
+
+    /* Set the value of the record dimension. */
+    if ((ret = PIOc_setframe(ncid, varid, recnum)))
+        return ret;
+
+    /* Read the distributed array. */
+    if ((ret = PIOc_read_darray(ncid, varid, decompid, 0, buf)))
+        return ret;
+
     return PIO_NOERR;
 }
 
 /**
  * Internal PIO function which provides a type-neutral interface to
- * nc_put_vard.
+ * PIOc_get_vard() and related functions. This function puts
+ * distributed arrays of any type, converting them to any type.
  *
  * @param ncid identifies the netCDF file
  * @param varid the variable ID number
@@ -1471,5 +1483,21 @@ int
 PIOc_put_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
                  nc_type xtype, const void *buf)
 {
+    io_desc_t *iodesc;     /* The IO description. */
+    int ret;
+
+    /* Set the value of the record dimension. */
+    if ((ret = PIOc_setframe(ncid, varid, recnum)))
+        return ret;
+
+    /* Get decomposition information. */
+    if (!(iodesc = pio_get_iodesc_from_id(decompid)))
+        return PIO_EBADID;
+
+    /* Write the distributed array. */
+    if ((ret = PIOc_write_darray(ncid, varid, decompid, iodesc->ndof,
+                                 (void *)buf, NULL)))
+        return ret;
+
     return PIO_NOERR;
 }
