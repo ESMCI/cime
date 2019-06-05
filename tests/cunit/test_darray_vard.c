@@ -197,9 +197,41 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                               test_data) != PIO_ENOTVAR)
                 ERR(ERR_WRONG);
 
-            /* Write the data. */
-            if ((ret = PIOc_put_vard(ncid, varid, ioid, 0, test_data)))
-                ERR(ret);
+            switch (pio_type)
+            {
+            case PIO_CHAR:
+                if ((ret = PIOc_put_vard_uchar(ncid, varid, ioid, 0,
+                                               test_data_char)))
+                    ERR(ret);
+                break;
+            case PIO_BYTE:
+                if ((ret = PIOc_put_vard_schar(ncid, varid, ioid, 0,
+                                               test_data_byte)))
+                    ERR(ret);
+                break;
+            case PIO_SHORT:
+                if ((ret = PIOc_put_vard_short(ncid, varid, ioid, 0,
+                                               test_data_short)))
+                    ERR(ret);
+                break;
+            case PIO_INT:
+                if ((ret = PIOc_put_vard_int(ncid, varid, ioid, 0,
+                                               test_data_int)))
+                    ERR(ret);
+                break;
+            case PIO_FLOAT:
+                if ((ret = PIOc_put_vard_float(ncid, varid, ioid, 0,
+                                               test_data_float)))
+                    ERR(ret);
+                break;
+            case PIO_DOUBLE:
+                if ((ret = PIOc_put_vard_double(ncid, varid, ioid, 0,
+                                               test_data_double)))
+                    ERR(ret);
+                break;
+            default:
+                ERR(ERR_WRONG);
+            }
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))

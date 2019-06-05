@@ -55,7 +55,7 @@ int
 PIOc_put_vard_uchar(int ncid, int varid, int decompid, const PIO_Offset recnum,
                     const unsigned char *op)
 {
-    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UBYTE, op);
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_CHAR, op);
 }
 
 /**
