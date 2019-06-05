@@ -78,6 +78,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     void *fillvalue;
     void *test_data;
     void *test_data_in;
+    signed char fillvalue_byte = NC_FILL_BYTE;
+    signed char test_data_byte[arraylen];
+    signed char test_data_byte_in[arraylen];
     short fillvalue_short = NC_FILL_SHORT;
     short test_data_short[arraylen];
     short test_data_short_in[arraylen];
@@ -95,6 +98,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     /* Initialize some data. */
     for (f = 0; f < arraylen; f++)
     {
+        test_data_byte[f] = my_rank - f;
         test_data_short[f] = my_rank + f;
         test_data_int[f] = my_rank * 10 + f;
         test_data_float[f] = my_rank * 10 + f + 0.5;
@@ -105,16 +109,24 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
      * available ways. */
     for (fmt = 0; fmt < num_flavors; fmt++)
     {
+        /* Pnetcdf cannot handle 1-byte types. */
+        if (fmt == 0 && (pio_type == PIO_BYTE || pio_type == PIO_CHAR)) continue;
+
         /* Test with/without providing a fill value to PIOc_write_darray(). */
         for (provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE;
              provide_fill++)
         {
             /* Create the filename. */
-            sprintf(filename, "data_%s_iotype_%d_pio_type_%d_provide_fill_%d.nc",
+            sprintf(filename, "%s_iotype_%d_pio_type_%d_provide_fill_%d.nc",
                     TEST_NAME, flavor[fmt], pio_type, provide_fill);
             /* Select the fill value and data. */
             switch (pio_type)
             {
+            case PIO_BYTE:
+                fillvalue = provide_fill ? &fillvalue_byte : NULL;
+                test_data = test_data_byte;
+                test_data_in = test_data_byte_in;
+                break;
             case PIO_SHORT:
                 fillvalue = provide_fill ? &fillvalue_short : NULL;
                 test_data = test_data_short;
@@ -184,6 +196,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 ERR(ret);
 
             PIO_Offset dimlen;
+
             /* check the unlimited dim size - it should be 1 */
             if ((ret = PIOc_inq_dimlen(ncid2, dimids[0], &dimlen)))
                 ERR(ret);
@@ -208,6 +221,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             {
                 switch (pio_type)
                 {
+                case PIO_BYTE:
+                    if (test_data_byte_in[f] != test_data_byte[f])
+                        return ERR_WRONG;
+                    break;
                 case PIO_SHORT:
                     if (test_data_short_in[f] != test_data_short[f])
                         return ERR_WRONG;
@@ -258,10 +275,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm)
 {
-#define NUM_TYPES_TO_TEST 4
+#define NUM_TYPES_TO_TEST 5
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_SHORT, PIO_INT,
+                                       PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
     int ret; /* Return code. */
