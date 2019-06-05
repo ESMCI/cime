@@ -41,10 +41,6 @@ module piodarray
 
   character(len=*), parameter, private  :: modName='piodarray'
 
-#ifdef MEMCHK
-integer :: msize, rss, mshare, mtext, mstack, lastrss=0
-#endif
-
 interface
    integer(C_INT) function PIOc_write_darray(ncid, vid, ioid, arraylen, array, fillvalue) &
         bind(C,name="PIOc_write_darray")

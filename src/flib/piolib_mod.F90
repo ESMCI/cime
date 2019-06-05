@@ -99,14 +99,6 @@ module piolib_mod
        PIO_iotype_available, &
        PIO_set_rearr_opts
 
-#ifdef MEMCHK
-  !> this is an internal variable for memory leak debugging
-  !! it is used when macro memchk is defined and it causes each task to print the
-  !! memory resident set size anytime it changes within pio.
-  !<
-  integer :: lastrss=0
-#endif
-
   !-----------------------------------------------------------------------
   !
   !  module variables
