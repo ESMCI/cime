@@ -17,7 +17,7 @@
  */
 
 /**
- * Get strided, muti-dimensional subset of a text variable.
+ * Put distributed array subset of a text variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -38,7 +38,7 @@ PIOc_put_vard_text(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned char variable.
+ * Put distributed array subset of an unsigned char variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -59,7 +59,7 @@ PIOc_put_vard_uchar(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of a signed char variable.
+ * Put distributed array subset of a signed char variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -80,7 +80,7 @@ PIOc_put_vard_schar(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned 16-bit integer
+ * Put distributed array subset of an unsigned 16-bit integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -102,7 +102,7 @@ PIOc_put_vard_ushort(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of a 16-bit integer variable.
+ * Put distributed array subset of a 16-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -123,7 +123,7 @@ PIOc_put_vard_short(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned integer
+ * Put distributed array subset of an unsigned integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -145,7 +145,7 @@ PIOc_put_vard_uint(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of an integer variable.
+ * Put distributed array subset of an integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -166,7 +166,7 @@ PIOc_put_vard_int(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /* /\** */
-/*  * Get strided, muti-dimensional subset of a 64-bit integer variable. */
+/*  * Put distributed array subset of a 64-bit integer variable. */
 /*  * */
 /*  * This routine is called collectively by all tasks in the */
 /*  * communicator ios.union_comm. */
@@ -187,7 +187,7 @@ PIOc_put_vard_int(int ncid, int varid, int decompid, const PIO_Offset recnum,
 /* } */
 
 /**
- * Get strided, muti-dimensional subset of a floating point variable.
+ * Put distributed array subset of a floating point variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -208,7 +208,7 @@ PIOc_put_vard_float(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of a 64-bit unsigned integer
+ * Put distributed array subset of a 64-bit unsigned integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -230,7 +230,7 @@ PIOc_put_vard_longlong(int ncid, int varid, int decompid, const PIO_Offset recnu
 }
 
 /**
- * Get strided, muti-dimensional subset of a 64-bit floating point
+ * Put distributed array subset of a 64-bit floating point
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -252,7 +252,7 @@ PIOc_put_vard_double(int ncid, int varid, int decompid, const PIO_Offset recnum,
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned 64-bit integer
+ * Put distributed array subset of an unsigned 64-bit integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -274,7 +274,7 @@ PIOc_put_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recn
 }
 
 /**
- * Write strided, muti-dimensional subset of a variable of any type.
+ * Write distributed array subset of a variable of any type.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
