@@ -1,0 +1,299 @@
+/**
+ * @file
+ * PIO functions to write data with distributed arrays.
+ *
+ * @author Ed Hartnett
+ * @date 2019
+ * @see https://github.com/NCAR/ParallelIO
+ */
+#include <config.h>
+#include <pio.h>
+#include <pio_internal.h>
+
+/**
+ * @addtogroup PIO_put_var_c Write Data
+ * Write data to a Variable in C.
+ * @{
+ */
+
+/**
+ * Get strided, muti-dimensional subset of a text variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_text(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                   const char *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_CHAR, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of an unsigned char variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_uchar(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                    const unsigned char *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UBYTE, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of a signed char variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_schar(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                    const signed char *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_BYTE, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of an unsigned 16-bit integer
+ * variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_ushort(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                     const unsigned short *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_USHORT, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of a 16-bit integer variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_short(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                    const short *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_SHORT, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of an unsigned integer
+ * variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_uint(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                   const unsigned int *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UINT, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of an integer variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_int(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                  const int *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_INT, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of a 64-bit integer variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_long(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                   const long *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, PIO_LONG_INTERNAL, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of a floating point variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_float(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                    const float *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_FLOAT, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of a 64-bit unsigned integer
+ * variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_longlong(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                       const long long *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_INT64, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of a 64-bit floating point
+ * variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_double(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                     const double *op)
+{
+    return PIOc_put_vars_tc(ncid, varid, decompid, recnum, NC_DOUBLE, op);
+}
+
+/**
+ * Get strided, muti-dimensional subset of an unsigned 64-bit integer
+ * variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                        const unsigned long long *op)
+{
+    return PIOc_put_vars_tc(ncid, varid, decompid, recnum, NC_UINT64, op);
+}
+
+/**
+ * Write strided, muti-dimensional subset of a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard(int ncid, int varid, int decompid, const PIO_Offset recnum,
+              const void *op)
+{
+    return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_NAT, op);
+}
+
+/**
+ * @}
+ */

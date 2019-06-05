@@ -1424,3 +1424,52 @@ PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 
     return ierr;
 }
+/**
+ * Internal PIO function which provides a type-neutral interface to
+ * nc_get_vard.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param xtype the netCDF type of the data being passed in buf. Data
+ * will be automatically covnerted from the type of the variable being
+ * read from to this type. If NC_NAT then the variable's file type
+ * will be used. Use special PIO_LONG_INTERNAL for _long() functions.
+ * @param buf pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                 nc_type xtype, void *buf)
+{
+    return PIO_NOERR;
+}
+
+/**
+ * Internal PIO function which provides a type-neutral interface to
+ * nc_put_vard.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param xtype the netCDF type of the data being passed in buf. Data
+ * will be automatically covnerted from this type to the type of the
+ * variable being written to. If NC_NAT then the variable's file type
+ * will be used. Use special PIO_LONG_INTERNAL for _long() functions.
+ * @param buf pointer to the data to be written.
+ *
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                 nc_type xtype, const void *buf)
+{
+    return PIO_NOERR;
+}
