@@ -361,7 +361,7 @@ module cime_comp_mod
   logical  :: lnd_c2_glc             ! .true.  => lnd to glc coupling on
   logical  :: ocn_c2_atm             ! .true.  => ocn to atm coupling on
   logical  :: ocn_c2_ice             ! .true.  => ocn to ice coupling on
-  logical  :: ocn_c2_glc             ! .true.  => ocn to glc coupling on
+  logical  :: ocn_c2_glc             ! .true.  => two-way ocn-glc coupling
   logical  :: ocn_c2_wav             ! .true.  => ocn to wav coupling on
   logical  :: ice_c2_atm             ! .true.  => ice to atm coupling on
   logical  :: ice_c2_ocn             ! .true.  => ice to ocn coupling on
@@ -1394,7 +1394,8 @@ contains
          glc_nx=glc_nx, glc_ny=glc_ny,          &
          ocn_nx=ocn_nx, ocn_ny=ocn_ny,          &
          wav_nx=wav_nx, wav_ny=wav_ny,          &
-         atm_aero=atm_aero )
+         atm_aero=atm_aero,                     &
+         ocn_c2_glc=ocn_c2_glc )
 
     ! derive samegrid flags
 
@@ -1436,7 +1437,6 @@ contains
     lnd_c2_glc = .false.
     ocn_c2_atm = .false.
     ocn_c2_ice = .false.
-    ocn_c2_glc = .false.
     ocn_c2_wav = .false.
     ice_c2_atm = .false.
     ice_c2_ocn = .false.
@@ -1465,7 +1465,6 @@ contains
        if (atm_prognostic) ocn_c2_atm = .true.
        if (atm_present   ) ocn_c2_atm = .true. ! needed for aoflux calc if aoflux=atm
        if (ice_prognostic) ocn_c2_ice = .true.
-       if (glc_prognostic) ocn_c2_glc = .true.
        if (wav_prognostic) ocn_c2_wav = .true.
     endif
     if (ice_present) then
@@ -1480,7 +1479,7 @@ contains
     endif
     if (glc_present) then
        if (glclnd_present .and. lnd_prognostic) glc_c2_lnd = .true.
-       if (glcocn_present .and. ocn_prognostic) glc_c2_ocn = .true.
+       if (ocn_prognostic .and. ocn_c2_glc) glc_c2_ocn = .true.
        if (glcice_present .and. iceberg_prognostic) glc_c2_ice = .true.
     endif
     if (wav_present) then

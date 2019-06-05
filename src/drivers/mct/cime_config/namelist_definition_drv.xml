@@ -656,6 +656,18 @@
     </values>
   </entry>
 
+  <entry id="ocn_c2_glc" modify_via_xml="OCN_C2_GLC">
+    <type>logical</type>
+    <category>control</category>
+    <group>seq_infodata_inparm</group>
+    <desc>
+      Ocn-glc two-way coupling. This is currently experimental.
+    </desc>
+    <values>
+      <value>$OCN_C2_GLC</value>
+    </values>
+  </entry>
+
   <entry id="wall_time_limit">
     <type>real</type>
     <category>control</category>
