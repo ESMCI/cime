@@ -1448,11 +1448,27 @@ int
 PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
                  nc_type xtype, void *buf)
 {
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    var_desc_t *vdesc;     /* Pointer to var information. */
     int ret;
+
+    /* Get file info. */
+    if ((ret = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    ios = file->iosystem;
 
     /* Set the value of the record dimension. */
     if ((ret = PIOc_setframe(ncid, varid, recnum)))
         return ret;
+
+    /* Get var info. */
+    if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
+        return pio_err(ios, file, ret, __FILE__, __LINE__);
+
+    /* Disallow type conversion for now. */
+    if (xtype != NC_NAT && xtype != vdesc->pio_type)
+        return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
 
     /* Read the distributed array. */
     if ((ret = PIOc_read_darray(ncid, varid, decompid, 0, buf)))
@@ -1507,7 +1523,7 @@ PIOc_put_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
         return pio_err(ios, file, ret, __FILE__, __LINE__);
 
     /* Disallow type conversion for now. */
-    if (xtype != vdesc->pio_type)
+    if (xtype != NC_NAT && xtype != vdesc->pio_type)
         return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
 
     /* Write the distributed array. */
