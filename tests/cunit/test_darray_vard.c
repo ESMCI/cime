@@ -78,6 +78,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     void *fillvalue;
     void *test_data;
     void *test_data_in;
+    unsigned char fillvalue_char = NC_FILL_BYTE;
+    unsigned char test_data_char[arraylen];
+    unsigned char test_data_char_in[arraylen];
     signed char fillvalue_byte = NC_FILL_BYTE;
     signed char test_data_byte[arraylen];
     signed char test_data_byte_in[arraylen];
@@ -98,6 +101,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     /* Initialize some data. */
     for (f = 0; f < arraylen; f++)
     {
+        test_data_char[f] = my_rank;
         test_data_byte[f] = my_rank - f;
         test_data_short[f] = my_rank + f;
         test_data_int[f] = my_rank * 10 + f;
@@ -122,6 +126,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             /* Select the fill value and data. */
             switch (pio_type)
             {
+            case PIO_CHAR:
+                fillvalue = provide_fill ? &fillvalue_char : NULL;
+                test_data = test_data_char;
+                test_data_in = test_data_char_in;
+                break;
             case PIO_BYTE:
                 fillvalue = provide_fill ? &fillvalue_byte : NULL;
                 test_data = test_data_byte;
@@ -221,6 +230,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             {
                 switch (pio_type)
                 {
+                case PIO_CHAR:
+                    if (test_data_char_in[f] != test_data_char[f])
+                        return ERR_WRONG;
+                    break;
                 case PIO_BYTE:
                     if (test_data_byte_in[f] != test_data_byte[f])
                         return ERR_WRONG;
@@ -275,11 +288,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm)
 {
-#define NUM_TYPES_TO_TEST 5
+#define NUM_TYPES_TO_TEST 6
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_SHORT, PIO_INT,
-                                       PIO_FLOAT, PIO_DOUBLE};
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_CHAR, PIO_BYTE, PIO_SHORT,
+                                       PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
     int ret; /* Return code. */
