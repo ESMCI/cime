@@ -78,27 +78,20 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 4;
-    void *fillvalue;
-    void *test_data;
-    void *test_data_in;
-    unsigned char fillvalue_char = NC_FILL_BYTE;
     unsigned char test_data_char[arraylen];
     unsigned char test_data_char_in[arraylen];
-    signed char fillvalue_byte = NC_FILL_BYTE;
     signed char test_data_byte[arraylen];
     signed char test_data_byte_in[arraylen];
-    short fillvalue_short = NC_FILL_SHORT;
     short test_data_short[arraylen];
     short test_data_short_in[arraylen];
-    int fillvalue_int = NC_FILL_INT;
     int test_data_int[arraylen];
     int test_data_int_in[arraylen];
-    float fillvalue_float = NC_FILL_FLOAT;
     float test_data_float[arraylen];
     float test_data_float_in[arraylen];
-    double fillvalue_double = NC_FILL_DOUBLE;
     double test_data_double[arraylen];
     double test_data_double_in[arraylen];
+    unsigned char test_data_ubyte[arraylen];
+    unsigned char test_data_ubyte_in[arraylen];
     int f, provide_fill, d;
 
     /* Initialize some data. */
@@ -126,42 +119,6 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             /* Create the filename. */
             sprintf(filename, "%s_iotype_%d_pio_type_%d_provide_fill_%d.nc",
                     TEST_NAME, flavor[fmt], pio_type, provide_fill);
-            /* Select the fill value and data. */
-            switch (pio_type)
-            {
-            case PIO_CHAR:
-                fillvalue = provide_fill ? &fillvalue_char : NULL;
-                test_data = test_data_char;
-                test_data_in = test_data_char_in;
-                break;
-            case PIO_BYTE:
-                fillvalue = provide_fill ? &fillvalue_byte : NULL;
-                test_data = test_data_byte;
-                test_data_in = test_data_byte_in;
-                break;
-            case PIO_SHORT:
-                fillvalue = provide_fill ? &fillvalue_short : NULL;
-                test_data = test_data_short;
-                test_data_in = test_data_short_in;
-                break;
-            case PIO_INT:
-                fillvalue = provide_fill ? &fillvalue_int : NULL;
-                test_data = test_data_int;
-                test_data_in = test_data_int_in;
-                break;
-            case PIO_FLOAT:
-                fillvalue = provide_fill ? &fillvalue_float : NULL;
-                test_data = test_data_float;
-                test_data_in = test_data_float_in;
-                break;
-            case PIO_DOUBLE:
-                fillvalue = provide_fill ? &fillvalue_double : NULL;
-                test_data = test_data_double;
-                test_data_in = test_data_double_in;
-                break;
-            default:
-                ERR(ERR_WRONG);
-            }
 
             /* Create the netCDF output file. */
             if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename,
@@ -183,20 +140,22 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             if ((ret = PIOc_enddef(ncid)))
                 ERR(ret);
 
-            /* These should not work. */
-            if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid, 0,
-                              test_data) != PIO_EBADID)
-                ERR(ERR_WRONG);
-            if (PIOc_put_vard(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0,
-                              test_data) != PIO_EBADID)
-                ERR(ERR_WRONG);
-            if (PIOc_put_vard(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0,
-                              test_data) != PIO_ENOTVAR)
-                ERR(ERR_WRONG);
 
             switch (pio_type)
             {
             case PIO_CHAR:
+                /* These should not work. */
+                if (PIOc_put_vard_uchar(ncid + TEST_VAL_42, varid, ioid, 0,
+                                  test_data_char) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_put_vard_uchar(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0,
+                                  test_data_char) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_put_vard_uchar(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0,
+                                  test_data_char) != PIO_ENOTVAR)
+                    ERR(ERR_WRONG);
+
+                /* This will work. */
                 if ((ret = PIOc_put_vard_uchar(ncid, varid, ioid, 0,
                                                test_data_char)))
                     ERR(ret);
@@ -247,18 +206,19 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             if (dimlen != 1)
                 ERR(ERR_WRONG);
 
-            /* These should not work. */
-            if ((ret = PIOc_get_vard(ncid2 + TEST_VAL_42, varid, ioid, 0,
-                                     test_data_in)) != PIO_EBADID)
-                ERR(ret);
-            if ((ret = PIOc_get_vard(ncid2, varid, ioid + TEST_VAL_42, 0,
-                                     test_data_in)) != PIO_EBADID)
-                ERR(ret);
-
             /* Read the data. */
             switch (pio_type)
             {
             case PIO_CHAR:
+                /* These should not work. */
+                if ((ret = PIOc_get_vard_uchar(ncid2 + TEST_VAL_42, varid, ioid, 0,
+                                         test_data_char_in)) != PIO_EBADID)
+                    ERR(ret);
+                if ((ret = PIOc_get_vard_uchar(ncid2, varid, ioid + TEST_VAL_42, 0,
+                                         test_data_char_in)) != PIO_EBADID)
+                    ERR(ret);
+
+                /* This will work. */
                 if ((ret = PIOc_get_vard_uchar(ncid2, varid, ioid, 0,
                                                test_data_char_in)))
                     ERR(ret);
@@ -328,11 +288,10 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
 
             /* Try to write, but it won't work, because we opened file
              * read-only. */
-            {
-                if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data,
-                                      fillvalue) != PIO_EPERM)
-                    ERR(ERR_WRONG);
-            }
+            if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data_char,
+                                  NULL) != PIO_EPERM)
+                ERR(ERR_WRONG);
+
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid2)))
                 ERR(ret);
@@ -361,13 +320,22 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
     /* int pio_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, */
     /*                                        PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, */
     /*                                        PIO_UINT, PIO_INT64, PIO_UINT64}; */
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
-                                       PIO_FLOAT, PIO_DOUBLE};
+    int pio_type[NUM_TYPES_TO_TEST + 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
+                                           PIO_FLOAT, PIO_DOUBLE, NC_UBYTE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
+    int num_types;
     int t;
     int ret; /* Return code. */
 
-    for (t = 0; t < NUM_TYPES_TO_TEST; t++)
+    /* Based on the IOTYPE, decide how many types to check. */
+    if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        /* num_types = NUM_NETCDF4_TYPES - 1; */
+        num_types = NUM_TYPES_TO_TEST;
+    else
+        num_types = NUM_CLASSIC_TYPES;
+
+    /* Check each type. */
+    for (t = 0; t < num_types; t++)
     {
         /* This will be our file name for writing out decompositions. */
         sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
