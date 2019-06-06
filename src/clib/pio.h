@@ -1195,6 +1195,60 @@ extern "C" {
                                 const PIO_Offset *count, const PIO_Offset *stride,
                                 const unsigned long long *op);
 
+    /* Data reads - vard. */
+    int PIOc_get_vard(int ncid, int varid, int decompid, const PIO_Offset recnum, void *buf);
+    int PIOc_get_vard_text(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                           char *buf);
+    int PIOc_get_vard_schar(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            signed char *buf);
+    int PIOc_get_vard_short(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            short *buf);
+    int PIOc_get_vard_int(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                          int *buf);
+    int PIOc_get_vard_float(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            float *buf);
+    /* int PIOc_get_vard_long(int ncid, int varid, int decompid, const PIO_Offset recnum, */
+    /*                        long *buf); */
+    int PIOc_get_vard_double(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                             double *buf);
+    int PIOc_get_vard_uchar(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            unsigned char *buf);
+    int PIOc_get_vard_ushort(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                             unsigned short *buf);
+    int PIOc_get_vard_uint(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                           unsigned int *buf);
+    int PIOc_get_vard_longlong(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                               long long *buf);
+    int PIOc_get_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                                unsigned long long *buf);
+
+    /* Data writes - vara. */
+    int PIOc_put_vard(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                      const void *buf);
+    int PIOc_put_vard_text(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                           const char *op);
+    int PIOc_put_vard_schar(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            const signed char *op);
+    int PIOc_put_vard_short(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            const short *op);
+    int PIOc_put_vard_int(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                          const int *op);
+    /* int PIOc_put_vard_long(int ncid, int varid, int decompid, const PIO_Offset recnum, */
+    /*                        const long *op); */
+    int PIOc_put_vard_float(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            const float *op);
+    int PIOc_put_vard_double(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                             const double *op);
+    int PIOc_put_vard_uchar(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                            const unsigned char *op);
+    int PIOc_put_vard_ushort(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                             const unsigned short *op);
+    int PIOc_put_vard_uint(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                           const unsigned int *op);
+    int PIOc_put_vard_longlong(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                               const long long *op);
+    int PIOc_put_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                                const unsigned long long *op);
 #if defined(__cplusplus)
 }
 #endif

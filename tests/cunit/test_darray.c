@@ -279,6 +279,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
                     ERR(ret);
 
+                /* /\* Read the data. *\/ */
+                /* if ((ret = PIOc_get_vard(ncid2, varid, ioid, 0, (void *)test_data_in))) */
+                /*     ERR(ret); */
+
                 /* Check the results. */
                 for (int f = 0; f < arraylen; f++)
                 {
