@@ -92,6 +92,14 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
     double test_data_double_in[arraylen];
     unsigned char test_data_ubyte[arraylen];
     unsigned char test_data_ubyte_in[arraylen];
+    unsigned short test_data_ushort[arraylen];
+    unsigned short test_data_ushort_in[arraylen];
+    unsigned int test_data_uint[arraylen];
+    unsigned int test_data_uint_in[arraylen];
+    long long int test_data_int64[arraylen];
+    long long int test_data_int64_in[arraylen];
+    unsigned long long int test_data_uint64[arraylen];
+    unsigned long long int test_data_uint64_in[arraylen];
     int f, provide_fill, d;
 
     /* Initialize some data. */
@@ -103,6 +111,11 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
         test_data_int[f] = my_rank * 10 + f;
         test_data_float[f] = my_rank * 10 + f + 0.5;
         test_data_double[f] = my_rank * 100000 + f + 0.5;
+        test_data_ubyte[f] = my_rank + f + 2;
+        test_data_ushort[f] = my_rank + f + 20;
+        test_data_uint[f] = my_rank + f + 200;
+        test_data_int64[f] = my_rank - f - 20000;
+        test_data_uint64[f] = my_rank + f + 20000;
     }
 
     /* Use PIO to create the example file in each of the four
@@ -188,6 +201,26 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             case PIO_UBYTE:
                 if ((ret = PIOc_put_vard_uchar(ncid, varid, ioid, 0,
                                                test_data_ubyte)))
+                    ERR(ret);
+                break;
+            case PIO_USHORT:
+                if ((ret = PIOc_put_vard_ushort(ncid, varid, ioid, 0,
+                                               test_data_ushort)))
+                    ERR(ret);
+                break;
+            case PIO_UINT:
+                if ((ret = PIOc_put_vard_uint(ncid, varid, ioid, 0,
+                                               test_data_uint)))
+                    ERR(ret);
+                break;
+            case PIO_INT64:
+                if ((ret = PIOc_put_vard_longlong(ncid, varid, ioid, 0,
+                                                  test_data_int64)))
+                    ERR(ret);
+                break;
+            case PIO_UINT64:
+                if ((ret = PIOc_put_vard_ulonglong(ncid, varid, ioid, 0,
+                                                   test_data_uint64)))
                     ERR(ret);
                 break;
             default:
@@ -331,11 +364,9 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
 {
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-    /* int pio_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, */
-    /*                                        PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, */
-    /*                                        PIO_UINT, PIO_INT64, PIO_UINT64}; */
-    int pio_type[NUM_TYPES_TO_TEST + 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
-                                           PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE};
+    int pio_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
+                                           PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT,
+                                           PIO_UINT, PIO_INT64, PIO_UINT64};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int num_types;
     int t;
