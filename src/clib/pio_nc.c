@@ -2273,6 +2273,8 @@ PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
             ierr = nc_def_var(file->fh, name, xtype, ndims, dimidsp, &varid);
+        LOG((3, "defined var ierr %d file->iotype %d", ierr, file->iotype));
+
 #ifdef _NETCDF4
         /* For netCDF-4 serial files, turn on compression for this variable. */
         if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4C)

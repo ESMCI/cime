@@ -78,8 +78,8 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 4;
-    unsigned char test_data_char[arraylen];
-    unsigned char test_data_char_in[arraylen];
+    char test_data_char[arraylen];
+    char test_data_char_in[arraylen];
     signed char test_data_byte[arraylen];
     signed char test_data_byte_in[arraylen];
     short test_data_short[arraylen];
@@ -145,18 +145,18 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             {
             case PIO_CHAR:
                 /* These should not work. */
-                if (PIOc_put_vard_uchar(ncid + TEST_VAL_42, varid, ioid, 0,
+                if (PIOc_put_vard_text(ncid + TEST_VAL_42, varid, ioid, 0,
                                   test_data_char) != PIO_EBADID)
                     ERR(ERR_WRONG);
-                if (PIOc_put_vard_uchar(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0,
+                if (PIOc_put_vard_text(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0,
                                   test_data_char) != PIO_EBADID)
                     ERR(ERR_WRONG);
-                if (PIOc_put_vard_uchar(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0,
+                if (PIOc_put_vard_text(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0,
                                   test_data_char) != PIO_ENOTVAR)
                     ERR(ERR_WRONG);
 
                 /* This will work. */
-                if ((ret = PIOc_put_vard_uchar(ncid, varid, ioid, 0,
+                if ((ret = PIOc_put_vard_text(ncid, varid, ioid, 0,
                                                test_data_char)))
                     ERR(ret);
                 break;
@@ -216,15 +216,15 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             {
             case PIO_CHAR:
                 /* These should not work. */
-                if ((ret = PIOc_get_vard_uchar(ncid2 + TEST_VAL_42, varid, ioid, 0,
+                if ((ret = PIOc_get_vard_text(ncid2 + TEST_VAL_42, varid, ioid, 0,
                                          test_data_char_in)) != PIO_EBADID)
                     ERR(ret);
-                if ((ret = PIOc_get_vard_uchar(ncid2, varid, ioid + TEST_VAL_42, 0,
+                if ((ret = PIOc_get_vard_text(ncid2, varid, ioid + TEST_VAL_42, 0,
                                          test_data_char_in)) != PIO_EBADID)
                     ERR(ret);
 
                 /* This will work. */
-                if ((ret = PIOc_get_vard_uchar(ncid2, varid, ioid, 0,
+                if ((ret = PIOc_get_vard_text(ncid2, varid, ioid, 0,
                                                test_data_char_in)))
                     ERR(ret);
                 break;
@@ -335,7 +335,7 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
     /*                                        PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, */
     /*                                        PIO_UINT, PIO_INT64, PIO_UINT64}; */
     int pio_type[NUM_TYPES_TO_TEST + 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
-                                           PIO_FLOAT, PIO_DOUBLE, NC_UBYTE};
+                                           PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int num_types;
     int t;
@@ -344,7 +344,7 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
     /* Based on the IOTYPE, decide how many types to check. */
     if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         /* num_types = NUM_NETCDF4_TYPES - 1; */
-        num_types = NUM_TYPES_TO_TEST;
+        num_types = NUM_TYPES_TO_TEST + 1;
     else
         num_types = NUM_CLASSIC_TYPES;
 

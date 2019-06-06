@@ -54,7 +54,7 @@ int PIOc_get_vard_text(int ncid, int varid, int decompid,
 int PIOc_get_vard_uchar(int ncid, int varid, int decompid,
                         const PIO_Offset recnum, unsigned char *buf)
 {
-    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_CHAR, buf);
+    return PIOc_get_vard_tc(ncid, varid, decompid, recnum, NC_UBYTE, buf);
 }
 
 /**
