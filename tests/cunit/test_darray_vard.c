@@ -52,11 +52,7 @@ char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
-#ifdef _NETCDF4
 #define NUM_TYPES_TO_TEST 6
-#else
-#define NUM_TYPES_TO_TEST 6
-#endif /* _NETCDF4 */
 
 /**
  * Test the darray functionality. Create a netCDF file with 3
@@ -362,39 +358,34 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
 {
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-#ifdef _NETCDF4
-   int pio_type[NUM_TYPES_TO_TEST] = {PIO_CHAR, PIO_BYTE, PIO_SHORT,
-                                       PIO_INT, PIO_FLOAT, PIO_DOUBLE};
-#else
-   int pio_type[NUM_TYPES_TO_TEST] = {PIO_CHAR, PIO_BYTE, PIO_SHORT,
-                                       PIO_INT, PIO_FLOAT, PIO_DOUBLE};
-#endif /* _NETCDF4 */
-
+    /* int pio_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, */
+    /*                                        PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, */
+    /*                                        PIO_UINT, PIO_INT64, PIO_UINT64}; */
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
+                                       PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
     int ret; /* Return code. */
 
+    for (t = 0; t < NUM_TYPES_TO_TEST; t++)
     {
-        for (t = 0; t < NUM_TYPES_TO_TEST; t++)
-        {
-            /* This will be our file name for writing out decompositions. */
-            sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
-                    TEST_NAME, my_rank, *flavor, pio_type[t]);
+        /* This will be our file name for writing out decompositions. */
+        sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
+                TEST_NAME, my_rank, *flavor, pio_type[t]);
 
-            /* Decompose the data over the tasks. */
-            if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid,
-                                               dim_len_2d, &ioid, pio_type[t])))
+        /* Decompose the data over the tasks. */
+        if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid,
+                                           dim_len_2d, &ioid, pio_type[t])))
+            return ret;
+
+        /* Run a simple darray test. */
+        if ((ret = test_darray(iosysid, ioid, fmt, num_flavors, flavor,
+                               my_rank, pio_type[t])))
                 return ret;
 
-            /* Run a simple darray test. */
-            if ((ret = test_darray(iosysid, ioid, fmt, num_flavors, flavor,
-                                   my_rank, pio_type[t])))
-                return ret;
-
-            /* Free the PIO decomposition. */
-            if ((ret = PIOc_freedecomp(iosysid, ioid)))
-                ERR(ret);
-        }
+        /* Free the PIO decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
     }
 
     return PIO_NOERR;
