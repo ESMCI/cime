@@ -11,8 +11,8 @@
 #include <pio_internal.h>
 
 /**
- * @addtogroup PIO_put_var_c Write Data
- * Write data to a Variable in C.
+ * @addtogroup PIO_put_vars_c Write Strided Arrays
+ * Write strided arrays of data to a Variable in C.
  * @{
  */
 
@@ -359,6 +359,43 @@ PIOc_put_vars_ulonglong(int ncid, int varid, const PIO_Offset *start, const PIO_
 }
 
 /**
+ * Write strided, muti-dimensional subset of a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param count an array of counts (must have same number of entries
+ * as variable has dimensions). If NULL, counts matching the size of
+ * the variable will be used.
+ * @param stride an array of strides (must have same number of
+ * entries as variable has dimensions). If NULL, strides of 1 will be
+ * used.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+              const PIO_Offset *stride, const void *op)
+{
+    return PIOc_put_vars_tc(ncid, varid, start, count, stride, NC_NAT, op);
+}
+
+/**
+ * @}
+ */
+/**
+ * @addtogroup PIO_put_var1_c Write One Value
+ * Write one value to a variable in C.
+ * @{
+ */
+
+/**
  * Put one value from an text variable.
  *
  * This routine is called collectively by all tasks in the
@@ -619,6 +656,37 @@ PIOc_put_var1_longlong(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
+ * Put one value from a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param index an array of indicies where the data value will be
+ * written (must have same number of entries as variable has
+ * dimensions). If NULL, indices of 0 will be used.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *op)
+{
+    return PIOc_put_var1_tc(ncid, varid, index, NC_NAT, op);
+}
+
+/**
+ * @}
+ */
+/**
+ * @addtogroup PIO_put_vara_c Write Arrays
+ * Write arrays of data to a Variable in C, specifying start and count
+ * arrays.
+ * @{
+ */
+
+/**
  * Put muti-dimensional subset of a text variable.
  *
  * This routine is called collectively by all tasks in the
@@ -844,6 +912,31 @@ PIOc_put_vara_float(int ncid, int varid, const PIO_Offset *start,
 }
 
 /**
+ * Put muti-dimensional subset of a 64-bit integer variable.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param count an array of counts (must have same number of entries
+ * as variable has dimensions). If NULL, counts matching the size of
+ * the variable will be used.
+ * @param op pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vara_double(int ncid, int varid, const PIO_Offset *start,
+                     const PIO_Offset *count, const double *op)
+{
+    return PIOc_put_vars_double(ncid, varid, start, count, NULL, op);
+}
+
+/**
  * Put muti-dimensional subset of an unsigned 64-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
@@ -894,7 +987,7 @@ PIOc_put_vara_longlong(int ncid, int varid, const PIO_Offset *start,
 }
 
 /**
- * Put muti-dimensional subset of a 64-bit integer variable.
+ * Put muti-dimensional subset of a variable of any type.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -912,11 +1005,20 @@ PIOc_put_vara_longlong(int ncid, int varid, const PIO_Offset *start,
  * @author Ed Hartnett
  */
 int
-PIOc_put_vara_double(int ncid, int varid, const PIO_Offset *start,
-                     const PIO_Offset *count, const double *op)
+PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+              const void *op)
 {
-    return PIOc_put_vars_double(ncid, varid, start, count, NULL, op);
+    return PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_NAT, op);
 }
+
+/**
+ * @}
+ */
+/**
+ * @addtogroup PIO_put_var_c Write Entire Variable
+ * Write the entire variable in C.
+ * @{
+ */
 
 /**
  * Put all data to a text variable.
@@ -1150,80 +1252,6 @@ int
 PIOc_put_var(int ncid, int varid, const void *op)
 {
     return PIOc_put_var_tc(ncid, varid, NC_NAT, op);
-}
-
-/**
- * Put one value from a variable of any type.
- *
- * This routine is called collectively by all tasks in the
- * communicator ios.union_comm.
- *
- * @param ncid identifies the netCDF file
- * @param varid the variable ID number
- * @param index an array of indicies where the data value will be
- * written (must have same number of entries as variable has
- * dimensions). If NULL, indices of 0 will be used.
- * @param op pointer to the data to be written.
- * @return PIO_NOERR on success, error code otherwise.
- * @author Ed Hartnett
- */
-int
-PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *op)
-{
-    return PIOc_put_var1_tc(ncid, varid, index, NC_NAT, op);
-}
-
-/**
- * Put muti-dimensional subset of a variable of any type.
- *
- * This routine is called collectively by all tasks in the
- * communicator ios.union_comm.
- *
- * @param ncid identifies the netCDF file
- * @param varid the variable ID number
- * @param start an array of start indicies (must have same number of
- * entries as variable has dimensions). If NULL, indices of 0 will be
- * used.
- * @param count an array of counts (must have same number of entries
- * as variable has dimensions). If NULL, counts matching the size of
- * the variable will be used.
- * @param op pointer to the data to be written.
- * @return PIO_NOERR on success, error code otherwise.
- * @author Ed Hartnett
- */
-int
-PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
-              const void *op)
-{
-    return PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_NAT, op);
-}
-
-/**
- * Write strided, muti-dimensional subset of a variable of any type.
- *
- * This routine is called collectively by all tasks in the
- * communicator ios.union_comm.
- *
- * @param ncid identifies the netCDF file
- * @param varid the variable ID number
- * @param start an array of start indicies (must have same number of
- * entries as variable has dimensions). If NULL, indices of 0 will be
- * used.
- * @param count an array of counts (must have same number of entries
- * as variable has dimensions). If NULL, counts matching the size of
- * the variable will be used.
- * @param stride an array of strides (must have same number of
- * entries as variable has dimensions). If NULL, strides of 1 will be
- * used.
- * @param op pointer to the data to be written.
- * @return PIO_NOERR on success, error code otherwise.
- * @author Ed Hartnett
- */
-int
-PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
-              const PIO_Offset *stride, const void *op)
-{
-    return PIOc_put_vars_tc(ncid, varid, start, count, stride, NC_NAT, op);
 }
 
 /**
