@@ -17,7 +17,7 @@
  */
 
 /**
- * Get strided, muti-dimensional subset of a text variable.
+ * Put strided, muti-dimensional subset of a text variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -45,7 +45,7 @@ PIOc_put_vars_text(int ncid, int varid, const PIO_Offset *start, const PIO_Offse
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned char variable.
+ * Put strided, muti-dimensional subset of an unsigned char variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -74,7 +74,7 @@ PIOc_put_vars_uchar(int ncid, int varid, const PIO_Offset *start,
 }
 
 /**
- * Get strided, muti-dimensional subset of a signed char variable.
+ * Put strided, muti-dimensional subset of a signed char variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -102,7 +102,7 @@ PIOc_put_vars_schar(int ncid, int varid, const PIO_Offset *start, const PIO_Offs
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned 16-bit integer
+ * Put strided, muti-dimensional subset of an unsigned 16-bit integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -131,7 +131,7 @@ PIOc_put_vars_ushort(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 }
 
 /**
- * Get strided, muti-dimensional subset of a 16-bit integer variable.
+ * Put strided, muti-dimensional subset of a 16-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -159,7 +159,7 @@ PIOc_put_vars_short(int ncid, int varid, const PIO_Offset *start,
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned integer
+ * Put strided, muti-dimensional subset of an unsigned integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -188,7 +188,7 @@ PIOc_put_vars_uint(int ncid, int varid, const PIO_Offset *start, const PIO_Offse
 }
 
 /**
- * Get strided, muti-dimensional subset of an integer variable.
+ * Put strided, muti-dimensional subset of an integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -216,7 +216,7 @@ PIOc_put_vars_int(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 }
 
 /**
- * Get strided, muti-dimensional subset of a 64-bit integer variable.
+ * Put strided, muti-dimensional subset of a 64-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -244,7 +244,7 @@ PIOc_put_vars_long(int ncid, int varid, const PIO_Offset *start, const PIO_Offse
 }
 
 /**
- * Get strided, muti-dimensional subset of a floating point variable.
+ * Put strided, muti-dimensional subset of a floating point variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -272,7 +272,7 @@ PIOc_put_vars_float(int ncid, int varid, const PIO_Offset *start, const PIO_Offs
 }
 
 /**
- * Get strided, muti-dimensional subset of a 64-bit unsigned integer
+ * Put strided, muti-dimensional subset of a 64-bit unsigned integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -301,7 +301,7 @@ PIOc_put_vars_longlong(int ncid, int varid, const PIO_Offset *start, const PIO_O
 }
 
 /**
- * Get strided, muti-dimensional subset of a 64-bit floating point
+ * Put strided, muti-dimensional subset of a 64-bit floating point
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -330,7 +330,7 @@ PIOc_put_vars_double(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 }
 
 /**
- * Get strided, muti-dimensional subset of an unsigned 64-bit integer
+ * Put strided, muti-dimensional subset of an unsigned 64-bit integer
  * variable.
  *
  * This routine is called collectively by all tasks in the
@@ -359,7 +359,7 @@ PIOc_put_vars_ulonglong(int ncid, int varid, const PIO_Offset *start, const PIO_
 }
 
 /**
- * Get one value from an text variable.
+ * Put one value from an text variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -380,7 +380,7 @@ PIOc_put_var1_text(int ncid, int varid, const PIO_Offset *index, const char *op)
 }
 
 /**
- * Get one value from an text variable.
+ * Put one value from an text variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -402,7 +402,7 @@ PIOc_put_var1_uchar(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from an signed char variable.
+ * Put one value from an signed char variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -424,7 +424,7 @@ PIOc_put_var1_schar(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from an unsigned 16-bit integer variable.
+ * Put one value from an unsigned 16-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -446,7 +446,7 @@ PIOc_put_var1_ushort(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from a 16-bit integer variable.
+ * Put one value from a 16-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -468,7 +468,7 @@ PIOc_put_var1_short(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from an unsigned integer variable.
+ * Put one value from an unsigned integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -490,7 +490,7 @@ PIOc_put_var1_uint(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from an integer variable.
+ * Put one value from an integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -511,7 +511,7 @@ PIOc_put_var1_int(int ncid, int varid, const PIO_Offset *index, const int *op)
 }
 
 /**
- * Get one value from an floating point variable.
+ * Put one value from an floating point variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -532,7 +532,7 @@ PIOc_put_var1_float(int ncid, int varid, const PIO_Offset *index, const float *o
 }
 
 /**
- * Get one value from an integer variable.
+ * Put one value from an integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -553,7 +553,7 @@ PIOc_put_var1_long(int ncid, int varid, const PIO_Offset *index, const long *op)
 }
 
 /**
- * Get one value from an 64-bit floating point variable.
+ * Put one value from an 64-bit floating point variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -575,7 +575,7 @@ PIOc_put_var1_double(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from an unsigned 64-bit integer variable.
+ * Put one value from an unsigned 64-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -597,7 +597,7 @@ PIOc_put_var1_ulonglong(int ncid, int varid, const PIO_Offset *index,
 }
 
 /**
- * Get one value from a 64-bit integer variable.
+ * Put one value from a 64-bit integer variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -1153,7 +1153,7 @@ PIOc_put_var(int ncid, int varid, const void *op)
 }
 
 /**
- * Get one value from a variable of any type.
+ * Put one value from a variable of any type.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.

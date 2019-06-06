@@ -1424,3 +1424,117 @@ PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 
     return ierr;
 }
+
+/**
+ * Internal PIO function which provides a type-neutral interface to
+ * PIOc_get_vard() and related functions. This function gets
+ * distributed arrays of any type, converting them to any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param xtype the netCDF type of the data being passed in buf. Data
+ * will be automatically covnerted from the type of the variable being
+ * read from to this type. If NC_NAT then the variable's file type
+ * will be used. Use special PIO_LONG_INTERNAL for _long() functions.
+ * @param buf pointer to the data to be written.
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_get_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                 nc_type xtype, void *buf)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    var_desc_t *vdesc;     /* Pointer to var information. */
+    int ret;
+
+    LOG((1, "PIOc_get_vard_tc ncid %d varid %d decompid %d recnum %d "
+         "xtype %d", ncid, varid, decompid, recnum, xtype));
+
+    /* Get file info. */
+    if ((ret = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    ios = file->iosystem;
+
+    /* Set the value of the record dimension. */
+    if ((ret = PIOc_setframe(ncid, varid, recnum)))
+        return ret;
+
+    /* Get var info. */
+    if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
+        return pio_err(ios, file, ret, __FILE__, __LINE__);
+    LOG((2, "vdesc->pio_type %d", vdesc->pio_type));
+
+    /* Disallow type conversion for now. */
+    if (xtype != NC_NAT && xtype != vdesc->pio_type)
+        return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
+
+    /* Read the distributed array. */
+    if ((ret = PIOc_read_darray(ncid, varid, decompid, 0, buf)))
+        return ret;
+
+    return PIO_NOERR;
+}
+
+/**
+ * Internal PIO function which provides a type-neutral interface to
+ * PIOc_get_vard() and related functions. This function puts
+ * distributed arrays of any type, converting them to any type.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param decompid the decomposition ID.
+ * @param recnum the record number.
+ * @param xtype the netCDF type of the data being passed in buf. Data
+ * will be automatically covnerted from this type to the type of the
+ * variable being written to. If NC_NAT then the variable's file type
+ * will be used. Use special PIO_LONG_INTERNAL for _long() functions.
+ * @param buf pointer to the data to be written.
+ *
+ * @return PIO_NOERR on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIOc_put_vard_tc(int ncid, int varid, int decompid, const PIO_Offset recnum,
+                 nc_type xtype, const void *buf)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    io_desc_t *iodesc;     /* The IO description. */
+    file_desc_t *file;     /* Pointer to file information. */
+    var_desc_t *vdesc;     /* Pointer to var information. */
+    int ret;
+
+    /* Get file info. */
+    if ((ret = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    ios = file->iosystem;
+
+    /* Set the value of the record dimension. */
+    if ((ret = PIOc_setframe(ncid, varid, recnum)))
+        return pio_err(ios, file, ret, __FILE__, __LINE__);
+
+    /* Get decomposition information. */
+    if (!(iodesc = pio_get_iodesc_from_id(decompid)))
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Get var info. */
+    if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
+        return pio_err(ios, file, ret, __FILE__, __LINE__);
+
+    /* Disallow type conversion for now. */
+    if (xtype != NC_NAT && xtype != vdesc->pio_type)
+        return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
+
+    /* Write the distributed array. */
+    if ((ret = PIOc_write_darray(ncid, varid, decompid, iodesc->ndof,
+                                 (void *)buf, NULL)))
+        return ret;
+
+    return PIO_NOERR;
+}
