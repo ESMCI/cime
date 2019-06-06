@@ -350,14 +350,15 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
  * Run all the tests.
  *
  * @param iosysid the IO system ID.
+ * @param fmt index into array of IOTYPEs.
  * @param num_flavors number of available iotypes in the build.
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise.
  */
-int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    MPI_Comm test_comm)
+int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
+                    int my_rank, MPI_Comm test_comm)
 {
     int ioid;
     char filename[PIO_MAX_NAME + 1];
@@ -371,10 +372,8 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
-    int fmt;
     int ret; /* Return code. */
 
-    for (fmt = 0; fmt < num_flavors; fmt++)
     {
         for (t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
@@ -429,30 +428,34 @@ int main(int argc, char **argv)
         int ioproc_stride = 1;    /* Stride in rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first I/O task. */
         int r;
+        int fmt;
         int ret;      /* Return code. */
 
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
-        for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+        for (fmt = 0; fmt < num_flavors; fmt++)
         {
-            /* Initialize the PIO IO system. This specifies how
-             * many and which processors are involved in I/O. */
-            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS,
-                                           ioproc_stride, ioproc_start,
-                                           rearranger[r], &iosysid)))
-                return ret;
+            for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+            {
+                /* Initialize the PIO IO system. This specifies how
+                 * many and which processors are involved in I/O. */
+                if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS,
+                                               ioproc_stride, ioproc_start,
+                                               rearranger[r], &iosysid)))
+                    return ret;
 
-            /* Run tests. */
-            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
-                                       test_comm)))
-                return ret;
+                /* Run tests. */
+                if ((ret = test_all_darray(iosysid, fmt, num_flavors, flavor,
+                                           my_rank, test_comm)))
+                    return ret;
 
-            /* Finalize PIO system. */
-            if ((ret = PIOc_free_iosystem(iosysid)))
-                return ret;
-        } /* next rearranger */
+                /* Finalize PIO system. */
+                if ((ret = PIOc_free_iosystem(iosysid)))
+                    return ret;
+            } /* next rearranger */
+        }
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
