@@ -158,7 +158,7 @@ int main(int argc, char **argv)
       int num_flavors; /* Number of PIO netCDF flavors in this build. */
       int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
       int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-      
+
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
                     ERR(ret);
 
             } /* next iotype */
-        
+
             /* Finalize PIO systems. */
             if (even_comm != MPI_COMM_NULL)
                 if ((ret = PIOc_free_iosystem(even_iosysid)))
