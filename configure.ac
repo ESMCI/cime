@@ -156,6 +156,9 @@ AC_DEFINE([INCLUDE_CMAKE_FCI], [1], [defined by CMake build])
 # All builds are on LINUX.
 AC_DEFINE([LINUX], [1], [defined by CMake build])
 
+# Define to solve intel compiler warning.
+AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on intel compiler])
+
 # Check for netCDF library.
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
 
@@ -235,9 +238,6 @@ AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
-
-# Define to solve intel compiler warning.
-AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on intel compiler])
 
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])
