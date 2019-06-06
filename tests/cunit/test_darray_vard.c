@@ -73,6 +73,7 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
     int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
+    int type_to_use;
     PIO_Offset arraylen = 4;
     char test_data_char[arraylen];
     char test_data_char_in[arraylen];
@@ -138,7 +139,8 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                     ERR(ret);
 
             /* Define a variable. */
-            if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids,
+            type_to_use = (pio_type == NC_NAT) ? PIO_INT : pio_type;
+            if ((ret = PIOc_def_var(ncid, VAR_NAME, type_to_use, NDIM, dimids,
                                     &varid)))
                 ERR(ret);
 
@@ -214,6 +216,11 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             case PIO_UINT64:
                 if ((ret = PIOc_put_vard_ulonglong(ncid, varid, ioid, 0,
                                                    test_data_uint64)))
+                    ERR(ret);
+                break;
+            case NC_NAT:
+                /* Using NAT to test void * version, using int data. */
+                if ((ret = PIOc_put_vard(ncid, varid, ioid, 0, test_data_int)))
                     ERR(ret);
                 break;
             default:
@@ -304,6 +311,12 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                                                    test_data_uint64_in)))
                     ERR(ret);
                 break;
+            case NC_NAT:
+                /* Using NAT to test void * version, using int data. */
+                if ((ret = PIOc_get_vard(ncid2, varid, ioid, 0,
+                                         test_data_int_in)))
+                    ERR(ret);
+                break;
             default:
                 ERR(ERR_WRONG);
             }
@@ -357,6 +370,11 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                     if (test_data_uint64_in[f] != test_data_uint64[f])
                         return ERR_WRONG;
                     break;
+                case NC_NAT:
+                    /* Using NAT to test void * version, using int data. */
+                    if (test_data_int_in[f] != test_data_int[f])
+                        return ERR_WRONG;
+                    break;
                 default:
                     ERR(ERR_WRONG);
                 }
@@ -393,9 +411,9 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
 {
     int ioid;
     char filename[PIO_MAX_NAME + 1];
-    int pio_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
-                                           PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT,
-                                           PIO_UINT, PIO_INT64, PIO_UINT64};
+    int pio_type[NUM_NETCDF4_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
+                                       PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT,
+                                       PIO_UINT, PIO_INT64, PIO_UINT64, NC_NAT};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int num_types;
     int t;
@@ -403,20 +421,26 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
 
     /* Based on the IOTYPE, decide how many types to check. */
     if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        num_types = NUM_NETCDF4_TYPES - 1;
+        num_types = NUM_NETCDF4_TYPES;
     else
         num_types = NUM_CLASSIC_TYPES;
 
     /* Check each type. */
     for (t = 0; t < num_types; t++)
     {
+        int type_to_use;
+
+        /* Using NAT to test generic versions of vard functions, so
+         * substiture PIO_INT. */
+        type_to_use = (pio_type[t] == NC_NAT) ? PIO_INT : pio_type[t];
+
         /* This will be our file name for writing out decompositions. */
         sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
                 TEST_NAME, my_rank, *flavor, pio_type[t]);
 
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid,
-                                           dim_len_2d, &ioid, pio_type[t])))
+                                           dim_len_2d, &ioid, type_to_use)))
             return ret;
 
         /* Run a simple darray test. */
