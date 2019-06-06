@@ -536,7 +536,7 @@ contains
 
     integer       :: num_flux_fields_from_lnd, num_flux_fields_from_ocn
     integer       :: num_state_fields_from_lnd, num_state_fields_from_ocn
-    integer       :: nflds
+    integer       :: nflds, nflds_from_ocn
     integer       :: i,n
     integer       :: mrgstr_index
     integer       :: index_o2x
@@ -557,6 +557,7 @@ contains
     num_state_fields_from_lnd = shr_string_listGetNum(trim(seq_flds_x2g_states_from_lnd))
     num_flux_fields_from_ocn = shr_string_listGetNum(trim(seq_flds_x2g_fluxes_from_ocn))
     num_state_fields_from_ocn = shr_string_listGetNum(trim(seq_flds_x2g_states_from_ocn))
+    nflds_from_ocn = num_flux_fields_from_ocn + num_state_fields_from_ocn
 
     if (first_time) then
        nflds = mct_aVect_nRattr(x2g_g)
@@ -568,7 +569,7 @@ contains
           call shr_sys_abort(subname//' ERROR: nflds /= num_flux_fields + num_state_fields')
        end if
 
-       allocate(mrgstr(nflds))
+       allocate(mrgstr(nflds_from_ocn))
     end if
 
     mrgstr_index = 1
@@ -614,7 +615,7 @@ contains
     if (first_time) then
        if (iamroot) then
           write(logunit,'(A)') subname//' Summary:'
-          do i = 1,nflds
+          do i = 1,nflds_from_ocn
              write(logunit,'(A)') trim(mrgstr(i))
           enddo
        endif
@@ -679,7 +680,7 @@ contains
 
     integer       :: num_flux_fields_from_lnd, num_flux_fields_from_ocn
     integer       :: num_state_fields_from_lnd, num_state_fields_from_ocn
-    integer       :: nflds
+    integer       :: nflds, nflds_from_lnd
     integer       :: i,n
     integer       :: mrgstr_index
     integer       :: index_l2x
@@ -701,6 +702,7 @@ contains
     num_state_fields_from_lnd = shr_string_listGetNum(trim(seq_flds_x2g_states_from_lnd))
     num_flux_fields_from_ocn = shr_string_listGetNum(trim(seq_flds_x2g_fluxes_from_ocn))
     num_state_fields_from_ocn = shr_string_listGetNum(trim(seq_flds_x2g_states_from_ocn))
+    nflds_from_lnd = num_flux_fields_from_lnd+num_state_fields_from_lnd
 
     if (first_time) then
        nflds = mct_aVect_nRattr(x2g_g)
@@ -712,7 +714,7 @@ contains
           call shr_sys_abort(subname//' ERROR: nflds /= num_flux_fields + num_state_fields')
        end if
 
-       allocate(mrgstr(nflds))
+       allocate(mrgstr(nflds_from_lnd))
     end if
 
     mrgstr_index = 1
@@ -770,7 +772,7 @@ contains
     if (first_time) then
        if (iamroot) then
           write(logunit,'(A)') subname//' Summary:'
-          do i = 1,nflds
+          do i = 1,nflds_from_lnd
              write(logunit,'(A)') trim(mrgstr(i))
           enddo
        endif
