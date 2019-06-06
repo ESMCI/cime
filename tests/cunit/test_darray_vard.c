@@ -185,6 +185,11 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                                                test_data_double)))
                     ERR(ret);
                 break;
+            case PIO_UBYTE:
+                if ((ret = PIOc_put_vard_uchar(ncid, varid, ioid, 0,
+                                               test_data_ubyte)))
+                    ERR(ret);
+                break;
             default:
                 ERR(ERR_WRONG);
             }
@@ -248,6 +253,11 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                                                test_data_double_in)))
                     ERR(ret);
                 break;
+            case PIO_UBYTE:
+                if ((ret = PIOc_get_vard_uchar(ncid2, varid, ioid, 0,
+                                               test_data_ubyte_in)))
+                    ERR(ret);
+                break;
             default:
                 ERR(ERR_WRONG);
             }
@@ -279,6 +289,10 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                     break;
                 case PIO_DOUBLE:
                     if (test_data_double_in[f] != test_data_double[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_UBYTE:
+                    if (test_data_ubyte_in[f] != test_data_ubyte[f])
                         return ERR_WRONG;
                     break;
                 default:
