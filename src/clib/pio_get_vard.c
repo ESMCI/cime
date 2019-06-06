@@ -12,7 +12,7 @@
 #include <pio_internal.h>
 
 /**
- * @addtogroup PIO_get_vard_c Read Distributed Arrays
+ * @addtogroup PIO_read_darray_c
  * Read distributed arrays from a variable in C.
  * @{
  */

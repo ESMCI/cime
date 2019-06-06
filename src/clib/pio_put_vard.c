@@ -11,7 +11,7 @@
 #include <pio_internal.h>
 
 /**
- * @addtogroup PIO_put_vard_c Write Data
+ * @addtogroup PIO_write_darray_c
  * Write distributed arrays to a Variable in C.
  * @{
  */
