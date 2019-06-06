@@ -35,12 +35,8 @@
 #define X_DIM_LEN 4
 #define Y_DIM_LEN 4
 
-/* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 2
-
 /* The names of variables in the netCDF output files. */
 #define VAR_NAME "Billy-Bob"
-#define VAR_NAME2 "Sally-Sue"
 
 /* Test with and without specifying a fill value to
  * PIOc_write_darray(). */
@@ -100,7 +96,7 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
     long long int test_data_int64_in[arraylen];
     unsigned long long int test_data_uint64[arraylen];
     unsigned long long int test_data_uint64_in[arraylen];
-    int f, provide_fill, d;
+    int f, d;
 
     /* Initialize some data. */
     for (f = 0; f < arraylen; f++)
@@ -125,13 +121,10 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
         if (fmt == 0 && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
             return PIO_NOERR;
 
-        /* Test with/without providing a fill value to PIOc_write_darray(). */
-        for (provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE;
-             provide_fill++)
         {
             /* Create the filename. */
-            sprintf(filename, "%s_iotype_%d_pio_type_%d_provide_fill_%d.nc",
-                    TEST_NAME, flavor[fmt], pio_type, provide_fill);
+            sprintf(filename, "%s_iotype_%d_pio_type_%d.nc",
+                    TEST_NAME, flavor[fmt], pio_type);
 
             /* Create the netCDF output file. */
             if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename,
@@ -291,6 +284,26 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                                                test_data_ubyte_in)))
                     ERR(ret);
                 break;
+            case PIO_USHORT:
+                if ((ret = PIOc_get_vard_ushort(ncid2, varid, ioid, 0,
+                                               test_data_ushort_in)))
+                    ERR(ret);
+                break;
+            case PIO_UINT:
+                if ((ret = PIOc_get_vard_uint(ncid2, varid, ioid, 0,
+                                               test_data_uint_in)))
+                    ERR(ret);
+                break;
+            case PIO_INT64:
+                if ((ret = PIOc_get_vard_longlong(ncid2, varid, ioid, 0,
+                                                  test_data_int64_in)))
+                    ERR(ret);
+                break;
+            case PIO_UINT64:
+                if ((ret = PIOc_get_vard_ulonglong(ncid2, varid, ioid, 0,
+                                                   test_data_uint64_in)))
+                    ERR(ret);
+                break;
             default:
                 ERR(ERR_WRONG);
             }
@@ -326,6 +339,22 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                     break;
                 case PIO_UBYTE:
                     if (test_data_ubyte_in[f] != test_data_ubyte[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_USHORT:
+                    if (test_data_ushort_in[f] != test_data_ushort[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_UINT:
+                    if (test_data_uint_in[f] != test_data_uint[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_INT64:
+                    if (test_data_int64_in[f] != test_data_int64[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_UINT64:
+                    if (test_data_uint64_in[f] != test_data_uint64[f])
                         return ERR_WRONG;
                     break;
                 default:
@@ -374,8 +403,7 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
 
     /* Based on the IOTYPE, decide how many types to check. */
     if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        /* num_types = NUM_NETCDF4_TYPES - 1; */
-        num_types = NUM_TYPES_TO_TEST + 1;
+        num_types = NUM_NETCDF4_TYPES - 1;
     else
         num_types = NUM_CLASSIC_TYPES;
 
