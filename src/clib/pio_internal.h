@@ -255,9 +255,6 @@ extern "C" {
     /* Find greatest commond divisor for long long. */
     long long lgcd (long long a, long long b );
 
-    /* Find greatest commond divisor in an array. */
-    int gcd_array(int nain, int *ain);
-
     /* Convert a global coordinate value into a local array index. */
     PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count);
 
