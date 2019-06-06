@@ -236,6 +236,9 @@ AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
+# Define to solve intel compiler warning.
+AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on intel compiler])
+
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])
 
