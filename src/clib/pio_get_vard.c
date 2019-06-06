@@ -12,8 +12,8 @@
 #include <pio_internal.h>
 
 /**
- * @addtogroup PIO_get_var_c Read Data
- * Read data from a variable in C.
+ * @addtogroup PIO_get_vard_c Read Distributed Arrays
+ * Read distributed arrays from a variable in C.
  * @{
  */
 

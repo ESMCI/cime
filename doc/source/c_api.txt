@@ -32,7 +32,10 @@
        - \ref PIO_def_var_c
        - \ref PIO_put_att_c
      \subsection putget_c Reading/Writing Data
+       - \ref PIO_get_vara_c
        - \ref PIO_get_var_c
+       - \ref PIO_get_var1_c
+       - \ref PIO_get_vars_c
        - \ref PIO_put_var_c
      \subsection inqnc_c Learn about Files and Metadata
        - \ref PIO_inq_c
