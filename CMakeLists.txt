@@ -57,8 +57,6 @@ else()
   set(USE_MPI_SERIAL 0)
 endif()
 
-#Set in config.h to solve intel 19 strnlen warning issue
-set(_GNU_SOURCE, 1)
 #==============================================================================
 #  PREPEND TO CMAKE MODULE PATH
 #==============================================================================
