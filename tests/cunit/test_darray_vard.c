@@ -65,14 +65,15 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  *
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition.
+ * @param fmt the index of the IOTYPE to test.
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
  * @param pio_type the type of the data.
  * @returns 0 for success, error code otherwise.
  */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
-                int my_rank, int pio_type)
+int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
+                int *flavor, int my_rank, int pio_type)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -102,7 +103,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     double fillvalue_double = NC_FILL_DOUBLE;
     double test_data_double[arraylen];
     double test_data_double_in[arraylen];
-    int f, fmt, provide_fill, d;
+    int f, provide_fill, d;
 
     /* Initialize some data. */
     for (f = 0; f < arraylen; f++)
@@ -117,10 +118,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Pnetcdf cannot handle 1-byte types. */
-        if (fmt == 0 && (pio_type == PIO_BYTE || pio_type == PIO_CHAR)) continue;
+        if (fmt == 0 && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
+            return PIO_NOERR;
 
         /* Test with/without providing a fill value to PIOc_write_darray(). */
         for (provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE;
@@ -370,27 +371,31 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int t;
+    int fmt;
     int ret; /* Return code. */
 
-    for (t = 0; t < NUM_TYPES_TO_TEST; t++)
+    for (fmt = 0; fmt < num_flavors; fmt++)
     {
-        /* This will be our file name for writing out decompositions. */
-        sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
-                TEST_NAME, my_rank, *flavor, pio_type[t]);
+        for (t = 0; t < NUM_TYPES_TO_TEST; t++)
+        {
+            /* This will be our file name for writing out decompositions. */
+            sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc",
+                    TEST_NAME, my_rank, *flavor, pio_type[t]);
 
-        /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid,
-                                           dim_len_2d, &ioid, pio_type[t])))
-            return ret;
+            /* Decompose the data over the tasks. */
+            if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid,
+                                               dim_len_2d, &ioid, pio_type[t])))
+                return ret;
 
-        /* Run a simple darray test. */
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
-                               pio_type[t])))
-            return ret;
+            /* Run a simple darray test. */
+            if ((ret = test_darray(iosysid, ioid, fmt, num_flavors, flavor,
+                                   my_rank, pio_type[t])))
+                return ret;
 
-        /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
+            /* Free the PIO decomposition. */
+            if ((ret = PIOc_freedecomp(iosysid, ioid)))
+                ERR(ret);
+        }
     }
 
     return PIO_NOERR;
