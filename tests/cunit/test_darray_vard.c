@@ -154,18 +154,18 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             case PIO_CHAR:
                 /* These should not work. */
                 if (PIOc_put_vard_text(ncid + TEST_VAL_42, varid, ioid, 0,
-                                  test_data_char) != PIO_EBADID)
+                                       test_data_char) != PIO_EBADID)
                     ERR(ERR_WRONG);
-                if (PIOc_put_vard_text(ncid + TEST_VAL_42, varid, ioid + TEST_VAL_42, 0,
-                                  test_data_char) != PIO_EBADID)
+                if (PIOc_put_vard_text(ncid, varid + TEST_VAL_42, ioid, 0,
+                                       test_data_char) != PIO_ENOTVAR)
                     ERR(ERR_WRONG);
-                if (PIOc_put_vard_text(ncid, TEST_VAL_42, ioid + TEST_VAL_42, 0,
-                                  test_data_char) != PIO_ENOTVAR)
+                if (PIOc_put_vard_text(ncid, varid, ioid + TEST_VAL_42, 0,
+                                       test_data_char) != PIO_EBADID)
                     ERR(ERR_WRONG);
 
                 /* This will work. */
                 if ((ret = PIOc_put_vard_text(ncid, varid, ioid, 0,
-                                               test_data_char)))
+                                              test_data_char)))
                     ERR(ret);
                 break;
             case PIO_BYTE:
@@ -180,7 +180,7 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                 break;
             case PIO_INT:
                 if ((ret = PIOc_put_vard_int(ncid, varid, ioid, 0,
-                                               test_data_int)))
+                                             test_data_int)))
                     ERR(ret);
                 break;
             case PIO_FLOAT:
@@ -190,7 +190,7 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                 break;
             case PIO_DOUBLE:
                 if ((ret = PIOc_put_vard_double(ncid, varid, ioid, 0,
-                                               test_data_double)))
+                                                test_data_double)))
                     ERR(ret);
                 break;
             case PIO_UBYTE:
@@ -200,12 +200,12 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                 break;
             case PIO_USHORT:
                 if ((ret = PIOc_put_vard_ushort(ncid, varid, ioid, 0,
-                                               test_data_ushort)))
+                                                test_data_ushort)))
                     ERR(ret);
                 break;
             case PIO_UINT:
                 if ((ret = PIOc_put_vard_uint(ncid, varid, ioid, 0,
-                                               test_data_uint)))
+                                              test_data_uint)))
                     ERR(ret);
                 break;
             case PIO_INT64:
@@ -250,15 +250,15 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
             case PIO_CHAR:
                 /* These should not work. */
                 if ((ret = PIOc_get_vard_text(ncid2 + TEST_VAL_42, varid, ioid, 0,
-                                         test_data_char_in)) != PIO_EBADID)
+                                              test_data_char_in)) != PIO_EBADID)
                     ERR(ret);
                 if ((ret = PIOc_get_vard_text(ncid2, varid, ioid + TEST_VAL_42, 0,
-                                         test_data_char_in)) != PIO_EBADID)
+                                              test_data_char_in)) != PIO_EBADID)
                     ERR(ret);
 
                 /* This will work. */
                 if ((ret = PIOc_get_vard_text(ncid2, varid, ioid, 0,
-                                               test_data_char_in)))
+                                              test_data_char_in)))
                     ERR(ret);
                 break;
             case PIO_BYTE:
@@ -273,7 +273,7 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                 break;
             case PIO_INT:
                 if ((ret = PIOc_get_vard_int(ncid2, varid, ioid, 0,
-                                               test_data_int_in)))
+                                             test_data_int_in)))
                     ERR(ret);
                 break;
             case PIO_FLOAT:
@@ -283,7 +283,7 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                 break;
             case PIO_DOUBLE:
                 if ((ret = PIOc_get_vard_double(ncid2, varid, ioid, 0,
-                                               test_data_double_in)))
+                                                test_data_double_in)))
                     ERR(ret);
                 break;
             case PIO_UBYTE:
@@ -293,12 +293,12 @@ int test_darray(int iosysid, int ioid, int fmt, int num_flavors,
                 break;
             case PIO_USHORT:
                 if ((ret = PIOc_get_vard_ushort(ncid2, varid, ioid, 0,
-                                               test_data_ushort_in)))
+                                                test_data_ushort_in)))
                     ERR(ret);
                 break;
             case PIO_UINT:
                 if ((ret = PIOc_get_vard_uint(ncid2, varid, ioid, 0,
-                                               test_data_uint_in)))
+                                              test_data_uint_in)))
                     ERR(ret);
                 break;
             case PIO_INT64:
@@ -446,7 +446,7 @@ int test_all_darray(int iosysid, int fmt, int num_flavors, int *flavor,
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, fmt, num_flavors, flavor,
                                my_rank, pio_type[t])))
-                return ret;
+            return ret;
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))

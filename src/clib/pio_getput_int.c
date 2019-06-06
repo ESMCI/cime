@@ -1424,6 +1424,7 @@ PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
 
     return ierr;
 }
+
 /**
  * Internal PIO function which provides a type-neutral interface to
  * PIOc_get_vard() and related functions. This function gets
