@@ -4,7 +4,7 @@
  * @author Jim Edwards
  * @date  2014
  *
- * @see http://code.google.com/p/parallelio/
+ * @see https://github.com/NCAR/ParallelIO
  */
 
 #ifndef _PIO_H_
