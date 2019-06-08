@@ -192,24 +192,6 @@ module pio_types
   integer, public, parameter :: PIO_FILL_INT = nf_fill_int;               !< int fill value
   real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;              !< float fill value
   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double; !< double fill value
-#else
-  integer, public, parameter :: PIO_global = 0  !< global atts
-  integer, public, parameter :: PIO_double = 6  !< double type
-  integer, public, parameter :: PIO_real   = 5  !< real type
-  integer, public, parameter :: PIO_int    = 4  !< int type
-  integer, public, parameter :: PIO_char   = 2  !< char type
-  integer, public, parameter :: PIO_noerr  = 0  !< no error
-  integer, public, parameter :: PIO_MAX_NAME = 25    !< max name len
-  integer, public, parameter :: PIO_MAX_VAR_DIMS = 6 !< max dims for a var
-  integer, public, parameter :: PIO_CLOBBER = 10     !< clobber existing file
-  integer, public, parameter :: PIO_NOCLOBBER = 11   !< do not clobber existing file
-  integer, public, parameter :: PIO_WRITE = 20       !< read-write
-  integer, public, parameter :: PIO_NOWRITE = 21     !< read-only
-  integer, public, parameter :: PIO_64BIT_OFFSET = 0 !< 64bit offset format
-  integer, public, parameter :: PIO_64BIT_DATA = 0   !< CDF5 format
-  integer, public, parameter :: PIO_FILL_INT = -2147483647;  !< int fill value
-  real, public, parameter :: PIO_FILL_FLOAT =  9.9692099683868690e+36; !< float fill value
-  double precision, public, parameter :: PIO_FILL_DOUBLE = 9.9692099683868690e+36; !< double fill value
 #endif
 #endif
   integer, public, parameter :: PIO_num_OST =  16 !< num ost
