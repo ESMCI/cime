@@ -46,10 +46,7 @@ module pio_types
   use iso_c_binding
   implicit none
   private
-  !-------------------------------------------
-  !  data structure to describe decomposition
-  !-------------------------------------------
-  type, public :: DecompMap_t
+  type, public :: DecompMap_t !< data structure to describe decomposition.
 #ifdef SEQUENCE
      sequence
 #endif
@@ -57,12 +54,10 @@ module pio_types
      integer(i4) :: length !< length
   end type DecompMap_t
 
-  !------------------------------------
-  !  a file descriptor data structure
-  !------------------------------------
   !>
   !! @struct iosystem_desc_t
-  !! @brief A defined PIO system descriptor created by @ref PIO_init (see pio_types)
+  !! A defined PIO system descriptor created by @ref PIO_init (see
+  !! pio_types).
   !<
   type, public :: IOSystem_desc_t
      integer(kind=c_int) :: iosysid = -1 !< iosysid
@@ -71,8 +66,8 @@ module pio_types
   !>
   !! @private
   !! @struct io_data_list
-  !! @brief Linked list of buffers for pnetcdf non-blocking interface
-  !>
+  !! Linked list of buffers for pnetcdf non-blocking interface.
+  !
   !    type, public :: io_data_list
   !       integer :: request
   !       real(r4), pointer :: data_real(:) => null()
@@ -85,9 +80,8 @@ module pio_types
   !>
   !! @public
   !! @struct file_desc_t
-  !! @brief File descriptor returned by \ref PIO_openfile or \ref PIO_createfile (see pio_types)
-  !!
-  !>
+  !! File descriptor returned by \ref PIO_openfile or \ref
+  !! PIO_createfile (see pio_types).
   type, public :: File_desc_t
      integer(kind=c_int) :: fh !< file handle
      type(iosystem_desc_t), pointer :: iosystem => null() !< iosystem
@@ -97,9 +91,8 @@ module pio_types
   !>
   !! @public
   !! @struct io_desc_t
-  !! @brief  An io descriptor handle that is generated in @ref PIO_initdecomp
+  !! An decomposition handle that is generated in @ref PIO_initdecomp.
   !! (see pio_types)
-  !<
   type, public :: io_desc_t
 #ifdef SEQUENCE
      sequence
@@ -149,12 +142,11 @@ module pio_types
   !<
 
 #ifdef _PNETCDF
-#include <pnetcdf.inc>   /* _EXTERNAL */
-  integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data            !< CDF5 format
+#include <pnetcdf.inc>
 #else
-#include <netcdf.inc>   /* _EXTERNAL */
-  integer, public, parameter :: PIO_64BIT_DATA = 0                        !< CDF5 format
+#include <netcdf.inc>
 #endif
+  integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data            !< CDF5 format
   integer, public, parameter :: PIO_num_OST =  16 !< num ost
   integer, public, parameter :: PIO_global = nf_global       !< global atts
   integer, public, parameter :: PIO_unlimited = nf_unlimited !< unlimited dimension
