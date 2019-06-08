@@ -1,7 +1,7 @@
 !>
 !! @file
 !! Derived datatypes and constants for PIO Fortran API.
-!!
+!! @author Jim Edwards
 !<
 !>
 !! @private
@@ -39,7 +39,6 @@
 !!  - PIO_real : 4-byte reals
 !!  - PIO_int :  4-byte integers
 !!  - PIO_char : character
-!<
 
 module pio_types
   use pio_kinds
@@ -58,24 +57,9 @@ module pio_types
   !! @struct iosystem_desc_t
   !! A defined PIO system descriptor created by @ref PIO_init (see
   !! pio_types).
-  !<
   type, public :: IOSystem_desc_t
      integer(kind=c_int) :: iosysid = -1 !< iosysid
   end type IOSystem_desc_t
-
-  !>
-  !! @private
-  !! @struct io_data_list
-  !! Linked list of buffers for pnetcdf non-blocking interface.
-  !
-  !    type, public :: io_data_list
-  !       integer :: request
-  !       real(r4), pointer :: data_real(:) => null()
-  !       integer(i4), pointer :: data_int(:) => null()
-  !       real(r8), pointer :: data_double(:) => null()
-  !       type(io_data_list), pointer :: next => null()
-  !    end type io_data_list
-
 
   !>
   !! @public
@@ -86,7 +70,6 @@ module pio_types
      integer(kind=c_int) :: fh !< file handle
      type(iosystem_desc_t), pointer :: iosystem => null() !< iosystem
   end type File_desc_t
-
 
   !>
   !! @public
@@ -103,8 +86,8 @@ module pio_types
   !>
   !! @public
   !! @struct var_desc_t
-  !! @brief A variable descriptor returned from @ref PIO_def_var (see pio_types)
-  !<
+  !! A variable descriptor returned from @ref PIO_def_var (see
+  !! pio_types).
   type, public :: Var_desc_t
 #ifdef SEQUENCE
      sequence
@@ -117,7 +100,7 @@ module pio_types
        PIO_iotype_pnetcdf = 1, &   !< parallel read/write of pNetCDF files
        PIO_iotype_netcdf  = 2, &   !< serial read/write of NetCDF file using 'base_node'
        PIO_iotype_netcdf4c = 3, &  !< netcdf4 (hdf5 format) file opened for compression (serial write access only)
-       PIO_iotype_netcdf4p = 4     !< netcdf4 (hdf5 format) file opened in parallel (all netcdf4 files for read will be opened this way)
+       PIO_iotype_netcdf4p = 4     !< netcdf4 (hdf5 format) file opened in parallel
 
 
   ! These are for backward compatability and should not be used or expanded upon
@@ -137,9 +120,8 @@ module pio_types
 
   !>
   !! @struct use_PIO_kinds
-  !! @brief The type of variable(s) associated with this iodesc.
+  !! The type of variable(s) associated with this iodesc.
   !! @copydoc PIO_kinds
-  !<
 
 #ifdef _PNETCDF
 #include <pnetcdf.inc>
@@ -196,13 +178,12 @@ module pio_types
   !!                    number of requests use PIO_REARR_COMM_UNLIMITED_PEND_REQ)
   !!
   !! @defgroup PIO_rearr_options Rearranger Options
-  !! @brief Type that defines the PIO rearranger options
-  !! @details
+  !! Type that defines the PIO rearranger options.
+  !!
   !!  - comm_type : @copydoc PIO_rearr_comm_t
   !!  - fcd : @copydoc PIO_rearr_comm_dir
   !!  - comm_fc_opts_comp2io : @copydoc PIO_rearr_comm_fc_options
   !!  - comm_fc_opts_io2comp : @copydoc PIO_rearr_comm_fc_options
-  !>
   enum, bind(c)
      enumerator :: PIO_rearr_comm_fc_2d_enable = 0 !< COMM procs to IO procs and vice versa.
      enumerator :: PIO_rearr_comm_fc_1d_comp2io !< COMM procs to IO procs only.
