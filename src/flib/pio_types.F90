@@ -125,10 +125,11 @@ module pio_types
 
 #ifdef _PNETCDF
 #include <pnetcdf.inc>
+  integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data            !< CDF5 format
 #else
 #include <netcdf.inc>
+  integer, public, parameter :: PIO_64BIT_DATA = 0            !< CDF5 format
 #endif
-  integer, public, parameter :: PIO_64BIT_DATA = nf_64bit_data            !< CDF5 format
   integer, public, parameter :: PIO_num_OST =  16 !< num ost
   integer, public, parameter :: PIO_global = nf_global       !< global atts
   integer, public, parameter :: PIO_unlimited = nf_unlimited !< unlimited dimension
