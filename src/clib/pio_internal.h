@@ -363,6 +363,13 @@ extern "C" {
 
     int PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
                         nc_type *xtypep, PIO_Offset *lenp);
+
+    /* Start a timer. */
+    int pio_start_timer(const char *name);
+
+    /* Stop a timer. */
+    int pio_stop_timer(const char *name);
+
 #if defined(__cplusplus)
 }
 #endif

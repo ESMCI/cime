@@ -103,7 +103,7 @@ program pioperformance
     rearrangers(1)=1
     rearrangers(2)=2
   endif
-  i = pio_set_log_level(2)
+  i = pio_set_log_level(-1)
   do i=1,max_decomp_files
      if(len_trim(decompfile(i))==0) exit
      if(mype == 0) print *, ' Testing decomp: ',trim(decompfile(i))
