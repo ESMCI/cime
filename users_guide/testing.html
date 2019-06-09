@@ -45,292 +45,374 @@
             
   <div class="section" id="testing">
 <span id="id1"></span><h1>8. Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="../Tools_user/create_test.html">create_test</a> is the tool we use to test both CIME and CIME-driven models. It can be used as an easy way to
-run a single basic test or an entire suite of tests that are run in parallel for improved performance.
-<a class="reference external" href="../Tools_user/create_test.html">create_test</a>  is the driver behind the automated nightly testing of CIME-driven models.</p>
-<div class="section" id="testname-syntax">
-<h2>8.1. Testname syntax<a class="headerlink" href="#testname-syntax" title="Permalink to this headline">¶</a></h2>
-<p>Tests come in the forms:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">[</span><span class="o">.</span><span class="n">TESTMODS</span><span class="p">]]</span>
+<p><a class="reference external" href="../Tools_user/create_test.html">create_test</a>
+is the tool we use to test both CIME and CIME-driven models.
+It can be used as an easy way to run a single basic test or an entire suite of tests.
+<a class="reference external" href="../Tools_user/create_test.html">create_test</a> runs a test suite in parallel for improved performance.
+It is the driver behind the automated nightly testing of cime-driven models.</p>
+<p>Running create_test is generally resource intensive, so run it in a manner appropriate for your system,
+e.g. using ‘nice’, batch queues, nohup, the <code class="docutils literal notranslate"><span class="pre">--parallel-jobs</span></code> option to create_test, etc.
+It will create and submit additional jobs to the batch queue (if one is available).</p>
+<p id="individual">An individual test can be run as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test $test_name
 </pre></div>
 </div>
-<p>Where</p>
-<ul>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">TESTTYPE</span></code></dt>
-<dd><p class="first last">How you want to do the test. Options for this value are listed in config_tests.xml.
-A common test type would be ERS which stands for exact restart, which means you want to test the
-grid and compset to see if they reproduce the same result upon restart as they would if no restart
-took place.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MODIFIERS</span></code></dt>
-<dd><p class="first">These are changes to the default settings for the test.</p>
-<p>The currently accepted modifiers are:</p>
-<div class="last line-block">
-<div class="line"><code class="docutils literal notranslate"><span class="pre">_LdN</span></code>, <code class="docutils literal notranslate"><span class="pre">_LnN</span></code>, <code class="docutils literal notranslate"><span class="pre">_LyN</span></code> - this changes the default length of the test.
-<code class="docutils literal notranslate"><span class="pre">N</span></code> is an integer, <code class="docutils literal notranslate"><span class="pre">d</span></code> is day, <code class="docutils literal notranslate"><span class="pre">n</span></code> is timestep and <code class="docutils literal notranslate"><span class="pre">y</span></code> is year.  <code class="docutils literal notranslate"><span class="pre">_Ld3</span></code> would specify that the test is modified to be a 3 day test.</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">_D</span></code> - this sets the xml variable <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> to TRUE.</div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">_IOP</span></code> - this turns on pnetcdf for the PIO backend.</div>
+<p>Multiple tests can be run similarly, by listing all of the test names on the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test  $test_name  $test_name2
+</pre></div>
 </div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">GRID</span></code></dt>
-<dd><p class="first last">The model grid (can be an alias)</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">COMPSET</span></code></dt>
-<dd><p class="first last">The compset name (can be an alias)</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MACHINE_COMPILER</span></code></dt>
-<dd><p class="first last">This is optional; <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  will probe
-the underlying machine and use the default compiler for that machine if this value is not
-supplied.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">TESTMODS</span></code></dt>
-<dd><p class="first last">This is optional. This points to a directory with  <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> files or a <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> that can be used to provide test specific case modifications for the test.</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>To see the available tests for your model, call <a class="reference external" href="../Tools_user/query_tests.html">query_tests</a>.</p>
+<p>or by putting the test names into a file, one name per line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test -f $file_of_test_names
+</pre></div>
 </div>
-<div class="section" id="test-types">
-<h2>8.2. Test Types<a class="headerlink" href="#test-types" title="Permalink to this headline">¶</a></h2>
-<p>The following are the type of tests that are supported by CIME:</p>
-<ul>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERS</span></code></dt>
+<p>A pre-defined suite of tests can by run using the <code class="docutils literal notranslate"><span class="pre">--xml</span></code> options to create_test,
+which harvest test names from testlist*.xml files.
+As described in <a class="reference external" href="https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide">https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide</a>,
+to determine what pre-defined test suites are available and what tests they contain,
+you can run <a class="reference internal" href="#id5">query_testlists</a>.</p>
+<p>Test suites are retrieved in create_test via 3 selection attributes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">your_category</span>   <span class="n">The</span> <span class="n">test</span> <span class="n">category</span><span class="o">.</span>
+<span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span>  <span class="n">your_machine</span>    <span class="n">The</span> <span class="n">machine</span><span class="o">.</span>
+<span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">your_compiler</span>   <span class="n">The</span> <span class="n">compiler</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">If none of these 3 are used, the default values are ‘none’.</div>
+<div class="line">If any of them are used, the default for the unused options is ‘all’.</div>
+<div class="line">Existing values of these attributes can be seen by running <a class="reference internal" href="#id5">query_testlists</a>.</div>
+</div>
+<p>The search for test names can be restricted to a single test list using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">testlist</span> <span class="n">your_testlist</span>
+</pre></div>
+</div>
+<p>Omitting this results in searching all testlists listed in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cime</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="p">{</span><span class="n">cesm</span><span class="p">,</span><span class="n">e3sm</span><span class="p">}</span><span class="o">/</span><span class="n">config_files</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<div class="section" id="testname-syntax">
+<h2>8.1. Testname syntax<a class="headerlink" href="#testname-syntax" title="Permalink to this headline">¶</a></h2>
+<p id="test-naming">Tests must be named with the following forms, [ ]=optional:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">][</span><span class="o">.</span><span class="n">GROUP</span><span class="o">-</span><span class="n">TESTMODS</span><span class="p">]</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">NAME PART</th>
+<th class="head">&#160;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#testtype">TESTTYPE</a></td>
+<td>the general type of test, e.g. SMS. Options are listed in the following table and config_tests.xml.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#modifiers">MODIFIERS</a></td>
+<td>These are changes to the default settings for the test.
+See the following table and test_scheduler.py.</td>
+</tr>
+<tr class="row-even"><td>GRID</td>
+<td>The model grid (can be an alias).</td>
+</tr>
+<tr class="row-odd"><td>COMPSET</td>
+<td>alias of the compset, or long name, if no <code class="docutils literal notranslate"><span class="pre">--xml</span></code> arguments are used.</td>
+</tr>
+<tr class="row-even"><td>MACHINE</td>
+<td>This is optional; if this value is not supplied, <a class="reference external" href="../Tools_user/create_test.html">create_test</a>
+will probe the underlying machine.</td>
+</tr>
+<tr class="row-odd"><td>COMPILER</td>
+<td>If this value is not supplied, use the default compiler for MACHINE.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#group-testmods">GROUP-TESTMODS</a></td>
+<td><p class="first">This is optional. This points to a directory with  <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> files or a <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code>
+that can be used to make namelist and <code class="docutils literal notranslate"><span class="pre">XML</span></code> modifications prior to running a test.</p>
+<blockquote class="last">
+<div><div class="line-block">
+<div class="line"><br /></div>
+</div>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils" id="testtype">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">TESTTYPE</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ERS</td>
+<td><dl class="first last docutils">
+<dt>Exact restart from startup (default 6 days + 5 days)</dt>
 <dd><div class="first last line-block">
-<div class="line">Exact restart from startup (default 6 days + 5 days).</div>
 <div class="line">Do an 11 day initial test - write a restart at day 6.    (file suffix: base)</div>
 <div class="line">Do a 5 day restart test, starting from restart at day 6. (file suffix: rest)</div>
 <div class="line">Compare component history files ‘.base’ and ‘.rest’ at day 11.</div>
+<div class="line-block">
+<div class="line">They should be identical.</div>
+</div>
 </div>
 </dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERS2</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Exact restart from startup  (default 6 days + 5 days).</div>
-<div class="line">Do an 11 day initial test without making restarts.     (file suffix: base)</div>
-<div class="line">Do an 11 day restart test stopping at day 6 with a restart, then resuming from restart at day 6. (file suffix: rest)</div>
+</td>
+</tr>
+<tr class="row-odd"><td>ERS2</td>
+<td><p class="first">Exact restart from startup  (default 6 days + 5 days).</p>
+<blockquote class="last">
+<div><div class="line-block">
+<div class="line">Do an 11 day initial test without making restarts. (file suffix: base)</div>
+<div class="line">Do an 11 day restart test stopping at day 6 with a restart,
+then resuming from restart at day 6. (file suffix: rest)</div>
 <div class="line">Compare component history files “.base” and “.rest” at day 11.</div>
 </div>
+</div></blockquote>
+</td>
+</tr>
+<tr class="row-even"><td>ERT</td>
+<td>Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).</td>
+</tr>
+<tr class="row-odd"><td>IRT</td>
+<td>Exact restart from startup, (default 4 days + 7 days) with restart from interim file.</td>
+</tr>
+<tr class="row-even"><td>ERIO</td>
+<td>Exact restart from startup with different PIO methods, (default 6 days + 5 days).</td>
+</tr>
+<tr class="row-odd"><td>ERR</td>
+<td>Exact restart from startup with resubmit, (default 4 days + 3 days).</td>
+</tr>
+<tr class="row-even"><td>ERRI</td>
+<td>Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</td>
+</tr>
+<tr class="row-odd"><td>ERI</td>
+<td><dl class="first last docutils">
+<dt>hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</dt>
+<dd><dl class="first last docutils">
+<dt>ref1case</dt>
+<dd>Do an initial run for 3 days writing restarts at day 3.
+ref1case is a clone of the main case.
+Short term archiving is on.</dd>
+<dt>ref2case (Suffix hybrid)</dt>
+<dd>Do a hybrid run for default 19 days running with ref1 restarts from day 3,
+and writing restarts at day 10.
+ref2case is a clone of the main case.
+Short term archiving is on.</dd>
+<dt>case</dt>
+<dd>Do a branch run, starting from restarts written in ref2case,
+for 9 days and writing restarts at day 5.
+Short term archiving is off.</dd>
+<dt>case (Suffix base)</dt>
+<dd>Do a restart run from the branch run restarts for 4 days.
+Compare component history files ‘.base’ and ‘.hybrid’ at day 19.
+Short term archiving is off.</dd>
+</dl>
 </dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERT</span></code></dt>
+</td>
+</tr>
+<tr class="row-even"><td>ERP</td>
+<td><dl class="first last docutils">
+<dt>PES counts hybrid (OPENMP/MPI) restart bit for bit test from startup, (default 6 days + 5 days).</dt>
+<dd>Initial PES set up out of the box
+Do an 11 day initial test - write a restart at day 6.     (file suffix base)
+Half the number of tasks and threads for each component.
+Do a 5 day restart test starting from restart at day 6. (file suffix rest)
+Compare component history files ‘.base’ and ‘.rest’ at day 11.
+This is just like an ERS test but the tasks/threading counts are modified on restart</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td>PEA</td>
+<td><dl class="first last docutils">
+<dt>Single PE bit for bit test (default 5 days)</dt>
+<dd>Do an initial run on 1 PE with mpi library.     (file suffix: base)
+Do the same run on 1 PE with mpiserial library. (file suffix: mpiserial)
+Compare base and mpiserial.</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-even"><td>PEM</td>
+<td><dl class="first last docutils">
+<dt>Modified PE counts for MPI(NTASKS) bit for bit test (default 5 days)</dt>
+<dd>Do an initial run with default PE layout                                     (file suffix: base)
+Do another initial run with modified PE layout (NTASKS_XXX =&gt; NTASKS_XXX/2)  (file suffix: modpes)
+Compare base and modpes</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td>PET</td>
+<td><dl class="first last docutils">
+<dt>Modified threading OPENMP bit for bit test (default 5 days)</dt>
+<dd>Do an initial run where all components are threaded by default. (file suffix: base)
+Do another initial run with NTHRDS=1 for all components.        (file suffix: single_thread)
+Compare base and single_thread.</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-even"><td>PFS</td>
+<td>Performance test setup. History and restart output is turned off. (default 20 days)</td>
+</tr>
+<tr class="row-odd"><td>ICP</td>
+<td>CICE performance test.</td>
+</tr>
+<tr class="row-even"><td>OCP</td>
+<td>POP performance test. (default 10 days)</td>
+</tr>
+<tr class="row-odd"><td>MCC</td>
+<td>Multi-driver validation vs single-driver (both multi-instance). (default 5 days)</td>
+</tr>
+<tr class="row-even"><td>NCK</td>
+<td><dl class="first last docutils">
+<dt>Multi-instance validation vs single instance - sequential PE for instances (default length)</dt>
+<dd>Do an initial run test with NINST 1. (file suffix: base)
+Do an initial run test with NINST 2. (file suffix: multiinst for both _0001 and _0002)
+Compare base and _0001 and _0002.</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td>REP</td>
+<td>Reproducibility: Two identical runs are bit for bit. (default 5 days)</td>
+</tr>
+<tr class="row-even"><td>SBN</td>
+<td>Smoke build-namelist test (just run preview_namelist and check_input_data).</td>
+</tr>
+<tr class="row-odd"><td>SMS</td>
+<td><dl class="first last docutils">
+<dt>Smoke startup test (default 5 days)</dt>
+<dd>Do a 5 day initial test. (file suffix: base)</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-even"><td>SEQ</td>
+<td><dl class="first last docutils">
+<dt>Different sequencing bit for bit test. (default 10 days)</dt>
+<dd>Do an initial run test with out-of-box PE-layout. (file suffix: base)
+Do a second run where all root pes are at pe-0.   (file suffix: seq)
+Compare base and seq.</dd>
+</dl>
+</td>
+</tr>
+<tr class="row-odd"><td>DAE</td>
+<td>Data assimilation test, default 1 day, two DA cycles, no data modification.</td>
+</tr>
+<tr class="row-even"><td>PRE</td>
+<td><dl class="first docutils">
+<dt>Pause-resume test: by default a bit for bit test of pause-resume cycling.</dt>
+<dd>Default 5 hours, five pause/resume cycles, no data modification.</dd>
+</dl>
+<div class="last line-block">
+<div class="line"><br /></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils" id="modifiers">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">MODIFIERS</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>_C#</td>
+<td>Set number of instances to # and use the multi driver (can’t use with _N).</td>
+</tr>
+<tr class="row-odd"><td>_CG</td>
+<td>CALENDAR set to “GREGORIAN”</td>
+</tr>
+<tr class="row-even"><td>_D</td>
+<td>XML variable DEBUG set to “TRUE”</td>
+</tr>
+<tr class="row-odd"><td>_I</td>
+<td>Marker to distinguish tests with same name - ignored.</td>
+</tr>
+<tr class="row-even"><td>_Lo#</td>
+<td><dl class="first last docutils">
+<dt>Run length set by o (STOP_OPTION) and # (STOP_N).</dt>
 <dd><div class="first last line-block">
-<div class="line">Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).</div>
+<div class="line">o = {“y”:”nyears”, “m”:”nmonths”,  “d”:”ndays”,</div>
+<div class="line-block">
+<div class="line">“h”:”nhours”, “s”:”nseconds”, “n”:”nsteps”}</div>
+</div>
 </div>
 </dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">IRT</span></code></dt>
+</td>
+</tr>
+<tr class="row-odd"><td>_Mx</td>
+<td>Set MPI library to x.</td>
+</tr>
+<tr class="row-even"><td>_N#</td>
+<td>Set number of instances to # and use a single driver (can’t use with _C).</td>
+</tr>
+<tr class="row-odd"><td>_Px</td>
+<td>Set create_newcase’s <code class="docutils literal notranslate"><span class="pre">--pecount</span></code> to x, which is usually N (tasks) or NxM (tasks x threads per task).</td>
+</tr>
+<tr class="row-even"><td>_R</td>
+<td>For testing in PTS_MODE or Single Column Model (SCM) mode.
+For PTS_MODE, compile with mpi-serial.</td>
+</tr>
+<tr class="row-odd"><td>_Vx</td>
+<td><dl class="first last docutils">
+<dt>Set driver to x.</dt>
 <dd><div class="first last line-block">
-<div class="line">Exact restart from startup, (default 4 days + 7 days) with restart from interim file.</div>
+<div class="line"><br /></div>
 </div>
 </dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERIO</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Exact restart from startup with different PIO methods, (default 6 days + 5 days).</div>
+</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils" id="group-testmods">
+<colgroup>
+<col width="12%" />
+<col width="88%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">TESTMODS</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>GROUP</td>
+<td>A subdirectory of testmods_dirs and the parent directory of various testmods.</td>
+</tr>
+<tr class="row-odd"><td><cite>-</cite></td>
+<td>Replaces ‘/’ in the path name where the testmods are found.</td>
+</tr>
+<tr class="row-even"><td>TESTMODS</td>
+<td><p class="first">A subdirectory of GROUP containing files which set non-default values
+of the set-up and run-time variables via namelists or xml_change commands.
+See “Adding tests”: <a class="reference internal" href="#cesm">CESM</a>.
+Examples include</p>
+<blockquote class="last">
+<div><div class="line-block">
+<div class="line">GROUP-TESTMODS = cam-outfrq9s points to</div>
+<div class="line-block">
+<div class="line">$cesm/components/cam/cime_config/testdefs/testmods_dirs/cam/outfrq9s</div>
 </div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERR</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Exact restart from startup with resubmit, (default 4 days + 3 days).</div>
+<div class="line">while allactive-defaultio points to</div>
+<div class="line-block">
+<div class="line">$cesm/cime_config/testmods_dirs/allactive/defaultio</div>
 </div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERRI</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</div>
 </div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERI</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</div>
-<div class="line">ref1case: Do an initial run for 3 days writing restarts at day 3. ref1case is a clone of the main case. Short term archiving is on.</div>
-<div class="line">ref2case (Suffix hybrid): Do a hybrid run for default 19 days running with ref1 restarts from day 3, and writing restarts at day 10.
-ref2case is a clone of the main case. Short term archiving is on.</div>
-<div class="line">case: Do a branch run, starting from restarts written in ref2case, for 9 days and writing restarts at day 5. Short term archiving is off.</div>
-<div class="line">case (Suffix base): Do a restart run from the branch run restarts for 4 days. Then ompare component history files ‘.base’ and ‘.hybrid’ at day 19.
-Short term archiving is off.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ERP</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">PES counts hybrid (OPENMP/MPI) restart bit for bit test from startup, (default 6 days + 5 days).</div>
-<div class="line">Initial PES set up out of the box.</div>
-<div class="line">Do an 11 day initial test - write a restart at day 6.     (file suffix base)</div>
-<div class="line">Half the number of tasks and threads for each component.</div>
-<div class="line">Do a 5 day restart test starting from restart at day 6. (file suffix rest)</div>
-<div class="line">Compare component history files ‘.base’ and ‘.rest’ at day 11.</div>
-<div class="line">This is just like an ERS test but the tasks/threading counts are modified on restart.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PEA</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Single PE bit for bit test (default 5 days)</div>
-<div class="line">Do an initial run on 1 PE with mpi library.     (file suffix: base)</div>
-<div class="line">Do the same run on 1 PE with mpiserial library. (file suffix: mpiserial)</div>
-<div class="line">Compare base and mpiserial.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PEM</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Modified PE counts for MPI(NTASKS) bit for bit test (default 5 days)</div>
-<div class="line">Do an initial run with default PE layout                               (file suffix: base)</div>
-<div class="line">Do another initial run with modified PE layout (NTASKS_XXX =&gt; NTASKS_XXX/2)  (file suffix: modpes)</div>
-<div class="line">Compare base and modpes</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PET</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Modified threading OPENMP bit for bit test (default 5 days)</div>
-<div class="line">Do an initial run where all components are threaded by default. (file suffix: base)</div>
-<div class="line">Do another initial run with NTHRDS=1 for all components.        (file suffix: single_thread)</div>
-<div class="line">Compare base and single_thread.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PFS</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Performance test setup. History and restart output is turned off. (default 20 days)</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">ICP</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">CICE performance test.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">OCP</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">POP performance test. (default 10 days)</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">MCC</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Multi-driver validation vs single-instance. (default 5 days)</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">NCK</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Multi-instance validation vs single instance - sequential PE for instances (default length)</div>
-<div class="line">Do an initial run test with NINST 1. (file suffix: base)</div>
-<div class="line">Do an initial run test with NINST 2. (file suffix: multiinst for both _0001 and _0002)</div>
-<div class="line">Compare base and _0001 and _0002.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">REP</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Reproducibility: Two identical runs are bit for bit. (default 5 days)</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">SBN</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Smoke build-namelist test (just run preview_namelist and check_input_data).</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">SMS</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Smoke startup test (default 5 days)</div>
-<div class="line">Do a 5 day initial test. (file suffix: base)</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">SEQ</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Different sequencing bit for bit test. (default 10 days)</div>
-<div class="line">Do an initial run test with out-of-box PE-layout. (file suffix: base)</div>
-<div class="line">Do a second run where all root pes are at pe-0.   (file suffix: seq)</div>
-<div class="line">Compare base and seq.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">DAE</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Data assimilation test, default 1 day, two DA cycles, no data modification.</div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">PRE</span></code></dt>
-<dd><div class="first last line-block">
-<div class="line">Pause-resume test: by default a bit for bit test of pause-resume cycling.</div>
-<div class="line">Default 5 hours, five pause/resume cycles, no data modification.</div>
-</div>
-</dd>
-</dl>
-</li>
-</ul>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Each test run by <a class="reference external" href="../Tools_user/create_test.html">create_test</a>  includes the following mandatory steps:</p>
 <ul class="simple">
 <li>CREATE_NEWCASE: creating the create</li>
@@ -361,9 +443,24 @@ Short term archiving is off.</div>
 <p>All output from the CIME infrastructure regarding this test will be put in the file $CASEROOT/TestStatus.log</p>
 <p>A cs.status.$testid script will be put in the test root. This script will allow you to see the
 current status of all your tests.</p>
+</div>
+<div class="section" id="query-testlists">
+<h2>8.2. Query_testlists<a class="headerlink" href="#query-testlists" title="Permalink to this headline">¶</a></h2>
+<p id="id5"><strong>$CIMEROOT/scripts/query_testlists</strong> gathers descriptions of the tests and testlists available
+for CESM, the components, and projects.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--xml-{compiler,machine,category,testlist}</span></code> arguments can be used
+as in create_test (above) to focus the search.
+The ‘category’ descriptor of a test can be used to run a group of associated tests at the same time.
+The available categories, with the tests they encompass, can be listed by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">query_testlists</span> <span class="o">--</span><span class="n">define</span><span class="o">-</span><span class="n">testtypes</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--show-options</span></code> argument does the same, but displays the ‘options’ defined for the tests,
+such as queue, walltime, etc..</p>
+</div>
 <div class="section" id="using-create-test-e3sm">
-<h3>8.2.1. Using <strong>create_test</strong> (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h3>
-<p>Usage will differ slightly depending on if you’re using E3SM or CESM.</p>
+<h2>8.3. Using <strong>create_test</strong> (E3SM)<a class="headerlink" href="#using-create-test-e3sm" title="Permalink to this headline">¶</a></h2>
+<p id="id6">Usage will differ slightly depending on if you’re using E3SM or CESM.</p>
 <p>Using examples to illustrate common use cases</p>
 <p>To run a test:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
@@ -442,7 +539,7 @@ current status of all your tests.</p>
 of the various test phases.</p>
 </div>
 <div class="section" id="managing-baselines">
-<h3>8.2.2. Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this headline">¶</a></h3>
+<h2>8.4. Managing baselines<a class="headerlink" href="#managing-baselines" title="Permalink to this headline">¶</a></h2>
 <p>A big part of testing is managing your baselines (sometimes called gold results). We have provided
 tools to help the user do this without having to repeat full runs of test cases with <a class="reference external" href="../Tools_user/create_test.html">create_test</a> .</p>
 <p>bless_test_results: Takes a batch of cases of tests that have already been run and copy their
@@ -461,17 +558,53 @@ baselines for ‘master’:</p>
 </div>
 </div>
 <div class="section" id="adding-tests">
-<h3>8.2.3. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h3>
-<p>Open the config/$model/tests.py file, you’ll see a python dict at the top
+<h2>8.5. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
+<p id="id10">E3SM</p>
+<p>Open the config/e3sm/tests.py file, you’ll see a python dict at the top
 of the file called _TESTS, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
 comment at the top of this file indicating that you add a test with
 this format: test&gt;.&lt;grid&gt;.&lt;compset&gt;, and then there is a second
 argument for mods.</p>
+<p>CESM</p>
+<p id="cesm">Select a compset to test.  If you need to test a non-standard compset,
+define an alias for it in the most appropriate config_compsets.xml in</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$cesm/components/$component/cime_config
+$cesm/cime/src/drivers/mct/cime_config
+$cesm/cime_config
+</pre></div>
 </div>
-<div class="section" id="scripts-regression-tests">
-<span id="id7"></span><h3>8.2.4. Scripts regression tests<a class="headerlink" href="#scripts-regression-tests" title="Permalink to this headline">¶</a></h3>
-<p><strong>$CIMEROOT/scripts/tests/scripts_regression_tests.py</strong> is the suite of internal tests we run
+<p>If you want to test non-default namelist or xml variable values for your chosen compset,
+you might find them in a suitable existing testmods directory (see “branching”, this section, for locations).
+If not, then populate a new testmods directory with the needed files (see “contents”, below).
+Note; do not use ‘-‘ in the testmods directory name because it has a special meaning to create_test.
+Testlists and testmods live in different paths for cime, drv, and components.
+The relevant directory branching looks like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>components/$component/cime_config/testdefs/
+   testlist_$component.xml
+   testmods_dirs/$component/{TESTMODS1,TESTMODS2,...}
+cime/src/drivers/mct/cime_config/testdefs/
+   testlist_drv.xml
+   testmods_dirs/drv/{default,5steps,...}
+cime_config/
+   testlist_allactive.xml
+   testmods_dirs/allactive/{defaultio,...}
+</pre></div>
+</div>
+<p>The contents of each testmods directory can include</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>user_nl_$components    namelist variable=value pairs
+shell_commands         xmlchange commands
+user_mods              a list of other GROUP-TESTMODS which should be imported
+                       but at a lower precedence than the local testmods.
+</pre></div>
+</div>
+<p>If this test will only be run as a single test, you can now create a test name
+and follow the <a class="reference internal" href="#individual">individual</a> test instructions for create_test.
+If you want this test to be part of a suite, then it must be described in the relevant testlists_YYY.xml file.</p>
+</div>
+<div class="section" id="cime-s-scripts-regression-tests">
+<h2>8.6. CIME’s scripts regression tests<a class="headerlink" href="#cime-s-scripts-regression-tests" title="Permalink to this headline">¶</a></h2>
+<p id="id11"><strong>$CIMEROOT/scripts/tests/scripts_regression_tests.py</strong> is the suite of internal tests we run
 for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
 test class or even a specific test within a test class.</p>
 <p>Run full suite:</p>
@@ -491,7 +624,7 @@ won’t print the output of the test until testing has completed. When there are
 test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
 analysis. The user will be notified of the specific directories that will be left for them to
 examine.</p>
-</div>
+<p>More description can be found in <a class="reference external" href="https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide">https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide</a></p>
 </div>
 </div>
 
@@ -505,13 +638,11 @@ examine.</p>
   <ul>
 <li><a class="reference internal" href="#">8. Testing</a><ul>
 <li><a class="reference internal" href="#testname-syntax">8.1. Testname syntax</a></li>
-<li><a class="reference internal" href="#test-types">8.2. Test Types</a><ul>
-<li><a class="reference internal" href="#using-create-test-e3sm">8.2.1. Using <strong>create_test</strong> (E3SM)</a></li>
-<li><a class="reference internal" href="#managing-baselines">8.2.2. Managing baselines</a></li>
-<li><a class="reference internal" href="#adding-tests">8.2.3. Adding tests</a></li>
-<li><a class="reference internal" href="#scripts-regression-tests">8.2.4. Scripts regression tests</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#query-testlists">8.2. Query_testlists</a></li>
+<li><a class="reference internal" href="#using-create-test-e3sm">8.3. Using <strong>create_test</strong> (E3SM)</a></li>
+<li><a class="reference internal" href="#managing-baselines">8.4. Managing baselines</a></li>
+<li><a class="reference internal" href="#adding-tests">8.5. Adding tests</a></li>
+<li><a class="reference internal" href="#cime-s-scripts-regression-tests">8.6. CIME’s scripts regression tests</a></li>
 </ul>
 </li>
 </ul>

@@ -139,6 +139,15 @@
 
     <span class="c1"># create caseroot</span>
     <span class="n">newcase</span><span class="o">.</span><span class="n">create_caseroot</span><span class="p">(</span><span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Many files in the case will be links back to the source tree</span>
+    <span class="c1"># but users may have broken links to modify files locally.  In this case</span>
+    <span class="c1"># copy the locally modified file.   We only want to do this for files that</span>
+    <span class="c1"># already exist in the clone.</span>
+    <span class="c1">#pylint: disable=protected-access</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_copy_user_modified_to_clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">newcase</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_copy_user_modified_to_clone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASETOOLS&quot;</span><span class="p">),</span> <span class="n">newcase</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASETOOLS&quot;</span><span class="p">))</span>
+
     <span class="n">newcase</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="n">flushall</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># copy user_ files</span>
@@ -199,6 +208,19 @@
     <span class="n">newcase</span><span class="o">.</span><span class="n">case_setup</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">newcase</span></div>
+<span class="c1"># pylint: disable=unused-argument</span>
+<span class="k">def</span> <span class="nf">_copy_user_modified_to_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origpath</span><span class="p">,</span> <span class="n">newpath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If file_ exists and is a link in newpath, and exists but is not a</span>
+<span class="sd">    link in origpath, copy origpath file to newpath</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">file_</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">newpath</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newpath</span><span class="p">,</span> <span class="n">file_</span><span class="p">))</span> <span class="ow">and</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">origpath</span><span class="p">,</span> <span class="n">file_</span><span class="p">))</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">origpath</span><span class="p">,</span> <span class="n">file_</span><span class="p">))):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copying user modified file </span><span class="si">{}</span><span class="s2"> to clone&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newpath</span><span class="p">,</span> <span class="n">file_</span><span class="p">))</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">origpath</span><span class="p">,</span> <span class="n">file_</span><span class="p">),</span> <span class="n">newpath</span><span class="p">)</span>
 </pre></div>
 
           </div>

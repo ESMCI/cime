@@ -49,30 +49,33 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./create_newcase --help
-usage: create_newcase [-h] [-d] [-v] [-s] --case CASE --compset COMPSET --res
-                      RES [--machine MACHINE] [--compiler COMPILER]
+usage: create_newcase [-h] [-d] [-v] [-s] --case CASENAME --compset COMPSET
+                      --res GRID [--machine MACHINE] [--compiler COMPILER]
                       [--multi-driver] [--ninst NINST] [--mpilib MPILIB]
                       [--project PROJECT] [--pecount PECOUNT]
                       [--user-mods-dir USER_MODS_DIR] [--pesfile PESFILE]
-                      [--user-grid] [--gridfile GRIDFILE] [--srcroot SRCROOT]
-                      [--output-root OUTPUT_ROOT] [--run-unsupported]
-                      [--walltime WALLTIME] [-q QUEUE]
-                      [--handle-preexisting-dirs {a,r,u}] [-i INPUT_DIR]
+                      [--gridfile GRIDFILE] [--srcroot SRCROOT]
+                      [--output-root OUTPUT_ROOT] [--walltime WALLTIME]
+                      [-q QUEUE] [--handle-preexisting-dirs {a,r,u}]
+                      [-i INPUT_DIR]
 
 Script to create a new CIME Case Control System (CSS) experimental case.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cesm/cime/scripts/create_newcase.log
+  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cime/scripts/create_newcase.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
-  --case CASE, -case CASE
+  --case CASENAME, -case CASENAME
                         (required) Specify the case name. 
-                        If not a full pathname, then the case is created under then current working directory.
+                        If this is simply a name (not a path), the case directory is created in the current working directory.
+                        This can also be a relative or absolute path specifying where the case should be created;
+                        with this usage, the name of the case will be the last component of the path.
   --compset COMPSET, -compset COMPSET
                         (required) Specify a compset. 
                         To see list of current compsets, use the utility ./query_config --compsets in this directory.
-  --res RES, -res RES   (required) Specify a model grid resolution. 
+  --res GRID, -res GRID
+                        (required) Specify a model grid resolution. 
                         To see list of current model resolutions, use the utility 
                         ./query_config --grids in this directory.
   --machine MACHINE, -mach MACHINE
@@ -105,17 +108,11 @@ optional arguments:
                         as would be found in a case directory.
   --pesfile PESFILE     Full pathname of an optional pes specification file. 
                         The file can follow either the config_pes.xml or the env_mach_pes.xml format.
-  --user-grid           If set, then the --res argument is treated as a user specified grid, 
-                        the additional argument --gridfile must also be specified 
-                        and all of the grid settings in the --res argument name (which must be a grid longname 
-                        must defined in the grid file pointed to by --gridfile.
   --gridfile GRIDFILE   Full pathname of config grid file to use. 
                         This should be a copy of config/config_grids.xml with the new user grid changes added to it. 
-                        This argument is required if --user-grid is an argument.
   --srcroot SRCROOT     Alternative pathname for source root directory. The default is cimeroot/../
   --output-root OUTPUT_ROOT
                         Alternative pathname for the directory where case output is written.
-  --run-unsupported     Force the creation of a case that is not tested or supported by CESM developers.
   --walltime WALLTIME   Set the wallclock limit for this case in the format (the usual format is HH:MM:SS). 
                         You may use env var CIME_GLOBAL_WALLTIME to set this. 
                         If CIME_GLOBAL_WALLTIME is not defined in the environment, then the walltime

@@ -42,7 +42,7 @@
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="k">import</span> <span class="n">EnvBase</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">transform_vars</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">convert_to_seconds</span><span class="p">,</span> <span class="n">format_time</span><span class="p">,</span> <span class="n">get_cime_config</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">transform_vars</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">convert_to_seconds</span><span class="p">,</span> <span class="n">format_time</span><span class="p">,</span> <span class="n">get_cime_config</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span><span class="p">,</span> <span class="n">get_logging_options</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 <span class="kn">import</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">math</span>
@@ -133,7 +133,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">subgroup</span> <span class="o">==</span> <span class="s2">&quot;PRIMARY&quot;</span><span class="p">:</span>
                 <span class="n">subgroup</span> <span class="o">=</span> <span class="s2">&quot;case.test&quot;</span> <span class="k">if</span> <span class="s2">&quot;case.test&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;case.run&quot;</span>
-
+            <span class="c1">#pylint: disable=assignment-from-none</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvBatch</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span></div>
@@ -364,13 +364,24 @@
         <span class="n">roots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;batch_system&quot;</span><span class="p">)</span>
         <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batchtype</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">queue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_queue_names</span><span class="p">():</span>
+            <span class="n">unknown_queue</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">qnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_queue</span><span class="p">()</span>
-            <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">qnode</span><span class="p">)</span>
+            <span class="n">default_queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">qnode</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">unknown_queue</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">directive_prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">directive_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;batch_directive&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">unknown_queue</span><span class="p">:</span>
+                    <span class="n">unknown_queue_directives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element_text</span><span class="p">(</span><span class="s2">&quot;unknown_queue_directives&quot;</span><span class="p">,</span>
+                                                                     <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">unknown_queue_directives</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">queue</span> <span class="o">=</span> <span class="n">default_queue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">queue</span> <span class="o">=</span> <span class="n">unknown_queue_directives</span>
 
                 <span class="n">dnodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;directives&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">dnode</span> <span class="ow">in</span> <span class="n">dnodes</span><span class="p">:</span>
@@ -584,14 +595,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_run_args</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">no_batch</span><span class="p">,</span> <span class="o">**</span><span class="n">run_args</span><span class="p">)</span>
         <span class="n">run_args_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">param</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">run_args_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">logging_options</span> <span class="o">=</span> <span class="n">get_logging_options</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">logging_options</span><span class="p">:</span>
+            <span class="n">run_args_str</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logging_options</span><span class="p">)</span>
 
         <span class="n">batch_env_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;batch_env&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">batch_env_flag</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">run_args_str</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> ARGS_FOR_SCRIPT=&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">batch_env_flag</span><span class="p">,</span> <span class="n">run_args_str</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> ARGS_FOR_SCRIPT=</span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">batch_env_flag</span><span class="p">,</span> <span class="n">run_args_str</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_submit_single_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">dep_jobs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                            <span class="n">no_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>

@@ -70,6 +70,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_environment</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_locked_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span> <span class="o">=</span> <span class="s1">&#39;cpl&#39;</span>
 
     <span class="k">def</span> <span class="nf">_init_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -189,6 +190,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_st_archive_case_test</span><span class="p">()</span>
+
 
         <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
@@ -314,6 +318,15 @@
 <span class="sd">        tests</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_st_archive_case_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">test_env_archive</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
+
 
     <span class="k">def</span> <span class="nf">_get_mem_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpllog</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -537,9 +550,9 @@
         <span class="n">script</span> <span class="o">=</span> \
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">echo Insta pass</span>
-<span class="sd">echo SUCCESSFUL TERMINATION &gt; {}/cpl.log.$LID</span>
-<span class="sd">cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">echo SUCCESSFUL TERMINATION &gt; {rundir}/{log}.log.$LID</span>
+<span class="sd">cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
@@ -559,13 +572,13 @@
         <span class="n">script</span> <span class="o">=</span> \
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">echo Insta pass</span>
-<span class="sd">echo SUCCESSFUL TERMINATION &gt; {}/cpl.log.$LID</span>
+<span class="sd">echo SUCCESSFUL TERMINATION &gt; {rundir}/{log}.log.$LID</span>
 <span class="sd">if [ -z &quot;$TESTRUNDIFF_ALTERNATE&quot; ]; then</span>
-<span class="sd">  cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
+<span class="sd">  cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
 <span class="sd">else</span>
-<span class="sd">  cp {}/scripts/tests/cpl.hi2.nc.test {}/{}.cpl.hi.0.nc</span>
+<span class="sd">  cp {root}/scripts/tests/cpl.hi2.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
 <span class="sd">fi</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
@@ -579,10 +592,10 @@
         <span class="n">script</span> <span class="o">=</span> \
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">echo Insta pass</span>
-<span class="sd">echo SUCCESSFUL TERMINATION &gt; {}/cpl.log.$LID</span>
-<span class="sd">cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
-<span class="sd">cp {}/scripts/tests/cpl.hi2.nc.test {}/{}.cpl.hi.0.nc.rest</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">echo SUCCESSFUL TERMINATION &gt; {rundir}/{log}.log.$LID</span>
+<span class="sd">cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
+<span class="sd">cp {root}/scripts/tests/cpl.hi2.nc.test {rundir}/{case}.cpl.hi.0.nc.rest</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TESTTESTDIFF</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span>
                                               <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div>
@@ -601,14 +614,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">if [ -z &quot;$TESTRUNFAIL_PASS&quot; ]; then</span>
 <span class="sd">  echo Insta fail</span>
-<span class="sd">  echo model failed &gt; {}/cpl.log.$LID</span>
+<span class="sd">  echo model failed &gt; {rundir}/{log}.log.$LID</span>
 <span class="sd">  exit -1</span>
 <span class="sd">else</span>
 <span class="sd">  echo Insta pass</span>
-<span class="sd">  echo SUCCESSFUL TERMINATION &gt; {}/cpl.log.$LID</span>
-<span class="sd">  cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
+<span class="sd">  echo SUCCESSFUL TERMINATION &gt; {rundir}/{log}.log.$LID</span>
+<span class="sd">  cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
 <span class="sd">fi</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
@@ -643,9 +656,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">sleep 300</span>
 <span class="sd">echo Slow pass</span>
-<span class="sd">echo SUCCESSFUL TERMINATION &gt; {}/cpl.log.$LID</span>
-<span class="sd">cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">echo SUCCESSFUL TERMINATION &gt; {rundir}/{log}.log.$LID</span>
+<span class="sd">cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
@@ -659,9 +672,9 @@
         <span class="n">script</span> <span class="o">=</span> \
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">echo Insta pass</span>
-<span class="sd">gunzip -c {} &gt; {}/cpl.log.$LID</span>
-<span class="sd">cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testfile</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">gunzip -c {testfile} &gt; {rundir}/{log}.log.$LID</span>
+<span class="sd">cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testfile</span><span class="o">=</span><span class="n">testfile</span><span class="p">,</span> <span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
@@ -675,9 +688,9 @@
         <span class="n">script</span> <span class="o">=</span> \
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">echo Insta pass</span>
-<span class="sd">gunzip -c {} &gt; {}/cpl.log.$LID</span>
-<span class="sd">cp {}/scripts/tests/cpl.hi1.nc.test {}/{}.cpl.hi.0.nc</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testfile</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">cimeroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+<span class="sd">gunzip -c {testfile} &gt; {rundir}/{log}.log.$LID</span>
+<span class="sd">cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testfile</span><span class="o">=</span><span class="n">testfile</span><span class="p">,</span> <span class="n">rundir</span><span class="o">=</span><span class="n">rundir</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>

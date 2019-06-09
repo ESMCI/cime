@@ -14,6 +14,7 @@ and **case.setup**.
 
 
    advanced-py-prof
+   archive_metadata
    bless_test_results
    case.build
    case.cmpgen_namelists

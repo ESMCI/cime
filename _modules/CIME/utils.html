@@ -189,11 +189,15 @@
 <span class="sd">    False</span>
 <span class="sd">    &gt;&gt;&gt; check_name(&quot;mycase*mods&quot;)</span>
 <span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; check_name(&quot;/some/full/path/name/&quot;)</span>
+<span class="sd">    False</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">chars</span> <span class="o">=</span> <span class="s1">&#39;+*?&lt;&gt;/</span><span class="si">{}</span><span class="s1">[\]~`@:&#39;</span> <span class="c1"># pylint: disable=anomalous-backslash-in-string</span>
     <span class="k">if</span> <span class="n">additional_chars</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">chars</span> <span class="o">+=</span> <span class="n">additional_chars</span>
+    <span class="k">if</span> <span class="n">fullname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">fullpath</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fullname</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1389,6 +1393,35 @@
 <span class="sd">    Does the text string appear in the filepath file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="is_last_process_complete"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.is_last_process_complete">[docs]</a><span class="k">def</span> <span class="nf">is_last_process_complete</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">expect_text</span><span class="p">,</span> <span class="n">fail_text</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Search the filepath in reverse order looking for expect_text</span>
+<span class="sd">    before finding fail_text. This utility is used by archive_metadata.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">complete</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">fb</span> <span class="o">=</span> <span class="n">fh</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="n">rfb</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">fb</span><span class="p">))</span>
+
+    <span class="n">findex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">fail_text</span><span class="p">,</span> <span class="n">rfb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">findex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">findex</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">findex</span> <span class="o">=</span> <span class="n">findex</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="n">eindex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expect_text</span><span class="p">,</span> <span class="n">rfb</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">eindex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">eindex</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">eindex</span> <span class="o">=</span> <span class="n">eindex</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">findex</span> <span class="o">&gt;</span> <span class="n">eindex</span><span class="p">:</span>
+        <span class="n">complete</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">complete</span></div>
 
 <div class="viewcode-block" id="transform_vars"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.transform_vars">[docs]</a><span class="k">def</span> <span class="nf">transform_vars</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

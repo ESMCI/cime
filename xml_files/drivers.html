@@ -304,7 +304,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;RUN_REFDIR&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;ccsm4_init&lt;/default_value&gt;
+    &lt;default_value&gt;cesm2_init&lt;/default_value&gt;
     &lt;group&gt;run_begin_stop_restart&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;
@@ -704,15 +704,6 @@ to define behavior.</p>
     Must be explicitly set in env_build.xml for userdefined machine.&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;SUPPORTED_BY&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;&lt;/default_value&gt;
-    &lt;group&gt;build_def&lt;/group&gt;
-    &lt;file&gt;env_build.xml&lt;/file&gt;
-    &lt;desc&gt;email address of person (or group) that supports the build and port for this machine (do not edit)&gt;&lt;/desc&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;MPILIB&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
@@ -970,7 +961,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;ESMF_LOGFILE_KIND&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;ESMF_LOGKIND_SINGLE,ESMF_LOGKIND_MULTI,ESMF_LOGKIND_NONE&lt;/valid_values&gt;
+    &lt;valid_values&gt;ESMF_LOGKIND_SINGLE,ESMF_LOGKIND_MULTI,ESMF_LOGKIND_MULTI_ON_ERROR,ESMF_LOGKIND_NONE&lt;/valid_values&gt;
     &lt;default_value&gt;ESMF_LOGKIND_NONE&lt;/default_value&gt;
     &lt;group&gt;run_flags&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -1579,10 +1570,11 @@ to define behavior.</p>
 
   &lt;entry id=&quot;ROF2OCN_FMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;rof2ocn flux mapping file&lt;/desc&gt;
+    &lt;desc&gt;rof2ocn flux mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
+    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;ROF2OCN_FMAPTYPE&quot;&gt;
@@ -1664,10 +1656,11 @@ to define behavior.</p>
 
   &lt;entry id=&quot;GLC2ICE_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ice runoff mapping file&lt;/desc&gt;
+    &lt;desc&gt;glc2ice runoff mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
+    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC2ICE_RMAPTYPE&quot;&gt;
@@ -1681,10 +1674,11 @@ to define behavior.</p>
 
   &lt;entry id=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn runoff mapping file for liquid runoff&lt;/desc&gt;
+    &lt;desc&gt;glc2ocn runoff mapping file for liquid runoff - the default value idmap_ignore, if set, will be ignored by buildnml and
+    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC2OCN_LIQ_RMAPTYPE&quot;&gt;
@@ -1698,10 +1692,11 @@ to define behavior.</p>
 
   &lt;entry id=&quot;GLC2OCN_ICE_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn runoff mapping file for ice runoff&lt;/desc&gt;
+    &lt;desc&gt;glc2ocn runoff mapping file for ice runoff - the default value idmap_ignore, if set, will be ignored by buildnml and
+    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC2OCN_ICE_RMAPTYPE&quot;&gt;
@@ -3612,10 +3607,14 @@ to define behavior.</p>
     &lt;desc forcing=&quot;HIST&quot;&gt;Historic transient &lt;/desc&gt;
     &lt;desc forcing=&quot;20TR&quot;&gt;Twentieth century transient&lt;/desc&gt;
     &lt;desc forcing=&quot;4804&quot;&gt;&lt;/desc&gt;
-    &lt;desc forcing=&quot;RCP2&quot;&gt;CMIP5 rcp 2.6 forcing&lt;/desc&gt;
-    &lt;desc forcing=&quot;RCP4&quot;&gt;CMIP5 rcp 4.5 forcing&lt;/desc&gt;
-    &lt;desc forcing=&quot;RCP6&quot;&gt;CMIP5 rcp 6.0 forcing&lt;/desc&gt;
-    &lt;desc forcing=&quot;RCP8&quot;&gt;CMIP5 rcp 8.5 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP119&quot;&gt;CMIP6 SSP1-1.9 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP126&quot;&gt;CMIP6 SSP1-2.6 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP245&quot;&gt;CMIP6 SSP2-4.5 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP370&quot;&gt;CMIP6 SSP3-7.0 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP434&quot;&gt;CMIP6 SSP4-3.4 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP460&quot;&gt;CMIP6 SSP4-6.0 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP534&quot;&gt;CMIP6 SSP5-3.4 forcing&lt;/desc&gt;
+    &lt;desc forcing=&quot;SSP585&quot;&gt;CMIP6 SSP5-8.5 forcing&lt;/desc&gt;
     &lt;desc cpl=&quot;BGC[%BDRD][%BPRP]&quot;&gt;Biogeochemistry intercomponent &lt;/desc&gt;
     &lt;desc option=&quot;BDRD&quot;&gt; with diagnostic CO2&lt;/desc&gt;
     &lt;desc option=&quot;BPRP&quot;&gt; with prognostic CO2 &lt;/desc&gt;
@@ -3736,7 +3735,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM&quot;&gt;none&lt;/value&gt;
       &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
-      &lt;value compset=&quot;RCP.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;SSP.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BDRD&quot;&gt;CO2C&lt;/value&gt;
     &lt;/values&gt;
@@ -4177,7 +4176,7 @@ to define behavior.</p>
     without any prognostic components.
     For the compsets below the following are the only allowable values of the components.
 
-    TIME = Time period (e.g. 2000, HIST, RCP8...)
+    TIME = Time period (e.g. 2000, HIST, SSP585...)
     ATM  = [DATM, SATM, XATM]
     LND  = [DLND, SLND, XLND]
     ICE  = [DICE, SICE, XICE]
@@ -5193,7 +5192,10 @@ to define behavior.</p>
       Setting this to zero will always do flux_max_iteration
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value cime_model=&#39;cesm&#39;&gt;0.0&lt;/value&gt;
+      &lt;!-- the value for f09 grids is maintained as 0.0 for compatibility with cmip6 experiments
+           the 1% convergence criteria improves performance of the atm ocn flux calculation in shr_flux_mod.F90 --&gt;
+      &lt;value cime_model=&#39;cesm&#39;&gt;0.01&lt;/value&gt;
+      &lt;value cime_model=&#39;cesm&#39; atm_grid=&quot;0.9x1.25&quot;&gt;0.0&lt;/value&gt;
       &lt;value cime_model=&#39;e3sm&#39;&gt;0.0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -5649,7 +5651,13 @@ to define behavior.</p>
     &lt;category&gt;history&lt;/category&gt;
     &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
     &lt;desc&gt;
-      turns on coupler history stream for instantaneous runoff to coupler fields.
+      turns on coupler history stream for average* runoff to coupler fields
+      (*despite the lack of an averaging time span in the name).
+      Files are written at time-of-day = 00000, and at the end of the run interval,
+      even if that time is not 00000.
+      Run length less than 24 hours; averaging period is the run length,
+      Otherwise; averaging period is 24 hours for files before the last (partial) day,
+                 averaging period is the last (partial) day for the last file.
       default: false
     &lt;/desc&gt;
     &lt;values&gt;
@@ -6753,6 +6761,23 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;0.0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;!-- =========================== --&gt;
+  &lt;!-- group esmf_inparm           --&gt;
+  &lt;!-- =========================== --&gt;
+
+  &lt;entry id=&quot;esmf_logfile_kind&quot; modify_via_xml=&quot;ESMF_LOGFILE_KIND&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;driver&lt;/category&gt;
+    &lt;group&gt;esmf_inparm&lt;/group&gt;
+    &lt;valid_values&gt;ESMF_LOGKIND_SINGLE,ESMF_LOGKIND_MULTI,ESMF_LOGKIND_MULTI_ON_ERROR,ESMF_LOGKIND_NONE&lt;/valid_values&gt;
+    &lt;desc&gt;
+      Specify type of ESMF logging
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$ESMF_LOGFILE_KIND&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 

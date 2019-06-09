@@ -2064,6 +2064,8 @@ writable</p>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase*mods&quot;</span><span class="p">)</span>
 <span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;/some/full/path/name/&quot;</span><span class="p">)</span>
+<span class="go">False</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2459,6 +2461,13 @@ indent_level: int</dd>
 <p>Returns a new string that is the same as the_string, except that
 each line is indented by ‘indent_level’ spaces.</p>
 <p>In python3, this can be done with textwrap.indent.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.is_last_process_complete">
+<code class="descclassname">CIME.utils.</code><code class="descname">is_last_process_complete</code><span class="sig-paren">(</span><em>filepath</em>, <em>expect_text</em>, <em>fail_text</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#is_last_process_complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.is_last_process_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search the filepath in reverse order looking for expect_text
+before finding fail_text. This utility is used by archive_metadata.</p>
 </dd></dl>
 
 <dl class="function">

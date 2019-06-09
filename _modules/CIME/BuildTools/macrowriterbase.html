@@ -175,8 +175,7 @@
 
 <div class="viewcode-block" id="MacroWriterBase.environment_variable_string"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macrowriterbase.MacroWriterBase.environment_variable_string">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">environment_variable_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an environment variable reference.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot;Return an environment variable reference.&quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="MacroWriterBase.shell_command_strings"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macrowriterbase.MacroWriterBase.shell_command_strings">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">shell_command_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
@@ -204,18 +203,15 @@
 <span class="sd">        # Cleanup</span>
 <span class="sd">        if post is not None:</span>
 <span class="sd">            writer.write(post)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="MacroWriterBase.variable_string"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macrowriterbase.MacroWriterBase.variable_string">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">variable_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a string to refer to a variable with the given name.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot;Return a string to refer to a variable with the given name.&quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="MacroWriterBase.set_variable"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macrowriterbase.MacroWriterBase.set_variable">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">set_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Write out a statement setting a variable to some value.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot;Write out a statement setting a variable to some value.&quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="MacroWriterBase.append_variable"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macrowriterbase.MacroWriterBase.append_variable">[docs]</a>    <span class="k">def</span> <span class="nf">append_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write out a statement appending a value to a string variable.&quot;&quot;&quot;</span>
@@ -228,13 +224,11 @@
 
 <span class="sd">        The arguments to this method are compared, and the block is entered</span>
 <span class="sd">        only if they are equal.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="MacroWriterBase.end_ifeq"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.macrowriterbase.MacroWriterBase.end_ifeq">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">end_ifeq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Write out a statement to end a block started with start_ifeq.&quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="sd">&quot;&quot;&quot;Write out a statement to end a block started with start_ifeq.&quot;&quot;&quot;</span></div></div>
 
 <span class="c1"># None class based method for version 1.0</span>
 
@@ -315,7 +309,7 @@
                                 <span class="n">component</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;NETCDF&quot;</span><span class="p">,</span> <span class="s2">&quot;NetCDF&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;PNETCDF_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;Pnetcdf_PATH&quot;</span><span class="p">)</span>
                                 <span class="k">if</span> <span class="n">is_shell</span><span class="p">:</span>
                                     <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;execute_process(COMMAND </span><span class="si">{}</span><span class="s1"> OUTPUT_VARIABLE TEMP</span><span class="si">{:d}</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">idx</span><span class="p">))</span>
-                                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;string(REGEX REPLACE &quot;</span><span class="se">\\</span><span class="s1">n$&quot; &quot;&quot; TEMP</span><span class="si">{:d}</span><span class="s1"> &quot;${{TEMP</span><span class="si">{:d}</span><span class="s1">}}&quot;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">))</span>
+                                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;string(REGEX REPLACE &quot;</span><span class="se">\\</span><span class="s1">n$&quot; &quot;&quot; TEMP</span><span class="si">{0:d}</span><span class="s1"> &quot;${{TEMP</span><span class="si">{0:d}</span><span class="s1">}}&quot;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
                                 <span class="k">else</span><span class="p">:</span>
                                     <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;set(TEMP</span><span class="si">{:d}</span><span class="s1"> &quot;</span><span class="si">{}</span><span class="s1">&quot;)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">component</span><span class="p">))</span>
 

@@ -138,8 +138,12 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_all_input_data">
-<code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>protocol=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_all_input_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>protocol=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em>, <em>chksum=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_all_input_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read through all files of the form <a href="#id1"><span class="problematic" id="id2">*</span></a>.input_data_list in the data_list_dir directory.  These files
+contain a list of input and boundary files needed by each model component.  For each file in the
+list confirm that it is available in input_data_root and if not (optionally download it from a
+server at address using protocol.  Perform a chksum of the downloaded file.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_case">
@@ -153,8 +157,12 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_input_data">
-<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if no files missing</p>
+<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em>, <em>user=None</em>, <em>passwd=None</em>, <em>chksum=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given case check for the relevant input data as specified in data_list_dir/<a href="#id3"><span class="problematic" id="id4">*</span></a>.input_data_list
+in the directory input_data_root, if not found optionally download it using the servers specified
+in config_inputdata.xml.  If a chksum file is available compute the chksum and compare it to that
+in the file.
+Return True if no files missing</p>
 </dd></dl>
 
 <dl class="method">
@@ -182,7 +190,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.configure">
-<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -192,7 +200,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.create" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -392,7 +400,10 @@ name is returned</p>
 <dl class="method">
 <dt id="CIME.case.case.Case.stage_refcase">
 <code class="descname">stage_refcase</code><span class="sig-paren">(</span><em>input_data_root=None</em>, <em>data_list_dir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.stage_refcase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a REFCASE for a hybrid or branch run
+This is the only case in which we are downloading an entire directory instead of
+a single file at a time.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.submit">
@@ -402,6 +413,11 @@ name is returned</p>
 <dl class="method">
 <dt id="CIME.case.case.Case.submit_jobs">
 <code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>skip_pnl=None</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.case.case.Case.test_env_archive">
+<code class="descname">test_env_archive</code><span class="sig-paren">(</span><em>testdir='env_archive_test'</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.test_env_archive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -501,6 +517,11 @@ restore_from_archive is a member of Class Case</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="CIME.case.case_st_archive.test_env_archive">
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">test_env_archive</code><span class="sig-paren">(</span><em>self</em>, <em>testdir='env_archive_test'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#test_env_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.test_env_archive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="CIME.case.case_st_archive.test_st_archive">
 <code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">test_st_archive</code><span class="sig-paren">(</span><em>self</em>, <em>testdir='st_archive_test'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#test_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.test_st_archive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -543,19 +564,43 @@ case_test is a member of class Case from case.py</p>
 <p>API for checking input for testcase</p>
 <dl class="function">
 <dt id="CIME.case.check_input_data.check_all_input_data">
-<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>self</em>, <em>protocol=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_all_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_all_input_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_all_input_data</code><span class="sig-paren">(</span><em>self</em>, <em>protocol=None</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=True</em>, <em>chksum=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_all_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_all_input_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read through all files of the form <a href="#id5"><span class="problematic" id="id6">*</span></a>.input_data_list in the data_list_dir directory.  These files
+contain a list of input and boundary files needed by each model component.  For each file in the
+list confirm that it is available in input_data_root and if not (optionally download it from a
+server at address using protocol.  Perform a chksum of the downloaded file.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="CIME.case.check_input_data.check_input_data">
-<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_input_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if no files missing</p>
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em>, <em>user=None</em>, <em>passwd=None</em>, <em>chksum=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_input_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a given case check for the relevant input data as specified in data_list_dir/<a href="#id7"><span class="problematic" id="id8">*</span></a>.input_data_list
+in the directory input_data_root, if not found optionally download it using the servers specified
+in config_inputdata.xml.  If a chksum file is available compute the chksum and compare it to that
+in the file.
+Return True if no files missing</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.case.check_input_data.md5">
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">md5</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#md5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>performs an md5 sum one chunk at a time to avoid memory issues with large files.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="CIME.case.check_input_data.stage_refcase">
 <code class="descclassname">CIME.case.check_input_data.</code><code class="descname">stage_refcase</code><span class="sig-paren">(</span><em>self</em>, <em>input_data_root=None</em>, <em>data_list_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#stage_refcase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.stage_refcase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get a REFCASE for a hybrid or branch run
+This is the only case in which we are downloading an entire directory instead of
+a single file at a time.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.case.check_input_data.verify_chksum">
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">verify_chksum</code><span class="sig-paren">(</span><em>input_data_root</em>, <em>rundir</em>, <em>filename</em>, <em>isdirectory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#verify_chksum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.verify_chksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>For file in filename perform a chksum and compare the result to that stored in
+the local checksumfile, if isdirectory chksum all files in the directory of form <em>.</em></p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-CIME.case.check_lockedfiles">

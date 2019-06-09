@@ -70,6 +70,11 @@ the xml element <code class="docutils literal notranslate"><span class="pre">COM
 </pre></div>
 </div>
 <p>Every file listed in COMPSETS_SPEC_FILE will be searched for the compset specified in the call to create_newcase.</p>
+<p>CIME will note which component’s config_compsets.xml had the matching compset name and that component will be treated as
+the <strong>primary component</strong> As an example, the primary component for a compset that has a prognostic atmosphere,
+land and cice (in prescribed mode) and a data ocean is the atmosphere component (for cesm this is CAM) because the compset
+is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
+In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 <div class="section" id="compset-longname">
 <span id="defining-compsets"></span><h2>2.1. Compset longname<a class="headerlink" href="#compset-longname" title="Permalink to this headline">¶</a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>
@@ -78,7 +83,7 @@ the xml element <code class="docutils literal notranslate"><span class="pre">COM
 </pre></div>
 </div>
 <p>Supported values for each element of the longname:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TIME</span> <span class="o">=</span> <span class="n">model</span> <span class="n">time</span> <span class="n">period</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="mi">1850</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">20</span><span class="n">TR</span><span class="p">,</span> <span class="n">RCP8</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TIME</span> <span class="o">=</span> <span class="n">model</span> <span class="n">time</span> <span class="n">period</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="mi">1850</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">20</span><span class="n">TR</span><span class="p">,</span> <span class="n">SSP585</span><span class="o">...</span><span class="p">)</span>
 
 <span class="n">CIME</span> <span class="n">supports</span> <span class="n">the</span> <span class="n">following</span> <span class="n">values</span> <span class="k">for</span> <span class="n">ATM</span><span class="p">,</span><span class="n">LND</span><span class="p">,</span><span class="n">ICE</span><span class="p">,</span><span class="n">OCN</span><span class="p">,</span><span class="n">ROF</span><span class="p">,</span><span class="n">GLC</span><span class="p">,</span><span class="n">WAV</span> <span class="ow">and</span> <span class="n">ESP</span><span class="o">.</span>
 <span class="n">ATM</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DATM</span><span class="p">,</span> <span class="n">SATM</span><span class="p">,</span> <span class="n">XATM</span><span class="p">]</span>
