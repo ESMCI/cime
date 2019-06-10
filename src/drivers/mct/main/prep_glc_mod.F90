@@ -30,12 +30,12 @@ module prep_glc_mod
   !--------------------------------------------------------------------------
 
   public :: prep_glc_init
-  public :: prep_glc_mrg
+  public :: prep_glc_mrg_l2g
   public :: prep_glc_mrg_o2g
 
-  public :: prep_glc_accum
+  public :: prep_glc_accum_l2g
   public :: prep_glc_accum_o2g
-  public :: prep_glc_accum_avg
+  public :: prep_glc_accum_avg_l2g
   public :: prep_glc_accum_avg_o2g
 
   public :: prep_glc_calc_o2x_gx
@@ -403,7 +403,7 @@ contains
 
   !================================================================================================
 
-  subroutine prep_glc_accum(timer)
+  subroutine prep_glc_accum_l2g(timer)
 
     !---------------------------------------------------------------
     ! Description
@@ -415,7 +415,7 @@ contains
     ! Local Variables
     integer :: eli
     type(mct_avect), pointer :: l2x_lx
-    character(*), parameter :: subname = '(prep_glc_accum)'
+    character(*), parameter :: subname = '(prep_glc_accum_l2g)'
     !---------------------------------------------------------------
 
     call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
@@ -430,7 +430,7 @@ contains
     l2gacc_lx_cnt = l2gacc_lx_cnt + 1
     call t_drvstopf  (trim(timer))
 
-  end subroutine prep_glc_accum
+  end subroutine prep_glc_accum_l2g
 
   !================================================================================================
 
@@ -461,7 +461,7 @@ contains
 
   !================================================================================================
 
-  subroutine prep_glc_accum_avg(timer)
+  subroutine prep_glc_accum_avg_l2g(timer)
 
     !---------------------------------------------------------------
     ! Description
@@ -472,7 +472,7 @@ contains
     !
     ! Local Variables
     integer :: eli
-    character(*), parameter :: subname = '(prep_glc_accum_avg)'
+    character(*), parameter :: subname = '(prep_glc_accum_avg_l2g)'
     !---------------------------------------------------------------
 
     call t_drvstartf (trim(timer),barrier=mpicom_CPLID)
@@ -484,7 +484,7 @@ contains
     l2gacc_lx_cnt = 0
     call t_drvstopf  (trim(timer))
 
-  end subroutine prep_glc_accum_avg
+  end subroutine prep_glc_accum_avg_l2g
 
   !================================================================================================
 
@@ -502,7 +502,7 @@ contains
     ! Local Variables
     integer :: egi, eoi, efi
     type(mct_avect), pointer :: x2g_gx
-    character(*), parameter  :: subname = '(prep_glc_mrg)'
+    character(*), parameter  :: subname = '(prep_glc_mrg_o2g)'
     !---------------------------------------------------------------
 
     call t_drvstartf (trim(timer_mrg),barrier=mpicom_CPLID)
@@ -628,7 +628,7 @@ contains
 
   !================================================================================================
 
-  subroutine prep_glc_mrg(infodata, fractions_gx, timer_mrg)
+  subroutine prep_glc_mrg_l2g(infodata, fractions_gx, timer_mrg)
 
     !---------------------------------------------------------------
     ! Description
@@ -642,7 +642,7 @@ contains
     ! Local Variables
     integer :: egi, eli, efi
     type(mct_avect), pointer :: x2g_gx
-    character(*), parameter  :: subname = '(prep_glc_mrg)'
+    character(*), parameter  :: subname = '(prep_glc_mrg_l2g)'
     !---------------------------------------------------------------
 
     call t_drvstartf (trim(timer_mrg),barrier=mpicom_CPLID)
@@ -656,7 +656,7 @@ contains
     enddo
     call t_drvstopf  (trim(timer_mrg))
 
-  end subroutine prep_glc_mrg
+  end subroutine prep_glc_mrg_l2g
 
   !================================================================================================
 

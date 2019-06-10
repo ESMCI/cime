@@ -2969,7 +2969,7 @@ contains
                 call prep_rof_accum(timer='CPL:lndpost_accl2r')
              endif
              if (lnd_c2_glc) then
-                call prep_glc_accum(timer='CPL:lndpost_accl2g' )
+                call prep_glc_accum_l2g(timer='CPL:lndpost_accl2g' )
              endif
 
              if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
@@ -2996,13 +2996,13 @@ contains
                 ! NOTE - only create appropriate input to glc if the avg_alarm is on
 
                 if (glcrun_avg_alarm) then
-                   call prep_glc_accum_avg(timer='CPL:glcprep_avg')
+                   call prep_glc_accum_avg_l2g(timer='CPL:glcprep_avg')
                    lnd2glc_averaged_now = .true.
 
                    ! Note that l2x_gx is obtained from mapping the module variable l2gacc_lx
                    call prep_glc_calc_l2x_gx(fractions_lx, timer='CPL:glcprep_lnd2glc')
 
-                   call prep_glc_mrg(infodata, fractions_gx, timer_mrg='CPL:glcprep_mrgx2g')
+                   call prep_glc_mrg_l2g(infodata, fractions_gx, timer_mrg='CPL:glcprep_mrgx2g')
 
                    call component_diag(infodata, glc, flow='x2c', comment='send glc', &
                         info_debug=info_debug, timer_diag='CPL:glcprep_diagav')
