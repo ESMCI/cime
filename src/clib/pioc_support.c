@@ -40,6 +40,38 @@ extern int pio_next_ncid;
 extern int default_error_handler;
 
 /**
+ * Start the PIO timer.
+ *
+ * @param name name of the timer.
+ * @return 0 for success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+pio_start_timer(const char *name)
+{
+#ifdef TIMING
+    GPTLstart(name);
+#endif /* TIMING */
+    return PIO_NOERR;
+}
+
+/**
+ * Stop the PIO timer.
+ *
+ * @param name name of the timer.
+ * @return 0 for success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+pio_stop_timer(const char *name)
+{
+#ifdef TIMING
+    GPTLstop("PIO:rearrange_comp2io");
+#endif /* TIMING */
+    return PIO_NOERR;
+}
+
+/**
  * Return a string description of an error code. If zero is passed,
  * the errmsg will be "No error".
  *

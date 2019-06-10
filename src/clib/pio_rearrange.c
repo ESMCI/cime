@@ -8,11 +8,9 @@
 #include <pio_internal.h>
 #include <pio.h>
 
-
 #if PIO_USE_MPISERIAL
-# define MPI_Type_create_hvector MPI_Type_hvector
+#define MPI_Type_create_hvector MPI_Type_hvector
 #endif
-
 
 /**
  * Convert a 1-D index into a coordinate value in an arbitrary
@@ -813,8 +811,10 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     int ret;
 
 #ifdef TIMING
-    GPTLstart("PIO:rearrange_comp2io");
-#endif
+    /* Start timer if desired. */
+    if ((ret = pio_start_timer("PIO:rearrange_comp2io")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* Caller must provide these. */
     pioassert(ios && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
@@ -969,8 +969,9 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     }
 
 #ifdef TIMING
-    GPTLstop("PIO:rearrange_comp2io");
-#endif
+    if ((ret = pio_stop_timer("PIO:rearrange_comp2io")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+#endif /* TIMING */
 
     return PIO_NOERR;
 }
@@ -999,8 +1000,10 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
-    GPTLstart("PIO:rearrange_io2comp");
-#endif
+    /* Start timer if desired. */
+    if ((ret = pio_start_timer("PIO:rearrange_io2comp")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* Different rearrangers use different communicators and number of
      * IO tasks. */
@@ -1093,7 +1096,8 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
 #ifdef TIMING
-    GPTLstop("PIO:rearrange_io2comp");
+    if ((ret = pio_stop_timer("PIO:rearrange_io2comp")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 #endif
 
     return PIO_NOERR;
@@ -1200,9 +1204,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 {
     int ret;
 
-#ifdef TIMING
-    GPTLstart("PIO:box_rearrange_create");
-#endif
     /* Check inputs. */
     pioassert(ios && maplen >= 0 && compmap && gdimlen && ndims > 0 && iodesc,
               "invalid input", __FILE__, __LINE__);
@@ -1226,6 +1227,12 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     int sc_info_msg_sz = sc_info_msg_maplen_sz + sc_info_msg_sc_sz;
     PIO_Offset sc_info_msg_send[sc_info_msg_sz];
     PIO_Offset sc_info_msg_recv[ios->num_iotasks * sc_info_msg_sz];
+
+#ifdef TIMING
+    /* Start timer if desired. */
+    if ((ret = pio_start_timer("PIO:box_rearrange_create")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* This is the box rearranger. */
     iodesc->rearranger = PIO_REARR_BOX;
@@ -1479,8 +1486,10 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     LOG((3, "iodesc->maxbytes = %d", iodesc->maxbytes));
 
 #ifdef TIMING
-    GPTLstop("PIO:box_rearrange_create");
+    if ((ret = pio_stop_timer("PIO:box_rearrange_create")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 #endif
+
     return PIO_NOERR;
 }
 
@@ -1509,8 +1518,11 @@ int box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
     int ret;
 
 #ifdef TIMING
-    GPTLstart("PIO:box_rearrange_create_with_holes");
-#endif
+    /* Start timer if desired. */
+    if ((ret = pio_start_timer("PIO:box_rearrange_create_with_holes")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+#endif /* TIMING */
+
     /* Check inputs. */
     pioassert(ios && maplen >= 0 && compmap && gdimlen && ndims > 0 && iodesc,
               "invalid input", __FILE__, __LINE__);
@@ -1766,8 +1778,10 @@ int box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
     LOG((3, "iodesc->maxbytes = %d", iodesc->maxbytes));
 
 #ifdef TIMING
-    GPTLstop("PIO:box_rearrange_create_with_holes");
-#endif
+    if ((ret = pio_stop_timer("PIO:box_rearrange_create_with_holes")))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+#endif /* TIMING */
+
     return PIO_NOERR;
 }
 

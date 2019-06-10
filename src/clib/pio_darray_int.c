@@ -421,9 +421,10 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
          iodesc->mpitype, iodesc->maxregions, iodesc->llen));
 
 #ifdef TIMING
-    /* Start timing this function. */
-    GPTLstart("PIO:write_darray_multi_par");
-#endif
+    /* Start timer if desired. */
+    if ((ierr = pio_start_timer("PIO:write_darray_multi_par")))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* Get pointer to iosystem. */
     ios = file->iosystem;
@@ -720,9 +721,9 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
 #ifdef TIMING
-    /* Stop timing this function. */
-    GPTLstop("PIO:write_darray_multi_par");
-#endif
+    if ((ierr = pio_stop_timer("PIO:write_darray_multi_par")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     return ierr;
 }
@@ -1089,9 +1090,10 @@ write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *v
     void *iobuf = fill ? vdesc->fillbuf : file->iobuf;
 
 #ifdef TIMING
-    /* Start timing this function. */
-    GPTLstart("PIO:write_darray_multi_serial");
-#endif
+    /* Start timer if desired. */
+    if ((ierr = pio_start_timer("PIO:write_darray_multi_serial")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)
@@ -1127,9 +1129,9 @@ write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *v
     }
 
 #ifdef TIMING
-    /* Stop timing this function. */
-    GPTLstop("PIO:write_darray_multi_serial");
-#endif
+    if ((ierr = pio_stop_timer("PIO:write_darray_multi_serial")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     return PIO_NOERR;
 }
@@ -1169,14 +1171,15 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
     pioassert(file && file->iosystem && iodesc && vid <= PIO_MAX_VARS, "invalid input",
               __FILE__, __LINE__);
 
-#ifdef TIMING
-    /* Start timing this function. */
-    GPTLstart("PIO:read_darray_nc");
-#endif
-
     /* Get the IO system info. */
     ios = file->iosystem;
     LOG((3, "pio_read_darray_nc ios->ioproc %d", ios->ioproc));
+
+#ifdef TIMING
+    /* Start timer if desired. */
+    if ((ierr = pio_start_timer("PIO:read_darray_nc")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* Get the variable info. */
     if ((ierr = get_var_desc(vid, &file->varlist, &vdesc)))
@@ -1398,9 +1401,9 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
     }
 
 #ifdef TIMING
-    /* Stop timing this function. */
-    GPTLstop("PIO:read_darray_nc");
-#endif
+    if ((ierr = pio_stop_timer("PIO:read_darray_nc")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     return PIO_NOERR;
 }
@@ -1442,11 +1445,13 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
               "invalid input", __FILE__, __LINE__);
 
     LOG((2, "pio_read_darray_nc_serial vid = %d", vid));
-#ifdef TIMING
-    /* Start timing this function. */
-    GPTLstart("PIO:read_darray_nc_serial");
-#endif
     ios = file->iosystem;
+
+#ifdef TIMING
+    /* Start timer if desired. */
+    if ((ierr = pio_start_timer("PIO:read_darray_nc_serial")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     /* Get var info for this var. */
     if ((ierr = get_var_desc(vid, &file->varlist, &vdesc)))
@@ -1703,9 +1708,9 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     }
 
 #ifdef TIMING
-    /* Stop timing this function. */
-    GPTLstop("PIO:read_darray_nc_serial");
-#endif
+    if ((ierr = pio_stop_timer("PIO:read_darray_nc_serial")))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+#endif /* TIMING */
 
     return PIO_NOERR;
 }
