@@ -223,6 +223,10 @@ def write_seq_maps_file(case, nmlgen, confdir):
                         if "rof2ocn_" in name:
                             if case.get_value("COMP_OCN") == 'docn':
                                 logger.warning("   NOTE: ignoring setting of {}=idmap in seq_maps.rc".format(name))
+                        elif "ocn2glc_" in name and case.get_value("OCN_C2_GLC") == False:
+                            logger.warning("   NOTE: ignoring setting of {}=idmap in seq_maps.rc".format(name))
+                        elif "glc2ocn_smap" in name and case.get_value("COMP_OCN") != 'mom':
+                            logger.warning("   NOTE: ignoring setting of {}=idmap in seq_maps.rc".format(name))
                         else:
                             expect(gridvalue[component1] == gridvalue[component2],
                                    "Need to provide valid mapping file between {} and {} in xml variable {} ".\
