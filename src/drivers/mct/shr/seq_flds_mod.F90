@@ -1612,7 +1612,7 @@ contains
       longname = 'Salinity at ocean vertical level 10'
       stdname  = 'salinity_vlev10'
       units    = 'g kg-1'
-      attname  = 'So_s'
+      attname  = 'So_s_10'
       call metadata_set(attname, longname, stdname, units)
 
       ! Sea surface  salinity
@@ -1622,7 +1622,7 @@ contains
       longname = 'Salinity at ocean vertical level 19'
       stdname  = 'salinity_vlev19'
       units    = 'g kg-1'
-      attname  = 'So_s'
+      attname  = 'So_s_19'
       call metadata_set(attname, longname, stdname, units)
 
       ! Sea surface  salinity
@@ -1632,7 +1632,7 @@ contains
       longname = 'Salinity at ocean vertical level 26'
       stdname  = 'salinity_vlev26'
       units    = 'g kg-1'
-      attname  = 'So_s'
+      attname  = 'So_s_26'
       call metadata_set(attname, longname, stdname, units)
 
       ! Sea surface  salinity
@@ -1642,7 +1642,7 @@ contains
       longname = 'Salinity at ocean vertical level 30'
       stdname  = 'salinity_vlev30'
       units    = 'g kg-1'
-      attname  = 'So_s'
+      attname  = 'So_s_30'
       call metadata_set(attname, longname, stdname, units)
 
       ! Sea surface  salinity
@@ -1652,7 +1652,7 @@ contains
       longname = 'Salinity at ocean vertical level 33'
       stdname  = 'salinity_vlev33'
       units    = 'g kg-1'
-      attname  = 'So_s'
+      attname  = 'So_s_33'
       call metadata_set(attname, longname, stdname, units)
 
       ! Sea surface  salinity
@@ -1662,7 +1662,7 @@ contains
       longname = 'Salinity at ocean vertical level 35'
       stdname  = 'salinity_vlev35'
       units    = 'g kg-1'
-      attname  = 'So_s'
+      attname  = 'So_s_35'
       call metadata_set(attname, longname, stdname, units)
 
     !endif
