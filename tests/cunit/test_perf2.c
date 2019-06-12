@@ -134,7 +134,8 @@ init_logging(int my_rank, int event_num[][NUM_EVENTS])
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
+int
+create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
@@ -179,9 +180,10 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param rearranger the rearranger in use.
  * @returns 0 for success, error code otherwise.
  */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
-                int my_rank, int ntasks, int num_io_procs, int provide_fill,
-                int rearranger)
+int
+test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
+            int my_rank, int ntasks, int num_io_procs, int provide_fill,
+            int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -414,9 +416,10 @@ test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise.
  */
-int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    int ntasks, int num_io_procs, int rearranger,
-                    MPI_Comm test_comm)
+int
+test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
+                int ntasks, int num_io_procs, int rearranger,
+                MPI_Comm test_comm)
 {
     int ioid;
     int my_test_size;
@@ -471,7 +474,8 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 }
 
 /* Run tests for darray functions. */
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
     int my_rank;
     int ntasks;
