@@ -1479,7 +1479,7 @@ contains
     endif
     if (glc_present) then
        if (glclnd_present .and. lnd_prognostic) glc_c2_lnd = .true.
-       if (ocn_prognostic .and. ocn_c2_glc) glc_c2_ocn = .true.
+       if (ocn_prognostic .and. (glcocn_present .or. ocn_c2_glc) ) glc_c2_ocn = .true.
        if (glcice_present .and. iceberg_prognostic) glc_c2_ice = .true.
     endif
     if (wav_present) then
