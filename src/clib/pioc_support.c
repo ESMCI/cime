@@ -167,7 +167,7 @@ PIOc_set_log_level(int level)
  * Initialize logging.  Open log file, if not opened yet, or increment
  * ref count if already open.
  *
- * @author Jayesh Krishna
+ * @author Jayesh Krishna, Ed Hartnett
  */
 int
 pio_init_logging(void)
