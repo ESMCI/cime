@@ -534,6 +534,7 @@ contains
   end subroutine PIO_initdecomp_bc
 
   !>
+  !! @public
   !! @ingroup PIO_initdecomp
   !! A deprecated interface to the PIO_initdecomp method.
   !!
@@ -564,8 +565,25 @@ contains
     call initdecomp_2dof_bin_i8(iosystem,basepiotype,dims,lenblocks,int(compdof,PIO_OFFSET_KIND),int(iodofr,PIO_OFFSET_KIND), &
          int(iodofw,PIO_OFFSET_KIND),iodesc)
 
-
   end subroutine initdecomp_2dof_bin_i4
+
+  !>
+  !! @public
+  !! @ingroup PIO_initdecomp
+  !! A deprecated interface to the PIO_initdecomp method.
+  !!
+  !! @param iosystem a defined pio system descriptor, see PIO_types
+  !! @param basepiotype the type of variable(s) associated with this iodesc.
+  !! @copydoc PIO_kinds
+  !! @param dims an array of the global length of each dimesion of the variable(s)
+  !! @param lenblocks
+  !! @param compdof mapping of the storage order of the variable to its memory order
+  !! @param iodofr
+  !! @param iodofw
+  !! @param iodesc @copydoc iodesc_generate
+  !! @deprecated
+  !! @author Jim Edwards
+  !<
   subroutine initdecomp_2dof_bin_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,iodesc)
     !    use calcdisplace_mod, only : calcdisplace
     type (iosystem_desc_t), intent(in) :: iosystem
@@ -580,6 +598,7 @@ contains
   end subroutine initdecomp_2dof_bin_i8
 
   !>
+  !! @public
   !! @ingroup PIO_initdecomp
   !! A deprecated interface to the PIO_initdecomp method.
   !!
@@ -613,6 +632,24 @@ contains
     call initdecomp_1dof_nf_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,start, count, iodesc)
   end subroutine initdecomp_1dof_bin_i8
 
+  !>
+  !! @public
+  !! @ingroup PIO_initdecomp
+  !! A deprecated interface to the PIO_initdecomp method.
+  !!
+  !! @param iosystem a defined pio system descriptor, see PIO_types
+  !! @param basepiotype the type of variable(s) associated with this
+  !! iodesc.  @copydoc PIO_kinds
+  !! @param dims an array of the global length of each dimesion of the
+  !! variable(s)
+  !! @param lenblocks
+  !! @param compdof mapping of the storage order of the variable to
+  !! its memory order
+  !! @param iodofr
+  !! @param iodesc @copydoc iodesc_generate
+  !! @deprecated
+  !! @author Jim Edwards
+  !<
   subroutine initdecomp_1dof_bin_i4(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in)           :: basepiotype
@@ -632,6 +669,7 @@ contains
   end subroutine initdecomp_1dof_bin_i4
 
   !>
+  !! @public
   !! @ingroup PIO_initdecomp
   !! A deprecated interface to the PIO_initdecomp method.
   !!
@@ -672,6 +710,28 @@ contains
 
   end subroutine initdecomp_2dof_nf_i4
 
+  !>
+  !! @public
+  !! @ingroup PIO_initdecomp
+  !! A deprecated interface to the PIO_initdecomp method.
+  !!
+  !! @param iosystem a defined pio system descriptor, see PIO_types
+  !! @param basepiotype the type of variable(s) associated with this
+  !! iodesc.  @copydoc PIO_kinds
+  !! @param dims: an array of the global length of each dimesion of
+  !! the variable(s)
+  !! @param lenblocks
+  !! @param compdof mapping of the storage order of the variable to
+  !! its memory order
+  !! @param iodofr
+  !! @param iodofw
+  !! @param start used with count to give a block description of the
+  !! shape of the data
+  !! @param count
+  !! @param iodesc @copydoc iodesc_generate
+  !! @deprecated
+  !! @author Jim Edwards
+  !<
   subroutine initdecomp_2dof_nf_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,start, count, iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in)           :: basepiotype
@@ -695,6 +755,7 @@ contains
   end subroutine initdecomp_2dof_nf_i8
 
   !>
+  !! @public
   !! @ingroup PIO_initdecomp
   !! A deprecated interface to the PIO_initdecomp method.
   !!
@@ -727,6 +788,24 @@ contains
 
   end subroutine initdecomp_1dof_nf_i4
 
+  !>
+  !! @public
+  !! @ingroup PIO_initdecomp
+  !! A deprecated interface to the PIO_initdecomp method.
+  !!
+  !! @param iosystem a defined PIO system descriptor, see pio_types
+  !! @param basepiotype The type of variable(s) associated with this iodesc.
+  !! @copydoc PIO_kinds
+  !! @param dims an array of the global length of each dimesion of the variable(s)
+  !! @param lenblocks
+  !! @param compdof mapping of the storage order of the variable to its memory order
+  !! @param iodof
+  !! @param start
+  !! @param count
+  !! @param iodesc @copydoc iodesc_generate
+  !! @deprecated
+  !! @author Jim Edwards
+  !<
   subroutine initdecomp_1dof_nf_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodof,start, count, iodesc)
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in)           :: basepiotype
@@ -748,6 +827,7 @@ contains
   end subroutine initdecomp_1dof_nf_i8
 
   !>
+  !! @public
   !! @ingroup PIO_initdecomp
   !! Implements the degrees of freedom decomposition for
   !! PIO_initdecomp(). This provides the ability to describe a
@@ -865,7 +945,10 @@ contains
 
   end subroutine PIO_initdecomp_internal
 
-  !> I8 version of PIO_initdecomp_dof_i4.
+  !>
+  !! @public
+  !! @ingroup PIO_initdecomp
+  !! I8 version of PIO_initdecomp_dof_i4.
   !! @author Jim Edwards
   subroutine PIO_initdecomp_dof_i8(iosystem,basepiotype,dims,compdof, iodesc, rearr, iostart, iocount)
     type (iosystem_desc_t), intent(in) :: iosystem
