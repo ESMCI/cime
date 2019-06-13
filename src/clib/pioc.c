@@ -917,7 +917,8 @@ PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
     int ret;           /* Return code for function calls. */
 
     /* Turn on the logging system. */
-    pio_init_logging();
+    if ((ret = pio_init_logging()))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 
     /* Find the number of computation tasks. */
     if ((mpierr = MPI_Comm_size(comp_comm, &num_comptasks)))
@@ -1420,7 +1421,8 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     my_proc_list = (int**) malloc(component_count * sizeof(int*));
 
     /* Turn on the logging system for PIO. */
-    pio_init_logging();
+    if ((ret = pio_init_logging()))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
     LOG((1, "PIOc_init_async num_io_procs = %d component_count = %d", num_io_procs,
          component_count));
 
