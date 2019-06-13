@@ -166,21 +166,28 @@ PIOc_set_log_level(int level)
 /**
  * Initialize logging.  Open log file, if not opened yet, or increment
  * ref count if already open.
+ *
+ * @author Jayesh Krishna, Ed Hartnett
  */
-void
+int
 pio_init_logging(void)
 {
+    int mpierr;
+    int ret = PIO_NOERR;
+
 #if PIO_ENABLE_LOGGING
     char log_filename[PIO_MAX_NAME];
 
     if (!LOG_FILE)
     {
         /* Create a filename with the rank in it. */
-        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        if ((mpierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         sprintf(log_filename, "pio_log_%d.log", my_rank);
 
         /* Open a file for this rank to log messages. */
-        LOG_FILE = fopen(log_filename, "w");
+        if (!(LOG_FILE = fopen(log_filename, "w")))
+            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
 
         pio_log_ref_cnt = 1;
     }
@@ -189,6 +196,8 @@ pio_init_logging(void)
         pio_log_ref_cnt++;
     }
 #endif /* PIO_ENABLE_LOGGING */
+
+    return ret;
 }
 
 /**

@@ -342,7 +342,7 @@ extern "C" {
     int pioc_change_def(int ncid, int is_enddef);
 
     /* Initialize and finalize logging. */
-    void pio_init_logging(void);
+    int pio_init_logging(void);
     void pio_finalize_logging(void );
 
     /* Write a netCDF decomp file. */
