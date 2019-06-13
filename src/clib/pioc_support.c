@@ -187,7 +187,7 @@ pio_init_logging(void)
 
         /* Open a file for this rank to log messages. */
         if (!(LOG_FILE = fopen(log_filename, "w")))
-            return pio_err(ios, file, PIO_EIO, filename, line);
+            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
 
         pio_log_ref_cnt = 1;
     }
