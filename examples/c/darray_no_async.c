@@ -21,6 +21,9 @@
 #include <gptl.h>
 #endif
 
+/* The name of this program. */
+#define TEST_NAME "darray_no_async"
+
 /* The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
 #define NUM_NETCDF_FLAVORS 4
@@ -250,6 +253,12 @@ int main(int argc, char* argv[])
     if ((ret = MPI_Comm_size(MPI_COMM_WORLD, &ntasks)))
         MPIERR(ret);
 
+#ifdef USE_MPE
+    /* If MPE logging is being used, then initialize it. */
+    if ((ret = MPE_Init_log()))
+        return ret;
+#endif /* USE_MPE */
+
     /* Check that a valid number of processors was specified. */
     if (ntasks != TARGET_NTASKS)
         fprintf(stderr, "Number of processors must be 16!\n");
@@ -367,6 +376,11 @@ int main(int argc, char* argv[])
     printf("rank: %d Freeing PIO resources...\n", my_rank);
     if ((ret = PIOc_free_iosystem(iosysid)))
         ERR(ret);
+
+#ifdef USE_MPE
+    if ((ret = MPE_Finish_log(TEST_NAME)))
+        MPIERR(ret);
+#endif /* USE_MPE */
 
     /* Finalize the MPI library. */
     MPI_Finalize();

@@ -92,9 +92,13 @@ void pio_log(int severity, const char *fmt, ...);
 /* These are for the event numbers array used to log various events in
  * the program with the MPE library, which produces output for the
  * Jumpshot program. */
-#define NUM_EVENTS 7
+
+/* Each event has start and end. */
 #define START 0
 #define END 1
+
+/* These are the events. */
+#define NUM_EVENTS 7
 #define INIT 0
 #define DECOMP 1
 #define CREATE 2
@@ -102,7 +106,6 @@ void pio_log(int severity, const char *fmt, ...);
 #define CLOSE 4
 #define CALCULATE 5
 #define INGEST 6
-#define ERR_LOGGING 99
 #endif /* USE_MPE */
 
 #if defined(__cplusplus)
