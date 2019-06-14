@@ -562,11 +562,11 @@
   <entry id="CCSM_CO2_PPMV">
     <type>real</type>
     <valid_values></valid_values>
-    <default_value>284.7</default_value>
+    <default_value>284.32</default_value>
     <values match="last">
       <value compset="^2000">367.0</value>
       <value compset="DATM.*POP2%ECO">284.7</value>
-      <value compset="^1850.+DATM%NYF.*_MICOM%ECO"  >284.7</value>
+      <value compset="^1850.+DATM%NYF.*_MICOM%ECO"  >284.32</value>
     </values>
     <group>run_co2</group>
     <file>env_run.xml</file>
