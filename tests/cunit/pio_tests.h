@@ -16,6 +16,10 @@
 #include <gptl.h>
 #endif
 
+#ifdef USE_MPE
+#include <mpe.h>
+#endif /* USE_MPE */
+
 /** The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
 #define NUM_FLAVORS 4
@@ -127,6 +131,7 @@ int check_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
 int get_iotypes(int *num_flavors, int *flavors);
 int get_iotype_name(int iotype, char *name);
 int pio_test_finalize(MPI_Comm *test_comm);
+int pio_test_finalize2(MPI_Comm *test_comm, const char *test_name);
 int test_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm,
                 int component_count, int num_io_procs, int target_ntasks, char *test_name);
 int test_no_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm, int target_ntasks,

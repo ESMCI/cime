@@ -274,9 +274,8 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
  */
 int pio_test_finalize2(MPI_Comm *test_comm, const char *test_name)
 {
-    int ret;
-
 #ifdef USE_MPE
+    int ret;
     if ((ret = MPE_Finish_log(test_name)))
         MPIERR(ret);
 #endif /* USE_MPE */
