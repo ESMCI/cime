@@ -122,7 +122,7 @@ int check_file(int iosysid, int ntasks, char *filename, int iotype,
     /* Open the file. */
     if ((ret = PIOc_openfile_retry(iosysid, &ncid, &iotype, filename, 0, 0)))
         return ret;
-    printf("opened file %s ncid = %d\n", filename, ncid);
+    /* printf("opened file %s ncid = %d\n", filename, ncid); */
 
     /* Check the metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
@@ -262,8 +262,8 @@ int main(int argc, char* argv[])
     /* Check that a valid number of processors was specified. */
     if (ntasks != TARGET_NTASKS)
         fprintf(stderr, "Number of processors must be 16!\n");
-    printf("%d: ParallelIO Library darray_no_async example running on %d processors.\n",
-           my_rank, ntasks);
+    /* printf("%d: ParallelIO Library darray_no_async example running on %d processors.\n", */
+    /*        my_rank, ntasks); */
 
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(LOG_LEVEL)))
@@ -290,8 +290,8 @@ int main(int argc, char* argv[])
     /* Create the PIO decomposition for this example. Since this
      * is a variable with an unlimited dimension, we want to
      * create a 2-D composition which represents one record. */
-    printf("rank: %d Creating decomposition, elements_per_pe %lld...\n", my_rank,
-           elements_per_pe);
+    /* printf("rank: %d Creating decomposition, elements_per_pe %lld...\n", my_rank, */
+    /*        elements_per_pe); */
     if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3 - 1, &dim_len[1], elements_per_pe,
                                 compdof, &ioid, PIO_REARR_SUBSET, NULL, NULL)))
         ERR(ret);
@@ -319,13 +319,13 @@ int main(int argc, char* argv[])
         sprintf(filename, "darray_no_async_iotype_%d.nc", format[fmt]);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n",
-               my_rank, filename, format[fmt]);
+        /* printf("rank: %d Creating sample file %s with format %d...\n", */
+        /*        my_rank, filename, format[fmt]); */
         if ((ret = PIOc_createfile(iosysid, &ncid, &(format[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
         /* Define netCDF dimension and variable. */
-        printf("rank: %d Defining netCDF metadata...\n", my_rank);
+        /* printf("rank: %d Defining netCDF metadata...\n", my_rank); */
         for (int d = 0; d < NDIM3; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
                 ERR(ret);
@@ -345,7 +345,7 @@ int main(int argc, char* argv[])
                 buffer[i] = 100 * t + START_DATA_VAL + my_rank;
 
             /* Write data to the file. */
-            printf("rank: %d Writing sample data...\n", my_rank);
+            /* printf("rank: %d Writing sample data...\n", my_rank); */
             if ((ret = PIOc_setframe(ncid, varid, t)))
                 ERR(ret);
             if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, buffer, NULL)))
@@ -357,7 +357,7 @@ int main(int argc, char* argv[])
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
+        /* printf("rank: %d Closing the sample data file...\n", my_rank); */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -368,12 +368,12 @@ int main(int argc, char* argv[])
     }
 
     /* Free the PIO decomposition. */
-    printf("rank: %d Freeing PIO decomposition...\n", my_rank);
+    /* printf("rank: %d Freeing PIO decomposition...\n", my_rank); */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
 
     /* Finalize the IO system. */
-    printf("rank: %d Freeing PIO resources...\n", my_rank);
+    /* printf("rank: %d Freeing PIO resources...\n", my_rank); */
     if ((ret = PIOc_free_iosystem(iosysid)))
         ERR(ret);
 
@@ -391,6 +391,7 @@ int main(int argc, char* argv[])
         return ret;
 #endif
 
-    printf("rank: %d SUCCESS!\n", my_rank);
+    if (!my_rank)
+        printf("rank: %d SUCCESS!\n", my_rank);
     return 0;
 }
