@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libpio.la
 # These linker flags specify libtool version info.
 # See http://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
 # for information regarding incrementing `-version-info`.
-libpio_la_LDFLAGS = -version-info 1:1:0
+libpio_la_LDFLAGS = -version-info 2:0:1
 
 # The header file.
 include_HEADERS = pio.h

@@ -3,19 +3,19 @@
 
 
 # Initialize autoconf and automake.
-AC_INIT(pio, 2.4.2-development)
+AC_INIT(pio, 2.4.3)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
 # The PIO version, again.
 AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
 AC_DEFINE([PIO_VERSION_MINOR], [4], [PIO minor version])
-AC_DEFINE([PIO_VERSION_PATCH], [2], [PIO patch version])
+AC_DEFINE([PIO_VERSION_PATCH], [3], [PIO patch version])
 
 # Once more for the documentation.
 AC_SUBST([VERSION_MAJOR], [2])
 AC_SUBST([VERSION_MINOR], [4])
-AC_SUBST([VERSION_PATCH], [2])
+AC_SUBST([VERSION_PATCH], [3])
 
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
