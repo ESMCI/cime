@@ -163,6 +163,56 @@ PIOc_set_log_level(int level)
     return PIO_NOERR;
 }
 
+#ifdef USE_MPE
+
+/* This array holds even numbers for MPE. */
+int event_num[2][NUM_EVENTS];
+
+/** This will set up the MPE logging event numbers. The calling program
+ * must call MPE_Init_log() before this function is called.
+ *
+ * @param my_rank rank of processor in MPI_COMM_WORLD.
+ * @author Ed Hartnett
+*/
+int
+init_mpe(int my_rank)
+{
+    int ret;
+
+    /* Get a bunch of event numbers. */
+    event_num[START][INIT] = MPE_Log_get_event_number();
+    event_num[END][INIT] = MPE_Log_get_event_number();
+    event_num[START][DECOMP] = MPE_Log_get_event_number();
+    event_num[END][DECOMP] = MPE_Log_get_event_number();
+    event_num[START][INGEST] = MPE_Log_get_event_number();
+    event_num[END][INGEST] = MPE_Log_get_event_number();
+    event_num[START][CLOSE] = MPE_Log_get_event_number();
+    event_num[END][CLOSE] = MPE_Log_get_event_number();
+    event_num[START][CALCULATE] = MPE_Log_get_event_number();
+    event_num[END][CALCULATE] = MPE_Log_get_event_number();
+    event_num[START][CREATE] = MPE_Log_get_event_number();
+    event_num[END][CREATE] = MPE_Log_get_event_number();
+    event_num[START][DARRAY_WRITE] = MPE_Log_get_event_number();
+    event_num[END][DARRAY_WRITE] = MPE_Log_get_event_number();
+
+    /* You should track at least initialization and partitioning, data
+     * ingest, update computation, all communications, any memory
+     * copies (if you do that), any output rendering, and any global
+     * communications. */
+    if (!my_rank)
+    {
+        MPE_Describe_state(event_num[START][INIT], event_num[END][INIT], "init", "red");
+        MPE_Describe_state(event_num[START][INGEST], event_num[END][INGEST], "ingest", "yellow");
+        MPE_Describe_state(event_num[START][DECOMP], event_num[END][DECOMP], "decomposition", "green");
+        MPE_Describe_state(event_num[START][CALCULATE], event_num[END][CALCULATE], "calculate", "orange");
+        MPE_Describe_state(event_num[START][CREATE], event_num[END][CREATE], "create", "purple");
+        MPE_Describe_state(event_num[START][CLOSE], event_num[END][CLOSE], "close file", "blue");
+        MPE_Describe_state(event_num[START][DARRAY_WRITE], event_num[END][DARRAY_WRITE], "darray write", "pink");
+    }
+    return 0;
+}
+#endif /* USE_MPE */
+
 /**
  * Initialize logging.  Open log file, if not opened yet, or increment
  * ref count if already open.

@@ -19,6 +19,9 @@
 #include <gptl.h>
 #endif
 #include <assert.h>
+#ifdef USE_MPE
+#include <mpe.h>
+#endif /* USE_MPE */
 
 /* These are the sizes of types in netCDF files. Do not replace these
  * constants with sizeof() calls for C types. They are not the
@@ -84,6 +87,23 @@ void pio_log(int severity, const char *fmt, ...);
  * a data type when creating attributes or varaibles, it is only used
  * internally. */
 #define PIO_LONG_INTERNAL 13
+
+#ifdef USE_MPE
+/* These are for the event numbers array used to log various events in
+ * the program with the MPE library, which produces output for the
+ * Jumpshot program. */
+#define NUM_EVENTS 7
+#define START 0
+#define END 1
+#define INIT 0
+#define DECOMP 1
+#define CREATE 2
+#define DARRAY_WRITE 3
+#define CLOSE 4
+#define CALCULATE 5
+#define INGEST 6
+#define ERR_LOGGING 99
+#endif /* USE_MPE */
 
 #if defined(__cplusplus)
 extern "C" {
