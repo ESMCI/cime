@@ -177,8 +177,6 @@ int event_num[2][NUM_EVENTS];
 int
 init_mpe(int my_rank)
 {
-    int ret;
-
     /* Get a bunch of event numbers. */
     event_num[START][INIT] = MPE_Log_get_event_number();
     event_num[END][INIT] = MPE_Log_get_event_number();
@@ -222,14 +220,27 @@ init_mpe(int my_rank)
 int
 pio_init_logging(void)
 {
-    int mpierr;
     int ret = PIO_NOERR;
 
-#if PIO_ENABLE_LOGGING
-    char log_filename[PIO_MAX_NAME];
+#ifdef USE_MPE
+    {
+        int mpe_rank;
+        int mpierr;
 
+        if ((mpierr = MPI_Comm_rank(MPI_COMM_WORLD, &mpe_rank)))
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+
+        if ((ret = init_mpe(mpe_rank)))
+            return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    }
+#endif /* USE_MPE */
+
+#if PIO_ENABLE_LOGGING
     if (!LOG_FILE)
     {
+        char log_filename[PIO_MAX_NAME];
+        int mpierr;
+
         /* Create a filename with the rank in it. */
         if ((mpierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);

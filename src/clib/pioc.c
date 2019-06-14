@@ -10,6 +10,11 @@
 #include <pio.h>
 #include <pio_internal.h>
 
+#ifdef USE_MPE
+/* The event numbers for MPE logging. */
+extern int event_num[2][NUM_EVENTS];
+#endif /* USE_MPE */
+
 /**
  * @defgroup PIO_init_c Initialize the IO System
  * Initialize the IOSystem, including specifying number of IO and
@@ -1426,6 +1431,11 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((1, "PIOc_init_async num_io_procs = %d component_count = %d", num_io_procs,
          component_count));
 
+#ifdef USE_MPE
+    if ((ret = MPE_Log_event(event_num[START][INIT], 0, "PIOc_init_async")))
+        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
+
     /* Determine which tasks to use for IO. */
     for (int p = 0; p < num_io_procs; p++)
         my_io_proc_list[p] = io_proc_list ? io_proc_list[p] : p;
@@ -1699,12 +1709,20 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     } /* next computational component */
 
     /* Now call the function from which the IO tasks will not return
-     * until the PIO_MSG_EXIT message is sent. This will handle all
-     * components. */
+     * until the PIO_MSG_EXIT message is sent. This will handle
+     * messages from all computation components. */
     if (in_io)
     {
         LOG((2, "Starting message handler io_rank = %d component_count = %d",
              io_rank, component_count));
+#ifdef USE_MPE
+        if ((ret = MPE_Log_event(event_num[END][INIT], 0,
+                                 "about to start processing messages")))
+            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
+
+        /* Start the message handler loop. This will not return until
+         * an exit message is sent, or an error occurs. */
         if ((ret = pio_msg_handler2(io_rank, component_count, iosys, io_comm)))
             return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((2, "Returned from pio_msg_handler2() ret = %d", ret));
@@ -1735,6 +1753,12 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     if ((ret = MPI_Group_free(&world_group)))
         return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+#ifdef USE_MPE
+    if (!in_io)
+        if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end of PIOc_init_async")))
+            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
 
     LOG((2, "successfully done with PIOc_init_async"));
     return PIO_NOERR;
