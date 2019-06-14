@@ -1888,6 +1888,12 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;              /* Return code from function calls. */
 
+#ifdef USE_MPE
+    if ((ierr = MPE_Log_event(event_num[START][CREATE], 0,
+                              "PIOc_createfile_int")))
+        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
+
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -2029,6 +2035,11 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
      * open files. */
     pio_add_to_file_list(file);
 
+#ifdef USE_MPE
+    if ((ierr = MPE_Log_event(event_num[END][CREATE], 0,
+                              "PIOc_createfile_int")))
+        return pio_err(NULL, file, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
     LOG((2, "Created file %s file->fh = %d file->pio_ncid = %d", filename,
          file->fh, file->pio_ncid));
 
