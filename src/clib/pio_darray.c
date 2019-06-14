@@ -895,6 +895,12 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     int ierr;              /* Return code. */
     void *tmparray;        /* unsorted copy of array buf if required */
 
+#ifdef USE_MPE
+    if ((ierr = MPE_Log_event(event_num[START][DARRAY_READ], 0,
+                             "PIOc_read_darray")))
+        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -957,6 +963,12 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     /* Free the buffer. */
     if (rlen > 0)
         brel(iobuf);
+
+#ifdef USE_MPE
+    if ((ierr = MPE_Log_event(event_num[END][DARRAY_READ], 0,
+                             "PIOc_read_darray")))
+        return pio_err(ios, file, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
 
     return PIO_NOERR;
 }

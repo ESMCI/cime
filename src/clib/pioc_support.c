@@ -182,16 +182,16 @@ init_mpe(int my_rank)
     event_num[END][INIT] = MPE_Log_get_event_number();
     event_num[START][DECOMP] = MPE_Log_get_event_number();
     event_num[END][DECOMP] = MPE_Log_get_event_number();
-    event_num[START][INGEST] = MPE_Log_get_event_number();
-    event_num[END][INGEST] = MPE_Log_get_event_number();
-    event_num[START][CLOSE] = MPE_Log_get_event_number();
-    event_num[END][CLOSE] = MPE_Log_get_event_number();
-    event_num[START][CALCULATE] = MPE_Log_get_event_number();
-    event_num[END][CALCULATE] = MPE_Log_get_event_number();
     event_num[START][CREATE] = MPE_Log_get_event_number();
     event_num[END][CREATE] = MPE_Log_get_event_number();
+    event_num[START][OPEN] = MPE_Log_get_event_number();
+    event_num[END][OPEN] = MPE_Log_get_event_number();
     event_num[START][DARRAY_WRITE] = MPE_Log_get_event_number();
     event_num[END][DARRAY_WRITE] = MPE_Log_get_event_number();
+    event_num[START][DARRAY_READ] = MPE_Log_get_event_number();
+    event_num[END][DARRAY_READ] = MPE_Log_get_event_number();
+    event_num[START][CLOSE] = MPE_Log_get_event_number();
+    event_num[END][CLOSE] = MPE_Log_get_event_number();
 
     /* You should track at least initialization and partitioning, data
      * ingest, update computation, all communications, any memory
@@ -200,12 +200,12 @@ init_mpe(int my_rank)
     if (!my_rank)
     {
         MPE_Describe_state(event_num[START][INIT], event_num[END][INIT], "init", "red");
-        MPE_Describe_state(event_num[START][INGEST], event_num[END][INGEST], "ingest", "yellow");
         MPE_Describe_state(event_num[START][DECOMP], event_num[END][DECOMP], "decomposition", "green");
-        MPE_Describe_state(event_num[START][CALCULATE], event_num[END][CALCULATE], "calculate", "orange");
-        MPE_Describe_state(event_num[START][CREATE], event_num[END][CREATE], "create", "purple");
-        MPE_Describe_state(event_num[START][CLOSE], event_num[END][CLOSE], "close file", "blue");
+        MPE_Describe_state(event_num[START][CREATE], event_num[END][CREATE], "create file", "purple");
+        MPE_Describe_state(event_num[START][OPEN], event_num[END][OPEN], "open file", "orange");
         MPE_Describe_state(event_num[START][DARRAY_WRITE], event_num[END][DARRAY_WRITE], "darray write", "pink");
+        MPE_Describe_state(event_num[START][DARRAY_READ], event_num[END][DARRAY_WRITE], "darray read", "brown");
+        MPE_Describe_state(event_num[START][CLOSE], event_num[END][CLOSE], "close file", "blue");
     }
     return 0;
 }
