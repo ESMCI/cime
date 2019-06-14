@@ -38,6 +38,11 @@ PIO_Offset maxusage = 0;
  * indicate that data are being written. */
 #define DARRAY_DATA 0
 
+#ifdef USE_MPE
+/* The event numbers for MPE logging. */
+extern int event_num[2][NUM_EVENTS];
+#endif /* USE_MPE */
+
 /**
  * Set the PIO IO node data buffer size limit.
  *
@@ -643,6 +648,11 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
 
     LOG((1, "PIOc_write_darray ncid = %d varid = %d ioid = %d arraylen = %d",
          ncid, varid, ioid, arraylen));
+#ifdef USE_MPE
+    if ((ierr = MPE_Log_event(event_num[START][DARRAY_WRITE], 0,
+                             "PIOc_write_darray")))
+        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -840,6 +850,12 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
     if (wmb->frame)
         wmb->frame[wmb->num_arrays] = vdesc->record;
     wmb->num_arrays++;
+
+#ifdef USE_MPE
+    if ((ierr = MPE_Log_event(event_num[END][DARRAY_WRITE], 0,
+                             "PIOc_write_darray")))
+        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+#endif /* USE_MPE */
 
     LOG((2, "wmb->num_arrays = %d iodesc->maxbytes / iodesc->mpitype_size = %d "
          "iodesc->ndof = %d iodesc->llen = %d", wmb->num_arrays,
