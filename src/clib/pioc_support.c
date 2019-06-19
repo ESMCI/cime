@@ -168,8 +168,10 @@ PIOc_set_log_level(int level)
 /* This array holds even numbers for MPE. */
 int event_num[2][NUM_EVENTS];
 
-/** This will set up the MPE logging event numbers. The calling program
- * must call MPE_Init_log() before this function is called.
+/** This will set up the MPE logging event numbers. The calling
+ * program must call MPE_Init_log() before this function is
+ * called. MPE must be installed, get it from
+ * https://www.mcs.anl.gov/research/projects/perfvis/software/MPE/.
  *
  * @param my_rank rank of processor in MPI_COMM_WORLD.
  * @author Ed Hartnett
@@ -193,29 +195,28 @@ init_mpe(int my_rank)
     event_num[START][CLOSE] = MPE_Log_get_event_number();
     event_num[END][CLOSE] = MPE_Log_get_event_number();
 
-    /* You should track at least initialization and partitioning, data
-     * ingest, update computation, all communications, any memory
-     * copies (if you do that), any output rendering, and any global
-     * communications. */
+    /* Available colors: "white", "black", "red", "yellow", "green",
+       "cyan", "blue", "magenta", "aquamarine", "forestgreen",
+       "orange", "marroon", "brown", "pink", "coral", "gray" */
     if (!my_rank)
     {
         MPE_Describe_info_state(event_num[START][INIT], event_num[END][INIT],
-                                "PIO init", "red", "%s");
+                                "PIO init", "green", "%s");
         MPE_Describe_info_state(event_num[START][DECOMP],
                                 event_num[END][DECOMP], "PIO decomposition",
-                                "green", "%s");
+                                "cyan", "%s");
         MPE_Describe_info_state(event_num[START][CREATE], event_num[END][CREATE],
-                                "PIO create file", "purple", "%s");
+                                "PIO create file", "red", "%s");
         MPE_Describe_info_state(event_num[START][OPEN], event_num[END][OPEN],
                                 "PIO open file", "orange", "%s");
         MPE_Describe_info_state(event_num[START][DARRAY_WRITE],
                                 event_num[END][DARRAY_WRITE], "PIO darray write",
                                 "pink", "%s");
         MPE_Describe_info_state(event_num[START][DARRAY_READ],
-                           event_num[END][DARRAY_WRITE], "PIO darray read",
-                           "brown", "%s");
+                                event_num[END][DARRAY_WRITE], "PIO darray read",
+                                "magenta", "%s");
         MPE_Describe_info_state(event_num[START][CLOSE], event_num[END][CLOSE],
-                                "PIO close file", "blue", "%s");
+                                "PIO close file", "purple", "%s");
     }
     return 0;
 }
