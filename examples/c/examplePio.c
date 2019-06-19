@@ -473,13 +473,6 @@ struct examplePioClass* epc_cleanUp( struct examplePioClass* this )
     
     PIOc_freedecomp(this->pioIoSystem, this->iodescNCells);
     PIOc_free_iosystem(this->pioIoSystem);
-#ifdef USE_MPE
-    {
-        int ret;
-        if ((ret = MPE_Finish_log(TEST_NAME)))
-            return NULL;
-    }
-#endif /* USE_MPE */
 
     MPI_Finalize();
     

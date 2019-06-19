@@ -227,9 +227,7 @@ int PIOc_closefile(int ncid)
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[START][CLOSE], 0,
-                              "PIOc_closefile")))
-        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_start_mpe_log(CLOSE);
 #endif /* USE_MPE */
 
     LOG((1, "PIOc_closefile ncid = %d", ncid));
@@ -306,9 +304,7 @@ int PIOc_closefile(int ncid)
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[END][CLOSE], 0,
-                              "PIOc_closefile")))
-        return pio_err(ios, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_stop_mpe_log(INIT, __func__);
 #endif /* USE_MPE */
 
     return ierr;

@@ -134,6 +134,10 @@ PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     int ierr;              /* Return code. */
     void *tmparray;
 
+/* #ifdef USE_MPE */
+/*     pio_start_mpe_log(DARRAY_WRITE); */
+/* #endif /\* USE_MPE *\/ */
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -411,6 +415,10 @@ PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if ((ierr = flush_output_buffer(file, flushtodisk, 0)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
+/* #ifdef USE_MPE */
+/*     pio_stop_mpe_log(DARRAY_WRITE, __func__); */
+/* #endif /\* USE_MPE *\/ */
+
     return PIO_NOERR;
 }
 
@@ -649,9 +657,7 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
     LOG((1, "PIOc_write_darray ncid = %d varid = %d ioid = %d arraylen = %d",
          ncid, varid, ioid, arraylen));
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[START][DARRAY_WRITE], 0,
-                             "PIOc_write_darray")))
-        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_start_mpe_log(DARRAY_WRITE);
 #endif /* USE_MPE */
 
     /* Get the file info. */
@@ -852,9 +858,7 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
     wmb->num_arrays++;
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[END][DARRAY_WRITE], 0,
-                             "PIOc_write_darray")))
-        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_stop_mpe_log(DARRAY_WRITE, __func__);
 #endif /* USE_MPE */
 
     LOG((2, "wmb->num_arrays = %d iodesc->maxbytes / iodesc->mpitype_size = %d "
@@ -896,9 +900,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     void *tmparray;        /* unsorted copy of array buf if required */
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[START][DARRAY_READ], 0,
-                             "PIOc_read_darray")))
-        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_start_mpe_log(DARRAY_READ);
 #endif /* USE_MPE */
 
     /* Get the file info. */
@@ -965,9 +967,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
         brel(iobuf);
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[END][DARRAY_READ], 0,
-                             "PIOc_read_darray")))
-        return pio_err(ios, file, PIO_EIO, __FILE__, __LINE__);
+    pio_stop_mpe_log(DARRAY_READ, __func__);
 #endif /* USE_MPE */
 
     return PIO_NOERR;

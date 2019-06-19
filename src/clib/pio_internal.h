@@ -364,9 +364,13 @@ extern "C" {
     /* Handle end and re-defs. */
     int pioc_change_def(int ncid, int is_enddef);
 
-    /* Initialize and finalize logging. */
+    /* Initialize and finalize logging, use --enable-logging at configure. */
     int pio_init_logging(void);
     void pio_finalize_logging(void );
+
+    /* Logging with the MPE library, use --enable-mpe at configure. */
+    void pio_start_mpe_log(int state);
+    void pio_stop_mpe_log(int state, const char *msg);
 
     /* Write a netCDF decomp file. */
     int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, int ndims,

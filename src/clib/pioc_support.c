@@ -199,16 +199,57 @@ init_mpe(int my_rank)
      * communications. */
     if (!my_rank)
     {
-        MPE_Describe_state(event_num[START][INIT], event_num[END][INIT], "init", "red");
-        MPE_Describe_state(event_num[START][DECOMP], event_num[END][DECOMP], "decomposition", "green");
-        MPE_Describe_state(event_num[START][CREATE], event_num[END][CREATE], "create file", "purple");
-        MPE_Describe_state(event_num[START][OPEN], event_num[END][OPEN], "open file", "orange");
-        MPE_Describe_state(event_num[START][DARRAY_WRITE], event_num[END][DARRAY_WRITE], "darray write", "pink");
-        MPE_Describe_state(event_num[START][DARRAY_READ], event_num[END][DARRAY_WRITE], "darray read", "brown");
-        MPE_Describe_state(event_num[START][CLOSE], event_num[END][CLOSE], "close file", "blue");
+        MPE_Describe_info_state(event_num[START][INIT], event_num[END][INIT],
+                                "PIO init", "red", "%s");
+        MPE_Describe_info_state(event_num[START][DECOMP],
+                                event_num[END][DECOMP], "PIO decomposition",
+                                "green", "%s");
+        MPE_Describe_info_state(event_num[START][CREATE], event_num[END][CREATE],
+                                "PIO create file", "purple", "%s");
+        MPE_Describe_info_state(event_num[START][OPEN], event_num[END][OPEN],
+                                "PIO open file", "orange", "%s");
+        MPE_Describe_info_state(event_num[START][DARRAY_WRITE],
+                                event_num[END][DARRAY_WRITE], "PIO darray write",
+                                "pink", "%s");
+        MPE_Describe_info_state(event_num[START][DARRAY_READ],
+                           event_num[END][DARRAY_WRITE], "PIO darray read",
+                           "brown", "%s");
+        MPE_Describe_info_state(event_num[START][CLOSE], event_num[END][CLOSE],
+                                "PIO close file", "blue", "%s");
     }
     return 0;
 }
+
+/**
+ * Start MPE logging.
+ *
+ * @param state_num the MPE event state number to START (ex. INIT).
+ * @author Ed Hartnett
+ */
+void
+pio_start_mpe_log(int state)
+{
+    if (MPE_Log_event(event_num[START][state], 0, NULL))
+        pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+}
+
+/**
+ * End MPE logging.
+ *
+ * @author Ed Hartnett
+ */
+void
+pio_stop_mpe_log(int state, const char *msg)
+{
+    MPE_LOG_BYTES bytebuf;
+    int pos = 0;
+    int ret;
+
+    MPE_Log_pack(bytebuf, &pos, 's', strlen(msg), msg);
+    if ((ret = MPE_Log_event(event_num[END][state], 0, bytebuf)))
+        pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+}
+
 #endif /* USE_MPE */
 
 /**
@@ -1889,9 +1930,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     int ierr;              /* Return code from function calls. */
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[START][CREATE], 0,
-                              "PIOc_createfile_int")))
-        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_start_mpe_log(CREATE);
 #endif /* USE_MPE */
 
     /* Get the IO system info from the iosysid. */
@@ -2036,9 +2075,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     pio_add_to_file_list(file);
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[END][CREATE], 0,
-                              "PIOc_createfile_int")))
-        return pio_err(NULL, file, PIO_EIO, __FILE__, __LINE__);
+    pio_stop_mpe_log(CREATE, __func__);
 #endif /* USE_MPE */
     LOG((2, "Created file %s file->fh = %d file->pio_ncid = %d", filename,
          file->fh, file->pio_ncid));
@@ -2350,9 +2387,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
     int ierr = PIO_NOERR;      /* Return code from function calls. */
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[START][OPEN], 0,
-                              "PIOc_openfile_retry")))
-        return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+    pio_start_mpe_log(OPEN);
 #endif /* USE_MPE */
 
     /* Get the IO system info from the iosysid. */
@@ -2613,8 +2648,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
     }
 
 #ifdef USE_MPE
-    if ((ierr = MPE_Log_event(event_num[END][OPEN], 0, "PIOc_openfile_retry")))
-        return pio_err(ios, file, PIO_EIO, __FILE__, __LINE__);
+    pio_stop_mpe_log(OPEN, __func__);
 #endif /* USE_MPE */
     LOG((2, "Opened file %s file->pio_ncid = %d file->fh = %d ierr = %d",
          filename, file->pio_ncid, file->fh, ierr));

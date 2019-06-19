@@ -377,11 +377,6 @@ int main(int argc, char* argv[])
     if ((ret = PIOc_free_iosystem(iosysid)))
         ERR(ret);
 
-#ifdef USE_MPE
-    if ((ret = MPE_Finish_log(TEST_NAME)))
-        MPIERR(ret);
-#endif /* USE_MPE */
-
     /* Finalize the MPI library. */
     MPI_Finalize();
 

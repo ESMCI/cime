@@ -70,4 +70,4 @@ test_darray_vard_SOURCES = test_darray_vard.c test_common.c pio_tests.h
 EXTRA_DIST = run_tests.sh
 
 # Clean up files produced during testing.
-CLEANFILES = *.nc *.log decomp*.txt
+CLEANFILES = *.nc *.log decomp*.txt *.clog2 *.slog2

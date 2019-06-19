@@ -9,9 +9,9 @@
 #include <pio_internal.h>
 #include <pio_tests.h>
 #include <sys/time.h>
-#ifdef USE_MPE
-#include <mpe.h>
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/* #include <mpe.h> */
+/* #endif /\* USE_MPE *\/ */
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 16
@@ -65,63 +65,63 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 /* Run test for each of the rearrangers. */
 #define NUM_REARRANGERS_TO_TEST 2
 
-#ifdef USE_MPE
-/* These are for the event numbers array used to log various events in
- * the program with the MPE library, which produces output for the
- * Jumpshot program. */
-#define NUM_EVENTS 7
-#define START 0
-#define END 1
-#define INIT 0
-#define DECOMP 1
-#define CREATE 2
-#define DARRAY_WRITE 3
-#define CLOSE 4
-#define CALCULATE 5
-#define INGEST 6
+/* #ifdef USE_MPE */
+/* /\* These are for the event numbers array used to log various events in */
+/*  * the program with the MPE library, which produces output for the */
+/*  * Jumpshot program. *\/ */
+/* #define NUM_EVENTS 7 */
+/* #define START 0 */
+/* #define END 1 */
+/* #define INIT 0 */
+/* #define DECOMP 1 */
+/* #define CREATE 2 */
+/* #define DARRAY_WRITE 3 */
+/* #define CLOSE 4 */
+/* #define CALCULATE 5 */
+/* #define INGEST 6 */
 
-#define ERR_LOGGING 99
+/* #define ERR_LOGGING 99 */
 
-/* This array holds even numbers for MPE. */
-int event_num[2][NUM_EVENTS];
+/* /\* This array holds even numbers for MPE. *\/ */
+/* int event_num[2][NUM_EVENTS]; */
 
-/* This will set up the MPE logging event numbers. */
-int
-init_logging(int my_rank, int event_num[][NUM_EVENTS])
-{
-   /* Get a bunch of event numbers. */
-   event_num[START][INIT] = MPE_Log_get_event_number();
-   event_num[END][INIT] = MPE_Log_get_event_number();
-   event_num[START][DECOMP] = MPE_Log_get_event_number();
-   event_num[END][DECOMP] = MPE_Log_get_event_number();
-   event_num[START][INGEST] = MPE_Log_get_event_number();
-   event_num[END][INGEST] = MPE_Log_get_event_number();
-   event_num[START][CLOSE] = MPE_Log_get_event_number();
-   event_num[END][CLOSE] = MPE_Log_get_event_number();
-   event_num[START][CALCULATE] = MPE_Log_get_event_number();
-   event_num[END][CALCULATE] = MPE_Log_get_event_number();
-   event_num[START][CREATE] = MPE_Log_get_event_number();
-   event_num[END][CREATE] = MPE_Log_get_event_number();
-   event_num[START][DARRAY_WRITE] = MPE_Log_get_event_number();
-   event_num[END][DARRAY_WRITE] = MPE_Log_get_event_number();
+/* /\* This will set up the MPE logging event numbers. *\/ */
+/* int */
+/* init_logging(int my_rank, int event_num[][NUM_EVENTS]) */
+/* { */
+/*    /\* Get a bunch of event numbers. *\/ */
+/*    event_num[START][INIT] = MPE_Log_get_event_number(); */
+/*    event_num[END][INIT] = MPE_Log_get_event_number(); */
+/*    event_num[START][DECOMP] = MPE_Log_get_event_number(); */
+/*    event_num[END][DECOMP] = MPE_Log_get_event_number(); */
+/*    event_num[START][INGEST] = MPE_Log_get_event_number(); */
+/*    event_num[END][INGEST] = MPE_Log_get_event_number(); */
+/*    event_num[START][CLOSE] = MPE_Log_get_event_number(); */
+/*    event_num[END][CLOSE] = MPE_Log_get_event_number(); */
+/*    event_num[START][CALCULATE] = MPE_Log_get_event_number(); */
+/*    event_num[END][CALCULATE] = MPE_Log_get_event_number(); */
+/*    event_num[START][CREATE] = MPE_Log_get_event_number(); */
+/*    event_num[END][CREATE] = MPE_Log_get_event_number(); */
+/*    event_num[START][DARRAY_WRITE] = MPE_Log_get_event_number(); */
+/*    event_num[END][DARRAY_WRITE] = MPE_Log_get_event_number(); */
 
-   /* You should track at least initialization and partitioning, data
-    * ingest, update computation, all communications, any memory
-    * copies (if you do that), any output rendering, and any global
-    * communications. */
-   if (!my_rank)
-   {
-      MPE_Describe_state(event_num[START][INIT], event_num[END][INIT], "init", "yellow");
-      MPE_Describe_state(event_num[START][INGEST], event_num[END][INGEST], "ingest", "red");
-      MPE_Describe_state(event_num[START][DECOMP], event_num[END][DECOMP], "decomposition", "green");
-      MPE_Describe_state(event_num[START][CALCULATE], event_num[END][CALCULATE], "calculate", "orange");
-      MPE_Describe_state(event_num[START][CREATE], event_num[END][CREATE], "create", "purple");
-      MPE_Describe_state(event_num[START][CLOSE], event_num[END][CLOSE], "close file", "blue");
-      MPE_Describe_state(event_num[START][DARRAY_WRITE], event_num[END][DARRAY_WRITE], "darray write", "pink");
-   }
-   return 0;
-}
-#endif /* USE_MPE */
+/*    /\* You should track at least initialization and partitioning, data */
+/*     * ingest, update computation, all communications, any memory */
+/*     * copies (if you do that), any output rendering, and any global */
+/*     * communications. *\/ */
+/*    if (!my_rank) */
+/*    { */
+/*       MPE_Describe_state(event_num[START][INIT], event_num[END][INIT], "init", "yellow"); */
+/*       MPE_Describe_state(event_num[START][INGEST], event_num[END][INGEST], "ingest", "red"); */
+/*       MPE_Describe_state(event_num[START][DECOMP], event_num[END][DECOMP], "decomposition", "green"); */
+/*       MPE_Describe_state(event_num[START][CALCULATE], event_num[END][CALCULATE], "calculate", "orange"); */
+/*       MPE_Describe_state(event_num[START][CREATE], event_num[END][CREATE], "create", "purple"); */
+/*       MPE_Describe_state(event_num[START][CLOSE], event_num[END][CLOSE], "close file", "blue"); */
+/*       MPE_Describe_state(event_num[START][DARRAY_WRITE], event_num[END][DARRAY_WRITE], "darray write", "pink"); */
+/*    } */
+/*    return 0; */
+/* } */
+/* #endif /\* USE_MPE *\/ */
 
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
@@ -204,7 +204,8 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+    for (int fmt = 0; fmt < 1; fmt++)
     {
         struct timeval starttime, endtime;
         long long startt, endt;
@@ -213,10 +214,10 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         float delta_in_sec;
         float mb_per_sec;
 
-#ifdef USE_MPE
-        if ((ret = MPE_Log_event(event_num[START][CREATE], 0, "start init")))
-            return ERR_MPI;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*         if ((ret = MPE_Log_event(event_num[START][CREATE], 0, "start init"))) */
+/*             return ERR_MPI; */
+/* #endif /\* USE_MPE *\/ */
 
         /* Create the filename. Use the same filename for all, so we
          * don't waste disk space. */
@@ -245,24 +246,25 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-#ifdef USE_MPE
-        if ((ret = MPE_Log_event(event_num[END][CREATE], 0, "end init")))
-            MPIERR(ret);
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*         if ((ret = MPE_Log_event(event_num[END][CREATE], 0, "end init"))) */
+/*             MPIERR(ret); */
+/* #endif /\* USE_MPE *\/ */
 
         /* Start the clock. */
         gettimeofday(&starttime, NULL);
 
-        for (int t = 0; t < NUM_TIMESTEPS; t++)
+        /* for (int t = 0; t < NUM_TIMESTEPS; t++) */
+        for (int t = 0; t < 1; t++)
         {
             /* Initialize some data. */
             for (int f = 0; f < arraylen; f++)
                 test_data[f] = (my_rank * 10 + f) + t * 1000;
 
-#ifdef USE_MPE
-            if ((ret = MPE_Log_event(event_num[START][DARRAY_WRITE], 0, "start init")))
-                return ERR_MPI;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*             if ((ret = MPE_Log_event(event_num[START][DARRAY_WRITE], 0, "start init"))) */
+/*                 return ERR_MPI; */
+/* #endif /\* USE_MPE *\/ */
 
             /* Set the value of the record dimension. */
             if ((ret = PIOc_setframe(ncid, varid, t)))
@@ -272,27 +274,27 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
                 ERR(ret);
 
-#ifdef USE_MPE
-            if ((ret = MPE_Log_event(event_num[END][DARRAY_WRITE], 0, "end init")))
-                MPIERR(ret);
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*             if ((ret = MPE_Log_event(event_num[END][DARRAY_WRITE], 0, "end init"))) */
+/*                 MPIERR(ret); */
+/* #endif /\* USE_MPE *\/ */
 
             num_megabytes += (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(1024*1024);
         }
 
-#ifdef USE_MPE
-        if ((ret = MPE_Log_event(event_num[START][CLOSE], 0, "start init")))
-            return ERR_MPI;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*         if ((ret = MPE_Log_event(event_num[START][CLOSE], 0, "start init"))) */
+/*             return ERR_MPI; */
+/* #endif /\* USE_MPE *\/ */
 
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-#ifdef USE_MPE
-        if ((ret = MPE_Log_event(event_num[END][CLOSE], 0, "end init")))
-            MPIERR(ret);
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*         if ((ret = MPE_Log_event(event_num[END][CLOSE], 0, "end init"))) */
+/*             MPIERR(ret); */
+/* #endif /\* USE_MPE *\/ */
 
 
         /* Stop the clock. */
@@ -428,27 +430,28 @@ test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
-#ifdef USE_MPE
-    if ((ret = MPE_Log_event(event_num[START][DECOMP], 0, "start init")))
-        return ERR_MPI;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*     if ((ret = MPE_Log_event(event_num[START][DECOMP], 0, "start init"))) */
+/*         return ERR_MPI; */
+/* #endif /\* USE_MPE *\/ */
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition_3d(ntasks, my_rank, iosysid, &ioid)))
         return ret;
 
-    /* Test decomposition read/write. */
-    if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
-                                      ntasks, rearranger, test_comm)))
-        return ret;
+    /* /\* Test decomposition read/write. *\/ */
+    /* if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank, */
+    /*                                   ntasks, rearranger, test_comm))) */
+    /*     return ret; */
 
-#ifdef USE_MPE
-    if ((ret = MPE_Log_event(event_num[END][DECOMP], 0, "end init")))
-        MPIERR(ret);
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*     if ((ret = MPE_Log_event(event_num[END][DECOMP], 0, "end init"))) */
+/*         MPIERR(ret); */
+/* #endif /\* USE_MPE *\/ */
 
     /* Test with/without providing a fill value to PIOc_write_darray(). */
-    for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
+    /* for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++) */
+    for (int provide_fill = 0; provide_fill < 1; provide_fill++)
     {
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
@@ -456,19 +459,19 @@ test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ret;
     }
 
-#ifdef USE_MPE
-    if ((ret = MPE_Log_event(event_num[START][DECOMP], 0, "start init")))
-        return ERR_MPI;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*     if ((ret = MPE_Log_event(event_num[START][DECOMP], 0, "start init"))) */
+/*         return ERR_MPI; */
+/* #endif /\* USE_MPE *\/ */
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
 
-#ifdef USE_MPE
-    if ((ret = MPE_Log_event(event_num[END][DECOMP], 0, "end init")))
-        MPIERR(ret);
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*     if ((ret = MPE_Log_event(event_num[END][DECOMP], 0, "end init"))) */
+/*         MPIERR(ret); */
+/* #endif /\* USE_MPE *\/ */
 
     return PIO_NOERR;
 }
@@ -496,13 +499,12 @@ main(int argc, char **argv)
                               0, -1, &test_comm)))
         ERR(ERR_INIT);
 
-#ifdef USE_MPE
-
-   if ((ret = MPE_Init_log()))
-       return ret;
-   if (init_logging(my_rank, event_num))
-       return ERR_LOGGING;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*    if ((ret = MPE_Init_log())) */
+/*        return ret; */
+/*    if (init_logging(my_rank, event_num)) */
+/*        return ERR_LOGGING; */
+/* #endif /\* USE_MPE *\/ */
 
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -532,10 +534,10 @@ main(int argc, char **argv)
         /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
         for (r = 0; r < 1; r++)
         {
-#ifdef USE_MPE
-            if ((ret = MPE_Log_event(event_num[START][INIT], 0, "start init")))
-                return ERR_MPI;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*             if ((ret = MPE_Log_event(event_num[START][INIT], 0, "start init"))) */
+/*                 return ERR_MPI; */
+/* #endif /\* USE_MPE *\/ */
 
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
@@ -543,10 +545,10 @@ main(int argc, char **argv)
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
 
-#ifdef USE_MPE
-            if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init")))
-                MPIERR(ret);
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*             if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init"))) */
+/*                 MPIERR(ret); */
+/* #endif /\* USE_MPE *\/ */
 
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
@@ -560,17 +562,17 @@ main(int argc, char **argv)
     } /* next num io procs */
 
 
-#ifdef USE_MPE
-   {
-       /* This causes problems on my MPICH2 library on Linux, but seems to be
-	* required for frost. */
-       char file_name[128];
-       sprintf(file_name, "chart_%d", 1);
-       if ((ret = MPE_Finish_log(file_name)))
-	   MPIERR(ret);
-   }
+/* #ifdef USE_MPE */
+/*    { */
+/*        /\* This causes problems on my MPICH2 library on Linux, but seems to be */
+/* 	* required for frost. *\/ */
+/*        char file_name[128]; */
+/*        sprintf(file_name, "chart_%d", 1); */
+/*        if ((ret = MPE_Finish_log(file_name))) */
+/* 	   MPIERR(ret); */
+/*    } */
 
-#endif /* USE_MPE */
+/* #endif /\* USE_MPE *\/ */
 
 
     if (!my_rank)
