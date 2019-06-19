@@ -21,6 +21,7 @@ AC_SUBST([VERSION_PATCH], [4])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Libtool initialisation.
+LD=ld # Required for MPE to work.
 LT_INIT
 
 # Find and learn about the C compiler.
@@ -97,17 +98,19 @@ test "x$enable_mpe" = xyes || enable_mpe=no
 AC_MSG_RESULT([$enable_mpe])
 if test "x$enable_mpe" = xyes; then
 
-   AC_SEARCH_LIBS([pthread_setspecific], [pthread], [HAVE_PTHREAD=yes], [HAVE_PTHREAD=no], [])
-   AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [-lpthread -lm])
-   AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [-lmpe -lpthread -lm])
+   AC_SEARCH_LIBS([pthread_setspecific], [pthread], [], [], [])
+   AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [])
+   AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [])
    AC_CHECK_HEADERS([mpe.h], [HAVE_MPE=yes], [HAVE_MPE=no])
-   if test "x$HAVE_LIBMPE" = xno -o "x$HAVE_MPE" = xno -o "x$HAVE_LIBLMPE" = xno; then
-      AC_MSG_ERROR([MPE not found but --enable-mpe used.])
+   if test "x$HAVE_LIBMPE" != xyes; then
+      AC_MSG_ERROR([-lmpe not found but --enable-mpe used.])
+   fi
+   if test "x$HAVE_LIBLMPE" != xyes; then
+      AC_MSG_ERROR([-llmpe not found but --enable-mpe used.])
    fi
    if test $enable_fortran = yes; then
-      AC_MSG_ERROR([MPE not implemented in Fortran tests and examples.])
+      AC_MSG_ERROR([MPE not implemented in Fortran tests and examples. Build without --enable-fortran])
    fi
-   LD=ld # MPE needs this.
    AC_DEFINE([USE_MPE], 1, [If true, use MPE timing library.])
 
 fi

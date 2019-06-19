@@ -104,8 +104,8 @@ void pio_log(int severity, const char *fmt, ...);
 #define CREATE 2
 #define OPEN 3
 #define DARRAY_WRITE 4
-#define DARRAY_READ 5
-#define CLOSE 6
+#define DARRAY_READ 6
+#define CLOSE 5
 #endif /* USE_MPE */
 
 #if defined(__cplusplus)

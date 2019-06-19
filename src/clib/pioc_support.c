@@ -190,10 +190,10 @@ init_mpe(int my_rank)
     event_num[END][OPEN] = MPE_Log_get_event_number();
     event_num[START][DARRAY_WRITE] = MPE_Log_get_event_number();
     event_num[END][DARRAY_WRITE] = MPE_Log_get_event_number();
-    event_num[START][DARRAY_READ] = MPE_Log_get_event_number();
-    event_num[END][DARRAY_READ] = MPE_Log_get_event_number();
     event_num[START][CLOSE] = MPE_Log_get_event_number();
     event_num[END][CLOSE] = MPE_Log_get_event_number();
+    event_num[START][DARRAY_READ] = MPE_Log_get_event_number();
+    event_num[END][DARRAY_READ] = MPE_Log_get_event_number();
 
     /* Available colors: "white", "black", "red", "yellow", "green",
        "cyan", "blue", "magenta", "aquamarine", "forestgreen",
@@ -213,10 +213,11 @@ init_mpe(int my_rank)
                                 event_num[END][DARRAY_WRITE], "PIO darray write",
                                 "pink", "%s");
         MPE_Describe_info_state(event_num[START][DARRAY_READ],
-                                event_num[END][DARRAY_WRITE], "PIO darray read",
+                                event_num[END][DARRAY_READ], "PIO darray read",
                                 "magenta", "%s");
-        MPE_Describe_info_state(event_num[START][CLOSE], event_num[END][CLOSE],
-                                "PIO close file", "purple", "%s");
+        MPE_Describe_info_state(event_num[START][CLOSE],
+                                event_num[END][CLOSE], "PIO close",
+                                "white", "%s");
     }
     return 0;
 }

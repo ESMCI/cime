@@ -304,7 +304,7 @@ int PIOc_closefile(int ncid)
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
 #ifdef USE_MPE
-    pio_stop_mpe_log(INIT, __func__);
+    pio_stop_mpe_log(CLOSE, __func__);
 #endif /* USE_MPE */
 
     return ierr;

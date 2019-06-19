@@ -611,6 +611,12 @@ int main(int argc, char* argv[])
     pioExInst->writeVar(pioExInst);
     pioExInst->readVar(pioExInst);
     pioExInst->closeFile(pioExInst);
+
+#ifdef USE_MPE
+    if ((ret = MPE_Finish_log("examplePio")))
+        return ret;
+#endif /* USE_MPE */
+
     pioExInst->cleanUp(pioExInst);
     
 #ifdef TIMING    
