@@ -104,6 +104,7 @@ if test "x$enable_mpe" = xyes; then
    if test $enable_fortran = yes; then
       AC_MSG_ERROR([MPE not implemented in Fortran tests and examples.])
    fi
+   LD=ld # MPE needs this.
    AC_DEFINE([USE_MPE], 1, [If true, use MPE timing library.])
 fi
 
