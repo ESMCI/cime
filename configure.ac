@@ -96,9 +96,12 @@ AC_ARG_ENABLE([mpe],
 test "x$enable_mpe" = xyes || enable_mpe=no
 AC_MSG_RESULT([$enable_mpe])
 if test "x$enable_mpe" = xyes; then
+
+   AC_SEARCH_LIBS([pthread_setspecific], [pthread], [HAVE_PTHREAD=yes], [HAVE_PTHREAD=no], [])
    AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [-lpthread -lm])
+   AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [-lmpe -lpthread -lm])
    AC_CHECK_HEADERS([mpe.h], [HAVE_MPE=yes], [HAVE_MPE=no])
-   if test "x$HAVE_LIBMPE" = xno -o "x$HAVE_MPE" = xno; then
+   if test "x$HAVE_LIBMPE" = xno -o "x$HAVE_MPE" = xno -o "x$HAVE_LIBLMPE" = xno; then
       AC_MSG_ERROR([MPE not found but --enable-mpe used.])
    fi
    if test $enable_fortran = yes; then
@@ -106,6 +109,7 @@ if test "x$enable_mpe" = xyes; then
    fi
    LD=ld # MPE needs this.
    AC_DEFINE([USE_MPE], 1, [If true, use MPE timing library.])
+
 fi
 
 # Does the user want to disable pnetcdf?
