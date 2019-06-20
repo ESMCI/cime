@@ -24,7 +24,7 @@
 #include <mpe.h>
 #endif /* USE_MPE */
 
-/* The name of this program. */
+/** The name of this program. */
 #define TEST_NAME "example1"
 
 /** The number of possible output netCDF output flavors available to

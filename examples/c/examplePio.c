@@ -24,7 +24,7 @@
 #include <mpe.h>
 #endif /* USE_MPE */
 
-/* The name of this program. */
+/** The name of this program. */
 #define TEST_NAME "examplePio"
 
 /** The length of our 1-d data array. */

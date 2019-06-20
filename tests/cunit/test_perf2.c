@@ -33,12 +33,12 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
-#define Z_DIM_LEN 32
-/* #define X_DIM_LEN 1024 */
-/* #define Y_DIM_LEN 1024 */
-/* #define Z_DIM_LEN 128 */
+/* #define X_DIM_LEN 128 */
+/* #define Y_DIM_LEN 128 */
+/* #define Z_DIM_LEN 32 */
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
+#define Z_DIM_LEN 128
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
@@ -254,8 +254,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         /* Start the clock. */
         gettimeofday(&starttime, NULL);
 
-        /* for (int t = 0; t < NUM_TIMESTEPS; t++) */
-        for (int t = 0; t < 1; t++)
+        for (int t = 0; t < NUM_TIMESTEPS; t++)
         {
             /* Initialize some data. */
             for (int f = 0; f < arraylen; f++)
