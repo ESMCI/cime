@@ -30,12 +30,12 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
-#define Z_DIM_LEN 32
-/* #define X_DIM_LEN 1024 */
-/* #define Y_DIM_LEN 1024 */
-/* #define Z_DIM_LEN 128 */
+/* #define X_DIM_LEN 128 */
+/* #define Y_DIM_LEN 128 */
+/* #define Z_DIM_LEN 32 */
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
+#define Z_DIM_LEN 128
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
@@ -230,8 +230,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-    for (int fmt = 0; fmt < 1; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
         struct timeval starttime, endtime;
@@ -367,8 +366,7 @@ test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
                        MPI_Comm test_comm)
 {
 
-    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-    for (int fmt = 0; fmt < 1; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
 	int ioid2;             /* ID for decomposition we will create from file. */
 	char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
@@ -488,19 +486,17 @@ test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ret;
     }
 
-/* #ifdef USE_MPE */
-/*     if ((ret = MPE_Log_event(event_num[START][DECOMP], 0, "start init"))) */
-/*         return ERR_MPI; */
-/* #endif /\* USE_MPE *\/ */
+#ifdef USE_MPE
+    test_start_mpe_log(TEST_DECOMP);
+#endif /* USE_MPE */
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
 
-/* #ifdef USE_MPE */
-/*     if ((ret = MPE_Log_event(event_num[END][DECOMP], 0, "end init"))) */
-/*         MPIERR(ret); */
-/* #endif /\* USE_MPE *\/ */
+#ifdef USE_MPE
+    test_stop_mpe_log(TEST_DECOMP, TEST_NAME);
+#endif /* USE_MPE */
 
     return PIO_NOERR;
 }
