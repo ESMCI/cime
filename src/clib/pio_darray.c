@@ -38,6 +38,11 @@ PIO_Offset maxusage = 0;
  * indicate that data are being written. */
 #define DARRAY_DATA 0
 
+#ifdef USE_MPE
+/* The event numbers for MPE logging. */
+extern int event_num[2][NUM_EVENTS];
+#endif /* USE_MPE */
+
 /**
  * Set the PIO IO node data buffer size limit.
  *
@@ -128,6 +133,10 @@ PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
     void *tmparray;
+
+/* #ifdef USE_MPE */
+/*     pio_start_mpe_log(DARRAY_WRITE); */
+/* #endif /\* USE_MPE *\/ */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -406,6 +415,10 @@ PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if ((ierr = flush_output_buffer(file, flushtodisk, 0)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
+/* #ifdef USE_MPE */
+/*     pio_stop_mpe_log(DARRAY_WRITE, __func__); */
+/* #endif /\* USE_MPE *\/ */
+
     return PIO_NOERR;
 }
 
@@ -643,6 +656,9 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
 
     LOG((1, "PIOc_write_darray ncid = %d varid = %d ioid = %d arraylen = %d",
          ncid, varid, ioid, arraylen));
+#ifdef USE_MPE
+    pio_start_mpe_log(DARRAY_WRITE);
+#endif /* USE_MPE */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -841,6 +857,10 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
         wmb->frame[wmb->num_arrays] = vdesc->record;
     wmb->num_arrays++;
 
+#ifdef USE_MPE
+    pio_stop_mpe_log(DARRAY_WRITE, __func__);
+#endif /* USE_MPE */
+
     LOG((2, "wmb->num_arrays = %d iodesc->maxbytes / iodesc->mpitype_size = %d "
          "iodesc->ndof = %d iodesc->llen = %d", wmb->num_arrays,
          iodesc->maxbytes / iodesc->mpitype_size, iodesc->ndof, iodesc->llen));
@@ -878,6 +898,10 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     size_t rlen = 0;       /* the length of data in iobuf. */
     int ierr;              /* Return code. */
     void *tmparray;        /* unsorted copy of array buf if required */
+
+#ifdef USE_MPE
+    pio_start_mpe_log(DARRAY_READ);
+#endif /* USE_MPE */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -941,6 +965,10 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     /* Free the buffer. */
     if (rlen > 0)
         brel(iobuf);
+
+#ifdef USE_MPE
+    pio_stop_mpe_log(DARRAY_READ, __func__);
+#endif /* USE_MPE */
 
     return PIO_NOERR;
 }

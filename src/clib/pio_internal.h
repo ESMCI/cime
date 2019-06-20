@@ -19,6 +19,9 @@
 #include <gptl.h>
 #endif
 #include <assert.h>
+#ifdef USE_MPE
+#include <mpe.h>
+#endif /* USE_MPE */
 
 /* These are the sizes of types in netCDF files. Do not replace these
  * constants with sizeof() calls for C types. They are not the
@@ -84,6 +87,26 @@ void pio_log(int severity, const char *fmt, ...);
  * a data type when creating attributes or varaibles, it is only used
  * internally. */
 #define PIO_LONG_INTERNAL 13
+
+#ifdef USE_MPE
+/* These are for the event numbers array used to log various events in
+ * the program with the MPE library, which produces output for the
+ * Jumpshot program. */
+
+/* Each event has start and end. */
+#define START 0
+#define END 1
+
+/* These are the events. */
+#define NUM_EVENTS 7
+#define INIT 0
+#define DECOMP 1
+#define CREATE 2
+#define OPEN 3
+#define DARRAY_WRITE 4
+#define DARRAY_READ 6
+#define CLOSE 5
+#endif /* USE_MPE */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -341,9 +364,15 @@ extern "C" {
     /* Handle end and re-defs. */
     int pioc_change_def(int ncid, int is_enddef);
 
-    /* Initialize and finalize logging. */
+    /* Initialize and finalize logging, use --enable-logging at configure. */
     int pio_init_logging(void);
     void pio_finalize_logging(void );
+
+#ifdef USE_MPE
+    /* Logging with the MPE library, use --enable-mpe at configure. */
+    void pio_start_mpe_log(int state);
+    void pio_stop_mpe_log(int state, const char *msg);
+#endif /* USE_MPE */
 
     /* Write a netCDF decomp file. */
     int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, int ndims,

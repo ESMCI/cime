@@ -21,6 +21,7 @@ AC_SUBST([VERSION_PATCH], [4])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Libtool initialisation.
+LD=ld # Required for MPE to work.
 LT_INIT
 
 # Find and learn about the C compiler.
@@ -50,22 +51,6 @@ test "x$enable_logging" = xyes || enable_logging=no
 AC_MSG_RESULT([$enable_logging])
 if test "x$enable_logging" = xyes; then
    AC_DEFINE([PIO_ENABLE_LOGGING], 1, [If true, turn on logging.])
-fi
-
-# Does the user want to use MPE library?
-AC_MSG_CHECKING([whether use of MPE library is enabled])
-AC_ARG_ENABLE([mpe],
-              [AS_HELP_STRING([--enable-mpe],
-                              [enable use of MPE library for timing and diagnostic info (may negatively impact performance).])])
-test "x$enable_mpe" = xyes || enable_mpe=no
-AC_MSG_RESULT([$enable_mpe])
-if test "x$enable_mpe" = xyes; then
-   AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [-lpthread -lm])
-   AC_CHECK_HEADERS([mpe.h], [HAVE_MPE=yes], [HAVE_MPE=no])
-   if test "x$HAVE_LIBMPE" = xno -o "x$HAVE_MPE" = xno; then
-      AC_MSG_ERROR([MPE not found but --enable-mpe used.])
-   fi
-   AC_DEFINE([USE_MPE], 1, [If true, use MPE timing library.])
 fi
 
 # Does the user want to enable timing?
@@ -103,6 +88,32 @@ AC_ARG_ENABLE([fortran],
 test "x$enable_fortran" = xyes || enable_fortran=no
 AC_MSG_RESULT([$enable_fortran])
 AM_CONDITIONAL(BUILD_FORTRAN, [test "x$enable_fortran" = xyes])
+
+# Does the user want to use MPE library?
+AC_MSG_CHECKING([whether use of MPE library is enabled])
+AC_ARG_ENABLE([mpe],
+              [AS_HELP_STRING([--enable-mpe],
+                              [enable use of MPE library for timing and diagnostic info (may negatively impact performance).])])
+test "x$enable_mpe" = xyes || enable_mpe=no
+AC_MSG_RESULT([$enable_mpe])
+if test "x$enable_mpe" = xyes; then
+
+   AC_SEARCH_LIBS([pthread_setspecific], [pthread], [], [], [])
+   dnl AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [])
+   dnl AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [])
+   AC_CHECK_HEADERS([mpe.h], [HAVE_MPE=yes], [HAVE_MPE=no])
+   dnl if test "x$HAVE_LIBMPE" != xyes; then
+   dnl    AC_MSG_ERROR([-lmpe not found but --enable-mpe used.])
+   dnl fi
+   dnl if test "x$HAVE_LIBLMPE" != xyes; then
+   dnl    AC_MSG_ERROR([-llmpe not found but --enable-mpe used.])
+   dnl fi
+   if test $enable_fortran = yes; then
+      AC_MSG_ERROR([MPE not implemented in Fortran tests and examples. Build without --enable-fortran])
+   fi
+   AC_DEFINE([USE_MPE], 1, [If true, use MPE timing library.])
+
+fi
 
 # Does the user want to disable pnetcdf?
 AC_MSG_CHECKING([whether pnetcdf is to be used])

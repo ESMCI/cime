@@ -163,6 +163,97 @@ PIOc_set_log_level(int level)
     return PIO_NOERR;
 }
 
+#ifdef USE_MPE
+
+/* This array holds even numbers for MPE. */
+int event_num[2][NUM_EVENTS];
+
+/** This will set up the MPE logging event numbers. The calling
+ * program must call MPE_Init_log() before this function is
+ * called. MPE must be installed, get it from
+ * https://www.mcs.anl.gov/research/projects/perfvis/software/MPE/.
+ *
+ * @param my_rank rank of processor in MPI_COMM_WORLD.
+ * @author Ed Hartnett
+*/
+int
+init_mpe(int my_rank)
+{
+    /* Get a bunch of event numbers. */
+    event_num[START][INIT] = MPE_Log_get_event_number();
+    event_num[END][INIT] = MPE_Log_get_event_number();
+    event_num[START][DECOMP] = MPE_Log_get_event_number();
+    event_num[END][DECOMP] = MPE_Log_get_event_number();
+    event_num[START][CREATE] = MPE_Log_get_event_number();
+    event_num[END][CREATE] = MPE_Log_get_event_number();
+    event_num[START][OPEN] = MPE_Log_get_event_number();
+    event_num[END][OPEN] = MPE_Log_get_event_number();
+    event_num[START][DARRAY_WRITE] = MPE_Log_get_event_number();
+    event_num[END][DARRAY_WRITE] = MPE_Log_get_event_number();
+    event_num[START][CLOSE] = MPE_Log_get_event_number();
+    event_num[END][CLOSE] = MPE_Log_get_event_number();
+    event_num[START][DARRAY_READ] = MPE_Log_get_event_number();
+    event_num[END][DARRAY_READ] = MPE_Log_get_event_number();
+
+    /* Available colors: "white", "black", "red", "yellow", "green",
+       "cyan", "blue", "magenta", "aquamarine", "forestgreen",
+       "orange", "marroon", "brown", "pink", "coral", "gray" */
+    if (!my_rank)
+    {
+        MPE_Describe_info_state(event_num[START][INIT], event_num[END][INIT],
+                                "PIO init", "green", "%s");
+        MPE_Describe_info_state(event_num[START][DECOMP],
+                                event_num[END][DECOMP], "PIO decomposition",
+                                "cyan", "%s");
+        MPE_Describe_info_state(event_num[START][CREATE], event_num[END][CREATE],
+                                "PIO create file", "red", "%s");
+        MPE_Describe_info_state(event_num[START][OPEN], event_num[END][OPEN],
+                                "PIO open file", "orange", "%s");
+        MPE_Describe_info_state(event_num[START][DARRAY_WRITE],
+                                event_num[END][DARRAY_WRITE], "PIO darray write",
+                                "pink", "%s");
+        MPE_Describe_info_state(event_num[START][DARRAY_READ],
+                                event_num[END][DARRAY_READ], "PIO darray read",
+                                "magenta", "%s");
+        MPE_Describe_info_state(event_num[START][CLOSE],
+                                event_num[END][CLOSE], "PIO close",
+                                "white", "%s");
+    }
+    return 0;
+}
+
+/**
+ * Start MPE logging.
+ *
+ * @param state_num the MPE event state number to START (ex. INIT).
+ * @author Ed Hartnett
+ */
+void
+pio_start_mpe_log(int state)
+{
+    if (MPE_Log_event(event_num[START][state], 0, NULL))
+        pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+}
+
+/**
+ * End MPE logging.
+ *
+ * @author Ed Hartnett
+ */
+void
+pio_stop_mpe_log(int state, const char *msg)
+{
+    MPE_LOG_BYTES bytebuf;
+    int pos = 0;
+    int ret;
+
+    MPE_Log_pack(bytebuf, &pos, 's', strlen(msg), msg);
+    if ((ret = MPE_Log_event(event_num[END][state], 0, bytebuf)))
+        pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
+}
+
+#endif /* USE_MPE */
+
 /**
  * Initialize logging.  Open log file, if not opened yet, or increment
  * ref count if already open.
@@ -172,14 +263,27 @@ PIOc_set_log_level(int level)
 int
 pio_init_logging(void)
 {
-    int mpierr;
     int ret = PIO_NOERR;
 
-#if PIO_ENABLE_LOGGING
-    char log_filename[PIO_MAX_NAME];
+#ifdef USE_MPE
+    {
+        int mpe_rank;
+        int mpierr;
 
+        if ((mpierr = MPI_Comm_rank(MPI_COMM_WORLD, &mpe_rank)))
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+
+        if ((ret = init_mpe(mpe_rank)))
+            return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    }
+#endif /* USE_MPE */
+
+#if PIO_ENABLE_LOGGING
     if (!LOG_FILE)
     {
+        char log_filename[PIO_MAX_NAME];
+        int mpierr;
+
         /* Create a filename with the rank in it. */
         if ((mpierr = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -1827,6 +1931,10 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;              /* Return code from function calls. */
 
+#ifdef USE_MPE
+    pio_start_mpe_log(CREATE);
+#endif /* USE_MPE */
+
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -1968,6 +2076,9 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
      * open files. */
     pio_add_to_file_list(file);
 
+#ifdef USE_MPE
+    pio_stop_mpe_log(CREATE, __func__);
+#endif /* USE_MPE */
     LOG((2, "Created file %s file->fh = %d file->pio_ncid = %d", filename,
          file->fh, file->pio_ncid));
 
@@ -2277,6 +2388,10 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int ierr = PIO_NOERR;      /* Return code from function calls. */
 
+#ifdef USE_MPE
+    pio_start_mpe_log(OPEN);
+#endif /* USE_MPE */
+
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -2534,6 +2649,9 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
             free(mpi_type_size);
     }
 
+#ifdef USE_MPE
+    pio_stop_mpe_log(OPEN, __func__);
+#endif /* USE_MPE */
     LOG((2, "Opened file %s file->pio_ncid = %d file->fh = %d ierr = %d",
          filename, file->pio_ncid, file->fh, ierr));
 

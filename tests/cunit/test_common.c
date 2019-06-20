@@ -251,11 +251,36 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
     if ((ret = PIOc_set_log_level(log_level)))
         return ret;
 
+#ifdef USE_MPE
+    /* If MPE logging is being used, then initialize it. */
+    if ((ret = MPE_Init_log()))
+        return ret;
+#endif /* USE_MPE */
+
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
     return PIO_NOERR;
+}
+
+/* Finalize a PIO C test. This version of the finalize function takes
+ * a test name, which is used if MPE logging is in use.
+ *
+ * @param test_comm pointer to the test communicator.
+ * @param test_name name of the test
+ * @returns 0 for success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int pio_test_finalize2(MPI_Comm *test_comm, const char *test_name)
+{
+#ifdef USE_MPE
+    int ret;
+    if ((ret = MPE_Finish_log(test_name)))
+        MPIERR(ret);
+#endif /* USE_MPE */
+
+    return pio_test_finalize(test_comm);
 }
 
 /* Finalize a PIO C test.

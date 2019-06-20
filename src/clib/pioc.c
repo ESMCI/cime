@@ -10,6 +10,11 @@
 #include <pio.h>
 #include <pio_internal.h>
 
+#ifdef USE_MPE
+/* The event numbers for MPE logging. */
+extern int event_num[2][NUM_EVENTS];
+#endif /* USE_MPE */
+
 /**
  * @defgroup PIO_init_c Initialize the IO System
  * Initialize the IOSystem, including specifying number of IO and
@@ -496,6 +501,10 @@ PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int ma
     LOG((1, "PIOc_InitDecomp iosysid = %d pio_type = %d ndims = %d maplen = %d",
          iosysid, pio_type, ndims, maplen));
 
+#ifdef USE_MPE
+    pio_start_mpe_log(DECOMP);
+#endif /* USE_MPE */
+
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -615,6 +624,7 @@ PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int ma
             iodesc->map[m] = compmap[m];
         }
     }
+
     /* Remember the dim sizes. */
     if (!(iodesc->dimlen = malloc(sizeof(int) * ndims)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
@@ -716,6 +726,10 @@ PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int ma
     /* This function only does something if pre-processor macro
      * PERFTUNE is set. */
     performance_tune_rearranger(ios, iodesc);
+
+#ifdef USE_MPE
+    pio_stop_mpe_log(DECOMP, __func__);
+#endif /* USE_MPE */
 
     return PIO_NOERR;
 }
@@ -920,6 +934,10 @@ PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
     if ((ret = pio_init_logging()))
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 
+#ifdef USE_MPE
+    pio_start_mpe_log(INIT);
+#endif /* USE_MPE */
+
     /* Find the number of computation tasks. */
     if ((mpierr = MPI_Comm_size(comp_comm, &num_comptasks)))
         return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -1042,6 +1060,9 @@ PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
     if ((ret = compute_buffer_init(ios)))
         return ret;
 
+#ifdef USE_MPE
+    pio_stop_mpe_log(INIT, __func__);
+#endif /* USE_MPE */
     LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
 
     return PIO_NOERR;
@@ -1426,6 +1447,10 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((1, "PIOc_init_async num_io_procs = %d component_count = %d", num_io_procs,
          component_count));
 
+#ifdef USE_MPE
+    pio_start_mpe_log(INIT);
+#endif /* USE_MPE */
+
     /* Determine which tasks to use for IO. */
     for (int p = 0; p < num_io_procs; p++)
         my_io_proc_list[p] = io_proc_list ? io_proc_list[p] : p;
@@ -1699,12 +1724,18 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     } /* next computational component */
 
     /* Now call the function from which the IO tasks will not return
-     * until the PIO_MSG_EXIT message is sent. This will handle all
-     * components. */
+     * until the PIO_MSG_EXIT message is sent. This will handle
+     * messages from all computation components. */
     if (in_io)
     {
         LOG((2, "Starting message handler io_rank = %d component_count = %d",
              io_rank, component_count));
+#ifdef USE_MPE
+    pio_stop_mpe_log(INIT, __func__);
+#endif /* USE_MPE */
+
+        /* Start the message handler loop. This will not return until
+         * an exit message is sent, or an error occurs. */
         if ((ret = pio_msg_handler2(io_rank, component_count, iosys, io_comm)))
             return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((2, "Returned from pio_msg_handler2() ret = %d", ret));
@@ -1735,6 +1766,11 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     if ((ret = MPI_Group_free(&world_group)))
         return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+#ifdef USE_MPE
+    if (!in_io)
+        pio_stop_mpe_log(INIT, __func__);
+#endif /* USE_MPE */
 
     LOG((2, "successfully done with PIOc_init_async"));
     return PIO_NOERR;

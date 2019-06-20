@@ -1,4 +1,5 @@
-/** @file
+/**
+ * @file
  *
  * PIO async message handling. This file contains the code which
  * runs on the IO nodes when async is in use. This code waits for
@@ -21,6 +22,11 @@
 extern int my_rank;
 extern int pio_log_level;
 #endif /* PIO_ENABLE_LOGGING */
+
+#ifdef USE_MPE
+/* The event numbers for MPE logging. */
+extern int event_num[2][NUM_EVENTS];
+#endif /* USE_MPE */
 
 /**
  * This function is run on the IO tasks to handle nc_inq_type*()
