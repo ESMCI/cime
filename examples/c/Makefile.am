@@ -4,7 +4,7 @@
 # Ed Hartnett 5/7/18
 
 # Link to our assembled library.
-AM_LDFLAGS = ${top_builddir}/src/clib/libpio.la
+LDADD = ${top_builddir}/src/clib/libpio.la
 AM_CPPFLAGS = -I$(top_srcdir)/src/clib
 
 # Build the tests for make check.

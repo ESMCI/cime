@@ -4,7 +4,7 @@
 # Ed Hartnett 8/17/17
 
 # Link to our assembled library.
-AM_LDFLAGS = ${top_builddir}/src/clib/libpio.la
+#AM_LDFLAGS = ${top_builddir}/src/clib/libpio.la
 AM_CPPFLAGS = -I$(top_srcdir)/src/clib
 LDADD = ${top_builddir}/src/clib/libpio.la
 

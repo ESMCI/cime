@@ -186,14 +186,14 @@ struct examplePioClass* epc_init( struct examplePioClass* this )
 	this->errorHandler(this, "Number of processors must be 1, 2, 4, 8, or 16!",
 			   ERR_CODE);
 
-#ifdef USE_MPE
-    /* If MPE logging is being used, then initialize it. */
-    {
-        int ret;
-        if ((ret = MPE_Init_log()))
-            return NULL;
-    }
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*     /\* If MPE logging is being used, then initialize it. *\/ */
+/*     { */
+/*         int ret; */
+/*         if ((ret = MPE_Init_log())) */
+/*             return NULL; */
+/*     } */
+/* #endif /\* USE_MPE *\/ */
 
     /*
     ** set up PIO for rest of example
@@ -612,10 +612,10 @@ int main(int argc, char* argv[])
     pioExInst->readVar(pioExInst);
     pioExInst->closeFile(pioExInst);
 
-#ifdef USE_MPE
-    if ((ret = MPE_Finish_log("examplePio")))
-        return ret;
-#endif /* USE_MPE */
+/* #ifdef USE_MPE */
+/*     if ((ret = MPE_Finish_log("examplePio"))) */
+/*         return ret; */
+/* #endif /\* USE_MPE *\/ */
 
     pioExInst->cleanUp(pioExInst);
     
