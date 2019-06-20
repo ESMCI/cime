@@ -368,9 +368,11 @@ extern "C" {
     int pio_init_logging(void);
     void pio_finalize_logging(void );
 
+#ifdef USE_MPE
     /* Logging with the MPE library, use --enable-mpe at configure. */
     void pio_start_mpe_log(int state);
     void pio_stop_mpe_log(int state, const char *msg);
+#endif /* USE_MPE */
 
     /* Write a netCDF decomp file. */
     int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, int ndims,
