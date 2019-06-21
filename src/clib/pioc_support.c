@@ -247,6 +247,9 @@ pio_start_mpe_log(int state)
 /**
  * End MPE logging.
  *
+ * @param state one of the MPE states defined in pio_internal.h.
+ * @param msg a text message to describe the state. Will be truncated
+ * to MPE_MAX_MSG_LEN.
  * @author Ed Hartnett
  */
 void
@@ -254,9 +257,14 @@ pio_stop_mpe_log(int state, const char *msg)
 {
     MPE_LOG_BYTES bytebuf;
     int pos = 0;
+    int msglen;
     int ret;
 
-    MPE_Log_pack(bytebuf, &pos, 's', strlen(msg), msg);
+    /* Truncate messages longer than MPE_MAX_MSG_LEN. */
+    msglen = strlen(msg) > MPE_MAX_MSG_LEN ? MPE_MAX_MSG_LEN : strlen(msg);
+
+    /* Tell MPE to stop the state, with a message. */
+    MPE_Log_pack(bytebuf, &pos, 's', msglen, msg);
     if ((ret = MPE_Log_event(event_num[END][state], 0, bytebuf)))
         pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
 }

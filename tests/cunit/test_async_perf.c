@@ -143,6 +143,10 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
         for (d = 0; d < elements_per_pe2; d++)
             my_data_int[d] = my_rank;
 
+#ifdef USE_MPE
+        test_start_mpe_log(TEST_CREATE);
+#endif /* USE_MPE */
+
         /* Create sample output file. */
         /* sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt], */
         /*         piotype); */
@@ -150,6 +154,14 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
             BAIL(ret);
+
+#ifdef USE_MPE
+        {
+            char msg[PIO_MAX_NAME + 1];
+            sprintf(msg, "iotype %d", flavor[fmt]);
+            test_stop_mpe_log(TEST_CREATE, msg);
+        }
+#endif /* USE_MPE */
 
         /* Find the size of the type. */
         if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
