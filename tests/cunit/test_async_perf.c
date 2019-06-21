@@ -36,12 +36,12 @@
 #define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
-/* #define X_DIM_LEN 128 */
-/* #define Y_DIM_LEN 128 */
-/* #define Z_DIM_LEN 32 */
-#define X_DIM_LEN 1024
-#define Y_DIM_LEN 1024
-#define Z_DIM_LEN 256
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
+#define Z_DIM_LEN 32
+/* #define X_DIM_LEN 1024 */
+/* #define Y_DIM_LEN 1024 */
+/* #define Z_DIM_LEN 256 */
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 3
@@ -62,7 +62,7 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 #define NUM_VAR_SETS 2
 
 /* How long to sleep for "calculation time". */
-#define SLEEP_SECONDS 3
+#define SLEEP_SECONDS 1
 
 #ifdef USE_MPE
 /* This array holds even numbers for MPE. */
@@ -371,7 +371,7 @@ int main(int argc, char **argv)
                 endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
                 delta = (endt - startt)/NUM_TIMESTEPS;
                 delta_in_sec = (float)delta / 1000000;
-                num_megabytes = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * NUM_TIMESTEPS *
+                num_megabytes = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * (long long int)  NUM_TIMESTEPS *
                                  sizeof(int))/(1024*1024);
                 mb_per_sec = num_megabytes / delta_in_sec;
                 printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs[niotest],
