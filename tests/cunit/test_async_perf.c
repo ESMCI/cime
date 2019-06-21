@@ -36,12 +36,12 @@
 #define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
-#define Z_DIM_LEN 32
-/* #define X_DIM_LEN 1024 */
-/* #define Y_DIM_LEN 1024 */
-/* #define Z_DIM_LEN 256 */
+/* #define X_DIM_LEN 128 */
+/* #define Y_DIM_LEN 128 */
+/* #define Z_DIM_LEN 32 */
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
+#define Z_DIM_LEN 256
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 3
