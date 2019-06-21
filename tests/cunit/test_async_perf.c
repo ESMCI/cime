@@ -78,13 +78,19 @@ int test_event[2][TEST_NUM_EVENTS];
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid, PIO_Offset *elements_per_pe)
+int
+create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid,
+                        PIO_Offset *elements_per_pe)
 {
     PIO_Offset my_elem_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
     int dim_len_3d[NDIM3] = {X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
     int my_proc_rank = my_rank - 1;
     int ret;
+
+#ifdef USE_MPE
+    test_start_mpe_log(TEST_DECOMP);
+#endif /* USE_MPE */
 
     /* How many data elements per task? */
     my_elem_per_pe = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks;
@@ -106,6 +112,14 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid, PIO
 
     /* Free the mapping. */
     free(compdof);
+
+#ifdef USE_MPE
+    {
+        char msg[MPE_MAX_MSG_LEN + 1];
+        sprintf(msg, "elements_per_pe %lld", my_elem_per_pe);
+        test_stop_mpe_log(TEST_DECOMP, msg);
+    }
+#endif /* USE_MPE */
 
     return 0;
 }
@@ -157,7 +171,7 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
 
 #ifdef USE_MPE
         {
-            char msg[PIO_MAX_NAME + 1];
+            char msg[MPE_MAX_MSG_LEN + 1];
             sprintf(msg, "iotype %d", flavor[fmt]);
             test_stop_mpe_log(TEST_CREATE, msg);
         }
@@ -182,6 +196,10 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
 
         for (t = 0; t < NUM_TIMESTEPS; t++)
         {
+#ifdef USE_MPE
+            test_start_mpe_log(TEST_DARRAY_WRITE);
+#endif /* USE_MPE */
+
             /* Set the record number for the record vars. */
             if ((ret = PIOc_setframe(ncid, varid, t)))
                 BAIL(ret);
@@ -191,12 +209,14 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
                                          my_data_int, NULL)))
                 BAIL(ret);
 
-            /* Sync the file. */
-            if ((ret = PIOc_sync(ncid)))
-                BAIL(ret);
-
+#ifdef USE_MPE
+            {
+                char msg[MPE_MAX_MSG_LEN + 1];
+                sprintf(msg, "timestep %d", t);
+                test_stop_mpe_log(TEST_DARRAY_WRITE, msg);
+            }
+#endif /* USE_MPE */
         }
-
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
@@ -276,6 +296,10 @@ int main(int argc, char **argv)
             float delta_in_sec;
             float mb_per_sec;
 
+#ifdef USE_MPE
+            test_start_mpe_log(TEST_INIT);
+#endif /* USE_MPE */
+
             /* Start the clock. */
             if (!my_rank)
             {
@@ -287,6 +311,14 @@ int main(int argc, char **argv)
                                        &num_computation_procs, NULL, &io_comm, comp_comm,
                                        PIO_REARR_BOX, &iosysid)))
                 ERR(ERR_INIT);
+
+#ifdef USE_MPE
+            {
+                char msg[MPE_MAX_MSG_LEN + 1];
+                sprintf(msg, "num IO procs %d", num_io_procs[niotest]);
+                test_stop_mpe_log(TEST_INIT, msg);
+            }
+#endif /* USE_MPE */
 
             /* This code runs only on computation components. */
             if (my_rank >= num_io_procs[niotest])

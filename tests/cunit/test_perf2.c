@@ -190,7 +190,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
 #ifdef USE_MPE
         {
-            char msg[PIO_MAX_NAME + 1];
+            char msg[MPE_MAX_MSG_LEN + 1];
             sprintf(msg, "iotype %d rearr %d", flavor[fmt], rearranger);
             test_stop_mpe_log(TEST_CREATE, msg);
         }
@@ -219,7 +219,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
 #ifdef USE_MPE
             {
-                char msg[PIO_MAX_NAME + 1];
+                char msg[MPE_MAX_MSG_LEN + 1];
                 sprintf(msg, "write_darray timestep %d", t);
                 test_stop_mpe_log(TEST_DARRAY_WRITE, msg);
             }
@@ -238,7 +238,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
 #ifdef USE_MPE
         {
-            char msg[PIO_MAX_NAME + 1];
+            char msg[MPE_MAX_MSG_LEN + 1];
             sprintf(msg, "closed ncid %d", ncid);
             test_stop_mpe_log(TEST_CLOSE, msg);
         }
