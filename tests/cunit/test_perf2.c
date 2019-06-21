@@ -30,12 +30,12 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-/* #define X_DIM_LEN 128 */
-/* #define Y_DIM_LEN 128 */
-/* #define Z_DIM_LEN 32 */
-#define X_DIM_LEN 1024
-#define Y_DIM_LEN 1024
-#define Z_DIM_LEN 128
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
+#define Z_DIM_LEN 32
+/* #define X_DIM_LEN 1024 */
+/* #define Y_DIM_LEN 1024 */
+/* #define Z_DIM_LEN 128 */
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 10
@@ -63,10 +63,8 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 #define NUM_REARRANGERS_TO_TEST 2
 
 #ifdef USE_MPE
-
 /* This array holds even numbers for MPE. */
 int test_event[2][TEST_NUM_EVENTS];
-
 #endif /* USE_MPE */
 
 /* Create the decomposition to divide the 4-dimensional sample data
@@ -444,10 +442,11 @@ main(int argc, char **argv)
         ERR(ERR_INIT);
 
 #ifdef USE_MPE
-   if (init_mpe_test_logging(my_rank, test_event))
+    /* If --enable-mpe was specified at configure, start MPE
+     * logging. */
+    if (init_mpe_test_logging(my_rank, test_event))
        return ERR_AWFUL;
 #endif /* USE_MPE */
-
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;

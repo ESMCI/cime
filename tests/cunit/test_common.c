@@ -305,7 +305,7 @@ init_mpe_test_logging(int my_rank, int test_event[][TEST_NUM_EVENTS])
    test_event[START][TEST_CALCULATE] = MPE_Log_get_event_number();
    test_event[END][TEST_CALCULATE] = MPE_Log_get_event_number();
 
-   /* Set up MPE states. */
+   /* Set up MPE states. This only happens on rank 0. */
    if (!my_rank)
    {
         MPE_Describe_info_state(test_event[START][TEST_INIT], test_event[END][TEST_INIT],

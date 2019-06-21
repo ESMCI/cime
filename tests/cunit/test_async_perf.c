@@ -36,9 +36,12 @@
 #define LON_LEN 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 1024
-#define Y_DIM_LEN 1024
-#define Z_DIM_LEN 256
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
+#define Z_DIM_LEN 32
+/* #define X_DIM_LEN 1024 */
+/* #define Y_DIM_LEN 1024 */
+/* #define Z_DIM_LEN 256 */
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 3
@@ -57,6 +60,11 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 #define LEN3 3
 
 #define NUM_VAR_SETS 2
+
+#ifdef USE_MPE
+/* This array holds even numbers for MPE. */
+int test_event[2][TEST_NUM_EVENTS];
+#endif /* USE_MPE */
 
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
@@ -213,6 +221,14 @@ int main(int argc, char **argv)
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 1, 0, -1, &test_comm)))
         ERR(ERR_INIT);
+
+#ifdef USE_MPE
+    /* If --enable-mpe was specified at configure, start MPE
+     * logging. */
+    if (init_mpe_test_logging(my_rank, test_event))
+        return ERR_AWFUL;
+#endif /* USE_MPE */
+
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
 
