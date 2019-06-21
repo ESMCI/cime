@@ -61,6 +61,9 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"unlim", "x", "y", "z"};
 
 #define NUM_VAR_SETS 2
 
+/* How long to sleep for "calculation time". */
+#define SLEEP_SECONDS 3
+
 #ifdef USE_MPE
 /* This array holds even numbers for MPE. */
 int test_event[2][TEST_NUM_EVENTS];
@@ -214,6 +217,22 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
                 char msg[MPE_MAX_MSG_LEN + 1];
                 sprintf(msg, "timestep %d", t);
                 test_stop_mpe_log(TEST_DARRAY_WRITE, msg);
+            }
+#endif /* USE_MPE */
+
+            /* Now do some calculations. */
+#ifdef USE_MPE
+            test_start_mpe_log(TEST_CALCULATE);
+#endif /* USE_MPE */
+
+            /* Sleep some seconds away. */
+            sleep(SLEEP_SECONDS);
+
+#ifdef USE_MPE
+            {
+                char msg[MPE_MAX_MSG_LEN + 1];
+                sprintf(msg, "timestep %d", t);
+                test_stop_mpe_log(TEST_CALCULATE, msg);
             }
 #endif /* USE_MPE */
         }
