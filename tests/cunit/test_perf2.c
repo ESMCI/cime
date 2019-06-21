@@ -63,91 +63,10 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 #define NUM_REARRANGERS_TO_TEST 2
 
 #ifdef USE_MPE
-/* These are for the event numbers array used to log various events in
- * the program with the MPE library, which produces output for the
- * Jumpshot program. */
-#define TEST_NUM_EVENTS 6
-#define START 0
-#define END 1
-#define TEST_INIT 0
-#define TEST_DECOMP 1
-#define TEST_CREATE 2
-#define TEST_DARRAY_WRITE 3
-#define TEST_CLOSE 4
-#define TEST_CALCULATE 5
 
 /* This array holds even numbers for MPE. */
 int test_event[2][TEST_NUM_EVENTS];
 
-/* This will set up the MPE logging event numbers. */
-int
-init_logging(int my_rank, int test_event[][TEST_NUM_EVENTS])
-{
-   /* Get a bunch of event numbers. */
-   test_event[START][TEST_INIT] = MPE_Log_get_event_number();
-   test_event[END][TEST_INIT] = MPE_Log_get_event_number();
-   test_event[START][TEST_DECOMP] = MPE_Log_get_event_number();
-   test_event[END][TEST_DECOMP] = MPE_Log_get_event_number();
-   test_event[START][TEST_CREATE] = MPE_Log_get_event_number();
-   test_event[END][TEST_CREATE] = MPE_Log_get_event_number();
-   test_event[START][TEST_DARRAY_WRITE] = MPE_Log_get_event_number();
-   test_event[END][TEST_DARRAY_WRITE] = MPE_Log_get_event_number();
-   test_event[START][TEST_CLOSE] = MPE_Log_get_event_number();
-   test_event[END][TEST_CLOSE] = MPE_Log_get_event_number();
-   test_event[START][TEST_CALCULATE] = MPE_Log_get_event_number();
-   test_event[END][TEST_CALCULATE] = MPE_Log_get_event_number();
-
-   /* Set up MPE states. */
-   if (!my_rank)
-   {
-        MPE_Describe_info_state(test_event[START][TEST_INIT], test_event[END][TEST_INIT],
-                                "test_perf2 init", "forestgreen", "%s");
-        MPE_Describe_info_state(test_event[START][TEST_DECOMP],
-                                test_event[END][TEST_DECOMP], "test_perf2 decomposition",
-                                "blue", "%s");
-        MPE_Describe_info_state(test_event[START][TEST_CREATE], test_event[END][TEST_CREATE],
-                                "test_perf2 create file", "marroon", "%s");
-        /* MPE_Describe_info_state(test_event[START][TEST_OPEN], test_event[END][TEST_OPEN], */
-        /*                         "test_perf2 open file", "orange", "%s"); */
-        MPE_Describe_info_state(test_event[START][TEST_DARRAY_WRITE],
-                                test_event[END][TEST_DARRAY_WRITE], "test_perf2 darray write",
-                                "coral", "%s");
-        MPE_Describe_info_state(test_event[START][TEST_CLOSE],
-                                test_event[END][TEST_CLOSE], "test_perf2 close",
-                                "gray", "%s");
-        MPE_Describe_info_state(test_event[START][TEST_CALCULATE],
-                                test_event[END][TEST_CALCULATE], "test_perf2 calculate",
-                                "aquamarine", "%s");
-   }
-   return 0;
-}
-
-/**
- * Start MPE logging.
- *
- * @param state_num the MPE event state number to START (ex. INIT).
- * @author Ed Hartnett
- */
-void
-test_start_mpe_log(int state)
-{
-    MPE_Log_event(test_event[START][state], 0, NULL);
-}
-
-/**
- * End MPE logging.
- *
- * @author Ed Hartnett
- */
-void
-test_stop_mpe_log(int state, const char *msg)
-{
-    MPE_LOG_BYTES bytebuf;
-    int pos = 0;
-
-    MPE_Log_pack(bytebuf, &pos, 's', strlen(msg), msg);
-    MPE_Log_event(test_event[END][state], 0, bytebuf);
-}
 #endif /* USE_MPE */
 
 /* Create the decomposition to divide the 4-dimensional sample data
@@ -525,7 +444,7 @@ main(int argc, char **argv)
         ERR(ERR_INIT);
 
 #ifdef USE_MPE
-   if (init_logging(my_rank, test_event))
+   if (init_mpe_test_logging(my_rank, test_event))
        return ERR_AWFUL;
 #endif /* USE_MPE */
 

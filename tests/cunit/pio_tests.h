@@ -20,6 +20,23 @@
 #include <mpe.h>
 #endif /* USE_MPE */
 
+#ifdef USE_MPE
+/* These are for the event numbers array used to log various events in
+ * the program with the MPE library, which produces output for the
+ * Jumpshot program. */
+#define TEST_NUM_EVENTS 6
+#define TEST_INIT 0
+#define TEST_DECOMP 1
+#define TEST_CREATE 2
+#define TEST_DARRAY_WRITE 3
+#define TEST_CLOSE 4
+#define TEST_CALCULATE 5
+
+int init_mpe_test_logging(int my_rank, int test_event[][TEST_NUM_EVENTS]);
+void test_start_mpe_log(int state);
+void test_stop_mpe_log(int state, const char *msg);
+#endif /* USE_MPE */
+
 /** The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
 #define NUM_FLAVORS 4
