@@ -97,7 +97,7 @@ void pio_log(int severity, const char *fmt, ...);
 #define START 0
 #define END 1
 
-/* These are the events. */
+/* These are the MPE states (events) we keep track of. */
 #define NUM_EVENTS 7
 #define INIT 0
 #define DECOMP 1
@@ -106,6 +106,11 @@ void pio_log(int severity, const char *fmt, ...);
 #define DARRAY_WRITE 4
 #define DARRAY_READ 6
 #define CLOSE 5
+
+/* The max length of msg added to log with mpe_log_pack(). (NULL
+ * terminator is not required by mpe_log_pack(), so need not be
+ * counted in this total).*/
+#define MPE_MAX_MSG_LEN 32
 #endif /* USE_MPE */
 
 #if defined(__cplusplus)

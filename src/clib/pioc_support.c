@@ -168,10 +168,14 @@ PIOc_set_log_level(int level)
 /* This array holds even numbers for MPE. */
 int event_num[2][NUM_EVENTS];
 
+/* This keeps track of whether MPE has been initialized. */
+int mpe_logging_initialized = 0;
+
 /** This will set up the MPE logging event numbers. The calling
- * program must call MPE_Init_log() before this function is
- * called. MPE must be installed, get it from
- * https://www.mcs.anl.gov/research/projects/perfvis/software/MPE/.
+ * program does not need to call MPE_Init_log(), that is done by the
+ * mpe library in MPI_Init(). MPE must be installed, get it from
+ * https://www.mcs.anl.gov/research/projects/perfvis/software/MPE/. PIO
+ * and the whole I/O stack must be built with MPE.
  *
  * @param my_rank rank of processor in MPI_COMM_WORLD.
  * @author Ed Hartnett
@@ -179,6 +183,10 @@ int event_num[2][NUM_EVENTS];
 int
 init_mpe(int my_rank)
 {
+    /* If we've already initialized MPE states, just return. */
+    if (mpe_logging_initialized++)
+        return 0;
+
     /* Get a bunch of event numbers. */
     event_num[START][INIT] = MPE_Log_get_event_number();
     event_num[END][INIT] = MPE_Log_get_event_number();
@@ -195,11 +203,12 @@ init_mpe(int my_rank)
     event_num[START][DARRAY_READ] = MPE_Log_get_event_number();
     event_num[END][DARRAY_READ] = MPE_Log_get_event_number();
 
-    /* Available colors: "white", "black", "red", "yellow", "green",
-       "cyan", "blue", "magenta", "aquamarine", "forestgreen",
-       "orange", "marroon", "brown", "pink", "coral", "gray" */
+    /* On rank 0, set up the info states. */
     if (!my_rank)
     {
+        /* Available colors: "white", "black", "red", "yellow", "green",
+           "cyan", "blue", "magenta", "aquamarine", "forestgreen",
+           "orange", "marroon", "brown", "pink", "coral", "gray" */
         MPE_Describe_info_state(event_num[START][INIT], event_num[END][INIT],
                                 "PIO init", "green", "%s");
         MPE_Describe_info_state(event_num[START][DECOMP],
@@ -238,6 +247,9 @@ pio_start_mpe_log(int state)
 /**
  * End MPE logging.
  *
+ * @param state one of the MPE states defined in pio_internal.h.
+ * @param msg a text message to describe the state. Will be truncated
+ * to MPE_MAX_MSG_LEN.
  * @author Ed Hartnett
  */
 void
@@ -245,9 +257,14 @@ pio_stop_mpe_log(int state, const char *msg)
 {
     MPE_LOG_BYTES bytebuf;
     int pos = 0;
+    int msglen;
     int ret;
 
-    MPE_Log_pack(bytebuf, &pos, 's', strlen(msg), msg);
+    /* Truncate messages longer than MPE_MAX_MSG_LEN. */
+    msglen = strlen(msg) > MPE_MAX_MSG_LEN ? MPE_MAX_MSG_LEN : strlen(msg);
+
+    /* Tell MPE to stop the state, with a message. */
+    MPE_Log_pack(bytebuf, &pos, 's', msglen, msg);
     if ((ret = MPE_Log_event(event_num[END][state], 0, bytebuf)))
         pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
 }

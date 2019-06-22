@@ -283,6 +283,81 @@ int pio_test_finalize2(MPI_Comm *test_comm, const char *test_name)
     return pio_test_finalize(test_comm);
 }
 
+#ifdef USE_MPE
+/* This array holds even numbers for MPE. */
+int test_event[2][TEST_NUM_EVENTS];
+
+/* This will set up the MPE logging event numbers. */
+int
+init_mpe_test_logging(int my_rank, int test_event[][TEST_NUM_EVENTS])
+{
+   /* Get a bunch of event numbers. */
+   test_event[START][TEST_INIT] = MPE_Log_get_event_number();
+   test_event[END][TEST_INIT] = MPE_Log_get_event_number();
+   test_event[START][TEST_DECOMP] = MPE_Log_get_event_number();
+   test_event[END][TEST_DECOMP] = MPE_Log_get_event_number();
+   test_event[START][TEST_CREATE] = MPE_Log_get_event_number();
+   test_event[END][TEST_CREATE] = MPE_Log_get_event_number();
+   test_event[START][TEST_DARRAY_WRITE] = MPE_Log_get_event_number();
+   test_event[END][TEST_DARRAY_WRITE] = MPE_Log_get_event_number();
+   test_event[START][TEST_CLOSE] = MPE_Log_get_event_number();
+   test_event[END][TEST_CLOSE] = MPE_Log_get_event_number();
+   test_event[START][TEST_CALCULATE] = MPE_Log_get_event_number();
+   test_event[END][TEST_CALCULATE] = MPE_Log_get_event_number();
+
+   /* Set up MPE states. This only happens on rank 0. */
+   if (!my_rank)
+   {
+        MPE_Describe_info_state(test_event[START][TEST_INIT], test_event[END][TEST_INIT],
+                                "test init", "forestgreen", "%s");
+        MPE_Describe_info_state(test_event[START][TEST_DECOMP],
+                                test_event[END][TEST_DECOMP], "test decomposition",
+                                "blue", "%s");
+        MPE_Describe_info_state(test_event[START][TEST_CREATE], test_event[END][TEST_CREATE],
+                                "test create file", "marroon", "%s");
+        /* MPE_Describe_info_state(test_event[START][TEST_OPEN], test_event[END][TEST_OPEN], */
+        /*                         "test open file", "orange", "%s"); */
+        MPE_Describe_info_state(test_event[START][TEST_DARRAY_WRITE],
+                                test_event[END][TEST_DARRAY_WRITE], "test darray write",
+                                "coral", "%s");
+        MPE_Describe_info_state(test_event[START][TEST_CLOSE],
+                                test_event[END][TEST_CLOSE], "test close",
+                                "gray", "%s");
+        MPE_Describe_info_state(test_event[START][TEST_CALCULATE],
+                                test_event[END][TEST_CALCULATE], "test calculate",
+                                "aquamarine", "%s");
+   }
+   return 0;
+}
+
+/**
+ * Start MPE logging.
+ *
+ * @param state_num the MPE event state number to START (ex. INIT).
+ * @author Ed Hartnett
+ */
+void
+test_start_mpe_log(int state)
+{
+    MPE_Log_event(test_event[START][state], 0, NULL);
+}
+
+/**
+ * End MPE logging.
+ *
+ * @author Ed Hartnett
+ */
+void
+test_stop_mpe_log(int state, const char *msg)
+{
+    MPE_LOG_BYTES bytebuf;
+    int pos = 0;
+
+    MPE_Log_pack(bytebuf, &pos, 's', strlen(msg), msg);
+    MPE_Log_event(test_event[END][state], 0, bytebuf);
+}
+#endif /* USE_MPE */
+
 /* Finalize a PIO C test.
  *
  * @param test_comm pointer to the test communicator.
