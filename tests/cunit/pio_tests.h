@@ -81,33 +81,6 @@ void test_stop_mpe_log(int state, const char *msg);
 #define NUM_PIO_TYPES_TO_TEST 6
 #endif /* _NETCDF4 */
 
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. Finalize and return. */
-#define MPIERR(e) do {                                                  \
-        MPI_Error_string(e, err_buffer, &resultlen);                    \
-        fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-        MPI_Finalize();                                                 \
-        return ERR_AWFUL;                                               \
-    } while (0)
-
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. Finalize and goto exit. */
-#define MPIBAIL(e) do {                                                 \
-        MPI_Error_string(e, err_buffer, &resultlen);                    \
-        fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-        ret = NC_EIO;                                                   \
-        goto exit;                                                      \
-    } while (0)
-
-/** Global err buffer for MPI. When there is an MPI error, this buffer
- * is used to store the error message that is associated with the MPI
- * error. */
-char err_buffer[MPI_MAX_ERROR_STRING];
-
-/** This is the length of the most recent MPI error message, stored
- * int the global error string. */
-int resultlen;
-
 /* Function prototypes. */
 int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks, int min_ntasks,
                    int max_ntasks, int log_level, MPI_Comm *test_comm);
