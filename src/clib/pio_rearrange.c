@@ -355,7 +355,7 @@ create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
             int *displace;
 
             if (!(displace = malloc(sizeof(int) * len)))
-                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+                EXIT1(PIO_ENOMEM);
 
             LOG((3, "blocksize = %d i = %d mcount[%d] = %d len = %d", blocksize, i, i,
                  mcount[i], len));
@@ -412,12 +412,14 @@ create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
         }
     }
 
+    LOG((3, "done with create_mpi_datatypes()"));
+
+exit:
     /* Free resources. */
     if (lindex)
         free(lindex);
 
-    LOG((3, "done with create_mpi_datatypes()"));
-    return PIO_NOERR;
+    return ret;
 }
 
 /**
