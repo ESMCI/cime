@@ -7,7 +7,7 @@
 
 #ifndef _PIO_TESTS_H
 #define _PIO_TESTS_H
-
+#include <pio_error.h>
 #include <unistd.h> /* Include this for the sleep function. */
 #include <assert.h>
 
@@ -96,21 +96,6 @@ void test_stop_mpe_log(int state, const char *msg);
         MPI_Error_string(e, err_buffer, &resultlen);                    \
         fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
         ret = NC_EIO;                                                   \
-        goto exit;                                                      \
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and exiting
- * with an exit code. Finalize and return. */
-#define ERR(e) do {                                                     \
-        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
-        MPI_Finalize();                                                 \
-        return e;                                                       \
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and goto
- * exit. Finalize and goto exit. */
-#define BAIL(e) do {                                                    \
-        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
         goto exit;                                                      \
     } while (0)
 
