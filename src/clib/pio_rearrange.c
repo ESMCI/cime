@@ -28,8 +28,9 @@
  * corresponding to this index.
  * @author Jim Edwards
  */
-inline void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
-                            PIO_Offset *dim_list)
+inline void
+idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
+                PIO_Offset *dim_list)
 {
     /* Check inputs. */
     pioassert(ndims >= 0 && gdimlen && idx >= -1 && dim_list, "invalid input",
@@ -74,9 +75,10 @@ inline void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
  * @param count array of size dim + 1 that gets the new counts.
  * @author Jim Edwards
  */
-void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *map,
-                   int region_size, int region_stride, const int *max_size,
-                   PIO_Offset *count)
+void
+expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *map,
+              int region_size, int region_stride, const int *max_size,
+              PIO_Offset *count)
 {
     /* Flag used to signal that we can no longer expand the region
        along dimension dim. */
@@ -151,8 +153,9 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
  * @returns length of the region found.
  * @author Jim Edwards
  */
-PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
-                       PIO_Offset *start, PIO_Offset *count)
+PIO_Offset
+find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+            PIO_Offset *start, PIO_Offset *count)
 {
     PIO_Offset regionlen = 1;
 
@@ -198,7 +201,8 @@ PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offs
  * @returns the local array index.
  * @author Jim Edwards
  */
-inline PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count)
+inline PIO_Offset
+coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count)
 {
     PIO_Offset lindex = 0;
     PIO_Offset stride = 1;
@@ -225,7 +229,8 @@ inline PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO
  * @returns 0 for success, error code otherwise.
  * @author Jim Edwards
  */
-int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
+int
+compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
 {
     PIO_Offset totiosize = 0;
     int mpierr; /* Return code from MPI calls. */
@@ -275,23 +280,27 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
-                         const PIO_Offset *mindex, const int *mcount, int *mfrom,
-                         MPI_Datatype *mtype)
+int
+create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
+                     const PIO_Offset *mindex, const int *mcount, int *mfrom,
+                     MPI_Datatype *mtype)
 {
     int blocksize;
     int numinds = 0;
     PIO_Offset *lindex = NULL;
     int mpierr; /* Return code from MPI functions. */
+    int ret = PIO_NOERR;
 
     /* Check inputs. */
     pioassert(msgcnt > 0 && mcount, "invalid input", __FILE__, __LINE__);
 
     PIO_Offset bsizeT[msgcnt];
 
-    LOG((1, "create_mpi_datatypes mpitype = %d msgcnt = %d", mpitype, msgcnt));
-    LOG((2, "MPI_BYTE = %d MPI_CHAR = %d MPI_SHORT = %d MPI_INT = %d MPI_FLOAT = %d MPI_DOUBLE = %d",
-         MPI_BYTE, MPI_CHAR, MPI_SHORT, MPI_INT, MPI_FLOAT, MPI_DOUBLE));
+    LOG((1, "create_mpi_datatypes mpitype = %d msgcnt = %d", mpitype,
+         msgcnt));
+    LOG((2, "MPI_BYTE = %d MPI_CHAR = %d MPI_SHORT = %d MPI_INT = %d "
+         "MPI_FLOAT = %d MPI_DOUBLE = %d", MPI_BYTE, MPI_CHAR, MPI_SHORT,
+         MPI_INT, MPI_FLOAT, MPI_DOUBLE));
 
     /* How many indicies in the array? */
     for (int j = 0; j < msgcnt; j++)
@@ -432,7 +441,8 @@ int create_mpi_datatypes(MPI_Datatype mpitype, int msgcnt,
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
+int
+define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
     int ret; /* Return value. */
 
@@ -539,8 +549,9 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
-                   const int *dest_ioproc, const PIO_Offset *dest_ioindex)
+int
+compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
+               const int *dest_ioproc, const PIO_Offset *dest_ioindex)
 {
     int *recv_buf = NULL;
     int nrecvs = 0;
@@ -801,8 +812,9 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
-                      void *rbuf, int nvars)
+int
+rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
+                  void *rbuf, int nvars)
 {
     int ntasks;       /* Number of tasks in communicator. */
     int niotasks;     /* Number of IO tasks. */
@@ -987,8 +999,9 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
-                      void *rbuf)
+int
+rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
+                  void *rbuf)
 {
     MPI_Comm mycomm;
     int ntasks;
@@ -1118,8 +1131,9 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
-                   const PIO_Offset *compmap)
+int
+determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
+               const PIO_Offset *compmap)
 {
     PIO_Offset totalllen = 0;
     PIO_Offset totalgridsize = 1;
@@ -1199,8 +1213,9 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
-                         const int *gdimlen, int ndims, io_desc_t *iodesc)
+int
+box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
+                     const int *gdimlen, int ndims, io_desc_t *iodesc)
 {
     int ret;
 
@@ -1493,7 +1508,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     return PIO_NOERR;
 }
 
-
 /**
  * The box_rearrange_create algorithm optimized for the case where many
  * iotasks have iomaplen == 0 (holes)
@@ -1510,10 +1524,11 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
-                                    const PIO_Offset *compmap,
-                                    const int *gdimlen, int ndims,
-                                    io_desc_t *iodesc)
+int
+box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
+                                const PIO_Offset *compmap,
+                                const int *gdimlen, int ndims,
+                                io_desc_t *iodesc)
 {
     int ret;
 
@@ -1794,7 +1809,8 @@ int box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
  * @returns 0 if offsets are the same or either pointer is NULL.
  * @author Jim Edwards
  */
-int compare_offsets(const void *a, const void *b)
+int
+compare_offsets(const void *a, const void *b)
 {
     mapsort *x = (mapsort *)a;
     mapsort *y = (mapsort *)b;
@@ -1822,8 +1838,9 @@ int compare_offsets(const void *a, const void *b)
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
-                int *maxregions, io_region *firstregion)
+int
+get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+            int *maxregions, io_region *firstregion)
 {
     int nmaplen = 0;
     int regionlen;
@@ -1909,7 +1926,8 @@ int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
+int
+default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
     int color;
     int key;
@@ -1990,8 +2008,9 @@ int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
-                            const int *gdimlen, int ndims, io_desc_t *iodesc)
+int
+subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
+                        const int *gdimlen, int ndims, io_desc_t *iodesc)
 {
     int i, j;
     PIO_Offset *iomap = NULL;
@@ -2402,7 +2421,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
  * @returns 0 on success, error code otherwise.
  * @author Jim Edwards
  */
-void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
+void
+performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
 #ifdef TIMING
 #ifdef PERFTUNE
