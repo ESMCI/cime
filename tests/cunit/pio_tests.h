@@ -92,11 +92,10 @@ void test_stop_mpe_log(int state, const char *msg);
 
 /** Handle MPI errors. This should only be used with MPI library
  * function calls. Finalize and goto exit. */
-#define MPIBAIL(e) do {                                                  \
+#define MPIBAIL(e) do {                                                 \
         MPI_Error_string(e, err_buffer, &resultlen);                    \
         fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-        MPI_Finalize();                                                 \
-        ret = NC_EIO;                                                  \
+        ret = NC_EIO;                                                   \
         goto exit;                                                      \
     } while (0)
 
@@ -110,9 +109,8 @@ void test_stop_mpe_log(int state, const char *msg);
 
 /** Handle non-MPI errors by finalizing the MPI library and goto
  * exit. Finalize and goto exit. */
-#define BAIL(e) do {                                                     \
+#define BAIL(e) do {                                                    \
         fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
-        MPI_Finalize();                                                 \
         goto exit;                                                      \
     } while (0)
 
