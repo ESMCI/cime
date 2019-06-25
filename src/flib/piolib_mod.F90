@@ -345,7 +345,7 @@ contains
          integer(C_INT), value :: frame
        end function PIOc_setframe
     end interface
-    iframe = frame-1
+    iframe = int(frame-1)
     ierr = PIOc_setframe(file%fh, vardesc%varid-1, iframe)
   end subroutine setframe
 
@@ -1448,7 +1448,6 @@ contains
     integer, intent(in) :: iotype
     character(len=*), intent(in)  :: fname
     integer, optional, intent(in) :: mode
-    integer :: iorank
     interface
        integer(C_INT) function PIOc_openfile(iosysid, fh, iotype, fname,mode) &
             bind(C,NAME='PIOc_openfile')
