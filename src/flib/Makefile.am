@@ -32,7 +32,7 @@ libpio_types_la_SOURCES = pio_types.F90
 libpio_support_la_SOURCES = pio_support.F90
 libpio_nf_la_SOURCES = pio_nf.F90
 libpiodarray_la_SOURCES = piodarray.F90
-libpionfatt_la_SOURCES = pionfatt_mod.F90
+libpionfatt_la_SOURCES = p1ionfatt_mod.f901
 libpionfget_la_SOURCES = pionfget_mod.F90
 libpionfput_la_SOURCES = pionfput_mod.F90
 libpiolib_mod_la_SOURCES = piolib_mod.F90
@@ -55,7 +55,7 @@ pio_types.mod: pio_types.$(OBJEXT)
 pio_support.mod: pio_support.$(OBJEXT)
 pio_nf.mod: pio_nf.$(OBJEXT)
 piodarray.mod: piodarray.F90 piodarray.$(OBJEXT)
-pionfatt_mod.mod: pionfatt_mod.F90 pionfatt_mod.$(OBJEXT)
+pionfatt_mod.mod: pionfatt_mod.f90 pionfatt_mod.$(OBJEXT)
 pionfget_mod.mod: pionfget_mod.F90 pionfget_mod.$(OBJEXT)
 pionfput_mod.mod: pionfput_mod.F90 pionfput_mod.$(OBJEXT)
 piolib_mod.mod: piolib_mod.$(OBJEXT)
@@ -77,7 +77,8 @@ include_HEADERS = $(MODFILES)
 # pre-processor. These will only be used by doxygen when --enable-docs
 # is used at configure.
 if BUILD_DOCS
-BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 pionfput_mod.f90 pionfatt_mod_2.f90 pionfget_mod_2.f90
+BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 \
+pionfput_mod.f90 pionfatt_mod_2.f90 pionfget_mod_2.f90
 piodarray.f90: piodarray.F90
 	$(CC) -E $< > $@
 piolib_mod.f90: piolib_mod.F90
