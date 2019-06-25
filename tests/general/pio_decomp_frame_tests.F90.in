@@ -106,7 +106,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_write_read_4d_col_decomp
   PIO_TF_FC_DATA_TYPE, dimension(:,:,:,:), allocatable :: rbuf, wbuf, exp_val
   integer, dimension(NDIMS-1) :: dims
   integer, dimension(NDIMS) :: pio_dims
-  integer :: i, j, k, tmp_idx, ierr, lsz, nrows, ncols, nhgts
+  integer :: i, j, k, tmp_idx, ierr, nrows, ncols, nhgts
   integer(kind=pio_offset_kind) :: f
   ! iotypes = valid io types
   integer, dimension(:), allocatable :: iotypes
@@ -244,7 +244,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_reuse_3d_decomp
   PIO_TF_FC_DATA_TYPE, dimension(:,:,:), allocatable :: rbuf3d, wbuf3d, exp_val3d
   integer, dimension(NDIMS-1) :: dims
   integer, dimension(NDIMS) :: pio_dims
-  integer :: i, j, k, tmp_idx, ierr, lsz, nrows, ncols, nhgts
+  integer :: i, j, k, tmp_idx, ierr, nrows, ncols, nhgts
   integer(kind=pio_offset_kind) :: f
   ! iotypes = valid io types
   integer, dimension(:), allocatable :: iotypes
@@ -434,7 +434,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_test_limited_time_dim
   PIO_TF_FC_DATA_TYPE, dimension(:,:,:,:), allocatable :: rbuf, wbuf, exp_val
   integer, dimension(NDIMS-1) :: dims
   integer, dimension(NDIMS) :: pio_dims
-  integer :: i, j, k, tmp_idx, ierr, lsz, nrows, ncols, nhgts
+  integer :: i, j, k, tmp_idx, ierr, nrows, ncols, nhgts
   integer(kind=pio_offset_kind) :: f
   ! iotypes = valid io types
   integer, dimension(:), allocatable :: iotypes
