@@ -55,7 +55,7 @@
         MPI_Error_string(e, err_buffer, &resultlen);                    \
         fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
         MPI_Finalize();                                                 \
-        return ERR_AWFUL;                                               \
+        return PIO_EIO;                                                 \
     } while (0)
 
 /**
