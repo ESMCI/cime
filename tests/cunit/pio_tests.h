@@ -7,7 +7,7 @@
 
 #ifndef _PIO_TESTS_H
 #define _PIO_TESTS_H
-
+#include <pio_error.h>
 #include <unistd.h> /* Include this for the sleep function. */
 #include <assert.h>
 
@@ -80,50 +80,6 @@ void test_stop_mpe_log(int state, const char *msg);
 #else
 #define NUM_PIO_TYPES_TO_TEST 6
 #endif /* _NETCDF4 */
-
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. Finalize and return. */
-#define MPIERR(e) do {                                                  \
-        MPI_Error_string(e, err_buffer, &resultlen);                    \
-        fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-        MPI_Finalize();                                                 \
-        return ERR_AWFUL;                                               \
-    } while (0)
-
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. Finalize and goto exit. */
-#define MPIBAIL(e) do {                                                  \
-        MPI_Error_string(e, err_buffer, &resultlen);                    \
-        fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-        MPI_Finalize();                                                 \
-        ret = NC_EIO;                                                  \
-        goto exit;                                                      \
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and exiting
- * with an exit code. Finalize and return. */
-#define ERR(e) do {                                                     \
-        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
-        MPI_Finalize();                                                 \
-        return e;                                                       \
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and goto
- * exit. Finalize and goto exit. */
-#define BAIL(e) do {                                                     \
-        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
-        MPI_Finalize();                                                 \
-        goto exit;                                                      \
-    } while (0)
-
-/** Global err buffer for MPI. When there is an MPI error, this buffer
- * is used to store the error message that is associated with the MPI
- * error. */
-char err_buffer[MPI_MAX_ERROR_STRING];
-
-/** This is the length of the most recent MPI error message, stored
- * int the global error string. */
-int resultlen;
 
 /* Function prototypes. */
 int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks, int min_ntasks,
