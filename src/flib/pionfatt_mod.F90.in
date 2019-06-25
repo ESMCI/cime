@@ -240,7 +240,6 @@ contains
     character(len=*), intent(in) :: name
     integer, intent(in) :: arrlen
     character(len=*), intent(in) :: values(arrlen)
-    integer :: vallen
 
 
     ierr = PIOc_put_att_text (ncid,varid-1,trim(name)//C_NULL_CHAR, int(arrlen,C_SIZE_T),values(1))
