@@ -319,7 +319,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_reuse_3d_decomp
     do j=1,ncols
       do i=1,nrows
         tmp_idx = (k - 1) * (ncols * nrows) + (j - 1) * nrows + i
-        compdof(tmp_idx) = exp_val4d(i,j,k,1)
+        compdof(tmp_idx) = int(exp_val4d(i,j,k,1))
       end do
     end do
   end do
