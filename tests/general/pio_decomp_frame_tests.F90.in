@@ -129,7 +129,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_write_read_4d_col_decomp
                         (start(2) - 1 + j - 1) * dims(1) + i
           wbuf(i,j,k,f) = wbuf(i,j,k,f) + (f - 1) * (dims(1) * dims(2) * dims(3))
           tmp_idx = (k - 1) * (ncols * nrows) + (j - 1) * nrows + i
-          compdof(tmp_idx) = wbuf(i,j,k,1)
+          compdof(tmp_idx) = int(wbuf(i,j,k,1))
         end do
       end do
     end do
@@ -275,7 +275,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_reuse_3d_decomp
     do j=1,ncols
       do i=1,nrows
         tmp_idx = (k - 1) * (ncols * nrows) + (j - 1) * nrows + i
-        compdof(tmp_idx) = wbuf4d(i,j,k,1)
+        compdof(tmp_idx) = int(wbuf4d(i,j,k,1))
       end do
     end do
   end do
@@ -457,7 +457,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_test_limited_time_dim
                         (start(2) - 1 + j - 1) * dims(1) + i
           wbuf(i,j,k,f) = wbuf(i,j,k,f) + (f - 1) * (dims(1) * dims(2) * dims(3))
           tmp_idx = (k - 1) * (ncols * nrows) + (j - 1) * nrows + i
-          compdof(tmp_idx) = wbuf(i,j,k,1)
+          compdof(tmp_idx) = int(wbuf(i,j,k,1))
         end do
       end do
     end do
