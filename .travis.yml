@@ -36,13 +36,13 @@ env:
     - CC=mpicc
     - FC=mpif90
     - CPPFLAGS='-I/usr/include'
-    - CFLAGS='-std=c99 -Werror'
+    - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
   
 script:
   - ls -l /usr/include
   - autoreconf -i
-  - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
+  - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer  -Werror'
   - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran'
