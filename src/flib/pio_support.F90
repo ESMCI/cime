@@ -35,7 +35,7 @@ contains
     integer(kind=pio_offset_kind), optional, intent(in) :: ilen
     integer :: i, slen
     if(present(ilen)) then
-       slen = ilen
+       slen = int(ilen)
     else
        slen = len(istr)
     endif
