@@ -1023,6 +1023,9 @@ contains
        end function PIOc_Init_Intracomm_from_F90
     end interface
 
+    if (comp_rank /= 0) continue ! to suppress warning
+    if (num_aggregator /= 0) continue ! to suppress warning
+
 #ifdef TIMING
     call t_startf("PIO:init")
 #endif
