@@ -150,19 +150,20 @@ expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *map,
  * found region.
  * @param count array (length ndims) that will get counts of found
  * region.
- * @returns length of the region found.
+ * @param regionlen pointer that gets the length of the region found.
+ * @returns 0 for success, error code otherwise.
  * @author Jim Edwards
  */
-PIO_Offset
+int
 find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
-            PIO_Offset *start, PIO_Offset *count)
+            PIO_Offset *start, PIO_Offset *count, PIO_Offset *regionlen)
 {
-    PIO_Offset regionlen = 1;
-
     /* Check inputs. */
-    pioassert(ndims > 0 && gdimlen && maplen > 0 && map && start && count,
-              "invalid input", __FILE__, __LINE__);
+    pioassert(ndims > 0 && gdimlen && maplen > 0 && map && start && count &&
+              regionlen, "invalid input", __FILE__, __LINE__);
     LOG((2, "find_region ndims = %d maplen = %d", ndims, maplen));
+
+    *regionlen = 1;
 
     int max_size[ndims];
 
@@ -187,9 +188,9 @@ find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
 
     /* Calculate the number of data elements in this region. */
     for (int dim = 0; dim < ndims; dim++)
-        regionlen *= count[dim];
+        *regionlen *= count[dim];
 
-    return regionlen;
+    return PIO_NOERR;
 }
 
 /**
@@ -1845,7 +1846,7 @@ get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
             int *maxregions, io_region *firstregion)
 {
     int nmaplen = 0;
-    int regionlen;
+    PIO_Offset regionlen;
     io_region *region;
     int ret;
 
@@ -1879,8 +1880,9 @@ get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
             region->count[i] = 1;
 
         /* Set start/count to describe first region in map. */
-        regionlen = find_region(ndims, gdimlen, maplen-nmaplen,
-                                &map[nmaplen], region->start, region->count);
+        if ((ret = find_region(ndims, gdimlen, maplen-nmaplen,
+                               &map[nmaplen], region->start, region->count, &regionlen)))
+            return ret;
         pioassert(region->start[0] >= 0, "failed to find region", __FILE__, __LINE__);
 
         nmaplen = nmaplen + regionlen;

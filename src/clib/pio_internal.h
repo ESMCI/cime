@@ -237,8 +237,8 @@ extern "C" {
     int alloc_region2(iosystem_desc_t *ios, int ndims, io_region **region);
 
     /* Set start and count so that they describe the first region in map.*/
-    PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
-                           PIO_Offset *start, PIO_Offset *count);
+    int find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
+                    PIO_Offset *start, PIO_Offset *count, PIO_Offset *regionlen);
 
     /* Calculate start and count regions for the subset rearranger. */
     int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
