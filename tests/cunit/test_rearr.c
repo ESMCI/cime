@@ -450,7 +450,8 @@ int test_find_region()
     PIO_Offset regionlen;
 
     /* Call the function we are testing. */
-    regionlen = find_region(ndims, gdimlen, maplen, map, start, count);
+    if (find_region(ndims, gdimlen, maplen, map, start, count, &regionlen))
+        return ERR_WRONG;
 
     /* Check results. */
     if (regionlen != 1 || start[0] != 0 || count[0] != 1)
