@@ -1039,7 +1039,6 @@ contains
 #endif
   end subroutine init_intracom
 
-  !>
   !! @public
   !! @ingroup PIO_init
   !! Initialize the pio subsystem. This is a collective call. Input
