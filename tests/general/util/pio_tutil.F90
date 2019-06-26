@@ -592,7 +592,6 @@ CONTAINS
     INTEGER :: nequal_idx
     ! Local and global equal bools
     LOGICAL :: lequal, gequal
-    LOGICAL :: failed
     TYPE failed_info
       SEQUENCE
       INTEGER :: idx
@@ -724,7 +723,6 @@ CONTAINS
     REAL(KIND=fc_real) :: nequal_idx
     ! Local and global equal bools
     LOGICAL :: lequal, gequal
-    LOGICAL :: failed
     TYPE failed_info
       SEQUENCE
       REAL(KIND=fc_real) :: idx
@@ -857,7 +855,6 @@ CONTAINS
     REAL(KIND=fc_double) :: nequal_idx
     ! Local and global equal bools
     LOGICAL :: lequal, gequal
-    LOGICAL :: failed
     TYPE failed_info
       SEQUENCE
       REAL(KIND=fc_double) :: idx
