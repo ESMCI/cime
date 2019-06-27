@@ -187,10 +187,7 @@ module piolib_mod
      module procedure initdecomp_1dof_bin_i8
      module procedure initdecomp_2dof_nf_i4
      module procedure initdecomp_2dof_nf_i8
-!     module procedure initdecomp_2dof_bin_i4
-!     module procedure initdecomp_2dof_bin_i8
      module procedure PIO_initdecomp_bc
-     !     module procedure PIO_initdecomp_dof_dof
   end interface PIO_initdecomp
 
   !>
@@ -527,74 +524,9 @@ contains
     ierr = PIOc_InitDecomp_bc(iosystem%iosysid, basepiotype, ndims, cdims, &
          cstart, ccount, iodesc%ioid)
 
-
     deallocate(cstart, ccount, cdims)
 
-
   end subroutine PIO_initdecomp_bc
-
-  ! !>
-  ! !! @public
-  ! !! @ingroup PIO_initdecomp
-  ! !! A deprecated interface to the PIO_initdecomp method.
-  ! !!
-  ! !! @param iosystem a defined pio system descriptor, see PIO_types
-  ! !! @param basepiotype the type of variable(s) associated with this iodesc.
-  ! !! @copydoc PIO_kinds
-  ! !! @param dims an array of the global length of each dimesion of the variable(s)
-  ! !! @param lenblocks
-  ! !! @param compdof mapping of the storage order of the variable to its memory order
-  ! !! @param iodofr
-  ! !! @param iodofw
-  ! !! @param iodesc @copydoc iodesc_generate
-  ! !! @deprecated
-  ! !! @author Jim Edwards
-  ! !<
-  ! subroutine initdecomp_2dof_bin_i4(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,iodesc)
-  !   type (iosystem_desc_t), intent(in) :: iosystem
-  !   integer(i4), intent(in)           :: basepiotype
-  !   integer(i4), intent(in)           :: dims(:)
-  !   integer (i4), intent(in)          :: lenblocks
-  !   integer (i4), intent(in)          :: compdof(:)   !> global degrees of freedom for computational decomposition
-  !   integer (i4), intent(in)          :: iodofr(:)     !> global degrees of freedom for io decomposition
-  !   integer (i4), intent(in)          :: iodofw(:)     !> global degrees of freedom for io decomposition
-  !   type (io_desc_t), intent(inout)     :: iodesc
-
-
-  !   call initdecomp_2dof_bin_i8(iosystem,basepiotype,dims,lenblocks,int(compdof,PIO_OFFSET_KIND),int(iodofr,PIO_OFFSET_KIND), &
-  !        int(iodofw,PIO_OFFSET_KIND),iodesc)
-
-  ! end subroutine initdecomp_2dof_bin_i4
-
-  ! !>
-  ! !! @public
-  ! !! @ingroup PIO_initdecomp
-  ! !! A deprecated interface to the PIO_initdecomp method.
-  ! !!
-  ! !! @param iosystem a defined pio system descriptor, see PIO_types
-  ! !! @param basepiotype the type of variable(s) associated with this iodesc.
-  ! !! @copydoc PIO_kinds
-  ! !! @param dims an array of the global length of each dimesion of the variable(s)
-  ! !! @param lenblocks
-  ! !! @param compdof mapping of the storage order of the variable to its memory order
-  ! !! @param iodofr
-  ! !! @param iodofw
-  ! !! @param iodesc @copydoc iodesc_generate
-  ! !! @deprecated
-  ! !! @author Jim Edwards
-  ! !<
-  ! subroutine initdecomp_2dof_bin_i8(iosystem,basepiotype,dims,lenblocks,compdof,iodofr,iodofw,iodesc)
-  !   !    use calcdisplace_mod, only : calcdisplace
-  !   type (iosystem_desc_t), intent(in) :: iosystem
-  !   integer(i4), intent(in)           :: basepiotype
-  !   integer(i4), intent(in)           :: dims(:)
-  !   integer (i4), intent(in)          :: lenblocks
-  !   integer (PIO_OFFSET_KIND), intent(in)          :: compdof(:)   !> global degrees of freedom for computational decomposition
-  !   integer (PIO_OFFSET_KIND), intent(in)          :: iodofr(:)     !> global degrees of freedom for io decomposition
-  !   integer (PIO_OFFSET_KIND), intent(in)          :: iodofw(:)     !> global degrees of freedom for io decomposition
-  !   type (io_desc_t), intent(inout)     :: iodesc
-
-  ! end subroutine initdecomp_2dof_bin_i8
 
   !>
   !! @public
