@@ -40,7 +40,6 @@ env:
     - LDFLAGS='-L/usr/lib'
   
 script:
-  - ls -l /usr/include
   - autoreconf -i
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer'
   - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
