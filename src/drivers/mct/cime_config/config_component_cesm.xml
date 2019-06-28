@@ -256,6 +256,7 @@
       <value compset="_DATM.*_DICE.*_POP2.*_DWAV">4</value>
       <value compset="_DATM.*_DICE.*_MICOM.*_WW3" >4</value>
       <value compset="_DATM.*_DICE.*_MICOM.*_DWAV">4</value>
+      <value compset="_MICOM" grid="oi%tnx0.25v">48</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
@@ -300,6 +301,7 @@
       <value compset="_POP2" grid="oi%gx1v6">24</value>
       <value compset="_POP2" grid="oi%gx1v7">24</value>
       <value compset="_MICOM" grid="oi%tnx1v">24</value>
+      <value compset="_MICOM" grid="oi%tnx0.25v">48</value>
       <value compset="_DATM%NYF.*_SLND.*_DICE.*_DOCN.*_SWAV">1</value>
       <value compset="_DATM%NYF.*_DLND.*_DICE.*_DOCN.*_DWAV">1</value>
       <value compset="_DLND.*_CISM\d">1</value>
