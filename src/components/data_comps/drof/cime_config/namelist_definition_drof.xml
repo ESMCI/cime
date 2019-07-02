@@ -241,7 +241,7 @@
     <values>
       <value stream="rof.diatren_ann_rx1">1</value>
       <value stream="rof.diatren_iaf_rx1">1948</value>
-      <value stream="rof.iaf_jra">1</value>
+      <value stream="rof.iaf_jra">1958</value>
       <value stream="rof.cplhist">$DROF_CPLHIST_YR_ALIGN</value>
     </values>
   </entry>
