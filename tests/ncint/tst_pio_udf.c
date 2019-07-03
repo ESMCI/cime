@@ -11,43 +11,43 @@
 
 #define FILE_NAME "tst_pio_udf.nc"
 
-int
-tst_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-             void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
-{
-   return NC_NOERR;
-}
+/* int */
+/* tst_open(const char *path, int mode, int basepe, size_t *chunksizehintp, */
+/*              void *parameters, const NC_Dispatch *dispatch, NC *nc_file) */
+/* { */
+/*    return NC_NOERR; */
+/* } */
 
-int
-tst_abort(int ncid)
-{
-   return TEST_VAL_42;
-}
+/* int */
+/* tst_abort(int ncid) */
+/* { */
+/*    return TEST_VAL_42; */
+/* } */
 
-int
-tst_close(int ncid, void *v)
-{
-   return NC_NOERR;
-}
+/* int */
+/* tst_close(int ncid, void *v) */
+/* { */
+/*    return NC_NOERR; */
+/* } */
 
-int
-tst_inq_format(int ncid, int *formatp)
-{
-   return TEST_VAL_42;
-}
+/* int */
+/* tst_inq_format(int ncid, int *formatp) */
+/* { */
+/*    return TEST_VAL_42; */
+/* } */
 
-int
-tst_inq_format_extended(int ncid, int *formatp, int *modep)
-{
-   return TEST_VAL_42;
-}
+/* int */
+/* tst_inq_format_extended(int ncid, int *formatp, int *modep) */
+/* { */
+/*    return TEST_VAL_42; */
+/* } */
 
-int
-tst_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
-             void *value, nc_type t)
-{
-   return TEST_VAL_42;
-}
+/* int */
+/* tst_get_vara(int ncid, int varid, const size_t *start, const size_t *count, */
+/*              void *value, nc_type t) */
+/* { */
+/*    return TEST_VAL_42; */
+/* } */
 
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the HDF4 dispatch interface. */
@@ -155,7 +155,7 @@ main(int argc, char **argv)
       if (nc_close(ncid)) ERR;
 
       /* Add our user defined format. */
-      if (nc_def_user_format(NC_UDF0, &tst_dispatcher, NULL)) ERR;
+      if (nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)) ERR;
 
       /* Check that our user-defined format has been added. */
       if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR;

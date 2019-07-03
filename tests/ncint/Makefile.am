@@ -5,6 +5,7 @@
 
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
 include $(top_srcdir)/set_flags.am
+LDADD = ${top_builddir}/src/clib/libpioc.la
 
 # Build the test for make check.
 check_PROGRAMS = tst_pio_udf

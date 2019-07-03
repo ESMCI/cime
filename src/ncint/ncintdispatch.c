@@ -127,3 +127,42 @@ NC_NCINT_finalize(void)
 {
     return NC_NOERR;
 }
+
+#define TEST_VAL_42 42
+int
+tst_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
+             void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
+{
+   return NC_NOERR;
+}
+
+int
+tst_abort(int ncid)
+{
+   return TEST_VAL_42;
+}
+
+int
+tst_close(int ncid, void *v)
+{
+   return NC_NOERR;
+}
+
+int
+tst_inq_format(int ncid, int *formatp)
+{
+   return TEST_VAL_42;
+}
+
+int
+tst_inq_format_extended(int ncid, int *formatp, int *modep)
+{
+   return TEST_VAL_42;
+}
+
+int
+tst_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
+             void *value, nc_type t)
+{
+   return TEST_VAL_42;
+}

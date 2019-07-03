@@ -17,6 +17,7 @@ if BUILD_NCINT
 NCINT = ncint
 endif # BUILD_NCINT
 
-SUBDIRS = clib ${NCINT} ${GPTL} $(FLIB)
+# Build these subdirectories.
+SUBDIRS = ${NCINT} clib ${GPTL} $(FLIB)
 
 EXTRA_DIST = CMakeLists.txt
