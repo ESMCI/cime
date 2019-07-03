@@ -149,14 +149,14 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
           printf("%s %d %d %d\n",__FILE__,__LINE__,extent, lb);
         */
 
-#ifdef ONEWAY
-        /* If ONEWAY is true we will post mpi_sendrecv comms instead
-         * of irecv/send. */
-        if ((mpierr = MPI_Sendrecv(sptr, sendcounts[my_rank],sendtypes[my_rank],
-                                   my_rank, tag, rptr, recvcounts[my_rank], recvtypes[my_rank],
-                                   my_rank, tag, comm, &status)))
-            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-#else
+/* #ifdef ONEWAY */
+/*         /\* If ONEWAY is true we will post mpi_sendrecv comms instead */
+/*          * of irecv/send. *\/ */
+/*         if ((mpierr = MPI_Sendrecv(sptr, sendcounts[my_rank],sendtypes[my_rank], */
+/*                                    my_rank, tag, rptr, recvcounts[my_rank], recvtypes[my_rank], */
+/*                                    my_rank, tag, comm, &status))) */
+/*             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__); */
+/* #else */
         if ((mpierr = MPI_Irecv(rptr, recvcounts[my_rank], recvtypes[my_rank],
                                 my_rank, tag, comm, rcvids)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -166,7 +166,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 
         if ((mpierr = MPI_Wait(rcvids, &status)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-#endif
+/* #endif */
     }
 
     LOG((2, "Done sending to self... sending to other procs"));
@@ -288,25 +288,26 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             }
             ptr = (char *)sendbuf + sdispls[p];
 
-            /* On some software stacks MPI_Irsend() is either not available, not
-             * a major issue anymore, or is buggy. With PIO1 we have found that
-             * although the code correctly posts receives before the irsends,
-             * on some systems (software stacks) the code hangs. However the
-             * code works fine with isends. The USE_MPI_ISEND_FOR_FC macro should be
-             * used to choose between mpi_irsends and mpi_isends - the default
-             * is still mpi_irsend
+            /* On some software stacks MPI_Irsend() is either not
+             * available, not a major issue anymore, or is buggy. With
+             * PIO1 we have found that although the code correctly
+             * posts receives before the irsends, on some systems
+             * (software stacks) the code hangs. However the code
+             * works fine with isends. The USE_MPI_ISEND_FOR_FC macro
+             * should be used to choose between mpi_irsends and
+             * mpi_isends - the default is still mpi_irsend
              */
             if (fc->hs && fc->isend)
             {
-#ifdef USE_MPI_ISEND_FOR_FC
-                if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
-                                        sndids + istep)))
-                    return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-#else
+/* #ifdef USE_MPI_ISEND_FOR_FC */
+/*                 if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm, */
+/*                                         sndids + istep))) */
+/*                     return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__); */
+/* #else */
                 if ((mpierr = MPI_Irsend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
                                          sndids + istep)))
                     return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-#endif
+/* #endif */
             }
             else if (fc->isend)
             {
