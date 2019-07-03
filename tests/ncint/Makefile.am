@@ -8,6 +8,7 @@ include $(top_srcdir)/set_flags.am
 
 # Build the test for make check.
 check_PROGRAMS = tst_pio_udf
+TESTS = tst_pio_udf
 
 # if RUN_TESTS
 # # Tests will run from a bash script.
