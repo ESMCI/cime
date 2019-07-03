@@ -58,6 +58,9 @@ main(int argc, char **argv)
         if (nc_inq_format(ncid, NULL) != TEST_VAL_42) ERR;
         if (nc_inq_format_extended(ncid, NULL, NULL) != TEST_VAL_42) ERR;
         if (nc_abort(ncid) != TEST_VAL_42) ERR;
+
+        /* Close the iosystem. */
+        if (nc_free_iosystem(iosysid)) ERR;
     }
     SUMMARIZE_ERR;
 

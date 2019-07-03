@@ -21,3 +21,14 @@ nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int
 {
     return PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr, iosysidp);
 }
+
+/**
+ * Same as PIOc_free_iosystem().
+ *
+ * @author Ed Hartnett
+ */
+int
+nc_free_iosystem(int iosysid)
+{
+    return PIOc_free_iosystem(iosysid);
+}

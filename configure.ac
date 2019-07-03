@@ -278,7 +278,7 @@ fi
 # These are needed by ncdispatch.h. Only build with HDF5 parallel
 # versions of netCDF. */
 if test "x$enable_netcdf_integration" = xyes; then
-   AC_SUBST([HDF5_PARALLEL], [1])
+  AC_DEFINE([HDF5_PARALLEL],[1],[Does HDF5 library provide parallel access])
 fi
 
 AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
