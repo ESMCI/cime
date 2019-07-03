@@ -1,8 +1,4 @@
-/* This is part of the netCDF package. Copyright 2005-2018 University
-   Corporation for Atmospheric Research/Unidata. See COPYRIGHT file
-   for conditions of use.
-
-   Test user-defined formats.
+/* Test netcdf integration layer.
 
    Ed Hartnett
 */
@@ -13,15 +9,7 @@
 #include "netcdf.h"
 #include "nc4dispatch.h"
 
-#define FILE_NAME "tst_udf.nc"
-
-#if defined(_WIN32) || defined(_WIN64)
-int
-NC4_show_metadata(int ncid)
-{
-   return 0;
-}
-#endif
+#define FILE_NAME "tst_pio_udf.nc"
 
 int
 tst_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
@@ -153,87 +141,35 @@ NC_NOTNC4_set_var_chunk_cache,
 NC_NOTNC4_get_var_chunk_cache
 };
 
-#define NUM_UDFS 2
-
-int mode[NUM_UDFS] = {NC_UDF0, NC_UDF1};
-
 int
 main(int argc, char **argv)
 {
-   printf("\n*** Testing user-defined formats.\n");
-   printf("*** testing simple user-defined format...");
+   printf("\n*** Testing netCDF integration layer.\n");
+   printf("*** testing simple use of netCDF integration layer format...");
    {
       int ncid;
       NC_Dispatch *disp_in;
-      int i;
 
       /* Create an empty file to play with. */
       if (nc_create(FILE_NAME, 0, &ncid)) ERR;
       if (nc_close(ncid)) ERR;
 
-      /* Test all available user-defined format slots. */
-      for (i = 0; i < NUM_UDFS; i++)
-      {
-         /* Add our user defined format. */
-         if (nc_def_user_format(mode[i], &tst_dispatcher, NULL)) ERR;
+      /* Add our user defined format. */
+      if (nc_def_user_format(NC_UDF0, &tst_dispatcher, NULL)) ERR;
 
-         /* Check that our user-defined format has been added. */
-         if (nc_inq_user_format(mode[i], &disp_in, NULL)) ERR;
-         if (disp_in != &tst_dispatcher) ERR;
+      /* Check that our user-defined format has been added. */
+      if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR;
+      if (disp_in != &tst_dispatcher) ERR;
 
-         /* Open file with our defined functions. */
-         if (nc_open(FILE_NAME, mode[i], &ncid)) ERR;
-         if (nc_close(ncid)) ERR;
+      /* Open file with our defined functions. */
+      if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
+      if (nc_close(ncid)) ERR;
 
          /* Open file again and abort, which is the same as closing it. */
-         if (nc_open(FILE_NAME, mode[i], &ncid)) ERR;
-         if (nc_inq_format(ncid, NULL) != TEST_VAL_42) ERR;
-         if (nc_inq_format_extended(ncid, NULL, NULL) != TEST_VAL_42) ERR;
-         if (nc_abort(ncid) != TEST_VAL_42) ERR;
-      }
-   }
-   SUMMARIZE_ERR;
-   printf("*** testing user-defined format with magic number...");
-   {
-      int ncid;
-      NC_Dispatch *disp_in;
-      char magic_number[5] = "1111";
-      char dummy_data[11] = "0123456789";
-      char magic_number_in[NC_MAX_MAGIC_NUMBER_LEN];
-      FILE *FP;
-      int i;
-
-      /* Create a file with magic number at start. */
-      if (!(FP = fopen(FILE_NAME, "w"))) ERR;
-      if (fwrite(magic_number, sizeof(char), strlen(magic_number), FP)
-          != strlen(magic_number)) ERR;
-      if (fwrite(dummy_data, sizeof(char), strlen(dummy_data), FP)
-          != strlen(dummy_data)) ERR;
-      if (fclose(FP)) ERR;
-
-      /* Test all available user-defined format slots. */
-      for (i = 0; i < NUM_UDFS; i++)
-      {
-         /* Add our test user defined format. */
-         if (nc_def_user_format(mode[i], &tst_dispatcher, magic_number)) ERR;
-
-         /* Check that our user-defined format has been added. */
-         if (nc_inq_user_format(mode[i], &disp_in, magic_number_in)) ERR;
-         if (disp_in != &tst_dispatcher) ERR;
-         if (strncmp(magic_number, magic_number_in, strlen(magic_number))) ERR;
-
-         /* Open file with our defined functions. */
-         if (nc_open(FILE_NAME, mode[i], &ncid)) ERR;
-         if (nc_close(ncid)) ERR;
-
-         /* Open file again and abort, which is the same as closing
-          * it. This time we don't specify a mode, because the magic
-          * number is used to identify the file. */
-         if (nc_open(FILE_NAME, 0, &ncid)) ERR;
-         if (nc_inq_format(ncid, NULL) != TEST_VAL_42) ERR;
-         if (nc_inq_format_extended(ncid, NULL, NULL) != TEST_VAL_42) ERR;
-         if (nc_abort(ncid) != TEST_VAL_42) ERR;
-      }
+      if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
+      if (nc_inq_format(ncid, NULL) != TEST_VAL_42) ERR;
+      if (nc_inq_format_extended(ncid, NULL, NULL) != TEST_VAL_42) ERR;
+      if (nc_abort(ncid) != TEST_VAL_42) ERR;
    }
    SUMMARIZE_ERR;
    FINAL_RESULTS;
