@@ -8,11 +8,18 @@
 if BUILD_FORTRAN
 UNIT = unit
 GENERAL = general
+# If GPTL us used, also add the performance directory.
 if USE_GPTL
 PERFORMANCE = performance
-endif
-endif
+endif # USE_GPTL
+endif # BUILD_FORTRAN
 
-SUBDIRS = cunit ${UNIT} ${GENERAL} ${PERFORMANCE}
+# Are we building with netCDF integration?
+if BUILD_NCINT
+NCINT = ncint
+endif # BUILD_NCINT
+
+# Build in these subdirs.
+SUBDIRS = cunit ${UNIT} ${NCINT} ${GENERAL} ${PERFORMANCE}
 
 EXTRA_DIST = CMakeLists.txt
