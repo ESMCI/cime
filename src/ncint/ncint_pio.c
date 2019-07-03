@@ -19,5 +19,5 @@ int
 nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                   int *iosysidp)
 {
-    return PIO_NOERR;
+    return PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr, iosysidp);
 }

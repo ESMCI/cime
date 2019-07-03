@@ -275,6 +275,12 @@ fi
 if test "x$enable_netcdf_integration" = xyes -a "x$have_netcdf_par" = xno; then
    AC_MSG_ERROR([Cannot use netCDF integration unless netCDF library was built for parallel I/O.])
 fi
+# These are needed by ncdispatch.h. Only build with HDF5 parallel
+# versions of netCDF. */
+if test "x$enable_netcdf_integration" = xyes; then
+   AC_SUBST([HDF5_PARALLEL], [1])
+fi
+
 AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
