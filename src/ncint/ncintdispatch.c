@@ -11,7 +11,7 @@
 
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
-static const NC_Dispatch NCINT_dispatcher = {
+NC_Dispatch NCINT_dispatcher = {
 
     NC_FORMATX_NC_HDF4,
 
@@ -130,38 +130,38 @@ NC_NCINT_finalize(void)
 
 #define TEST_VAL_42 42
 int
-tst_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
+NC_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
              void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
 {
    return NC_NOERR;
 }
 
 int
-tst_abort(int ncid)
+NC_NCINT_abort(int ncid)
 {
    return TEST_VAL_42;
 }
 
 int
-tst_close(int ncid, void *v)
+NC_NCINT_close(int ncid, void *v)
 {
    return NC_NOERR;
 }
 
 int
-tst_inq_format(int ncid, int *formatp)
+NC_NCINT_inq_format(int ncid, int *formatp)
 {
    return TEST_VAL_42;
 }
 
 int
-tst_inq_format_extended(int ncid, int *formatp, int *modep)
+NC_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
    return TEST_VAL_42;
 }
 
 int
-tst_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
+NC_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
              void *value, nc_type t)
 {
    return TEST_VAL_42;
