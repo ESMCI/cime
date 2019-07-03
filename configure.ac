@@ -124,6 +124,18 @@ test "x$enable_pnetcdf" = xno || enable_pnetcdf=yes
 AC_MSG_RESULT([$enable_pnetcdf])
 AM_CONDITIONAL(BUILD_PNETCDF, [test "x$enable_pnetcdf" = xyes])
 
+# Does the user want to build netcdf-c integration layer?
+AC_MSG_CHECKING([whether netcdf-c integration layer should be build])
+AC_ARG_ENABLE([netcdf-integration],
+              [AS_HELP_STRING([--enable-netcdf-integration],
+                              [enable building of netCDF C API integration.])])
+test "x$enable_netcdf_integration" = xyes || enable_netcdf_integration=no
+AC_MSG_RESULT([$enable_netcdf_integration])
+if test "x$enable_netcdf_integration" = xyes -a "x$enable_timing" = xyes; then
+   AC_MSG_ERROR([Cannot use GPTL timing library with netCDF interation.])
+fi
+AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
+
 # Does the user want to build documentation?
 AC_MSG_CHECKING([whether documentation should be build (requires doxygen)])
 AC_ARG_ENABLE([docs],
@@ -273,6 +285,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
+          src/ncint/Makefile
           src/flib/Makefile
           src/gptl/Makefile
           tests/Makefile
