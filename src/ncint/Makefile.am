@@ -2,22 +2,8 @@
 ## layer.
 # Ed Hartnett 7/3/19
 
-# The library we are building.
-#lib_LTLIBRARIES = libpioc.la
+# This is our output. The ncint convenience library.
+noinst_LTLIBRARIES = libncint.la
 
-# These linker flags specify libtool version info.
-# See http://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
-# for information regarding incrementing `-version-info`.
-#libpioc_la_LDFLAGS = -version-info 2:0:1
-
-# The library header file will be installed in include dir.
-#include_HEADERS = pio.h uthash.h
-
-# The library soure files.
-# libpioc_la_SOURCES = bget.c pioc_sc.c pio_darray.c pio_file.c		\
-# pio_getput_int.c pio_msg.c pio_nc.c pio_rearrange.c pioc.c		\
-# pioc_support.c pio_darray_int.c pio_get_nc.c pio_lists.c pio_nc4.c	\
-# pio_put_nc.c pio_spmd.c pio_get_vard.c pio_put_vard.c pio_internal.h	\
-# bget.h uthash.h pio_error.h
-
-EXTRA_DIST = Makefile.am
+# The source files.
+libncint_la_SOURCES = ncintdispatch.c ncintdispatch.h
