@@ -8,6 +8,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include "ncintdispatch.h"
+#include "pio.h"
 
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
@@ -128,41 +129,50 @@ NC_NCINT_finalize(void)
     return NC_NOERR;
 }
 
+/** Default iosysid. */
+int diosysid;
+
 #define TEST_VAL_42 42
 int
 NC_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-             void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
+              void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
 {
-   return NC_NOERR;
+    int ret;
+    nc_file->int_ncid = nc_file->ext_ncid;
+
+    if ((ret = PIOc_open(diosysid, path, mode, &nc_file->ext_ncid)))
+        return ret;
+
+    return NC_NOERR;
 }
 
 int
 NC_NCINT_abort(int ncid)
 {
-   return TEST_VAL_42;
+    return TEST_VAL_42;
 }
 
 int
 NC_NCINT_close(int ncid, void *v)
 {
-   return NC_NOERR;
+    return NC_NOERR;
 }
 
 int
 NC_NCINT_inq_format(int ncid, int *formatp)
 {
-   return TEST_VAL_42;
+    return TEST_VAL_42;
 }
 
 int
 NC_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
-   return TEST_VAL_42;
+    return TEST_VAL_42;
 }
 
 int
 NC_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
-             void *value, nc_type t)
+                  void *value, nc_type t)
 {
-   return TEST_VAL_42;
+    return TEST_VAL_42;
 }

@@ -53,11 +53,11 @@ main(int argc, char **argv)
         if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
         if (nc_close(ncid)) ERR;
 
-        /* Open file again and abort, which is the same as closing it. */
-        if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
-        if (nc_inq_format(ncid, NULL) != TEST_VAL_42) ERR;
-        if (nc_inq_format_extended(ncid, NULL, NULL) != TEST_VAL_42) ERR;
-        if (nc_abort(ncid) != TEST_VAL_42) ERR;
+        /* /\* Open file again and abort, which is the same as closing it. *\/ */
+        /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR; */
+        /* if (nc_inq_format(ncid, NULL) != TEST_VAL_42) ERR; */
+        /* if (nc_inq_format_extended(ncid, NULL, NULL) != TEST_VAL_42) ERR; */
+        /* if (nc_abort(ncid) != TEST_VAL_42) ERR; */
 
         /* Close the iosystem. */
         if (nc_free_iosystem(iosysid)) ERR;

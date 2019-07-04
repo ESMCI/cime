@@ -10,6 +10,9 @@
 #include <pio_internal.h>
 #include "ncintdispatch.h"
 
+/* The default io system id. */
+extern int diosysid;
+
 /**
  * Same as PIOc_Init_Intracomm().
  *
@@ -19,7 +22,16 @@ int
 nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                   int *iosysidp)
 {
-    return PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr, iosysidp);
+    int ret;
+
+    if ((ret = PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr,
+                                   iosysidp)))
+        return ret;
+
+    /* Remember the io system id. */
+    diosysid = *iosysidp;
+
+    return PIO_NOERR;
 }
 
 /**
