@@ -50,8 +50,8 @@ main(int argc, char **argv)
         if (disp_in != &NCINT_dispatcher) ERR;
 
         /* Open file with our defined functions. */
-        if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
-        if (nc_close(ncid)) ERR;
+        /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR; */
+        /* if (nc_close(ncid)) ERR; */
 
         /* /\* Open file again and abort, which is the same as closing it. *\/ */
         /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR; */
