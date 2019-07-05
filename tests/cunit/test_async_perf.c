@@ -155,7 +155,7 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
         int d, t;
 
         if (!(my_data_int = malloc(elements_per_pe2 * sizeof(int))))
-            BAIL(PIO_ENOMEM);
+            PBAIL(PIO_ENOMEM);
 
         for (d = 0; d < elements_per_pe2; d++)
             my_data_int[d] = my_rank;
@@ -170,7 +170,7 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
         sprintf(data_filename, "data_%s.nc", TEST_NAME);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
-            BAIL(ret);
+            PBAIL(ret);
 
 #ifdef USE_MPE
         {
@@ -182,20 +182,20 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
 
         /* Find the size of the type. */
         if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
-            BAIL(ret);
+            PBAIL(ret);
 
         /* Define dimensions. */
         for (int d = 0; d < NDIM4; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
-                BAIL(ret);
+                PBAIL(ret);
 
         /* Define variables. */
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM4, dimid, &varid)))
-            BAIL(ret);
+            PBAIL(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
-            BAIL(ret);
+            PBAIL(ret);
 
         for (t = 0; t < NUM_TIMESTEPS; t++)
         {
@@ -205,12 +205,12 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
 
             /* Set the record number for the record vars. */
             if ((ret = PIOc_setframe(ncid, varid, t)))
-                BAIL(ret);
+                PBAIL(ret);
 
             /* Write some data to the record vars. */
             if ((ret = PIOc_write_darray(ncid, varid, ioid3, elements_per_pe2,
                                          my_data_int, NULL)))
-                BAIL(ret);
+                PBAIL(ret);
 
 #ifdef USE_MPE
             {
@@ -239,14 +239,14 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
-            BAIL(ret);
+            PBAIL(ret);
 
         free(my_data_int);
     }
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid3)))
-        BAIL(ret);
+        PBAIL(ret);
 exit:
     return ret;
 }
