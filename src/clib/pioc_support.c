@@ -2365,6 +2365,40 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
 }
 
 /**
+ * Find the appropriate IOTYPE from mode flags to nc_open().
+ *
+ * @param mode the mode flag from nc_open().
+ * @param iotype pointer that gets the IOTYPE.
+ *
+ * @return 0 on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+find_iotype_from_omode(int mode, int *iotype)
+{
+    /* Check inputs. */
+    pioassert(iotype, "pointer to iotype must be provided", __FILE__, __LINE__);
+
+    /* Figure out the iotype. */
+    if (mode & NC_NETCDF4)
+    {
+        if (mode & NC_MPIIO || mode & NC_MPIPOSIX)
+            *iotype = PIO_IOTYPE_NETCDF4P;
+        else
+            *iotype = PIO_IOTYPE_NETCDF4C;
+    }
+    else
+    {
+        if (mode & NC_PNETCDF || mode & NC_MPIIO)
+            *iotype = PIO_IOTYPE_PNETCDF;
+        else
+            *iotype = PIO_IOTYPE_NETCDF;
+    }
+
+    return PIO_NOERR;
+}
+
+/**
  * Open an existing file using PIO library. This is an internal
  * function. Depending on the value of the retry parameter, a failed
  * open operation will be handled differently. If retry is non-zero,
@@ -2647,6 +2681,16 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
 
         /* Return the PIO ncid to the user. */
         *ncidp = file->pio_ncid;
+    }
+    else
+    {
+        /* Use the ncid passed in from the netCDF dispatch code. */
+        file->pio_ncid = *ncidp;
+
+        /* To prevent PIO from reusing the same ncid, if someone
+         * starting mingling netcdf integration PIO and regular PIO
+         * code. */
+        pio_next_ncid = file->pio_ncid + 1;
     }
 
     /* Add this file to the list of currently open files. */

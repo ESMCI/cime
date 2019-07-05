@@ -194,6 +194,9 @@ extern "C" {
     int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename, int mode,
                             int retry, int use_ext_ncid);
 
+    /* Give the mode flag from an open, determine the IOTYPE. */
+    int find_iotype_from_omode(int mode, int *iotype);
+
     /* Given PIO type, find MPI type and type size. */
     int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size);
 
