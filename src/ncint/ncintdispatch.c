@@ -20,7 +20,7 @@ int diosysid;
  * functions that make up the NCINT dispatch interface. */
 NC_Dispatch NCINT_dispatcher = {
 
-    NC_FORMATX_NC_UDF0,
+    NC_FORMATX_UDF0,
 
     NC_NCINT_create,
     NC_NCINT_open,
@@ -189,16 +189,16 @@ NC_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
     cmode = cmode & ~NC_UDF0;
 
     /* Find the IOTYPE from the mode flag. */
-    if ((ret = find_iotype_from_omode(mode, &iotype)))
+    if ((ret = find_iotype_from_omode(cmode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc_file, path, mode)))
+    if ((ret = nc4_nc4f_list_add(nc_file, path, cmode)))
         return ret;
 
     /* Open the file with PIO. Tell openfile_retry to accept the
      * externally assigned ncid. */
-    if ((ret = PIOc_createfile_int(diosysid,  &nc_file->ext_ncid, iotype,
+    if ((ret = PIOc_createfile_int(diosysid,  &nc_file->ext_ncid, &iotype,
                                    path, cmode)))
         return ret;
 

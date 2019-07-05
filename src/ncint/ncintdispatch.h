@@ -41,6 +41,11 @@ extern "C" {
                   void *parameters, const NC_Dispatch *, NC *);
 
     extern int
+    NC_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
+                    size_t *chunksizehintp, void *parameters,
+                    const NC_Dispatch *dispatch, NC *nc_file);
+
+    extern int
     NC_NCINT_abort(int ncid);
 
     extern int
