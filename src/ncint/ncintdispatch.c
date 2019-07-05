@@ -179,7 +179,7 @@ NC_NCINT_abort(int ncid)
 int
 NC_NCINT_close(int ncid, void *v)
 {
-    return NC_NOERR;
+    return PIOc_closefile(ncid);
 }
 
 int
