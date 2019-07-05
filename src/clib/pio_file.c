@@ -57,7 +57,7 @@ PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
 {
     PLOG((1, "PIOc_openfile iosysid %d *iotype %d filename %s mode %d", iosysid,
           iotype ? *iotype: 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1, 0);
 }
 
 /**
@@ -85,7 +85,7 @@ PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
 {
     PLOG((1, "PIOc_openfile2 iosysid %d *iotype %d filename %s mode %d", iosysid,
           iotype ? *iotype : 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0);
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0, 0);
 }
 
 /**
