@@ -37,16 +37,18 @@ main(int argc, char **argv)
     printf("\n*** Testing netCDF integration layer.\n");
     printf("*** testing simple use of netCDF integration layer format...");
     {
-        int ncid;
+        int ncid, ioid;
         int dimid[NDIM2], varid;
+        int dimlen[NDIM2] = {DIM_LEN_X, DIM_LEN_Y};
         int iosysid;
         NC_Dispatch *disp_in;
+        size_t elements_per_pe;
+        size_t *compdof; /* The decomposition mapping. */
+        int i;
 
-        /* Create an empty file to play with. */
-        /* if (nc_create(FILE_NAME, NC_CLOBBER, &ncid)) ERR; */
-        /* if (nc_close(ncid)) ERR; */
-
+        /* Turn on logging for PIO library. */
         PIOc_set_log_level(3);
+
         /* Initialize the intracomm. */
         if (nc_init_intracomm(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) ERR;
 
@@ -55,9 +57,22 @@ main(int argc, char **argv)
 
         /* Create a file to play with. */
         if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_X, DIM_LEN_X, &dimid[0])) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_Y, DIM_LEN_Y, &dimid[1])) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_X, dimlen[0], &dimid[0])) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[1], &dimid[1])) ERR;
         if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+
+        /* Create a decomposition for distributed arrays. */
+        elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
+        if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
+            ERR;
+        for (i = 0; i < elements_per_pe; i++)
+            compdof[i] = my_rank * elements_per_pe + i;
+
+        /* Create the PIO decomposition for this test. */
+        if (nc_init_decomp(iosysid, PIO_INT, NDIM2, dimlen, elements_per_pe,
+                           compdof, &ioid, 0, NULL, NULL)) ERR;
+        free(compdof);
+
         if (nc_close(ncid)) ERR;
 
         /* Check that our user-defined format has been added. */

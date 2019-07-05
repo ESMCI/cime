@@ -1252,6 +1252,10 @@ extern "C" {
 
     int nc_free_iosystem(int iosysid);
 
+    int nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
+                       int maplen, const size_t *compmap, int *ioidp,
+                       int rearranger, const size_t *iostart,
+                       const size_t *iocount);
 #if defined(__cplusplus)
 }
 #endif
