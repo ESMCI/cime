@@ -199,7 +199,7 @@ NC_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
     /* Open the file with PIO. Tell openfile_retry to accept the
      * externally assigned ncid. */
     if ((ret = PIOc_createfile_int(diosysid,  &nc_file->ext_ncid, &iotype,
-                                   path, cmode)))
+                                   path, cmode, 1)))
         return ret;
 
     return PIO_NOERR;

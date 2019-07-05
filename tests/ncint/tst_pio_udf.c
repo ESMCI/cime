@@ -36,9 +36,10 @@ main(int argc, char **argv)
         NC_Dispatch *disp_in;
 
         /* Create an empty file to play with. */
-        if (nc_create(FILE_NAME, NC_CLOBBER, &ncid)) ERR;
-        if (nc_close(ncid)) ERR;
+        /* if (nc_create(FILE_NAME, NC_CLOBBER, &ncid)) ERR; */
+        /* if (nc_close(ncid)) ERR; */
 
+        PIOc_set_log_level(3);
         /* Initialize the intracomm. */
         if (nc_init_intracomm(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) ERR;
 
@@ -46,13 +47,12 @@ main(int argc, char **argv)
         if (nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)) ERR;
 
         /* Create an empty file to play with. */
-        /* if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR; */
-        /* if (nc_close(ncid)) ERR; */
+        if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
+        if (nc_close(ncid)) ERR;
 
         /* Check that our user-defined format has been added. */
         if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR;
         if (disp_in != &NCINT_dispatcher) ERR;
-        PIOc_set_log_level(3);
 
         /* Open file with our defined functions. */
         if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;

@@ -156,7 +156,7 @@ PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
           iosysid, *iotype, filename, mode));
 
     /* Create the file. */
-    if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode)))
+    if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode, 0)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Run this on all tasks if async is not in use, but only on
@@ -204,7 +204,7 @@ PIOc_create(int iosysid, const char *path, int cmode, int *ncidp)
     if ((ret = find_iotype_from_cmode(cmode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    return PIOc_createfile_int(iosysid, ncidp, &iotype, path, cmode);
+    return PIOc_createfile_int(iosysid, ncidp, &iotype, path, cmode, 0);
 }
 
 /**

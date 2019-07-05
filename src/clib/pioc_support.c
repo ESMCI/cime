@@ -1935,13 +1935,16 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * PIO_IOTYPE_NETCDF4P.
  * @param filename The filename to create.
  * @param mode The netcdf mode for the create operation.
+ * @paran use_ext_ncid non-zero to use an externally assigned ncid
+ * (used in the netcdf integration layer).
+ *
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile_c
  * @author Ed Hartnett
  */
 int
 PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
-                    int mode)
+                    int mode, int use_ext_ncid)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -2082,12 +2085,28 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         PLOG((3, "createfile bcast pio_next_ncid %d", pio_next_ncid));
     }
 
-    /* Assign the PIO ncid. */
-    file->pio_ncid = pio_next_ncid++;
-    PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
+    /* With the netCDF integration layer, the ncid is assigned for PIO
+     * by the netCDF dispatch layer code. So it is passed in. In
+     * normal PIO operation, the ncid is generated here. */
+    if (use_ext_ncid)
+    {
+        /* Use the ncid passed in from the netCDF dispatch code. */
+        file->pio_ncid = *ncidp;
 
-    /* Return the ncid to the caller. */
-    *ncidp = file->pio_ncid;
+        /* To prevent PIO from reusing the same ncid, if someone
+         * starting mingling netcdf integration PIO and regular PIO
+         * code. */
+        pio_next_ncid = file->pio_ncid + 1;
+    }
+    else
+    {
+        /* Assign the PIO ncid. */
+        file->pio_ncid = pio_next_ncid++;
+        PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
+
+        /* Return the ncid to the caller. */
+        *ncidp = file->pio_ncid;
+    }
 
     /* Add the struct with this files info to the global list of
      * open files. */

@@ -187,7 +187,8 @@ extern "C" {
     int delete_var_desc(int varid, var_desc_t **varlist);
 
     /* Create a file (internal function). */
-    int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename, int mode);
+    int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
+                            int mode, int use_ext_ncid);
 
     /* Open a file with optional retry as netCDF-classic if first
      * iotype does not work. */
