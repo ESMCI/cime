@@ -46,7 +46,7 @@ nc_free_iosystem(int iosysid)
 }
 
 /**
- * Same as PIOc_init_decomp()
+ * Same as PIOc_init_decomp().
  *
  * @author Ed Hartnett
  */
@@ -60,4 +60,15 @@ nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
                             (const PIO_Offset *)compmap, ioidp, rearranger,
                             (const PIO_Offset *)iostart,
                             (const PIO_Offset *)iocount);
+}
+
+/**
+ * Same as PIOc_freedecomp().
+ *
+ * @author Ed Hartnett
+ */
+int
+nc_free_decomp(int ioid)
+{
+    return PIOc_freedecomp(diosysid, ioid);
 }

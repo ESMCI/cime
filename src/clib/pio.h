@@ -1256,6 +1256,9 @@ extern "C" {
                        int maplen, const size_t *compmap, int *ioidp,
                        int rearranger, const size_t *iostart,
                        const size_t *iocount);
+
+    int nc_free_decomp(int ioid);
+
 #if defined(__cplusplus)
 }
 #endif

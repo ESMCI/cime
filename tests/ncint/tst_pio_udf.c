@@ -83,6 +83,9 @@ main(int argc, char **argv)
         if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
         if (nc_close(ncid)) ERR;
 
+        /* Free the decomposition. */
+        if (nc_free_decomp(ioid)) ERR;
+
         /* Close the iosystem. */
         if (nc_free_iosystem(iosysid)) ERR;
     }
