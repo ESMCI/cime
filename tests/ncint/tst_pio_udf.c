@@ -13,8 +13,11 @@
 
 #define FILE_NAME "tst_pio_udf.nc"
 #define VAR_NAME "data_var"
-#define DIM_NAME "dim_x"
-#define DIM_LEN 16
+#define DIM_NAME_X "dim_x"
+#define DIM_NAME_Y "dim_y"
+#define DIM_LEN_X 4
+#define DIM_LEN_Y 4
+#define NDIM2 2
 
 extern NC_Dispatch NCINT_dispatcher;
 
@@ -35,7 +38,7 @@ main(int argc, char **argv)
     printf("*** testing simple use of netCDF integration layer format...");
     {
         int ncid;
-        int dimid, varid;
+        int dimid[NDIM2], varid;
         int iosysid;
         NC_Dispatch *disp_in;
 
@@ -50,10 +53,11 @@ main(int argc, char **argv)
         /* Add our user defined format. */
         if (nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)) ERR;
 
-        /* Create an empty file to play with. */
+        /* Create a file to play with. */
         if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
-        if (nc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)) ERR;
-        if (nc_def_var(ncid, VAR_NAME, NC_INT, 1, &dimid, &varid)) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_X, DIM_LEN_X, &dimid[0])) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_Y, DIM_LEN_Y, &dimid[1])) ERR;
+        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
         if (nc_close(ncid)) ERR;
 
         /* Check that our user-defined format has been added. */
