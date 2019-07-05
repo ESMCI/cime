@@ -92,8 +92,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     MPI_Status status; /* Not actually used - replace with MPI_STATUSES_IGNORE. */
     int mpierr;  /* Return code from MPI functions. */
 
-    LOG((2, "pio_swapm fc->hs = %d fc->isend = %d fc->max_pend_req = %d", fc->hs,
-         fc->isend, fc->max_pend_req));
+    PLOG((2, "pio_swapm fc->hs = %d fc->isend = %d fc->max_pend_req = %d", fc->hs,
+          fc->isend, fc->max_pend_req));
 
     /* Get my rank and size of communicator. */
     if ((mpierr = MPI_Comm_size(comm, &ntasks)))
@@ -101,7 +101,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     if ((mpierr = MPI_Comm_rank(comm, &my_rank)))
         return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
-    LOG((2, "ntasks = %d my_rank = %d", ntasks, my_rank));
+    PLOG((2, "ntasks = %d my_rank = %d", ntasks, my_rank));
 
     /* Now we know the size of these arrays. */
     int swapids[ntasks];
@@ -113,9 +113,9 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 #if PIO_ENABLE_LOGGING
     {
         for (int p = 0; p < ntasks; p++)
-            LOG((4, "sendcounts[%d] = %d sdispls[%d] = %d sendtypes[%d] = %d recvcounts[%d] = %d "
-                 "rdispls[%d] = %d recvtypes[%d] = %d", p, sendcounts[p], p, sdispls[p], p,
-                 sendtypes[p], p, recvcounts[p], p, rdispls[p], p, recvtypes[p]));
+            PLOG((4, "sendcounts[%d] = %d sdispls[%d] = %d sendtypes[%d] = %d recvcounts[%d] = %d "
+                  "rdispls[%d] = %d recvtypes[%d] = %d", p, sendcounts[p], p, sdispls[p], p,
+                  sendtypes[p], p, recvcounts[p], p, rdispls[p], p, recvtypes[p]));
     }
 #endif /* PIO_ENABLE_LOGGING */
 
@@ -124,7 +124,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     if (fc->max_pend_req == 0)
     {
         /* Call the MPI alltoall without flow control. */
-        LOG((3, "Calling MPI_Alltoallw without flow control."));
+        PLOG((3, "Calling MPI_Alltoallw without flow control."));
         if ((mpierr = MPI_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf,
                                     recvcounts, rdispls, recvtypes, comm)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -169,7 +169,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 /* #endif */
     }
 
-    LOG((2, "Done sending to self... sending to other procs"));
+    PLOG((2, "Done sending to self... sending to other procs"));
 
     /* When send to self is complete there is nothing left to do if
      * ntasks==1. */
@@ -198,7 +198,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             swapids[steps++] = p;
     }
 
-    LOG((3, "steps=%d", steps));
+    PLOG((3, "steps=%d", steps));
 
     if (steps == 0)
         return PIO_NOERR;
@@ -233,7 +233,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         }
     }
 
-    LOG((2, "fc->max_pend_req=%d, maxreq=%d, maxreqh=%d", fc->max_pend_req, maxreq, maxreqh));
+    PLOG((2, "fc->max_pend_req=%d, maxreq=%d, maxreqh=%d", fc->max_pend_req, maxreq, maxreqh));
 
     /* If handshaking is in use, do a nonblocking recieve to listen
      * for it. */
@@ -362,7 +362,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
      * them here. */
     if (steps > 0)
     {
-        LOG((2, "Waiting for outstanding msgs"));
+        PLOG((2, "Waiting for outstanding msgs"));
         if ((mpierr = MPI_Waitall(steps, rcvids, MPI_STATUSES_IGNORE)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
         if (fc->isend)
