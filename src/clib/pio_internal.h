@@ -60,10 +60,10 @@
 
 #if PIO_ENABLE_LOGGING
 void pio_log(int severity, const char *fmt, ...);
-#define LOG(e) pio_log e
+#define PLOG(e) pio_log e
 #else
 /** Logging macro for debugging. */
-#define LOG(e)
+#define PLOG(e)
 #endif /* PIO_ENABLE_LOGGING */
 
 /** Find maximum. */

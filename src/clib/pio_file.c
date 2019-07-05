@@ -55,9 +55,9 @@ int
 PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                   int mode)
 {
-    LOG((1, "PIOc_openfile iosysid %d *iotype %d filename %s mode %d", iosysid,
-         iotype ? *iotype: 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1, 0);
+    PLOG((1, "PIOc_openfile iosysid %d *iotype %d filename %s mode %d", iosysid,
+          iotype ? *iotype: 0, filename, mode));
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
 }
 
 /**
@@ -83,9 +83,9 @@ int
 PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
                    int mode)
 {
-    LOG((1, "PIOc_openfile2 iosysid %d *iotype %d filename %s mode %d", iosysid,
-         iotype ? *iotype : 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0, 0);
+    PLOG((1, "PIOc_openfile2 iosysid %d *iotype %d filename %s mode %d", iosysid,
+          iotype ? *iotype : 0, filename, mode));
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0);
 }
 
 /**
@@ -108,8 +108,7 @@ PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
 
-    LOG((1, "PIOc_open iosysid = %d path = %s mode = %x", iosysid, path,
-         mode));
+    PLOG((1, "PIOc_open iosysid = %d path = %s mode = %x", iosysid, path, mode));
 
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -153,8 +152,8 @@ PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
-         iosysid, *iotype, filename, mode));
+    PLOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
+          iosysid, *iotype, filename, mode));
 
     /* Create the file. */
     if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode)))
@@ -231,7 +230,7 @@ PIOc_closefile(int ncid)
     pio_start_mpe_log(CLOSE);
 #endif /* USE_MPE */
 
-    LOG((1, "PIOc_closefile ncid = %d", ncid));
+    PLOG((1, "PIOc_closefile ncid = %d", ncid));
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
@@ -328,7 +327,7 @@ PIOc_deletefile(int iosysid, const char *filename)
     int msg = PIO_MSG_DELETE_FILE;
     size_t len;
 
-    LOG((1, "PIOc_deletefile iosysid = %d filename = %s", iosysid, filename));
+    PLOG((1, "PIOc_deletefile iosysid = %d filename = %s", iosysid, filename));
 
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -348,7 +347,7 @@ PIOc_deletefile(int iosysid, const char *filename)
             if (!mpierr)
                 mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, ios->compmaster,
                                    ios->intercomm);
-            LOG((2, "Bcast len = %d filename = %s", len, filename));
+            PLOG((2, "Bcast len = %d filename = %s", len, filename));
         }
 
         /* Handle MPI errors. */
@@ -356,7 +355,7 @@ PIOc_deletefile(int iosysid, const char *filename)
             return check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-        LOG((3, "done hanlding errors mpierr = %d", mpierr));
+        PLOG((3, "done hanlding errors mpierr = %d", mpierr));
     }
 
     /* If this is an IO task, then call the netCDF function. The
@@ -373,7 +372,7 @@ PIOc_deletefile(int iosysid, const char *filename)
         if (!mpierr)
             mpierr = MPI_Barrier(ios->io_comm);
     }
-    LOG((2, "PIOc_deletefile ierr = %d", ierr));
+    PLOG((2, "PIOc_deletefile ierr = %d", ierr));
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
@@ -405,7 +404,7 @@ PIOc_sync(int ncid)
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
 
-    LOG((1, "PIOc_sync ncid = %d", ncid));
+    PLOG((1, "PIOc_sync ncid = %d", ncid));
 
     /* Get the file info from the ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -419,18 +418,18 @@ PIOc_sync(int ncid)
         {
             wmulti_buffer *wmb, *twmb;
 
-            LOG((3, "PIOc_sync checking buffers"));
-	    HASH_ITER(hh, file->buffer, wmb, twmb)
-	      {  
+            PLOG((3, "PIOc_sync checking buffers"));
+            HASH_ITER(hh, file->buffer, wmb, twmb)
+            {
                 /* If there are any data arrays waiting in the
                  * multibuffer, flush it. */
                 if (wmb->num_arrays > 0)
                     flush_buffer(ncid, wmb, true);
-		HASH_DEL(file->buffer, wmb);
-		brel(wmb);
-                
-	      }
-	    file->buffer = NULL;
+                HASH_DEL(file->buffer, wmb);
+                brel(wmb);
+
+            }
+            file->buffer = NULL;
         }
     }
 
@@ -481,7 +480,7 @@ PIOc_sync(int ncid)
                 return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
         }
-        LOG((2, "PIOc_sync ierr = %d", ierr));
+        PLOG((2, "PIOc_sync ierr = %d", ierr));
     }
 
     /* Broadcast and check the return code. */
