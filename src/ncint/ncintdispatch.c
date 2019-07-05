@@ -20,9 +20,9 @@ int diosysid;
  * functions that make up the NCINT dispatch interface. */
 NC_Dispatch NCINT_dispatcher = {
 
-    NC_FORMATX_NC_HDF4,
+    NC_FORMATX_NC_UDF0,
 
-    NC_RO_create,
+    NC_NCINT_create,
     NC_NCINT_open,
 
     NC_RO_redef,
@@ -168,6 +168,41 @@ NC_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
         return ret;
 
     return NC_NOERR;
+}
+
+int
+NC_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
+                size_t *chunksizehintp, void *parameters,
+                const NC_Dispatch *dispatch, NC *nc_file)
+{
+    int iotype;
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    int ret;
+
+    LOG((1, "NC_NCINT_create path = %s mode = %x", path, mode));
+
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(diosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Turn of NC_UDF0 in the mode flag. */
+    cmode = cmode & ~NC_UDF0;
+
+    /* Find the IOTYPE from the mode flag. */
+    if ((ret = find_iotype_from_omode(mode, &iotype)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Add necessary structs to hold netcdf-4 file data. */
+    if ((ret = nc4_nc4f_list_add(nc_file, path, mode)))
+        return ret;
+
+    /* Open the file with PIO. Tell openfile_retry to accept the
+     * externally assigned ncid. */
+    if ((ret = PIOc_createfile_int(diosysid,  &nc_file->ext_ncid, iotype,
+                                   path, cmode)))
+        return ret;
+
+    return PIO_NOERR;
 }
 
 int

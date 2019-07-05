@@ -187,27 +187,24 @@ PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @author Ed Hartnett
  */
 int
-PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
+PIOc_create(int iosysid, const char *path, int cmode, int *ncidp)
 {
     int iotype;            /* The PIO IO type. */
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    int ret;
 
-    /* Figure out the iotype. */
-    if (cmode & NC_NETCDF4)
-    {
-        if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
-            iotype = PIO_IOTYPE_NETCDF4P;
-        else
-            iotype = PIO_IOTYPE_NETCDF4C;
-    }
-    else
-    {
-        if (cmode & NC_PNETCDF || cmode & NC_MPIIO)
-            iotype = PIO_IOTYPE_PNETCDF;
-        else
-            iotype = PIO_IOTYPE_NETCDF;
-    }
+    PLOG((1, "PIOc_create iosysid = %d path = %s cmode = %x", iosysid, path,
+          cmode));
 
-    return PIOc_createfile_int(iosysid, ncidp, &iotype, filename, cmode);
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Find the IOTYPE from the mode flag. */
+    if ((ret = find_iotype_from_cmode(cmode, &iotype)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    return PIOc_createfile_int(iosysid, ncidp, &iotype, path, cmode);
 }
 
 /**

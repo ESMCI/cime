@@ -197,6 +197,9 @@ extern "C" {
     /* Give the mode flag from an open, determine the IOTYPE. */
     int find_iotype_from_omode(int mode, int *iotype);
 
+    /* Give the mode flag from an nc_create call, determine the IOTYPE. */
+    int find_iotype_from_cmode(int cmode, int *iotype);
+
     /* Given PIO type, find MPI type and type size. */
     int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size);
 

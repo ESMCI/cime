@@ -1,7 +1,7 @@
 /** @file
  * Support functions for the PIO library.
  */
-#include <config.h>
+#include "config.h"
 #if PIO_ENABLE_LOGGING
 #include <stdarg.h>
 #include <unistd.h>
@@ -2390,6 +2390,41 @@ find_iotype_from_omode(int mode, int *iotype)
     else
     {
         if (mode & NC_PNETCDF || mode & NC_MPIIO)
+            *iotype = PIO_IOTYPE_PNETCDF;
+        else
+            *iotype = PIO_IOTYPE_NETCDF;
+    }
+
+    return PIO_NOERR;
+}
+
+
+/**
+ * Find the appropriate IOTYPE from mode flags to nc_create().
+ *
+ * @param mode the mode flag from nc_create().
+ * @param iotype pointer that gets the IOTYPE.
+ *
+ * @return 0 on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+find_iotype_from_cmode(int cmode, int *iotype)
+{
+    /* Check inputs. */
+    pioassert(iotype, "pointer to iotype must be provided", __FILE__, __LINE__);
+
+    /* Figure out the iotype. */
+    if (cmode & NC_NETCDF4)
+    {
+        if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
+            *iotype = PIO_IOTYPE_NETCDF4P;
+        else
+            *iotype = PIO_IOTYPE_NETCDF4C;
+    }
+    else
+    {
+        if (cmode & NC_PNETCDF || cmode & NC_MPIIO)
             *iotype = PIO_IOTYPE_PNETCDF;
         else
             *iotype = PIO_IOTYPE_NETCDF;
