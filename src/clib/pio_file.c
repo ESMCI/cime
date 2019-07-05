@@ -56,7 +56,7 @@ int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
 {
     LOG((1, "PIOc_openfile iosysid %d *iotype %d filename %s mode %d", iosysid,
          iotype ? *iotype: 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1, 0);
 }
 
 /**
@@ -83,7 +83,7 @@ int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
 {
     LOG((1, "PIOc_openfile2 iosysid %d *iotype %d filename %s mode %d", iosysid,
          iotype ? *iotype : 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0);
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0, 0);
 }
 
 /**
@@ -123,7 +123,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
 
     /* Open the file. If the open fails, do not retry as serial
      * netCDF. Just return the error code. */
-    return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0);
+    return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0, 0);
 }
 
 /**

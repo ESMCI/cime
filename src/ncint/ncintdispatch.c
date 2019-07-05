@@ -140,8 +140,16 @@ NC_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
     int ret;
     nc_file->int_ncid = nc_file->ext_ncid;
 
-    if ((ret = PIOc_open(diosysid, path, mode, &nc_file->ext_ncid)))
-        return ret;
+    /* Turn of NC_UDF0 in the mode flag. */
+    mode = mode & ~NC_UDF0;
+
+    /* /\* Add necessary structs to hold netcdf-4 file data. *\/ */
+    /* if ((retval = nc4_nc4f_list_add(nc_file, path, mode))) */
+    /*     return retval; */
+
+    /* /\* Open the file with PIO. *\/ */
+    /* if ((ret = PIOc_open(diosysid, path, mode, &nc_file->ext_ncid))) */
+    /*     return ret; */
 
     return NC_NOERR;
 }

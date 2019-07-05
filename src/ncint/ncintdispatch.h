@@ -8,8 +8,9 @@
 #define _NCINTDISPATCH_H
 
 #include "config.h"
-#include "ncdispatch.h"
-#include "nc4dispatch.h"
+#include <ncdispatch.h>
+#include <nc4dispatch.h>
+#include <netcdf_dispatch.h>
 
 /** This is the max size of an SD dataset name in HDF4 (from HDF4
  * documentation).*/

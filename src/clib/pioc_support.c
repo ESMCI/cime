@@ -2384,6 +2384,8 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
  * @param mode the netcdf mode for the open operation
  * @param retry non-zero to automatically retry with netCDF serial
  * classic.
+ * @paran use_ext_ncid non-zero to use an externally assigned ncid
+ * (used in the netcdf integration layer).
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile_c
@@ -2391,7 +2393,7 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
  */
 int
 PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
-                    int mode, int retry)
+                    int mode, int retry, int use_ext_ncid)
 {
     iosystem_desc_t *ios;      /* Pointer to io system information. */
     file_desc_t *file;         /* Pointer to file information. */
@@ -2633,13 +2635,19 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
             return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
-    /* Create the ncid that the user will see. This is necessary
-     * because otherwise ncids will be reused if files are opened
-     * on multiple iosystems. */
-    file->pio_ncid = pio_next_ncid++;
+    /* With the netCDF integration layer, the ncid is assigned for PIO
+     * by the netCDF dispatch layer code. So it is passed in. In
+     * normal PIO operation, the ncid is generated here. */
+    if (!use_ext_ncid)
+    {
+        /* Create the ncid that the user will see. This is necessary
+         * because otherwise ncids will be reused if files are opened
+         * on multiple iosystems. */
+        file->pio_ncid = pio_next_ncid++;
 
-    /* Return the PIO ncid to the user. */
-    *ncidp = file->pio_ncid;
+        /* Return the PIO ncid to the user. */
+        *ncidp = file->pio_ncid;
+    }
 
     /* Add this file to the list of currently open files. */
     pio_add_to_file_list(file);

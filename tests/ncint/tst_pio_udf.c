@@ -48,6 +48,7 @@ main(int argc, char **argv)
         /* Check that our user-defined format has been added. */
         if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR;
         if (disp_in != &NCINT_dispatcher) ERR;
+        PIOc_set_log_level(3);
 
         /* Open file with our defined functions. */
         /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR; */

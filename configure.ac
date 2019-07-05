@@ -279,6 +279,7 @@ fi
 # versions of netCDF. */
 if test "x$enable_netcdf_integration" = xyes; then
   AC_DEFINE([HDF5_PARALLEL],[1],[Does HDF5 library provide parallel access])
+  AC_DEFINE([USE_NETCDF4],[1],[Does HDF5 library provide parallel access])
 fi
 
 AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
