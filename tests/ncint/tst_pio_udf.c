@@ -12,6 +12,9 @@
 #include <mpi.h>
 
 #define FILE_NAME "tst_pio_udf.nc"
+#define VAR_NAME "data_var"
+#define DIM_NAME "dim_x"
+#define DIM_LEN 16
 
 extern NC_Dispatch NCINT_dispatcher;
 
@@ -32,6 +35,7 @@ main(int argc, char **argv)
     printf("*** testing simple use of netCDF integration layer format...");
     {
         int ncid;
+        int dimid, varid;
         int iosysid;
         NC_Dispatch *disp_in;
 
@@ -48,6 +52,8 @@ main(int argc, char **argv)
 
         /* Create an empty file to play with. */
         if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
+        if (nc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)) ERR;
+        if (nc_def_var(ncid, VAR_NAME, NC_INT, 1, &dimid, &varid)) ERR;
         if (nc_close(ncid)) ERR;
 
         /* Check that our user-defined format has been added. */

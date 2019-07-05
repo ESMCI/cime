@@ -46,6 +46,13 @@ extern "C" {
                     const NC_Dispatch *dispatch, NC *nc_file);
 
     extern int
+    NC_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
+                     const int *dimidsp, int *varidp);
+
+    extern int
+    NC_NCINT_def_dim(int ncid, const char *name, size_t len, int *idp);
+
+    extern int
     NC_NCINT_abort(int ncid);
 
     extern int

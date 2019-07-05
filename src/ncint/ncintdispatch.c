@@ -39,7 +39,7 @@ NC_Dispatch NCINT_dispatcher = {
     NC4_inq,
     NC4_inq_type,
 
-    NC_RO_def_dim,
+    NC_NCINT_def_dim,
     NC4_inq_dimid,
     NC4_inq_dim,
     NC4_inq_unlimdim,
@@ -53,7 +53,7 @@ NC_Dispatch NCINT_dispatcher = {
     NC4_get_att,
     NC_RO_put_att,
 
-    NC_RO_def_var,
+    NC_NCINT_def_var,
     NC4_inq_varid,
     NC_RO_rename_var,
     NC_NCINT_get_vara,
@@ -203,6 +203,19 @@ NC_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
         return ret;
 
     return PIO_NOERR;
+}
+
+int
+NC_NCINT_def_dim(int ncid, const char *name, size_t len, int *idp)
+{
+    return PIOc_def_dim(ncid, name, len, idp);
+}
+
+int
+NC_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
+                 const int *dimidsp, int *varidp)
+{
+    return PIOc_def_var(ncid, name, xtype, ndims, dimidsp, varidp);
 }
 
 int
