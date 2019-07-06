@@ -63,7 +63,7 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_rename_var,
     PIO_NCINT_get_vara,
     PIO_NCINT_put_vara,
-    NCDEFAULT_get_vars,
+    PIO_NCINT_get_vars,
     NCDEFAULT_put_vars,
     NCDEFAULT_get_varm,
     NCDEFAULT_put_varm,
@@ -215,6 +215,140 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
         return ret;
 
     return NC_NOERR;
+}
+
+/**
+ * @internal This just calls nc_enddef, ignoring the extra parameters.
+ *
+ * @param ncid File and group ID.
+ * @param h_minfree Ignored.
+ * @param v_align Ignored.
+ * @param v_minfree Ignored.
+ * @param r_align Ignored.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT__enddef(int ncid, size_t h_minfree, size_t v_align,
+                  size_t v_minfree, size_t r_align)
+{
+    return PIOc_enddef(ncid);
+}
+
+/**
+ * @internal Put the file back in redef mode. This is done
+ * automatically for netcdf-4 files, if the user forgets.
+ *
+ * @param ncid File and group ID.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_redef(int ncid)
+{
+    return PIOc_redef(ncid);
+}
+
+/**
+ * @internal Flushes all buffers associated with the file, after
+ * writing all changed metadata. This may only be called in data mode.
+ *
+ * @param ncid File and group ID.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EINDEFINE Classic model file is in define mode.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_sync(int ncid)
+{
+    return PIOc_sync(ncid);
+}
+
+int
+PIO_NCINT_abort(int ncid)
+{
+    return TEST_VAL_42;
+}
+
+int
+PIO_NCINT_close(int ncid, void *v)
+{
+    return PIOc_closefile(ncid);
+}
+
+/**
+ * @internal Set fill mode.
+ *
+ * @param ncid File ID.
+ * @param fillmode File mode.
+ * @param old_modep Pointer that gets old mode. Ignored if NULL.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_set_fill(int ncid, int fillmode, int *old_modep)
+{
+    return PIOc_set_fill(ncid, fillmode, old_modep);
+}
+
+int
+PIO_NCINT_inq_format(int ncid, int *formatp)
+{
+    return TEST_VAL_42;
+}
+
+int
+PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
+{
+    return TEST_VAL_42;
+}
+
+/**
+ * @internal Learn number of dimensions, variables, global attributes,
+ * and the ID of the first unlimited dimension (if any).
+ *
+ * @note It's possible for any of these pointers to be NULL, in which
+ * case don't try to figure out that value.
+ *
+ * @param ncid File and group ID.
+ * @param ndimsp Pointer that gets number of dimensions.
+ * @param nvarsp Pointer that gets number of variables.
+ * @param nattsp Pointer that gets number of global attributes.
+ * @param unlimdimidp Pointer that gets first unlimited dimension ID,
+ * or -1 if there are no unlimied dimensions.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq(int ncid, int *ndimsp, int *nvarsp, int *nattsp, int *unlimdimidp)
+{
+    return PIOc_inq(ncid, ndimsp, nvarsp, nattsp, unlimdimidp);
+}
+
+/**
+ * @internal Get the name and size of a type. For strings, 1 is
+ * returned. For VLEN the base type len is returned.
+ *
+ * @param ncid File and group ID.
+ * @param typeid1 Type ID.
+ * @param name Gets the name of the type.
+ * @param size Gets the size of one element of the type in bytes.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EBADTYPE Type not found.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_type(int ncid, nc_type typeid1, char *name, size_t *size)
+{
+    return PIOc_inq_type(ncid, typeid1, name, (PIO_Offset *)size);
 }
 
 int
@@ -539,136 +673,39 @@ PIO_NCINT_put_vara(int ncid, int varid, const size_t *startp,
 }
 
 /**
- * @internal This just calls nc_enddef, ignoring the extra parameters.
- *
- * @param ncid File and group ID.
- * @param h_minfree Ignored.
- * @param v_align Ignored.
- * @param v_minfree Ignored.
- * @param r_align Ignored.
- *
- * @return ::NC_NOERR No error.
- * @author Ed Hartnett
- */
-int
-PIO_NCINT__enddef(int ncid, size_t h_minfree, size_t v_align,
-                  size_t v_minfree, size_t r_align)
-{
-    return PIOc_enddef(ncid);
-}
-
-/**
- * @internal Put the file back in redef mode. This is done
- * automatically for netcdf-4 files, if the user forgets.
- *
- * @param ncid File and group ID.
- *
- * @return ::NC_NOERR No error.
- * @author Ed Hartnett
- */
-int
-PIO_NCINT_redef(int ncid)
-{
-    return PIOc_redef(ncid);
-}
-
-/**
- * @internal Flushes all buffers associated with the file, after
- * writing all changed metadata. This may only be called in data mode.
- *
- * @param ncid File and group ID.
- *
- * @return ::NC_NOERR No error.
- * @return ::NC_EBADID Bad ncid.
- * @return ::NC_EINDEFINE Classic model file is in define mode.
- * @author Ed Hartnett
- */
-int
-PIO_NCINT_sync(int ncid)
-{
-    return PIOc_sync(ncid);
-}
-
-int
-PIO_NCINT_abort(int ncid)
-{
-    return TEST_VAL_42;
-}
-
-int
-PIO_NCINT_close(int ncid, void *v)
-{
-    return PIOc_closefile(ncid);
-}
-
-/**
- * @internal Set fill mode.
+ * @internal Read a strided array of data from a variable. This is
+ * called by nc_get_vars() for netCDF-4 files, as well as all the
+ * other nc_get_vars_* functions.
  *
  * @param ncid File ID.
- * @param fillmode File mode.
- * @param old_modep Pointer that gets old mode. Ignored if NULL.
+ * @param varid Variable ID.
+ * @param startp Array of start indices. Must be provided for
+ * non-scalar vars.
+ * @param countp Array of counts. Will default to counts of extent of
+ * dimension if NULL.
+ * @param stridep Array of strides. Will default to strides of 1 if
+ * NULL.
+ * @param data The data to be written.
+ * @param mem_nc_type The type of the data in memory. (Convert to this
+ * type from file type.)
  *
- * @return ::NC_NOERR No error.
- * @author Ed Hartnett
+ * @returns ::NC_NOERR No error.
+ * @returns ::NC_EBADID Bad ncid.
+ * @returns ::NC_ENOTVAR Var not found.
+ * @returns ::NC_EHDFERR HDF5 function returned error.
+ * @returns ::NC_EINVALCOORDS Incorrect start.
+ * @returns ::NC_EEDGE Incorrect start/count.
+ * @returns ::NC_ENOMEM Out of memory.
+ * @returns ::NC_EMPI MPI library error (parallel only)
+ * @returns ::NC_ECANTEXTEND Can't extend dimension for write.
+ * @returns ::NC_ERANGE Data conversion error.
+ * @author Ed Hartnett, Dennis Heimbigner
  */
 int
-PIO_NCINT_set_fill(int ncid, int fillmode, int *old_modep)
+PIO_NCINT_get_vars(int ncid, int varid, const size_t *startp, const size_t *countp,
+                   const ptrdiff_t *stridep, void *data, nc_type mem_nc_type)
 {
-    return PIOc_set_fill(ncid, fillmode, old_modep);
+    return PIOc_get_vars_tc(ncid, varid, (PIO_Offset *)startp,
+                            (PIO_Offset *)countp, (PIO_Offset *)stridep,
+                            mem_nc_type, data);
 }
-
-int
-PIO_NCINT_inq_format(int ncid, int *formatp)
-{
-    return TEST_VAL_42;
-}
-
-int
-PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
-{
-    return TEST_VAL_42;
-}
-
-/**
- * @internal Learn number of dimensions, variables, global attributes,
- * and the ID of the first unlimited dimension (if any).
- *
- * @note It's possible for any of these pointers to be NULL, in which
- * case don't try to figure out that value.
- *
- * @param ncid File and group ID.
- * @param ndimsp Pointer that gets number of dimensions.
- * @param nvarsp Pointer that gets number of variables.
- * @param nattsp Pointer that gets number of global attributes.
- * @param unlimdimidp Pointer that gets first unlimited dimension ID,
- * or -1 if there are no unlimied dimensions.
- *
- * @return ::NC_NOERR No error.
- * @author Ed Hartnett
- */
-int
-PIO_NCINT_inq(int ncid, int *ndimsp, int *nvarsp, int *nattsp, int *unlimdimidp)
-{
-    return PIOc_inq(ncid, ndimsp, nvarsp, nattsp, unlimdimidp);
-}
-
-/**
- * @internal Get the name and size of a type. For strings, 1 is
- * returned. For VLEN the base type len is returned.
- *
- * @param ncid File and group ID.
- * @param typeid1 Type ID.
- * @param name Gets the name of the type.
- * @param size Gets the size of one element of the type in bytes.
- *
- * @return ::NC_NOERR No error.
- * @return ::NC_EBADID Bad ncid.
- * @return ::NC_EBADTYPE Type not found.
- * @author Ed Hartnett
- */
-int
-PIO_NCINT_inq_type(int ncid, nc_type typeid1, char *name, size_t *size)
-{
-    return PIOc_inq_type(ncid, typeid1, name, (PIO_Offset *)size);
-}
-
