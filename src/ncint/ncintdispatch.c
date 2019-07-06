@@ -71,7 +71,7 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_inq_var_all,
 
     NC_NOTNC4_var_par_access,
-    NC_RO_def_var_fill,
+    PIO_NCINT_def_var_fill,
 
     NC4_show_metadata,
     NC4_inq_unlimdims,
@@ -762,4 +762,23 @@ PIO_NCINT_inq_var_all(int ncid, int varid, char *name, nc_type *xtypep,
                       unsigned int *idp, size_t *nparamsp, unsigned int *params)
 {
     return PIOc_inq_var(ncid, varid, name, xtypep, ndimsp, dimidsp, nattsp);
+}
+
+/**
+ * @internal This functions sets fill value and no_fill mode for a
+ * netCDF-4 variable. It is called by nc_def_var_fill().
+ *
+ * @note All pointer parameters may be NULL, in which case they are ignored.
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param no_fill No_fill setting.
+ * @param fill_value Pointer to fill value.
+ *
+ * @returns ::NC_NOERR for success
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
+{
+    return PIOc_def_var_fill(ncid, varid, no_fill, fill_value);
 }

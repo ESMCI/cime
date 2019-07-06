@@ -153,6 +153,10 @@ extern "C" {
                           int *no_fill, void *fill_valuep, int *endiannessp,
                           unsigned int *idp, size_t *nparamsp, unsigned int *params);
 
+    extern int
+    PIO_NCINT_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value);
+
+
 #if defined(__cplusplus)
 }
 #endif
