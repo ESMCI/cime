@@ -124,13 +124,8 @@ nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int
 {
     int ret;
 
-    /* Add our user defined format, if necessary. */
     if (!ncint_initialized)
-    {
-        if ((ret = nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)))
-            return ret;
-        ncint_initialized++;
-    }
+        NC_NCINT_initialize();
 
     if ((ret = PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr,
                                    iosysidp)))
@@ -151,7 +146,15 @@ nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int
 int
 NC_NCINT_initialize(void)
 {
+    int ret;
+
     NCINT_dispatch_table = &NCINT_dispatcher;
+
+    /* Add our user defined format. */
+    if ((ret = nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)))
+        return ret;
+    ncint_initialized++;
+
     return NC_NOERR;
 }
 

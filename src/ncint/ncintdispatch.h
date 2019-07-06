@@ -37,6 +37,9 @@ extern "C" {
 #endif
 
     extern int
+    NC_NCINT_initialize(void);
+
+    extern int
     NC_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
                   void *parameters, const NC_Dispatch *, NC *);
 
