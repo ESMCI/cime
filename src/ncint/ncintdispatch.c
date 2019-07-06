@@ -50,13 +50,13 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_inq_unlimdim,
     PIO_NCINT_rename_dim,
 
-    NC4_inq_att,
-    NC4_inq_attid,
-    NC4_inq_attname,
-    NC_RO_rename_att,
-    NC_RO_del_att,
-    NC4_get_att,
-    NC_RO_put_att,
+    PIO_NCINT_inq_att,
+    PIO_NCINT_inq_attid,
+    PIO_NCINT_inq_attname,
+    PIO_NCINT_rename_att,
+    PIO_NCINT_del_att,
+    PIO_NCINT_get_att,
+    PIO_NCINT_put_att,
 
     PIO_NCINT_def_var,
     NC4_inq_varid,
@@ -303,6 +303,132 @@ int
 PIO_NCINT_rename_dim(int ncid, int dimid, const char *name)
 {
     return PIOc_rename_dim(ncid, dimid, name);
+}
+
+/**
+ * @internal Learn about an att. All the nc4 nc_inq_ functions just
+ * call nc4_get_att to get the metadata on an attribute.
+ *
+ * @param ncid File and group ID.
+ * @param varid Variable ID.
+ * @param name Name of attribute.
+ * @param xtypep Pointer that gets type of attribute.
+ * @param lenp Pointer that gets length of attribute data array.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
+                 size_t *lenp)
+{
+    return PIOc_inq_att(ncid, varid, name, xtypep, (PIO_Offset *)lenp);
+}
+
+/**
+ * @internal Learn an attnum, given a name.
+ *
+ * @param ncid File and group ID.
+ * @param varid Variable ID.
+ * @param name Name of attribute.
+ * @param attnump Pointer that gets the attribute index number.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_attid(int ncid, int varid, const char *name, int *attnump)
+{
+    return PIOc_inq_attid(ncid, varid, name, attnump);
+}
+
+/**
+ * @internal Given an attnum, find the att's name.
+ *
+ * @param ncid File and group ID.
+ * @param varid Variable ID.
+ * @param attnum The index number of the attribute.
+ * @param name Pointer that gets name of attrribute.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_attname(int ncid, int varid, int attnum, char *name)
+{
+    return PIOc_inq_attname(ncid, varid, attnum, name);
+}
+
+/**
+ * @internal I think all atts should be named the exact same thing, to
+ * avoid confusion!
+ *
+ * @param ncid File and group ID.
+ * @param varid Variable ID.
+ * @param name Name of attribute.
+ * @param newname New name for attribute.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_rename_att(int ncid, int varid, const char *name, const char *newname)
+{
+    return PIOc_rename_att(ncid, varid, name, newname);
+}
+
+/**
+ * @internal Delete an att. Rub it out. Push the button on
+ * it. Liquidate it. Bump it off. Take it for a one-way
+ * ride. Terminate it.
+ *
+ * @param ncid File and group ID.
+ * @param varid Variable ID.
+ * @param name Name of attribute to delete.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_del_att(int ncid, int varid, const char *name)
+{
+    return PIOc_del_att(ncid, varid, name);
+}
+
+/**
+ * @internal Get an attribute.
+ *
+ * @param ncid File and group ID.
+ * @param varid Variable ID.
+ * @param name Name of attribute.
+ * @param value Pointer that gets attribute data.
+ * @param memtype The type the data should be converted to as it is
+ * read.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_get_att(int ncid, int varid, const char *name, void *value,
+                 nc_type memtype)
+{
+    return PIOc_get_att_tc(ncid, varid, name, memtype, value);
+}
+
+/**
+ * @internal Write an attribute.
+ *
+ * @return ::NC_EPERM Not allowed.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_put_att(int ncid, int varid, const char *name, nc_type file_type,
+              size_t len, const void *data, nc_type mem_type)
+{
+    return PIOc_put_att_tc(ncid, varid, name, file_type, (PIO_Offset)len,
+                           mem_type,  data);
 }
 
 int

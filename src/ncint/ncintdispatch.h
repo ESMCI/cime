@@ -99,8 +99,34 @@ extern "C" {
     PIO_NCINT_rename_dim(int ncid, int dimid, const char *name);
 
     extern int
+    PIO_NCINT_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
+                      size_t *lenp);
+
+    extern int
+    PIO_NCINT_inq_attid(int ncid, int varid, const char *name, int *attnump);
+
+    extern int
+    PIO_NCINT_inq_attname(int ncid, int varid, int attnum, char *name);
+
+    extern int
+    PIO_NCINT_rename_att(int ncid, int varid, const char *name, const char *newname);
+
+    extern int
+    PIO_NCINT_del_att(int ncid, int varid, const char *name);
+
+    extern int
+    PIO_NCINT_get_att(int ncid, int varid, const char *name, void *value,
+                      nc_type memtype);
+
+    extern int
+    PIO_NCINT_put_att(int ncid, int varid, const char *name, nc_type file_type,
+                      size_t len, const void *data, nc_type mem_type);
+
+
+    extern int
     PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
-                      void *value, nc_type);
+                       void *value, nc_type t);
+
 
 #if defined(__cplusplus)
 }
