@@ -16,6 +16,9 @@
 /** Default iosysid. */
 int diosysid;
 
+/** Did we initialize user-defined format? */
+int ncint_initialized = 0;
+
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
 NC_Dispatch NCINT_dispatcher = {
@@ -109,6 +112,35 @@ NC_Dispatch NCINT_dispatcher = {
 };
 
 const NC_Dispatch* NCINT_dispatch_table = NULL;
+
+/**
+ * Same as PIOc_Init_Intracomm().
+ *
+ * @author Ed Hartnett
+ */
+int
+nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
+                  int *iosysidp)
+{
+    int ret;
+
+    /* Add our user defined format, if necessary. */
+    if (!ncint_initialized)
+    {
+        if ((ret = nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)))
+            return ret;
+        ncint_initialized++;
+    }
+
+    if ((ret = PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr,
+                                   iosysidp)))
+        return ret;
+
+    /* Remember the io system id. */
+    diosysid = *iosysidp;
+
+    return PIO_NOERR;
+}
 
 /**
  * @internal Initialize NCINT dispatch layer.

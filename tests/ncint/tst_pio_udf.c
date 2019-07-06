@@ -56,9 +56,6 @@ main(int argc, char **argv)
         /* Initialize the intracomm. */
         if (nc_init_intracomm(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) ERR;
 
-        /* Add our user defined format. */
-        if (nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)) ERR;
-
         /* Create a file with a 3D record var. */
         if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
         if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) ERR;
