@@ -122,11 +122,19 @@ extern "C" {
     PIO_NCINT_put_att(int ncid, int varid, const char *name, nc_type file_type,
                       size_t len, const void *data, nc_type mem_type);
 
+    extern int
+    PIO_NCINT_inq_varid(int ncid, const char *name, int *varidp);
+
+    extern int
+    PIO_NCINT_rename_var(int ncid, int varid, const char *name);
 
     extern int
     PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
                        void *value, nc_type t);
 
+    extern int
+    PIO_NCINT_put_vara(int ncid, int varid, const size_t *startp,
+                       const size_t *countp, const void *op, int memtype);
 
 #if defined(__cplusplus)
 }

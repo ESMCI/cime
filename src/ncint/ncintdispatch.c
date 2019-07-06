@@ -59,10 +59,10 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_put_att,
 
     PIO_NCINT_def_var,
-    NC4_inq_varid,
-    NC_RO_rename_var,
+    PIO_NCINT_inq_varid,
+    PIO_NCINT_rename_var,
     PIO_NCINT_get_vara,
-    NC_RO_put_vara,
+    PIO_NCINT_put_vara,
     NCDEFAULT_get_vars,
     NCDEFAULT_put_vars,
     NCDEFAULT_get_varm,
@@ -439,6 +439,106 @@ PIO_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 }
 
 /**
+ * @internal Find the ID of a variable, from the name. This function
+ * is called by nc_inq_varid().
+ *
+ * @param ncid File ID.
+ * @param name Name of the variable.
+ * @param varidp Gets variable ID.
+
+ * @returns ::NC_NOERR No error.
+ * @returns ::NC_EBADID Bad ncid.
+ * @returns ::NC_ENOTVAR Bad variable ID.
+ */
+int
+PIO_NCINT_inq_varid(int ncid, const char *name, int *varidp)
+{
+    return PIOc_inq_varid(ncid, name, varidp);
+}
+
+/**
+ * @internal Rename a var to "bubba," for example. This is called by
+ * nc_rename_var() for netCDF-4 files. This results in complexities
+ * when coordinate variables are involved.
+
+ * Whenever a var has the same name as a dim, and also uses that dim
+ * as its first dimension, then that var is aid to be a coordinate
+ * variable for that dimensions. Coordinate variables are represented
+ * in the HDF5 by making them dimscales. Dimensions without coordinate
+ * vars are represented by datasets which are dimscales, but have a
+ * special attribute marking them as dimscales without associated
+ * coordinate variables.
+ *
+ * When a var is renamed, we must detect whether it has become a
+ * coordinate var (by being renamed to the same name as a dim that is
+ * also its first dimension), or whether it is no longer a coordinate
+ * var. These cause flags to be set in NC_VAR_INFO_T which are used at
+ * enddef time to make changes in the HDF5 file.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID
+ * @param name New name of the variable.
+ *
+ * @returns ::NC_NOERR No error.
+ * @returns ::NC_EBADID Bad ncid.
+ * @returns ::NC_ENOTVAR Invalid variable ID.
+ * @returns ::NC_EBADNAME Bad name.
+ * @returns ::NC_EMAXNAME Name is too long.
+ * @returns ::NC_ENAMEINUSE Name in use.
+ * @returns ::NC_ENOMEM Out of memory.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_rename_var(int ncid, int varid, const char *name)
+{
+    return PIOc_rename_var(ncid, varid, name);
+}
+
+/**
+ * @internal Read an array of data to a variable.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param startp Array of start indices.
+ * @param countp Array of counts.
+ * @param op pointer that gets the data.
+ * @param memtype The type of these data in memory.
+ *
+ * @returns ::NC_NOERR for success
+ * @author Ed Hartnett, Dennis Heimbigner
+ */
+int
+PIO_NCINT_get_vara(int ncid, int varid, const size_t *start,
+                   const size_t *count, void *value, nc_type t)
+{
+    return PIOc_get_vars_tc(ncid, varid, (PIO_Offset *)start,
+                            (PIO_Offset *)count, NULL, t, value);
+}
+
+/**
+ * @internal Write an array of data to a variable. This is called by
+ * nc_put_vara() and other nc_put_vara_* functions, for netCDF-4
+ * files.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param startp Array of start indices.
+ * @param countp Array of counts.
+ * @param op pointer that gets the data.
+ * @param memtype The type of these data in memory.
+ *
+ * @returns ::NC_NOERR for success
+ * @author Ed Hartnett, Dennis Heimbigner
+ */
+int
+PIO_NCINT_put_vara(int ncid, int varid, const size_t *startp,
+                   const size_t *countp, const void *op, int memtype)
+{
+    return PIOc_put_vars_tc(ncid, varid, (PIO_Offset *)startp,
+                            (PIO_Offset *)countp, NULL, memtype, op);
+}
+
+/**
  * @internal This just calls nc_enddef, ignoring the extra parameters.
  *
  * @param ncid File and group ID.
@@ -572,9 +672,3 @@ PIO_NCINT_inq_type(int ncid, nc_type typeid1, char *name, size_t *size)
     return PIOc_inq_type(ncid, typeid1, name, (PIO_Offset *)size);
 }
 
-int
-PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
-                   void *value, nc_type t)
-{
-    return TEST_VAL_42;
-}
