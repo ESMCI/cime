@@ -1468,6 +1468,8 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
      * required for backward compatibility. */
     if (fndims == ndims + 1 && vdesc->record < 0)
         vdesc->record = 0;
+    PLOG((3, "fndims %d ndims %d vdesc->record %d", fndims, ndims,
+          vdesc->record));
 
     /* Confirm that we are being called with the correct ndims. */
     pioassert((fndims == ndims && vdesc->record < 0) ||

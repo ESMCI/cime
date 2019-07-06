@@ -10,4 +10,4 @@ noinst_LTLIBRARIES = libncint.la
 
 # The source files.
 libncint_la_SOURCES = ncintdispatch.c ncintdispatch.h ncint_pio.c	\
-ncint_vard.c
+nc_put_vard.c nc_get_vard.c
