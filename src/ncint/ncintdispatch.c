@@ -344,6 +344,26 @@ PIO_NCINT_inq(int ncid, int *ndimsp, int *nvarsp, int *nattsp, int *unlimdimidp)
     return PIOc_inq(ncid, ndimsp, nvarsp, nattsp, unlimdimidp);
 }
 
+/**
+ * @internal Get the name and size of a type. For strings, 1 is
+ * returned. For VLEN the base type len is returned.
+ *
+ * @param ncid File and group ID.
+ * @param typeid1 Type ID.
+ * @param name Gets the name of the type.
+ * @param size Gets the size of one element of the type in bytes.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EBADTYPE Type not found.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_type(int ncid, nc_type typeid1, char *name, size_t *size)
+{
+    return PIOc_inq_type(ncid, typeid1, name, (PIO_Offset *)size);
+}
+
 int
 PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
                    void *value, nc_type t)
