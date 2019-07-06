@@ -74,7 +74,7 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_def_var_fill,
 
     NC4_show_metadata,
-    NC4_inq_unlimdims,
+    PIO_NCINT_inq_unlimdims,
 
     NC4_inq_ncid,
     NC4_inq_grps,
@@ -781,4 +781,25 @@ int
 PIO_NCINT_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 {
     return PIOc_def_var_fill(ncid, varid, no_fill, fill_value);
+}
+
+/**
+ * @internal Returns an array of unlimited dimension ids.The user can
+ * get the number of unlimited dimensions by first calling this with
+ * NULL for the second pointer.
+ *
+ * @param ncid File and group ID.
+ * @param nunlimdimsp Pointer that gets the number of unlimited
+ * dimensions. Ignored if NULL.
+ * @param unlimdimidsp Pointer that gets arrray of unlimited dimension
+ * ID. Ignored if NULL.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @author Ed Hartnett, Dennis Heimbigner
+ */
+int
+PIO_NCINT_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
+{
+    return PIOc_inq_unlimdims(ncid, nunlimdimsp, unlimdimidsp);
 }

@@ -156,6 +156,10 @@ extern "C" {
     extern int
     PIO_NCINT_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value);
 
+    extern int
+    PIO_NCINT_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp);
+
+
 
 #if defined(__cplusplus)
 }
