@@ -87,6 +87,18 @@ extern "C" {
     PIO_NCINT_inq_type(int ncid, nc_type typeid1, char *name, size_t *size);
 
     extern int
+    PIO_NCINT_inq_dimid(int ncid, const char *name, int *idp);
+
+    extern int
+    PIO_NCINT_inq_dim(int ncid, int dimid, char *name, size_t *lenp);
+
+    extern int
+    PIO_NCINT_inq_unlimdim(int ncid, int *unlimdimidp);
+
+    extern int
+    PIO_NCINT_rename_dim(int ncid, int dimid, const char *name);
+
+    extern int
     PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
                       void *value, nc_type);
 

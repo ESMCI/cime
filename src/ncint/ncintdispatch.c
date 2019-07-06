@@ -42,13 +42,13 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_inq_format_extended,
 
     PIO_NCINT_inq,
-    NC4_inq_type,
+    PIO_NCINT_inq_type,
 
     PIO_NCINT_def_dim,
-    NC4_inq_dimid,
-    NC4_inq_dim,
-    NC4_inq_unlimdim,
-    NC_RO_rename_dim,
+    PIO_NCINT_inq_dimid,
+    PIO_NCINT_inq_dim,
+    PIO_NCINT_inq_unlimdim,
+    PIO_NCINT_rename_dim,
 
     NC4_inq_att,
     NC4_inq_attid,
@@ -221,6 +221,88 @@ int
 PIO_NCINT_def_dim(int ncid, const char *name, size_t len, int *idp)
 {
     return PIOc_def_dim(ncid, name, len, idp);
+}
+
+/**
+ * @internal Given dim name, find its id.
+ *
+ * @param ncid File and group ID.
+ * @param name Name of the dimension to find.
+ * @param idp Pointer that gets dimension ID.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EBADDIM Dimension not found.
+ * @return ::NC_EINVAL Invalid input. Name must be provided.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_dimid(int ncid, const char *name, int *idp)
+{
+    return PIOc_inq_dimid(ncid, name, idp);
+}
+
+/**
+ * @internal Find out name and len of a dim. For an unlimited
+ * dimension, the length is the largest length so far written. If the
+ * name of lenp pointers are NULL, they will be ignored.
+ *
+ * @param ncid File and group ID.
+ * @param dimid Dimension ID.
+ * @param name Pointer that gets name of the dimension.
+ * @param lenp Pointer that gets length of dimension.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EDIMSIZE Dimension length too large.
+ * @return ::NC_EBADDIM Dimension not found.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_dim(int ncid, int dimid, char *name, size_t *lenp)
+{
+    return PIOc_inq_dim(ncid, dimid, name, (PIO_Offset *)lenp);
+}
+
+/**
+ * @internal Netcdf-4 files might have more than one unlimited
+ * dimension, but return the first one anyway.
+ *
+ * @note that this code is inconsistent with nc_inq
+ *
+ * @param ncid File and group ID.
+ * @param unlimdimidp Pointer that gets ID of first unlimited
+ * dimension, or -1.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_unlimdim(int ncid, int *unlimdimidp)
+{
+    return PIOc_inq_unlimdim(ncid, unlimdimidp);
+}
+
+/**
+ * @internal Rename a dimension, for those who like to prevaricate.
+ *
+ * @note If we're not in define mode, new name must be of equal or
+ * less size, if strict nc3 rules are in effect for this file. But we
+ * don't check this because reproducing the exact classic behavior
+ * would be too difficult. See github issue #1340.
+ *
+ * @param ncid File and group ID.
+ * @param dimid Dimension ID.
+ * @param name New dimension name.
+ *
+ * @return 0 on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_rename_dim(int ncid, int dimid, const char *name)
+{
+    return PIOc_rename_dim(ncid, dimid, name);
 }
 
 int
