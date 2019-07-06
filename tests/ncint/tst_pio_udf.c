@@ -13,11 +13,13 @@
 
 #define FILE_NAME "tst_pio_udf.nc"
 #define VAR_NAME "data_var"
+#define DIM_NAME_UNLIMITED "dim_unlimited"
 #define DIM_NAME_X "dim_x"
 #define DIM_NAME_Y "dim_y"
 #define DIM_LEN_X 4
 #define DIM_LEN_Y 4
 #define NDIM2 2
+#define NDIM3 3
 
 extern NC_Dispatch NCINT_dispatcher;
 
@@ -38,13 +40,14 @@ main(int argc, char **argv)
     printf("*** testing simple use of netCDF integration layer format...");
     {
         int ncid, ioid;
-        int dimid[NDIM2], varid;
-        int dimlen[NDIM2] = {DIM_LEN_X, DIM_LEN_Y};
+        int dimid[NDIM3], varid;
+        int dimlen[NDIM3] = {NC_UNLIMITED, DIM_LEN_X, DIM_LEN_Y};
         int iosysid;
         NC_Dispatch *disp_in;
         size_t elements_per_pe;
         size_t *compdof; /* The decomposition mapping. */
         int *my_data;
+        int *data_in;
         int i;
 
         /* Turn on logging for PIO library. */
@@ -56,13 +59,14 @@ main(int argc, char **argv)
         /* Add our user defined format. */
         if (nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)) ERR;
 
-        /* Create a file to play with. */
+        /* Create a file with a 3D record var. */
         if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_X, dimlen[0], &dimid[0])) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[1], &dimid[1])) ERR;
-        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM2, dimid, &varid)) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) ERR;
+        if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) ERR;
+        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) ERR;
 
-        /* Create a decomposition for distributed arrays. */
+        /* Calculate a decomposition for distributed arrays. */
         elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
         if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
             ERR;
@@ -70,7 +74,7 @@ main(int argc, char **argv)
             compdof[i] = my_rank * elements_per_pe + i;
 
         /* Create the PIO decomposition for this test. */
-        if (nc_init_decomp(iosysid, PIO_INT, NDIM2, dimlen, elements_per_pe,
+        if (nc_init_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe,
                            compdof, &ioid, 1, NULL, NULL)) ERR;
         free(compdof);
 
@@ -87,11 +91,22 @@ main(int argc, char **argv)
         if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR;
         if (disp_in != &NCINT_dispatcher) ERR;
 
-        /* Open file with our defined functions. */
+        /* Open the file. */
         if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
+
+        /* Read distributed arrays. */
+        if (!(data_in = malloc(elements_per_pe * sizeof(int)))) ERR;
+        if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) ERR;
+
+        /* Check results. */
+        for (i = 0; i < elements_per_pe; i++)
+            if (data_in[i] != my_data[i]) ERR;
+
+        /* Close file. */
         if (nc_close(ncid)) ERR;
 
         /* Free resources. */
+        free(data_in);
         free(my_data);
         if (nc_free_decomp(ioid)) ERR;
         if (nc_free_iosystem(iosysid)) ERR;
