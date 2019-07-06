@@ -28,7 +28,7 @@ nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int
     int ret;
 
     if (!ncint_initialized)
-        NC_NCINT_initialize();
+        PIO_NCINT_initialize();
 
     if ((ret = PIOc_Init_Intracomm(comp_comm, num_iotasks, stride, base, rearr,
                                    iosysidp)))
