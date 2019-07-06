@@ -59,6 +59,16 @@ extern "C" {
     PIO_NCINT_sync(int ncid);
 
     extern int
+    PIO_NCINT_redef(int ncid);
+
+    extern int
+    PIO_NCINT__enddef(int ncid, size_t h_minfree, size_t v_align,
+                      size_t v_minfree, size_t r_align);
+
+    extern int
+    PIO_NCINT_set_fill(int ncid, int fillmode, int *old_modep);
+
+    extern int
     PIO_NCINT_abort(int ncid);
 
     extern int

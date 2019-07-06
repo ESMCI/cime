@@ -30,12 +30,12 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_create,
     PIO_NCINT_open,
 
-    NC_RO_redef,
-    NC_RO__enddef,
+    PIO_NCINT_redef,
+    PIO_NCINT__enddef,
     PIO_NCINT_sync,
     PIO_NCINT_abort,
     PIO_NCINT_close,
-    NC_RO_set_fill,
+    PIO_NCINT_set_fill,
     NC_NOTNC3_inq_base_pe,
     NC_NOTNC3_set_base_pe,
     PIO_NCINT_inq_format,
@@ -150,8 +150,8 @@ PIO_NCINT_finalize(void)
 
 int
 PIO_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
-                size_t *chunksizehintp, void *parameters,
-                const NC_Dispatch *dispatch, NC *nc_file)
+                 size_t *chunksizehintp, void *parameters,
+                 const NC_Dispatch *dispatch, NC *nc_file)
 {
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -185,7 +185,7 @@ PIO_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
 
 int
 PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-              void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
+               void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
 {
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -225,9 +225,43 @@ PIO_NCINT_def_dim(int ncid, const char *name, size_t len, int *idp)
 
 int
 PIO_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
-                 const int *dimidsp, int *varidp)
+                  const int *dimidsp, int *varidp)
 {
     return PIOc_def_var(ncid, name, xtype, ndims, dimidsp, varidp);
+}
+
+/**
+ * @internal This just calls nc_enddef, ignoring the extra parameters.
+ *
+ * @param ncid File and group ID.
+ * @param h_minfree Ignored.
+ * @param v_align Ignored.
+ * @param v_minfree Ignored.
+ * @param r_align Ignored.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT__enddef(int ncid, size_t h_minfree, size_t v_align,
+                  size_t v_minfree, size_t r_align)
+{
+    return PIOc_enddef(ncid);
+}
+
+/**
+ * @internal Put the file back in redef mode. This is done
+ * automatically for netcdf-4 files, if the user forgets.
+ *
+ * @param ncid File and group ID.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_redef(int ncid)
+{
+    return PIOc_redef(ncid);
 }
 
 /**
@@ -259,6 +293,22 @@ PIO_NCINT_close(int ncid, void *v)
     return PIOc_closefile(ncid);
 }
 
+/**
+ * @internal Set fill mode.
+ *
+ * @param ncid File ID.
+ * @param fillmode File mode.
+ * @param old_modep Pointer that gets old mode. Ignored if NULL.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_set_fill(int ncid, int fillmode, int *old_modep)
+{
+    return PIOc_set_fill(ncid, fillmode, old_modep);
+}
+
 int
 PIO_NCINT_inq_format(int ncid, int *formatp)
 {
@@ -273,7 +323,7 @@ PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 
 int
 PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
-                  void *value, nc_type t)
+                   void *value, nc_type t)
 {
     return TEST_VAL_42;
 }
