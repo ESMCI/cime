@@ -41,7 +41,7 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_inq_format,
     PIO_NCINT_inq_format_extended,
 
-    NC4_inq,
+    PIO_NCINT_inq,
     NC4_inq_type,
 
     PIO_NCINT_def_dim,
@@ -319,6 +319,29 @@ int
 PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
     return TEST_VAL_42;
+}
+
+/**
+ * @internal Learn number of dimensions, variables, global attributes,
+ * and the ID of the first unlimited dimension (if any).
+ *
+ * @note It's possible for any of these pointers to be NULL, in which
+ * case don't try to figure out that value.
+ *
+ * @param ncid File and group ID.
+ * @param ndimsp Pointer that gets number of dimensions.
+ * @param nvarsp Pointer that gets number of variables.
+ * @param nattsp Pointer that gets number of global attributes.
+ * @param unlimdimidp Pointer that gets first unlimited dimension ID,
+ * or -1 if there are no unlimied dimensions.
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq(int ncid, int *ndimsp, int *nvarsp, int *nattsp, int *unlimdimidp)
+{
+    return PIOc_inq(ncid, ndimsp, nvarsp, nattsp, unlimdimidp);
 }
 
 int

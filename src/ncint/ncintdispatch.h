@@ -81,6 +81,9 @@ extern "C" {
     PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep);
 
     extern int
+    PIO_NCINT_inq(int ncid, int *ndimsp, int *nvarsp, int *nattsp, int *unlimdimidp);
+
+    extern int
     PIO_NCINT_get_vara(int ncid, int varid, const size_t *start, const size_t *count,
                       void *value, nc_type);
 
