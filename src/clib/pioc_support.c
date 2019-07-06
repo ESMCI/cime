@@ -1,7 +1,7 @@
 /** @file
  * Support functions for the PIO library.
  */
-#include <config.h>
+#include "config.h"
 #if PIO_ENABLE_LOGGING
 #include <stdarg.h>
 #include <unistd.h>
@@ -1935,13 +1935,16 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * PIO_IOTYPE_NETCDF4P.
  * @param filename The filename to create.
  * @param mode The netcdf mode for the create operation.
+ * @paran use_ext_ncid non-zero to use an externally assigned ncid
+ * (used in the netcdf integration layer).
+ *
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile_c
  * @author Ed Hartnett
  */
 int
 PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
-                    int mode)
+                    int mode, int use_ext_ncid)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -2082,12 +2085,28 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         PLOG((3, "createfile bcast pio_next_ncid %d", pio_next_ncid));
     }
 
-    /* Assign the PIO ncid. */
-    file->pio_ncid = pio_next_ncid++;
-    PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
+    /* With the netCDF integration layer, the ncid is assigned for PIO
+     * by the netCDF dispatch layer code. So it is passed in. In
+     * normal PIO operation, the ncid is generated here. */
+    if (use_ext_ncid)
+    {
+        /* Use the ncid passed in from the netCDF dispatch code. */
+        file->pio_ncid = *ncidp;
 
-    /* Return the ncid to the caller. */
-    *ncidp = file->pio_ncid;
+        /* To prevent PIO from reusing the same ncid, if someone
+         * starting mingling netcdf integration PIO and regular PIO
+         * code. */
+        pio_next_ncid = file->pio_ncid + 1;
+    }
+    else
+    {
+        /* Assign the PIO ncid. */
+        file->pio_ncid = pio_next_ncid++;
+        PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
+
+        /* Return the ncid to the caller. */
+        *ncidp = file->pio_ncid;
+    }
 
     /* Add the struct with this files info to the global list of
      * open files. */
@@ -2365,6 +2384,75 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
 }
 
 /**
+ * Find the appropriate IOTYPE from mode flags to nc_open().
+ *
+ * @param mode the mode flag from nc_open().
+ * @param iotype pointer that gets the IOTYPE.
+ *
+ * @return 0 on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+find_iotype_from_omode(int mode, int *iotype)
+{
+    /* Check inputs. */
+    pioassert(iotype, "pointer to iotype must be provided", __FILE__, __LINE__);
+
+    /* Figure out the iotype. */
+    if (mode & NC_NETCDF4)
+    {
+        if (mode & NC_MPIIO || mode & NC_MPIPOSIX)
+            *iotype = PIO_IOTYPE_NETCDF4P;
+        else
+            *iotype = PIO_IOTYPE_NETCDF4C;
+    }
+    else
+    {
+        if (mode & NC_PNETCDF || mode & NC_MPIIO)
+            *iotype = PIO_IOTYPE_PNETCDF;
+        else
+            *iotype = PIO_IOTYPE_NETCDF;
+    }
+
+    return PIO_NOERR;
+}
+
+
+/**
+ * Find the appropriate IOTYPE from mode flags to nc_create().
+ *
+ * @param mode the mode flag from nc_create().
+ * @param iotype pointer that gets the IOTYPE.
+ *
+ * @return 0 on success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+find_iotype_from_cmode(int cmode, int *iotype)
+{
+    /* Check inputs. */
+    pioassert(iotype, "pointer to iotype must be provided", __FILE__, __LINE__);
+
+    /* Figure out the iotype. */
+    if (cmode & NC_NETCDF4)
+    {
+        if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
+            *iotype = PIO_IOTYPE_NETCDF4P;
+        else
+            *iotype = PIO_IOTYPE_NETCDF4C;
+    }
+    else
+    {
+        if (cmode & NC_PNETCDF || cmode & NC_MPIIO)
+            *iotype = PIO_IOTYPE_PNETCDF;
+        else
+            *iotype = PIO_IOTYPE_NETCDF;
+    }
+
+    return PIO_NOERR;
+}
+
+/**
  * Open an existing file using PIO library. This is an internal
  * function. Depending on the value of the retry parameter, a failed
  * open operation will be handled differently. If retry is non-zero,
@@ -2384,6 +2472,8 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
  * @param mode the netcdf mode for the open operation
  * @param retry non-zero to automatically retry with netCDF serial
  * classic.
+ * @paran use_ext_ncid non-zero to use an externally assigned ncid
+ * (used in the netcdf integration layer).
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile_c
@@ -2391,7 +2481,7 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
  */
 int
 PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
-                    int mode, int retry)
+                    int mode, int retry, int use_ext_ncid)
 {
     iosystem_desc_t *ios;      /* Pointer to io system information. */
     file_desc_t *file;         /* Pointer to file information. */
@@ -2633,13 +2723,29 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
             return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
     }
 
-    /* Create the ncid that the user will see. This is necessary
-     * because otherwise ncids will be reused if files are opened
-     * on multiple iosystems. */
-    file->pio_ncid = pio_next_ncid++;
+    /* With the netCDF integration layer, the ncid is assigned for PIO
+     * by the netCDF dispatch layer code. So it is passed in. In
+     * normal PIO operation, the ncid is generated here. */
+    if (!use_ext_ncid)
+    {
+        /* Create the ncid that the user will see. This is necessary
+         * because otherwise ncids will be reused if files are opened
+         * on multiple iosystems. */
+        file->pio_ncid = pio_next_ncid++;
 
-    /* Return the PIO ncid to the user. */
-    *ncidp = file->pio_ncid;
+        /* Return the PIO ncid to the user. */
+        *ncidp = file->pio_ncid;
+    }
+    else
+    {
+        /* Use the ncid passed in from the netCDF dispatch code. */
+        file->pio_ncid = *ncidp;
+
+        /* To prevent PIO from reusing the same ncid, if someone
+         * starting mingling netcdf integration PIO and regular PIO
+         * code. */
+        pio_next_ncid = file->pio_ncid + 1;
+    }
 
     /* Add this file to the list of currently open files. */
     pio_add_to_file_list(file);

@@ -7,10 +7,17 @@ if BUILD_FORTRAN
 FLIB = flib
 endif
 
+# Are we building with the GPTL timing library?
 if USE_GPTL
 GPTL = gptl
 endif
 
-SUBDIRS = clib ${GPTL} $(FLIB)
+# Are we building with netCDF integration?
+if BUILD_NCINT
+NCINT = ncint
+endif # BUILD_NCINT
+
+# Build these subdirectories.
+SUBDIRS = ${NCINT} clib ${GPTL} $(FLIB)
 
 EXTRA_DIST = CMakeLists.txt

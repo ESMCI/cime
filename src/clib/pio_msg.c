@@ -1972,9 +1972,9 @@ int open_file_handler(iosystem_desc_t *ios)
     PLOG((2, "open_file_handler got parameters len = %d filename = %s iotype = %d mode = %d",
           len, filename, iotype, mode));
 
-    /* Call the open file function. Errors are handling within
+    /* Call the open file function. Errors are handled within
      * function, so return code can be ignored. */
-    PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0);
+    PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0, 0);
 
     return PIO_NOERR;
 }

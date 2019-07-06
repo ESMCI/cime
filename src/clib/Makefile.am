@@ -4,6 +4,11 @@
 # The library we are building.
 lib_LTLIBRARIES = libpioc.la
 
+# Are we building with netCDF integration?
+if BUILD_NCINT
+libpioc_la_LIBADD = ../ncint/libncint.la
+endif # BUILD_NCINT
+
 # These linker flags specify libtool version info.
 # See http://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
 # for information regarding incrementing `-version-info`.

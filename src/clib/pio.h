@@ -1245,6 +1245,23 @@ extern "C" {
                                const long long *op);
     int PIOc_put_vard_ulonglong(int ncid, int varid, int decompid, const PIO_Offset recnum,
                                 const unsigned long long *op);
+
+    /* These functions are for the netCDF integration layer. */
+    int nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
+                          int *iosysidp);
+
+    int nc_free_iosystem(int iosysid);
+
+    int nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
+                       int maplen, const size_t *compmap, int *ioidp,
+                       int rearranger, const size_t *iostart,
+                       const size_t *iocount);
+
+    int nc_free_decomp(int ioid);
+
+    int nc_put_vard_int(int ncid, int varid, int decompid, const size_t recnum,
+                        const int *op);
+
 #if defined(__cplusplus)
 }
 #endif

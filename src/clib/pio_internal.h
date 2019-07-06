@@ -187,12 +187,19 @@ extern "C" {
     int delete_var_desc(int varid, var_desc_t **varlist);
 
     /* Create a file (internal function). */
-    int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename, int mode);
+    int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
+                            int mode, int use_ext_ncid);
 
     /* Open a file with optional retry as netCDF-classic if first
      * iotype does not work. */
     int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename, int mode,
-                            int retry);
+                            int retry, int use_ext_ncid);
+
+    /* Give the mode flag from an open, determine the IOTYPE. */
+    int find_iotype_from_omode(int mode, int *iotype);
+
+    /* Give the mode flag from an nc_create call, determine the IOTYPE. */
+    int find_iotype_from_cmode(int cmode, int *iotype);
 
     /* Given PIO type, find MPI type and type size. */
     int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size);

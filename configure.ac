@@ -262,6 +262,28 @@ if test "x$enable_timing" = xyes; then
 fi
 AM_CONDITIONAL([HAVE_PAPI], [test "x$have_papi" = xyes])
 
+# Does the user want to build netcdf-c integration layer?
+AC_MSG_CHECKING([whether netcdf-c integration layer should be build])
+AC_ARG_ENABLE([netcdf-integration],
+              [AS_HELP_STRING([--enable-netcdf-integration],
+                              [enable building of netCDF C API integration.])])
+test "x$enable_netcdf_integration" = xyes || enable_netcdf_integration=no
+AC_MSG_RESULT([$enable_netcdf_integration])
+if test "x$enable_netcdf_integration" = xyes -a "x$enable_timing" = xyes; then
+   AC_MSG_ERROR([Cannot use GPTL timing library with netCDF interation.])
+fi
+if test "x$enable_netcdf_integration" = xyes -a "x$have_netcdf_par" = xno; then
+   AC_MSG_ERROR([Cannot use netCDF integration unless netCDF library was built for parallel I/O.])
+fi
+# These are needed by ncdispatch.h. Only build with HDF5 parallel
+# versions of netCDF. */
+if test "x$enable_netcdf_integration" = xyes; then
+  AC_DEFINE([HDF5_PARALLEL],[1],[Does HDF5 library provide parallel access])
+  AC_DEFINE([USE_NETCDF4],[1],[Does HDF5 library provide parallel access])
+fi
+
+AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
+
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
@@ -273,10 +295,12 @@ AC_CONFIG_HEADERS([config.h])
 AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
+          src/ncint/Makefile
           src/flib/Makefile
           src/gptl/Makefile
           tests/Makefile
           tests/cunit/Makefile
+          tests/ncint/Makefile
           tests/unit/Makefile
           tests/general/Makefile
           tests/general/util/Makefile

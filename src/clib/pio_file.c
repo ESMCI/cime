@@ -51,12 +51,13 @@ extern int event_num[2][NUM_EVENTS];
  * @ingroup PIO_open_file_c
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
+int
+PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                   int mode)
 {
     PLOG((1, "PIOc_openfile iosysid %d *iotype %d filename %s mode %d", iosysid,
           iotype ? *iotype: 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1, 0);
 }
 
 /**
@@ -78,12 +79,13 @@ int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @ingroup PIO_open_file_c
  * @author Ed Hartnett
  */
-int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
+int
+PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
                    int mode)
 {
     PLOG((1, "PIOc_openfile2 iosysid %d *iotype %d filename %s mode %d", iosysid,
           iotype ? *iotype : 0, filename, mode));
-    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0);
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 0, 0);
 }
 
 /**
@@ -99,31 +101,26 @@ int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @ingroup PIO_open_file_c
  * @author Ed Hartnett
  */
-int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
+int
+PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
 {
     int iotype;
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    int ret;
 
     PLOG((1, "PIOc_open iosysid = %d path = %s mode = %x", iosysid, path, mode));
 
-    /* Figure out the iotype. */
-    if (mode & NC_NETCDF4)
-    {
-        if (mode & NC_MPIIO || mode & NC_MPIPOSIX)
-            iotype = PIO_IOTYPE_NETCDF4P;
-        else
-            iotype = PIO_IOTYPE_NETCDF4C;
-    }
-    else
-    {
-        if (mode & NC_PNETCDF || mode & NC_MPIIO)
-            iotype = PIO_IOTYPE_PNETCDF;
-        else
-            iotype = PIO_IOTYPE_NETCDF;
-    }
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Find the IOTYPE from the mode flag. */
+    if ((ret = find_iotype_from_omode(mode, &iotype)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Open the file. If the open fails, do not retry as serial
      * netCDF. Just return the error code. */
-    return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0);
+    return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0, 0);
 }
 
 /**
@@ -144,7 +141,8 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @ingroup PIO_create_file_c
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
+int
+PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                     int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -158,7 +156,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
           iosysid, *iotype, filename, mode));
 
     /* Create the file. */
-    if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode)))
+    if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode, 0)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Run this on all tasks if async is not in use, but only on
@@ -188,27 +186,25 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @ingroup PIO_create_file_c
  * @author Ed Hartnett
  */
-int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
+int
+PIOc_create(int iosysid, const char *path, int cmode, int *ncidp)
 {
     int iotype;            /* The PIO IO type. */
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    int ret;
 
-    /* Figure out the iotype. */
-    if (cmode & NC_NETCDF4)
-    {
-        if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
-            iotype = PIO_IOTYPE_NETCDF4P;
-        else
-            iotype = PIO_IOTYPE_NETCDF4C;
-    }
-    else
-    {
-        if (cmode & NC_PNETCDF || cmode & NC_MPIIO)
-            iotype = PIO_IOTYPE_PNETCDF;
-        else
-            iotype = PIO_IOTYPE_NETCDF;
-    }
+    PLOG((1, "PIOc_create iosysid = %d path = %s cmode = %x", iosysid, path,
+          cmode));
 
-    return PIOc_createfile_int(iosysid, ncidp, &iotype, filename, cmode);
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Find the IOTYPE from the mode flag. */
+    if ((ret = find_iotype_from_cmode(cmode, &iotype)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    return PIOc_createfile_int(iosysid, ncidp, &iotype, path, cmode, 0);
 }
 
 /**
@@ -219,7 +215,8 @@ int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
  * @ingroup PIO_close_file_c
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_closefile(int ncid)
+int
+PIOc_closefile(int ncid)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -318,7 +315,8 @@ int PIOc_closefile(int ncid)
  * @returns PIO_NOERR for success, error code otherwise.
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_deletefile(int iosysid, const char *filename)
+int
+PIOc_deletefile(int iosysid, const char *filename)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
@@ -395,7 +393,8 @@ int PIOc_deletefile(int iosysid, const char *filename)
  * @ingroup PIO_sync_file_c
  * @author Jim Edwards, Ed Hartnett
  */
-int PIOc_sync(int ncid)
+int
+PIOc_sync(int ncid)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
