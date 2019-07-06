@@ -140,6 +140,11 @@ extern "C" {
     PIO_NCINT_get_vars(int ncid, int varid, const size_t *startp, const size_t *countp,
                        const ptrdiff_t *stridep, void *data, nc_type mem_nc_type);
 
+    extern int
+    PIO_NCINT_put_vars(int ncid, int varid, const size_t *startp, const size_t *countp,
+                       const ptrdiff_t *stridep, const void *data, nc_type mem_nc_type);
+
+
 
 #if defined(__cplusplus)
 }

@@ -64,7 +64,7 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_get_vara,
     PIO_NCINT_put_vara,
     PIO_NCINT_get_vars,
-    NCDEFAULT_put_vars,
+    PIO_NCINT_put_vars,
     NCDEFAULT_get_varm,
     NCDEFAULT_put_varm,
 
@@ -583,6 +583,7 @@ PIO_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
  * @returns ::NC_NOERR No error.
  * @returns ::NC_EBADID Bad ncid.
  * @returns ::NC_ENOTVAR Bad variable ID.
+ * @author Ed Hartnett
  */
 int
 PIO_NCINT_inq_varid(int ncid, const char *name, int *varidp)
@@ -614,12 +615,6 @@ PIO_NCINT_inq_varid(int ncid, const char *name, int *varidp)
  * @param name New name of the variable.
  *
  * @returns ::NC_NOERR No error.
- * @returns ::NC_EBADID Bad ncid.
- * @returns ::NC_ENOTVAR Invalid variable ID.
- * @returns ::NC_EBADNAME Bad name.
- * @returns ::NC_EMAXNAME Name is too long.
- * @returns ::NC_ENAMEINUSE Name in use.
- * @returns ::NC_ENOMEM Out of memory.
  * @author Ed Hartnett
  */
 int
@@ -639,7 +634,7 @@ PIO_NCINT_rename_var(int ncid, int varid, const char *name)
  * @param memtype The type of these data in memory.
  *
  * @returns ::NC_NOERR for success
- * @author Ed Hartnett, Dennis Heimbigner
+ * @author Ed Hartnett
  */
 int
 PIO_NCINT_get_vara(int ncid, int varid, const size_t *start,
@@ -662,7 +657,7 @@ PIO_NCINT_get_vara(int ncid, int varid, const size_t *start,
  * @param memtype The type of these data in memory.
  *
  * @returns ::NC_NOERR for success
- * @author Ed Hartnett, Dennis Heimbigner
+ * @author Ed Hartnett
  */
 int
 PIO_NCINT_put_vara(int ncid, int varid, const size_t *startp,
@@ -690,22 +685,42 @@ PIO_NCINT_put_vara(int ncid, int varid, const size_t *startp,
  * type from file type.)
  *
  * @returns ::NC_NOERR No error.
- * @returns ::NC_EBADID Bad ncid.
- * @returns ::NC_ENOTVAR Var not found.
- * @returns ::NC_EHDFERR HDF5 function returned error.
- * @returns ::NC_EINVALCOORDS Incorrect start.
- * @returns ::NC_EEDGE Incorrect start/count.
- * @returns ::NC_ENOMEM Out of memory.
- * @returns ::NC_EMPI MPI library error (parallel only)
- * @returns ::NC_ECANTEXTEND Can't extend dimension for write.
- * @returns ::NC_ERANGE Data conversion error.
- * @author Ed Hartnett, Dennis Heimbigner
+ * @author Ed Hartnett
  */
 int
 PIO_NCINT_get_vars(int ncid, int varid, const size_t *startp, const size_t *countp,
                    const ptrdiff_t *stridep, void *data, nc_type mem_nc_type)
 {
     return PIOc_get_vars_tc(ncid, varid, (PIO_Offset *)startp,
+                            (PIO_Offset *)countp, (PIO_Offset *)stridep,
+                            mem_nc_type, data);
+}
+
+/**
+ * @internal Write a strided array of data to a variable. This is
+ * called by nc_put_vars() and other nc_put_vars_* functions, for
+ * netCDF-4 files. Also the nc_put_vara() calls end up calling this
+ * with a NULL stride parameter.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param startp Array of start indices. Must always be provided by
+ * caller for non-scalar vars.
+ * @param countp Array of counts. Will default to counts of full
+ * dimension size if NULL.
+ * @param stridep Array of strides. Will default to strides of 1 if
+ * NULL.
+ * @param data The data to be written.
+ * @param mem_nc_type The type of the data in memory.
+ *
+ * @returns ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_put_vars(int ncid, int varid, const size_t *startp, const size_t *countp,
+                   const ptrdiff_t *stridep, const void *data, nc_type mem_nc_type)
+{
+    return PIOc_put_vars_tc(ncid, varid, (PIO_Offset *)startp,
                             (PIO_Offset *)countp, (PIO_Offset *)stridep,
                             mem_nc_type, data);
 }
