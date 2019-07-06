@@ -44,6 +44,7 @@ main(int argc, char **argv)
         NC_Dispatch *disp_in;
         size_t elements_per_pe;
         size_t *compdof; /* The decomposition mapping. */
+        int *my_data;
         int i;
 
         /* Turn on logging for PIO library. */
@@ -70,9 +71,16 @@ main(int argc, char **argv)
 
         /* Create the PIO decomposition for this test. */
         if (nc_init_decomp(iosysid, PIO_INT, NDIM2, dimlen, elements_per_pe,
-                           compdof, &ioid, 0, NULL, NULL)) ERR;
+                           compdof, &ioid, 1, NULL, NULL)) ERR;
         free(compdof);
 
+        /* Create some data on this processor. */
+        if (!(my_data = malloc(elements_per_pe * sizeof(int)))) ERR;
+        for (i = 0; i < elements_per_pe; i++)
+            my_data[i] = my_rank * 10 + i;
+
+        /* Write some data with distributed arrays. */
+        if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) ERR;
         if (nc_close(ncid)) ERR;
 
         /* Check that our user-defined format has been added. */
@@ -83,10 +91,9 @@ main(int argc, char **argv)
         if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
         if (nc_close(ncid)) ERR;
 
-        /* Free the decomposition. */
+        /* Free resources. */
+        free(my_data);
         if (nc_free_decomp(ioid)) ERR;
-
-        /* Close the iosystem. */
         if (nc_free_iosystem(iosysid)) ERR;
     }
     SUMMARIZE_ERR;

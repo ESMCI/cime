@@ -1259,6 +1259,9 @@ extern "C" {
 
     int nc_free_decomp(int ioid);
 
+    int nc_put_vard_int(int ncid, int varid, int decompid, const size_t recnum,
+                        const int *op);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -9,4 +9,5 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/clib
 noinst_LTLIBRARIES = libncint.la
 
 # The source files.
-libncint_la_SOURCES = ncintdispatch.c ncintdispatch.h ncint_pio.c
+libncint_la_SOURCES = ncintdispatch.c ncintdispatch.h ncint_pio.c	\
+ncint_vard.c
