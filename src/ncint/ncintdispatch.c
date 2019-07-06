@@ -68,7 +68,7 @@ NC_Dispatch NCINT_dispatcher = {
     NCDEFAULT_get_varm,
     NCDEFAULT_put_varm,
 
-    NC4_inq_var_all,
+    PIO_NCINT_inq_var_all,
 
     NC_NOTNC4_var_par_access,
     NC_RO_def_var_fill,
@@ -455,7 +455,7 @@ PIO_NCINT_rename_dim(int ncid, int dimid, const char *name)
  */
 int
 PIO_NCINT_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
-                 size_t *lenp)
+                  size_t *lenp)
 {
     return PIOc_inq_att(ncid, varid, name, xtypep, (PIO_Offset *)lenp);
 }
@@ -546,7 +546,7 @@ PIO_NCINT_del_att(int ncid, int varid, const char *name)
  */
 int
 PIO_NCINT_get_att(int ncid, int varid, const char *name, void *value,
-                 nc_type memtype)
+                  nc_type memtype)
 {
     return PIOc_get_att_tc(ncid, varid, name, memtype, value);
 }
@@ -559,7 +559,7 @@ PIO_NCINT_get_att(int ncid, int varid, const char *name, void *value,
  */
 int
 PIO_NCINT_put_att(int ncid, int varid, const char *name, nc_type file_type,
-              size_t len, const void *data, nc_type mem_type)
+                  size_t len, const void *data, nc_type mem_type)
 {
     return PIOc_put_att_tc(ncid, varid, name, file_type, (PIO_Offset)len,
                            mem_type,  data);
@@ -723,4 +723,43 @@ PIO_NCINT_put_vars(int ncid, int varid, const size_t *startp, const size_t *coun
     return PIOc_put_vars_tc(ncid, varid, (PIO_Offset *)startp,
                             (PIO_Offset *)countp, (PIO_Offset *)stridep,
                             mem_nc_type, data);
+}
+/**
+ * @internal Get all the information about a variable. Pass NULL for
+ * whatever you don't care about.
+ *
+ * @param ncid File ID.
+ * @param varid Variable ID.
+ * @param name Gets name.
+ * @param xtypep Gets type.
+ * @param ndimsp Gets number of dims.
+ * @param dimidsp Gets array of dim IDs.
+ * @param nattsp Gets number of attributes.
+ * @param shufflep Gets shuffle setting.
+ * @param deflatep Gets deflate setting.
+ * @param deflate_levelp Gets deflate level.
+ * @param fletcher32p Gets fletcher32 setting.
+ * @param contiguousp Gets contiguous setting.
+ * @param chunksizesp Gets chunksizes.
+ * @param no_fill Gets fill mode.
+ * @param fill_valuep Gets fill value.
+ * @param endiannessp Gets one of ::NC_ENDIAN_BIG ::NC_ENDIAN_LITTLE
+ * ::NC_ENDIAN_NATIVE
+ * @param idp Pointer to memory to store filter id.
+ * @param nparamsp Pointer to memory to store filter parameter count.
+ * @param params Pointer to vector of unsigned integers into which
+ * to store filter parameters.
+ *
+ * @returns ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_var_all(int ncid, int varid, char *name, nc_type *xtypep,
+                      int *ndimsp, int *dimidsp, int *nattsp,
+                      int *shufflep, int *deflatep, int *deflate_levelp,
+                      int *fletcher32p, int *contiguousp, size_t *chunksizesp,
+                      int *no_fill, void *fill_valuep, int *endiannessp,
+                      unsigned int *idp, size_t *nparamsp, unsigned int *params)
+{
+    return PIOc_inq_var(ncid, varid, name, xtypep, ndimsp, dimidsp, nattsp);
 }
