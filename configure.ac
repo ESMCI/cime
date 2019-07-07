@@ -296,11 +296,13 @@ AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
           src/ncint/Makefile
+          src/fncint/Makefile
           src/flib/Makefile
           src/gptl/Makefile
           tests/Makefile
           tests/cunit/Makefile
           tests/ncint/Makefile
+          tests/fncint/Makefile
           tests/unit/Makefile
           tests/general/Makefile
           tests/general/util/Makefile
