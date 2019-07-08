@@ -15,6 +15,7 @@ program ftst_pio
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks, ierr)
 
+  ierr = pio_set_log_level(1)
   call PIO_init(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, ioSystem, base)
 
