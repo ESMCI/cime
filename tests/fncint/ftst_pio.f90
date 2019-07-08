@@ -5,10 +5,12 @@ program ftst_pio
   use pio
   implicit none
   include 'mpif.h'
+  include 'netcdf.inc'
 
   integer :: myRank, ntasks
   type(iosystem_desc_t) :: ioSystem
   integer :: niotasks = 1, numAggregator = 0, stride = 1, base = 0
+  integer :: ncid
   integer :: ierr
 
   call MPI_Init(ierr)
@@ -18,6 +20,9 @@ program ftst_pio
   ierr = pio_set_log_level(1)
   call PIO_init(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, ioSystem, base)
+
+  ierr = nf_create('ftst_pio.nc', nf_clobber, ncid)
+  ierr = nf_close(ncid)
 
   call PIO_finalize(ioSystem, ierr)
   call MPI_Finalize(ierr)

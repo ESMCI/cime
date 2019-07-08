@@ -6,8 +6,11 @@
 # Link to the PIO Fortran and C libraries.
 LDADD = ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpioc.la
 
+# Link to the netCDF fortran library.
+LDADD += -lnetcdff
+
 # Find the pio.mod file.
-AM_FCFLAGS = -I${top_builddir}/src/flib
+AM_FCFLAGS = -I${top_builddir}/src/flib ${CPPFLAGS}
 
 # Build the test for make check.
 check_PROGRAMS = ftst_pio
