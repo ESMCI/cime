@@ -3,9 +3,11 @@
 
 # Ed Hartnett 7/3/19
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-AM_FCFLAGS = -I$(top_srcdir)/src/flib
-AM_LDADD = ${top_builddir}/src/clib/libpioc.la
+# Link to the PIO Fortran and C libraries.
+LDADD = ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpioc.la
+
+# Find the pio.mod file.
+AM_FCFLAGS = -I${top_builddir}/src/flib
 
 # Build the test for make check.
 check_PROGRAMS = ftst_pio
