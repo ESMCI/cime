@@ -191,6 +191,24 @@ module piolib_mod
   end interface PIO_initdecomp
 
   !>
+  !! PIO_initdecomp is an overload interface the models decomposition to pio.
+  !! initdecomp_1dof_bin_i8, initdecomp_1dof_nf_i4, initdecomp_2dof_bin_i4,
+  !! and initdecomp_2dof_nf_i4 are all depreciated, but supported for backwards
+  !! compatibility.
+  !<
+  ! interface nf_init_decomp
+  !    module procedure PIO_initdecomp_dof_i4  ! previous name: initdecomop_1dof_nf_box
+  !    module procedure PIO_initdecomp_dof_i8  ! previous name: initdecomop_1dof_nf_box
+  !    module procedure initdecomp_1dof_nf_i4
+  !    module procedure initdecomp_1dof_nf_i8
+  !    module procedure initdecomp_1dof_bin_i4
+  !    module procedure initdecomp_1dof_bin_i8
+  !    module procedure initdecomp_2dof_nf_i4
+  !    module procedure initdecomp_2dof_nf_i8
+  !    module procedure PIO_initdecomp_bc
+  ! end interface nf_init_decomp
+
+  !>
   !! Return the actual number of IO-tasks used. PIO will reset the
   !! total number of IO-tasks if certain conditions are meet.
   !<

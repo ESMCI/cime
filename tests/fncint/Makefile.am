@@ -4,11 +4,12 @@
 # Ed Hartnett 7/3/19
 
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
-AM_CPPFLAGS = -I$(top_srcdir)/src/clib
+AM_FCFLAGS = -I$(top_srcdir)/src/flib
 LDADD = ${top_builddir}/src/clib/libpioc.la
 
 # Build the test for make check.
-#check_PROGRAMS = tst_pio_udf
+check_PROGRAMS = ftst_pio
+ftst_pio_SOURCES = ftst_pio.f90
 
 #if RUN_TESTS
 # Tests will run from a bash script.
