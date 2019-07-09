@@ -1187,6 +1187,7 @@ using a fortran linker.
     <append MODEL="micom"> -r8 </append>
     <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
