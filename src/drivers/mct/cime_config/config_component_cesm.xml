@@ -164,6 +164,7 @@
       <value compset="HIST.*_DATM%(QIA|CRU)">CO2A</value>
       <value compset="RCP.*_DATM%(QIA|CRU)" >CO2A</value>
       <value compset="20TR_DATM%IAF.*_MICOM%ECO">CO2A</value>
+      <value compset="20TR_DATM%JRA.*_MICOM%ECO">CO2A</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
@@ -568,7 +569,7 @@
     <default_value>284.32</default_value>
     <values match="last">
       <value compset="^2000">367.0</value>
-      <value compset="DATM.*POP2%ECO">284.7</value>
+      <value compset="DATM.*POP2%ECO">284.317</value>
       <value compset="^1850.+DATM%NYF.*_MICOM%ECO"  >284.32</value>
     </values>
     <group>run_co2</group>
