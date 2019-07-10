@@ -297,7 +297,6 @@ AC_OUTPUT(Makefile
           src/Makefile
           src/clib/Makefile
           src/ncint/Makefile
-          src/fncint/Makefile
           src/flib/Makefile
           src/gptl/Makefile
           tests/Makefile

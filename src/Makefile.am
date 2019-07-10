@@ -15,12 +15,9 @@ endif
 # Are we building with netCDF integration?
 if BUILD_NCINT
 NCINT = ncint
-if BUILD_FORTRAN
-FNCINT = fncint
-endif # BUILD_FORTRAN
 endif # BUILD_NCINT
 
 # Build these subdirectories.
-SUBDIRS = ${NCINT} clib ${GPTL} $(FNCINT) $(FLIB)
+SUBDIRS = ${NCINT} clib ${GPTL} $(FLIB)
 
 EXTRA_DIST = CMakeLists.txt
