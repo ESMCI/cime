@@ -7,6 +7,7 @@ lib_LTLIBRARIES = libpioc.la
 # Are we building with netCDF integration?
 if BUILD_NCINT
 libpioc_la_LIBADD = ../ncint/libncint.la
+libpioc_la_CPPFLAGS = -I${top_srcdir}/src/ncint
 endif # BUILD_NCINT
 
 # These linker flags specify libtool version info.

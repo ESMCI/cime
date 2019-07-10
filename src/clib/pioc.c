@@ -9,11 +9,19 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
+#ifdef NETCDF_INTEGRATION
+#include "ncintdispatch.h"
+#endif /* NETCDF_INTEGRATION */
 
 #ifdef USE_MPE
 /* The event numbers for MPE logging. */
 extern int event_num[2][NUM_EVENTS];
 #endif /* USE_MPE */
+
+#ifdef NETCDF_INTEGRATION
+/* Have we initialized? */
+extern int ncint_initialized;
+#endif /* NETCDF_INTEGRATION */
 
 /**
  * @defgroup PIO_init_c Initialize the IO System
@@ -933,6 +941,13 @@ PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
     /* Turn on the logging system. */
     if ((ret = pio_init_logging()))
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+
+#ifdef NETCDF_INTEGRATION
+    PLOG((1, "Initializing netcdf integration"));
+    /* Initialize netCDF integration layer if we need to. */
+    if (!ncint_initialized)
+        PIO_NCINT_initialize();
+#endif /* NETCDF_INTEGRATION */
 
 #ifdef USE_MPE
     pio_start_mpe_log(INIT);
