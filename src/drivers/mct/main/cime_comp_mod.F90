@@ -3100,6 +3100,7 @@ contains
              if (drv_threading) call seq_comm_setnthreads(nthreads_CPLID)
              if (do_hist_r2x) then
                 call t_drvstartf ('driver_rofpost_histaux', barrier=mpicom_CPLID)
+                write_hist_alarm = t24hr_alarm .or. stop_alarm
                 do eri = 1,num_inst_rof
                    inst_suffix =  component_get_suffix(rof(eri))
                    call seq_hist_writeaux(infodata, EClock_d, rof(eri), flow='c2x', &
