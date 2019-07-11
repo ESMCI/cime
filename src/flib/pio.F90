@@ -7,6 +7,7 @@
 !>
 !! @defgroup PIO_set_blocksize Box Rearranger Settings
 !! Set the box rearranger blocksize in Fortran.
+#include "config.h"
 
 module pio
 ! Package all exposed variables and functions under one roof
@@ -21,7 +22,10 @@ module pio
        pio_freedecomp, pio_syncfile, &
        pio_finalize, pio_set_hint, pio_getnumiotasks, pio_file_is_open, &
        PIO_deletefile, PIO_get_numiotasks, PIO_iotype_available, &
-       pio_set_rearr_opts, nf_init_intracom
+!#ifdef NETCDF_INTEGRATION
+       nf_init_intracom, &
+!#endif
+       pio_set_rearr_opts
 
   use pio_types, only : io_desc_t, file_desc_t, var_desc_t, iosystem_desc_t, &
        pio_rearr_opt_t, pio_rearr_comm_fc_opt_t, pio_rearr_comm_fc_2d_enable,&

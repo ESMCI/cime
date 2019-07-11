@@ -19,8 +19,8 @@ program ftst_pio
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks, ierr)
 
-  ! ierr = pio_set_log_level(2)
-  ! ierr = nf_set_log_level(2)
+  ierr = pio_set_log_level(2)
+  ierr = nf_set_log_level(2)
   call nf_init_intracom(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, ioSystem, base)
 

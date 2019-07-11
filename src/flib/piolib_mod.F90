@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "piolib_mod.f90"
+#include "config.h"
 !>
 !! @file
 !! Initialization Routines for PIO.
@@ -97,8 +98,8 @@ module piolib_mod
        PIO_deletefile, &
        PIO_get_numiotasks, &
        PIO_iotype_available, &
-       PIO_set_rearr_opts, &
-       nf_init_intracom
+       nf_init_intracom, &
+       PIO_set_rearr_opts
 
   !-----------------------------------------------------------------------
   !
@@ -134,9 +135,11 @@ module piolib_mod
      module procedure setframe
   end interface PIO_setframe
 
+!#ifdef NETCDF_INTEGRATION
   interface nf_init_intracom
      module procedure nf_init_intracom
   end interface nf_init_intracom
+!#endif
 
   !>
   !! Increment the record number for a future read/write of distributed
@@ -976,6 +979,7 @@ contains
 #endif
   end subroutine init_intracom
 
+!#ifdef NETCDF_INTEGRATION
   !>
   !! @public
   !! @ingroup PIO_init
@@ -1026,6 +1030,7 @@ contains
     ierr = nc_set_iosystem(iosystem%iosysid)
 
   end subroutine nf_init_intracom
+!#endif
 
   !! @public
   !! @ingroup PIO_init
