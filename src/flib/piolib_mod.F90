@@ -98,7 +98,9 @@ module piolib_mod
        PIO_deletefile, &
        PIO_get_numiotasks, &
        PIO_iotype_available, &
+#ifdef NETCDF_INTEGRATION
        nf_init_intracom, &
+#endif
        PIO_set_rearr_opts
 
   !-----------------------------------------------------------------------
@@ -135,11 +137,11 @@ module piolib_mod
      module procedure setframe
   end interface PIO_setframe
 
-!#ifdef NETCDF_INTEGRATION
+#ifdef NETCDF_INTEGRATION
   interface nf_init_intracom
      module procedure nf_init_intracom
   end interface nf_init_intracom
-!#endif
+#endif
 
   !>
   !! Increment the record number for a future read/write of distributed
@@ -979,7 +981,7 @@ contains
 #endif
   end subroutine init_intracom
 
-!#ifdef NETCDF_INTEGRATION
+#ifdef NETCDF_INTEGRATION
   !>
   !! @public
   !! @ingroup PIO_init
@@ -1030,7 +1032,7 @@ contains
     ierr = nc_set_iosystem(iosystem%iosysid)
 
   end subroutine nf_init_intracom
-!#endif
+#endif
 
   !! @public
   !! @ingroup PIO_init
