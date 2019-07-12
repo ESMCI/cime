@@ -17,9 +17,12 @@ endif # BUILD_FORTRAN
 # Are we building with netCDF integration?
 if BUILD_NCINT
 NCINT = ncint
+if BUILD_FORTRAN
+FNCINT = fncint
+endif # BUILD_FORTRAN
 endif # BUILD_NCINT
 
 # Build in these subdirs.
-SUBDIRS = cunit ${UNIT} ${NCINT} ${GENERAL} ${PERFORMANCE}
+SUBDIRS = cunit ${UNIT} ${NCINT} ${GENERAL} ${PERFORMANCE} ${FNCINT}
 
 EXTRA_DIST = CMakeLists.txt

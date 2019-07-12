@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "piolib_mod.f90"
+#include "config.h"
 !>
 !! @file
 !! Initialization Routines for PIO.
