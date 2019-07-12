@@ -128,6 +128,8 @@ PIO_NCINT_initialize(void)
 
     NCINT_dispatch_table = &NCINT_dispatcher;
 
+    PLOG((1, "Adding user-defined format for netCDF PIO integration"));
+
     /* Add our user defined format. */
     if ((ret = nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)))
         return ret;
@@ -148,8 +150,13 @@ PIO_NCINT_finalize(void)
     return NC_NOERR;
 }
 
+/**
+ * Create a file using PIO via netCDF's nc_create().
+ *
+ * @author Ed Hartnett
+ */
 int
-PIO_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
+PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
                  size_t *chunksizehintp, void *parameters,
                  const NC_Dispatch *dispatch, NC *nc_file)
 {
@@ -157,7 +164,7 @@ PIO_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
 
-    LOG((1, "PIO_NCINT_create path = %s mode = %x", path, mode));
+    PLOG((1, "PIO_NCINT_create path = %s mode = %x", path, cmode));
 
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(diosysid)))
@@ -191,7 +198,7 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
 
-    LOG((1, "PIO_NCINT_open path = %s mode = %x", path, mode));
+    PLOG((1, "PIO_NCINT_open path = %s mode = %x", path, mode));
 
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(diosysid)))

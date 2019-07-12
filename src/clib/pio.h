@@ -1250,6 +1250,7 @@ extern "C" {
     int nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                           int *iosysidp);
 
+    int nc_set_iosystem(int iosysid);
     int nc_free_iosystem(int iosysid);
 
     int nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
