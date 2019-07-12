@@ -22,6 +22,9 @@ module pio
        pio_freedecomp, pio_syncfile, &
        pio_finalize, pio_set_hint, pio_getnumiotasks, pio_file_is_open, &
        PIO_deletefile, PIO_get_numiotasks, PIO_iotype_available, &
+!#ifdef NETCDF_INTEGRATION
+!       nf_init_intracom, &
+!#endif
        pio_set_rearr_opts
 ! #ifdef NETCDF_INTEGRATION
 !        nf_init_intracom, &
