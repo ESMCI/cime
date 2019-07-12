@@ -22,9 +22,21 @@ def create_dirs(self):
     docdir = os.path.join(caseroot, "CaseDocs")
     dirs_to_make = []
     models = self.get_values("COMP_CLASSES")
-    for model in models:
-        dirname = model.lower()
-        dirs_to_make.append(os.path.join(exeroot, dirname, "obj"))
+# if environment variable CESM_BLD_TEMPLATE exists assume it is a valid bld
+# directory and copy it to exeroot
+    if not os.path.isdir(exeroot) and "CESM_BLD_TEMPLATE" in os.environ:
+        template_dir = os.environ["CESM_BLD_TEMPLATE"]
+        expect(os.path.isdir(template_dir), "Could not find template directory {}".format(template_dir))
+        logger.info("Copying bld directory from {}".format(template_dir))
+        shutil.copytree(template_dir, exeroot)
+        # there is a problem with doing this for the glc directory, just remove it
+        shutil.rmtree(os.path.join(exeroot,"glc"))
+        dirs_to_make.append(os.path.join(exeroot,"glc", "obj"))
+    else:
+        for model in models:
+            dirname = model.lower()
+            dirs_to_make.append(os.path.join(exeroot, dirname, "obj"))
+
 
     dirs_to_make.extend([exeroot, libroot, incroot, rundir, docdir])
 
