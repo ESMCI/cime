@@ -5,7 +5,7 @@ create_dirs and create_namelists are members of Class case from file case.py
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import run_sub_or_cmd, safe_copy
-import glob
+import glob, shutil
 logger = logging.getLogger(__name__)
 
 def create_dirs(self):
