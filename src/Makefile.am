@@ -5,7 +5,7 @@
 # Does the user want to build fortran?
 if BUILD_FORTRAN
 FLIB = flib
-endif
+endif # BUILD_FORTRAN
 
 # Are we building with the GPTL timing library?
 if USE_GPTL
