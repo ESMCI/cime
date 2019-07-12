@@ -971,58 +971,58 @@ contains
 #endif
   end subroutine init_intracom
 
-! #ifdef NETCDF_INTEGRATION
-!   !>
-!   !! @public
-!   !! @ingroup PIO_init
-!   !! Initialize the pio subsystem. This is a collective call. Input
-!   !! parameters are read on comp_rank=0 values on other tasks are
-!   !! ignored. This variation of PIO_init locates the IO tasks on a
-!   !! subset of the compute tasks.
-!   !!
-!   !! @param comp_rank mpi rank of each participating task,
-!   !! @param comp_comm the mpi communicator which defines the
-!   !! collective.
-!   !! @param num_iotasks the number of iotasks to define.
-!   !! @param num_aggregator the mpi aggregator count
-!   !! @param stride the stride in the mpi rank between io tasks.
-!   !! @param rearr @copydoc PIO_rearr_method
-!   !! @param iosystem a derived type which can be used in subsequent
-!   !! pio operations (defined in PIO_types).
-!   !! @param base @em optional argument can be used to offset the first
-!   !! io task - default base is task 1.
-!   !! @param rearr_opts the rearranger options.
-!   !! @author Jim Edwards
-!   !<
-!   subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
-!     use pio_types, only : pio_internal_error, pio_rearr_opt_t
-!     use iso_c_binding
+#ifdef NETCDF_INTEGRATION
+  !>
+  !! @public
+  !! @ingroup PIO_init
+  !! Initialize the pio subsystem. This is a collective call. Input
+  !! parameters are read on comp_rank=0 values on other tasks are
+  !! ignored. This variation of PIO_init locates the IO tasks on a
+  !! subset of the compute tasks.
+  !!
+  !! @param comp_rank mpi rank of each participating task,
+  !! @param comp_comm the mpi communicator which defines the
+  !! collective.
+  !! @param num_iotasks the number of iotasks to define.
+  !! @param num_aggregator the mpi aggregator count
+  !! @param stride the stride in the mpi rank between io tasks.
+  !! @param rearr @copydoc PIO_rearr_method
+  !! @param iosystem a derived type which can be used in subsequent
+  !! pio operations (defined in PIO_types).
+  !! @param base @em optional argument can be used to offset the first
+  !! io task - default base is task 1.
+  !! @param rearr_opts the rearranger options.
+  !! @author Jim Edwards
+  !<
+  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+    use pio_types, only : pio_internal_error, pio_rearr_opt_t
+    use iso_c_binding
 
-!     integer(i4), intent(in) :: comp_rank
-!     integer(i4), intent(in) :: comp_comm
-!     integer(i4), intent(in) :: num_iotasks
-!     integer(i4), intent(in) :: num_aggregator
-!     integer(i4), intent(in) :: stride
-!     integer(i4), intent(in) :: rearr
-!     type (iosystem_desc_t), intent(out)  :: iosystem  ! io descriptor to initalize
-!     integer(i4), intent(in),optional :: base
-!     type (pio_rearr_opt_t), intent(in), optional :: rearr_opts
-!     integer :: ierr
+    integer(i4), intent(in) :: comp_rank
+    integer(i4), intent(in) :: comp_comm
+    integer(i4), intent(in) :: num_iotasks
+    integer(i4), intent(in) :: num_aggregator
+    integer(i4), intent(in) :: stride
+    integer(i4), intent(in) :: rearr
+    type (iosystem_desc_t), intent(out)  :: iosystem  ! io descriptor to initalize
+    integer(i4), intent(in),optional :: base
+    type (pio_rearr_opt_t), intent(in), optional :: rearr_opts
+    integer :: ierr
 
-!     interface
-!        integer(C_INT) function nc_set_iosystem(iosystemid) &
-!             bind(C,name="nc_set_iosystem")
-!          use iso_c_binding
-!          integer(C_INT), intent(in), value :: iosystemid
-!        end function nc_set_iosystem
-!     end interface
+    interface
+       integer(C_INT) function nc_set_iosystem(iosystemid) &
+            bind(C,name="nc_set_iosystem")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: iosystemid
+       end function nc_set_iosystem
+    end interface
 
-!     call init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+    call init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
 
-!     ierr = nc_set_iosystem(iosystem%iosysid)
+    ierr = nc_set_iosystem(iosystem%iosysid)
 
-!   end subroutine nf_init_intracom
-! #endif
+  end subroutine nf_init_intracom
+#endif
 
   !! @public
   !! @ingroup PIO_init
