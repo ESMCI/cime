@@ -17,7 +17,12 @@ libpiof_la_LDFLAGS = -version-info 2:0:1
 # The library soure files.
 libpiof_la_LIBADD = libpio_nf.la libpio_kinds.la libpio_support.la	\
 libpiodarray.la libpionfatt.la libpionfget.la libpionfput.la		\
-libpiolib_mod.la libpio.la
+libpiolib_mod.la
+
+if NETCDF_INTEGRATION
+libpiof_la_LIBADD += libncint_mod.la
+endif
+libpiof_la_LIBADD +=  libpio.la
 
 libpiof_la_SOURCES = pio_types.F90
 
@@ -25,6 +30,9 @@ libpiof_la_SOURCES = pio_types.F90
 noinst_LTLIBRARIES = libpio_kinds.la libpio_types.la		\
 libpio_support.la libpio_nf.la libpiodarray.la libpionfatt.la	\
 libpionfget.la libpionfput.la libpiolib_mod.la libpio.la
+if NETCDF_INTEGRATION
+noinst_LTLIBRARIES += libncint_mod.la
+endif
 
 # The convenience libraries depends on their source.
 libpio_kinds_la_SOURCES = pio_kinds.F90
@@ -36,6 +44,7 @@ libpionfatt_la_SOURCES = pionfatt_mod.F90
 libpionfget_la_SOURCES = pionfget_mod.F90
 libpionfput_la_SOURCES = pionfput_mod.F90
 libpiolib_mod_la_SOURCES = piolib_mod.F90
+libncint_mod_la_SOURCES = ncint_mod.F90
 libpio_la_SOURCES = pio.F90
 
 # These F90 files are generated from .F90.in files, using the script
@@ -59,16 +68,24 @@ pionfatt_mod.mod: pionfatt_mod.F90 pionfatt_mod.$(OBJEXT)
 pionfget_mod.mod: pionfget_mod.F90 pionfget_mod.$(OBJEXT)
 pionfput_mod.mod: pionfput_mod.F90 pionfput_mod.$(OBJEXT)
 piolib_mod.mod: piolib_mod.$(OBJEXT)
+ncint_mod.mod: ncint_mod.$(OBJEXT)
 pio.mod: pio.$(OBJEXT)
 
 # Some mod files depend on other mod files.
-pio.$(OBJEXT): pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod \
+DEPEND_FILES = pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod \
 pio_nf.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod pio_support.mod
+if NETCDF_INTEGRATION
+DEPEND_FILES += ncint_mod.mod
+endif
+pio.$(OBJEXT): $(DEPEND_FILES)
 
 # Mod files are built and then installed as headers.
 MODFILES = pio_kinds.mod pio_types.mod pio_support.mod pio_nf.mod	\
 piodarray.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod	\
 piolib_mod.mod pio.mod
+if NETCDF_INTEGRATION
+MODFILES += ncint_mod.mod
+endif
 BUILT_SOURCES = $(MODFILES)
 include_HEADERS = $(MODFILES)
 

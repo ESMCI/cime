@@ -284,6 +284,7 @@ if test "x$enable_netcdf_integration" = xyes; then
 fi
 
 AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
+AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
