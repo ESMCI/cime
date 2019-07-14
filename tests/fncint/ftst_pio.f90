@@ -27,7 +27,7 @@ program ftst_pio
   ierr = nf_create(FILE_NAME, 64, ncid)
   ierr = nf_close(ncid)
 
-  call nf_free_iosystem()
+  ierr = nf_free_iosystem()
   call MPI_Finalize(ierr)
   if (myRank .eq. 0) then
      print *, '*** SUCCESS running ftst_pio!'
