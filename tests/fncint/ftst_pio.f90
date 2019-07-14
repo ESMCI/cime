@@ -21,7 +21,7 @@ program ftst_pio
 
   ierr = pio_set_log_level(2)
   ierr = nf_set_log_level(2)
-  call nf_init_intracom(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
+  ierr = nf_init_intracom(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, ioSystem, base)
 
   ierr = nf_create(FILE_NAME, 64, ncid)

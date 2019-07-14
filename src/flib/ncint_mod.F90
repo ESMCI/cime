@@ -61,8 +61,8 @@ contains
   !! @param rearr_opts the rearranger options.
   !! @author Ed Hartnett
   !<
-  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
-       num_aggregator, stride,  rearr, iosystem, base, rearr_opts)
+  function nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
+       num_aggregator, stride,  rearr, iosystem, base, rearr_opts) result(ierr)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
     use iso_c_binding
 
@@ -90,7 +90,7 @@ contains
 
     ierr = nc_set_iosystem(iosystem%iosysid)
 
-  end subroutine nf_init_intracom
+  end function nf_init_intracom
 
   !>
   !! @public
