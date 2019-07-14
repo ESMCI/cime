@@ -73,7 +73,8 @@ contains
   !! @param rearr_opts the rearranger options.
   !! @author Ed Hartnett
   !<
-  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
+       num_aggregator, stride,  rearr, iosystem, base, rearr_opts)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
     use iso_c_binding
 
@@ -96,7 +97,8 @@ contains
        end function nc_set_iosystem
     end interface
 
-    call PIO_init(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+    call PIO_init(comp_rank, comp_comm, num_iotasks, num_aggregator, &
+         stride,  rearr, iosystem, base, rearr_opts)
 
     ierr = nc_set_iosystem(iosystem%iosysid)
 
@@ -109,7 +111,7 @@ contains
   !!
   !! @param iosystem @copydoc io_desc_t
   !! @retval ierr @copydoc error_return
-  !! @author Jim Edwards
+  !! @author Ed Hartnett
   !<
   subroutine nf_free_iosystem(iosystem, ierr)
     type (iosystem_desc_t), intent(inout) :: iosystem
