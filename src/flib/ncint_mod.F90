@@ -34,20 +34,8 @@ module ncint_mod
 #ifdef NO_MPIMOD
   include 'mpif.h'    ! _EXTERNAL
 #endif
-  ! !public member functions:
 
   public :: nf_init_intracom, nf_free_iosystem
-
-  interface nf_init_intracom
-     module procedure nf_init_intracom
-  end interface nf_init_intracom
-
-  !>
-  !! Shuts down an IOSystem and associated resources.
-  !<
-  interface nf_free_iosystem
-     module procedure nf_free_iosystem
-  end interface nf_free_iosystem
 
 contains
 
@@ -73,8 +61,8 @@ contains
   !! @param rearr_opts the rearranger options.
   !! @author Ed Hartnett
   !<
-  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
-       num_aggregator, stride,  rearr, iosystem, base, rearr_opts)
+  function nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
+       num_aggregator, stride,  rearr, iosystem, base, rearr_opts) result(ierr)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
     use iso_c_binding
 
@@ -102,7 +90,7 @@ contains
 
     ierr = nc_set_iosystem(iosystem%iosysid)
 
-  end subroutine nf_init_intracom
+  end function nf_init_intracom
 
   !>
   !! @public
@@ -113,9 +101,10 @@ contains
   !! @retval ierr @copydoc error_return
   !! @author Ed Hartnett
   !<
-  subroutine nf_free_iosystem()
+  function nf_free_iosystem() result(status)
     integer(i4) :: ierr
     integer(i4) :: iosysid;
+    integer :: status
 
     interface
        integer(C_INT) function nc_get_iosystem(iosysid) &
@@ -135,6 +124,7 @@ contains
 
     ierr = nc_get_iosystem(iosysid)
     ierr = PIOc_finalize(iosysid)
-  end subroutine nf_free_iosystem
+    status = ierr
+  end function nf_free_iosystem
 
 end module ncint_mod
