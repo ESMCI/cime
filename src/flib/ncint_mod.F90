@@ -113,10 +113,28 @@ contains
   !! @retval ierr @copydoc error_return
   !! @author Ed Hartnett
   !<
-  subroutine nf_free_iosystem(iosystem, ierr)
-    type (iosystem_desc_t), intent(inout) :: iosystem
-    integer(i4), intent(out) :: ierr
-    call PIO_finalize(iosystem, ierr)
+  subroutine nf_free_iosystem()
+    integer(i4) :: ierr
+    integer(i4) :: iosysid = 0;
+
+    interface
+       integer(C_INT) function nc_get_iosystem(iosysid) &
+            bind(C, name="nc_get_iosystem")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: iosysid
+       end function nc_get_iosystem
+    end interface
+
+    interface
+       integer(C_INT) function PIOc_finalize(iosysid) &
+            bind(C, name="PIOc_finalize")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: iosysid
+       end function PIOc_finalize
+    end interface
+
+    ierr = nc_get_iosystem(iosysid)
+    ierr = PIOc_finalize(iosysid)
   end subroutine nf_free_iosystem
 
 end module ncint_mod
