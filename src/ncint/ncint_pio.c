@@ -41,6 +41,9 @@ nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int
 /**
  * Set the default iosystemID.
  *
+ * @param iosysid The IO system ID to set.
+ *
+ * @return PIO_NOERR for success.
  * @author Ed Hartnett
  */
 int
@@ -48,6 +51,26 @@ nc_set_iosystem(int iosysid)
 {
     /* Remember the io system id. */
     diosysid = iosysid;
+
+    return PIO_NOERR;
+}
+
+/**
+ * Get the default iosystemID.
+ *
+ * @param iosysid Pointer that gets The IO system ID.
+ *
+ * @return PIO_NOERR for success.
+ * @author Ed Hartnett
+ */
+int
+nc_get_iosystem(int *iosysid)
+{
+    pioassert(iosysid, "pointer to iosysid must be provided", __FILE__,
+              __LINE__);
+
+    /* Remember the io system id. */
+    *iosysid = diosysid;
 
     return PIO_NOERR;
 }

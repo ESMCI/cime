@@ -37,6 +37,16 @@ main(int argc, char **argv)
     if (MPI_Comm_size(MPI_COMM_WORLD, &ntasks)) ERR;
 
     printf("\n*** Testing netCDF integration layer.\n");
+    printf("*** testing getting/setting of default iosystemid...");
+    {
+        int iosysid;
+
+        if (nc_set_iosystem(TEST_VAL_42)) ERR;
+        if (nc_get_iosystem(&iosysid)) ERR;
+        if (iosysid != TEST_VAL_42) ERR;
+    }
+    SUMMARIZE_ERR;
+
     printf("*** testing simple use of netCDF integration layer format...");
     {
         int ncid, ioid;

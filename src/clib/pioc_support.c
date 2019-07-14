@@ -87,7 +87,8 @@ PIOc_strerror(int pioerr, char *errmsg)
     PLOG((1, "PIOc_strerror pioerr = %d", pioerr));
 
     /* Caller must provide this. */
-    pioassert(errmsg, "pointer to errmsg string must be provided", __FILE__, __LINE__);
+    pioassert(errmsg, "pointer to errmsg string must be provided", __FILE__,
+              __LINE__);
 
     /* System error? NetCDF and pNetCDF errors are always negative. */
     if (pioerr > 0)
