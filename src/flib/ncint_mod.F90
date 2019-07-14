@@ -1,8 +1,11 @@
 #include "config.h"
 !>
 !! @file
-!! Initialization Routines for PIO.
+!! These are the extra functions added to support netCDF
+!! integration. In most cases these functions are wrappers for
+!! existing PIO_ functions, but with names that start with nf_.
 !!
+!! @author Ed Hartnett
 !<
 
 !>
@@ -20,12 +23,9 @@ module ncint_mod
   !--------------
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
   use pio_nf, only : pio_set_log_level
-  use piolib_mod, only : pio_init
+  use piolib_mod, only : pio_init, pio_finalize
   !
 
-#ifdef TIMING
-  use perf_mod, only : t_startf, t_stopf     ! _EXTERNAL
-#endif
 #ifndef NO_MPIMOD
   use mpi    ! _EXTERNAL
 #endif
@@ -36,11 +36,18 @@ module ncint_mod
 #endif
   ! !public member functions:
 
-  public :: nf_init_intracom
+  public :: nf_init_intracom, nf_free_iosystem
 
   interface nf_init_intracom
      module procedure nf_init_intracom
   end interface nf_init_intracom
+
+  !>
+  !! Shuts down an IOSystem and associated resources.
+  !<
+  interface nf_free_iosystem
+     module procedure nf_free_iosystem
+  end interface nf_free_iosystem
 
 contains
 
@@ -66,7 +73,8 @@ contains
   !! @param rearr_opts the rearranger options.
   !! @author Ed Hartnett
   !<
-  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+  subroutine nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
+       num_aggregator, stride,  rearr, iosystem, base, rearr_opts)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
     use iso_c_binding
 
@@ -89,10 +97,26 @@ contains
        end function nc_set_iosystem
     end interface
 
-    call PIO_init(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+    call PIO_init(comp_rank, comp_comm, num_iotasks, num_aggregator, &
+         stride,  rearr, iosystem, base, rearr_opts)
 
     ierr = nc_set_iosystem(iosystem%iosysid)
 
   end subroutine nf_init_intracom
+
+  !>
+  !! @public
+  !! @ingroup PIO_finalize
+  !! Finalizes an IO System. This is a collective call.
+  !!
+  !! @param iosystem @copydoc io_desc_t
+  !! @retval ierr @copydoc error_return
+  !! @author Ed Hartnett
+  !<
+  subroutine nf_free_iosystem(iosystem, ierr)
+    type (iosystem_desc_t), intent(inout) :: iosystem
+    integer(i4), intent(out) :: ierr
+    call PIO_finalize(iosystem, ierr)
+  end subroutine nf_free_iosystem
 
 end module ncint_mod
