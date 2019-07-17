@@ -281,10 +281,35 @@ PIO_NCINT_abort(int ncid)
     return TEST_VAL_42;
 }
 
+/**
+ * Close a file opened with PIO.
+ *
+ * @param ncid the ncid for the PIO file.
+ * @param v ignored, use NULL.
+ *
+ * @return PIO_NOERR for success, error code otherwise.
+ * @author Ed Hartnett
+ */
 int
 PIO_NCINT_close(int ncid, void *v)
 {
-    return PIOc_closefile(ncid);
+    NC_FILE_INFO_T *h5;
+    int retval;
+
+    /* Tell PIO to close the file. */
+    if ((retval = PIOc_closefile(ncid)))
+        return retval;
+
+    /* Find our metadata for this file. */
+    if ((retval = nc4_find_grp_h5(ncid, NULL, &h5)))
+        return retval;
+    assert(h5);
+
+    /* Delete the group name. */
+    if ((retval = nc4_nc4f_list_del(h5)))
+        return retval;
+
+    return retval;
 }
 
 /**

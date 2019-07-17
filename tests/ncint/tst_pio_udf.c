@@ -68,54 +68,54 @@ main(int argc, char **argv)
 
         /* Create a file with a 3D record var. */
         if (nc_create(FILE_NAME, NC_UDF0, &ncid)) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) ERR;
-        if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) ERR;
-        if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) ERR;
+        /* if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) ERR; */
+        /* if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) ERR; */
+        /* if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) ERR; */
+        /* if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) ERR; */
 
-        /* Calculate a decomposition for distributed arrays. */
-        elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
-        if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
-            ERR;
-        for (i = 0; i < elements_per_pe; i++)
-            compdof[i] = my_rank * elements_per_pe + i;
+        /* /\* Calculate a decomposition for distributed arrays. *\/ */
+        /* elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks; */
+        /* if (!(compdof = malloc(elements_per_pe * sizeof(size_t)))) */
+        /*     ERR; */
+        /* for (i = 0; i < elements_per_pe; i++) */
+        /*     compdof[i] = my_rank * elements_per_pe + i; */
 
-        /* Create the PIO decomposition for this test. */
-        if (nc_init_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe,
-                           compdof, &ioid, 1, NULL, NULL)) ERR;
-        free(compdof);
+        /* /\* Create the PIO decomposition for this test. *\/ */
+        /* if (nc_init_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe, */
+        /*                    compdof, &ioid, 1, NULL, NULL)) ERR; */
+        /* free(compdof); */
 
-        /* Create some data on this processor. */
-        if (!(my_data = malloc(elements_per_pe * sizeof(int)))) ERR;
-        for (i = 0; i < elements_per_pe; i++)
-            my_data[i] = my_rank * 10 + i;
+        /* /\* Create some data on this processor. *\/ */
+        /* if (!(my_data = malloc(elements_per_pe * sizeof(int)))) ERR; */
+        /* for (i = 0; i < elements_per_pe; i++) */
+        /*     my_data[i] = my_rank * 10 + i; */
 
-        /* Write some data with distributed arrays. */
-        if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) ERR;
-        if (nc_close(ncid)) ERR;
+        /* /\* Write some data with distributed arrays. *\/ */
+        /* if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) ERR; */
+        /* if (nc_close(ncid)) ERR; */
 
-        /* Check that our user-defined format has been added. */
-        if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR;
-        if (disp_in != &NCINT_dispatcher) ERR;
+        /* /\* Check that our user-defined format has been added. *\/ */
+        /* if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) ERR; */
+        /* if (disp_in != &NCINT_dispatcher) ERR; */
 
-        /* Open the file. */
-        if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR;
+        /* /\* Open the file. *\/ */
+        /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) ERR; */
 
-        /* Read distributed arrays. */
-        if (!(data_in = malloc(elements_per_pe * sizeof(int)))) ERR;
-        if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) ERR;
+        /* /\* Read distributed arrays. *\/ */
+        /* if (!(data_in = malloc(elements_per_pe * sizeof(int)))) ERR; */
+        /* if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) ERR; */
 
-        /* Check results. */
-        for (i = 0; i < elements_per_pe; i++)
-            if (data_in[i] != my_data[i]) ERR;
+        /* /\* Check results. *\/ */
+        /* for (i = 0; i < elements_per_pe; i++) */
+        /*     if (data_in[i] != my_data[i]) ERR; */
 
         /* Close file. */
         if (nc_close(ncid)) ERR;
 
-        /* Free resources. */
-        free(data_in);
-        free(my_data);
-        if (nc_free_decomp(ioid)) ERR;
+        /* /\* Free resources. *\/ */
+        /* free(data_in); */
+        /* free(my_data); */
+        /* if (nc_free_decomp(ioid)) ERR; */
         if (nc_free_iosystem(iosysid)) ERR;
     }
     SUMMARIZE_ERR;

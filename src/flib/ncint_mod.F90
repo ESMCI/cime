@@ -127,4 +127,36 @@ contains
     status = ierr
   end function nf_free_iosystem
 
-end module ncint_mod
+  ! !>
+  ! !! @public
+  ! !! @ingroup PIO_initdecomp
+  ! !! Implements the block-cyclic decomposition for PIO_initdecomp.
+  ! !! This provides the ability to describe a computational
+  ! !! decomposition in PIO that has a block-cyclic form. That is
+  ! !! something that can be described using start and count arrays.
+  ! !! Optional parameters for this subroutine allows for the
+  ! !! specification of io decomposition using iostart and iocount
+  ! !! arrays. If iostart and iocount arrays are not specified by the
+  ! !! user, and rearrangement is turned on then PIO will calculate a
+  ! !! suitable IO decomposition
+  ! !!
+  ! !! @param iosystem @copydoc iosystem_desc_t
+  ! !! @param basepiotype @copydoc use_PIO_kinds
+  ! !! @param dims An array of the global length of each dimesion of the
+  ! !! variable(s)
+  ! !! @param compstart The start index into the block-cyclic
+  ! !! computational decomposition
+  ! !! @param compcount The count for the block-cyclic computational
+  ! !! decomposition
+  ! !! @param iodesc @copydoc iodesc_generate
+  ! !! @author Jim Edwards
+  ! !<
+  ! function nf_init_decomp(iosystem,basepiotype,dims,compstart,compcount,iodesc)
+  !   type (iosystem_desc_t), intent(inout) :: iosystem
+  !   integer(i4), intent(in)               :: basepiotype
+  !   integer(i4), intent(in)               :: dims(:)
+  !   integer (kind=PIO_OFFSET_KIND)             :: compstart(:)
+  !   integer (kind=PIO_OFFSET_KIND)             :: compcount(:)
+  !   type (IO_desc_t), intent(out)         :: iodesc
+
+  end module ncint_mod
