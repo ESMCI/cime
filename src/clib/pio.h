@@ -1,7 +1,7 @@
 /**
  * @file
  * Public headers for the PIO C interface.
- * @author Jim Edwards
+ * @author Jim Edwards, Ed Hartnett
  * @date  2014
  *
  * @see https://github.com/NCAR/ParallelIO
@@ -1247,8 +1247,8 @@ extern "C" {
                                 const unsigned long long *op);
 
     /* These functions are for the netCDF integration layer. */
-    int nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
-                          int *iosysidp);
+    int nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
+                         int *iosysidp);
 
     /* Set the default IOsystem ID. */
     int nc_set_iosystem(int iosysid);
@@ -1256,65 +1256,68 @@ extern "C" {
     /* Get the default IOsystem ID. */
     int nc_get_iosystem(int *iosysid);
 
+    /* Release the resources associated with an iosystem. */
     int nc_free_iosystem(int iosysid);
 
-    int nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
-                       int maplen, const size_t *compmap, int *ioidp,
-                       int rearranger, const size_t *iostart,
-                       const size_t *iocount);
+    /* Define a decomposition for distributed arrays. */
+    int nc_def_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
+                      int maplen, const size_t *compmap, int *ioidp,
+                      int rearranger, const size_t *iostart,
+                      const size_t *iocount);
 
+    /* Release resources associated with a decomposition. */
     int nc_free_decomp(int ioid);
 
-    /* Data reads - vard. */
+    /* Data reads - read a distributed array. */
     int nc_get_vard(int ncid, int varid, int decompid, const size_t recnum, void *buf);
     int nc_get_vard_text(int ncid, int varid, int decompid, const size_t recnum,
-                           char *buf);
+                         char *buf);
     int nc_get_vard_schar(int ncid, int varid, int decompid, const size_t recnum,
-                            signed char *buf);
+                          signed char *buf);
     int nc_get_vard_short(int ncid, int varid, int decompid, const size_t recnum,
-                            short *buf);
+                          short *buf);
     int nc_get_vard_int(int ncid, int varid, int decompid, const size_t recnum,
-                          int *buf);
+                        int *buf);
     int nc_get_vard_float(int ncid, int varid, int decompid, const size_t recnum,
-                            float *buf);
+                          float *buf);
     int nc_get_vard_double(int ncid, int varid, int decompid, const size_t recnum,
-                             double *buf);
+                           double *buf);
     int nc_get_vard_uchar(int ncid, int varid, int decompid, const size_t recnum,
-                            unsigned char *buf);
+                          unsigned char *buf);
     int nc_get_vard_ushort(int ncid, int varid, int decompid, const size_t recnum,
-                             unsigned short *buf);
+                           unsigned short *buf);
     int nc_get_vard_uint(int ncid, int varid, int decompid, const size_t recnum,
-                           unsigned int *buf);
+                         unsigned int *buf);
     int nc_get_vard_longlong(int ncid, int varid, int decompid, const size_t recnum,
-                               long long *buf);
+                             long long *buf);
     int nc_get_vard_ulonglong(int ncid, int varid, int decompid, const size_t recnum,
-                                unsigned long long *buf);
+                              unsigned long long *buf);
 
-    /* Data writes - vard. */
+    /* Data writes - Write a distributed array. */
     int nc_put_vard(int ncid, int varid, int decompid, const size_t recnum,
-                      const void *buf);
+                    const void *buf);
     int nc_put_vard_text(int ncid, int varid, int decompid, const size_t recnum,
-                           const char *op);
+                         const char *op);
     int nc_put_vard_schar(int ncid, int varid, int decompid, const size_t recnum,
-                            const signed char *op);
+                          const signed char *op);
     int nc_put_vard_short(int ncid, int varid, int decompid, const size_t recnum,
-                            const short *op);
+                          const short *op);
     int nc_put_vard_int(int ncid, int varid, int decompid, const size_t recnum,
-                          const int *op);
+                        const int *op);
     int nc_put_vard_float(int ncid, int varid, int decompid, const size_t recnum,
-                            const float *op);
+                          const float *op);
     int nc_put_vard_double(int ncid, int varid, int decompid, const size_t recnum,
-                             const double *op);
+                           const double *op);
     int nc_put_vard_uchar(int ncid, int varid, int decompid, const size_t recnum,
-                            const unsigned char *op);
+                          const unsigned char *op);
     int nc_put_vard_ushort(int ncid, int varid, int decompid, const size_t recnum,
-                             const unsigned short *op);
+                           const unsigned short *op);
     int nc_put_vard_uint(int ncid, int varid, int decompid, const size_t recnum,
-                           const unsigned int *op);
+                         const unsigned int *op);
     int nc_put_vard_longlong(int ncid, int varid, int decompid, const size_t recnum,
-                               const long long *op);
+                             const long long *op);
     int nc_put_vard_ulonglong(int ncid, int varid, int decompid, const size_t recnum,
-                                const unsigned long long *op);
+                              const unsigned long long *op);
 
 #if defined(__cplusplus)
 }

@@ -18,27 +18,37 @@ program ftst_pio
   type(io_desc_t) :: iodesc_nCells
   integer :: ierr
 
+  ! Set up MPI.
   call MPI_Init(ierr)
   call MPI_Comm_rank(MPI_COMM_WORLD, myRank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks, ierr)
 
-
+  ! These control logging in the PIO and netCDF libraries.
   ierr = pio_set_log_level(2)
   ierr = nf_set_log_level(2)
-  ierr = nf_init_intracom(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
+
+  ! Define an IOSystem.
+  ierr = nf_def_iosystem(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, ioSystem, base)
 
-
+  ! Define a decomposition.
   dims(1) = 3 * ntasks
   compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
-  data_buffer = myRank
   call PIO_initdecomp(ioSystem, PIO_int, dims, compdof, iodesc_nCells)
 
+  ! Create a file.
   ierr = nf_create(FILE_NAME, 64, ncid)
+
+  data_buffer = myRank
+
+  ! Close the file.
   ierr = nf_close(ncid)
 
+  ! Free resources.
   call PIO_freedecomp(ioSystem, iodesc_nCells)
   ierr = nf_free_iosystem()
+
+  ! We're done!
   call MPI_Finalize(ierr)
   if (myRank .eq. 0) then
      print *, '*** SUCCESS running ftst_pio!'

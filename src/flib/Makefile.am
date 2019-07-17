@@ -99,7 +99,7 @@ pionfput_mod.f90 pionfatt_mod_2.f90 pionfget_mod_2.f90
 piodarray.f90: piodarray.F90
 	$(CC) -E $< > $@
 piolib_mod.f90: piolib_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfatt_mod.f90: pionfatt_mod.F90
 	$(CC) -E $< > $@
 pionfget_mod.f90: pionfget_mod.F90

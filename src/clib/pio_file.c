@@ -179,9 +179,10 @@ PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * parameters are read on comp task 0 and ignored elsewhere.
  *
  * @param iosysid : A defined pio system descriptor (input)
+ * @param path : The filename to create.
  * @param cmode : The netcdf mode for the create operation.
- * @param filename : The filename to open
  * @param ncidp : A pio file descriptor (output)
+ *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_create_file_c
  * @author Ed Hartnett

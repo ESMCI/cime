@@ -10,10 +10,11 @@
 #include <pio_internal.h>
 #include "ncintdispatch.h"
 
-/* The default io system id. */
+/** This is te default io system id. */
 extern int diosysid;
 
-/* Have we initialized? */
+/** Have we initialized the netCDF integration layer? This is where we
+ * register our dispatch layer with netcdf-c. */
 extern int ncint_initialized;
 
 /**
@@ -22,8 +23,8 @@ extern int ncint_initialized;
  * @author Ed Hartnett
  */
 int
-nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
-                  int *iosysidp)
+nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
+                 int rearr, int *iosysidp)
 {
     int ret;
 
@@ -92,10 +93,10 @@ nc_free_iosystem(int iosysid)
  * @author Ed Hartnett
  */
 int
-nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
+nc_def_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
                int maplen, const size_t *compmap, int *ioidp,
-               int rearranger, const size_t *iostart,
-               const size_t *iocount)
+              int rearranger, const size_t *iostart,
+              const size_t *iocount)
 {
     return PIOc_init_decomp(iosysid, pio_type, ndims, gdimlen, maplen,
                             (const PIO_Offset *)compmap, ioidp, rearranger,
