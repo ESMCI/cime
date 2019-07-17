@@ -19,8 +19,6 @@ int diosysid;
 /** Did we initialize user-defined format? */
 int ncint_initialized = 0;
 
-#define TEST_VAL_42 42
-
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
 NC_Dispatch NCINT_dispatcher = {
@@ -278,7 +276,7 @@ PIO_NCINT_sync(int ncid)
 int
 PIO_NCINT_abort(int ncid)
 {
-    return TEST_VAL_42;
+    return PIO_NCINT_close(ncid, NULL);
 }
 
 /**
@@ -331,13 +329,31 @@ PIO_NCINT_set_fill(int ncid, int fillmode, int *old_modep)
 int
 PIO_NCINT_inq_format(int ncid, int *formatp)
 {
-    return TEST_VAL_42;
+    /* HDF4 is the format. */
+    if (formatp)
+        *formatp = NC_FORMATX_UDF0;
+
+    return NC_NOERR;
 }
 
 int
 PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
-    return TEST_VAL_42;
+    NC *nc;
+    int retval;
+
+    LOG((2, "%s: ncid 0x%x", __func__, ncid));
+
+    if ((retval = nc4_find_nc_grp_h5(ncid, &nc, NULL, NULL)))
+        return NC_EBADID;
+
+    if (modep)
+        *modep = nc->mode|NC_UDF0;
+
+    if (formatp)
+        *formatp = NC_FORMATX_UDF0;
+
+    return NC_NOERR;
 }
 
 /**
