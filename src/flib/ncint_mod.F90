@@ -14,17 +14,13 @@
 !!
 module ncint_mod
   use iso_c_binding
-  !--------------
   use pio_kinds
-  !--------------
   use pio_types, only : file_desc_t, iosystem_desc_t, var_desc_t, io_desc_t, &
        pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
        pio_noerr, pio_rearr_subset, pio_rearr_opt_t
-  !--------------
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
   use pio_nf, only : pio_set_log_level
   use piolib_mod, only : pio_init, pio_finalize
-  !
 
 #ifndef NO_MPIMOD
   use mpi    ! _EXTERNAL
@@ -35,7 +31,7 @@ module ncint_mod
   include 'mpif.h'    ! _EXTERNAL
 #endif
 
-  public :: nf_init_intracom, nf_free_iosystem
+  public :: nf_def_iosystem, nf_free_iosystem
 
 contains
 
@@ -61,7 +57,7 @@ contains
   !! @param rearr_opts the rearranger options.
   !! @author Ed Hartnett
   !<
-  function nf_init_intracom(comp_rank, comp_comm, num_iotasks, &
+  function nf_def_iosystem(comp_rank, comp_comm, num_iotasks, &
        num_aggregator, stride,  rearr, iosystem, base, rearr_opts) result(ierr)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
     use iso_c_binding
@@ -90,7 +86,7 @@ contains
 
     ierr = nc_set_iosystem(iosystem%iosysid)
 
-  end function nf_init_intracom
+  end function nf_def_iosystem
 
   !>
   !! @public

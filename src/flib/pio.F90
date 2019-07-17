@@ -25,7 +25,7 @@ module pio
        pio_set_rearr_opts
 
 #ifdef NETCDF_INTEGRATION
-  use ncint_mod, only: nf_init_intracom, nf_free_iosystem
+  use ncint_mod, only: nf_def_iosystem, nf_free_iosystem
 #endif
 
   use pio_types, only : io_desc_t, file_desc_t, var_desc_t, iosystem_desc_t, &
