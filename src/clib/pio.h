@@ -1247,8 +1247,8 @@ extern "C" {
                                 const unsigned long long *op);
 
     /* These functions are for the netCDF integration layer. */
-    int nc_init_intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
-                          int *iosysidp);
+    int nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
+                         int *iosysidp);
 
     /* Set the default IOsystem ID. */
     int nc_set_iosystem(int iosysid);
