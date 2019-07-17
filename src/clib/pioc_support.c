@@ -1936,7 +1936,7 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * PIO_IOTYPE_NETCDF4P.
  * @param filename The filename to create.
  * @param mode The netcdf mode for the create operation.
- * @paran use_ext_ncid non-zero to use an externally assigned ncid
+ * @param use_ext_ncid non-zero to use an externally assigned ncid
  * (used in the netcdf integration layer).
  *
  * @returns 0 for success, error code otherwise.
@@ -2422,7 +2422,7 @@ find_iotype_from_omode(int mode, int *iotype)
 /**
  * Find the appropriate IOTYPE from mode flags to nc_create().
  *
- * @param mode the mode flag from nc_create().
+ * @param cmode the mode flag from nc_create().
  * @param iotype pointer that gets the IOTYPE.
  *
  * @return 0 on success, error code otherwise.
@@ -2473,7 +2473,7 @@ find_iotype_from_cmode(int cmode, int *iotype)
  * @param mode the netcdf mode for the open operation
  * @param retry non-zero to automatically retry with netCDF serial
  * classic.
- * @paran use_ext_ncid non-zero to use an externally assigned ncid
+ * @param use_ext_ncid non-zero to use an externally assigned ncid
  * (used in the netcdf integration layer).
  *
  * @return 0 for success, error code otherwise.

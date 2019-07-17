@@ -10,10 +10,11 @@
 #include <pio_internal.h>
 #include "ncintdispatch.h"
 
-/* The default io system id. */
+/** This is te default io system id. */
 extern int diosysid;
 
-/* Have we initialized? */
+/** Have we initialized the netCDF integration layer? This is where we
+ * register our dispatch layer with netcdf-c. */
 extern int ncint_initialized;
 
 /**

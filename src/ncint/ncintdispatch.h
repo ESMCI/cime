@@ -1,6 +1,7 @@
 /**
- * @file @internal This header file contains the prototypes for the
- * PIO netCDF integration layer.
+ * @file
+ * This header file contains the prototypes for the PIO netCDF
+ * integration layer.
  *
  * Ed Hartnett
  */
@@ -11,26 +12,6 @@
 #include <ncdispatch.h>
 #include <nc4dispatch.h>
 #include <netcdf_dispatch.h>
-
-/** This is the max size of an SD dataset name in HDF4 (from HDF4
- * documentation).*/
-#define NC_MAX_HDF4_NAME 64
-
-/** This is the max number of dimensions for a HDF4 SD dataset (from
- * HDF4 documentation). */
-#define NC_MAX_HDF4_DIMS 32
-
-/* Stuff below is for hdf4 files. */
-typedef struct NC_VAR_HDF4_INFO
-{
-    int sdsid;
-    int hdf4_data_type;
-} NC_VAR_HDF4_INFO_T;
-
-typedef struct NC_HDF4_FILE_INFO
-{
-    int sdid;
-} NC_HDF4_FILE_INFO_T;
 
 #if defined(__cplusplus)
 extern "C" {
