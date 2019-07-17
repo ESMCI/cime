@@ -92,10 +92,10 @@ nc_free_iosystem(int iosysid)
  * @author Ed Hartnett
  */
 int
-nc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
+nc_def_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
                int maplen, const size_t *compmap, int *ioidp,
-               int rearranger, const size_t *iostart,
-               const size_t *iocount)
+              int rearranger, const size_t *iostart,
+              const size_t *iocount)
 {
     return PIOc_init_decomp(iosysid, pio_type, ndims, gdimlen, maplen,
                             (const PIO_Offset *)compmap, ioidp, rearranger,

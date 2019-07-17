@@ -81,8 +81,8 @@ main(int argc, char **argv)
             compdof[i] = my_rank * elements_per_pe + i;
 
         /* Create the PIO decomposition for this test. */
-        if (nc_init_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe,
-                           compdof, &ioid, 1, NULL, NULL)) ERR;
+        if (nc_def_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe,
+                          compdof, &ioid, 1, NULL, NULL)) ERR;
         free(compdof);
 
         /* Create some data on this processor. */
