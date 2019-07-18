@@ -9,7 +9,7 @@
 !<
 
 !>
-!! @defgroup PIO_ncint NetCDF Integration
+!! @defgroup ncint NetCDF Integration
 !! Integrate netCDF and PIO code.
 !!
 module ncint_mod
@@ -37,7 +37,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_init
+  !! @ingroup ncint
   !! Initialize the pio subsystem. This is a collective call. Input
   !! parameters are read on comp_rank=0 values on other tasks are
   !! ignored. This variation of PIO_init locates the IO tasks on a
@@ -90,7 +90,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_finalize
+  !! @ingroup ncint
   !! Finalizes an IO System. This is a collective call.
   !!
   !! @param iosystem @copydoc io_desc_t
@@ -125,7 +125,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_finalize
+  !! @ingroup ncint
   !! Free a decomposition.
   !!
   !! @param decompid the decompostion ID.
@@ -134,25 +134,8 @@ contains
   function nf_free_decomp(decompid) result(status)
     integer, intent(in) :: decompid
     integer(C_INT) :: cdecompid
-    integer(i4) :: iosysid;
     integer(i4) :: ierr
     integer :: status
-
-    interface
-       integer(C_INT) function nc_get_iosystem(iosysid) &
-            bind(C, name="nc_get_iosystem")
-         use iso_c_binding
-         integer(C_INT), intent(out) :: iosysid
-       end function nc_get_iosystem
-    end interface
-
-    interface
-       integer(C_INT) function PIOc_freedecomp(iosysid, ioid) &
-            bind(C,name="PIOc_freedecomp")
-         use iso_c_binding
-         integer(C_INT), intent(in), value :: iosysid, ioid
-       end function PIOc_freedecomp
-    end interface
 
     interface
        integer(C_INT) function nc_free_decomp(decompid) &
@@ -162,16 +145,14 @@ contains
        end function nc_free_decomp
     end interface
 
-    ierr = nc_get_iosystem(iosysid)
     cdecompid = decompid
-!    ierr = PIOc_freedecomp(iosysid, cdecompid)
     ierr = nc_free_decomp(cdecompid)
     status = ierr
   end function nf_free_decomp
 
   ! !>
   ! !! @public
-  ! !! @ingroup PIO_initdecomp
+  ! !! @ingroup ncint
   ! !! Implements the block-cyclic decomposition for PIO_initdecomp.
   ! !! This provides the ability to describe a computational
   ! !! decomposition in PIO that has a block-cyclic form. That is
