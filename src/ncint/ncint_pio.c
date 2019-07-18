@@ -112,5 +112,6 @@ nc_def_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen,
 int
 nc_free_decomp(int ioid)
 {
+    PLOG((1, "nc_free_decomp ioid %d", ioid));
     return PIOc_freedecomp(diosysid, ioid);
 }

@@ -15,7 +15,8 @@ program ftst_pio
   parameter (FILE_NAME='ftst_pio.nc')
   integer, dimension(3) :: data_buffer, compdof
   integer, dimension(1) :: dims
-  type(io_desc_t) :: iodesc_nCells
+  type(io_desc_t) :: iodesc
+  integer :: decompid
   integer :: ierr
 
   ! Set up MPI.
@@ -24,7 +25,7 @@ program ftst_pio
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks, ierr)
 
   ! These control logging in the PIO and netCDF libraries.
-  ierr = pio_set_log_level(2)
+  ierr = pio_set_log_level(3)
   ierr = nf_set_log_level(2)
 
   ! Define an IOSystem.
@@ -34,7 +35,8 @@ program ftst_pio
   ! Define a decomposition.
   dims(1) = 3 * ntasks
   compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
-  call PIO_initdecomp(ioSystem, PIO_int, dims, compdof, iodesc_nCells)
+  call PIO_initdecomp(ioSystem, PIO_int, dims, compdof, iodesc)
+  decompid = iodesc%ioid
 
   ! Create a file.
   ierr = nf_create(FILE_NAME, 64, ncid)
@@ -45,7 +47,8 @@ program ftst_pio
   ierr = nf_close(ncid)
 
   ! Free resources.
-  call PIO_freedecomp(ioSystem, iodesc_nCells)
+  ierr = nf_free_decomp(decompid)
+!  call PIO_freedecomp(ioSystem, iodesc_nCells)
   ierr = nf_free_iosystem()
 
   ! We're done!

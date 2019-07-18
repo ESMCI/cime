@@ -705,10 +705,10 @@ PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int ma
     /* Broadcast next ioid to all tasks from io root.*/
     if (ios->async)
     {
-        PLOG((3, "createfile bcasting pio_next_ioid %d", pio_next_ioid));
+        PLOG((3, "initdecomp bcasting pio_next_ioid %d", pio_next_ioid));
         if ((mpierr = MPI_Bcast(&pio_next_ioid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-        PLOG((3, "createfile bcast pio_next_ioid %d", pio_next_ioid));
+        PLOG((3, "initdecomp bcast pio_next_ioid %d", pio_next_ioid));
     }
 
     /* Set the decomposition ID. */
