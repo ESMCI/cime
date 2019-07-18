@@ -9,7 +9,7 @@
 !<
 
 !>
-!! @defgroup PIO_ncint NetCDF Integration
+!! @defgroup ncint NetCDF Integration
 !! Integrate netCDF and PIO code.
 !!
 module ncint_mod
@@ -31,13 +31,13 @@ module ncint_mod
   include 'mpif.h'    ! _EXTERNAL
 #endif
 
-  public :: nf_def_iosystem, nf_free_iosystem
+  public :: nf_def_iosystem, nf_free_iosystem, nf_free_decomp
 
 contains
 
   !>
   !! @public
-  !! @ingroup PIO_init
+  !! @ingroup ncint
   !! Initialize the pio subsystem. This is a collective call. Input
   !! parameters are read on comp_rank=0 values on other tasks are
   !! ignored. This variation of PIO_init locates the IO tasks on a
@@ -90,7 +90,7 @@ contains
 
   !>
   !! @public
-  !! @ingroup PIO_finalize
+  !! @ingroup ncint
   !! Finalizes an IO System. This is a collective call.
   !!
   !! @param iosystem @copydoc io_desc_t
@@ -123,9 +123,36 @@ contains
     status = ierr
   end function nf_free_iosystem
 
+  !>
+  !! @public
+  !! @ingroup ncint
+  !! Free a decomposition.
+  !!
+  !! @param decompid the decompostion ID.
+  !! @author Ed Hartnett
+  !<
+  function nf_free_decomp(decompid) result(status)
+    integer, intent(in) :: decompid
+    integer(C_INT) :: cdecompid
+    integer(i4) :: ierr
+    integer :: status
+
+    interface
+       integer(C_INT) function nc_free_decomp(decompid) &
+            bind(C, name="nc_free_decomp")
+         use iso_c_binding
+         integer(C_INT), intent(in), value :: decompid
+       end function nc_free_decomp
+    end interface
+
+    cdecompid = decompid
+    ierr = nc_free_decomp(cdecompid)
+    status = ierr
+  end function nf_free_decomp
+
   ! !>
   ! !! @public
-  ! !! @ingroup PIO_initdecomp
+  ! !! @ingroup ncint
   ! !! Implements the block-cyclic decomposition for PIO_initdecomp.
   ! !! This provides the ability to describe a computational
   ! !! decomposition in PIO that has a block-cyclic form. That is

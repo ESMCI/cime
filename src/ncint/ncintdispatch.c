@@ -19,8 +19,6 @@ int diosysid;
 /** Did we initialize user-defined format? */
 int ncint_initialized = 0;
 
-#define TEST_VAL_42 42
-
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
 NC_Dispatch NCINT_dispatcher = {
@@ -113,6 +111,10 @@ NC_Dispatch NCINT_dispatcher = {
     NC_NOTNC4_get_var_chunk_cache
 };
 
+/**
+ * Pointer to the dispatch table used for netCDF/PIO
+ * integration. Files opened or created with mode flag NC_UDF0 will be
+ * opened using the functions in this dispatch table. */
 const NC_Dispatch* NCINT_dispatch_table = NULL;
 
 /**
@@ -153,6 +155,17 @@ PIO_NCINT_finalize(void)
 /**
  * Create a file using PIO via netCDF's nc_create().
  *
+ * @param path The file name of the new file.
+ * @param cmode The creation mode flag.
+ * @param initialsz Ignored by this function.
+ * @param basepe Ignored by this function.
+ * @param chunksizehintp Ignored by this function.
+ * @param parameters pointer to struct holding extra data (e.g. for
+ * parallel I/O) layer. Ignored if NULL.
+ * @param dispatch Pointer to the dispatch table for this file.
+ * @param nc_file Pointer to an already-existing instance of NC.
+ *
+ * @return ::NC_NOERR No error, or error code.
  * @author Ed Hartnett
  */
 int
@@ -190,6 +203,25 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
     return PIO_NOERR;
 }
 
+/**
+ * @internal Open a netCDF file with PIO.
+ *
+ * @param path The file name of the file.
+ * @param mode The open mode flag.
+ * @param basepe Ignored by this function.
+ * @param chunksizehintp Ignored by this function.
+ * @param parameters pointer to struct holding extra data (e.g. for
+ * parallel I/O) layer. Ignored if NULL. Ignored by this function.
+ * @param dispatch Pointer to the dispatch table for this file.
+ * @param nc_file Pointer to an instance of NC. The ncid has already
+ * been assigned, and is in nc_file->ext_ncid.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EINVAL Invalid input.
+ * @return ::NC_EHDFERR Error from HDF4 layer.
+ * @return ::NC_ENOMEM Out of memory.
+ * @author Ed Hartnett
+ */
 int
 PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
                void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
@@ -278,7 +310,7 @@ PIO_NCINT_sync(int ncid)
 int
 PIO_NCINT_abort(int ncid)
 {
-    return TEST_VAL_42;
+    return PIO_NCINT_close(ncid, NULL);
 }
 
 /**
@@ -328,16 +360,59 @@ PIO_NCINT_set_fill(int ncid, int fillmode, int *old_modep)
     return PIOc_set_fill(ncid, fillmode, old_modep);
 }
 
+/**
+ * @internal Get the format (i.e. NC_FORMAT_UDF0) of a file opened
+ * with PIO.
+ *
+ * @param ncid File ID (ignored).
+ * @param formatp Pointer that gets the constant indicating format.
+
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @author Ed Hartnett
+ */
 int
 PIO_NCINT_inq_format(int ncid, int *formatp)
 {
-    return TEST_VAL_42;
+    /* HDF4 is the format. */
+    if (formatp)
+        *formatp = NC_FORMATX_UDF0;
+
+    return NC_NOERR;
 }
 
+/**
+ * @internal Return the extended format (i.e. the dispatch model),
+ * plus the mode associated with an open file.
+ *
+ * @param ncid File ID.
+ * @param formatp a pointer that gets the extended format. PIO files
+ * will always get NC_FORMATX_UDF0.
+ * @param modep a pointer that gets the open/create mode associated with
+ * this file. Ignored if NULL.
+
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @author Ed Hartnett
+ */
 int
 PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
-    return TEST_VAL_42;
+    NC *nc;
+    int retval;
+
+    LOG((2, "%s: ncid 0x%x", __func__, ncid));
+
+    if ((retval = nc4_find_nc_grp_h5(ncid, &nc, NULL, NULL)))
+        return NC_EBADID;
+
+    if (modep)
+        *modep = nc->mode|NC_UDF0;
+
+    if (formatp)
+        *formatp = NC_FORMATX_UDF0;
+
+    return NC_NOERR;
 }
 
 /**
