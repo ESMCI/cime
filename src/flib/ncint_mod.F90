@@ -15,12 +15,10 @@
 module ncint_mod
   use iso_c_binding
   use pio_kinds
-  use pio_types, only : file_desc_t, iosystem_desc_t, var_desc_t, io_desc_t, &
-       pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
-       pio_noerr, pio_rearr_subset, pio_rearr_opt_t
+  use pio_types
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
   use pio_nf, only : pio_set_log_level
-  use piolib_mod, only : pio_init, pio_finalize
+  use piolib_mod, only : pio_init, pio_finalize, pio_initdecomp
 
 #ifndef NO_MPIMOD
   use mpi    ! _EXTERNAL
@@ -31,7 +29,7 @@ module ncint_mod
   include 'mpif.h'    ! _EXTERNAL
 #endif
 
-  public :: nf_def_iosystem, nf_free_iosystem, nf_free_decomp
+  public :: nf_def_iosystem, nf_free_iosystem, nf_def_decomp, nf_free_decomp
 
 contains
 
@@ -150,36 +148,47 @@ contains
     status = ierr
   end function nf_free_decomp
 
-  ! !>
-  ! !! @public
-  ! !! @ingroup ncint
-  ! !! Implements the block-cyclic decomposition for PIO_initdecomp.
-  ! !! This provides the ability to describe a computational
-  ! !! decomposition in PIO that has a block-cyclic form. That is
-  ! !! something that can be described using start and count arrays.
-  ! !! Optional parameters for this subroutine allows for the
-  ! !! specification of io decomposition using iostart and iocount
-  ! !! arrays. If iostart and iocount arrays are not specified by the
-  ! !! user, and rearrangement is turned on then PIO will calculate a
-  ! !! suitable IO decomposition
-  ! !!
-  ! !! @param iosystem @copydoc iosystem_desc_t
-  ! !! @param basepiotype @copydoc use_PIO_kinds
-  ! !! @param dims An array of the global length of each dimesion of the
-  ! !! variable(s)
-  ! !! @param compstart The start index into the block-cyclic
-  ! !! computational decomposition
-  ! !! @param compcount The count for the block-cyclic computational
-  ! !! decomposition
-  ! !! @param iodesc @copydoc iodesc_generate
-  ! !! @author Jim Edwards
-  ! !<
-  ! function nf_init_decomp(iosystem,basepiotype,dims,compstart,compcount,iodesc)
-  !   type (iosystem_desc_t), intent(inout) :: iosystem
-  !   integer(i4), intent(in)               :: basepiotype
-  !   integer(i4), intent(in)               :: dims(:)
-  !   integer (kind=PIO_OFFSET_KIND)             :: compstart(:)
-  !   integer (kind=PIO_OFFSET_KIND)             :: compcount(:)
-  !   type (IO_desc_t), intent(out)         :: iodesc
+  !>
+  !! @public
+  !! @ingroup ncint
+  !! Implements the block-cyclic decomposition for PIO_initdecomp.
+  !! This provides the ability to describe a computational
+  !! decomposition in PIO that has a block-cyclic form. That is
+  !! something that can be described using start and count arrays.
+  !! Optional parameters for this subroutine allows for the
+  !! specification of io decomposition using iostart and iocount
+  !! arrays. If iostart and iocount arrays are not specified by the
+  !! user, and rearrangement is turned on then PIO will calculate a
+  !! suitable IO decomposition
+  !!
+  !! @param iosystem @copydoc iosystem_desc_t
+  !! @param basepiotype @copydoc use_PIO_kinds
+  !! @param dims An array of the global length of each dimesion of the
+  !! variable(s)
+  !! @param compstart The start index into the block-cyclic
+  !! computational decomposition
+  !! @param compcount The count for the block-cyclic computational
+  !! decomposition
+  !! @param iodesc @copydoc iodesc_generate
+  !! @author Jim Edwards
+  !<
+  function nf_def_decomp(iosystem, basepiotype, dims, compdof, &
+       decompid, rearr, iostart, iocount) result(status)
+    type (iosystem_desc_t), intent(in) :: iosystem
+    integer(i4), intent(in) :: basepiotype
+    integer(i4), intent(in) :: dims(:)
+    integer (PIO_OFFSET_KIND), intent(in) :: compdof(:)
+    integer, optional, target :: rearr
+    integer (PIO_OFFSET_KIND), optional :: iostart(:), iocount(:)
+    integer(i4), intent(inout) :: decompid
+    type (io_desc_t) :: iodesc
+    integer :: status
+
+    call PIO_initdecomp(iosystem, basepiotype, dims, compdof, &
+         iodesc, rearr, iostart, iocount)
+    decompid = iodesc%ioid
+
+    status = 0
+  end function nf_def_decomp
 
   end module ncint_mod

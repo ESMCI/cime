@@ -879,7 +879,8 @@ contains
   !! @ingroup PIO_initdecomp
   !! I8 version of PIO_initdecomp_dof_i4.
   !! @author Jim Edwards
-  subroutine PIO_initdecomp_dof_i8(iosystem,basepiotype,dims,compdof, iodesc, rearr, iostart, iocount)
+  subroutine PIO_initdecomp_dof_i8(iosystem, basepiotype, dims, compdof, &
+       iodesc, rearr, iostart, iocount)
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in)           :: basepiotype
     integer(i4), intent(in)           :: dims(:)
@@ -895,7 +896,8 @@ contains
 
     maplen = size(compdof)
 
-    call PIO_initdecomp_internal(iosystem, basepiotype, dims, maplen, compdof, iodesc, rearr, iostart,iocount)
+    call PIO_initdecomp_internal(iosystem, basepiotype, dims, maplen, &
+         compdof, iodesc, rearr, iostart, iocount)
 
 #ifdef TIMING
     call t_stopf("PIO:initdecomp_dof")
