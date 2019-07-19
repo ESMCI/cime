@@ -15,20 +15,21 @@ program ftst_pio
   character*(*) LAT_NAME, LON_NAME, REC_NAME, VAR_NAME
   parameter (LAT_NAME = 'latitude', LON_NAME = 'longitude', &
        REC_NAME = 'time', VAR_NAME = 'some_data_var')
-  integer :: myRank, ntasks
+  integer :: my_rank, ntasks
   integer :: niotasks = 1, numAggregator = 0, stride = 1, base = 0
   integer :: ncid
   integer(kind = PIO_OFFSET_KIND), dimension(3) :: data_buffer
-  integer(kind = PIO_OFFSET_KIND), dimension(1) :: compdof
+  integer(kind = PIO_OFFSET_KIND), dimension(:), allocatable :: compdof
   integer, dimension(2) :: dims
   integer, dimension(3) :: var_dim
+  integer :: maplen
   integer :: decompid, iosysid
-  integer :: varid
+  integer :: varid, i
   integer :: ierr
 
   ! Set up MPI.
   call MPI_Init(ierr)
-  call MPI_Comm_rank(MPI_COMM_WORLD, myRank, ierr)
+  call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks, ierr)
 
   ! These control logging in the PIO and netCDF libraries.
@@ -37,14 +38,18 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define an IOSystem.
-  ierr = nf_def_iosystem(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
+  ierr = nf_def_iosystem(my_rank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, iosysid, base)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define a 2D decomposition.
   dims(1) = NLAT / ntasks
   dims(2) = NLON / ntasks
-  compdof(1) = myRank
+  maplen = dims(1) * dims(2)
+  allocate(compdof(maplen))
+  do i = 1, maplen
+     compdof(i) = i + (my_rank - 1) * maplen
+  end do
   ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
@@ -67,7 +72,7 @@ program ftst_pio
   ierr = nf_enddef(ncid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  data_buffer = myRank
+  data_buffer = my_rank
 
 
   ! Close the file.
@@ -82,7 +87,7 @@ program ftst_pio
 
   ! We're done!
   call MPI_Finalize(ierr)
-  if (myRank .eq. 0) then
+  if (my_rank .eq. 0) then
      print *, '*** SUCCESS running ftst_pio!'
   endif
 end program ftst_pio
