@@ -11,15 +11,16 @@ program ftst_pio
 
   character*(*) FILE_NAME
   parameter (FILE_NAME = 'ftst_pio.nc')
-  integer :: NDIM3 = 3, NRECS = 2, NLAT = 6, NLON = 12
+  integer :: NDIM3 = 3, NRECS = 2, NLAT = 4, NLON = 4
   character*(*) LAT_NAME, LON_NAME, REC_NAME, VAR_NAME
   parameter (LAT_NAME = 'latitude', LON_NAME = 'longitude', &
        REC_NAME = 'time', VAR_NAME = 'some_data_var')
   integer :: myRank, ntasks
   integer :: niotasks = 1, numAggregator = 0, stride = 1, base = 0
   integer :: ncid
-  integer(kind = PIO_OFFSET_KIND), dimension(3) :: data_buffer, compdof
-  integer, dimension(1) :: dims
+  integer(kind = PIO_OFFSET_KIND), dimension(3) :: data_buffer
+  integer(kind = PIO_OFFSET_KIND), dimension(1) :: compdof
+  integer, dimension(2) :: dims
   integer, dimension(3) :: var_dim
   integer :: decompid, iosysid
   integer :: varid
@@ -40,9 +41,10 @@ program ftst_pio
        stride, PIO_rearr_subset, iosysid, base)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! Define a decomposition.
-  dims(1) = 3 * ntasks
-  compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
+  ! Define a 2D decomposition.
+  dims(1) = NLAT / ntasks
+  dims(2) = NLON / ntasks
+  compdof(1) = myRank
   ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
