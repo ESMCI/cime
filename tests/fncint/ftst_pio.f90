@@ -40,28 +40,37 @@ program ftst_pio
   ! Define an IOSystem.
   ierr = nf_def_iosystem(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
        stride, PIO_rearr_subset, iosysid, base)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define a decomposition.
   dims(1) = 3 * ntasks
   compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
   ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Create a file.
   ierr = nf_create(FILE_NAME, 64, ncid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define dimensions.
   ierr = nf_def_dim(ncid, LAT_NAME, NLATS, lat_dimid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
   ierr = nf_def_dim(ncid, LON_NAME, NLONS, lon_dimid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
   ierr = nf_def_dim(ncid, REC_NAME, NF_UNLIMITED, rec_dimid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   data_buffer = myRank
 
   ! Close the file.
   ierr = nf_close(ncid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Free resources.
   ierr = nf_free_decomp(decompid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
   ierr = nf_free_iosystem()
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! We're done!
   call MPI_Finalize(ierr)
