@@ -9,22 +9,20 @@ program ftst_pio
   include 'mpif.h'
   include 'netcdf.inc'
 
+  character*(*) FILE_NAME
+  parameter (FILE_NAME = 'ftst_pio.nc')
+  integer :: NDIM3 = 3, NRECS = 2, NLAT = 6, NLON = 12
+  character*(*) LAT_NAME, LON_NAME, REC_NAME, VAR_NAME
+  parameter (LAT_NAME = 'latitude', LON_NAME = 'longitude', &
+       REC_NAME = 'time', VAR_NAME = 'some_data_var')
   integer :: myRank, ntasks
   integer :: niotasks = 1, numAggregator = 0, stride = 1, base = 0
   integer :: ncid
-  character*(*) FILE_NAME
-  parameter (FILE_NAME = 'ftst_pio.nc')
   integer(kind = PIO_OFFSET_KIND), dimension(3) :: data_buffer, compdof
   integer, dimension(1) :: dims
-  integer, dimension(3) :: var_dims
+  integer, dimension(3) :: var_dim
   integer :: decompid, iosysid
-  integer :: NDIMS, NRECS
-  parameter (NDIMS = 4, NRECS = 2)
-  integer NLATS, NLONS
-  parameter (NLATS = 6, NLONS = 12)
-  character*(*) LAT_NAME, LON_NAME, REC_NAME
-  parameter (LAT_NAME = 'latitude', LON_NAME = 'longitude', REC_NAME = 'time')
-  integer :: lon_dimid, lat_dimid, rec_dimid
+  integer :: varid
   integer :: ierr
 
   ! Set up MPI.
@@ -53,14 +51,22 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define dimensions.
-  ierr = nf_def_dim(ncid, LAT_NAME, NLATS, lat_dimid)
+  ierr = nf_def_dim(ncid, LAT_NAME, NLAT, var_dim(1))
   if (ierr .ne. nf_noerr) call handle_err(ierr)
-  ierr = nf_def_dim(ncid, LON_NAME, NLONS, lon_dimid)
+  ierr = nf_def_dim(ncid, LON_NAME, NLON, var_dim(2))
   if (ierr .ne. nf_noerr) call handle_err(ierr)
-  ierr = nf_def_dim(ncid, REC_NAME, NF_UNLIMITED, rec_dimid)
+  ierr = nf_def_dim(ncid, REC_NAME, NF_UNLIMITED, var_dim(3))
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
+
+  ! Define a data variable.
+  ierr = nf_def_var(ncid, VAR_NAME, NF_REAL, NDIM3, var_dim, varid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
+
+  ierr = nf_enddef(ncid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   data_buffer = myRank
+
 
   ! Close the file.
   ierr = nf_close(ncid)
