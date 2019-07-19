@@ -48,15 +48,14 @@ contains
   !! @param num_aggregator the mpi aggregator count
   !! @param stride the stride in the mpi rank between io tasks.
   !! @param rearr @copydoc PIO_rearr_method
-  !! @param iosystem a derived type which can be used in subsequent
-  !! pio operations (defined in PIO_types).
+  !! @param iosysid the ID of the IOSystem.
   !! @param base @em optional argument can be used to offset the first
   !! io task - default base is task 1.
   !! @param rearr_opts the rearranger options.
   !! @author Ed Hartnett
   !<
   function nf_def_iosystem(comp_rank, comp_comm, num_iotasks, &
-       num_aggregator, stride,  rearr, iosystem, base, rearr_opts) result(ierr)
+       num_aggregator, stride,  rearr, iosysid, base, rearr_opts) result(ierr)
     use pio_types, only : pio_internal_error, pio_rearr_opt_t
     use iso_c_binding
 
@@ -66,9 +65,10 @@ contains
     integer(i4), intent(in) :: num_aggregator
     integer(i4), intent(in) :: stride
     integer(i4), intent(in) :: rearr
-    type (iosystem_desc_t), intent(out)  :: iosystem  ! io descriptor to initalize
+    integer(i4), intent(out) :: iosysid
     integer(i4), intent(in),optional :: base
     type (pio_rearr_opt_t), intent(in), optional :: rearr_opts
+    type (iosystem_desc_t) :: iosystem
     integer :: ierr
 
     interface
@@ -82,7 +82,8 @@ contains
     call PIO_init(comp_rank, comp_comm, num_iotasks, num_aggregator, &
          stride, rearr, iosystem, base, rearr_opts)
 
-    ierr = nc_set_iosystem(iosystem%iosysid)
+    iosysid = iosystem%iosysid
+    ierr = nc_set_iosystem(iosysid)
 
   end function nf_def_iosystem
 

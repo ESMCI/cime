@@ -29,12 +29,12 @@ program ftst_pio
 
   ! Define an IOSystem.
   ierr = nf_def_iosystem(myRank, MPI_COMM_WORLD, niotasks, numAggregator, &
-       stride, PIO_rearr_subset, ioSystem, base)
+       stride, PIO_rearr_subset, iosysid, base)
 
   ! Define a decomposition.
   dims(1) = 3 * ntasks
   compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
-  ierr = nf_def_decomp(ioSystem%iosysid, PIO_int, dims, compdof, decompid)
+  ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
 
   ! Create a file.
   ierr = nf_create(FILE_NAME, 64, ncid)
