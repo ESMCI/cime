@@ -194,4 +194,40 @@ contains
     status = 0
   end function nf_def_decomp
 
+  !>
+  !! @public
+  !! @ingroup ncint
+  !! Put distributed array subset of an integer variable.
+  !!
+  !! This routine is called collectively by all tasks in the
+  !! communicator ios.union_comm.
+  !!
+  !! @param ncid identifies the netCDF file
+  !! @param varid the variable ID number
+  !! @param decompid the decomposition ID.
+  !! @param recnum the record number.
+  !! @param op pointer to the data to be written.
+  !! @return PIO_NOERR on success, error code otherwise.
+  !! @author Ed Hartnett
+  !<
+  function nf_put_vard_int(ncid, varid, decompid, recnum, ivals) result(status)
+    use iso_c_binding
+    integer, intent(in):: ncid, varid, decompid, recnum
+    integer, intent(in):: ivals(*)
+    integer(c_int):: ierr
+    integer:: status
+
+    interface
+       function nc_put_vard_int(ncid, varid, decompid, recnum, op) bind(c)
+         use iso_c_binding
+         integer(c_int), value, intent(in) :: ncid, varid, decompid
+         integer(c_int64_t), value, intent(in) :: recnum
+         integer(c_int), intent(in) :: op(*)
+         integer(c_int) :: nc_put_vard_int
+       end function nc_put_vard_int
+    end interface
+
+    status = 0
+  end function nf_put_vard_int
+
   end module ncint_mod

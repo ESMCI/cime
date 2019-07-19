@@ -18,8 +18,8 @@ program ftst_pio
   integer :: my_rank, ntasks
   integer :: niotasks = 1, numAggregator = 0, stride = 1, base = 0
   integer :: ncid
-  integer(kind = PIO_OFFSET_KIND), dimension(3) :: data_buffer
   integer(kind = PIO_OFFSET_KIND), dimension(:), allocatable :: compdof
+  integer, dimension(:), allocatable :: data_buffer
   integer, dimension(2) :: dims
   integer, dimension(3) :: var_dim
   integer :: maplen
@@ -47,8 +47,10 @@ program ftst_pio
   dims(2) = NLON / ntasks
   maplen = dims(1) * dims(2)
   allocate(compdof(maplen))
+  allocate(data_buffer(maplen))
   do i = 1, maplen
      compdof(i) = i + (my_rank - 1) * maplen
+     data_buffer(i) = (my_rank - 1) * 10 + i
   end do
   ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
@@ -72,9 +74,6 @@ program ftst_pio
   ierr = nf_enddef(ncid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  data_buffer = my_rank
-
-
   ! Close the file.
   ierr = nf_close(ncid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
@@ -84,6 +83,8 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
   ierr = nf_free_iosystem()
   if (ierr .ne. nf_noerr) call handle_err(ierr)
+  deallocate(compdof)
+  deallocate(data_buffer)
 
   ! We're done!
   call MPI_Finalize(ierr)
