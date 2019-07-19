@@ -68,10 +68,13 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define a data variable.
-  ierr = nf_def_var(ncid, VAR_NAME, NF_REAL, NDIM3, var_dim, varid)
+  ierr = nf_def_var(ncid, VAR_NAME, NF_INT, NDIM3, var_dim, varid)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ierr = nf_enddef(ncid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ierr = nf_enddef(ncid)
+  ! Write 1st record with distributed arrays.
+  ierr = nf_put_vard_int(ncid, varid, decompid, 1, data_buffer)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Close the file.

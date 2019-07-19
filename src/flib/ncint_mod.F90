@@ -29,7 +29,8 @@ module ncint_mod
   include 'mpif.h'    ! _EXTERNAL
 #endif
 
-  public :: nf_def_iosystem, nf_free_iosystem, nf_def_decomp, nf_free_decomp
+  public :: nf_def_iosystem, nf_free_iosystem, nf_def_decomp, nf_free_decomp, &
+       nf_put_vard_int
 
 contains
 
@@ -214,20 +215,23 @@ contains
     use iso_c_binding
     integer, intent(in):: ncid, varid, decompid, recnum
     integer, intent(in):: ivals(*)
+    integer(c_int64_t):: lrecnum
     integer(c_int):: ierr
     integer:: status
 
     interface
-       function nc_put_vard_int(ncid, varid, decompid, recnum, op) bind(c)
+       function nc_put_vard_int(ncid, varid, decompid, lrecnum, op) bind(c)
          use iso_c_binding
          integer(c_int), value, intent(in) :: ncid, varid, decompid
-         integer(c_int64_t), value, intent(in) :: recnum
+         integer(c_int64_t), value, intent(in) :: lrecnum
          integer(c_int), intent(in) :: op(*)
          integer(c_int) :: nc_put_vard_int
        end function nc_put_vard_int
     end interface
 
-    status = 0
+    lrecnum = recnum - 1 ! c functions are 0-based
+    ierr = nc_put_vard_int(ncid, varid - 1, decompid, lrecnum, ivals)
+    status = ierr
   end function nf_put_vard_int
 
   end module ncint_mod
