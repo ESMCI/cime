@@ -173,18 +173,21 @@ contains
   !! @author Jim Edwards
   !<
   function nf_def_decomp(iosystem, basepiotype, dims, compdof, &
-       iodesc, rearr, iostart, iocount) result(status)
+       decompid, rearr, iostart, iocount) result(status)
     type (iosystem_desc_t), intent(in) :: iosystem
     integer(i4), intent(in) :: basepiotype
     integer(i4), intent(in) :: dims(:)
     integer (PIO_OFFSET_KIND), intent(in) :: compdof(:)
     integer, optional, target :: rearr
     integer (PIO_OFFSET_KIND), optional :: iostart(:), iocount(:)
-    type (io_desc_t), intent(inout) :: iodesc
+    integer(i4), intent(inout) :: decompid
+    type (io_desc_t) :: iodesc
     integer :: status
 
     call PIO_initdecomp(iosystem, basepiotype, dims, compdof, &
          iodesc, rearr, iostart, iocount)
+    decompid = iodesc%ioid
+
     status = 0
   end function nf_def_decomp
 
