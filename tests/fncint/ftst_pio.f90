@@ -13,7 +13,7 @@ program ftst_pio
   integer :: ncid
   character*(*) FILE_NAME
   parameter (FILE_NAME='ftst_pio.nc')
-  integer, dimension(3) :: data_buffer, compdof
+  integer(kind=PIO_OFFSET_KIND), dimension(3) :: data_buffer, compdof
   integer, dimension(1) :: dims
   type(io_desc_t) :: iodesc
   integer :: decompid
@@ -35,7 +35,7 @@ program ftst_pio
   ! Define a decomposition.
   dims(1) = 3 * ntasks
   compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
-  call PIO_initdecomp(ioSystem, PIO_int, dims, compdof, iodesc)
+  ierr = nf_def_decomp(ioSystem, PIO_int, dims, compdof, iodesc)
   decompid = iodesc%ioid
 
   ! Create a file.
@@ -48,7 +48,6 @@ program ftst_pio
 
   ! Free resources.
   ierr = nf_free_decomp(decompid)
-!  call PIO_freedecomp(ioSystem, iodesc_nCells)
   ierr = nf_free_iosystem()
 
   ! We're done!
