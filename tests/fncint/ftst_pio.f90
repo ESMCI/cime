@@ -15,7 +15,7 @@ program ftst_pio
   parameter (FILE_NAME='ftst_pio.nc')
   integer(kind=PIO_OFFSET_KIND), dimension(3) :: data_buffer, compdof
   integer, dimension(1) :: dims
-  integer :: decompid
+  integer :: decompid, iosysid
   integer :: ierr
 
   ! Set up MPI.
@@ -34,7 +34,7 @@ program ftst_pio
   ! Define a decomposition.
   dims(1) = 3 * ntasks
   compdof = 3 * myRank + (/1, 2, 3/)  ! Where in the global array each task writes
-  ierr = nf_def_decomp(ioSystem, PIO_int, dims, compdof, decompid)
+  ierr = nf_def_decomp(ioSystem%iosysid, PIO_int, dims, compdof, decompid)
 
   ! Create a file.
   ierr = nf_create(FILE_NAME, 64, ncid)

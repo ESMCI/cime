@@ -170,11 +170,11 @@ contains
   !! @param compcount The count for the block-cyclic computational
   !! decomposition
   !! @param iodesc @copydoc iodesc_generate
-  !! @author Jim Edwards
+  !! @author Ed Hartnett
   !<
-  function nf_def_decomp(iosystem, basepiotype, dims, compdof, &
+  function nf_def_decomp(iosysid, basepiotype, dims, compdof, &
        decompid, rearr, iostart, iocount) result(status)
-    type (iosystem_desc_t), intent(in) :: iosystem
+    integer(i4), intent(in) :: iosysid
     integer(i4), intent(in) :: basepiotype
     integer(i4), intent(in) :: dims(:)
     integer (PIO_OFFSET_KIND), intent(in) :: compdof(:)
@@ -182,8 +182,10 @@ contains
     integer (PIO_OFFSET_KIND), optional :: iostart(:), iocount(:)
     integer(i4), intent(inout) :: decompid
     type (io_desc_t) :: iodesc
+    type (iosystem_desc_t) :: iosystem
     integer :: status
 
+    iosystem%iosysid = iosysid
     call PIO_initdecomp(iosystem, basepiotype, dims, compdof, &
          iodesc, rearr, iostart, iocount)
     decompid = iodesc%ioid
