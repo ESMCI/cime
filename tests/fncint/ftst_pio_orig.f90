@@ -18,10 +18,12 @@ program ftst_pio
   integer :: my_rank, ntasks
   integer :: niotasks = 1, numAggregator = 0, stride = 1, base = 0
   integer :: ncid
-  integer(kind = PIO_OFFSET_KIND), dimension(:), allocatable :: compdof
+  integer, dimension(:), allocatable :: compdof
   integer, dimension(:), allocatable :: data_buffer
   integer, dimension(2) :: dims
   integer, dimension(3) :: var_dim
+  type(iosystem_desc_t) :: ioSystem
+  type(io_desc_t) :: iodesc
   integer :: maplen
   integer :: decompid, iosysid
   integer :: varid, i
@@ -38,9 +40,8 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define an IOSystem.
-  ierr = nf_def_iosystem(my_rank, MPI_COMM_WORLD, niotasks, numAggregator, &
-       stride, PIO_rearr_subset, iosysid, base)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  call PIO_init(my_rank, MPI_COMM_WORLD, niotasks, numAggregator, stride, &
+       PIO_rearr_subset, ioSystem, base=base)
 
   ! Define a 2D decomposition.
   dims(1) = NLAT * 2 / ntasks
@@ -59,42 +60,46 @@ program ftst_pio
      data_buffer(i) = my_rank
   end do
   print *, 'compdof', my_rank, compdof
-  ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! Create a file.
-  ierr = nf_create(FILE_NAME, 64, ncid)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+!  call PIO_initdecomp(ioSystem, PIO_int, maplen, compdof, iodesc)
 
-  ! Define dimensions.
-  ierr = nf_def_dim(ncid, LAT_NAME, NLAT, var_dim(1))
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
-  ierr = nf_def_dim(ncid, LON_NAME, NLON, var_dim(2))
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
-  ierr = nf_def_dim(ncid, REC_NAME, NF_UNLIMITED, var_dim(3))
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! Define a data variable.
-  ierr = nf_def_var(ncid, VAR_NAME, NF_INT, NDIM3, var_dim, varid)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
-  ierr = nf_enddef(ncid)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! Write 1st record with distributed arrays.
-  ierr = nf_put_vard_int(ncid, varid, decompid, 1, data_buffer)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ! Create a file.
+  ! ierr = nf_create(FILE_NAME, 64, ncid)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! Close the file.
-  ierr = nf_close(ncid)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ! Define dimensions.
+  ! ierr = nf_def_dim(ncid, LAT_NAME, NLAT, var_dim(1))
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ierr = nf_def_dim(ncid, LON_NAME, NLON, var_dim(2))
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ierr = nf_def_dim(ncid, REC_NAME, NF_UNLIMITED, var_dim(3))
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! Free resources.
-  ierr = nf_free_decomp(decompid)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
-  ierr = nf_free_iosystem()
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ! Define a data variable.
+  ! ierr = nf_def_var(ncid, VAR_NAME, NF_INT, NDIM3, var_dim, varid)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+  ! ierr = nf_enddef(ncid)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+
+  ! ! Write 1st record with distributed arrays.
+  ! ierr = nf_put_vard_int(ncid, varid, decompid, 1, data_buffer)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+
+  ! ! Close the file.
+  ! ierr = nf_close(ncid)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+
+  ! ! Free resources.
+  ! ierr = nf_free_decomp(decompid)
+  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
   deallocate(compdof)
   deallocate(data_buffer)
+!  call PIO_freedecomp(ioSystem, iodesc)
+  call pio_finalize(ioSystem, ierr)
 
   ! We're done!
   call MPI_Finalize(ierr)

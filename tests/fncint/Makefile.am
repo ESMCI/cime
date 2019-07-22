@@ -13,8 +13,9 @@ LDADD += -lnetcdff
 AM_FCFLAGS = -I${top_builddir}/src/flib ${CPPFLAGS}
 
 # Build the test for make check.
-check_PROGRAMS = ftst_pio
+check_PROGRAMS = ftst_pio ftst_pio_orig
 ftst_pio_SOURCES = ftst_pio.f90
+ftst_pio_orig_SOURCES = ftst_pio_orig.f90
 
 if RUN_TESTS
 # Tests will run from a bash script.
