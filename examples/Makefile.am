@@ -2,5 +2,4 @@
 
 # Ed Hartnett
 
-SUBDIRS = c
-
+SUBDIRS = c f03
