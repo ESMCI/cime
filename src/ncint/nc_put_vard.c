@@ -1,11 +1,11 @@
 /**
-  * @file
-  * PIO functions to write data with distributed arrays.
-  *
-  * @author Ed Hartnett
-  * @date 2019
-  * @see https://github.com/NCAR/ParallelIO
-  */
+ * @file
+ * PIO functions to write data with distributed arrays.
+ *
+ * @author Ed Hartnett
+ * @date 2019
+ * @see https://github.com/NCAR/ParallelIO
+ */
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
@@ -32,7 +32,7 @@
  */
 int
 nc_put_vard_text(int ncid, int varid, int decompid, const size_t recnum,
-                   const char *op)
+                 const char *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_CHAR, op);
 }
@@ -53,7 +53,7 @@ nc_put_vard_text(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_uchar(int ncid, int varid, int decompid, const size_t recnum,
-                    const unsigned char *op)
+                  const unsigned char *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UBYTE, op);
 }
@@ -74,7 +74,7 @@ nc_put_vard_uchar(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_schar(int ncid, int varid, int decompid, const size_t recnum,
-                    const signed char *op)
+                  const signed char *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_BYTE, op);
 }
@@ -96,7 +96,7 @@ nc_put_vard_schar(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_ushort(int ncid, int varid, int decompid, const size_t recnum,
-                     const unsigned short *op)
+                   const unsigned short *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_USHORT, op);
 }
@@ -117,7 +117,7 @@ nc_put_vard_ushort(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_short(int ncid, int varid, int decompid, const size_t recnum,
-                    const short *op)
+                  const short *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_SHORT, op);
 }
@@ -139,7 +139,7 @@ nc_put_vard_short(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_uint(int ncid, int varid, int decompid, const size_t recnum,
-                   const unsigned int *op)
+                 const unsigned int *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UINT, op);
 }
@@ -160,7 +160,7 @@ nc_put_vard_uint(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_int(int ncid, int varid, int decompid, const size_t recnum,
-                  const int *op)
+                const int *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_INT, op);
 }
@@ -202,7 +202,7 @@ nc_put_vard_int(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_float(int ncid, int varid, int decompid, const size_t recnum,
-                    const float *op)
+                  const float *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_FLOAT, op);
 }
@@ -224,7 +224,7 @@ nc_put_vard_float(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_longlong(int ncid, int varid, int decompid, const size_t recnum,
-                       const long long *op)
+                     const long long *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_INT64, op);
 }
@@ -246,7 +246,7 @@ nc_put_vard_longlong(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_double(int ncid, int varid, int decompid, const size_t recnum,
-                     const double *op)
+                   const double *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_DOUBLE, op);
 }
@@ -268,7 +268,7 @@ nc_put_vard_double(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard_ulonglong(int ncid, int varid, int decompid, const size_t recnum,
-                        const unsigned long long *op)
+                      const unsigned long long *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_UINT64, op);
 }
@@ -289,7 +289,7 @@ nc_put_vard_ulonglong(int ncid, int varid, int decompid, const size_t recnum,
  */
 int
 nc_put_vard(int ncid, int varid, int decompid, const size_t recnum,
-              const void *op)
+            const void *op)
 {
     return PIOc_put_vard_tc(ncid, varid, decompid, recnum, NC_NAT, op);
 }
