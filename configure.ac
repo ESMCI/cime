@@ -313,4 +313,5 @@ AC_OUTPUT(Makefile
           doc/images/Makefile
           examples/Makefile
           examples/c/Makefile
+          examples/f03/Makefile
           scripts/Makefile)
