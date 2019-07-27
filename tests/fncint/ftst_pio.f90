@@ -33,9 +33,8 @@ program ftst_pio
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks, ierr)
 
   ! These control logging in the PIO and netCDF libraries.
-  ierr = pio_set_log_level(3)
-  ierr = nf_set_log_level(2)
-  if (ierr .ne. nf_noerr) call handle_err(ierr)
+  !ierr = pio_set_log_level(3)
+  !ierr = nf_set_log_level(2)
 
   ! Define an IOSystem.
   ierr = nf_def_iosystem(my_rank, MPI_COMM_WORLD, niotasks, numAggregator, &
@@ -43,7 +42,7 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define a 2D decomposition.
-  dims(1) = 1
+  dims(1) = 4
   dims(2) = 4
   maplen = 4
   print *, 'dims: ', dims
@@ -55,8 +54,7 @@ program ftst_pio
   ! in fortran. Also recall that compdof is 1-based for fortran.
   do i = 1, maplen
      compdof(i) = i + my_rank * maplen
-     !data_buffer(i) = my_rank * 10 + i
-     data_buffer(i) = my_rank
+     data_buffer(i) = my_rank * 10 + i
   end do
   print *, 'compdof', my_rank, compdof
   ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
