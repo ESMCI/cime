@@ -180,9 +180,9 @@ contains
     integer(i4), intent(in) :: basepiotype
     integer(i4), intent(in) :: dims(:)
     integer (PIO_OFFSET_KIND), intent(in) :: compdof(:)
+    integer(i4), intent(out) :: decompid
     integer, optional, target :: rearr
     integer (PIO_OFFSET_KIND), optional :: iostart(:), iocount(:)
-    integer(i4), intent(inout) :: decompid
     type (io_desc_t) :: iodesc
     type (iosystem_desc_t) :: iosystem
     integer :: status
