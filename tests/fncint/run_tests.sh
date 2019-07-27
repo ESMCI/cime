@@ -11,7 +11,8 @@ trap exit INT TERM
 printf 'running Fortran tests for PIO netCDF integration...\n'
 
 #PIO_TESTS='ftst_pio_orig ftst_pio'
-PIO_TESTS='ftst_pio_orig'
+#PIO_TESTS='tst_c_pio ftst_pio_orig'
+PIO_TESTS='tst_c_pio'
 
 success1=true
 for TEST in $PIO_TESTS

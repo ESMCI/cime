@@ -10,7 +10,7 @@ program ftst_pio
   include 'netcdf.inc'
 
   character*(*) FILE_NAME
-  parameter (FILE_NAME = 'ftst_pio.nc')
+  parameter (FILE_NAME = 'ftst_pio_orig.nc')
   integer :: NDIM3 = 3, NRECS = 2, NLAT = 4, NLON = 4
   character*(*) LAT_NAME, LON_NAME, REC_NAME, VAR_NAME
   parameter (LAT_NAME = 'latitude', LON_NAME = 'longitude', &
@@ -23,6 +23,7 @@ program ftst_pio
   integer, dimension(2) :: dims
   integer, dimension(3) :: var_dim
   type(iosystem_desc_t) :: ioSystem
+  type(file_desc_t) :: pioFileDesc
   type(io_desc_t) :: iodesc
   integer :: maplen
   integer :: decompid, iosysid
@@ -61,13 +62,14 @@ program ftst_pio
   end do
   print *, 'compdof', my_rank, compdof
 
-!  call PIO_initdecomp(ioSystem, PIO_int, maplen, compdof, iodesc)
+  call PIO_initdecomp(ioSystem, PIO_int, dims, compdof, iodesc)
 
 
   ! ierr = nf_def_decomp(iosysid, PIO_int, dims, compdof, decompid)
   ! if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! ! Create a file.
+  ! Create a file.
+  ierr = PIO_createfile(ioSystem, pioFileDesc, PIO_IOTYPE_PNETCDF, FILE_NAME, PIO_clobber)
   ! ierr = nf_create(FILE_NAME, 64, ncid)
   ! if (ierr .ne. nf_noerr) call handle_err(ierr)
 
@@ -89,11 +91,12 @@ program ftst_pio
   ! ierr = nf_put_vard_int(ncid, varid, decompid, 1, data_buffer)
   ! if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! ! Close the file.
+  ! Close the file.
+  call PIO_closefile(pioFileDesc)
   ! ierr = nf_close(ncid)
-  ! if (ierr .ne. nf_noerr) call handle_err(ierr)
+  if (ierr .ne. nf_noerr) call handle_err(ierr)
 
-  ! ! Free resources.
+  ! Free resources.
   ! ierr = nf_free_decomp(decompid)
   ! if (ierr .ne. nf_noerr) call handle_err(ierr)
   deallocate(compdof)

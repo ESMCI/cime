@@ -1785,33 +1785,36 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         int request[reqcnt];
         int status[reqcnt];
 
-        for (int i = 0; i <= maxreq; i++)
+        if (file->varlist)
         {
-            if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
-                return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-#ifdef MPIO_ONESIDED
-            /*onesided optimization requires that all of the requests in a wait_all call represent
-              a contiguous block of data in the file */
-            if (rcnt > 0 && (prev_record != vdesc->record || vdesc->nreqs == 0))
+            for (int i = 0; i <= maxreq; i++)
             {
-                ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
-                rcnt = 0;
-            }
-            prev_record = vdesc->record;
+                if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
+                    return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+#ifdef MPIO_ONESIDED
+                /*onesided optimization requires that all of the requests in a wait_all call represent
+                  a contiguous block of data in the file */
+                if (rcnt > 0 && (prev_record != vdesc->record || vdesc->nreqs == 0))
+                {
+                    ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
+                    rcnt = 0;
+                }
+                prev_record = vdesc->record;
 #endif
-            for (reqcnt = 0; reqcnt < vdesc->nreqs; reqcnt++)
-                request[rcnt++] = max(vdesc->request[reqcnt], NC_REQ_NULL);
-            PLOG((3,"flush_output_buffer rcnt=%d",rcnt));
+                for (reqcnt = 0; reqcnt < vdesc->nreqs; reqcnt++)
+                    request[rcnt++] = max(vdesc->request[reqcnt], NC_REQ_NULL);
+                PLOG((3,"flush_output_buffer rcnt=%d",rcnt));
 
-            if (vdesc->request != NULL)
-                free(vdesc->request);
-            vdesc->request = NULL;
-            vdesc->nreqs = 0;
+                if (vdesc->request != NULL)
+                    free(vdesc->request);
+                vdesc->request = NULL;
+                vdesc->nreqs = 0;
 
 #ifdef FLUSH_EVERY_VAR
-            ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
-            rcnt = 0;
+                ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
+                rcnt = 0;
 #endif
+            }
         }
 
         if (rcnt > 0)

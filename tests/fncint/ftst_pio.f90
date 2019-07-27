@@ -39,13 +39,13 @@ program ftst_pio
 
   ! Define an IOSystem.
   ierr = nf_def_iosystem(my_rank, MPI_COMM_WORLD, niotasks, numAggregator, &
-       stride, PIO_rearr_subset, iosysid, base)
+       stride, PIO_rearr_box, iosysid, base)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define a 2D decomposition.
-  dims(1) = NLAT * 2 / ntasks
-  dims(2) = NLON * 2 / ntasks
-  maplen = dims(1) * dims(2)
+  dims(1) = 1
+  dims(2) = 4
+  maplen = 4
   print *, 'dims: ', dims
   print *, 'maplen: ', maplen
   print *, 'my_rank: ', my_rank
