@@ -21,6 +21,7 @@
 #define NDIM3 3
 #define LLEN 4
 #define MPI_ERR 999
+#define NTASKS4 4
 
 int
 main(int argc, char **argv)
@@ -36,6 +37,9 @@ main(int argc, char **argv)
     if (MPI_Comm_rank(MPI_COMM_WORLD, &my_rank))
         return MPI_ERR;
     if (MPI_Comm_size(MPI_COMM_WORLD, &ntasks))
+        return MPI_ERR;
+    /* Must run on 4 tasks only. */
+    if (ntasks != NTASKS4)
         return MPI_ERR;
 
     if (!my_rank)
@@ -57,7 +61,7 @@ main(int argc, char **argv)
         int i;
         int ret;
 
-        PIOc_set_log_level(3);
+        /* PIOc_set_log_level(3); */
 
         /* Initialize local data. */
         for (i = 0; i < LLEN; i++)
