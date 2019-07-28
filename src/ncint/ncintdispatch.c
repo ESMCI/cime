@@ -8,7 +8,6 @@
 #include "config.h"
 #include <stdlib.h>
 #include "ncintdispatch.h"
-#include "nc4dispatch.h"
 #include "nc4internal.h"
 #include "pio.h"
 #include "pio_internal.h"
