@@ -222,6 +222,7 @@
     <default_value>1</default_value>
     <values match="last">
       <value compset="(AMIP_|20TR_|HIST_|5505_|PIPD_|%TSCH)">1850</value>
+      <value compset="(HIST_CAM60%NORESM%NORBC)">1849</value>
     </values>
     <group>run_component_cam_sstice</group>
     <file>env_run.xml</file>
@@ -244,6 +245,7 @@
     <default_value>0</default_value>
     <values match="last">
       <value compset="(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)">1850</value>
+      <value compset="(HIST_CAM60%NORESM%NORBC)">1849</value>
     </values>
     <group>run_component_cam_sstice</group>
     <file>env_run.xml</file>
@@ -260,6 +262,7 @@
     <default_value>0</default_value>
     <values match="last">
       <value compset="(AMIP_|HIST_|20TR_|5505_|PIPD_|%TSCH)">2012</value>
+      <value compset="(HIST_CAM60%NORESM%NORBC)">2015</value>
     </values>
     <group>run_component_cam_sstice</group>
     <file>env_run.xml</file>
