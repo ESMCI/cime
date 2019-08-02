@@ -1930,7 +1930,8 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * @param iosysid A defined pio system ID, obtained from
  * PIOc_Init_Intracomm() or PIOc_InitAsync().
  * @param ncidp A pointer that gets the ncid of the newly created
- * file.
+ * file. For NetCDF integration, this contains the ncid assigned by
+ * the netCDF layer, which is used instead of a PIO-generated ncid.
  * @param iotype A pointer to a pio output format. Must be one of
  * PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF, PIO_IOTYPE_NETCDF4C, or
  * PIO_IOTYPE_NETCDF4P.

@@ -162,7 +162,8 @@ PIO_NCINT_finalize(void)
  * @param parameters pointer to struct holding extra data (e.g. for
  * parallel I/O) layer. Ignored if NULL.
  * @param dispatch Pointer to the dispatch table for this file.
- * @param nc_file Pointer to an already-existing instance of NC.
+ * @param ncid The ncid assigned to this file by netCDF (aka
+ * ext_ncid).
  *
  * @return ::NC_NOERR No error, or error code.
  * @author Ed Hartnett
@@ -170,8 +171,9 @@ PIO_NCINT_finalize(void)
 int
 PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
                  size_t *chunksizehintp, void *parameters,
-                 const NC_Dispatch *dispatch, NC *nc_file)
+                 const NC_Dispatch *dispatch, int ncid)
 {
+    NC *nc;
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
@@ -189,14 +191,17 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
     if ((ret = find_iotype_from_omode(cmode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc_file, path, cmode)))
+    /* Find NC pointer for this file. */
+    if ((ret = NC_check_id(ncid, &nc)))
         return ret;
 
-    /* Open the file with PIO. Tell openfile_retry to accept the
-     * externally assigned ncid. */
-    if ((ret = PIOc_createfile_int(diosysid,  &nc_file->ext_ncid, &iotype,
-                                   path, cmode, 1)))
+    /* Add necessary structs to hold netcdf-4 file data. */
+    if ((ret = nc4_nc4f_list_add(nc, path, cmode)))
+        return ret;
+
+    /* Create the file with PIO. The final parameter tests
+     * createfile_int to accept the externally assigned ncid. */
+    if ((ret = PIOc_createfile_int(diosysid, &ncid, &iotype, path, cmode, 1)))
         return ret;
 
     return PIO_NOERR;
@@ -212,8 +217,7 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
  * @param parameters pointer to struct holding extra data (e.g. for
  * parallel I/O) layer. Ignored if NULL. Ignored by this function.
  * @param dispatch Pointer to the dispatch table for this file.
- * @param nc_file Pointer to an instance of NC. The ncid has already
- * been assigned, and is in nc_file->ext_ncid.
+ * @param ncid
  *
  * @return ::NC_NOERR No error.
  * @return ::NC_EINVAL Invalid input.
@@ -223,8 +227,9 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
  */
 int
 PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-               void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
+               void *parameters, const NC_Dispatch *dispatch, int ncid)
 {
+    NC *nc;
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
@@ -242,14 +247,17 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
     if ((ret = find_iotype_from_omode(mode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
+    /* Find NC pointer for this file. */
+    if ((ret = NC_check_id(ncid, &nc)))
+        return ret;
+
     /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc_file, path, mode)))
+    if ((ret = nc4_nc4f_list_add(nc, path, mode)))
         return ret;
 
     /* Open the file with PIO. Tell openfile_retry to accept the
      * externally assigned ncid. */
-    if ((ret = PIOc_openfile_retry(diosysid, &nc_file->ext_ncid, &iotype,
-                                   path, mode, 0, 1)))
+    if ((ret = PIOc_openfile_retry(diosysid, &ncid, &iotype, path, mode, 0, 1)))
         return ret;
 
     return NC_NOERR;

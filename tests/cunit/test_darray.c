@@ -106,7 +106,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+    for (int fmt = 3; fmt < 4; fmt++)
     {
 
         /* Add a couple of extra tests for the
@@ -384,7 +385,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, -1, &test_comm)))
+                              MIN_NTASKS, 3, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))

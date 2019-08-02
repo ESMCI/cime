@@ -186,7 +186,7 @@ extern "C" {
     int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc);
     int delete_var_desc(int varid, var_desc_t **varlist);
 
-    /* Create a file (internal function). */
+    /* Create a file. */
     int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                             int mode, int use_ext_ncid);
 

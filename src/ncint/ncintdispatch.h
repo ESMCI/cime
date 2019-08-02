@@ -22,12 +22,12 @@ extern "C" {
 
     extern int
     PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-                  void *parameters, const NC_Dispatch *, NC *);
+                  void *parameters, const NC_Dispatch *, int);
 
     extern int
     PIO_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
                     size_t *chunksizehintp, void *parameters,
-                    const NC_Dispatch *dispatch, NC *nc_file);
+                    const NC_Dispatch *dispatch, int);
 
     extern int
     PIO_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
