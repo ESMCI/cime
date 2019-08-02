@@ -2855,6 +2855,7 @@ contains
 
        if (iamin_CPLID) then
 
+          history_alarm = .true.
           call cime_comp_barriers(mpicom=mpicom_CPLID, timer='CPL:HISTORY_BARRIER')
           call t_drvstartf ('CPL:HISTORY',cplrun=.true.,barrier=mpicom_CPLID)
           if ( history_alarm) then

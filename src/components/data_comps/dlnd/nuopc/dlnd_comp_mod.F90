@@ -1,7 +1,7 @@
 module dlnd_comp_mod
 
   use NUOPC                 , only : NUOPC_Advertise
-  use ESMF                  , only : ESMF_State, ESMF_SUCCESS, ESMF_STATE
+  use ESMF                  , only : ESMF_State, ESMF_SUCCESS, ESMF_STATE, ESMF_LogWrite, ESMF_LOGMSG_INFO
   use ESMF                  , only : ESMF_Mesh, ESMF_DistGrid, ESMF_MeshGet, ESMF_DistGridGet
   use perf_mod              , only : t_startf, t_stopf, t_adj_detailf, t_barrierf
   use mct_mod               , only : mct_gsmap_init
@@ -157,6 +157,8 @@ contains
 
     do n = 1,fldsFrLnd_num
        call NUOPC_Advertise(exportState, standardName=fldsFrLnd(n)%stdname, rc=rc)
+       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+       call ESMF_LogWrite('dlnd Export field'//': '//trim(fldsFrLnd(n)%stdname), ESMF_LOGMSG_INFO)
        if (ChkErr(rc,__LINE__,u_FILE_u)) return
     enddo
 
