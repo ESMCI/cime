@@ -8,9 +8,15 @@
 #include "config.h"
 #include <stdlib.h>
 #include "ncintdispatch.h"
-#include "nc4internal.h"
 #include "pio.h"
 #include "pio_internal.h"
+
+/* Prototypes from nc4internal.h. */
+int nc4_file_list_add(int ncid, const char *path, int mode,
+                      void **dispatchdata);
+int nc4_file_list_del(int ncid);
+int nc4_file_list_get(int ncid, char **path, int *mode,
+                      void **dispatchdata);
 
 /** Default iosysid. */
 int diosysid;
@@ -322,20 +328,14 @@ PIO_NCINT_abort(int ncid)
 int
 PIO_NCINT_close(int ncid, void *v)
 {
-    NC_FILE_INFO_T *h5;
     int retval;
 
     /* Tell PIO to close the file. */
     if ((retval = PIOc_closefile(ncid)))
         return retval;
 
-    /* Find our metadata for this file. */
-    if ((retval = nc4_find_grp_h5(ncid, NULL, &h5)))
-        return retval;
-    assert(h5);
-
     /* Delete the group name. */
-    if ((retval = nc4_nc4f_list_del(h5)))
+    if ((retval = nc4_file_list_del(ncid)))
         return retval;
 
     return retval;
@@ -395,16 +395,16 @@ PIO_NCINT_inq_format(int ncid, int *formatp)
 int
 PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
-    NC *nc;
+    int my_mode;
     int retval;
 
-    LOG((2, "%s: ncid 0x%x", __func__, ncid));
+    PLOG((2, "%s: ncid 0x%x", __func__, ncid));
 
-    if ((retval = nc4_find_nc_grp_h5(ncid, &nc, NULL, NULL)))
+    if ((retval = nc4_file_list_get(ncid, NULL, &my_mode, NULL)))
         return NC_EBADID;
 
     if (modep)
-        *modep = nc->mode|NC_UDF0;
+        *modep = my_mode|NC_UDF0;
 
     if (formatp)
         *formatp = NC_FORMATX_UDF0;

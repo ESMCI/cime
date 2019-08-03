@@ -10,8 +10,8 @@
 
 #include "config.h"
 #include <ncdispatch.h>
-#include <nc4dispatch.h>
 #include <netcdf_dispatch.h>
+#include <nc4dispatch.h>
 
 #if defined(__cplusplus)
 extern "C" {
