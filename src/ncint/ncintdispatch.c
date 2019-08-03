@@ -173,7 +173,6 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
                  size_t *chunksizehintp, void *parameters,
                  const NC_Dispatch *dispatch, int ncid)
 {
-    NC *nc;
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
@@ -191,12 +190,8 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
     if ((ret = find_iotype_from_omode(cmode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    /* Find NC pointer for this file. */
-    if ((ret = NC_check_id(ncid, &nc)))
-        return ret;
-
     /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc, path, cmode)))
+    if ((ret = nc4_file_list_add(ncid, path, cmode, NULL)))
         return ret;
 
     /* Create the file with PIO. The final parameter tests
@@ -229,7 +224,6 @@ int
 PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
                void *parameters, const NC_Dispatch *dispatch, int ncid)
 {
-    NC *nc;
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ret;
@@ -247,12 +241,8 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
     if ((ret = find_iotype_from_omode(mode, &iotype)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    /* Find NC pointer for this file. */
-    if ((ret = NC_check_id(ncid, &nc)))
-        return ret;
-
     /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc, path, mode)))
+    if ((ret = nc4_file_list_add(ncid, path, mode, NULL)))
         return ret;
 
     /* Open the file with PIO. Tell openfile_retry to accept the
