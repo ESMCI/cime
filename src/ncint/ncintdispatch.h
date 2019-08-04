@@ -9,9 +9,7 @@
 #define _NCINTDISPATCH_H
 
 #include "config.h"
-#include <ncdispatch.h>
 #include <netcdf_dispatch.h>
-#include <nc4dispatch.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -139,6 +137,13 @@ extern "C" {
 
     extern int
     PIO_NCINT_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp);
+
+    extern int
+    PIO_NCINT_show_metadata(int i);
+
+    extern int
+    PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
+                             nc_type typeid2, int *equalp);
 
 
 

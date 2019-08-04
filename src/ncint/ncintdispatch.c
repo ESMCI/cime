@@ -68,31 +68,31 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_put_vara,
     PIO_NCINT_get_vars,
     PIO_NCINT_put_vars,
-    NCDEFAULT_get_varm,
-    NCDEFAULT_put_varm,
+    NC_NOTNC3_get_varm,
+    NC_NOTNC3_put_varm,
 
     PIO_NCINT_inq_var_all,
 
     NC_NOTNC4_var_par_access,
     PIO_NCINT_def_var_fill,
 
-    NC4_show_metadata,
+    PIO_NCINT_show_metadata,
     PIO_NCINT_inq_unlimdims,
 
-    NC4_inq_ncid,
-    NC4_inq_grps,
-    NC4_inq_grpname,
-    NC4_inq_grpname_full,
-    NC4_inq_grp_parent,
-    NC4_inq_grp_full_ncid,
-    NC4_inq_varids,
-    NC4_inq_dimids,
-    NC4_inq_typeids,
-    NC4_inq_type_equal,
+    NC_NOTNC4_inq_ncid,
+    NC_NOTNC4_inq_grps,
+    NC_NOTNC4_inq_grpname,
+    NC_NOTNC4_inq_grpname_full,
+    NC_NOTNC4_inq_grp_parent,
+    NC_NOTNC4_inq_grp_full_ncid,
+    NC_NOTNC4_inq_varids,
+    NC_NOTNC4_inq_dimids,
+    NC_NOTNC4_inq_typeids,
+    PIO_NCINT_inq_type_equal,
     NC_NOTNC4_def_grp,
     NC_NOTNC4_rename_grp,
-    NC4_inq_user_type,
-    NC4_inq_typeid,
+    NC_NOTNC4_inq_user_type,
+    NC_NOTNC4_inq_typeid,
 
     NC_NOTNC4_def_compound,
     NC_NOTNC4_insert_compound,
@@ -900,10 +900,48 @@ PIO_NCINT_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  *
  * @return ::NC_NOERR No error.
  * @return ::NC_EBADID Bad ncid.
- * @author Ed Hartnett, Dennis Heimbigner
+ * @author Ed Hartnett
  */
 int
 PIO_NCINT_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
 {
     return PIOc_inq_unlimdims(ncid, nunlimdimsp, unlimdimidsp);
+}
+
+/**
+ * @internal Does nothing.
+ *
+ * @param i Ignored
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_show_metadata(int i)
+{
+    return NC_NOERR;
+}
+
+/**
+ * @internal Determine if two types are equal.
+ *
+ * @param ncid1 First file/group ID.
+ * @param typeid1 First type ID.
+ * @param ncid2 Second file/group ID.
+ * @param typeid2 Second type ID.
+ * @param equalp Pointer that will get 1 if the two types are equal.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EBADTYPE Type not found.
+ * @return ::NC_EINVAL Invalid type.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
+                         nc_type typeid2, int *equalp)
+{
+    if (equalp)
+        *equalp = typeid1 == typeid2 ? 1 : 0;
+    return NC_NOERR;
 }
