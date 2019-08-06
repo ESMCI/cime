@@ -3,6 +3,9 @@
 
 # Ed Hartnett 7/3/19
 
+# Put together AM_CPPFLAGS and AM_LDFLAGS.
+include $(top_srcdir)/set_flags.am
+
 # Link to the PIO Fortran and C libraries.
 LDADD = ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpioc.la
 

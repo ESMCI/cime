@@ -9,8 +9,6 @@
 #define _NCINTDISPATCH_H
 
 #include "config.h"
-#include <ncdispatch.h>
-#include <nc4dispatch.h>
 #include <netcdf_dispatch.h>
 
 #if defined(__cplusplus)
@@ -22,12 +20,12 @@ extern "C" {
 
     extern int
     PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-                  void *parameters, const NC_Dispatch *, NC *);
+                  void *parameters, const NC_Dispatch *, int);
 
     extern int
     PIO_NCINT_create(const char* path, int cmode, size_t initialsz, int basepe,
                     size_t *chunksizehintp, void *parameters,
-                    const NC_Dispatch *dispatch, NC *nc_file);
+                    const NC_Dispatch *dispatch, int);
 
     extern int
     PIO_NCINT_def_var(int ncid, const char *name, nc_type xtype, int ndims,
@@ -139,6 +137,13 @@ extern "C" {
 
     extern int
     PIO_NCINT_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp);
+
+    extern int
+    PIO_NCINT_show_metadata(int i);
+
+    extern int
+    PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
+                             nc_type typeid2, int *equalp);
 
 
 

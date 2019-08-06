@@ -8,10 +8,15 @@
 #include "config.h"
 #include <stdlib.h>
 #include "ncintdispatch.h"
-#include "nc4dispatch.h"
-#include "nc4internal.h"
 #include "pio.h"
 #include "pio_internal.h"
+
+/* Prototypes from nc4internal.h. */
+int nc4_file_list_add(int ncid, const char *path, int mode,
+                      void **dispatchdata);
+int nc4_file_list_del(int ncid);
+int nc4_file_list_get(int ncid, char **path, int *mode,
+                      void **dispatchdata);
 
 /** Default iosysid. */
 int diosysid;
@@ -63,31 +68,31 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_put_vara,
     PIO_NCINT_get_vars,
     PIO_NCINT_put_vars,
-    NCDEFAULT_get_varm,
-    NCDEFAULT_put_varm,
+    NC_NOTNC3_get_varm,
+    NC_NOTNC3_put_varm,
 
     PIO_NCINT_inq_var_all,
 
     NC_NOTNC4_var_par_access,
     PIO_NCINT_def_var_fill,
 
-    NC4_show_metadata,
+    PIO_NCINT_show_metadata,
     PIO_NCINT_inq_unlimdims,
 
-    NC4_inq_ncid,
-    NC4_inq_grps,
-    NC4_inq_grpname,
-    NC4_inq_grpname_full,
-    NC4_inq_grp_parent,
-    NC4_inq_grp_full_ncid,
-    NC4_inq_varids,
-    NC4_inq_dimids,
-    NC4_inq_typeids,
-    NC4_inq_type_equal,
+    NC_NOTNC4_inq_ncid,
+    NC_NOTNC4_inq_grps,
+    NC_NOTNC4_inq_grpname,
+    NC_NOTNC4_inq_grpname_full,
+    NC_NOTNC4_inq_grp_parent,
+    NC_NOTNC4_inq_grp_full_ncid,
+    NC_NOTNC4_inq_varids,
+    NC_NOTNC4_inq_dimids,
+    NC_NOTNC4_inq_typeids,
+    PIO_NCINT_inq_type_equal,
     NC_NOTNC4_def_grp,
     NC_NOTNC4_rename_grp,
-    NC4_inq_user_type,
-    NC4_inq_typeid,
+    NC_NOTNC4_inq_user_type,
+    NC_NOTNC4_inq_typeid,
 
     NC_NOTNC4_def_compound,
     NC_NOTNC4_insert_compound,
@@ -163,7 +168,8 @@ PIO_NCINT_finalize(void)
  * @param parameters pointer to struct holding extra data (e.g. for
  * parallel I/O) layer. Ignored if NULL.
  * @param dispatch Pointer to the dispatch table for this file.
- * @param nc_file Pointer to an already-existing instance of NC.
+ * @param ncid The ncid assigned to this file by netCDF (aka
+ * ext_ncid).
  *
  * @return ::NC_NOERR No error, or error code.
  * @author Ed Hartnett
@@ -171,7 +177,7 @@ PIO_NCINT_finalize(void)
 int
 PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
                  size_t *chunksizehintp, void *parameters,
-                 const NC_Dispatch *dispatch, NC *nc_file)
+                 const NC_Dispatch *dispatch, int ncid)
 {
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -191,13 +197,12 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc_file, path, cmode)))
+    if ((ret = nc4_file_list_add(ncid, path, cmode, NULL)))
         return ret;
 
-    /* Open the file with PIO. Tell openfile_retry to accept the
-     * externally assigned ncid. */
-    if ((ret = PIOc_createfile_int(diosysid,  &nc_file->ext_ncid, &iotype,
-                                   path, cmode, 1)))
+    /* Create the file with PIO. The final parameter tests
+     * createfile_int to accept the externally assigned ncid. */
+    if ((ret = PIOc_createfile_int(diosysid, &ncid, &iotype, path, cmode, 1)))
         return ret;
 
     return PIO_NOERR;
@@ -213,8 +218,7 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
  * @param parameters pointer to struct holding extra data (e.g. for
  * parallel I/O) layer. Ignored if NULL. Ignored by this function.
  * @param dispatch Pointer to the dispatch table for this file.
- * @param nc_file Pointer to an instance of NC. The ncid has already
- * been assigned, and is in nc_file->ext_ncid.
+ * @param ncid
  *
  * @return ::NC_NOERR No error.
  * @return ::NC_EINVAL Invalid input.
@@ -224,7 +228,7 @@ PIO_NCINT_create(const char *path, int cmode, size_t initialsz, int basepe,
  */
 int
 PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
-               void *parameters, const NC_Dispatch *dispatch, NC *nc_file)
+               void *parameters, const NC_Dispatch *dispatch, int ncid)
 {
     int iotype;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -244,13 +248,12 @@ PIO_NCINT_open(const char *path, int mode, int basepe, size_t *chunksizehintp,
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Add necessary structs to hold netcdf-4 file data. */
-    if ((ret = nc4_nc4f_list_add(nc_file, path, mode)))
+    if ((ret = nc4_file_list_add(ncid, path, mode, NULL)))
         return ret;
 
     /* Open the file with PIO. Tell openfile_retry to accept the
      * externally assigned ncid. */
-    if ((ret = PIOc_openfile_retry(diosysid, &nc_file->ext_ncid, &iotype,
-                                   path, mode, 0, 1)))
+    if ((ret = PIOc_openfile_retry(diosysid, &ncid, &iotype, path, mode, 0, 1)))
         return ret;
 
     return NC_NOERR;
@@ -325,20 +328,14 @@ PIO_NCINT_abort(int ncid)
 int
 PIO_NCINT_close(int ncid, void *v)
 {
-    NC_FILE_INFO_T *h5;
     int retval;
 
     /* Tell PIO to close the file. */
     if ((retval = PIOc_closefile(ncid)))
         return retval;
 
-    /* Find our metadata for this file. */
-    if ((retval = nc4_find_grp_h5(ncid, NULL, &h5)))
-        return retval;
-    assert(h5);
-
     /* Delete the group name. */
-    if ((retval = nc4_nc4f_list_del(h5)))
+    if ((retval = nc4_file_list_del(ncid)))
         return retval;
 
     return retval;
@@ -398,16 +395,16 @@ PIO_NCINT_inq_format(int ncid, int *formatp)
 int
 PIO_NCINT_inq_format_extended(int ncid, int *formatp, int *modep)
 {
-    NC *nc;
+    int my_mode;
     int retval;
 
-    LOG((2, "%s: ncid 0x%x", __func__, ncid));
+    PLOG((2, "%s: ncid 0x%x", __func__, ncid));
 
-    if ((retval = nc4_find_nc_grp_h5(ncid, &nc, NULL, NULL)))
+    if ((retval = nc4_file_list_get(ncid, NULL, &my_mode, NULL)))
         return NC_EBADID;
 
     if (modep)
-        *modep = nc->mode|NC_UDF0;
+        *modep = my_mode|NC_UDF0;
 
     if (formatp)
         *formatp = NC_FORMATX_UDF0;
@@ -903,10 +900,48 @@ PIO_NCINT_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  *
  * @return ::NC_NOERR No error.
  * @return ::NC_EBADID Bad ncid.
- * @author Ed Hartnett, Dennis Heimbigner
+ * @author Ed Hartnett
  */
 int
 PIO_NCINT_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
 {
     return PIOc_inq_unlimdims(ncid, nunlimdimsp, unlimdimidsp);
+}
+
+/**
+ * @internal Does nothing.
+ *
+ * @param i Ignored
+ *
+ * @return ::NC_NOERR No error.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_show_metadata(int i)
+{
+    return NC_NOERR;
+}
+
+/**
+ * @internal Determine if two types are equal.
+ *
+ * @param ncid1 First file/group ID.
+ * @param typeid1 First type ID.
+ * @param ncid2 Second file/group ID.
+ * @param typeid2 Second type ID.
+ * @param equalp Pointer that will get 1 if the two types are equal.
+ *
+ * @return ::NC_NOERR No error.
+ * @return ::NC_EBADID Bad ncid.
+ * @return ::NC_EBADTYPE Type not found.
+ * @return ::NC_EINVAL Invalid type.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
+                         nc_type typeid2, int *equalp)
+{
+    if (equalp)
+        *equalp = typeid1 == typeid2 ? 1 : 0;
+    return NC_NOERR;
 }
