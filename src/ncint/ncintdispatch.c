@@ -133,14 +133,17 @@ PIO_NCINT_initialize(void)
 {
     int ret;
 
-    NCINT_dispatch_table = &NCINT_dispatcher;
+    if (!ncint_initialized)
+    {
+        NCINT_dispatch_table = &NCINT_dispatcher;
 
-    PLOG((1, "Adding user-defined format for netCDF PIO integration"));
+        PLOG((1, "Adding user-defined format for netCDF PIO integration"));
 
-    /* Add our user defined format. */
-    if ((ret = nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)))
-        return ret;
-    ncint_initialized++;
+        /* Add our user defined format. */
+        if ((ret = nc_def_user_format(NC_UDF0, &NCINT_dispatcher, NULL)))
+            return ret;
+        ncint_initialized++;
+    }
 
     return NC_NOERR;
 }

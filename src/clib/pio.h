@@ -1250,6 +1250,11 @@ extern "C" {
     int nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                          int *iosysidp);
 
+    int nc_def_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
+                     int component_count, int *num_procs_per_comp, int **proc_list,
+                     MPI_Comm *io_comm, MPI_Comm *comp_comm, int rearranger,
+                     int *iosysidp);
+
     /* Set the default IOsystem ID. */
     int nc_set_iosystem(int iosysid);
 
