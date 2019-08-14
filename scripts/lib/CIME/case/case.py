@@ -484,7 +484,7 @@ class Case(object):
 
         # Fill in compset name
         self._compsetname, self._components = self.valid_compset(self._compsetname, files)
-        # if this is a valiid compset longname there will be at least 7 components.
+        # if this is a valid compset longname there will be at least 7 components and at least one is not stub
         components = self.get_compset_components()
         expect(len(components) > 6, "No compset alias {} found and this does not appear to be a compset longname.".format(compset_name))
 
@@ -678,6 +678,7 @@ class Case(object):
                "compset is not set")
         # the first element is always the date operator - skip it
         elements = compset.split('_')[1:] # pylint: disable=maybe-no-member
+        allstubs = True
         for element in elements:
             # ignore the possible BGC or TEST modifier
             if element.startswith("BGC%") or element.startswith("TEST"):
@@ -687,6 +688,9 @@ class Case(object):
                 if "ww" not in element_component and "fv3" not in element_component:
                     element_component = re.sub(r'[0-9]*',"",element_component)
                 components.append(element_component)
+                if not element_component.startswith('s'):
+                    allstubs = False
+        expect(not allstubs, "Invalid compset name, all stub components generated")
         return components
 
 
