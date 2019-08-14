@@ -439,7 +439,7 @@ class Case(object):
             if result is not None:
                 del self.lookups[key]
 
-    def _set_compset(self, compset_name, files, driver="mct"):
+    def _set_compset(self, compset_name, files, driver="mct", test=False):
         """
         Loop through all the compset files and find the compset
         specifation file that matches either the input 'compset_name'.
@@ -485,7 +485,7 @@ class Case(object):
         # Fill in compset name
         self._compsetname, self._components = self.valid_compset(self._compsetname, files)
         # if this is a valid compset longname there will be at least 7 components and at least one is not stub
-        components = self.get_compset_components()
+        components = self.get_compset_components(test=test)
         expect(len(components) > 6, "No compset alias {} found and this does not appear to be a compset longname.".format(compset_name))
 
         return compset_alias, science_support
@@ -668,7 +668,7 @@ class Case(object):
         self.set_lookup_value("USER_MODS_DIR"  , user_mods_dir)
 
 
-    def get_compset_components(self):
+    def get_compset_components(self, test=False):
         #If are doing a create_clone then, self._compsetname is not set yet
         components = []
         compset = self.get_value("COMPSET")
@@ -690,7 +690,8 @@ class Case(object):
                 components.append(element_component)
                 if not element_component.startswith('s'):
                     allstubs = False
-        expect(not allstubs, "Invalid compset name, all stub components generated")
+
+        expect(test or not allstubs, "Invalid compset name, all stub components generated {}".format(test))
         return components
 
 
@@ -898,9 +899,9 @@ class Case(object):
         #--------------------------------------------
         # find and/or fill out compset name
         #--------------------------------------------
-        compset_alias, science_support = self._set_compset(compset_name, files, driver)
+        compset_alias, science_support = self._set_compset(compset_name, files, driver, test=test)
 
-        self._components = self.get_compset_components()
+        self._components = self.get_compset_components(test)
 
         #--------------------------------------------
         # grid
@@ -1190,7 +1191,7 @@ class Case(object):
                 logger.warning("FAILED to set up exefiles: {}".format(str(e)))
 
     def _create_caseroot_sourcemods(self):
-        components = self.get_compset_components()
+        components = self.get_compset_components(test=self.get_value("TEST"))
         components.extend(['share', 'drv'])
         readme_message = """Put source mods for the {component} library in this directory.
 

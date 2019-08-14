@@ -1549,7 +1549,7 @@ def find_system_test(testname, case):
         system_test_path =  "CIME.SystemTests.system_tests_common.{}".format(testname)
     else:
         components = ["any"]
-        components.extend( case.get_compset_components())
+        components.extend( case.get_compset_components(test=case.get_value("TEST")))
         fdir = []
         for component in components:
             tdir = case.get_value("SYSTEM_TESTS_DIR",
