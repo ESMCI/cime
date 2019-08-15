@@ -40,7 +40,7 @@ idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
     /* Easiest to start from the right and move left. */
     for (int i = ndims - 1; i >= 0; --i)
     {
-        int next_idx;
+        PIO_Offset next_idx;
 
         /* This way of doing div/mod is slightly faster than using "/"
          * and "%". */
