@@ -3,7 +3,7 @@
 
 
 # Initialize autoconf and automake.
-AC_INIT(pio, 2.4.4-development)
+AC_INIT(pio, 2.4.4)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
