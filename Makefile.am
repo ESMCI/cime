@@ -12,5 +12,4 @@ endif
 
 SUBDIRS = src tests examples ${DOC} scripts
 
-EXTRA_DIST = CMakeLists.txt set_flags.am COPYRIGHT
-
+EXTRA_DIST = CMakeLists.txt set_flags.am COPYRIGHT config.h.in
