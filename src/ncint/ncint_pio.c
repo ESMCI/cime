@@ -55,10 +55,10 @@ nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
  * numbers for each computation component. If NULL then the
  * computation components are assigned processors sequentially
  * starting with processor num_io_procs.
- * @param user_io_comm pointer to an MPI_Comm. If not NULL, it will
+ * @param io_comm pointer to an MPI_Comm. If not NULL, it will
  * get an MPI duplicate of the IO communicator. (It is a full
  * duplicate and later must be freed with MPI_Free() by the caller.)
- * @param user_comp_comm pointer to an array of pointers to MPI_Comm;
+ * @param comp_comm pointer to an array of pointers to MPI_Comm;
  * the array is of length component_count. If not NULL, it will get an
  * MPI duplicate of each computation communicator. (These are full
  * duplicates and each must later be freed with MPI_Free() by the
