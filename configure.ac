@@ -314,4 +314,5 @@ AC_OUTPUT(Makefile
           examples/Makefile
           examples/c/Makefile
           examples/f03/Makefile
+          cmake/Makefile
           scripts/Makefile)
