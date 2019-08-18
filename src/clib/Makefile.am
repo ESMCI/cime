@@ -25,4 +25,4 @@ pioc_support.c pio_darray_int.c pio_get_nc.c pio_lists.c pio_nc4.c	\
 pio_put_nc.c pio_spmd.c pio_get_vard.c pio_put_vard.c pio_internal.h	\
 bget.h uthash.h pio_error.h
 
-EXTRA_DIST = CMakeLists.txt
+EXTRA_DIST = CMakeLists.txt topology.c
