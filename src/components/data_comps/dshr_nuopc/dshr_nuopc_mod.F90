@@ -251,6 +251,7 @@ contains
     integer                :: n
     type(ESMF_Field)       :: field
     character(len=80)      :: stdname
+    character(len=5)       :: cvalue
     character(len=*),parameter  :: subname='(dshr_nuopc_mod:fld_list_realize)'
     ! ----------------------------------------------
 
@@ -272,12 +273,15 @@ contains
                      ungriddedLbound=(/fldlist(n)%ungridded_lbound/), &
                      ungriddedUbound=(/fldlist(n)%ungridded_ubound/), gridToFieldMap=(/gridToFieldMap/), rc=rc)
                 if (ChkErr(rc,__LINE__,u_FILE_u)) return
+                write(cvalue,'(I5)')fldlist(n)%ungridded_ubound
+                call ESMF_LogWrite(trim(subname)//trim(tag)//" Field = "//trim(stdname)//&
+                     " is connected using mesh with ungriddedubound = "//trim(cvalue), ESMF_LOGMSG_INFO)
              else
                 field = ESMF_FieldCreate(mesh, ESMF_TYPEKIND_R8, name=stdname, meshloc=ESMF_MESHLOC_ELEMENT, rc=rc)
                 if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, line=__LINE__, file=u_FILE_u)) return
+                call ESMF_LogWrite(trim(subname)//trim(tag)//" Field = "//trim(stdname)//&
+                     " is connected using mesh ", ESMF_LOGMSG_INFO)
              end if
-             call ESMF_LogWrite(trim(subname)//trim(tag)//" Field = "//trim(stdname)//" is connected using mesh", &
-                  ESMF_LOGMSG_INFO)
           endif
 
           ! NOW call NUOPC_Realize

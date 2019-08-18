@@ -66,7 +66,7 @@ int
 pio_stop_timer(const char *name)
 {
 #ifdef TIMING
-    GPTLstop("PIO:rearrange_comp2io");
+    GPTLstop(name);
 #endif /* TIMING */
     return PIO_NOERR;
 }
