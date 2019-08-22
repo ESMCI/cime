@@ -1923,6 +1923,22 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
 }
 
 /**
+ * Change the ncid of a file in the netCDF C library. This requires a
+ * knowledge of netCDF internals.
+ *
+ * @param ncidp Pointer to current ncid.
+ * @param pio_ncid The new ncid we want.
+ *
+ * @returns 0 for success, error code otherwise.
+ * @author Ed Hartnett
+ */
+int
+change_ncid(int *ncidp, int pio_ncid)
+{
+    return PIO_NOERR;
+}
+
+/**
  * Create a new file using pio. This is an internal function that is
  * called by both PIOc_create() and PIOc_createfile(). Input
  * parameters are read on comp task 0 and ignored elsewhere.
@@ -2087,28 +2103,24 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         PLOG((3, "createfile bcast pio_next_ncid %d", pio_next_ncid));
     }
 
+    /* Assign the PIO ncid. */
+    file->pio_ncid = pio_next_ncid++;
+
     /* With the netCDF integration layer, the ncid is assigned for PIO
      * by the netCDF dispatch layer code. So it is passed in. In
      * normal PIO operation, the ncid is generated here. */
     if (use_ext_ncid)
     {
-        /* Use the ncid passed in from the netCDF dispatch code. */
-        file->pio_ncid = *ncidp;
-
-        /* To prevent PIO from reusing the same ncid, if someone
-         * starting mingling netcdf integration PIO and regular PIO
-         * code. */
-        pio_next_ncid = file->pio_ncid + 1;
+        /* The ncid was assigned on the computational
+         * processors. Change the ncid to one that I/O and
+         * computational components can agree on. */
+        if ((ierr = change_ncid(*ncidp, file->pio_ncid)))
+            return pio_err(NULL, file, ierr, __FILE__, __LINE__);
     }
-    else
-    {
-        /* Assign the PIO ncid. */
-        file->pio_ncid = pio_next_ncid++;
-        PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
+    PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
 
-        /* Return the ncid to the caller. */
-        *ncidp = file->pio_ncid;
-    }
+    /* Return the ncid to the caller. */
+    *ncidp = file->pio_ncid;
 
     /* Add the struct with this files info to the global list of
      * open files. */
