@@ -39,8 +39,6 @@ NC_Dispatch NCINT_dispatcher = {
     PIO_NCINT_abort,
     PIO_NCINT_close,
     PIO_NCINT_set_fill,
-    NC_NOTNC3_inq_base_pe,
-    NC_NOTNC3_set_base_pe,
     PIO_NCINT_inq_format,
     PIO_NCINT_inq_format_extended,
 

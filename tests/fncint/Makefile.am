@@ -23,10 +23,10 @@ check_PROGRAMS = ftst_pio ftst_pio_orig tst_c_pio
 ftst_pio_SOURCES = ftst_pio.f90
 ftst_pio_orig_SOURCES = ftst_pio_orig.f90
 
-if RUN_TESTS
-# Tests will run from a bash script.
-TESTS = run_tests.sh
-endif # RUN_TESTS
+# if RUN_TESTS
+# # Tests will run from a bash script.
+# TESTS = run_tests.sh
+# endif # RUN_TESTS
 
 # Distribute the test script.
 EXTRA_DIST = run_tests.sh

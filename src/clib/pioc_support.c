@@ -39,6 +39,8 @@ extern int pio_next_ncid;
 /** The default error handler used when iosystem cannot be located. */
 extern int default_error_handler;
 
+int nc4_file_change_ncid(int ncid, unsigned short new_ncid_index);
+
 /**
  * Start the PIO timer.
  *
@@ -2114,7 +2116,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         /* The ncid was assigned on the computational
          * processors. Change the ncid to one that I/O and
          * computational components can agree on. */
-        if ((ierr = change_ncid(*ncidp, file->pio_ncid)))
+        if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
     }
     PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
