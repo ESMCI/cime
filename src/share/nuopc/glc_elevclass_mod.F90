@@ -399,7 +399,7 @@ contains
     integer , intent(in)  :: nec              ! number of elevation classes 
     real(r8), intent(in)  :: glc_topo(:)      ! topographic height
     real(r8), intent(in)  :: glc_icefrac(:)
-    real(r8), intent(in)  :: logunit
+    integer , intent(in)  :: logunit
     real(r8), intent(out) :: glc_icefrac_ec(:,:)
     !
     ! local variables
