@@ -2003,6 +2003,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_CREATE_FILE;
+            char ncidp_present = ncidp ? 1 : 0;
             size_t len = strlen(filename);
             char ncidp_present = ncidp ? 1 : 0;
 
@@ -2024,8 +2025,12 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                 mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncidp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d ncidp_present %d",
-                  len, filename, file->iotype, mode, use_ext_ncid, ncidp_present));
+            if (ncidp_present)
+                if (!mpierr)
+                    mpierr = MPI_Bcast(ncidp, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d "
+                  "ncidp_present %d", len, filename, file->iotype, mode,
+                  use_ext_ncid, ncidp_present));
         }
 
         /* Handle MPI errors. */
