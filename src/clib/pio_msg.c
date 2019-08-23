@@ -205,7 +205,8 @@ int create_file_handler(iosystem_desc_t *ios)
           use_ext_ncid, ncidp_present, ncid));
 
     /* Call the create file function. */
-    PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode);
+    PIOc_createfile_int(ios->iosysid, &ncid, &iotype, filename, mode,
+                        use_ext_ncid);
 
     PLOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;
