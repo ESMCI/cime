@@ -168,10 +168,12 @@ int set_fill_handler(iosystem_desc_t *ios)
  */
 int create_file_handler(iosystem_desc_t *ios)
 {
-    int ncid;
     int len;
     int iotype;
     int mode;
+    int use_ext_ncid;
+    char ncidp_present;
+    int *ncidp = NULL;
     int mpierr;
 
     PLOG((1, "create_file_handler comproot = %d", ios->comproot));
@@ -191,12 +193,17 @@ int create_file_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-    PLOG((1, "create_file_handler got parameters len = %d filename = %s iotype = %d mode = %d",
-          len, filename, iotype, mode));
+    if ((mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&ncidp_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((1, "create_file_handler len %d filename %s iotype %d mode %d "
+          "use_ext_ncid %d ncidp_present %d", len, filename, iotype, mode,
+          use_ext_ncid, ncidp_present));
 
     /* Call the create file function. */
-    PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode);
-
+    PIOc_createfile_int(ios->iosysid, ncidp, &iotype, filename, mode,
+                        use_ext_ncid);
 
     PLOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;

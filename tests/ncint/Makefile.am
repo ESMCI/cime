@@ -13,10 +13,10 @@ check_PROGRAMS = tst_pio_udf tst_pio_async
 tst_pio_udf_SOURCES = tst_pio_udf.c pio_err_macros.h
 tst_pio_async_SOURCES = tst_pio_async.c pio_err_macros.h
 
-# if RUN_TESTS
-# # Tests will run from a bash script.
-# TESTS = run_tests.sh
-# endif # RUN_TESTS
+if RUN_TESTS
+# Tests will run from a bash script.
+TESTS = run_tests.sh
+endif # RUN_TESTS
 
 # Distribute the test script.
 EXTRA_DIST = run_tests.sh

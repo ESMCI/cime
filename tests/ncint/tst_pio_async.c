@@ -63,23 +63,23 @@ main(int argc, char **argv)
         if (my_rank)
         {
             /* Create a file with a 3D record var. */
-            /* if (nc_create(FILE_NAME, NC_UDF0, &ncid)) PERR; */
+            if (nc_create(FILE_NAME, NC_UDF0, &ncid)) PERR;
             /* if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) PERR; */
             /* if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR; */
             /* if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR; */
             /* if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR; */
 
             /* Calculate a decomposition for distributed arrays. */
-            elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
-            if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
-                PERR;
-            for (i = 0; i < elements_per_pe; i++)
-                compdof[i] = my_rank * elements_per_pe + i;
+            /* elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks; */
+            /* if (!(compdof = malloc(elements_per_pe * sizeof(size_t)))) */
+            /*     PERR; */
+            /* for (i = 0; i < elements_per_pe; i++) */
+            /*     compdof[i] = my_rank * elements_per_pe + i; */
 
-            /* Create the PIO decomposition for this test. */
-            if (nc_def_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe,
-                              compdof, &ioid, 1, NULL, NULL)) PERR;
-            free(compdof);
+            /* /\* Create the PIO decomposition for this test. *\/ */
+            /* if (nc_def_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe, */
+            /*                   compdof, &ioid, 1, NULL, NULL)) PERR; */
+            /* free(compdof); */
 
             /* /\* Create some data on this processor. *\/ */
             /* if (!(my_data = malloc(elements_per_pe * sizeof(int)))) PERR; */
@@ -88,7 +88,8 @@ main(int argc, char **argv)
 
             /* /\* Write some data with distributed arrays. *\/ */
             /* if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR; */
-            /* if (nc_close(ncid)) PERR; */
+            if (nc_enddef(ncid)) PERR;
+            if (nc_close(ncid)) PERR;
 
             /* /\* Check that our user-defined format has been added. *\/ */
             /* if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) PERR; */
@@ -111,7 +112,7 @@ main(int argc, char **argv)
             /* /\* Free resources. *\/ */
             /* free(data_in); */
             /* free(my_data); */
-            if (nc_free_decomp(ioid)) PERR;
+            /* if (nc_free_decomp(ioid)) PERR; */
             if (nc_free_iosystem(iosysid)) PERR;
         }
     }
