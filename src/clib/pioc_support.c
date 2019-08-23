@@ -2014,8 +2014,10 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                 mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
-            PLOG((2, "len = %d filename = %s iotype = %d mode = %d", len, filename,
-                  file->iotype, mode));
+            if (!mpierr)
+                mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d",
+                  len, filename, file->iotype, mode, use_ext_ncid));
         }
 
         /* Handle MPI errors. */
