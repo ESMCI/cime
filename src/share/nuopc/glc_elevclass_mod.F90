@@ -545,6 +545,9 @@ contains
 
     ! note that glc_elevclass gives the elevation class of each glc
     ! grid cell, assuming that the grid cell is ice-covered.
+    ! glc_elevclass for a given glc gridcell spans [0 -> nec]
+    ! the first and undistributed dimension of glc_icefrac_ec spans [1 -> nec+1]
+
     do ec = 0, nec
        do glc_pt = 1,npts
           if (ec == 0) then
