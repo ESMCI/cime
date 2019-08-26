@@ -268,7 +268,7 @@ contains
              if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, line=__LINE__, file=u_FILE_u)) return
           else
              ! Create the field
-             if (fldlist(n)%ungridded_lbound > 0 .and. fldlist(n)%ungridded_ubound > 0) then
+             if (fldlist(n)%ungridded_lbound >= 0 .and. fldlist(n)%ungridded_ubound > 0) then
                 field = ESMF_FieldCreate(mesh, ESMF_TYPEKIND_R8, name=stdname, meshloc=ESMF_MESHLOC_ELEMENT, &
                      ungriddedLbound=(/fldlist(n)%ungridded_lbound/), &
                      ungriddedUbound=(/fldlist(n)%ungridded_ubound/), gridToFieldMap=(/gridToFieldMap/), rc=rc)
