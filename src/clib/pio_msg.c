@@ -28,10 +28,6 @@ extern int pio_log_level;
 extern int event_num[2][NUM_EVENTS];
 #endif /* USE_MPE */
 
-/* Prototypes from nc4internal.h. */
-int nc4_file_list_add(int ncid, const char *path, int mode,
-                      void **dispatchdata);
-
 /**
  * This function is run on the IO tasks to handle nc_inq_type*()
  * functions.
