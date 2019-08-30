@@ -28,6 +28,10 @@ extern int pio_log_level;
 extern int event_num[2][NUM_EVENTS];
 #endif /* USE_MPE */
 
+/* Prototypes from nc4internal.h. */
+int nc4_file_list_add(int ncid, const char *path, int mode,
+                      void **dispatchdata);
+
 /**
  * This function is run on the IO tasks to handle nc_inq_type*()
  * functions.
@@ -168,20 +172,14 @@ int set_fill_handler(iosystem_desc_t *ios)
  */
 int create_file_handler(iosystem_desc_t *ios)
 {
-<<<<<<< HEAD
-=======
     int ncid = 0;
->>>>>>> master
     int len;
     int iotype;
     int mode;
     int use_ext_ncid;
     char ncidp_present;
-<<<<<<< HEAD
-    int *ncidp = NULL;
-=======
->>>>>>> master
     int mpierr;
+    int ret;
 
     PLOG((1, "create_file_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -212,8 +210,17 @@ int create_file_handler(iosystem_desc_t *ios)
           use_ext_ncid, ncidp_present, ncid));
 
     /* Call the create file function. */
-    PIOc_createfile_int(ios->iosysid, &ncid, &iotype, filename, mode,
-                        use_ext_ncid);
+    if (use_ext_ncid)
+    {
+        PLOG((2, "about to call nc_create()"));
+        nc_create(filename, mode|NC_UDF0, &ncid);
+    }
+    else
+    {
+        PLOG((2, "about to call PIOc_createfile_int()"));
+        PIOc_createfile_int(ios->iosysid, &ncid, &iotype, filename, mode,
+                            use_ext_ncid);
+    }
 
     PLOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;

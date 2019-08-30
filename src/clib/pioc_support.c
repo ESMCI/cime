@@ -1935,8 +1935,12 @@ PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * @param iosysid A defined pio system ID, obtained from
  * PIOc_Init_Intracomm() or PIOc_InitAsync().
  * @param ncidp A pointer that gets the ncid of the newly created
- * file. For NetCDF integration, this contains the ncid assigned by
- * the netCDF layer, which is used instead of a PIO-generated ncid.
+ * file. This is the PIO ncid. Within PIO, the file will have a
+ * different ID, the file->fh. When netCDF integration is used, the
+ * PIO ncid is also stored in the netcdf-c internal file list, and the
+ * PIO code is called by the netcdf-c dispatch code. In this case,
+ * there are two ncids for the file, the PIO ncid, and the file->fh
+ * ncid.
  * @param iotype A pointer to a pio output format. Must be one of
  * PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF, PIO_IOTYPE_NETCDF4C, or
  * PIO_IOTYPE_NETCDF4P.
@@ -2003,7 +2007,6 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_CREATE_FILE;
-            char ncidp_present = ncidp ? 1 : 0;
             size_t len = strlen(filename);
             char ncidp_present = ncidp ? 1 : 0;
 
@@ -2073,6 +2076,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
             break;
 #endif
         }
+        PLOG((3, "create call complete file->fh %d", file->fh));
     }
 
     /* Broadcast and check the return code. */
@@ -2117,6 +2121,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
         file->pio_ncid = file->pio_ncid << ID_SHIFT;
+        PLOG((2, "changed ncid to file->pio_ncid = %d", file->pio_ncid));
     }
     PLOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
 

@@ -19,8 +19,12 @@ extern int event_num[2][NUM_EVENTS];
 #endif /* USE_MPE */
 
 #ifdef NETCDF_INTEGRATION
-/* Have we initialized? */
+/* Have we initialized the netcdf integration code? */
 extern int ncint_initialized;
+
+/* This is used as the default iosysid for the netcdf integration
+ * code. */
+extern int diosysid;
 #endif /* NETCDF_INTEGRATION */
 
 /**
@@ -1736,6 +1740,16 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         /* Add this id to the list of PIO iosystem ids. */
         iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
         PLOG((2, "new iosys ID added to iosystem_list iosysidp[%d] = %d", cmp, iosysidp[cmp]));
+
+#ifdef NETCDF_INTEGRATION
+        if (in_io || in_cmp)
+        {
+            /* Remember the io system id. */
+            diosysid = iosysidp[cmp];
+            PLOG((3, "diosysid = %d", iosysidp[cmp]));
+        }
+#endif /* NETCDF_INTEGRATION */
+
     } /* next computational component */
 
     /* Now call the function from which the IO tasks will not return
