@@ -208,8 +208,10 @@ int create_file_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if (use_ext_ncid)
     {
+#ifdef NETCDF_INTEGRATION
         PLOG((2, "about to call nc_create()"));
         nc_create(filename, mode|NC_UDF0, &ncid);
+#endif /* NETCDF_INTEGRATION */
     }
     else
     {
