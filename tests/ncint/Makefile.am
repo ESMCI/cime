@@ -18,11 +18,6 @@ if RUN_TESTS
 TESTS = run_tests.sh
 endif # RUN_TESTS
 
-# if RUN_TESTS
-# # Tests will run from a bash script.
-# TESTS = run_tests.sh
-# endif # RUN_TESTS
-
 # Distribute the test script.
 EXTRA_DIST = run_tests.sh
 

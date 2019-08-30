@@ -175,6 +175,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int use_ext_ncid;
     char ncidp_present;
     int mpierr;
+    int ret;
 
     PLOG((1, "create_file_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -205,8 +206,19 @@ int create_file_handler(iosystem_desc_t *ios)
           use_ext_ncid, ncidp_present, ncid));
 
     /* Call the create file function. */
-    PIOc_createfile_int(ios->iosysid, &ncid, &iotype, filename, mode,
-                        use_ext_ncid);
+    if (use_ext_ncid)
+    {
+#ifdef NETCDF_INTEGRATION
+        PLOG((2, "about to call nc_create()"));
+        nc_create(filename, mode|NC_UDF0, &ncid);
+#endif /* NETCDF_INTEGRATION */
+    }
+    else
+    {
+        PLOG((2, "about to call PIOc_createfile_int()"));
+        PIOc_createfile_int(ios->iosysid, &ncid, &iotype, filename, mode,
+                            use_ext_ncid);
+    }
 
     PLOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;
