@@ -93,8 +93,8 @@ main(int argc, char **argv)
             if (nc_enddef(ncid)) PERR;
             if (nc_close(ncid)) PERR;
 
-            /* /\* Open the file. *\/ */
-            /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR; */
+            /* Open the file. */
+            if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR;
 
             /* /\* Read distributed arrays. *\/ */
             /* if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR; */
@@ -105,7 +105,7 @@ main(int argc, char **argv)
             /*     if (data_in[i] != my_data[i]) PERR; */
 
             /* Close file. */
-            /* if (nc_close(ncid)) PERR; */
+            if (nc_close(ncid)) PERR;
 
             /* /\* Free resources. *\/ */
             /* free(data_in); */
