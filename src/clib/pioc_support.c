@@ -42,6 +42,8 @@ extern int pio_next_ncid;
 /** The default error handler used when iosystem cannot be located. */
 extern int default_error_handler;
 
+/** This prototype from netCDF is required for netCDF integration to
+ * work. */
 int nc4_file_change_ncid(int ncid, unsigned short new_ncid_index);
 
 /**
