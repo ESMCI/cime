@@ -70,6 +70,7 @@ main(int argc, char **argv)
             if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
             if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
             if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR;
+            if (nc_enddef(ncid)) PERR;
 
             /* Calculate a decomposition for distributed arrays. */
             elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
@@ -90,22 +91,29 @@ main(int argc, char **argv)
 
             /* Write some data with distributed arrays. */
             if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR;
-            if (nc_enddef(ncid)) PERR;
             if (nc_close(ncid)) PERR;
 
-            /* Open the file. */
-            if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR;
+            {
+                int ndims, nvars, ngatts, unlimdimid;
 
-            /* Read distributed arrays. */
-            if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
-            /* if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR; */
+                /* Open the file. */
+                if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR;
 
-            /* Check results. */
-            /* for (i = 0; i < elements_per_pe; i++) */
-            /*     if (data_in[i] != my_data[i]) PERR; */
+                /* Check the file. */
+                if (nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)) PERR;
+                if (ndims != 3 || nvars != 1 || ngatts != 0 || unlimdimid != 0) PERR;
 
-            /* Close file. */
-            if (nc_close(ncid)) PERR;
+                /* Read distributed arrays. */
+                if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
+                /* if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR; */
+
+                /* Check results. */
+                /* for (i = 0; i < elements_per_pe; i++) */
+                /*     if (data_in[i] != my_data[i]) PERR; */
+
+                /* Close file. */
+                if (nc_close(ncid)) PERR;
+            }
 
             /* Free resources. */
             free(data_in);
