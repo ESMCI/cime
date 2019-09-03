@@ -46,7 +46,7 @@ main(int argc, char **argv)
         int iosysid;
         size_t elements_per_pe;
         size_t *compdof; /* The decomposition mapping. */
-        /* int *my_data; */
+        int *my_data;
         /* int *data_in; */
         int num_procs2[COMPONENT_COUNT] = {3};
         int num_io_procs = 1;
@@ -72,30 +72,26 @@ main(int argc, char **argv)
             /* if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR; */
 
             /* Calculate a decomposition for distributed arrays. */
-            /* elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks; */
-            /* if (!(compdof = malloc(elements_per_pe * sizeof(size_t)))) */
-            /*     PERR; */
-            /* for (i = 0; i < elements_per_pe; i++) */
-            /*     compdof[i] = my_rank * elements_per_pe + i; */
+            elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
+            if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
+                PERR;
+            for (i = 0; i < elements_per_pe; i++)
+                compdof[i] = my_rank * elements_per_pe + i;
 
-            /* /\* Create the PIO decomposition for this test. *\/ */
-            /* if (nc_def_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe, */
-            /*                   compdof, &ioid, 1, NULL, NULL)) PERR; */
-            /* free(compdof); */
+            /* Create the PIO decomposition for this test. */
+            if (nc_def_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe,
+                              compdof, &ioid, 1, NULL, NULL)) PERR;
+            free(compdof);
 
-            /* /\* Create some data on this processor. *\/ */
-            /* if (!(my_data = malloc(elements_per_pe * sizeof(int)))) PERR; */
-            /* for (i = 0; i < elements_per_pe; i++) */
-            /*     my_data[i] = my_rank * 10 + i; */
+            /* Create some data on this processor. */
+            if (!(my_data = malloc(elements_per_pe * sizeof(int)))) PERR;
+            for (i = 0; i < elements_per_pe; i++)
+                my_data[i] = my_rank * 10 + i;
 
             /* /\* Write some data with distributed arrays. *\/ */
             /* if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR; */
             if (nc_enddef(ncid)) PERR;
             if (nc_close(ncid)) PERR;
-
-            /* /\* Check that our user-defined format has been added. *\/ */
-            /* if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) PERR; */
-            /* if (disp_in != &NCINT_dispatcher) PERR; */
 
             /* /\* Open the file. *\/ */
             /* if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR; */
@@ -113,8 +109,8 @@ main(int argc, char **argv)
 
             /* /\* Free resources. *\/ */
             /* free(data_in); */
-            /* free(my_data); */
-            /* if (nc_free_decomp(ioid)) PERR; */
+            free(my_data);
+            if (nc_free_decomp(ioid)) PERR;
             if (nc_free_iosystem(iosysid)) PERR;
         }
     }
