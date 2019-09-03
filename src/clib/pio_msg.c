@@ -1999,8 +1999,18 @@ int open_file_handler(iosystem_desc_t *ios)
 
     /* Call the open file function. Errors are handled within
      * function, so return code can be ignored. */
-    PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0,
-                        use_ext_ncid);
+    if (use_ext_ncid)
+    {
+#ifdef NETCDF_INTEGRATION
+        PLOG((2, "about to call nc_create()"));
+        nc_open(filename, mode|NC_UDF0, &ncid);
+#endif /* NETCDF_INTEGRATION */
+    }
+    else
+    {
+        PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0,
+                            use_ext_ncid);
+    }
 
     return PIO_NOERR;
 }
