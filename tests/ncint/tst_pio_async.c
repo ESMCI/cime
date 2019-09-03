@@ -97,8 +97,10 @@ main(int argc, char **argv)
                 int ndims, nvars, ngatts, unlimdimid;
                 nc_type xtype_in;
                 char var_name_in[NC_MAX_NAME + 1];
+                char dim_name_in[NC_MAX_NAME + 1];
                 int natts_in;
                 int dimids_in[NDIM3];
+                size_t dim_len_in;
 
                 /* Open the file. */
                 if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR;
@@ -112,6 +114,12 @@ main(int argc, char **argv)
                 if (strcmp(var_name_in, VAR_NAME) || xtype_in != NC_INT || ndims != NDIM3
                     || dimids_in[0] != 0 || dimids_in[1] != 1 || dimids_in[2] != 2 ||
                     natts_in != 0) PERR;
+                if (nc_inq_dim(ncid, 0, dim_name_in, &dim_len_in)) PERR;
+                if (strcmp(dim_name_in, DIM_NAME_UNLIMITED) || dim_len_in != 1) PERR;
+                if (nc_inq_dim(ncid, 1, dim_name_in, &dim_len_in)) PERR;
+                if (strcmp(dim_name_in, DIM_NAME_X) || dim_len_in != DIM_LEN_X) PERR;
+                if (nc_inq_dim(ncid, 2, dim_name_in, &dim_len_in)) PERR;
+                if (strcmp(dim_name_in, DIM_NAME_Y) || dim_len_in != DIM_LEN_Y) PERR;
 
                 /* Read distributed arrays. */
                 if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
