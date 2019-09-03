@@ -123,7 +123,7 @@ main(int argc, char **argv)
 
                 /* Read distributed arrays. */
                 if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
-                /* if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR; */
+                if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR;
 
                 /* Check results. */
                 /* for (i = 0; i < elements_per_pe; i++) */
