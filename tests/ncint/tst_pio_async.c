@@ -41,13 +41,13 @@ main(int argc, char **argv)
         printf("*** testing simple async use of netCDF integration layer...");
     {
         int ncid, ioid;
-        /* int dimid[NDIM3], varid; */
+        int dimid[NDIM3], varid;
         int dimlen[NDIM3] = {NC_UNLIMITED, DIM_LEN_X, DIM_LEN_Y};
         int iosysid;
         size_t elements_per_pe;
         size_t *compdof; /* The decomposition mapping. */
         int *my_data;
-        /* int *data_in; */
+        int *data_in;
         int num_procs2[COMPONENT_COUNT] = {3};
         int num_io_procs = 1;
         int i;
@@ -66,10 +66,10 @@ main(int argc, char **argv)
         {
             /* Create a file with a 3D record var. */
             if (nc_create(FILE_NAME, NC_UDF0|NC_NETCDF4, &ncid)) PERR;
-            /* if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) PERR; */
-            /* if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR; */
-            /* if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR; */
-            /* if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR; */
+            if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) PERR;
+            if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
+            if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
+            if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR;
 
             /* Calculate a decomposition for distributed arrays. */
             elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
@@ -88,8 +88,8 @@ main(int argc, char **argv)
             for (i = 0; i < elements_per_pe; i++)
                 my_data[i] = my_rank * 10 + i;
 
-            /* /\* Write some data with distributed arrays. *\/ */
-            /* if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR; */
+            /* Write some data with distributed arrays. */
+            if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR;
             if (nc_enddef(ncid)) PERR;
             if (nc_close(ncid)) PERR;
 
