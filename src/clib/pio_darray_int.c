@@ -1714,6 +1714,7 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 #endif /* TIMING */
 
+    PLOG((2, "pio_read_darray_nc_serial complete ierr %d", ierr));
     return PIO_NOERR;
 }
 
