@@ -65,6 +65,10 @@ int main(int argc, char **argv)
 
     PIOc_set_log_level(4);
 
+    /* Change error handling so we can test inval parameters. */
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
+
     /* Set up IO system. Task 0 will do IO, tasks 1-3 will be a single
      * computational unit. Task 0 will stay in this function until the
      * computational component calls PIOc_finalize(). */
@@ -82,6 +86,7 @@ int main(int argc, char **argv)
         int gdimlen[NDIM1] = {DIM_LEN_1};
         PIO_Offset compmap[MAPLEN];
         int varid;
+        int data;
         int ioid;
 
         /* Create a file. */
@@ -93,6 +98,8 @@ int main(int argc, char **argv)
             ERR(ret);
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM2, dimid, &varid)))
             ERR(ret);
+        if ((ret = PIOc_def_var_fill(ncid, varid, PIO_NOFILL, NULL)))
+            ERR(ret);
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
@@ -103,11 +110,19 @@ int main(int argc, char **argv)
         if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, gdimlen, MAPLEN,
                                     compmap, &ioid, PIO_REARR_BOX, NULL, NULL)))
             ERR(ret);
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+
+        /* Write a record of data. */
+        if ((ret = PIOc_setframe(ncid, 0, 0)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, 0, ioid, MAPLEN, &data, NULL)))
             ERR(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Free the decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
             ERR(ret);
 
         /* Shut down the IO system. */
