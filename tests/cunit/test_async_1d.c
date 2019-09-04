@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     /* Make sure we have 4 tasks. */
     if (ntasks != TARGET_NTASKS) ERR(ERR_WRONG);
 
-    PIOc_set_log_level(4);
+    /* PIOc_set_log_level(4); */
 
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))

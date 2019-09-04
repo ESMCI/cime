@@ -85,6 +85,10 @@ nc_def_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if ((ret = PIO_NCINT_initialize()))
         return ret;
 
+    /* Change error handling so we can test inval parameters. */
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
+
     /* Call the PIOc_ function to initialize the intracomm. */
     if ((ret = PIOc_init_async(world, num_io_procs, io_proc_list,
                                component_count, num_procs_per_comp, proc_list,

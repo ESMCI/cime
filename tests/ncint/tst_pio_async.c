@@ -53,9 +53,9 @@ main(int argc, char **argv)
         int i;
 
         /* Turn on logging for PIO library. */
-        PIOc_set_log_level(4);
-        if (!my_rank)
-            nc_set_log_level(3);
+        /* PIOc_set_log_level(4); */
+        /* if (!my_rank) */
+        /*     nc_set_log_level(3); */
 
         /* Initialize the intracomm. The IO task will not return from
          * this call until the PIOc_finalize() is called by the
