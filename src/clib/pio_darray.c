@@ -903,6 +903,9 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     pio_start_mpe_log(DARRAY_READ);
 #endif /* USE_MPE */
 
+    PLOG((1, "PIOc_read_darray ncid %d varid %d ioid %d arraylen %ld ",
+          ncid, varid, ioid, arraylen));
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -942,12 +945,15 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
         return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
 
+    /* If the map is not monotonically increasing we will need to sort
+     * it. */
+    PLOG((3, "iodesc->needssort %d", iodesc->needssort));
     if (iodesc->needssort)
     {
-        if (!(tmparray = malloc(iodesc->piotype_size*iodesc->maplen)))
+        if (!(tmparray = malloc(iodesc->piotype_size * iodesc->maplen)))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-        for(int m=0; m<iodesc->maplen;m++)
-            ((int *) array)[m] = -1;
+        for (int m = 0; m < iodesc->maplen; m++)
+            ((int *)array)[m] = -1;
     }
     else
         tmparray = array;
@@ -956,6 +962,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     if ((ierr = rearrange_io2comp(ios, iodesc, iobuf, tmparray)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
+    /* If we need to sort the map, do it. */
     if (iodesc->needssort)
     {
         pio_sorted_copy(tmparray, array, iodesc, 1, 1);
@@ -969,6 +976,8 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
 #ifdef USE_MPE
     pio_stop_mpe_log(DARRAY_READ, __func__);
 #endif /* USE_MPE */
+
+    PLOG((2, "done with PIOc_read_darray()"));
 
     return PIO_NOERR;
 }

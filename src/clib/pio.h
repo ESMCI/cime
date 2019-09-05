@@ -311,7 +311,8 @@ typedef struct io_desc_t
      * everywhere (false) */
     bool needsfill;
 
-    /** If the map is not monotonically increasing we will need to sort it. */
+    /** If the map is not monotonically increasing we will need to
+     * sort it. */
     bool needssort;
 
     /** The maximum number of bytes of this iodesc before flushing. */

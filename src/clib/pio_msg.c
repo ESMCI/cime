@@ -1970,6 +1970,7 @@ int open_file_handler(iosystem_desc_t *ios)
     int len;
     int iotype;
     int mode;
+    int use_ext_ncid;
     int mpierr;
 
     PLOG((1, "open_file_handler comproot = %d", ios->comproot));
@@ -1990,13 +1991,26 @@ int open_file_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    PLOG((2, "open_file_handler got parameters len = %d filename = %s iotype = %d mode = %d",
-          len, filename, iotype, mode));
+    PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d",
+          len, filename, iotype, mode, use_ext_ncid));
 
     /* Call the open file function. Errors are handled within
      * function, so return code can be ignored. */
-    PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0, 0);
+    if (use_ext_ncid)
+    {
+#ifdef NETCDF_INTEGRATION
+        PLOG((2, "about to call nc_create()"));
+        nc_open(filename, mode|NC_UDF0, &ncid);
+#endif /* NETCDF_INTEGRATION */
+    }
+    else
+    {
+        PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0,
+                            use_ext_ncid);
+    }
 
     return PIO_NOERR;
 }

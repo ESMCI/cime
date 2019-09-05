@@ -2573,6 +2573,8 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                 mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -2750,7 +2752,19 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
     /* With the netCDF integration layer, the ncid is assigned for PIO
      * by the netCDF dispatch layer code. So it is passed in. In
      * normal PIO operation, the ncid is generated here. */
-    if (!use_ext_ncid)
+#ifdef NETCDF_INTEGRATION
+    if (use_ext_ncid)
+    {
+        /* The ncid was assigned on the computational
+         * processors. Change the ncid to one that I/O and
+         * computational components can agree on. */
+        if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
+            return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+        file->pio_ncid = file->pio_ncid << ID_SHIFT;
+        PLOG((2, "changed ncid to file->pio_ncid = %d", file->pio_ncid));
+    }
+    else
+#endif /* NETCDF_INTEGRATION */
     {
         /* Create the ncid that the user will see. This is necessary
          * because otherwise ncids will be reused if files are opened
@@ -2759,16 +2773,6 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
 
         /* Return the PIO ncid to the user. */
         *ncidp = file->pio_ncid;
-    }
-    else
-    {
-        /* Use the ncid passed in from the netCDF dispatch code. */
-        file->pio_ncid = *ncidp;
-
-        /* To prevent PIO from reusing the same ncid, if someone
-         * starting mingling netcdf integration PIO and regular PIO
-         * code. */
-        pio_next_ncid = file->pio_ncid + 1;
     }
 
     /* Add this file to the list of currently open files. */
