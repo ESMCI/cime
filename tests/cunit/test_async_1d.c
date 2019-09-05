@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     /* Make sure we have 4 tasks. */
     if (ntasks != TARGET_NTASKS) ERR(ERR_WRONG);
 
-    /* PIOc_set_log_level(4); */
+    PIOc_set_log_level(4);
 
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         int gdimlen[NDIM1] = {DIM_LEN_1};
         PIO_Offset compmap[MAPLEN];
         int varid;
-        int data;
+        int data, data_in;
         int ioid;
 
         /* Create a file. */
@@ -112,9 +112,24 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Write a record of data. */
+        data = my_rank;
         if ((ret = PIOc_setframe(ncid, 0, 0)))
             ERR(ret);
         if ((ret = PIOc_write_darray(ncid, 0, ioid, MAPLEN, &data, NULL)))
+            ERR(ret);
+
+        /* Close the file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Reopen the file and check. */
+        if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, FILE_NAME, 0)))
+            ERR(ret);
+
+        /* Read the data. */
+        if ((ret = PIOc_setframe(ncid, 0, 0)))
+            ERR(ret);
+        if ((ret = PIOc_read_darray(ncid, 0, ioid, MAPLEN, &data_in)))
             ERR(ret);
 
         /* Close the file. */
