@@ -1137,19 +1137,19 @@ write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *v
 }
 
 /**
- * Read an array of data from a file to the (parallel) IO library.
+ * Read an array of data from a file using distributed arrays.
  *
  * @param file a pointer to the open file descriptor for the file
- * that will be written to
- * @param iodesc a pointer to the defined iodescriptor for the buffer
- * @param vid the variable id to be read
+ * that will be read from.
+ * @param iodesc a pointer to the defined iodescriptor for the buffer.
+ * @param vid the variable id to be read.
  * @param iobuf the buffer to be read into from this mpi task. May be
- * null. for example we have 8 ionodes and a distributed array with
+ * null. (For example we have 8 ionodes and a distributed array with
  * global size 4, then at least 4 nodes will have a null iobuf. In
- * practice the box rearranger trys to have at least blocksize bytes
+ * practice the box rearranger tries to have at least blocksize bytes
  * on each io task and so if the total number of bytes to write is
  * less than blocksize*numiotasks then some iotasks will have a NULL
- * iobuf.
+ * iobuf.)
  * @return 0 on success, error code otherwise.
  * @ingroup PIO_read_darray_c
  * @author Jim Edwards, Ed Hartnett

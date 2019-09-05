@@ -450,7 +450,7 @@ define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
     int ret; /* Return value. */
 
     pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
-    PLOG((1, "define_iodesc_datatypes ios->ioproc = %d iodesc->rtype is %sNULL, "
+    PLOG((3, "define_iodesc_datatypes ios->ioproc = %d iodesc->rtype is %sNULL, "
           "iodesc->nrecvs %d", ios->ioproc, iodesc->rtype ? "not " : "",
           iodesc->nrecvs));
 

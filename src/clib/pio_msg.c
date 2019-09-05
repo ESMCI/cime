@@ -2259,8 +2259,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
 }
 
 /**
- * This function is run on the IO tasks to...
- * NOTE: not yet implemented
+ * This function is run on the IO tasks to read distributed arrays.
  *
  * @param ios pointer to the iosystem_desc_t data.
  *
@@ -2269,9 +2268,33 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
  * @internal
  * @author Ed Hartnett
  */
-int readdarray_handler(iosystem_desc_t *ios)
+int read_darray_handler(iosystem_desc_t *ios)
 {
+    int ncid;
+    int varid;
+    int ioid;
+    int arraylen;
+    void *data;
+
+    PLOG((1, "read_darray_handler called"));
     assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&ioid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((2, "ncid %d varid %d ioid %d arraylen %d" ncid, varid,
+          ioid, arraylen));
+
+    PIOc_read_darray(ncid, varid, ioid, arraylen, data);
+
+    PLOG((1, "read_darray_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -2736,7 +2759,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             ret = advanceframe_handler(my_iosys);
             break;
         case PIO_MSG_READDARRAY:
-            ret = readdarray_handler(my_iosys);
+            ret = read_darray_handler(my_iosys);
             break;
         case PIO_MSG_SETERRORHANDLING:
             ret = seterrorhandling_handler(my_iosys);
