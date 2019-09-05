@@ -42,6 +42,7 @@
 /* Run async tests. */
 int main(int argc, char **argv)
 {
+#ifdef USE_NETCDF4
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
@@ -146,6 +147,7 @@ int main(int argc, char **argv)
     }
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
+#endif /* USE_NETCDF4 */
 
     return 0;
 }
