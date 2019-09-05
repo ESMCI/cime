@@ -175,7 +175,6 @@ int create_file_handler(iosystem_desc_t *ios)
     int use_ext_ncid;
     char ncidp_present;
     int mpierr;
-    int ret;
 
     PLOG((1, "create_file_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -2274,7 +2273,8 @@ int read_darray_handler(iosystem_desc_t *ios)
     int varid;
     int ioid;
     int arraylen;
-    void *data;
+    void *data = NULL;
+    int mpierr;
 
     PLOG((1, "read_darray_handler called"));
     assert(ios);
@@ -2289,7 +2289,7 @@ int read_darray_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-    PLOG((2, "ncid %d varid %d ioid %d arraylen %d" ncid, varid,
+    PLOG((2, "ncid %d varid %d ioid %d arraylen %d", ncid, varid,
           ioid, arraylen));
 
     PIOc_read_darray(ncid, varid, ioid, arraylen, data);

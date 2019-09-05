@@ -899,8 +899,9 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     void *iobuf = NULL;    /* holds the data as read on the io node. */
     size_t rlen = 0;       /* the length of data in iobuf. */
-    int ierr;              /* Return code. */
     void *tmparray;        /* unsorted copy of array buf if required */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
+    int ierr;              /* Return code. */
 
 #ifdef USE_MPE
     pio_start_mpe_log(DARRAY_READ);
@@ -935,7 +936,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
                 mpierr = MPI_Bcast(&ioid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
-            PLOG((2, "PIOc_read_darray ncid %d varid %d ioid %d arraylen %d"
+            PLOG((2, "PIOc_read_darray ncid %d varid %d ioid %d arraylen %d",
                   ncid, varid, ioid, arraylen));
         }
 
