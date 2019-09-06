@@ -709,7 +709,7 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
             return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Move to end of list or the entry that matches this ioid. */
-    hashid = ioid*10 + vdesc->rec_var;
+    hashid = ioid * 10 + vdesc->rec_var;
     HASH_FIND_INT( file->buffer, &hashid, wmb);
     if (wmb)
         PLOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
@@ -871,10 +871,11 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
 }
 
 /**
- * Read a field from a file to the IO library.
+ * Read a field from a file to the IO library using distributed
+ * arrays.
  *
- * @param ncid identifies the netCDF file
- * @param varid the variable ID to be read
+ * @param ncid identifies the netCDF file.
+ * @param varid the variable ID to be read.
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
  * @param arraylen this parameter is ignored. Nominally it is the
@@ -898,8 +899,9 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     void *iobuf = NULL;    /* holds the data as read on the io node. */
     size_t rlen = 0;       /* the length of data in iobuf. */
-    int ierr;              /* Return code. */
     void *tmparray;        /* unsorted copy of array buf if required */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
+    int ierr;              /* Return code. */
 
 #ifdef USE_MPE
     pio_start_mpe_log(DARRAY_READ);
@@ -912,6 +914,38 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* If async is in use, and this is not an IO task, bcast the
+     * parameters. */
+    if (ios->async)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_READDARRAY;
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            /* Send the function parameters and associated informaiton
+             * to the msg handler. */
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ioid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            PLOG((2, "PIOc_read_darray ncid %d varid %d ioid %d arraylen %d",
+                  ncid, varid, ioid, arraylen));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+    }
 
     /* Get the iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))

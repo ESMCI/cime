@@ -88,7 +88,7 @@ int main(int argc, char **argv)
         PIO_Offset compmap[MAPLEN];
         int varid;
         int data;
-        /* int data_in; */
+        int data_in;
         int ioid;
 
         /* Create a file. */
@@ -131,8 +131,9 @@ int main(int argc, char **argv)
         /* Read the data. */
         if ((ret = PIOc_setframe(ncid, 0, 0)))
             ERR(ret);
-        /* if ((ret = PIOc_read_darray(ncid, 0, ioid, MAPLEN, &data_in))) */
-        /*     ERR(ret); */
+        if ((ret = PIOc_read_darray(ncid, 0, ioid, MAPLEN, &data_in)))
+            ERR(ret);
+        if (data_in != data) ERR(ERR_WRONG);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))

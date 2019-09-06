@@ -963,10 +963,10 @@ PIOc_freedecomp(int iosysid, int ioid)
         }
 
         /* Handle MPI errors. */
-        PLOG((3, "handline error mpierr %d ios->comproot %d", mpierr, ios->comproot));
+        PLOG((3, "handling mpierr %d ios->comproot %d", mpierr, ios->comproot));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(NULL, NULL, mpierr2, __FILE__, __LINE__);
-        PLOG((3, "handline error mpierr2 %d", mpierr2));
+        PLOG((3, "handling mpierr2 %d", mpierr2));
         if (mpierr)
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
     }
