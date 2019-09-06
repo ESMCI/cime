@@ -99,52 +99,6 @@ main(int argc, char **argv)
             if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR;
             if (nc_close(ncid)) PERR;
 
-            /* Reopen the file using normal PIO calls. */
-            {
-                int ndims, nvars, ngatts, unlimdimid;
-                int ioid2;
-                PIO_Offset *compdof2; /* The decomposition mapping. */
-                nc_type xtype_in;
-                char var_name_in[NC_MAX_NAME + 1];
-                char dim_name_in[NC_MAX_NAME + 1];
-                int natts_in;
-                int dimids_in[NDIM3];
-                int iotype = PIO_IOTYPE_NETCDF4C;
-                size_t dim_len_in;
-
-                /* Open the file. */
-                if (PIOc_openfile(iosysid, &ncid, &iotype, FILE_NAME, 0)) PERR;
-
-                /* Set up decomposition. */
-                if (!(compdof2 = malloc(elements_per_pe * sizeof(size_t))))
-                    PERR;
-                for (i = 0; i < elements_per_pe; i++)
-                {
-                    compdof2[i] = (my_rank - num_io_procs) * elements_per_pe + i;
-                    /* printf("my_rank %d compdof2[%d]=%lld\n", my_rank, i, compdof2[i]); */
-                }
-
-                if (PIOc_init_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe, compdof2,
-                                     &ioid2, 1, NULL, NULL)) PERR;
-                free(compdof2);
-
-                /* Read distributed arrays. */
-                if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
-                if (PIOc_setframe(ncid, 0, 0)) PERR;
-                /* if (PIOc_read_darray(ncid, 0, ioid, elements_per_pe, data_in)) PERR; */
-
-                /* Check results. */
-                /* for (i = 0; i < elements_per_pe; i++) */
-                /*     if (data_in[i] != my_data[i]) PERR; */
-
-                /* Close file. */
-                if (PIOc_closefile(ncid)) PERR;
-
-                /* Free resources. */
-                free(data_in);
-                if (PIOc_freedecomp(iosysid, ioid2)) PERR;
-            }
-
             /* Reopen the file using netCDF integration. */
             {
                 int ndims, nvars, ngatts, unlimdimid;
@@ -176,11 +130,11 @@ main(int argc, char **argv)
 
                 /* Read distributed arrays. */
                 if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
-                /* if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR; */
+                if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR;
 
                 /* Check results. */
-                /* for (i = 0; i < elements_per_pe; i++) */
-                /*     if (data_in[i] != my_data[i]) PERR; */
+                for (i = 0; i < elements_per_pe; i++)
+                    if (data_in[i] != my_data[i]) PERR;
 
                 /* Close file. */
                 if (nc_close(ncid)) PERR;
