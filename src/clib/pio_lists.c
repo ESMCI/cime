@@ -303,13 +303,15 @@ pio_delete_iodesc_from_list(int ioid)
  * @param pio_type_size size of the PIO type in bytes
  * @param mpi_type the MPI type.
  * @param mpi_type_size size of the MPI type in bytes.
+ * @param ndims the number of dims for this var.
  * @param varlist pointer to list to add to.
  * @returns 0 for success, error code otherwise.
  * @author Ed Hartnett
  */
 int
 add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size,
-               MPI_Datatype mpi_type, int mpi_type_size, var_desc_t **varlist)
+               MPI_Datatype mpi_type, int mpi_type_size, int ndims,
+               var_desc_t **varlist)
 {
     var_desc_t *var_desc;
 
@@ -327,6 +329,7 @@ add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size,
     var_desc->pio_type_size = pio_type_size;
     var_desc->mpi_type = mpi_type;
     var_desc->mpi_type_size = mpi_type_size;
+    var_desc->ndims = ndims;
     var_desc->record = -1;
 
     HASH_ADD_INT(*varlist, varid, var_desc);

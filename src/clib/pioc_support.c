@@ -2810,8 +2810,9 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
 
     /* Add info about the variables to the file_desc_t struct. */
     for (int v = 0; v < nvars; v++)
-        if ((ierr = add_to_varlist(v, rec_var[v], pio_type[v], pio_type_size[v], mpi_type[v],
-                                   mpi_type_size[v], &file->varlist)))
+        if ((ierr = add_to_varlist(v, rec_var[v], pio_type[v], pio_type_size[v],
+                                   mpi_type[v], mpi_type_size[v], ndim[v],
+                                   &file->varlist)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     file->nvars = nvars;
 
