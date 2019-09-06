@@ -61,7 +61,7 @@ main(int argc, char **argv)
         int i;
 
         /* Turn on logging for PIO library. */
-        PIOc_set_log_level(3);
+        /* PIOc_set_log_level(3); */
 
         /* Initialize the intracomm. */
         if (nc_def_iosystemm(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) PERR;

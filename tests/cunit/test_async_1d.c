@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     /* Make sure we have 4 tasks. */
     if (ntasks != TARGET_NTASKS) ERR(ERR_WRONG);
 
-    PIOc_set_log_level(4);
+    /* PIOc_set_log_level(4); */
 
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -87,7 +87,8 @@ int main(int argc, char **argv)
         int gdimlen[NDIM1] = {DIM_LEN_1};
         PIO_Offset compmap[MAPLEN];
         int varid;
-        int data, data_in;
+        int data;
+        /* int data_in; */
         int ioid;
 
         /* Create a file. */

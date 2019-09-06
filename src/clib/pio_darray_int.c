@@ -1189,8 +1189,10 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
     ndims = iodesc->ndims;
 
     /* Get the number of dims for this var in the file. */
-    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);
+    /* if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims))) */
+    /*     return pio_err(ios, file, ierr, __FILE__, __LINE__); */
+    fndims = vdesc->ndims;
+    PLOG((3, "fndims %d vdesc->ndims %d", fndims, vdesc->ndims));
 #if USE_VARD_READ
     if(!ios->async || !ios->ioproc)
         ierr = get_gdim0(file, iodesc, vid, fndims, &gdim0);
@@ -1461,15 +1463,17 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     ndims = iodesc->ndims;
 
     /* Get number of dims for this var. */
-    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);
+    fndims = vdesc->ndims;
+    /* if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims))) */
+    /*     return pio_err(ios, file, ierr, __FILE__, __LINE__); */
 
     /* If setframe was not called, use a default value of 0. This is
      * required for backward compatibility. */
     if (fndims == ndims + 1 && vdesc->record < 0)
         vdesc->record = 0;
-    PLOG((3, "fndims %d ndims %d vdesc->record %d", fndims, ndims,
-          vdesc->record));
+    PLOG((3, "fndims %d ndims %d vdesc->record %d vdesc->ndims %d", fndims,
+          ndims, vdesc->record, vdesc->ndims));
+    /* pioassert(fndims == vdesc->ndims, "bad ndims", __FILE__, __LINE__); */
 
     /* Confirm that we are being called with the correct ndims. */
     pioassert((fndims == ndims && vdesc->record < 0) ||

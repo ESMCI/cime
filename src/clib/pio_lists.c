@@ -318,6 +318,10 @@ add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size,
     /* Check inputs. */
     pioassert(varid >= 0 && varlist, "invalid input", __FILE__, __LINE__);
 
+    PLOG((4, "add_to_varlist varid %d rec_var %d pio_type %d pio_type_size %d "
+          "mpi_type %d mpi_type_size %d ndims %d", varid, rec_var, pio_type,
+          pio_type_size, mpi_type, mpi_type_size, ndims));
+
     /* Allocate storage. */
     if (!(var_desc = calloc(1, sizeof(var_desc_t))))
         return PIO_ENOMEM;
