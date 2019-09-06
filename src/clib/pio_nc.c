@@ -2109,7 +2109,7 @@ PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
 }
 
 /**
- * The PIO-C interface for the NetCDF function nc_def_var.
+ * The PIO-C interface for the NetCDF function nc_def_var
  *
  * This routine is called collectively by all tasks in the communicator
  * ios.union_comm. For more information on the underlying NetCDF commmand
@@ -2302,7 +2302,7 @@ PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 
     /* Add to the list of var_desc_t structs for this file. */
     if ((ierr = add_to_varlist(varid, rec_var, xtype, (int)pio_type_size, mpi_type,
-                               mpi_type_size, &file->varlist)))
+                               mpi_type_size, ndims, &file->varlist)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     file->nvars++;
 

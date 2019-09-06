@@ -134,6 +134,9 @@ typedef struct var_desc_t
     /** Holds the fill value of this var. */
     void *fillvalue;
 
+    /** Number of dimensions for this var. */
+    int ndims;
+
     /** Non-zero if fill mode is turned on for this var. */
     int use_fill;
 
