@@ -2205,7 +2205,8 @@ check_unlim_use(int ncid)
 /**
  * Internal function used when opening an existing file. This function
  * is called by PIOc_openfile_retry(). It learns some things about the
- * metadata in that file. The results end up in the file_desc_t.
+ * metadata in that file. The results end up in the file_desc_t and
+ * var_desc_t structs for this file and the vars in it.
  *
  * @param file pointer to the file_desc_t for this file.
  * @param ncid the ncid assigned to the file when opened.
@@ -2230,8 +2231,9 @@ check_unlim_use(int ncid)
  * @author Ed Hartnett
  */
 int
-inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec_var,
-                  int **pio_type, int **pio_type_size, MPI_Datatype **mpi_type, int **mpi_type_size)
+inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
+                  int **rec_var, int **pio_type, int **pio_type_size,
+                  MPI_Datatype **mpi_type, int **mpi_type_size)
 {
     int nunlimdims = 0;        /* The number of unlimited dimensions. */
     int unlimdimid;
@@ -2239,6 +2241,11 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
     int mpierr;
     int ret;
 
+    /* Check inputs. */
+    pioassert(rec_var && pio_type && pio_type_size && mpi_type && mpi_type_size,
+              "pointers must be provided", __FILE__, __LINE__);
+
+    /* How many vars in the file? */
     if (iotype == PIO_IOTYPE_PNETCDF)
     {
 #ifdef _PNETCDF
@@ -2252,6 +2259,7 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
             return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
     }
 
+    /* Allocate storage for info about each var. */
     if (*nvars)
     {
         if (!(*rec_var = malloc(*nvars * sizeof(int))))
