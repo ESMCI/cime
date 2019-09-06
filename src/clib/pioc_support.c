@@ -2225,12 +2225,14 @@ check_unlim_use(int ncid)
  * @param mpi_type_size gets an array (length nvars) of the size of
  * the MPI type for each var in the file. This array must be freed by
  * caller.
+ * @param ndim gets an array (length nvars) with the number of
+ * dimensions of each var.
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile_c
  * @author Ed Hartnett
  */
-int
+static int
 inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
                   int **rec_var, int **pio_type, int **pio_type_size,
                   MPI_Datatype **mpi_type, int **mpi_type_size)
