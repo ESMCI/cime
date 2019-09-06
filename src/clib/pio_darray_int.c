@@ -1460,254 +1460,254 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     /* Get the number of dims in our decomposition. */
     ndims = iodesc->ndims;
 
-/*     /\* Get number of dims for this var. *\/ */
-/*     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims))) */
-/*         return pio_err(ios, file, ierr, __FILE__, __LINE__); */
+    /* Get number of dims for this var. */
+    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
-/*     /\* If setframe was not called, use a default value of 0. This is */
-/*      * required for backward compatibility. *\/ */
-/*     if (fndims == ndims + 1 && vdesc->record < 0) */
-/*         vdesc->record = 0; */
-/*     PLOG((3, "fndims %d ndims %d vdesc->record %d", fndims, ndims, */
-/*           vdesc->record)); */
+    /* If setframe was not called, use a default value of 0. This is
+     * required for backward compatibility. */
+    if (fndims == ndims + 1 && vdesc->record < 0)
+        vdesc->record = 0;
+    PLOG((3, "fndims %d ndims %d vdesc->record %d", fndims, ndims,
+          vdesc->record));
 
-/*     /\* Confirm that we are being called with the correct ndims. *\/ */
-/*     pioassert((fndims == ndims && vdesc->record < 0) || */
-/*               (fndims == ndims + 1 && vdesc->record >= 0), */
-/*               "unexpected record", __FILE__, __LINE__); */
+    /* Confirm that we are being called with the correct ndims. */
+    pioassert((fndims == ndims && vdesc->record < 0) ||
+              (fndims == ndims + 1 && vdesc->record >= 0),
+              "unexpected record", __FILE__, __LINE__);
 
-/*     if (ios->ioproc) */
-/*     { */
-/*         io_region *region; */
-/*         size_t start[fndims]; */
-/*         size_t count[fndims]; */
-/*         size_t tmp_start[fndims * iodesc->maxregions]; */
-/*         size_t tmp_count[fndims * iodesc->maxregions]; */
-/*         size_t tmp_bufsize; */
-/*         void *bufptr; */
+    if (ios->ioproc)
+    {
+        io_region *region;
+        size_t start[fndims];
+        size_t count[fndims];
+        size_t tmp_start[fndims * iodesc->maxregions];
+        size_t tmp_count[fndims * iodesc->maxregions];
+        size_t tmp_bufsize;
+        void *bufptr;
 
-/*         /\* buffer is incremented by byte and loffset is in terms of */
-/*            the iodessc->mpitype so we need to multiply by the size of */
-/*            the mpitype. *\/ */
-/*         region = iodesc->firstregion; */
+        /* buffer is incremented by byte and loffset is in terms of
+           the iodessc->mpitype so we need to multiply by the size of
+           the mpitype. */
+        region = iodesc->firstregion;
 
-/*         /\* If setframe was not set before this call, assume a value of */
-/*          * 0. This is required for backward compatibility. *\/ */
-/*         if (fndims > ndims) */
-/*             if (vdesc->record < 0) */
-/*                 vdesc->record = 0; */
+        /* If setframe was not set before this call, assume a value of
+         * 0. This is required for backward compatibility. */
+        if (fndims > ndims)
+            if (vdesc->record < 0)
+                vdesc->record = 0;
 
-/*         /\* Put together start/count arrays for all regions. *\/ */
-/*         for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++) */
-/*         { */
-/*             if (!region || iodesc->llen == 0) */
-/*             { */
-/*                 /\* Nothing to write for this region. *\/ */
-/*                 for (int i = 0; i < fndims; i++) */
-/*                 { */
-/*                     tmp_start[i + regioncnt * fndims] = 0; */
-/*                     tmp_count[i + regioncnt * fndims] = 0; */
-/*                 } */
-/*                 bufptr = NULL; */
-/*             } */
-/*             else */
-/*             { */
-/*                 if (vdesc->record >= 0 && fndims > 1) */
-/*                 { */
-/*                     /\* This is a record var. Find start for record dims. *\/ */
-/*                     tmp_start[regioncnt * fndims] = vdesc->record; */
+        /* Put together start/count arrays for all regions. */
+        for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
+        {
+            if (!region || iodesc->llen == 0)
+            {
+                /* Nothing to write for this region. */
+                for (int i = 0; i < fndims; i++)
+                {
+                    tmp_start[i + regioncnt * fndims] = 0;
+                    tmp_count[i + regioncnt * fndims] = 0;
+                }
+                bufptr = NULL;
+            }
+            else
+            {
+                if (vdesc->record >= 0 && fndims > 1)
+                {
+                    /* This is a record var. Find start for record dims. */
+                    tmp_start[regioncnt * fndims] = vdesc->record;
 
-/*                     /\* Find start/count for all non-record dims. *\/ */
-/*                     for (int i = 1; i < fndims; i++) */
-/*                     { */
-/*                         tmp_start[i + regioncnt * fndims] = region->start[i - 1]; */
-/*                         tmp_count[i + regioncnt * fndims] = region->count[i - 1]; */
-/*                     } */
+                    /* Find start/count for all non-record dims. */
+                    for (int i = 1; i < fndims; i++)
+                    {
+                        tmp_start[i + regioncnt * fndims] = region->start[i - 1];
+                        tmp_count[i + regioncnt * fndims] = region->count[i - 1];
+                    }
 
-/*                     /\* Set count for record dimension. *\/ */
-/*                     if (tmp_count[1 + regioncnt * fndims] > 0) */
-/*                         tmp_count[regioncnt * fndims] = 1; */
-/*                 } */
-/*                 else */
-/*                 { */
-/*                     /\* Non-time dependent array *\/ */
-/*                     for (int i = 0; i < fndims; i++) */
-/*                     { */
-/*                         tmp_start[i + regioncnt * fndims] = region->start[i]; */
-/*                         tmp_count[i + regioncnt * fndims] = region->count[i]; */
-/*                     } */
-/*                 } */
-/*             } */
+                    /* Set count for record dimension. */
+                    if (tmp_count[1 + regioncnt * fndims] > 0)
+                        tmp_count[regioncnt * fndims] = 1;
+                }
+                else
+                {
+                    /* Non-time dependent array */
+                    for (int i = 0; i < fndims; i++)
+                    {
+                        tmp_start[i + regioncnt * fndims] = region->start[i];
+                        tmp_count[i + regioncnt * fndims] = region->count[i];
+                    }
+                }
+            }
 
-/* #if PIO_ENABLE_LOGGING */
-/*             /\* Log arrays for debug purposes. *\/ */
-/*             PLOG((3, "region = %d", region)); */
-/*             for (int i = 0; i < fndims; i++) */
-/*                 PLOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + regioncnt * fndims, tmp_start[i + regioncnt * fndims], */
-/*                       i + regioncnt * fndims, tmp_count[i + regioncnt * fndims])); */
-/* #endif /\* PIO_ENABLE_LOGGING *\/ */
+#if PIO_ENABLE_LOGGING
+            /* Log arrays for debug purposes. */
+            PLOG((3, "region = %d", region));
+            for (int i = 0; i < fndims; i++)
+                PLOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + regioncnt * fndims, tmp_start[i + regioncnt * fndims],
+                      i + regioncnt * fndims, tmp_count[i + regioncnt * fndims]));
+#endif /* PIO_ENABLE_LOGGING */
 
-/*             /\* Move to next region. *\/ */
-/*             if (region) */
-/*                 region = region->next; */
-/*         } /\* next regioncnt *\/ */
+            /* Move to next region. */
+            if (region)
+                region = region->next;
+        } /* next regioncnt */
 
-/*         /\* IO tasks other than 0 send their starts/counts and data to */
-/*          * IO task 0. *\/ */
-/*         if (ios->io_rank > 0) */
-/*         { */
-/*             if ((mpierr = MPI_Send(&iodesc->llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm))) */
-/*                 return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*             PLOG((3, "sent iodesc->llen = %d", iodesc->llen)); */
+        /* IO tasks other than 0 send their starts/counts and data to
+         * IO task 0. */
+        if (ios->io_rank > 0)
+        {
+            if ((mpierr = MPI_Send(&iodesc->llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
+                return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+            PLOG((3, "sent iodesc->llen = %d", iodesc->llen));
 
-/*             if (iodesc->llen > 0) */
-/*             { */
-/*                 if ((mpierr = MPI_Send(&(iodesc->maxregions), 1, MPI_INT, 0, */
-/*                                        ios->num_iotasks + ios->io_rank, ios->io_comm))) */
-/*                     return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                 if ((mpierr = MPI_Send(tmp_count, iodesc->maxregions * fndims, MPI_OFFSET, 0, */
-/*                                        2 * ios->num_iotasks + ios->io_rank, ios->io_comm))) */
-/*                     return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                 if ((mpierr = MPI_Send(tmp_start, iodesc->maxregions * fndims, MPI_OFFSET, 0, */
-/*                                        3 * ios->num_iotasks + ios->io_rank, ios->io_comm))) */
-/*                     return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                 PLOG((3, "sent iodesc->maxregions = %d tmp_count and tmp_start arrays", iodesc->maxregions)); */
+            if (iodesc->llen > 0)
+            {
+                if ((mpierr = MPI_Send(&(iodesc->maxregions), 1, MPI_INT, 0,
+                                       ios->num_iotasks + ios->io_rank, ios->io_comm)))
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmp_count, iodesc->maxregions * fndims, MPI_OFFSET, 0,
+                                       2 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmp_start, iodesc->maxregions * fndims, MPI_OFFSET, 0,
+                                       3 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                PLOG((3, "sent iodesc->maxregions = %d tmp_count and tmp_start arrays", iodesc->maxregions));
 
-/*                 if ((mpierr = MPI_Recv(iobuf, iodesc->llen, iodesc->mpitype, 0, */
-/*                                        4 * ios->num_iotasks + ios->io_rank, ios->io_comm, &status))) */
-/*                     return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                 PLOG((3, "received %d elements of data", iodesc->llen)); */
-/*             } */
-/*         } */
-/*         else if (ios->io_rank == 0) */
-/*         { */
-/*             /\* This is IO task 0. Get starts/counts and data from */
-/*              * other IO tasks. *\/ */
-/*             int maxregions = 0; */
-/*             size_t loffset, regionsize; */
-/*             size_t this_start[fndims * iodesc->maxregions]; */
-/*             size_t this_count[fndims * iodesc->maxregions]; */
+                if ((mpierr = MPI_Recv(iobuf, iodesc->llen, iodesc->mpitype, 0,
+                                       4 * ios->num_iotasks + ios->io_rank, ios->io_comm, &status)))
+                    return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                PLOG((3, "received %d elements of data", iodesc->llen));
+            }
+        }
+        else if (ios->io_rank == 0)
+        {
+            /* This is IO task 0. Get starts/counts and data from
+             * other IO tasks. */
+            int maxregions = 0;
+            size_t loffset, regionsize;
+            size_t this_start[fndims * iodesc->maxregions];
+            size_t this_count[fndims * iodesc->maxregions];
 
-/*             for (int rtask = 1; rtask <= ios->num_iotasks; rtask++) */
-/*             { */
-/*                 if (rtask < ios->num_iotasks) */
-/*                 { */
-/*                     if ((mpierr = MPI_Recv(&tmp_bufsize, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status))) */
-/*                         return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                     PLOG((3, "received tmp_bufsize = %d", tmp_bufsize)); */
+            for (int rtask = 1; rtask <= ios->num_iotasks; rtask++)
+            {
+                if (rtask < ios->num_iotasks)
+                {
+                    if ((mpierr = MPI_Recv(&tmp_bufsize, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status)))
+                        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                    PLOG((3, "received tmp_bufsize = %d", tmp_bufsize));
 
-/*                     if (tmp_bufsize > 0) */
-/*                     { */
-/*                         if ((mpierr = MPI_Recv(&maxregions, 1, MPI_INT, rtask, ios->num_iotasks + rtask, */
-/*                                                ios->io_comm, &status))) */
-/*                             return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                         if ((mpierr = MPI_Recv(this_count, maxregions * fndims, MPI_OFFSET, rtask, */
-/*                                                2 * ios->num_iotasks + rtask, ios->io_comm, &status))) */
-/*                             return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                         if ((mpierr = MPI_Recv(this_start, maxregions * fndims, MPI_OFFSET, rtask, */
-/*                                                3 * ios->num_iotasks + rtask, ios->io_comm, &status))) */
-/*                             return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*                         PLOG((3, "received maxregions = %d this_count, this_start arrays ", maxregions)); */
-/*                     } */
-/*                 } */
-/*                 else */
-/*                 { */
-/*                     maxregions = iodesc->maxregions; */
-/*                     tmp_bufsize = iodesc->llen; */
-/*                 } */
-/*                 PLOG((3, "maxregions = %d tmp_bufsize = %d", maxregions, tmp_bufsize)); */
+                    if (tmp_bufsize > 0)
+                    {
+                        if ((mpierr = MPI_Recv(&maxregions, 1, MPI_INT, rtask, ios->num_iotasks + rtask,
+                                               ios->io_comm, &status)))
+                            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(this_count, maxregions * fndims, MPI_OFFSET, rtask,
+                                               2 * ios->num_iotasks + rtask, ios->io_comm, &status)))
+                            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(this_start, maxregions * fndims, MPI_OFFSET, rtask,
+                                               3 * ios->num_iotasks + rtask, ios->io_comm, &status)))
+                            return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+                        PLOG((3, "received maxregions = %d this_count, this_start arrays ", maxregions));
+                    }
+                }
+                else
+                {
+                    maxregions = iodesc->maxregions;
+                    tmp_bufsize = iodesc->llen;
+                }
+                PLOG((3, "maxregions = %d tmp_bufsize = %d", maxregions, tmp_bufsize));
 
-/*                 /\* Now get each region of data. *\/ */
-/*                 loffset = 0; */
-/*                 for (int regioncnt = 0; regioncnt < maxregions; regioncnt++) */
-/*                 { */
-/*                     /\* Get pointer where data should go. *\/ */
-/*                     bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * loffset); */
-/*                     regionsize = 1; */
+                /* Now get each region of data. */
+                loffset = 0;
+                for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
+                {
+                    /* Get pointer where data should go. */
+                    bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * loffset);
+                    regionsize = 1;
 
-/*                     /\* ??? *\/ */
-/*                     if (rtask < ios->num_iotasks) */
-/*                     { */
-/*                         for (int m = 0; m < fndims; m++) */
-/*                         { */
-/*                             start[m] = this_start[m + regioncnt * fndims]; */
-/*                             count[m] = this_count[m + regioncnt * fndims]; */
-/*                             regionsize *= count[m]; */
-/*                         } */
-/*                     } */
-/*                     else */
-/*                     { */
-/*                         for (int m = 0; m < fndims; m++) */
-/*                         { */
-/*                             start[m] = tmp_start[m + regioncnt * fndims]; */
-/*                             count[m] = tmp_count[m + regioncnt * fndims]; */
-/*                             regionsize *= count[m]; */
-/*                         } */
-/*                     } */
-/*                     loffset += regionsize; */
+                    /* ??? */
+                    if (rtask < ios->num_iotasks)
+                    {
+                        for (int m = 0; m < fndims; m++)
+                        {
+                            start[m] = this_start[m + regioncnt * fndims];
+                            count[m] = this_count[m + regioncnt * fndims];
+                            regionsize *= count[m];
+                        }
+                    }
+                    else
+                    {
+                        for (int m = 0; m < fndims; m++)
+                        {
+                            start[m] = tmp_start[m + regioncnt * fndims];
+                            count[m] = tmp_count[m + regioncnt * fndims];
+                            regionsize *= count[m];
+                        }
+                    }
+                    loffset += regionsize;
 
-/*                     /\* Read the data. *\/ */
-/*                     /\* ierr = nc_get_vara(file->fh, vid, start, count, bufptr); *\/ */
-/*                     switch (iodesc->piotype) */
-/*                     { */
-/*                     case PIO_BYTE: */
-/*                         ierr = nc_get_vara_schar(file->fh, vid, start, count, (signed char*)bufptr); */
-/*                         break; */
-/*                     case PIO_CHAR: */
-/*                         ierr = nc_get_vara_text(file->fh, vid, start, count, (char*)bufptr); */
-/*                         break; */
-/*                     case PIO_SHORT: */
-/*                         ierr = nc_get_vara_short(file->fh, vid, start, count, (short*)bufptr); */
-/*                         break; */
-/*                     case PIO_INT: */
-/*                         ierr = nc_get_vara_int(file->fh, vid, start, count, (int*)bufptr); */
-/*                         break; */
-/*                     case PIO_FLOAT: */
-/*                         ierr = nc_get_vara_float(file->fh, vid, start, count, (float*)bufptr); */
-/*                         break; */
-/*                     case PIO_DOUBLE: */
-/*                         ierr = nc_get_vara_double(file->fh, vid, start, count, (double*)bufptr); */
-/*                         break; */
-/* #ifdef _NETCDF4 */
-/*                     case PIO_UBYTE: */
-/*                         ierr = nc_get_vara_uchar(file->fh, vid, start, count, (unsigned char*)bufptr); */
-/*                         break; */
-/*                     case PIO_USHORT: */
-/*                         ierr = nc_get_vara_ushort(file->fh, vid, start, count, (unsigned short*)bufptr); */
-/*                         break; */
-/*                     case PIO_UINT: */
-/*                         ierr = nc_get_vara_uint(file->fh, vid, start, count, (unsigned int*)bufptr); */
-/*                         break; */
-/*                     case PIO_INT64: */
-/*                         ierr = nc_get_vara_longlong(file->fh, vid, start, count, (long long*)bufptr); */
-/*                         break; */
-/*                     case PIO_UINT64: */
-/*                         ierr = nc_get_vara_ulonglong(file->fh, vid, start, count, (unsigned long long*)bufptr); */
-/*                         break; */
-/*                     case PIO_STRING: */
-/*                         ierr = nc_get_vara_string(file->fh, vid, start, count, (char**)bufptr); */
-/*                         break; */
-/* #endif /\* _NETCDF4 *\/ */
-/*                     default: */
-/*                         return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__); */
-/*                     } */
+                    /* Read the data. */
+                    /* ierr = nc_get_vara(file->fh, vid, start, count, bufptr); */
+                    switch (iodesc->piotype)
+                    {
+                    case PIO_BYTE:
+                        ierr = nc_get_vara_schar(file->fh, vid, start, count, (signed char*)bufptr);
+                        break;
+                    case PIO_CHAR:
+                        ierr = nc_get_vara_text(file->fh, vid, start, count, (char*)bufptr);
+                        break;
+                    case PIO_SHORT:
+                        ierr = nc_get_vara_short(file->fh, vid, start, count, (short*)bufptr);
+                        break;
+                    case PIO_INT:
+                        ierr = nc_get_vara_int(file->fh, vid, start, count, (int*)bufptr);
+                        break;
+                    case PIO_FLOAT:
+                        ierr = nc_get_vara_float(file->fh, vid, start, count, (float*)bufptr);
+                        break;
+                    case PIO_DOUBLE:
+                        ierr = nc_get_vara_double(file->fh, vid, start, count, (double*)bufptr);
+                        break;
+#ifdef _NETCDF4
+                    case PIO_UBYTE:
+                        ierr = nc_get_vara_uchar(file->fh, vid, start, count, (unsigned char*)bufptr);
+                        break;
+                    case PIO_USHORT:
+                        ierr = nc_get_vara_ushort(file->fh, vid, start, count, (unsigned short*)bufptr);
+                        break;
+                    case PIO_UINT:
+                        ierr = nc_get_vara_uint(file->fh, vid, start, count, (unsigned int*)bufptr);
+                        break;
+                    case PIO_INT64:
+                        ierr = nc_get_vara_longlong(file->fh, vid, start, count, (long long*)bufptr);
+                        break;
+                    case PIO_UINT64:
+                        ierr = nc_get_vara_ulonglong(file->fh, vid, start, count, (unsigned long long*)bufptr);
+                        break;
+                    case PIO_STRING:
+                        ierr = nc_get_vara_string(file->fh, vid, start, count, (char**)bufptr);
+                        break;
+#endif /* _NETCDF4 */
+                    default:
+                        return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
+                    }
 
-/*                     /\* Check error code of netCDF call. *\/ */
-/*                     if (ierr) */
-/*                         return check_netcdf(file, ierr, __FILE__, __LINE__); */
-/*                 } */
+                    /* Check error code of netCDF call. */
+                    if (ierr)
+                        return check_netcdf(file, ierr, __FILE__, __LINE__);
+                }
 
-/*                 /\* The decomposition may not use all of the active io */
-/*                  * tasks. rtask here is the io task rank and */
-/*                  * ios->num_iotasks is the number of iotasks actually */
-/*                  * used in this decomposition. *\/ */
-/*                 if (rtask < ios->num_iotasks && tmp_bufsize > 0) */
-/*                     if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->mpitype, rtask, */
-/*                                            4 * ios->num_iotasks + rtask, ios->io_comm))) */
-/*                         return check_mpi(NULL, file, mpierr, __FILE__, __LINE__); */
-/*             } */
-/*         } */
-/*     } */
+                /* The decomposition may not use all of the active io
+                 * tasks. rtask here is the io task rank and
+                 * ios->num_iotasks is the number of iotasks actually
+                 * used in this decomposition. */
+                if (rtask < ios->num_iotasks && tmp_bufsize > 0)
+                    if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->mpitype, rtask,
+                                           4 * ios->num_iotasks + rtask, ios->io_comm)))
+                        return check_mpi(NULL, file, mpierr, __FILE__, __LINE__);
+            }
+        }
+    }
 
 #ifdef TIMING
     if ((ierr = pio_stop_timer("PIO:read_darray_nc_serial")))
