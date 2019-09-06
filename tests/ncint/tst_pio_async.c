@@ -76,13 +76,13 @@ main(int argc, char **argv)
 
             /* Calculate a decomposition for distributed arrays. */
             elements_per_pe = DIM_LEN_X * DIM_LEN_Y / (ntasks - num_io_procs);
-            printf("my_rank %d elements_per_pe %ld\n", my_rank, elements_per_pe);
+            /* printf("my_rank %d elements_per_pe %ld\n", my_rank, elements_per_pe); */
             if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
                 PERR;
             for (i = 0; i < elements_per_pe; i++)
             {
                 compdof[i] = (my_rank - num_io_procs) * elements_per_pe + i;
-                printf("my_rank %d compdof[%d]=%ld\n", my_rank, i, compdof[i]);
+                /* printf("my_rank %d compdof[%d]=%ld\n", my_rank, i, compdof[i]); */
             }
 
             /* Create the PIO decomposition for this test. */
@@ -121,7 +121,7 @@ main(int argc, char **argv)
                 for (i = 0; i < elements_per_pe; i++)
                 {
                     compdof2[i] = (my_rank - num_io_procs) * elements_per_pe + i;
-                    printf("my_rank %d compdof2[%d]=%lld\n", my_rank, i, compdof2[i]);
+                    /* printf("my_rank %d compdof2[%d]=%lld\n", my_rank, i, compdof2[i]); */
                 }
 
                 if (PIOc_init_decomp(iosysid, PIO_INT, NDIM2, &dimlen[1], elements_per_pe, compdof2,

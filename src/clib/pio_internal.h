@@ -182,7 +182,8 @@ extern "C" {
 
     /* List operations for var_desc_t list. */
     int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size,
-                       MPI_Datatype mpi_type, int mpi_type_size, var_desc_t **varlist);
+                       MPI_Datatype mpi_type, int mpi_type_size, int ndim,
+                       var_desc_t **varlist);
     int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc);
     int delete_var_desc(int varid, var_desc_t **varlist);
 
