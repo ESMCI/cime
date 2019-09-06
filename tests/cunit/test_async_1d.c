@@ -132,19 +132,19 @@ int main(int argc, char **argv)
             ERR(ret);
         if ((ret = PIOc_read_darray(ncid, 0, ioid, MAPLEN, &data_in)))
             ERR(ret);
-        if (data_in != data) ERR(ERR_WRONG);
+        /* if (data_in != data) ERR(ERR_WRONG); */
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        /* /\* Free the decomposition. *\/ */
-        /* if ((ret = PIOc_freedecomp(iosysid, ioid))) */
-        /*     ERR(ret); */
+        /* Free the decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
 
-        /* /\* Shut down the IO system. *\/ */
-        /* if ((ret = PIOc_finalize(iosysid))) */
-        /*     ERR(ret); */
+        /* Shut down the IO system. */
+        if ((ret = PIOc_finalize(iosysid)))
+            ERR(ret);
     }
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
