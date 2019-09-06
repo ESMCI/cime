@@ -67,7 +67,7 @@ main(int argc, char **argv)
         if (my_rank)
         {
             /* Create a file with a 3D record var. */
-            if (nc_create(FILE_NAME, NC_UDF0|NC_NETCDF4, &ncid)) PERR;
+            if (nc_create(FILE_NAME, NC_PIO|NC_NETCDF4, &ncid)) PERR;
             if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) PERR;
             if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
             if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
@@ -110,7 +110,7 @@ main(int argc, char **argv)
                 size_t dim_len_in;
 
                 /* Open the file. */
-                if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR;
+                if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
 
                 /* Check the file. */
                 if (nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)) PERR;

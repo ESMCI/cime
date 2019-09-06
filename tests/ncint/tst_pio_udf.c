@@ -67,7 +67,7 @@ main(int argc, char **argv)
         if (nc_def_iosystemm(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) PERR;
 
         /* Create a file with a 3D record var. */
-        if (nc_create(FILE_NAME, NC_UDF0, &ncid)) PERR;
+        if (nc_create(FILE_NAME, NC_PIO, &ncid)) PERR;
         if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) PERR;
         if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
         if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
@@ -95,11 +95,11 @@ main(int argc, char **argv)
         if (nc_close(ncid)) PERR;
 
         /* Check that our user-defined format has been added. */
-        if (nc_inq_user_format(NC_UDF0, &disp_in, NULL)) PERR;
+        if (nc_inq_user_format(NC_PIO, &disp_in, NULL)) PERR;
         if (disp_in != &NCINT_dispatcher) PERR;
 
         /* Open the file. */
-        if (nc_open(FILE_NAME, NC_UDF0, &ncid)) PERR;
+        if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
 
         /* Read distributed arrays. */
         if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
