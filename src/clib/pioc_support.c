@@ -2235,7 +2235,7 @@ check_unlim_use(int ncid)
 static int
 inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
                   int **rec_var, int **pio_type, int **pio_type_size,
-                  MPI_Datatype **mpi_type, int **mpi_type_size)
+                  MPI_Datatype **mpi_type, int **mpi_type_size, int **ndim)
 {
     int nunlimdims = 0;        /* The number of unlimited dimensions. */
     int unlimdimid;
@@ -2273,6 +2273,8 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
         if (!(*mpi_type = malloc(*nvars * sizeof(MPI_Datatype))))
             return PIO_ENOMEM;
         if (!(*mpi_type_size = malloc(*nvars * sizeof(int))))
+            return PIO_ENOMEM;
+        if (!(*ndim = malloc(*nvars * sizeof(int))))
             return PIO_ENOMEM;
     }
 
@@ -2526,6 +2528,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
     int *pio_type_size = NULL;
     MPI_Datatype *mpi_type = NULL;
     int *mpi_type_size = NULL;
+    int *ndim = NULL;
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int ierr = PIO_NOERR;      /* Return code from function calls. */
 
@@ -2614,7 +2617,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                 break;
 
             if ((ierr = inq_file_metadata(file, file->fh, PIO_IOTYPE_NETCDF4P, &nvars, &rec_var, &pio_type,
-                                          &pio_type_size, &mpi_type, &mpi_type_size)))
+                                          &pio_type_size, &mpi_type, &mpi_type_size, &ndim)))
                 break;
             PLOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
                   filename, mode, imode, ierr));
@@ -2630,7 +2633,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                 if ((ierr = check_unlim_use(file->fh)))
                     break;
                 ierr = inq_file_metadata(file, file->fh, PIO_IOTYPE_NETCDF4C, &nvars, &rec_var, &pio_type,
-                                         &pio_type_size, &mpi_type, &mpi_type_size);
+                                         &pio_type_size, &mpi_type, &mpi_type_size, &ndim);
             }
             break;
 #endif /* _NETCDF4 */
@@ -2641,7 +2644,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                 if ((ierr = nc_open(filename, mode, &file->fh)))
                     break;
                 ierr = inq_file_metadata(file, file->fh, PIO_IOTYPE_NETCDF, &nvars, &rec_var, &pio_type,
-                                         &pio_type_size, &mpi_type, &mpi_type_size);
+                                         &pio_type_size, &mpi_type, &mpi_type_size, &ndim);
             }
             break;
 
@@ -2660,7 +2663,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
 
             if (!ierr)
                 ierr = inq_file_metadata(file, file->fh, PIO_IOTYPE_PNETCDF, &nvars, &rec_var, &pio_type,
-                                         &pio_type_size, &mpi_type, &mpi_type_size);
+                                         &pio_type_size, &mpi_type, &mpi_type_size, &ndim);
             break;
 #endif
 
@@ -2691,7 +2694,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                     ierr = nc_open(filename, mode, &file->fh);
                     if (ierr == PIO_NOERR)
                         ierr = inq_file_metadata(file, file->fh, PIO_IOTYPE_NETCDF, &nvars, &rec_var, &pio_type,
-                                                 &pio_type_size, &mpi_type, &mpi_type_size);
+                                                 &pio_type_size, &mpi_type, &mpi_type_size, &ndim);
                 }
                 else
                     file->do_io = 0;
@@ -2808,6 +2811,8 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
             free(mpi_type);
         if (mpi_type_size)
             free(mpi_type_size);
+        if (ndim)
+            free(ndim);
     }
 
 #ifdef USE_MPE
