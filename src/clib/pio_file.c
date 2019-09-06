@@ -23,10 +23,12 @@
  */
 
 /* This is the next ncid that will be used when a file is opened or
-   created. We start at 16 so that it will be easy for us to notice
+   created. We start at 128 so that it will be easy for us to notice
    that it's not netcdf (starts at 4), pnetcdf (starts at 0) or
-   netCDF-4/HDF5 (starts at 65xxx). */
-int pio_next_ncid = 16;
+   netCDF-4/HDF5 (starts at 65xxx). Also, when used with netCDF
+   intgration, this will allow the user to have 127 normal netCDF
+   files open, as well as many PIO ones. */
+int pio_next_ncid = 128;
 
 #ifdef USE_MPE
 /* The event numbers for MPE logging. */
