@@ -2789,6 +2789,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
         /* The ncid was assigned on the computational
          * processors. Change the ncid to one that I/O and
          * computational components can agree on. */
+        file->pio_ncid = pio_next_ncid++;
         if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
         file->pio_ncid = file->pio_ncid << ID_SHIFT;
