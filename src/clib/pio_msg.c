@@ -174,7 +174,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int mode;
     int use_ext_ncid;
     char ncidp_present;
-    int iosysid;
+    int iosysid = 0;
     int mpierr;
 
     PLOG((1, "create_file_handler comproot = %d", ios->comproot));
@@ -201,8 +201,10 @@ int create_file_handler(iosystem_desc_t *ios)
     if (ncidp_present)
         if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
             return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+#ifdef NETCDF_INTEGRATION
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+#endif /* NETCDF_INTEGRATION */
     PLOG((1, "create_file_handler len %d filename %s iotype %d mode %d "
           "use_ext_ncid %d ncidp_present %d ncid %d iosysid %d", len,
           filename, iotype, mode, use_ext_ncid, ncidp_present, ncid,
@@ -1977,7 +1979,7 @@ int open_file_handler(iosystem_desc_t *ios)
     int iotype;
     int mode;
     int use_ext_ncid;
-    int iosysid;
+    int iosysid = 0;
     int mpierr;
 
     PLOG((1, "open_file_handler comproot = %d", ios->comproot));
@@ -2000,8 +2002,10 @@ int open_file_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+#ifdef NETCDF_INTEGRATION
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+#endif /* NETCDF_INTEGRATION */
 
     PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d iosysid %d",
           len, filename, iotype, mode, use_ext_ncid, iosysid));
