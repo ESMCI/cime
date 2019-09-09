@@ -2598,6 +2598,8 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                 mpierr = MPI_Bcast(&mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&diosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */

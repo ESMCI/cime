@@ -215,7 +215,7 @@ int create_file_handler(iosystem_desc_t *ios)
         /* Set the IO system ID. */
         nc_set_iosystem(iosysid);
 
-        PLOG((2, "about to call nc_create() have set iosysid to %d", iosysid));
+        PLOG((2, "about to call nc_create() having set iosysid to %d", iosysid));
         nc_create(filename, mode|NC_UDF0, &ncid);
 #endif /* NETCDF_INTEGRATION */
     }
@@ -1977,6 +1977,7 @@ int open_file_handler(iosystem_desc_t *ios)
     int iotype;
     int mode;
     int use_ext_ncid;
+    int iosysid;
     int mpierr;
 
     PLOG((1, "open_file_handler comproot = %d", ios->comproot));
@@ -1999,16 +2000,22 @@ int open_file_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d",
-          len, filename, iotype, mode, use_ext_ncid));
+    PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d iosysid %d",
+          len, filename, iotype, mode, use_ext_ncid, iosysid));
 
     /* Call the open file function. Errors are handled within
      * function, so return code can be ignored. */
     if (use_ext_ncid)
     {
 #ifdef NETCDF_INTEGRATION
-        PLOG((2, "about to call nc_create()"));
+        /* Set the IO system ID. */
+        nc_set_iosystem(iosysid);
+
+        PLOG((2, "about to call nc_create() having set iosysid to %d",
+              iosysid));
         nc_open(filename, mode|NC_UDF0, &ncid);
 #endif /* NETCDF_INTEGRATION */
     }
