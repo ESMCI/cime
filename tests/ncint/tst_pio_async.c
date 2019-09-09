@@ -1,5 +1,8 @@
 /* Test netcdf integration layer.
 
+   This is a very simple test of async mode in PIO, using the netCDF
+   integration layer.
+
    Ed Hartnett
 */
 

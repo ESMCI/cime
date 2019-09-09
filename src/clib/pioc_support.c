@@ -42,9 +42,15 @@ extern int pio_next_ncid;
 /** The default error handler used when iosystem cannot be located. */
 extern int default_error_handler;
 
+#ifdef NETCDF_INTEGRATION
+/* This is used as the default iosysid for the netcdf integration
+ * code. */
+extern int diosysid;
+
 /** This prototype from netCDF is required for netCDF integration to
  * work. */
 int nc4_file_change_ncid(int ncid, unsigned short new_ncid_index);
+#endif /* NETCDF_INTEGRATION */
 
 /**
  * Start the PIO timer.
@@ -2033,6 +2039,10 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
             if (ncidp_present)
                 if (!mpierr)
                     mpierr = MPI_Bcast(ncidp, 1, MPI_INT, ios->compmaster, ios->intercomm);
+#ifdef NETCDF_INTEGRATION
+            if (!mpierr)
+                mpierr = MPI_Bcast(&diosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+#endif /* NETCDF_INTEGRATION */
             PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d "
                   "ncidp_present %d", len, filename, file->iotype, mode,
                   use_ext_ncid, ncidp_present));
@@ -2590,6 +2600,10 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                 mpierr = MPI_Bcast(&mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&use_ext_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+#ifdef NETCDF_INTEGRATION
+            if (!mpierr)
+                mpierr = MPI_Bcast(&diosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+#endif /* NETCDF_INTEGRATION */
         }
 
         /* Handle MPI errors. */
@@ -2789,6 +2803,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
         /* The ncid was assigned on the computational
          * processors. Change the ncid to one that I/O and
          * computational components can agree on. */
+        file->pio_ncid = pio_next_ncid++;
         if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
         file->pio_ncid = file->pio_ncid << ID_SHIFT;
