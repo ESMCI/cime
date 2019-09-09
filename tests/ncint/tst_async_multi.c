@@ -1,8 +1,5 @@
 /* Test netcdf integration layer.
 
-   This is a very simple test of async mode in PIO, using the netCDF
-   integration layer.
-
    Ed Hartnett
 */
 
@@ -10,7 +7,7 @@
 #include <pio.h>
 #include "pio_err_macros.h"
 
-#define FILE_NAME "tst_pio_async.nc"
+#define FILE_NAME "tst_async_multi.nc"
 #define VAR_NAME "data_var"
 #define DIM_NAME_UNLIMITED "dim_unlimited"
 #define DIM_NAME_X "dim_x"

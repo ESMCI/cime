@@ -1,5 +1,8 @@
 /* Test netcdf integration layer.
 
+   This is a very simple test for PIO in intercomm mode, using the
+   netCDF integration layer.
+
    Ed Hartnett
 */
 
