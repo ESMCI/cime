@@ -42,9 +42,15 @@ extern int pio_next_ncid;
 /** The default error handler used when iosystem cannot be located. */
 extern int default_error_handler;
 
+#ifdef NETCDF_INTEGRATION
+/* This is used as the default iosysid for the netcdf integration
+ * code. */
+extern int diosysid;
+
 /** This prototype from netCDF is required for netCDF integration to
  * work. */
 int nc4_file_change_ncid(int ncid, unsigned short new_ncid_index);
+#endif /* NETCDF_INTEGRATION */
 
 /**
  * Start the PIO timer.
@@ -2033,9 +2039,11 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
             if (ncidp_present)
                 if (!mpierr)
                     mpierr = MPI_Bcast(ncidp, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&diosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             PLOG((2, "len %d filename %s iotype %d mode %d use_ext_ncid %d "
-                  "ncidp_present %d", len, filename, file->iotype, mode,
-                  use_ext_ncid, ncidp_present));
+                  "ncidp_present %d diosysid %d", len, filename, file->iotype, mode,
+                  use_ext_ncid, ncidp_present, diosysid));
         }
 
         /* Handle MPI errors. */

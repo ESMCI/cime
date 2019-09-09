@@ -174,6 +174,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int mode;
     int use_ext_ncid;
     char ncidp_present;
+    int iosysid;
     int mpierr;
 
     PLOG((1, "create_file_handler comproot = %d", ios->comproot));
@@ -200,15 +201,21 @@ int create_file_handler(iosystem_desc_t *ios)
     if (ncidp_present)
         if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
             return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     PLOG((1, "create_file_handler len %d filename %s iotype %d mode %d "
-          "use_ext_ncid %d ncidp_present %d ncid %d", len, filename, iotype, mode,
-          use_ext_ncid, ncidp_present, ncid));
+          "use_ext_ncid %d ncidp_present %d ncid %d iosysid %d", len,
+          filename, iotype, mode, use_ext_ncid, ncidp_present, ncid,
+          iosysid));
 
     /* Call the create file function. */
     if (use_ext_ncid)
     {
 #ifdef NETCDF_INTEGRATION
-        PLOG((2, "about to call nc_create()"));
+        /* Set the IO system ID. */
+        nc_set_iosystem(iosysid);
+
+        PLOG((2, "about to call nc_create() have set iosysid to %d", iosysid));
         nc_create(filename, mode|NC_UDF0, &ncid);
 #endif /* NETCDF_INTEGRATION */
     }
