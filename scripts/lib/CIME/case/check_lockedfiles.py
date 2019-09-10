@@ -45,7 +45,7 @@ def check_pelayouts_require_rebuild(self, models):
 
 def check_lockedfile(self, filebase):
     caseroot = self.get_value("CASEROOT")
-
+    external_workflow = self.get_value("EXTERNAL_WORKFLOW")
     cfile = os.path.join(caseroot, filebase)
     lfile = os.path.join(caseroot, "LockedFiles", filebase)
     components = self.get_values("COMP_CLASSES")
@@ -93,7 +93,7 @@ def check_lockedfile(self, filebase):
                     else:
                         self.set_value("BUILD_STATUS", 1)
                     f2obj.set_value("BUILD_COMPLETE", False)
-            elif objname == "env_batch":
+            elif objname == "env_batch" and not external_workflow:
                 expect(False, "Batch configuration has changed, please run case.setup --reset")
             else:
                 expect(False, "'{}' diff was not handled".format(objname))

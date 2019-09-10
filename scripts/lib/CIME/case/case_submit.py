@@ -54,7 +54,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
         except:
             env_batch_has_changed = True
 
-    if batch_system != "none" and env_batch_has_changed and not external_workflow:
+    if batch_system != "none" and env_batch_has_changed or external_workflow:
         # May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)
         logger.warning(\
 """

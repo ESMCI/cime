@@ -41,7 +41,7 @@ def parse_command_line(args, description):
 def cylc_get_ensemble_first_and_last(case, ensemble):
     if ensemble == 1:
         return 1,None
-    casename = case.get_value("CASE")
+    casename = os.path.basename(case.get_value("CASEROOT"))
     m = re.search(r"(.*[^\d])(\d+)$", casename)
     minval = int(m.group(2))
     maxval = minval+ensemble-1
@@ -49,7 +49,7 @@ def cylc_get_ensemble_first_and_last(case, ensemble):
 
 def cylc_get_case_path_string(case, ensemble):
     caseroot = case.get_value("CASEROOT")
-    casename = case.get_value("CASE")
+    casename = os.path.basename(caseroot)
     if ensemble == 1:
         return "{};".format(caseroot)
     basepath = os.path.abspath(caseroot+"/..")
@@ -99,7 +99,7 @@ def _main_func(description):
         env_batch = case.get_env('batch')
         env_workflow = case.get_env('workflow')
         jobs = env_workflow.get_jobs()
-        casename = case.get_value('CASE')
+        casename = os.path.basename(caseroot)
         input_template = os.path.join(case.get_value("MACHDIR"),"cylc_suite.rc.template")
 
         overrides = {"cycles":cycles,
@@ -109,10 +109,11 @@ def _main_func(description):
         first,last = cylc_get_ensemble_first_and_last(case, ensemble)
         if ensemble == 1:
             overrides.update({'members':"{}".format(first)})
-            overrides.update({"workflow_description":"case {}".format(case.get_value("CASE"))})
+            overrides.update({"workflow_description":"case {}".
+                              format(os.path.basename(case.get_value("CASEROOT")))})
         else:
             overrides.update({'members':"{}..{}".format(first,last)})
-            firstcase = case.get_value("CASE")
+            firstcase = os.path.basename(case.get_value("CASEROOT"))
             intlen = len(str(last))
             lastcase = firstcase[:-intlen]+str(last)
             overrides.update({"workflow_description":"ensemble from {} to {}".format(firstcase,lastcase)})
