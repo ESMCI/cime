@@ -67,6 +67,7 @@
       </runtime_parameters>
     </job>
   </workflow_jobs>
+
   <workflow_jobs case="timeseries_transfer" prepend="timeseries">
     <job name="timeseries_transfer">
       <template>$ENV{POSTPROCESS_PATH}/timeseries/template.timeseries_transfer</template>
@@ -79,6 +80,7 @@
       </runtime_parameters>
     </job>
   </workflow_jobs>
+
   <workflow_jobs case="diagnostics" prepend="timeseries">
     <job name="xconform">
       <template>$CASEROOT/postprocess/xconform</template>
@@ -104,7 +106,6 @@ timeseries or case.st_archive</dependency>
       <dependency>timeseries or case.st_archive</dependency>
       <prereq>$CASEROOT/postprocess/pp_config -value --get GENERATE_AVGS_ATM</prereq>
     </job>
-
 
     <job name="ocn_averages">
       <template>$CASEROOT/postprocess/ocn_averages</template>
@@ -133,6 +134,40 @@ timeseries or case.st_archive</dependency>
       <dependency>ocn_averages</dependency>
       <prereq>$CASEROOT/postprocess/pp_config -value --get GENERATE_AVGS_ATM</prereq>
     </job>
-
   </workflow_jobs>
+
+  <workflow_jobs case="global_workflow">
+    <!-- order matters, with no-batch jobs will be run in the order listed here -->
+    <job name="chgres.run">
+      <template>template.chgres.run</template>
+      <prereq>$BUILD_COMPLETE and not $TEST</prereq>
+      <runtime_parameters>
+        <task_count>36</task_count>
+        <tasks_per_node>36</tasks_per_node>
+        <walltime>0:20:00</walltime>
+      </runtime_parameters>
+    </job>
+    <job name="case.run">
+      <template>template.case.run</template>
+      <prereq>$BUILD_COMPLETE and not $TEST</prereq>
+      <dependency>chgres.run</dependency>
+    </job>
+    <job name="case.test">
+      <template>template.case.test</template>
+      <prereq>$BUILD_COMPLETE and $TEST</prereq>
+      <dependency>chgres.run</dependency>
+    </job>
+    <job name="case.st_archive">
+      <template>template.st_archive</template>
+      <!-- If DOUT_S is true and case.run (or case.test) exits successfully then run st_archive-->
+      <dependency>case.run or case.test and chgres.run</dependency>
+      <prereq>$DOUT_S</prereq>
+      <runtime_parameters>
+        <task_count>1</task_count>
+        <tasks_per_node>1</tasks_per_node>
+        <walltime>0:20:00</walltime>
+      </runtime_parameters>
+    </job>
+  </workflow_jobs>
+
 </config_workflow>
