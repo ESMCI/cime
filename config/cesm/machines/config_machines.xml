@@ -488,7 +488,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="MPI_USE_ARRAY"/>
     </environment_variables>
     <environment_variables comp_interface="nuopc" DEBUG="FALSE">
-      <env name="ESMFMKFILE">/glade/work/dunlap/ESMF-INSTALL/8.0.0bs38/lib/libO/Linux.intel.64.mpt.default/esmf.mk</env>
+      <env name="ESMFMKFILE">/glade/work/turuncu/ESMF/8.0.0b48/lib/libO/Linux.intel.64.mpt.default/esmf.mk</env>
       <env name="LD_LIBRARY_PATH">/glade/u/home/dunlap/YAML-INSTALL/lib:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
     <environment_variables comp_interface="nuopc" DEBUG="TRUE">
@@ -500,6 +500,10 @@ This allows using a different mpirun command to launch unit tests
       <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc">
+      <env name="CHGRES_BIN">/glade/work/turuncu/UFS/UFS_UTILS/exec/chgres_cube.exe</env>
+      <env name="CHGRES_NPROC">36</env>
     </environment_variables>
     <environment_variables comp_interface="nuopc">
       <env name="CHGRES_NML">/glade/scratch/turuncu/fv3gfs/chgres.test/config.C96.nml</env>
