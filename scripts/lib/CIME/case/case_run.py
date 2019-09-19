@@ -169,11 +169,15 @@ def _post_run_check(case, lid):
     rundir = case.get_value("RUNDIR")
     model = case.get_value("MODEL")
     driver = case.get_value("COMP_INTERFACE")
+    compset = case.get_value("COMPSET")
 
     if driver == 'nuopc':
         file_prefix = 'med'
     else:
         file_prefix = 'cpl'
+
+    if compset == '2000_FV3GFS_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP':
+        file_prefix = 'cesm'
 
     cpl_ninst = 1
     if case.get_value("MULTI_DRIVER"):
