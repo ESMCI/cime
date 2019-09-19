@@ -1,0 +1,16 @@
+#!/bin/bash
+{{ batchdirectives }}
+
+# Run ncep_post
+for f in 012 024 036
+do
+  export T1=$SECONDS
+  cp dynf$f.nemsio nemsfile
+  cp phyf$f.nemsio flxfile
+  cp itaga.$f itag
+  time  mpiexec_mpt $NCEP_POST_BIN  >oi.$f  2>ei.$f
+  export T2=$SECONDS
+  let dff=$T2'-'$T1
+  echo  ran $DECOMP on `date` in $dff  seconds >>TIMES
+  echo done >>DONEOUT
+done

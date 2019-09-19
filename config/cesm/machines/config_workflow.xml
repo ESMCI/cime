@@ -138,13 +138,33 @@ timeseries or case.st_archive</dependency>
 
   <workflow_jobs case="global_workflow">
     <!-- order matters, with no-batch jobs will be run in the order listed here -->
+    <job name="case.chgres">
+      <template>template.chgres</template>
+      <prereq>$BUILD_COMPLETE</prereq>
+      <runtime_parameters>
+        <task_count>36</task_count>
+        <tasks_per_node>36</tasks_per_node>
+        <walltime>0:20:00</walltime>
+      </runtime_parameters>
+    </job>
     <job name="case.run">
       <template>template.case.run</template>
+      <dependency>case.chgres</dependency>
       <prereq>$BUILD_COMPLETE and not $TEST</prereq>
     </job>
     <job name="case.test">
       <template>template.case.test</template>
       <prereq>$BUILD_COMPLETE and $TEST</prereq>
+    </job>
+    <job name="case.gfs_post">
+      <template>template.gfs_post</template>
+      <dependency>case.run</dependency>
+      <prereq>$BUILD_COMPLETE</prereq>
+      <runtime_parameters>
+        <task_count>8</task_count>
+        <tasks_per_node>8</tasks_per_node>
+        <walltime>0:20:00</walltime>
+      </runtime_parameters>
     </job>
     <job name="case.st_archive">
       <template>template.st_archive</template>
