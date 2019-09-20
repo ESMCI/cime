@@ -489,7 +489,6 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
     <environment_variables comp_interface="nuopc" DEBUG="FALSE">
       <env name="ESMFMKFILE">/glade/work/turuncu/ESMF/8.0.0b48/lib/libO/Linux.intel.64.mpt.default/esmf.mk</env>
-      <env name="LD_LIBRARY_PATH">/glade/u/home/dunlap/YAML-INSTALL/lib:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
     <environment_variables comp_interface="nuopc" DEBUG="TRUE">
       <env name="ESMFMKFILE">/glade/work/dunlap/ESMF-INSTALL/8.0.0bs38/lib/libg/Linux.intel.64.mpt.default/esmf.mk</env>
@@ -505,7 +504,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="CHGRES_NML">/glade/scratch/turuncu/fv3gfs/chgres.test/config.C96.nml</env>
       <env name="CHGRES_BIN">/glade/work/turuncu/UFS/UFS_UTILS/exec/chgres_cube.exe</env>
       <env name="NCEP_POST_BIN">/glade/work/turuncu/UFS/GLB_WRKF/sorc/gfs_post.fd/exec/ncep_post</env>      
-      <env name="LD_LIBRARY_PATH">/glade/work/turuncu/UFS/REQ_LIBS/jasper-1.900.1/lib:/usr/lib64:/glade/u/apps/ch/os/lib64:$ENV{LD_LIBRARY_PATH}</env>
+      <env name="LD_LIBRARY_PATH">/glade/u/home/dunlap/YAML-INSTALL/lib:/glade/work/turuncu/UFS/REQ_LIBS/jasper-1.900.1/lib:/usr/lib64:/glade/u/apps/ch/os/lib64:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
     <environment_variables unit_testing="true">
       <env name="MPI_USE_ARRAY">false</env>

@@ -136,7 +136,7 @@ timeseries or case.st_archive</dependency>
     </job>
   </workflow_jobs>
 
-  <workflow_jobs case="global_workflow">
+  <workflow_jobs case="fv3gfs_global">
     <!-- order matters, with no-batch jobs will be run in the order listed here -->
     <job name="case.chgres.run">
       <template>template.chgres.run</template>
