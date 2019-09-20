@@ -5,4 +5,25 @@
 ln -sf $CHGRES_NML fort.41
 
 # Run chgres
-mpiexec_mpt $CHGRES_BIN
+rundir=`./xmlquery --value RUNDIR`
+echo "run dir is $rundir"
+cd $rundir
+
+runcmd='{{ mpirun }}'
+mpirun=`echo $runcmd | awk '{print $1}'`
+eval "$mpirun ./chgres_cube.exe"
+
+# Move output files
+mv -f gfs_ctrl.nc INPUT/.
+mv -f out.atm.tile1.nc INPUT/gfs_data.tile1.nc
+mv -f out.atm.tile2.nc INPUT/gfs_data.tile2.nc
+mv -f out.atm.tile3.nc INPUT/gfs_data.tile3.nc
+mv -f out.atm.tile4.nc INPUT/gfs_data.tile4.nc
+mv -f out.atm.tile5.nc INPUT/gfs_data.tile5.nc
+mv -f out.atm.tile6.nc INPUT/gfs_data.tile6.nc
+mv -f out.sfc.tile1.nc INPUT/sfc_data.tile1.nc
+mv -f out.sfc.tile2.nc INPUT/sfc_data.tile2.nc
+mv -f out.sfc.tile3.nc INPUT/sfc_data.tile3.nc
+mv -f out.sfc.tile4.nc INPUT/sfc_data.tile4.nc
+mv -f out.sfc.tile5.nc INPUT/sfc_data.tile5.nc
+mv -f out.sfc.tile6.nc INPUT/sfc_data.tile6.nc

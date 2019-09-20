@@ -497,17 +497,15 @@ This allows using a different mpirun command to launch unit tests
     <environment_variables comp_interface="nuopc">
       <env name="ESMF_RUNTIME_PROFILE">ON</env>
       <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
-      <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
+      <env name="UGCSINPUTPATH">/glade/scratch/turuncu/fv3gfs/fv3_gfdlmprad</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
     </environment_variables>
     <environment_variables comp_interface="nuopc">
-      <env name="CHGRES_BIN">/glade/work/turuncu/UFS/UFS_UTILS/exec/chgres_cube.exe</env>
-      <env name="CHGRES_NPROC">36</env>
-    </environment_variables>
-    <environment_variables comp_interface="nuopc">
       <env name="CHGRES_NML">/glade/scratch/turuncu/fv3gfs/chgres.test/config.C96.nml</env>
       <env name="CHGRES_BIN">/glade/work/turuncu/UFS/UFS_UTILS/exec/chgres_cube.exe</env>
+      <env name="NCEP_POST_BIN">/glade/work/turuncu/UFS/GLB_WRKF/sorc/gfs_post.fd/exec/ncep_post</env>      
+      <env name="LD_LIBRARY_PATH">/glade/work/turuncu/UFS/REQ_LIBS/jasper-1.900.1/lib:/usr/lib64:/glade/u/apps/ch/os/lib64:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
     <environment_variables unit_testing="true">
       <env name="MPI_USE_ARRAY">false</env>
