@@ -218,6 +218,7 @@ contains
 
     if (nxg /= 0 .and. nyg /= 0) then
 
+       ! fields from glc
        call fld_list_add(fldsFrGlc_num, fldsFrGlc, trim(flds_scalar_name))
        call fld_list_add(fldsFrGlc_num, fldsFrGlc, 'Sg_icemask'                )
        call fld_list_add(fldsFrGlc_num, fldsFrGlc, 'Sg_icemask_coupled_fluxes' )
@@ -225,10 +226,10 @@ contains
        call fld_list_add(fldsFrGlc_num, fldsFrGlc, 'Sg_topo'                   )
        call fld_list_add(fldsFrGlc_num, fldsFrGlc, 'Flgg_hflx'                 )
 
+       ! fields to glc from land
        call fld_list_add(fldsToGlc_num, fldsToGlc, trim(flds_scalar_name))
        call fld_list_add(fldsToGlc_num, fldsToGlc, 'Sl_tsrf')
-       call fld_list_add(fldsToGlc_num, fldsToGlc, 'Sl_topo')
-       call fld_list_add(fldsToGlc_num, fldsToGlc, 'Flgg_hflx')
+       call fld_list_add(fldsToGlc_num, fldsToGlc, 'Flgl_qice')
 
        do n = 1,fldsFrGlc_num
           if (mastertask) write(logunit,*)'Advertising From Xglc ',trim(fldsFrGlc(n)%stdname)

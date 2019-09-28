@@ -22,7 +22,7 @@ module dlnd_comp_mod
   use shr_cal_mod           , only : shr_cal_datetod2string
   use dshr_methods_mod      , only : ChkErr
   use dshr_nuopc_mod        , only : fld_list_type, dshr_fld_add, dshr_import, dshr_export
-  use glc_elevclass_mod     , only : glc_elevclass_as_string, glc_elevclass_init
+  use glc_elevclass_mod     , only : glc_elevclass_as_string
   use dlnd_shr_mod          , only : datamode        ! namelist input
   use dlnd_shr_mod          , only : rest_file       ! namelist input
   use dlnd_shr_mod          , only : rest_file_strm  ! namelist input
@@ -97,8 +97,6 @@ contains
     if (.not. lnd_present) return
 
     glc_nec = glc_nec_in
-
-    call glc_elevclass_init(glc_nec)
 
     !-------------------
     ! export fields

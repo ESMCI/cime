@@ -33,6 +33,7 @@ module docn_comp_mod
   use docn_shr_mod          , only : aquap_option   ! derived from datamode namelist input
   use docn_shr_mod          , only : rest_file      ! namelist input
   use docn_shr_mod          , only : rest_file_strm ! namelist input
+  use docn_shr_mod          , only : fixed_sst      ! namelist input
   use docn_shr_mod          , only : nullstr
   use docn_shr_mod          , only : SDOCN
 
@@ -1118,6 +1119,12 @@ contains
              sst(i) = tmp*(t0_max - t0_min) + t0_min
           end if
        end do
+    end if
+
+    ! RCE 
+
+    if (sst_option == 11) then
+       sst = fixed_sst
     end if
 
   end subroutine prescribed_sst

@@ -32,6 +32,7 @@ module docn_shr_mod
   character(CL) , public :: restfilm              ! model restart file namelist
   character(CL) , public :: restfils              ! stream restart file namelist
   logical       , public :: force_prognostic_true ! if true set prognostic true
+  real(r8)      , public :: fixed_sst             ! fixed SST
 
   ! variables obtained from namelist read
   character(CL) , public :: rest_file             ! restart filename
@@ -74,7 +75,7 @@ CONTAINS
 
     !----- define namelist -----
     namelist / docn_nml / decomp, &
-         restfilm, restfils, force_prognostic_true
+         restfilm, restfils, force_prognostic_true, fixed_sst
 
     !----------------------------------------------------------------------------
     ! Read docn_in
@@ -96,10 +97,12 @@ CONTAINS
        write(logunit,F00)' restfilm   = ',trim(restfilm)
        write(logunit,F00)' restfils   = ',trim(restfils)
        write(logunit,F0L)' force_prognostic_true = ',force_prognostic_true
+       write(logunit,F02)' fixed_sst = ',fixed_sst
     endif
     call shr_mpi_bcast(restfilm,mpicom,'restfilm')
     call shr_mpi_bcast(restfils,mpicom,'restfils')
     call shr_mpi_bcast(force_prognostic_true,mpicom,'force_prognostic_true')
+    call shr_mpi_bcast(fixed_sst,mpicom,'fixed_sst')
 
     rest_file = trim(restfilm)
     rest_file_strm = trim(restfils)
