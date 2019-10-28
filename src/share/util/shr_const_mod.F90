@@ -81,7 +81,7 @@ MODULE shr_const_mod
    real(SHR_KIND_R8),parameter :: SHR_CONST_SPVAL        = 1.0e30_SHR_KIND_R8                 ! special missing value
    real(SHR_KIND_R8),parameter :: SHR_CONST_SPVAL_TOLMIN = 0.99_SHR_KIND_R8 * SHR_CONST_SPVAL ! min spval tolerance
    real(SHR_KIND_R8),parameter :: SHR_CONST_SPVAL_TOLMAX = 1.01_SHR_KIND_R8 * SHR_CONST_SPVAL ! max spval tolerance
-   real(SHR_KIND_R8),parameter :: SHR_CONST_SPVAL_AERODEP= 1.e29_r8                  ! special aerosol deposition
+   real(SHR_KIND_R8),parameter :: SHR_CONST_SPVAL_AERODEP= 1.e29_SHR_KIND_R8                  ! special aerosol deposition
    
    !Water Isotope Ratios in Vienna Standard Mean Ocean Water (VSMOW):
    real(SHR_KIND_R8),parameter :: SHR_CONST_VSMOW_18O   = 2005.2e-6_SHR_KIND_R8   ! 18O/16O in VMSOW
