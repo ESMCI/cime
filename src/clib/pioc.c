@@ -869,7 +869,7 @@ PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
     }
     for (i = 0; i < maplen; i++)
     {
-        compmap[i] = 0;
+        compmap[i] = 1;
         for (n = ndims - 1; n >= 0; n--)
             compmap[i] += (start[n] + loc[n]) * prod[n];
 
