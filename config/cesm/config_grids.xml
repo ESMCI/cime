@@ -1202,8 +1202,8 @@
       <nx>1152</nx> <ny>768</ny>
       <file grid="atm|lnd" mask="gx1v6">domain.lnd.fv0.23x0.31_gx1v6.100517.nc</file>
       <file grid="ocnice"  mask="gx1v6">domain.ocn.0.23x0.31_gx1v6_101108.nc</file>
-      <file grid="atm|lnd" mask="tnx0.25v4">domain.lnd.fv0.9x1.25_tnx0.25v4.170629.nc</file>
-      <file grid="ocnice"  mask="tnx0.25v4">domain.ocn.tnx0.25v4.170629.nc</file>
+      <file grid="atm|lnd" mask="tnx0.25v4">domain.lnd.fv0.23x0.31_tnx0.25v4.191031.nc</file>
+      <file grid="ocnice"  mask="tnx0.25v4">domain.ocn.tnx0.25v4.191031.nc</file>
       <desc>0.23x0.31 is FV 1/4-deg grid:</desc>
     </domain>
 
