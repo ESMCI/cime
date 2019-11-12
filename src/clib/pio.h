@@ -18,13 +18,6 @@
 
 #include <netcdf.h>
 
-#ifndef MPI_OFFSET
-/** MPI_OFFSET is an integer type of size sufficient to represent the
- * size (in bytes) of the largest file supported by MPI. In some MPI
- * implementations MPI_OFFSET is not properly defined.  */
-#define MPI_OFFSET  MPI_LONG_LONG
-#endif
-
 /** PIO_OFFSET is an integer type of size sufficient to represent the
  * size (in bytes) of the largest file supported by MPI. This is not
  * actually used by the code. */

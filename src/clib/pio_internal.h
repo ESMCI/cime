@@ -30,6 +30,13 @@
 #include <mpe.h>
 #endif /* USE_MPE */
 
+#ifndef MPI_OFFSET
+/** MPI_OFFSET is an integer type of size sufficient to represent the
+ * size (in bytes) of the largest file supported by MPI. In some MPI
+ * implementations MPI_OFFSET is not properly defined.  */
+#define MPI_OFFSET  MPI_LONG_LONG
+#endif
+
 /* These are the sizes of types in netCDF files. Do not replace these
  * constants with sizeof() calls for C types. They are not the
  * same. Even on a system where sizeof(short) is 4, the size of a
