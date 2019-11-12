@@ -16,15 +16,7 @@
 #include <mpi.h>
 #include <uthash.h>
 
-#ifdef _NETCDF
 #include <netcdf.h>
-#ifdef _NETCDF4
-#include <netcdf_par.h>
-#endif
-#endif
-#ifdef _PNETCDF
-#include <pnetcdf.h>
-#endif
 
 #ifndef MPI_OFFSET
 /** MPI_OFFSET is an integer type of size sufficient to represent the
