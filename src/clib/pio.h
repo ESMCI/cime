@@ -694,10 +694,10 @@ enum PIO_ERROR_HANDLERS
 #define PIO_EUNLIMIT NC_EUNLIMIT      /**< NC_UNLIMITED size already in use */
 #define PIO_ENORECVARS NC_ENORECVARS  /**< nc_rec op when there are no record vars */
 #define PIO_ECHAR NC_ECHAR            /**< Attempt to convert between text & numbers */
-#define PIO_EEDGE NC_EEDGE            /** Start+count exceeds dimension bound. */
+#define PIO_EEDGE NC_EEDGE            /**< Start+count exceeds dimension bound. */
 #define PIO_ESTRIDE NC_ESTRIDE        /**< Illegal stride */
 #define PIO_EBADNAME NC_EBADNAME      /**< Attribute or variable name contains illegal characters */
-#define PIO_ERANGE NC_ERANGE          /** Range error */
+#define PIO_ERANGE NC_ERANGE          /**< Range error */
 #define PIO_ENOMEM NC_ENOMEM          /**< Memory allocation (malloc) failure */
 #define PIO_EVARSIZE NC_EVARSIZE      /**< One or more variable sizes violate format constraints */
 #define PIO_EDIMSIZE NC_EDIMSIZE      /**< Invalid dimension size */
