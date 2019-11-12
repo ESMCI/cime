@@ -632,8 +632,6 @@ enum PIO_ERROR_HANDLERS
     PIO_RETURN_ERROR = (-53)
 };
 
-#if defined( _PNETCDF) || defined(_NETCDF)
-
 #define PIO_GLOBAL NC_GLOBAL
 #define PIO_UNLIMITED NC_UNLIMITED
 
@@ -755,14 +753,8 @@ enum PIO_ERROR_HANDLERS
 #define PIO_FILL_UINT NC_FILL_UINT
 #define PIO_FILL_INT64 NC_FILL_INT64
 #define PIO_FILL_UINT64 NC_FILL_UINT64
-#endif /*  defined( _PNETCDF) || defined(_NETCDF) */
 
-/** Define the extra error codes for the parallel-netcdf library. */
-#ifdef _PNETCDF
 #define PIO_EINDEP  NC_EINDEP
-#else  /* _PNETCDF */
-#define PIO_EINDEP  (-203)
-#endif /* _PNETCDF */
 
 /** The first error code for PIO. */
 #define PIO_FIRST_ERROR_CODE (-500)
