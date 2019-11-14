@@ -443,6 +443,7 @@
     <values match="last">
       <value compset="_CAM5%PTAEROUPD1">.true.</value>
       <value compset="_CAM60%PTAERO">.true.</value>
+      <value compset="_CAM60%NORESM">.true.</value>
       <value compset="_CAM54%PTAERO">.true.</value>
       <value compset="_CAM5%NUDGEPTAEROUPD1">.true.</value>
       <value compset="_CAM54%NUDGEPTAERO">.true.</value>
@@ -463,6 +464,7 @@
     <values match="last">
       <value compset="_CAM5%PTAEROUPD1">1</value>
       <value compset="_CAM60%PTAERO">1</value>
+      <value compset="_CAM60%NORESM">1</value>
       <value compset="_CAM54%PTAERO">1</value>
       <value compset="_CAM5%NUDGEPTAEROUPD1">1</value>
       <value compset="_CAM54%NUDGEPTAERO">1</value>
