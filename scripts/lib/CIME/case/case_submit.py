@@ -30,9 +30,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
     import sys
  
     if "fram" in case.get_value("MACH"):
-        print "limit0",resource.getrlimit(resource.RLIMIT_STACK)
         resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
-        print "limit1",resource.getrlimit(resource.RLIMIT_STACK)
     caseroot = case.get_value("CASEROOT")
 
     if job is None:
