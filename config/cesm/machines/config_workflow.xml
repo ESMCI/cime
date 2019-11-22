@@ -149,7 +149,7 @@ timeseries or case.st_archive</dependency>
     </job>
     <job name="case.run">
       <template>template.case.run</template>
-      <dependency>case.chgres.run</dependency>
+      <dependency>case.chgres</dependency>
       <prereq>$BUILD_COMPLETE and not $TEST</prereq>
     </job>
     <job name="case.test">
