@@ -50,7 +50,7 @@
     </job>
   </workflow_jobs>
 
-  <workflow_jobs id="fv3gfs_global">
+  <workflow_jobs id="ufs-mrweather">
     <!-- order matters, with no-batch jobs will be run in the order listed here -->
     <job name="case.chgres">
       <template>template.chgres.run</template>
@@ -63,7 +63,7 @@
     </job>
     <job name="case.run">
       <template>template.case.run</template>
-      <dependency>case.chgres.run</dependency>
+      <dependency>case.chgres</dependency>
       <prereq>$BUILD_COMPLETE and not $TEST</prereq>
     </job>
     <job name="case.test">
