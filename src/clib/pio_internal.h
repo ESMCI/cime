@@ -16,6 +16,7 @@
 #include <bget.h>
 #include <limits.h>
 #include <math.h>
+#include <netcdf.h>
 #ifdef _NETCDF4
 #include <netcdf_par.h>
 #endif
