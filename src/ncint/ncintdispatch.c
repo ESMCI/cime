@@ -7,9 +7,9 @@
 
 #include "config.h"
 #include <stdlib.h>
-#include "ncintdispatch.h"
 #include "pio.h"
 #include "pio_internal.h"
+#include "ncintdispatch.h"
 
 /* Prototypes from nc4internal.h. */
 int nc4_file_list_add(int ncid, const char *path, int mode,
