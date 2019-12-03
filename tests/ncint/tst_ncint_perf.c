@@ -24,7 +24,7 @@
 #define NDIM2 2
 #define NDIM3 3
 #define NUM_TIMESTEPS 1
-#define NUM_MODES 2
+#define NUM_MODES 4
 
 extern NC_Dispatch NCINT_dispatcher;
 
@@ -95,9 +95,13 @@ main(int argc, char **argv)
             float num_megabytes = DIM_LEN_X * DIM_LEN_Y * sizeof(int) / (float)1000000 * NUM_TIMESTEPS;
             float delta_in_sec;
             float mb_per_sec;
-            int cmode[NUM_MODES] = {NC_PIO, NC_PIO|NC_NETCDF4};
-            char mode_name[NUM_MODES][NC_MAX_NAME + 1] = {"netCDF-classic sequential",
-                                                          "netCDF-4/HDF5 sequential"};
+            int cmode[NUM_MODES] = {NC_PIO, NC_PIO|NC_NETCDF4,
+                                    NC_PIO|NC_NETCDF4|NC_MPIIO,
+                                    NC_PIO|NC_PNETCDF};
+            char mode_name[NUM_MODES][NC_MAX_NAME + 1] = {"classic sequential",
+                                                          "netCDF-4 sequential",
+                                                          "netCDF-4 parallel I/O",
+                                                          "classic pnetcdf parallel I/O"};
             int t, m;
 
             for (m = 0; m < NUM_MODES; m++)
