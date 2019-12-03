@@ -17,8 +17,10 @@
 #define DIM_NAME_UNLIMITED "dim_unlimited"
 #define DIM_NAME_X "dim_x"
 #define DIM_NAME_Y "dim_y"
-#define DIM_LEN_X 3
-#define DIM_LEN_Y 4
+#define DIM_LEN_X 3072
+#define DIM_LEN_Y 1536
+/* #define DIM_LEN_X 3 */
+/* #define DIM_LEN_Y 4 */
 #define NDIM2 2
 #define NDIM3 3
 #define NUM_TIMESTEPS 1
@@ -75,12 +77,10 @@ main(int argc, char **argv)
             struct timeval starttime, endtime;
             long long startt, endt;
             long long delta;
-            float num_megabytes = 0;
+            float num_megabytes = DIM_LEN_X * DIM_LEN_Y * sizeof(int) / (float)1000000 * NUM_TIMESTEPS;
             float delta_in_sec;
             float mb_per_sec;
-
-            /* Start the clock. */
-            gettimeofday(&starttime, NULL);
+            int t;
 
             /* Create a file with a 3D record var. */
             if (nc_create(FILE_NAME, NC_PIO|NC_NETCDF4, &ncid)) PERR;
@@ -93,6 +93,7 @@ main(int argc, char **argv)
             /* Calculate a decomposition for distributed arrays. */
             elements_per_pe = DIM_LEN_X * DIM_LEN_Y / (ntasks - num_io_procs);
             /* printf("my_rank %d elements_per_pe %ld\n", my_rank, elements_per_pe); */
+
             if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
                 PERR;
             for (i = 0; i < elements_per_pe; i++)
@@ -111,53 +112,13 @@ main(int argc, char **argv)
             for (i = 0; i < elements_per_pe; i++)
                 my_data[i] = my_rank * 10 + i;
 
+            /* Start the clock. */
+            gettimeofday(&starttime, NULL);
+
             /* Write some data with distributed arrays. */
-            if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR;
+            for (t = 0; t < NUM_TIMESTEPS; t++)
+                if (nc_put_vard_int(ncid, varid, ioid, t, my_data)) PERR;
             if (nc_close(ncid)) PERR;
-
-            /* Reopen the file using netCDF integration. */
-            {
-                int ndims, nvars, ngatts, unlimdimid;
-                nc_type xtype_in;
-                char var_name_in[NC_MAX_NAME + 1];
-                char dim_name_in[NC_MAX_NAME + 1];
-                int natts_in;
-                int dimids_in[NDIM3];
-                size_t dim_len_in;
-
-                /* Open the file. */
-                if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
-
-                /* Check the file. */
-                if (nc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)) PERR;
-                if (ndims != 3 || nvars != 1 || ngatts != 0 ||
-                    unlimdimid != 0) PERR;
-                if (nc_inq_var(ncid, 0, var_name_in, &xtype_in, &ndims,
-                               dimids_in, &natts_in)) PERR;
-                if (strcmp(var_name_in, VAR_NAME) || xtype_in != NC_INT || ndims != NDIM3
-                    || dimids_in[0] != 0 || dimids_in[1] != 1 || dimids_in[2] != 2 ||
-                    natts_in != 0) PERR;
-                if (nc_inq_dim(ncid, 0, dim_name_in, &dim_len_in)) PERR;
-                if (strcmp(dim_name_in, DIM_NAME_UNLIMITED) || dim_len_in != 1) PERR;
-                if (nc_inq_dim(ncid, 1, dim_name_in, &dim_len_in)) PERR;
-                if (strcmp(dim_name_in, DIM_NAME_X) || dim_len_in != DIM_LEN_X) PERR;
-                if (nc_inq_dim(ncid, 2, dim_name_in, &dim_len_in)) PERR;
-                if (strcmp(dim_name_in, DIM_NAME_Y) || dim_len_in != DIM_LEN_Y) PERR;
-
-                /* Read distributed arrays. */
-                if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
-                if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR;
-
-                /* Check results. */
-                for (i = 0; i < elements_per_pe; i++)
-                    if (data_in[i] != my_data[i]) PERR;
-
-                /* Close file. */
-                if (nc_close(ncid)) PERR;
-
-                /* Free resources. */
-                free(data_in);
-            }
 
             /* Stop the clock. */
             gettimeofday(&endtime, NULL);
@@ -168,8 +129,9 @@ main(int argc, char **argv)
             delta = (endt - startt)/NUM_TIMESTEPS;
             delta_in_sec = (float)delta / 1000000;
             mb_per_sec = num_megabytes / delta_in_sec;
-            printf("\n%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
-                   1, 0, 1, delta_in_sec, num_megabytes, mb_per_sec);
+            if (my_rank == num_io_procs)
+                printf("\n%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
+                       1, 0, 1, delta_in_sec, num_megabytes, mb_per_sec);
 
             free(my_data);
             if (nc_free_decomp(ioid)) PERR;
