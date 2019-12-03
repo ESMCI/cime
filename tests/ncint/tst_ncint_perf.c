@@ -55,15 +55,29 @@ main(int argc, char **argv)
         size_t elements_per_pe;
         size_t *compdof; /* The decomposition mapping. */
         int *my_data;
-        int *data_in;
-        int num_procs2[COMPONENT_COUNT] = {3};
-        int num_io_procs = 1;
+        int num_procs2[COMPONENT_COUNT];
+        int num_io_procs;
         int i;
 
         /* Turn on logging for PIO library. */
         /* PIOc_set_log_level(4); */
         /* if (!my_rank) */
         /*     nc_set_log_level(3); */
+        if (ntasks <= 16)
+            num_io_procs = 1;
+        else if (ntasks <= 64)
+            num_io_procs = 4;
+        else if (ntasks <= 128)
+            num_io_procs = 16;
+        else if (ntasks <= 512)
+            num_io_procs = 64;
+        else if (ntasks <= 1024)
+            num_io_procs = 128;
+        else if (ntasks <= 2048)
+            num_io_procs = 256;
+
+        /* Figure out how many computation processors. */
+        num_procs2[0] = ntasks - num_io_procs;
 
         /* Initialize the intracomm. The IO task will not return from
          * this call until the PIOc_finalize() is called by the
@@ -72,7 +86,7 @@ main(int argc, char **argv)
                          num_procs2, NULL, NULL, NULL, PIO_REARR_BOX, &iosysid))
             PERR;
 
-        if (my_rank)
+        if (my_rank > num_io_procs)
         {
             struct timeval starttime, endtime;
             long long startt, endt;
