@@ -61,4 +61,6 @@ static int total_err = 0, err = 0;
         return 0;                                               \
     } while (0)
 
+#define ERR_WRONG 99
+
 #endif /* _PIO_ERR_MACROS_H */

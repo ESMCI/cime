@@ -2134,6 +2134,7 @@ PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
         file->pio_ncid = file->pio_ncid << ID_SHIFT;
+        file->ncint_file++;
         PLOG((2, "changed ncid to file->pio_ncid = %d", file->pio_ncid));
     }
 #endif /* NETCDF_INTEGRATION */
@@ -2807,6 +2808,7 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
         if ((ierr = nc4_file_change_ncid(*ncidp, file->pio_ncid)))
             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
         file->pio_ncid = file->pio_ncid << ID_SHIFT;
+        file->ncint_file++;
         PLOG((2, "changed ncid to file->pio_ncid = %d", file->pio_ncid));
     }
     else

@@ -584,6 +584,11 @@ typedef struct file_desc_t
     /** True if this task should participate in IO (only true for one
      * task with netcdf serial files. */
     int do_io;
+
+    /** True if this file was opened with the netCDF integration
+     * feature. One consequence is that PIO_IOTYPE_NETCDF4C files will
+     * not have deflate automatically turned on for each var. */
+    int ncint_file;
 } file_desc_t;
 
 /**
