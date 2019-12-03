@@ -98,11 +98,16 @@ main(int argc, char **argv)
             int cmode[NUM_MODES] = {NC_PIO, NC_PIO|NC_NETCDF4,
                                     NC_PIO|NC_NETCDF4|NC_MPIIO,
                                     NC_PIO|NC_PNETCDF};
-            char mode_name[NUM_MODES][NC_MAX_NAME + 1] = {"classic sequential",
-                                                          "netCDF-4 sequential",
+            char mode_name[NUM_MODES][NC_MAX_NAME + 1] = {"classic sequential   ",
+                                                          "netCDF-4 sequential  ",
                                                           "netCDF-4 parallel I/O",
-                                                          "classic pnetcdf parallel I/O"};
+                                                          "pnetcdf              "};
             int t, m;
+
+            /* Print header. */
+            if (my_rank == num_io_procs)
+                printf("access,\t\t\tntasks,\tnio,\trearr,\ttime(s),\tdata size (MB),\t"
+                       "performance(MB/s)\n");
 
             for (m = 0; m < NUM_MODES; m++)
             {
@@ -154,9 +159,9 @@ main(int argc, char **argv)
                 delta_in_sec = (float)delta / 1000000;
                 mb_per_sec = num_megabytes / delta_in_sec;
                 if (my_rank == num_io_procs)
-                    printf("%s\t%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n",
-                           mode_name[m], ntasks, num_io_procs, 1, 0, 1,
-                           delta_in_sec, num_megabytes, mb_per_sec);
+                    printf("%s,\t%d,\t%d,\t%d,\t%8.3f,\t%8.1f,\t%8.3f\n", mode_name[m],
+                           ntasks, num_io_procs, 1, delta_in_sec, num_megabytes,
+                           mb_per_sec);
             } /* next mode flag */
 
             free(my_data);
