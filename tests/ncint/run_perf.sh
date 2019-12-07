@@ -13,7 +13,7 @@ trap exit INT TERM
 
 printf 'running PIO performance tests...\n'
 
-PIO_TESTS='tst_ncint_perf'
+PIO_TESTS='tst_ncint_perf tst_ncint_async_perf'
 
 success1=true
 for TEST in $PIO_TESTS

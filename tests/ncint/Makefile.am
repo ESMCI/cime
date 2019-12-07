@@ -9,11 +9,12 @@ LDADD = ${top_builddir}/src/clib/libpioc.la
 
 # Build the test for make check.
 check_PROGRAMS = tst_pio_udf tst_pio_async tst_async_multi	\
-tst_ncint_perf
+tst_ncint_async_perf tst_ncint_perf
 
 tst_pio_udf_SOURCES = tst_pio_udf.c pio_err_macros.h
 tst_pio_async_SOURCES = tst_pio_async.c pio_err_macros.h
 tst_async_multi_SOURCES = tst_async_multi.c pio_err_macros.h
+tst_ncint_async_perf_SOURCES = tst_ncint_async_perf.c pio_err_macros.h
 tst_ncint_perf_SOURCES = tst_ncint_perf.c pio_err_macros.h
 
 if RUN_TESTS

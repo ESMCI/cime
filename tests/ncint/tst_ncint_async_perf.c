@@ -1,10 +1,10 @@
 /* Test netcdf integration layer.
 
-   This is a performance test of intercomm mode in PIO, using the
-   netCDF integration layer.
+   This is a performance test of async mode in PIO, using the netCDF
+   integration layer.
 
    Ed Hartnett
-   12/7/19
+   12/2/19
 */
 
 #include "config.h"
@@ -12,7 +12,7 @@
 #include <sys/time.h>
 #include "pio_err_macros.h"
 
-#define FILE_NAME "tst_ncint_perf.nc"
+#define FILE_NAME "tst_ncint_async_perf.nc"
 #define VAR_NAME "data_var"
 #define DIM_NAME_UNLIMITED "dim_unlimited"
 #define DIM_NAME_X "dim_x"
@@ -47,7 +47,7 @@ main(int argc, char **argv)
     if (!my_rank)
         printf("\n*** Testing netCDF integration PIO performance.\n");
     if (!my_rank)
-        printf("*** testing simple intercomm use of netCDF integration layer...\n");
+        printf("*** testing simple async use of netCDF integration layer...\n");
     {
         int ncid, ioid;
         int dimid[NDIM3], varid;
@@ -56,6 +56,7 @@ main(int argc, char **argv)
         size_t elements_per_pe;
         size_t *compdof; /* The decomposition mapping. */
         int *my_data;
+        int num_procs2[COMPONENT_COUNT];
         int num_io_procs;
         int i;
 
@@ -76,10 +77,17 @@ main(int argc, char **argv)
         else if (ntasks <= 2048)
             num_io_procs = 256;
 
-        /* Initialize the intracomm. */
-        if (nc_def_iosystem(MPI_COMM_WORLD, num_io_procs, 1, 0, PIO_REARR_BOX, &iosysid))
+        /* Figure out how many computation processors. */
+        num_procs2[0] = ntasks - num_io_procs;
+
+        /* Initialize the intracomm. The IO task will not return from
+         * this call until the PIOc_finalize() is called by the
+         * compute tasks. */
+        if (nc_def_async(MPI_COMM_WORLD, num_io_procs, NULL, COMPONENT_COUNT,
+                         num_procs2, NULL, NULL, NULL, PIO_REARR_BOX, &iosysid))
             PERR;
 
+        if (my_rank >= num_io_procs)
         {
             struct timeval starttime, endtime;
             long long startt, endt;
@@ -97,7 +105,7 @@ main(int argc, char **argv)
             int t, m;
 
             /* Print header. */
-            if (!my_rank)
+            if (my_rank == num_io_procs)
                 printf("access,\t\t\tntasks,\tnio,\trearr,\ttime(s),\tdata size (MB),\t"
                        "performance(MB/s)\n");
 
@@ -112,14 +120,14 @@ main(int argc, char **argv)
                 if (nc_enddef(ncid)) PERR;
 
                 /* Calculate a decomposition for distributed arrays. */
-                elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
+                elements_per_pe = DIM_LEN_X * DIM_LEN_Y / (ntasks - num_io_procs);
                 /* printf("my_rank %d elements_per_pe %ld\n", my_rank, elements_per_pe); */
 
                 if (!(compdof = malloc(elements_per_pe * sizeof(size_t))))
                     PERR;
                 for (i = 0; i < elements_per_pe; i++)
                 {
-                    compdof[i] = my_rank * elements_per_pe + i;
+                    compdof[i] = (my_rank - num_io_procs) * elements_per_pe + i;
                     /* printf("my_rank %d compdof[%d]=%ld\n", my_rank, i, compdof[i]); */
                 }
 
@@ -158,9 +166,8 @@ main(int argc, char **argv)
 
             free(my_data);
             if (nc_free_decomp(ioid)) PERR;
+            if (nc_free_iosystem(iosysid)) PERR;
         }
-        if (nc_free_iosystem(iosysid)) PERR;
-
     }
     if (!my_rank)
         PSUMMARIZE_ERR;

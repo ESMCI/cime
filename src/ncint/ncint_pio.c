@@ -19,8 +19,8 @@ extern int diosysid;
  * @author Ed Hartnett
  */
 int
-nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
-                 int rearr, int *iosysidp)
+nc_def_iosystem(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
+                int rearr, int *iosysidp)
 {
     int ret;
 
