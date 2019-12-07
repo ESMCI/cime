@@ -67,7 +67,7 @@ main(int argc, char **argv)
         /* PIOc_set_log_level(3); */
 
         /* Initialize the intracomm. */
-        if (nc_def_iosystemm(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) PERR;
+        if (nc_def_iosystem(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) PERR;
 
         /* Create a file with a 3D record var. */
         if (nc_create(FILE_NAME, NC_PIO, &ncid)) PERR;

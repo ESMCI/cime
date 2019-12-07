@@ -1232,7 +1232,7 @@ extern "C" {
                                 const unsigned long long *op);
 
     /* These functions are for the netCDF integration layer. */
-    int nc_def_iosystemm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
+    int nc_def_iosystem(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                          int *iosysidp);
 
     int nc_def_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
