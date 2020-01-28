@@ -7,7 +7,10 @@ components.
 
 import sys, os
 
-_CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..","..","..","..", "..")
+_CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..","..","..","..","..","..")
+
+print "DEBUG: _CIMEROOT is ",_CIMEROOT
+
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
 
 from standard_script_setup import *
@@ -17,6 +20,7 @@ from CIME.case import Case
 def buildlib(case, libroot, bldroot, compname=None):
     if compname is None:
         thisdir = os.path.dirname(os.path.abspath(__file__))
+        print "DEBUG: thisdir = ",thisdir
         path, dir1 = os.path.split(thisdir)
         _, dir2 = os.path.split(path)
         if dir1 == "cime_config":
