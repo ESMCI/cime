@@ -199,6 +199,8 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
         # loop over models
         for model in models:
             comp = case.get_value("COMP_{}".format(model))
+            if comp is None:
+                continue
             logger.debug("Building {} usernl files".format(model))
             _build_usernl_files(case, model, comp)
             if comp == "cism":

@@ -508,7 +508,7 @@ class Case(object):
                 continue
             spec[comp] = self.get_value("COMP_{}".format(comp))
             notprogcomps = ("D{}".format(comp),"X{}".format(comp),"S{}".format(comp))
-            if spec[comp].upper() in notprogcomps:
+            if not spec[comp] or spec[comp].upper() in notprogcomps:
                 progcomps[comp] = False
             else:
                 progcomps[comp] = True
@@ -657,7 +657,6 @@ class Case(object):
         Assumes that self._primary_component has already been set.
         """
         component = self.get_primary_component()
-
         compset_spec_file = files.get_value("COMPSETS_SPEC_FILE",
                                             {"component":component}, resolved=False)
 
@@ -764,6 +763,8 @@ class Case(object):
             comp_name  = self._components[i-1]
             root_dir_node_name = 'COMP_ROOT_DIR_' + comp_class
             node_name = 'CONFIG_' + comp_class + '_FILE'
+            if driver == "nuopc" and comp_name == "s"+comp_class.lower():
+                continue
             comp_root_dir = files.get_value(root_dir_node_name, {"component":comp_name}, resolved=False)
             if comp_root_dir is not None:
                 self.set_value(root_dir_node_name, comp_root_dir)
