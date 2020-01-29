@@ -51,19 +51,19 @@ def build_cime_component_lib(case, compname, libroot, bldroot):
                                "src.{}\n".format(compname)) + "\n")
         if compname.startswith('d'):
             if (comp_interface == 'nuopc'):
-                out.write(os.path.join(cimeroot, "src", "components", "data_comps", comp_interface, "dshr_nuopc") + "\n")
-                out.write(os.path.join(cimeroot, "src", "components", "data_comps", comp_interface, compname, "src") + "\n")
-            if (comp_interface == 'mct'):
-                out.write(os.path.join(cimeroot, "src", "components", "data_comps", comp_interface) + "\n")
-                out.write(os.path.join(cimeroot, "src", "components", "data_comps", comp_interface, compname, "src") + "\n")
+                out.write(os.path.join(cimeroot, "src", "components", comp_interface, "data_comps", "dshr_nuopc") + "\n")
+                out.write(os.path.join(cimeroot, "src", "components", comp_interface, "data_comps", compname, "src") + "\n")
+            if (comp_interface == 'mct'):                                           
+                out.write(os.path.join(cimeroot, "src", "components", comp_interface, "data_comps", compname) + "\n")
+                out.write(os.path.join(cimeroot, "src", "components", comp_interface, "data_comps", compname, "src") + "\n")
 
         elif compname.startswith('x'):
-            out.write(os.path.join(cimeroot, "src", "components", "xcpl_comps", "xshare") + "\n")
-            out.write(os.path.join(cimeroot, "src", "components", "xcpl_comps", "xshare", comp_interface) + "\n")
-            out.write(os.path.join(cimeroot, "src", "components", "xcpl_comps", compname, comp_interface) + "\n")
+            out.write(os.path.join(cimeroot, "src", "components", comp_interface, "xcpl_comps", "xshare") + "\n")
+            out.write(os.path.join(cimeroot, "src", "components", comp_interface, "xcpl_comps", compname, "src") + "\n")
 
         elif compname.startswith('s'):
-            out.write(os.path.join(cimeroot, "src", "components", "stub_comps", compname, comp_interface) + "\n")
+            if (comp_interface == 'mct'):                                           
+                out.write(os.path.join(cimeroot, "src", "components", comp_interface, "stub_comps", compname, "src") + "\n")
 
     # Build the component
     run_gmake(case, compclass, libroot, bldroot)
