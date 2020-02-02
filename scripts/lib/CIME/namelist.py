@@ -1224,6 +1224,12 @@ class Namelist(object):
         for group_name in group_names:
             if "_attributes" not in group_name and "nuopc_" not in group_name and "_no_group" not in group_name:
                 continue
+            skip_group = False
+            for skip_comp in skip_comps:
+                if skip_comp in group_name:
+                    skip_group = True
+            if skip_group:
+                continue
             if "_attributes" in group_name:
                 out_file.write("{}::\n".format(group_name))
 

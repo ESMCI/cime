@@ -76,7 +76,7 @@ class NamelistGenerator(object):
         # Save off important information from inputs.
         self._case = case
         self._din_loc_root = case.get_value('DIN_LOC_ROOT')
-
+        self._driver = case.get_value("COMP_INTERFACE")
         # Create definition object - this will validate the xml schema in the definition file
         self._definition = NamelistDefinition(definition_files[0], files=files)
 
@@ -269,6 +269,8 @@ class NamelistGenerator(object):
             match = _var_ref_re.search(scalar)
             while match:
                 env_val = self._case.get_value(match.group('name'))
+                if env_val is None and self._driver == 'nuopc':
+                    break
                 expect(env_val is not None,
                        "Namelist default for variable {} refers to unknown XML variable {}.".format(name, match.group('name')))
                 scalar = scalar.replace(match.group(0), str(env_val), 1)
