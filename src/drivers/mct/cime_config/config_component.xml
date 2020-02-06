@@ -1741,6 +1741,9 @@
   <entry id="EPS_OGRID">
     <type>real</type>
     <default_value>1.0e-02</default_value>
+    <values>
+      <value grid="tnx2v1">1.0e-01</value>
+    </values>
     <group>run_domain</group>
     <file>env_run.xml</file>
     <desc>Error tolerance for differences in ocean/ice lon/lat in domain checking</desc>
@@ -1872,6 +1875,22 @@
     <group>run_dout</group>
     <file>env_run.xml</file>
     <desc>Root directory for short term archiving. This directory must be visible to compute nodes.</desc>
+  </entry>
+
+  <entry id="DOUT_L_ROOT">
+    <type>char</type>
+    <default_value>UNSET</default_value>
+    <group>run_dout</group>
+    <file>env_run.xml</file>
+    <desc>Root directory for long term archiving.</desc>
+  </entry>
+
+  <entry id="DOUT_L_HOSTNAME">
+    <type>char</type>
+    <default_value>UNSET</default_value>
+    <group>run_dout</group>
+    <file>env_run.xml</file>
+    <desc>hostname for longterm archiving.</desc>
   </entry>
 
   <entry id="MPI_RUN_COMMAND">

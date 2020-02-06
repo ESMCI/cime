@@ -671,7 +671,7 @@ contains
 
   !===============================================================================
 
-  subroutine seq_flux_ocnalb_mct( infodata, ocn, a2x_o, fractions_o, xao_o, dtime) !+tht dtime
+  subroutine seq_flux_ocnalb_mct( infodata, ocn, a2x_o, fractions_o, xao_o )
 
     !-----------------------------------------------------------------------
     !
@@ -682,9 +682,6 @@ contains
     type(mct_aVect)         , intent(in)    :: a2x_o
     type(mct_aVect)         , intent(inout) :: fractions_o
     type(mct_aVect)         , intent(inout) :: xao_o
-
-    integer(in)             , intent(in)    :: dtime !+tht: time step of coupling interval
-
     !
     ! Local variables
     !
@@ -713,7 +710,6 @@ contains
     integer(in)         :: klat,klon       ! field indices
     logical             :: update_alb           ! was albedo updated
     logical,save        :: first_call = .true.
-    real(r8)            :: dtavg                !+tht time step
     !
     real(r8),parameter :: albdif = 0.06_r8 ! 60 deg reference albedo, diffuse
     real(r8),parameter :: albdir = 0.07_r8 ! 60 deg reference albedo, direct
@@ -809,7 +805,6 @@ contains
 
        call seq_infodata_GetData(infodata,nextsw_cday=nextsw_cday,orb_eccen=eccen, &
             orb_mvelpp=mvelpp, orb_lambm0=lambm0, orb_obliqr=obliqr)
-       dtavg=dtime !+tht
        if (nextsw_cday >= -0.5_r8) then
           calday = nextsw_cday
           call shr_orb_decl(calday, eccen, mvelpp,lambm0, obliqr, delta, eccf)
@@ -817,7 +812,7 @@ contains
           do n=1,nloc_o
              rlat = const_deg2rad * lats(n)
              rlon = const_deg2rad * lons(n)
-             cosz = shr_orb_cosz( calday, rlat, rlon, delta , dtavg) !+tht dtavg
+             cosz = shr_orb_cosz( calday, rlat, rlon, delta )
              if (cosz  >  0.0_r8) then !--- sun hit --
                 anidr = (.026_r8/(cosz**1.7_r8 + 0.065_r8)) +   &
                      (.150_r8*(cosz         - 0.100_r8 ) *   &

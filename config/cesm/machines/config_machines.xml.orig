@@ -2207,51 +2207,242 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
   </machine>
 
-  <machine MACH="vilje">
-    <DESC>SGI Altix ICE X, 16-way nodes, dual eight-core Xeon E5-2670@2.60GHz, 32 GiB per node</DESC>
+<<<<<<< HEAD
+  <machine MACH="yellowstone">
+    <DESC>NCAR IBM, os is Linux, 16 pes/node, batch system is LSF</DESC>
+    <NODENAME_REGEX>.*yellowstone</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>intel</COMPILERS>
-    <MPILIBS>mpich,mpi-serial</MPILIBS>
-    <CIME_OUTPUT_ROOT>/work/$USER/noresm</CIME_OUTPUT_ROOT>
-    <DIN_LOC_ROOT>/work/shared/noresm/inputdata</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
-    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/../archive/$CASE</DOUT_S_ROOT>
-    <!--DOUT_L_MSROOT>/norstore_osl/projects/NS2345K/noresm/cases/$CASE</DOUT_L_MSROOT-->
-    <BASELINE_ROOT>UNSET</BASELINE_ROOT>
-    <CCSM_CPRNC>UNSET</CCSM_CPRNC>
-    <GMAKE_J>4</GMAKE_J>
-    <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
-    <SUPPORTED_BY>noresmCommunity</SUPPORTED_BY>
-    <MAX_TASKS_PER_NODE>32</MAX_TASKS_PER_NODE>
-    <MAX_MPITASKS_PER_NODE>16</MAX_MPITASKS_PER_NODE>
+    <COMPILERS>intel,pgi,gnu,intel15</COMPILERS>
+    <MPILIBS>mpich2,pempi</MPILIBS>
+    <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$ENV{CESMROOT}/lmwg</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>$ENV{CESMDATAROOT}/ccsm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cime/tools/cprnc/cprnc</CCSM_CPRNC>
+    <PERL5LIB>/glade/apps/opt/perlmods/lib64/perl5:/glade/apps/opt/perlmods/share/perl5</PERL5LIB>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>lsf</BATCH_SYSTEM>
+    <SUPPORTED_BY>cseg</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>30</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>15</MAX_MPITASKS_PER_NODE>
+    <COSTPES_PER_NODE>16</COSTPES_PER_NODE>
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
-    <mpirun mpilib="mpi-serial">
-      <executable></executable>
+    <mpirun mpilib="default" unit_testing="true">
+      <!-- For unit testing, avoid all of the extra stuff that we use before and
+	   after the mpirun command when launching cesm on yellowstone -->
+      <executable>mpirun.lsf </executable>
     </mpirun>
-    <mpirun mpilib="default">
-      <executable>mpiexec_mpt</executable>
+    <mpirun mpilib="default" threaded="false">
+      <executable>TARGET_PROCESSOR_LIST=AUTO_SELECT $ENV{CESMDATAROOT}/tools/bin/mpirun </executable>
       <arguments>
-      <arg name="num_tasks"> -n $TOTALPES</arg>
+	<arg name="anum_tasks"> -n {{ total_tasks }}</arg>
+	<arg name="tasks_per_node"> -tpn {{ tasks_per_node }} </arg>
+	<arg name="bindtool">$ENV{CESMDATAROOT}/tools/bin/launch </arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="default" threaded="true">
+      <executable>unset MP_PE_AFFINITY; unset MP_TASK_AFFINITY; unset MP_CPU_BIND_LIST; $ENV{CESMDATAROOT}/tools/bin/mpirun </executable>
+      <arguments>
+	<arg name="anum_tasks"> -n {{ total_tasks }}</arg>
+	<arg name="tasks_per_node"> -tpn {{ tasks_per_node }} </arg>
+	<arg name="bindtool">$ENV{CESMDATAROOT}/tools/bin/hybrid_launch </arg>
+      </arguments>
+    </mpirun>
+    <mpirun compiler="gnu">
+      <executable> $ENV{CESMDATAROOT}/tools/bin/mpirun </executable>
+      <arguments>
+	<arg name="anum_tasks"> -n {{ total_tasks }}</arg>
+	<arg name="tasks_per_node"> -tpn {{ tasks_per_node }} </arg>
       </arguments>
     </mpirun>
     <module_system type="module">
-      <init_path lang="csh">/usr/share/modules/init/csh</init_path>
-      <init_path lang="perl">/usr/share/modules/init/perl</init_path>
-      <init_path lang="sh">/usr/share/modules/init/sh</init_path>
-      <cmd_path lang="csh">module</cmd_path>
-      <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
-      <cmd_path lang="python">/usr/bin/modulecmd python</cmd_path>
+      <init_path lang="perl">/glade/apps/opt/lmod/lmod/init/perl</init_path>
+      <init_path lang="python">/glade/apps/opt/lmod/lmod/init/env_modules_python.py</init_path>
+      <init_path lang="csh">/glade/apps/opt/lmod/lmod/init/csh</init_path>
+      <init_path lang="sh">/glade/apps/opt/lmod/lmod/init/sh</init_path>
+      <cmd_path lang="perl">/glade/apps/opt/lmod/lmod/libexec/lmod perl</cmd_path>
+      <cmd_path lang="python">/glade/apps/opt/lmod/lmod/libexec/lmod python</cmd_path>
       <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"/>
-        <command name="load">perl/5.22.0</command>
-        <command name="load">intelcomp/15.0.1</command>
-        <command name="load">mpt/2.10</command>
-        <command name="load">netcdf/4.3.2/</command>
-        <command name="load">cmake/3.4.3</command>
-        <command name="load">python/2.7.9</command>
+	<command name="purge"/>
+	<command name="load">ncarenv/1.0</command>
+	<command name="load">ncarbinlibs/1.1</command>
+	<command name="load">perlmods</command>
+	<command name="load">gmake/4.1</command>
+	<command name="load">python</command>
+	<command name="load">all-python-libs</command>
+	<command name="load">git</command>
+      </modules>
+      <modules compiler="intel">
+	<command name="load">intel/15.0.3</command>
+	<command name="load">mkl/11.1.2</command>
+	<command name="load">esmf</command>
+      </modules>
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
+	<command name="load">esmf-7.0.0-ncdfio-mpi-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
+	<command name="load">esmf-7.0.0-defio-mpi-O</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
+	<command name="load">esmf-7.0.0-ncdfio-uni-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
+	<command name="load">esmf-7.0.0-ncdfio-uni-O</command>
+      </modules>
+      <modules compiler="pgi">
+	<command name="load">pgi/15.10</command>
+      </modules>
+      <modules compiler="gnu">
+	<command name="load">gnu/5.2.0</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="gnu">
+	<command name="load">netcdf/4.3.3.1</command>
+      </modules>
+      <modules mpilib="!mpi-serial" compiler="gnu">
+	<command name="load">netcdf-mpi/4.3.3.1</command>
+	<command name="load">pnetcdf/1.6.1</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="pgi">
+	<command name="load">netcdf/4.3.3.1</command>
+      </modules>
+      <modules mpilib="!mpi-serial" compiler="pgi">
+	<command name="load">netcdf-mpi/4.3.3.1</command>
+	<command name="load">pnetcdf/1.6.1</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="intel">
+	<command name="load">netcdf/4.3.3.1</command>
+      </modules>
+      <modules mpilib="!mpi-serial" compiler="intel">
+	<command name="load">netcdf-mpi/4.3.3.1</command>
+	<command name="load">pnetcdf/1.6.1</command>
+      </modules>
+      <modules>
+	<command name="load">ncarcompilers/1.0</command>
+	<command name="load">cmake/3.0.2</command>
+	<command name="load">all-python-libs</command>
       </modules>
     </module_system>
+    <environment_variables>
+      <env name="OMP_STACKSIZE">256M</env>
+      <env name="MP_LABELIO">yes</env>
+      <env name="MP_INFOLEVEL">2</env>
+      <env name="MP_SHARED_MEMORY">yes</env>
+      <env name="MP_EUILIB">us</env>
+      <env name="MP_STDOUTMODE">unordered</env>
+      <env name="MP_RC_USE_LMC">yes</env>
+    </environment_variables>
+    <environment_variables DEBUG="TRUE">
+      <env name="MP_EAGER_LIMIT">0</env>
+    </environment_variables>
+    <environment_variables mpilib="!mpi-serial">
+      <env name="MP_MPILIB">$MPILIB</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
+  </machine>
+
+=======
+>>>>>>> origin/featureCESMNCARBeta_trunk2.0-7
+  <machine MACH="vilje">
+         <DESC>SGI Altix ICE X, 16-way nodes, dual eight-core Xeon E5-2670@2.60GHz, 32 GiB per node</DESC>
+         <OS>LINUX</OS>
+         <COMPILERS>intel</COMPILERS>
+         <MPILIBS>mpich,mpi-serial</MPILIBS>
+         <CIME_OUTPUT_ROOT>/work/$USER/noresm</CIME_OUTPUT_ROOT>
+         <DIN_LOC_ROOT>/work/shared/noresm/inputdata</DIN_LOC_ROOT>
+         <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
+         <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/../archive/$CASE</DOUT_S_ROOT>
+         <!--DOUT_L_MSROOT>/norstore_osl/projects/NS2345K/noresm/cases/$CASE</DOUT_L_MSROOT-->
+    	 <BASELINE_ROOT>UNSET</BASELINE_ROOT>
+         <CCSM_CPRNC>UNSET</CCSM_CPRNC>
+         <GMAKE_J>4</GMAKE_J>
+         <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
+		 <SUPPORTED_BY>noresmCommunity</SUPPORTED_BY>
+         <MAX_TASKS_PER_NODE>32</MAX_TASKS_PER_NODE>
+         <MAX_MPITASKS_PER_NODE>16</MAX_MPITASKS_PER_NODE>
+         <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+        <mpirun mpilib="mpi-serial">
+          <executable></executable>
+        </mpirun>
+        <mpirun mpilib="default">
+          <executable>mpiexec_mpt</executable>
+<<<<<<< HEAD
+          <arguments>
+	         <arg name="num_tasks"> -n $TOTALPES</arg>
+          </arguments>
+        </mpirun>
+       <module_system type="module">
+         <init_path lang="csh">/usr/share/modules/init/csh</init_path>
+         <init_path lang="perl">/usr/share/modules/init/perl</init_path>
+         <init_path lang="sh">/usr/share/modules/init/sh</init_path>
+         <cmd_path lang="csh">module</cmd_path>
+         <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
+         <cmd_path lang="python">/usr/bin/modulecmd python</cmd_path>
+         <cmd_path lang="sh">module</cmd_path>
+         <modules>
+            <command name="purge"/>
+            <command name="load">perl/5.22.0</command>
+            <command name="load">intelcomp/15.0.1</command>
+            <command name="load">mpt/2.10</command>
+            <command name="load">netcdf/4.3.2/</command>
+            <command name="load">cmake/3.4.3</command>
+            <command name="load">python/2.7.9</command>
+         </modules>
+       </module_system>
+    <environment_variables>
+      <env name="KMP_STACKSIZE">64M</env>
+      <env name="decfort_dump_flag">Y</env>
+    </environment_variables>
+  </machine>
+
+  <machine MACH="modex">
+      <DESC>Medium sized linux cluster at BNL, torque scheduler.</DESC>
+      <OS>LINUX</OS>
+      <COMPILERS>gnu</COMPILERS>
+      <MPILIBS>openmpi,mpi-serial</MPILIBS>
+      <CIME_OUTPUT_ROOT>/data/$ENV{USER}</CIME_OUTPUT_ROOT>
+      <DIN_LOC_ROOT>/data/Model_Data/cesm_input_datasets/</DIN_LOC_ROOT>
+      <DIN_LOC_ROOT_CLMFORC>/data/Model_Data/cesm_input_datasets/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+      <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/cesm_archive/$CASE</DOUT_S_ROOT>
+      <BASELINE_ROOT>$CIME_OUTPUT_ROOT/cesm_baselines</BASELINE_ROOT>
+      <CCSM_CPRNC>/data/software/cesm_tools/cprnc/cprnc</CCSM_CPRNC>
+      <GMAKE_J>4</GMAKE_J>
+      <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
+      <SUPPORTED_BY>rgknox at lbl dot gov and sserbin at bnl gov</SUPPORTED_BY>
+      <MAX_TASKS_PER_NODE>12</MAX_TASKS_PER_NODE>
+      <MAX_MPITASKS_PER_NODE>12</MAX_MPITASKS_PER_NODE>
+      <COSTPES_PER_NODE>12</COSTPES_PER_NODE>
+      <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+      <mpirun mpilib="default">
+          <executable>mpirun</executable>
+=======
+>>>>>>> origin/featureCESMNCARBeta_trunk2.0-7
+          <arguments>
+	         <arg name="num_tasks"> -n $TOTALPES</arg>
+          </arguments>
+        </mpirun>
+       <module_system type="module">
+         <init_path lang="csh">/usr/share/modules/init/csh</init_path>
+         <init_path lang="perl">/usr/share/modules/init/perl</init_path>
+         <init_path lang="sh">/usr/share/modules/init/sh</init_path>
+         <cmd_path lang="csh">module</cmd_path>
+         <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
+         <cmd_path lang="python">/usr/bin/modulecmd python</cmd_path>
+         <cmd_path lang="sh">module</cmd_path>
+         <modules>
+            <command name="purge"/>
+            <command name="load">perl/5.22.0</command>
+            <command name="load">intelcomp/15.0.1</command>
+            <command name="load">mpt/2.10</command>
+            <command name="load">netcdf/4.3.2/</command>
+            <command name="load">cmake/3.4.3</command>
+            <command name="load">python/2.7.9</command>
+         </modules>
+       </module_system>
     <environment_variables>
       <env name="KMP_STACKSIZE">64M</env>
       <env name="decfort_dump_flag">Y</env>
@@ -2267,8 +2458,6 @@ This allows using a different mpirun command to launch unit tests
     <DIN_LOC_ROOT>/cluster/shared/noresm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>/cluster/work/users/$USER/archive/$CASE</DOUT_S_ROOT>
-    <DOUT_L_ROOT>/projects/NS2345K/noresm/cases</DOUT_L_ROOT>
-    <DOUT_L_HOSTNAME>login.nird.sigma2.no</DOUT_L_HOSTNAME>
     <!--DOUT_L_MSROOT>UNSET</DOUT_L_MSROOT-->
     <BASELINE_ROOT>UNSET</BASELINE_ROOT>
     <CCSM_CPRNC>UNSET</CCSM_CPRNC>
@@ -2315,54 +2504,6 @@ This allows using a different mpirun command to launch unit tests
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
-  </machine>
-
-  <machine MACH="nebula">
-    <DESC>Intel Skylake 6130 32 core nodes 96G RAM OPA network</DESC>
-    <OS>LINUX</OS>
-    <COMPILERS>intel</COMPILERS>
-    <MPILIBS>impi</MPILIBS>
-    <CIME_OUTPUT_ROOT>/nobackup/forsk/$USER/noresm</CIME_OUTPUT_ROOT>
-    <DIN_LOC_ROOT>/nobackup/forsk/noresm/inputdata/</DIN_LOC_ROOT>
-    <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
-    <DOUT_S_ROOT>/nobackup/forsk/$USER/archive/$CASE</DOUT_S_ROOT>
-    <!--DOUT_L_MSROOT>UNSET</DOUT_L_MSROOT-->
-    <BASELINE_ROOT>UNSET</BASELINE_ROOT>
-    <CCSM_CPRNC>UNSET</CCSM_CPRNC>
-    <GMAKE_J>4</GMAKE_J>
-    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
-      <SUPPORTED_BY>noresmCommunity</SUPPORTED_BY>
-    <MAX_TASKS_PER_NODE>32</MAX_TASKS_PER_NODE>
-    <MAX_MPITASKS_PER_NODE>32</MAX_MPITASKS_PER_NODE>
-    <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
-    <mpirun mpilib="mpi-serial">
-      <executable></executable>
-    </mpirun>
-    <mpirun mpilib="default">
-      <executable>mpprun</executable>
-    </mpirun>
-    <module_system type="module">
-      <init_path lang="csh">/software/sse/manual/lmod/7.7/init/csh</init_path>
-      <init_path lang="perl">/software/sse/manual/lmod/7.7/init/perl</init_path>
-      <init_path lang="sh">/software/sse/manual/lmod/7.7/init/sh</init_path>
-      <init_path lang="python">/software/sse/manual/lmod/7.7/init/env_modules_python.py</init_path>
-      <cmd_path lang="csh">module</cmd_path>
-      <cmd_path lang="perl">/software/sse/manual/lmod/7.7/libexec/lmod perl</cmd_path>
-      <cmd_path lang="python">/software/sse/manual/lmod/7.7/libexec/lmod python</cmd_path>
-      <cmd_path lang="sh">module</cmd_path>
-      <modules>
-        <command name="purge">--force</command>
-        <command name="load">nsc/.1.0</command>
-        <command name="load">mpprun/4.0</command>
-        <command name="load">buildenv-intel/2018a-eb</command>
-        <command name="load">netCDF/4.4.1.1-HDF5-1.8.19-nsc1-intel-2018a-eb</command>
-        <command name="load">PnetCDF/1.8.1-nsc1-intel-2018a-eb</command>
-      </modules>
-    </module_system>
-    <environment_variables>
-      <env name="KMP_STACKSIZE">64M</env>
-      <env name="decfort_dump_flag">Y</env>
-    </environment_variables>
   </machine>
 
   <default_run_suffix>

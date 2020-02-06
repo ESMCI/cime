@@ -592,6 +592,11 @@ def archive_last_restarts(self, archive_restdir, rundir, last_date=None, link_to
 ###############################################################################
 def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy_only=False, resubmit=True):
 ###############################################################################
+    import resource
+    import sys
+
+    if "fram" in self.get_value("MACH"):
+        resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     """
     Create archive object and perform short term archiving
     """
@@ -629,6 +634,8 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
     logger.info("st_archive completed")
 
     # resubmit case if appropriate
+    if "fram" in self.get_value("MACH"):
+        resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     resubmit_cnt = self.get_value("RESUBMIT")
     logger.debug("resubmit_cnt {} resubmit {}".format(resubmit_cnt, resubmit))
     if resubmit_cnt > 0 and resubmit:
@@ -641,6 +648,14 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
                         .format(sshhost, case=caseroot), verbose=True)
         else:
             self.submit(resubmit=True)
+
+    if self.get_value('COMPRESS_ARCHIVE_FILES'):
+        archiveroot = self.get_value('DOUT_S_ROOT')
+        convert='/noresm2netcdf4.sh'
+        cmd_convert=caseroot+convert
+        cmd="%s %s" %(cmd_convert,archiveroot)
+        logger.info("cmd={}".format(cmd))
+        run_cmd_no_fail(cmd)
 
     return True
 

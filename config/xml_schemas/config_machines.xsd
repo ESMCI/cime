@@ -38,6 +38,8 @@
   <xs:element name="DIN_LOC_ROOT" type="xs:string"/>
   <xs:element name="DIN_LOC_ROOT_CLMFORC" type="xs:string"/>
   <xs:element name="DOUT_S_ROOT" type="xs:string"/>
+  <xs:element name="DOUT_L_ROOT" type="xs:string"/>
+  <xs:element name="DOUT_L_HOSTNAME" type="xs:string"/>
   <xs:element name="BASELINE_ROOT" type="xs:string"/>
   <xs:element name="CCSM_CPRNC" type="xs:string"/>
   <xs:element name="PERL5LIB" type="xs:string"/>
@@ -119,6 +121,10 @@
         <xs:element ref="DIN_LOC_ROOT_CLMFORC" minOccurs="0" maxOccurs="1"/>
 	<!-- DOUT_S_ROOT: root directory of short term archive files -->
         <xs:element ref="DOUT_S_ROOT" minOccurs="1" maxOccurs="1"/>
+        <!-- DOUT_L_ROOT: root directory of long term archive files -->
+        <xs:element ref="DOUT_L_ROOT" minOccurs="0" maxOccurs="1"/>
+        <!-- DOUT_L_HOSTNAME: hostname for long term archive files -->
+        <xs:element ref="DOUT_L_HOSTNAME" minOccurs="0" maxOccurs="1"/>
 	<!-- BASELINE_ROOT:  Root directory for system test baseline files -->
         <xs:element ref="BASELINE_ROOT" minOccurs="0" maxOccurs="1"/>
 	<!-- CCSM_CPRNC: location of the cprnc tool, compares model output in testing-->

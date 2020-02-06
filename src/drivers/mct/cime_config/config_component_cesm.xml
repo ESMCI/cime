@@ -110,10 +110,22 @@
     We will not document this further in this guide.</desc>
   </entry>
 
+  <entry id="COMPRESS_ARCHIVE_FILES">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>TRUE</default_value>
+    <group>run_data_archive</group>
+    <file>env_run.xml</file>
+    <desc>Logical  compress/convert  archive files to netcdf-4</desc>
+  </entry>
+
   <entry id="BFBFLAG">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
     <default_value>FALSE</default_value>
+    <values>
+      <value compset="_MICOM">TRUE</value>
+    </values>
     <group>run_flags</group>
     <file>env_run.xml</file>
     <desc>turns on coupler bit-for-bit reproducibility with varying pe counts</desc>
@@ -135,16 +147,24 @@
 
   <entry id="CCSM_BGC">
     <type>char</type>
-    <valid_values>none,CO2A,CO2B,CO2C</valid_values>
+    <valid_values>none,CO2A,CO2B,CO2C,CO2_DMSA,CO2_DMSB</valid_values>
     <default_value>none</default_value>
     <values match="last">
       <value compset="_CAM">CO2A</value>
       <value compset="_DATM">none</value>
       <value compset="_DATM%CPLHIST.+POP\d">CO2A</value>
+      <value compset="_DATM%CPLHIST.+MICOM%ECO">CO2A</value>
       <value compset="HIST.*_DATM.*_CLM">CO2A</value>
       <value compset="RCP.*_DATM.*_CLM">CO2A</value>
       <value compset="_BGC%BPRP">CO2C</value>
       <value compset="_BGC%BDRD">CO2C</value>
+      <value compset="_BGC%BPRPDMS">CO2_DMSA</value>
+      <value compset="_BGC%BDRDDMS">CO2_DMSB</value>
+      <value compset="_BGC%DMS">CO2_DMSB</value>
+      <value compset="HIST.*_DATM%(QIA|CRU)">CO2A</value>
+      <value compset="RCP.*_DATM%(QIA|CRU)" >CO2A</value>
+      <value compset="20TR_DATM%IAF.*_MICOM%ECO">CO2A</value>
+      <value compset="20TR_DATM%JRA.*_MICOM%ECO">CO2A</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
@@ -206,7 +226,9 @@
       <value compset="_DATM%COPYALL_NPS">72</value>
       <value compset="_DATM.*_CLM">48</value>
       <value compset="_DATM.*_DICE.*_POP2">4</value>
+      <value compset="_DATM.*_DICE.*_MICOM">4</value>
       <value compset="_DATM.*_SLND.*_CICE.*_POP2">24</value>
+      <value compset="_DATM.*_SLND.*_CICE.*_MICOM">24</value>
       <value compset="_DATM.*_CICE.*_DOCN">24</value>
       <value compset="_DATM.*_DOCN%US20">24</value>
       <value compset="_DATM%CPLHIST.+POP\d">48</value>
@@ -233,6 +255,9 @@
       <value compset="_DLND.*_CISM\d">1</value>
       <value compset="_DATM.*_DICE.*_POP2.*_WW3">4</value>
       <value compset="_DATM.*_DICE.*_POP2.*_DWAV">4</value>
+      <value compset="_DATM.*_DICE.*_MICOM.*_WW3" >4</value>
+      <value compset="_DATM.*_DICE.*_MICOM.*_DWAV">4</value>
+      <value compset="_MICOM" grid="oi%tnx0.25v">48</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
@@ -272,9 +297,12 @@
     <default_value>$ATM_NCPL</default_value>
     <values match="last">
       <value compset="_POP2">1</value>
+      <value compset="_MICOM">1</value>
       <value compset="_POP2" grid="oi%tx0.1v2">4</value>
       <value compset="_POP2" grid="oi%gx1v6">24</value>
       <value compset="_POP2" grid="oi%gx1v7">24</value>
+      <value compset="_MICOM" grid="oi%tnx1v">24</value>
+      <value compset="_MICOM" grid="oi%tnx0.25v">48</value>
       <value compset="_DATM%NYF.*_SLND.*_DICE.*_DOCN.*_SWAV">1</value>
       <value compset="_DATM%NYF.*_DLND.*_DICE.*_DOCN.*_DWAV">1</value>
       <value compset="_DLND.*_CISM\d">1</value>
@@ -327,6 +355,7 @@
     <default_value>8</default_value>
     <values match="last">
       <value compset="_DATM.*_POP2.*_DROF">$ATM_NCPL</value>
+      <value compset="_DATM.*_MICOM.*_DROF">$ATM_NCPL</value>
       <value compset="_DATM.*_DOCN%SOM">$ATM_NCPL</value>
       <value compset="_DATM.*_SLND.*_DICE.*_DOCN">$ATM_NCPL</value>
       <value compset="_DATM%CPLHIST.+POP\d">8</value>
@@ -363,6 +392,8 @@
       <value compset="DATM.+POP\d">TRUE</value>
       <value compset="DATM.+DOCN%IAF">TRUE</value>
       <value compset="DATM%CPLHIST.+POP\d">FALSE</value>
+      <value compset="DATM.+MICOM">TRUE</value>
+      <value compset="DATM%CPLHIST.+MICOM">FALSE</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
@@ -388,7 +419,9 @@
     <default_value>off</default_value>
     <values match="last">
       <value compset="DATM.+POP\d">ocn</value>
+      <value compset="DATM.+MICOM">ocn</value>
       <value compset="DATM%CPLHIST.+POP\d">off</value>
+      <value compset="DATM%CPLHIST.+MICOM">off</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
@@ -403,6 +436,50 @@
     </desc>
   </entry>
 
+  <entry id="COSZ_AVG">
+    <type>char</type>
+    <valid_values>.true.,.false.</valid_values>
+    <default_value>.false.</default_value>
+    <values match="last">
+      <value compset="_CAM5%PTAEROUPD1">.true.</value>
+      <value compset="_CAM60%PTAERO">.true.</value>
+      <value compset="_CAM60%NORESM">.true.</value>
+      <value compset="_CAM54%PTAERO">.true.</value>
+      <value compset="_CAM5%NUDGEPTAEROUPD1">.true.</value>
+      <value compset="_CAM54%NUDGEPTAERO">.true.</value>
+      <value compset="_CAM60%NUDGEPTAERO">.true.</value>
+      <value compset="_MICOM">.true.</value>
+    </values>
+    <group>run_component_cpl</group>
+    <file>env_run.xml</file>
+    <desc>
+      Default is false and true for N* cpmpsets, controls value of ALB_COSZ_AVG
+    </desc>
+  </entry>
+
+  <entry id="OCN_FLUX_SCHEME">
+    <type>integer</type>
+    <valid_values>0,1,2</valid_values>
+    <default_value>0</default_value>
+    <values match="last">
+      <value compset="_CAM5%PTAEROUPD1">1</value>
+      <value compset="_CAM60%PTAERO">1</value>
+      <value compset="_CAM60%NORESM">1</value>
+      <value compset="_CAM54%PTAERO">1</value>
+      <value compset="_CAM5%NUDGEPTAEROUPD1">1</value>
+      <value compset="_CAM54%NUDGEPTAERO">1</value>
+      <value compset="_CAM60%NUDGEPTAERO">1</value>
+      <value compset="_MICOM">1</value>
+      <value compset="_DATM.*_MICOM">0</value>
+      <value compset="_DATM%CPLHIST.*_MICOM">1</value>
+    </values>
+    <group>run_component_cpl</group>
+    <file>env_run.xml</file>
+    <desc>
+      Default is false and true for N* cpmpsets, controls value of FLUX_SCHEME
+    </desc>
+  </entry>
+
   <entry id="CPL_SEQ_OPTION">
     <type>char</type>
     <valid_values>CESM1_ORIG,CESM1_ORIG_TIGHT,CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2</valid_values>
@@ -410,8 +487,10 @@
     <values match="last">
       <value compset="_DATM.*_DOCN%SOM"          >CESM1_MOD</value>
       <value compset="_POP2"                     >CESM1_MOD</value>
+      <value compset="_MICOM"                    >CESM1_MOD</value>
       <value compset="_POP2" grid="oi%gx1v6"     >RASM_OPTION1</value>
       <value compset="_POP2" grid="oi%gx1v7"     >RASM_OPTION1</value>
+      <value compset="_MICOM" grid="oi%tnx1v"     >RASM_OPTION1</value>
       <value compset="_DATM%NYF.*_SLND.*_DICE.*_DOCN">CESM1_MOD</value>
       <value compset="_XATM.*_XLND.*_XICE.*_XOCN">CESM1_MOD</value>
       <value compset="_SOCN"                     >CESM1_MOD</value>
@@ -477,6 +556,8 @@
     <values match="last">
       <value compset="DATM.*_POP\d">TRUE</value>
       <value compset="CAM.*_POP\d">TRUE</value>
+      <value compset="DATM.*_MICOM"    >TRUE</value>
+      <value compset="CAM.*_MICOM"     >TRUE</value>
       <value compset="CAM.*_DOCN%SOM">TRUE</value>
     </values>
     <group>run_budgets</group>
@@ -487,10 +568,11 @@
   <entry id="CCSM_CO2_PPMV">
     <type>real</type>
     <valid_values></valid_values>
-    <default_value>284.7</default_value>
+    <default_value>284.32</default_value>
     <values match="last">
       <value compset="^2000">367.0</value>
-      <value compset="DATM.*POP2%ECO">284.7</value>
+      <value compset="DATM.*POP2%ECO">284.317</value>
+      <value compset="^1850.+DATM%NYF.*_MICOM%ECO"  >284.32</value>
     </values>
     <group>run_co2</group>
     <file>env_run.xml</file>

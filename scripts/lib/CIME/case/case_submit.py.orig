@@ -25,14 +25,6 @@ def _build_prereq_str(case, prev_job_ids):
 def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resubmit=False,
             resubmit_immediate=False, skip_pnl=False, mail_user=None, mail_type=None,
             batch_args=None):
-
-    import resource
-    import sys
- 
-    if "fram" in case.get_value("MACH"):
-        resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
-    caseroot = case.get_value("CASEROOT")
-
     if job is None:
         job = case.get_primary_job()
 

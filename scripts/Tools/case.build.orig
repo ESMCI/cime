@@ -106,8 +106,12 @@ def parse_command_line(args, description):
     cleanlist = args.clean if args.clean is None or len(args.clean) else comps
     buildlist = None if args.build is None or len(args.build) == 0 else args.build
 
-  # return args.caseroot, args.sharedlib_only, args.model_only, cleanlist, args.clean_all, buildlist, clean_depends, not args.skip_provenance_check
+<<<<<<< HEAD
     return args.caseroot, args.sharedlib_only, args.model_only, cleanlist, args.clean_all, buildlist, clean_depends, 0 # not args.skip_provenance_check
+=======
+  # return args.caseroot, args.sharedlib_only, args.model_only, cleanlist, args.clean_all, buildlist, clean_depends, not args.skip_provenance_check
+    return args.caseroot, args.sharedlib_only, args.model_only, cleanlist, args.clean_all, buildlist, clean_depends, 0
+>>>>>>> origin/featureCESMNCARBeta_trunk2.0-7
 
 ###############################################################################
 def _main_func(description):

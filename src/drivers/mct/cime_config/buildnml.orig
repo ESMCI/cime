@@ -123,8 +123,13 @@ def _create_drv_namelists(case, infile, confdir, nmlgen, files):
         atmdt = int(basedt / case.get_value('ATM_NCPL'))
         expect(atmdt == mindt, 'Active atm should match shortest model timestep atmdt={} mindt={}'
                .format(atmdt, mindt))
+<<<<<<< HEAD
+            
+    
+=======
 
 
+>>>>>>> origin/featureCESMNCARBeta_trunk2.0-7
     #--------------------------------
     # Overwrite: set start_ymd
     #--------------------------------

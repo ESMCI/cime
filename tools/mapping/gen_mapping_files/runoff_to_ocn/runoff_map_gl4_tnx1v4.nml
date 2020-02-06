@@ -1,0 +1,16 @@
+&input_nml
+   gridtype     = 'scrip'
+   file_roff    = '/cluster/shared/noresm/inputdata/glc/cism/griddata/SCRIPgrid_greenland_4km_epsg3413_c170414.nc'
+   file_ocn     = '/cluster/shared/noresm/inputdata/ocn/micom/tnx1v4/20170601/remap_grid_tnx1v4_20170601.nc'
+   file_ocn_coastal_mask     = '/cluster/shared/noresm/inputdata/ocn/micom/tnx1v4/20170601/remap_grid_tnx1v4_20170601.nc'
+   file_nn      = 'map_gland4km_epsg3413_to_tnx1v4_nn.nc '
+   file_smooth  = 'map_tnx1v4_coast_to_tnx1v4_sm_for_gland4km.nc '
+   file_new     = 'map_gland4km_to_tnx1v4_nnsm_e1000r300_181030.nc'
+   title        = 'runoff map: gland4km -> tnx1v4, nearest neighbor and smoothed '
+   eFold        = 1000000.0
+   rMax         =  300000.0
+   restrict_smooth_src_to_nn_dest = .true.
+   step1 = .true.
+   step2 = .true.
+   step3 = .true.
+  /

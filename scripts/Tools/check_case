@@ -44,7 +44,7 @@ def _main_func(description):
     parse_command_line(sys.argv, description)
 
     with Case(read_only=False) as case:
-        case.check_lockedfiles()
+        case.check_lockedfiles(skip="env_batch")
         case.create_namelists()
         build_complete = case.get_value("BUILD_COMPLETE")
 

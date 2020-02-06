@@ -923,7 +923,11 @@
        =T -> use cosz average over time-step also for albedos
     </desc>
     <values>
+<<<<<<< HEAD
       <value>$COSZ_AVG</value>
+=======
+      <value>F</value>
+>>>>>>> origin/featureCESMNCARBeta_trunk2.0-7
     </values>
   </entry>
 
