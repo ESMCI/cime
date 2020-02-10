@@ -333,6 +333,7 @@ This allows using a different mpirun command to launch unit tests
     <module_system type="module">
       <init_path lang="sh">/apps/lmod/lmod/init/sh</init_path>
       <init_path lang="csh">/apps/lmod/lmod/init/csh</init_path>
+      <init_path lang="python">/apps/lmod/lmod/init/env_modules_python.py</init_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <cmd_path lang="python">/apps/lmod/lmod/libexec/lmod python</cmd_path>
