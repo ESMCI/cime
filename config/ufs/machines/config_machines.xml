@@ -313,7 +313,7 @@ This allows using a different mpirun command to launch unit tests
     <DIN_LOC_ROOT_CLMFORC>/scratch1/NCEPDEV/nems/Rocky.Dunlap/INPUTDATA/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>/scratch1/NCEPDEV/nems/Rocky.Dunlap/BASELINES</BASELINE_ROOT>
-    <CCSM_CPRNC>/scratch1/NCEPDEV/nems/Rocky.Dunlap/cesmdataroot/tools/cprnc</CCSM_CPRNC>
+    <CCSM_CPRNC>/home/Rocky.Dunlap/bin/cprnc</CCSM_CPRNC>
     <GMAKE>make</GMAKE>
     <GMAKE_J>8</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
@@ -341,27 +341,19 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">intel/18.0.5.274</command>
       </modules>
       <modules mpilib="impi">
+        <command name="load">netcdf/4.7.0</command>
         <command name="load">impi/2018.0.4</command>
+	<command name="use">/scratch1/BMC/gmtb/software/modulefiles/intel-18.0.5.274/impi-2018.0.4</command>
+	<command name="load">NCEPlibs/1.0.0alpha01</command>
       </modules>
       <modules>
-        <command name="load">netcdf/4.7.0</command>
-	<command name="use">/scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles</command>
-	<command name="load">esmf/8.0.0</command>
-	<command name="use">/scratch1/BMC/gmtb/software/modulefiles/intel-18.0.5.274/impi-2018.0.4</command>
-	<command name="load">NCEPlibs-ufs-public/1.0.0.beta01</command>
-        <command name="use">/contrib/modulefiles</command>
-        <command name="load">cmake/3.9.0</command>
+        <command name="use">/scratch1/BMC/gmtb/software/modulefiles/generic</command>
+        <command name="load">cmake/3.16.3</command>
       </modules>
     </module_system>
     <environment_variables comp_interface="nuopc">
       <env name="ESMF_RUNTIME_PROFILE">ON</env>
       <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
-      <!--
-      <env name="UGCSINPUTPATH">/scratch1/NCEPDEV/nems/Rocky.Dunlap/INPUTDATA/fv3_gfs_v15_repro_ccpp</env>
-      <env name="UGCSFIXEDFILEPATH">/scratch1/NCEPDEV/nems/Rocky.Dunlap/INPUTDATA/fix_am</env>
-      <env name="UGCSFIXEDFILEPATH">/scratch1/NCEPDEV/global/glopara/fix</env>
-      <env name="UGCSADDONPATH">/scratch1/NCEPDEV/nems/Rocky.Dunlap/INPUTDATA/addon</env>
-      -->
     </environment_variables>
   </machine>
 
