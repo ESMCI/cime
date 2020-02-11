@@ -3,6 +3,12 @@
 <inputdata>
   <!-- server precidence is order in this file.  Highest preference at top -->
   <!-- If the client doesn't have the protocol it will be skipped -->
+  
+  <server>
+    <protocol>wget</protocol>
+    <address>http://ns2345k.web.sigma2.no/inputdata</address>
+  </server>
+  
   <server>
     <comment>grid ftp requires the globus-url-copy tool on the client side </comment>
     <protocol>gftp</protocol>
