@@ -3202,6 +3202,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 if test -z "$AR"; then
    AR="ar cruv"
+else
+   AR="$AR cruv"
 fi
 
 # RANLIB
