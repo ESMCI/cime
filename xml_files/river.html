@@ -9,10 +9,13 @@
     <title>CIME River Runoff Data and Stub XML Files &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME Sea Ice Data and Stub XML Files" href="seaice.html" />
@@ -81,12 +84,13 @@
   --&gt;
 
   &lt;description modifier_mode=&quot;1&quot;&gt;
-    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%CPLHIST][%JRA]&quot;&gt;Data runoff model&lt;/desc&gt;
+    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%CPLHIST][%JRA][%JRA-1p4-2018]&quot;&gt;Data runoff model&lt;/desc&gt;
     &lt;desc option=&quot;NULL&quot;&gt;NULL mode&lt;/desc&gt;
     &lt;desc option=&quot;NYF&quot; &gt;COREv2 normal year forcing:&lt;/desc&gt;
     &lt;desc option=&quot;IAF&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
     &lt;desc option=&quot;CPLHIST&quot;&gt;CPLHIST mode:&lt;/desc&gt;
     &lt;desc option=&quot;JRA&quot;&gt;JRA55 interannual forcing&lt;/desc&gt;
+    &lt;desc option=&quot;JRA-1p4-2018&quot;&gt;JRA55 interannual forcing, v1.4, through 2018&lt;/desc&gt;
   &lt;/description&gt;
 
   &lt;entry id=&quot;COMP_ROF&quot;&gt;
@@ -100,7 +104,7 @@
 
   &lt;entry id=&quot;DROF_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,IAF_JRA,NULL&lt;/valid_values&gt;
+    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,IAF_JRA,IAF_JRA_1p4_2018,NULL&lt;/valid_values&gt;
     &lt;default_value&gt;DIATREN_ANN_RX1&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DROF%NULL&quot;&gt;NULL&lt;/value&gt;
@@ -108,6 +112,7 @@
       &lt;value compset=&quot;_DROF%IAF&quot; &gt;DIATREN_IAF_RX1&lt;/value&gt;
       &lt;value compset=&quot;_DROF%CPLHIST&quot;&gt;CPLHIST&lt;/value&gt;
       &lt;value compset=&quot;_DROF%JRA&quot; &gt;IAF_JRA&lt;/value&gt;
+      &lt;value compset=&quot;_DROF%JRA-1p4-2018&quot; &gt;IAF_JRA_1p4_2018&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;r%null&quot;&gt;NULL&lt;/value&gt; &lt;!-- overwrites above if runoff grid is null --&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
@@ -220,12 +225,13 @@
   --&gt;
 
   &lt;description modifier_mode=&quot;1&quot;&gt;
-    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%CPLHIST][%JRA]&quot;&gt;Data runoff model&lt;/desc&gt;
+    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%CPLHIST][%JRA][%JRA-1p4-2018]&quot;&gt;Data runoff model&lt;/desc&gt;
     &lt;desc option=&quot;NULL&quot;&gt;NULL mode&lt;/desc&gt;
     &lt;desc option=&quot;NYF&quot; &gt;COREv2 normal year forcing:&lt;/desc&gt;
     &lt;desc option=&quot;IAF&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
     &lt;desc option=&quot;CPLHIST&quot;&gt;CPLHIST mode:&lt;/desc&gt;
     &lt;desc option=&quot;JRA&quot;&gt;JRA55 interannual forcing&lt;/desc&gt;
+    &lt;desc option=&quot;JRA-1p4-2018&quot;&gt;JRA55 interannual forcing, v1.4, through 2018&lt;/desc&gt;
   &lt;/description&gt;
 
   &lt;entry id=&quot;COMP_ROF&quot;&gt;
@@ -239,7 +245,7 @@
 
   &lt;entry id=&quot;DROF_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,IAF_JRA,NULL&lt;/valid_values&gt;
+    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,IAF_JRA,IAF_JRA_1p4_2018,NULL&lt;/valid_values&gt;
     &lt;default_value&gt;DIATREN_ANN_RX1&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DROF%NULL&quot;&gt;NULL&lt;/value&gt;
@@ -247,6 +253,7 @@
       &lt;value compset=&quot;_DROF%IAF&quot; &gt;DIATREN_IAF_RX1&lt;/value&gt;
       &lt;value compset=&quot;_DROF%CPLHIST&quot;&gt;CPLHIST&lt;/value&gt;
       &lt;value compset=&quot;_DROF%JRA&quot; &gt;IAF_JRA&lt;/value&gt;
+      &lt;value compset=&quot;_DROF%JRA-1p4-2018&quot; &gt;IAF_JRA_1p4_2018&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;r%null&quot;&gt;NULL&lt;/value&gt; &lt;!-- overwrites above if runoff grid is null --&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
@@ -399,6 +406,7 @@
       &lt;value drof_mode=&quot;CPLHIST&quot;        &gt;rof.cplhist&lt;/value&gt;
       &lt;value drof_mode=&quot;DIATREN_ANN_RX1&quot;&gt;rof.diatren_ann_rx1&lt;/value&gt;
       &lt;value drof_mode=&quot;DIATREN_IAF_RX1&quot;&gt;rof.diatren_iaf_rx1&lt;/value&gt;
+      &lt;value drof_mode=&quot;IAF_JRA_1p4_2018&quot;&gt;rof.iaf_jra_1p4_2018&lt;/value&gt;
       &lt;value drof_mode=&quot;IAF_JRA&quot;        &gt;rof.iaf_jra&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -411,7 +419,7 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -424,7 +432,7 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;runoff.daitren.annual.090225.nc&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;runoff.daitren.iaf.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;domain.roff.JRA025.170111.nc&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;domain.roff.JRA025.170111.nc&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -467,7 +475,7 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_DIR&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -480,6 +488,69 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;runoff.daitren.annual.090225.nc&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;runoff.daitren.iaf.20120419.nc&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra_1p4_2018&quot;&gt;
+           JRA.v1.4.runoff.1958.190214.nc
+           JRA.v1.4.runoff.1959.190214.nc
+           JRA.v1.4.runoff.1960.190214.nc
+           JRA.v1.4.runoff.1961.190214.nc
+           JRA.v1.4.runoff.1962.190214.nc
+           JRA.v1.4.runoff.1963.190214.nc
+           JRA.v1.4.runoff.1964.190214.nc
+           JRA.v1.4.runoff.1965.190214.nc
+           JRA.v1.4.runoff.1966.190214.nc
+           JRA.v1.4.runoff.1967.190214.nc
+           JRA.v1.4.runoff.1968.190214.nc
+           JRA.v1.4.runoff.1969.190214.nc
+           JRA.v1.4.runoff.1970.190214.nc
+           JRA.v1.4.runoff.1971.190214.nc
+           JRA.v1.4.runoff.1972.190214.nc
+           JRA.v1.4.runoff.1973.190214.nc
+           JRA.v1.4.runoff.1974.190214.nc
+           JRA.v1.4.runoff.1975.190214.nc
+           JRA.v1.4.runoff.1976.190214.nc
+           JRA.v1.4.runoff.1977.190214.nc
+           JRA.v1.4.runoff.1978.190214.nc
+           JRA.v1.4.runoff.1979.190214.nc
+           JRA.v1.4.runoff.1980.190214.nc
+           JRA.v1.4.runoff.1981.190214.nc
+           JRA.v1.4.runoff.1982.190214.nc
+           JRA.v1.4.runoff.1983.190214.nc
+           JRA.v1.4.runoff.1984.190214.nc
+           JRA.v1.4.runoff.1985.190214.nc
+           JRA.v1.4.runoff.1986.190214.nc
+           JRA.v1.4.runoff.1987.190214.nc
+           JRA.v1.4.runoff.1988.190214.nc
+           JRA.v1.4.runoff.1989.190214.nc
+           JRA.v1.4.runoff.1990.190214.nc
+           JRA.v1.4.runoff.1991.190214.nc
+           JRA.v1.4.runoff.1992.190214.nc
+           JRA.v1.4.runoff.1993.190214.nc
+           JRA.v1.4.runoff.1994.190214.nc
+           JRA.v1.4.runoff.1995.190214.nc
+           JRA.v1.4.runoff.1996.190214.nc
+           JRA.v1.4.runoff.1997.190214.nc
+           JRA.v1.4.runoff.1998.190214.nc
+           JRA.v1.4.runoff.1999.190214.nc
+           JRA.v1.4.runoff.2000.190214.nc
+           JRA.v1.4.runoff.2001.190214.nc
+           JRA.v1.4.runoff.2002.190214.nc
+           JRA.v1.4.runoff.2003.190214.nc
+           JRA.v1.4.runoff.2004.190214.nc
+           JRA.v1.4.runoff.2005.190214.nc
+           JRA.v1.4.runoff.2006.190214.nc
+           JRA.v1.4.runoff.2007.190214.nc
+           JRA.v1.4.runoff.2008.190214.nc
+           JRA.v1.4.runoff.2009.190214.nc
+           JRA.v1.4.runoff.2010.190214.nc
+           JRA.v1.4.runoff.2011.190214.nc
+           JRA.v1.4.runoff.2012.190214.nc
+           JRA.v1.4.runoff.2013.190214.nc
+           JRA.v1.4.runoff.2014.190214.nc
+           JRA.v1.4.runoff.2015.190214.nc
+           JRA.v1.4.runoff.2016.190214.nc
+           JRA.v1.4.runoff.2017.190214.nc
+           JRA.v1.4.runoff.2018.190214.nc
+      &lt;/value&gt;
       &lt;value stream=&quot;rof.iaf_jra&quot;&gt;
            JRA.v1.1.runoff.1958.170807.nc
            JRA.v1.1.runoff.1959.170807.nc
@@ -557,7 +628,7 @@
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;
         runoff rofl
       &lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;
         rofl  rofl
         rofi  rofi
       &lt;/value&gt;
@@ -587,7 +658,7 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_YR_ALIGN&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -600,7 +671,7 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;1948&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;1958&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;1958&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_YR_START&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -613,6 +684,7 @@
     &lt;values&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;2009&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra_1p4_2018&quot;&gt;2018&lt;/value&gt;
       &lt;value stream=&quot;rof.iaf_jra&quot;&gt;2016&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_YR_END&lt;/value&gt;
     &lt;/values&gt;
@@ -807,7 +879,7 @@
       &lt;value&gt;linear&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;upper&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;upper&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;upper&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;upper&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;nearest&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -1053,7 +1125,7 @@ does it have any namelist settings.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CIME River Runoff Data and Stub XML Files</a><ul>
 <li><a class="reference internal" href="#cimeroot-src-components-data-comps-drof-cime-config">CIMEROOT/src/components/data_comps/drof/cime_config</a></li>
@@ -1114,7 +1186,7 @@ does it have any namelist settings.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

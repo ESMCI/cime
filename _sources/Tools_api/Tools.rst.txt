@@ -4,6 +4,14 @@ Tools package
 Submodules
 ----------
 
+Tools.generate\_cylc\_workflow module
+-------------------------------------
+
+.. automodule:: Tools.generate_cylc_workflow
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Tools.standard\_script\_setup module
 ------------------------------------
 

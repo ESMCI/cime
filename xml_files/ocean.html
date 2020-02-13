@@ -9,10 +9,13 @@
     <title>CIME Ocean Data and Stub XML Files &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME River Runoff Data and Stub XML Files" href="river.html" />
@@ -82,7 +85,7 @@
        This file may have ocn desc entries.
   --&gt;
   &lt;description modifier_mode=&quot;1&quot;&gt;
-    &lt;desc ocn=&quot;DOCN[%NULL][%DOM][%SOM][%SOMAQP][%IAF][%SST_AQUAP][%AQP1][%AQP2][%AQP3][%AQP4][%AQP5][%AQP6][%AQP7][%AQP8][%AQP9][%AQP10][%AQPFILE]&quot;&gt;DOCN &lt;/desc&gt;
+    &lt;desc ocn=&quot;DOCN[%NULL][%DOM][%SOM][%SOMAQP][%IAF][%SST_AQUAP][%AQP1][%AQP2][%AQP3][%AQP4][%AQP5][%AQP6][%AQP7][%AQP8][%AQP9][%AQP10][%AQPFILE][%AQPCONST]&quot;&gt;DOCN &lt;/desc&gt;
     &lt;desc option=&quot;NULL&quot;&gt;  null mode&lt;/desc&gt;
     &lt;desc option=&quot;DOM&quot;&gt;  prescribed ocean mode&lt;/desc&gt;
     &lt;desc option=&quot;SOM&quot;&gt;  slab ocean mode&lt;/desc&gt;
@@ -100,6 +103,7 @@
     &lt;desc option=&quot;AQP9&quot;&gt;  analytic aquaplanet sst - option 9&lt;/desc&gt;
     &lt;desc option=&quot;AQP10&quot;&gt;  analytic aquaplanet sst - option 10&lt;/desc&gt;
     &lt;desc option=&quot;AQPFILE&quot;&gt;  file input aquaplanet sst &lt;/desc&gt;
+    &lt;desc option=&quot;AQPCONST&quot;&gt;  globally constant SST for idealized experiments, such as RCE &lt;/desc&gt;
   &lt;/description&gt;
 
   &lt;entry id=&quot;COMP_OCN&quot;&gt;
@@ -113,7 +117,7 @@
 
   &lt;entry id=&quot;DOCN_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;prescribed,sst_aquap1,sst_aquap2,sst_aquap3,sst_aquap4,sst_aquap5,sst_aquap6,sst_aquap7,sst_aquap8,sst_aquap9,sst_aquap10,sst_aquapfile,som,som_aquap,interannual,null&lt;/valid_values&gt;
+    &lt;valid_values&gt;prescribed,sst_aquap1,sst_aquap2,sst_aquap3,sst_aquap4,sst_aquap5,sst_aquap6,sst_aquap7,sst_aquap8,sst_aquap9,sst_aquap10,sst_aquapfile,som,som_aquap,sst_aquap_constant,interannual,null&lt;/valid_values&gt;
     &lt;default_value&gt;prescribed&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DOCN%NULL_&quot;&gt;null&lt;/value&gt;
@@ -132,6 +136,7 @@
       &lt;value compset=&quot;_DOCN%AQP9_&quot;&gt;sst_aquap9&lt;/value&gt;
       &lt;value compset=&quot;_DOCN%AQP10_&quot;&gt;sst_aquap10&lt;/value&gt;
       &lt;value compset=&quot;_DOCN%AQPFILE_&quot;&gt;sst_aquapfile&lt;/value&gt;
+      &lt;value compset=&quot;_DOCN%AQPCONST_&quot;&gt;sst_aquap_constant&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_docn&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -201,6 +206,18 @@
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Sets aquaplanet forcing filename instead of using an analytic form.
     This is only used when DOCN_MODE=sst_aquapfile.&lt;/desc&gt;
+  &lt;/entry&gt;
+
+   &lt;entry id=&quot;DOCN_AQPCONST_VALUE&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;-1&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DOCN%AQPCONST&quot;&gt;300&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_docn&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Sets globally constant SST value&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;SSTICE_STREAM&quot;&gt;
@@ -408,6 +425,7 @@
       &lt;value docn_mode=&quot;sst_aquap9&quot;&gt;&#39;&#39;&lt;/value&gt;
       &lt;value docn_mode=&quot;sst_aquap10&quot;&gt;&#39;&#39;&lt;/value&gt;
       &lt;value docn_mode=&quot;sst_aquapfile&quot;&gt;aquapfile&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap_constant&quot;&gt;&#39;&#39;&lt;/value&gt;
       &lt;value docn_mode=&quot;som&quot;&gt;som&lt;/value&gt;
       &lt;value docn_mode=&quot;som_aquap&quot;&gt;som&lt;/value&gt;
       &lt;value docn_mode=&quot;interannual&quot;&gt;interannual&lt;/value&gt;
@@ -607,7 +625,7 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;streams&lt;/category&gt;
     &lt;group&gt;shr_strdata_nml&lt;/group&gt;
-    &lt;valid_values&gt;SSTDATA,SST_AQUAP1,SST_AQUAP2,SST_AQUAP3,SST_AQUAP4,SST_AQUAP5,SST_AQUAP6,SST_AQUAP7,SST_AQUAP8,SST_AQUAP9,SST_AQUAP10,SST_AQUAPFILE,SOM,SOM_AQUAP,IAF,NULL,COPYALL&lt;/valid_values&gt;
+    &lt;valid_values&gt;SSTDATA,SST_AQUAP1,SST_AQUAP2,SST_AQUAP3,SST_AQUAP4,SST_AQUAP5,SST_AQUAP6,SST_AQUAP7,SST_AQUAP8,SST_AQUAP9,SST_AQUAP10,SST_AQUAPFILE,SST_AQUAP_CONSTANT,SOM,SOM_AQUAP,IAF,NULL,COPYALL&lt;/valid_values&gt;
     &lt;desc&gt;
       General method that operates on the data. This is generally
       implemented in the data models but is set in the strdata method for
@@ -674,6 +692,7 @@
       &lt;value docn_mode=&quot;sst_aquap9$&quot;&gt;SST_AQUAP9&lt;/value&gt;
       &lt;value docn_mode=&quot;sst_aquap10$&quot;&gt;SST_AQUAP10&lt;/value&gt;
       &lt;value docn_mode=&quot;sst_aquapfile$&quot;&gt;SST_AQUAPFILE&lt;/value&gt;
+      &lt;value docn_mode=&quot;sst_aquap_constant$&quot;&gt;SST_AQUAP_CONSTANT&lt;/value&gt;
       &lt;value docn_mode=&quot;som$&quot;&gt;SOM&lt;/value&gt;
       &lt;value docn_mode=&quot;som_aquap&quot;&gt;SOM_AQUAP&lt;/value&gt;
       &lt;value docn_mode=&quot;interannual&quot;&gt;IAF&lt;/value&gt;
@@ -993,6 +1012,19 @@
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;sst_constant_value&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;real(30)&lt;/type&gt;
+    &lt;category&gt;docn&lt;/category&gt;
+    &lt;group&gt;docn_nml&lt;/group&gt;
+    &lt;desc&gt;
+      Value of globally uniform SST (K) for idealized experiments 
+      when data ocean mode is sst_aquap_constant
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;-1.0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
 &lt;/entry_id&gt;
 </pre></div>
 </div>
@@ -1074,7 +1106,7 @@ does it have any namelist settings.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CIME Ocean Data and Stub XML Files</a><ul>
 <li><a class="reference internal" href="#cimeroot-src-components-data-comps-docn-cime-config">CIMEROOT/src/components/data_comps/docn/cime_config</a></li>
@@ -1135,7 +1167,7 @@ does it have any namelist settings.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

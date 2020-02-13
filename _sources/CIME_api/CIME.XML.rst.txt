@@ -140,6 +140,14 @@ CIME.XML.env\_test module
     :undoc-members:
     :show-inheritance:
 
+CIME.XML.env\_workflow module
+-----------------------------
+
+.. automodule:: CIME.XML.env_workflow
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.XML.files module
 ---------------------
 
@@ -220,6 +228,14 @@ CIME.XML.standard\_module\_setup module
     :undoc-members:
     :show-inheritance:
 
+CIME.XML.stream module
+----------------------
+
+.. automodule:: CIME.XML.stream
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME.XML.test\_reporter module
 ------------------------------
 
@@ -248,6 +264,14 @@ CIME.XML.testspec module
 ------------------------
 
 .. automodule:: CIME.XML.testspec
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+CIME.XML.workflow module
+------------------------
+
+.. automodule:: CIME.XML.workflow
     :members:
     :undoc-members:
     :show-inheritance:

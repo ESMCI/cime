@@ -9,10 +9,13 @@
     <title>Common XML Files &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data, Stub and Driver Component XML Files" href="components.html" />
@@ -60,6 +63,13 @@
     &lt;header&gt;
       These variables may be changed anytime during a run, they
       control arguments to the batch submit command.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_workflow.xml&quot;&gt;
+    &lt;header&gt;
+      These variables may be changed anytime during a run, they
+      control jobs that will be submitted and their dependancies.
     &lt;/header&gt;
   &lt;/file&gt;
 
@@ -785,7 +795,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Common XML Files</a><ul>
 <li><a class="reference internal" href="#cimeroot-config-config-headers-xml">CIMEROOT/config/config_headers.xml</a></li>
@@ -844,7 +854,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

@@ -9,10 +9,13 @@
     <title>CIME.case.case_clone &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -164,6 +167,14 @@
                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="n">casesub</span><span class="p">),</span>
                         <span class="n">symlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+    <span class="c1"># copy the postprocessing directory if it exists</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cloneroot</span><span class="p">,</span> <span class="s2">&quot;postprocess&quot;</span><span class="p">)):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cloneroot</span><span class="p">,</span> <span class="s2">&quot;postprocess&quot;</span><span class="p">),</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="s2">&quot;postprocess&quot;</span><span class="p">),</span>
+                        <span class="n">symlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+
     <span class="c1"># lock env_case.xml in new case</span>
     <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">)</span>
 
@@ -259,7 +270,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

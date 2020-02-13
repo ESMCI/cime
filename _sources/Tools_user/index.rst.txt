@@ -45,7 +45,9 @@ and **case.setup**.
    e3sm_check_env
    e3sm_cime_merge
    e3sm_cime_split
+   generate_cylc_workflow.py
    getTiming
+   grids.txt
    jenkins_generic_job
    jenkins_script
    list_e3sm_tests
@@ -57,6 +59,7 @@ and **case.setup**.
    preview_run
    query_config
    query_testlists
+   rc.template
    save_provenance
    simple-py-prof
    simple_compare

@@ -1,0 +1,14 @@
+
+.. _grids.txt:
+
+####################################################
+grids.txt 
+####################################################
+
+**grids.txt** is a script in CIMEROOT/scripts.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./grids.txt --help
+   :cwd: ../../../scripts

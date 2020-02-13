@@ -9,10 +9,13 @@
     <title>CIME package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.BuildTools package" href="CIME.BuildTools.html" />
@@ -132,6 +135,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_mach_specific">CIME.XML.env_mach_specific module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_run">CIME.XML.env_run module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_test">CIME.XML.env_test module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_workflow">CIME.XML.env_workflow module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.files">CIME.XML.files module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.generic_xml">CIME.XML.generic_xml module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.grids">CIME.XML.grids module</a></li>
@@ -142,10 +146,12 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.pes">CIME.XML.pes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.pio">CIME.XML.pio module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.standard_module_setup">CIME.XML.standard_module_setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.stream">CIME.XML.stream module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.test_reporter">CIME.XML.test_reporter module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.testlist">CIME.XML.testlist module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.tests">CIME.XML.tests module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.testspec">CIME.XML.testspec module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.workflow">CIME.XML.workflow module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html#module-CIME.XML">Module contents</a></li>
 </ul>
 </li>
@@ -205,7 +211,7 @@
 code to compute and assemble aprun commands.</p>
 <dl class="function">
 <dt id="CIME.aprun.get_aprun_cmd_for_case">
-<code class="descclassname">CIME.aprun.</code><code class="descname">get_aprun_cmd_for_case</code><span class="sig-paren">(</span><em>case</em>, <em>run_exe</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/aprun.html#get_aprun_cmd_for_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.aprun.get_aprun_cmd_for_case" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.aprun.</code><code class="descname">get_aprun_cmd_for_case</code><span class="sig-paren">(</span><em>case</em>, <em>run_exe</em>, <em>overrides=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/aprun.html#get_aprun_cmd_for_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.aprun.get_aprun_cmd_for_case" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a case, construct and return the aprun command and optimized node count</p>
 </dd></dl>
 
@@ -470,7 +476,7 @@ True</p>
 
 <dl class="staticmethod">
 <dt id="CIME.date.date.hms_to_second">
-<em class="property">static </em><code class="descname">hms_to_second</code><span class="sig-paren">(</span><em>minute</em>, <em>second</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.hms_to_second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.hms_to_second" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">hms_to_second</code><span class="sig-paren">(</span><em>hour</em>, <em>minute</em>, <em>second</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.hms_to_second"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.hms_to_second" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -500,7 +506,7 @@ True</p>
 
 <dl class="staticmethod">
 <dt id="CIME.date.date.second_to_hms">
-<em class="property">static </em><code class="descname">second_to_hms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.second_to_hms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.second_to_hms" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">second_to_hms</code><span class="sig-paren">(</span><em>second</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date.second_to_hms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date.second_to_hms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -771,7 +777,7 @@ write</p>
 <p>This function is similar to <cite>get_variable_value</cite>, except that it does
 not require a <cite>group_name</cite>, and it requires that the <cite>variable_name</cite> be
 unique across all groups.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>  
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>  <span class="c1"># doctest: +ELLIPSIS</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">SystemExit</span>: <span class="n">ERROR: Namelist.get_value: Variable {} is present in multiple groups: ...</span>
@@ -1515,7 +1521,7 @@ will raise an exception.</p>
 
 <dl class="method">
 <dt id="CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">
-<code class="descname">create_stream_file_and_update_shr_strdata_nml</code><span class="sig-paren">(</span><em>config</em>, <em>stream</em>, <em>stream_path</em>, <em>data_list_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_stream_file_and_update_shr_strdata_nml</code><span class="sig-paren">(</span><em>config</em>, <em>caseroot</em>, <em>stream</em>, <em>stream_path</em>, <em>data_list_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the pseudo-XML file corresponding to a given stream.</p>
 <p>Arguments:
 <cite>config</cite> - Used to look up namelist defaults. This is used <em>in addition</em></p>
@@ -2591,12 +2597,12 @@ parse and return the partial results.</p>
 
 <dl class="function">
 <dt id="CIME.utils.run_bld_cmd_ensure_logging">
-<code class="descclassname">CIME.utils.</code><code class="descname">run_bld_cmd_ensure_logging</code><span class="sig-paren">(</span><em>cmd</em>, <em>arg_logger</em>, <em>from_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_bld_cmd_ensure_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_bld_cmd_ensure_logging" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">run_bld_cmd_ensure_logging</code><span class="sig-paren">(</span><em>cmd</em>, <em>arg_logger</em>, <em>from_dir=None</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_bld_cmd_ensure_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_bld_cmd_ensure_logging" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.run_cmd">
-<code class="descclassname">CIME.utils.</code><code class="descname">run_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>input_str=None</em>, <em>from_dir=None</em>, <em>verbose=None</em>, <em>arg_stdout=&lt;object object&gt;</em>, <em>arg_stderr=&lt;object object&gt;</em>, <em>env=None</em>, <em>combine_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">run_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>input_str=None</em>, <em>from_dir=None</em>, <em>verbose=None</em>, <em>arg_stdout=&lt;object object&gt;</em>, <em>arg_stderr=&lt;object object&gt;</em>, <em>env=None</em>, <em>combine_output=False</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around subprocess to make it much more convenient to run shell commands</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd</span><span class="p">(</span><span class="s1">&#39;ls file_i_hope_doesnt_exist&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
 <span class="go">True</span>
@@ -2606,12 +2612,12 @@ parse and return the partial results.</p>
 
 <dl class="function">
 <dt id="CIME.utils.run_cmd_no_fail">
-<code class="descclassname">CIME.utils.</code><code class="descname">run_cmd_no_fail</code><span class="sig-paren">(</span><em>cmd</em>, <em>input_str=None</em>, <em>from_dir=None</em>, <em>verbose=None</em>, <em>arg_stdout=&lt;object object&gt;</em>, <em>arg_stderr=&lt;object object&gt;</em>, <em>env=None</em>, <em>combine_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd_no_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd_no_fail" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">run_cmd_no_fail</code><span class="sig-paren">(</span><em>cmd</em>, <em>input_str=None</em>, <em>from_dir=None</em>, <em>verbose=None</em>, <em>arg_stdout=&lt;object object&gt;</em>, <em>arg_stderr=&lt;object object&gt;</em>, <em>env=None</em>, <em>combine_output=False</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd_no_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd_no_fail" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around subprocess to make it much more convenient to run shell commands.
 Expects command to work. Just returns output string.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo foo&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;foo&#39;</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo THE ERROR &gt;&amp;2; false&#39;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo THE ERROR &gt;&amp;2; false&#39;</span><span class="p">)</span> <span class="c1"># doctest:+ELLIPSIS</span>
 <span class="gt">Traceback (most recent call last):</span>
     <span class="o">...</span>
 <span class="gr">SystemExit</span>: <span class="n">ERROR: Command: &#39;echo THE ERROR &gt;&amp;2; false&#39; failed with error ...</span>
@@ -2627,7 +2633,7 @@ Expects command to work. Just returns output string.</p>
 
 <dl class="function">
 <dt id="CIME.utils.run_sub_or_cmd">
-<code class="descclassname">CIME.utils.</code><code class="descname">run_sub_or_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>cmdargs</em>, <em>subname</em>, <em>subargs</em>, <em>logfile=None</em>, <em>case=None</em>, <em>from_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_sub_or_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_sub_or_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">run_sub_or_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>cmdargs</em>, <em>subname</em>, <em>subargs</em>, <em>logfile=None</em>, <em>case=None</em>, <em>from_dir=None</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_sub_or_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_sub_or_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>This code will try to import and run each cmd as a subroutine
 if that fails it will run it as a program in a seperate shell</p>
 <p>Raises exception on failure.</p>
@@ -2789,7 +2795,7 @@ recursively.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CIME package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
@@ -2871,7 +2877,7 @@ recursively.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

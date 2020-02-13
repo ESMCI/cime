@@ -9,10 +9,13 @@
     <title>CIME.XML package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.case package" href="CIME.case.html" />
@@ -600,7 +603,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <p>Interface to the env_batch.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_batch.EnvBatch">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_batch.</code><code class="descname">EnvBatch</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_batch.xml'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_batch.</code><code class="descname">EnvBatch</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_batch.xml'</em>, <em>schema=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.cancel_job">
@@ -630,7 +633,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_batch_directives">
-<code class="descname">get_batch_directives</code><span class="sig-paren">(</span><em>case</em>, <em>job</em>, <em>overrides=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_batch_directives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_batch_directives" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_batch_directives</code><span class="sig-paren">(</span><em>case</em>, <em>job</em>, <em>overrides=None</em>, <em>output_format='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_batch_directives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_batch_directives" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -659,6 +662,11 @@ with the key attribute but you don’t care what its value is.</p>
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_job_id">
 <code class="descname">get_job_id</code><span class="sig-paren">(</span><em>output</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_job_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_job_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_batch.EnvBatch.get_job_overrides">
+<code class="descname">get_job_overrides</code><span class="sig-paren">(</span><em>job</em>, <em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_job_overrides"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_job_overrides" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -691,7 +699,7 @@ with the key attribute but you don’t care what its value is.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_value">
-<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup='PRIMARY'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_value" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Must default subgroup to something in order to provide single return value</p>
 </dd></dl>
 
@@ -856,7 +864,7 @@ stderr output even when things are working fine.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun">
-<code class="descname">get_mpirun</code><span class="sig-paren">(</span><em>case</em>, <em>attribs</em>, <em>job</em>, <em>exe_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_mpirun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_mpirun</code><span class="sig-paren">(</span><em>case</em>, <em>attribs</em>, <em>job</em>, <em>exe_only=False</em>, <em>overrides=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_mpirun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find best match, return (executable, {arg_name : text})</p>
 </dd></dl>
 
@@ -973,6 +981,56 @@ otherwise create a node and initialize it to value</p>
 <dt id="CIME.XML.env_test.EnvTest.set_value">
 <code class="descname">set_value</code><span class="sig-paren">(</span><em>vid</em>, <em>value</em>, <em>subgroup=None</em>, <em>ignore_type=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_test.html#EnvTest.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_test.EnvTest.set_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>check if vid is in test section of file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.XML.env_workflow">
+<span id="cime-xml-env-workflow-module"></span><h2>CIME.XML.env_workflow module<a class="headerlink" href="#module-CIME.XML.env_workflow" title="Permalink to this headline">¶</a></h2>
+<p>Interface to the env_workflow.xml file.  This class inherits from EnvBase</p>
+<dl class="class">
+<dt id="CIME.XML.env_workflow.EnvWorkflow">
+<em class="property">class </em><code class="descclassname">CIME.XML.env_workflow.</code><code class="descname">EnvWorkflow</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_workflow.xml'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.create_job_groups">
+<code class="descname">create_job_groups</code><span class="sig-paren">(</span><em>batch_jobs</em>, <em>is_test</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.create_job_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.create_job_groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.get_children">
+<code class="descname">get_children</code><span class="sig-paren">(</span><em>name=None</em>, <em>attributes=None</em>, <em>root=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the critical function, its interface and performance are crucial.</p>
+<p>You can specify attributes={key:None} if you want to select chilren
+with the key attribute but you don’t care what its value is.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.get_job_specs">
+<code class="descname">get_job_specs</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_job_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_job_specs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.get_jobs">
+<code class="descname">get_jobs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_jobs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.get_type_info">
+<code class="descname">get_type_info</code><span class="sig-paren">(</span><em>vid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_type_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_type_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup='PRIMARY'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Must default subgroup to something in order to provide single return value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.env_workflow.EnvWorkflow.set_value">
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>item</em>, <em>value</em>, <em>subgroup=None</em>, <em>ignore_type=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.set_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override the entry_id set_value function with some special cases for this class</p>
 </dd></dl>
 
 </dd></dl>
@@ -1599,6 +1657,23 @@ reporting when the namelist comes from a specific, known file.</p>
 <div class="section" id="module-CIME.XML.standard_module_setup">
 <span id="cime-xml-standard-module-setup-module"></span><h2>CIME.XML.standard_module_setup module<a class="headerlink" href="#module-CIME.XML.standard_module_setup" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-CIME.XML.stream">
+<span id="cime-xml-stream-module"></span><h2>CIME.XML.stream module<a class="headerlink" href="#module-CIME.XML.stream" title="Permalink to this headline">¶</a></h2>
+<p>Interface to the streams.xml style files.  This class inherits from GenericXML.py</p>
+<p>stream files predate cime and so do not conform to entry id format</p>
+<dl class="class">
+<dt id="CIME.XML.stream.Stream">
+<em class="property">class </em><code class="descclassname">CIME.XML.stream.</code><code class="descname">Stream</code><span class="sig-paren">(</span><em>infile=None</em>, <em>files=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/stream.html#Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.stream.Stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
+<dl class="method">
+<dt id="CIME.XML.stream.Stream.get_value">
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/stream.html#Stream.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.stream.Stream.get_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Value of fields in a stream.xml file</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-CIME.XML.test_reporter">
 <span id="cime-xml-test-reporter-module"></span><h2>CIME.XML.test_reporter module<a class="headerlink" href="#module-CIME.XML.test_reporter" title="Permalink to this headline">¶</a></h2>
 <p>Interface to the testreporter xml.  This class inherits from GenericXML.py</p>
@@ -1730,6 +1805,23 @@ INFRASTRUCTURE_TEST=”TRUE”.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-CIME.XML.workflow">
+<span id="cime-xml-workflow-module"></span><h2>CIME.XML.workflow module<a class="headerlink" href="#module-CIME.XML.workflow" title="Permalink to this headline">¶</a></h2>
+<p>Interface to the config_workflow.xml file.  This class inherits from GenericXML.py</p>
+<dl class="class">
+<dt id="CIME.XML.workflow.Workflow">
+<em class="property">class </em><code class="descclassname">CIME.XML.workflow.</code><code class="descname">Workflow</code><span class="sig-paren">(</span><em>infile=None</em>, <em>files=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/workflow.html#Workflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.workflow.Workflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
+<dl class="method">
+<dt id="CIME.XML.workflow.Workflow.get_workflow_jobs">
+<code class="descname">get_workflow_jobs</code><span class="sig-paren">(</span><em>machine</em>, <em>workflowid='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/workflow.html#Workflow.get_workflow_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.workflow.Workflow.get_workflow_jobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of jobs with the first element the name of the script
+and the second a dict of qualifiers for the job</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-CIME.XML">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.XML" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -1741,7 +1833,7 @@ INFRASTRUCTURE_TEST=”TRUE”.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CIME.XML package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -1762,6 +1854,7 @@ INFRASTRUCTURE_TEST=”TRUE”.</p>
 <li><a class="reference internal" href="#module-CIME.XML.env_mach_specific">CIME.XML.env_mach_specific module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.env_run">CIME.XML.env_run module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.env_test">CIME.XML.env_test module</a></li>
+<li><a class="reference internal" href="#module-CIME.XML.env_workflow">CIME.XML.env_workflow module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.files">CIME.XML.files module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.generic_xml">CIME.XML.generic_xml module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.grids">CIME.XML.grids module</a></li>
@@ -1772,10 +1865,12 @@ INFRASTRUCTURE_TEST=”TRUE”.</p>
 <li><a class="reference internal" href="#module-CIME.XML.pes">CIME.XML.pes module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.pio">CIME.XML.pio module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.standard_module_setup">CIME.XML.standard_module_setup module</a></li>
+<li><a class="reference internal" href="#module-CIME.XML.stream">CIME.XML.stream module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.test_reporter">CIME.XML.test_reporter module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.testlist">CIME.XML.testlist module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.tests">CIME.XML.tests module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML.testspec">CIME.XML.testspec module</a></li>
+<li><a class="reference internal" href="#module-CIME.XML.workflow">CIME.XML.workflow module</a></li>
 <li><a class="reference internal" href="#module-CIME.XML">Module contents</a></li>
 </ul>
 </li>
@@ -1832,7 +1927,7 @@ INFRASTRUCTURE_TEST=”TRUE”.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

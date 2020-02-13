@@ -9,10 +9,13 @@
     <title>create_test &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="cs.status" href="cs.status.html" />
@@ -53,7 +56,9 @@ usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
                    [-u] [--save-timing] [--no-batch] [--single-submit]
                    [-r TEST_ROOT] [--output-root OUTPUT_ROOT]
                    [--baseline-root BASELINE_ROOT] [--clean] [-m MACHINE]
-                   [--mpilib MPILIB] [-b BASELINE_NAME] [-c] [-g]
+                   [--mpilib MPILIB] [-c COMPARE] [-g GENERATE]
+                   [--xml-machine XML_MACHINE] [--xml-compiler XML_COMPILER]
+                   [--xml-category XML_CATEGORY] [--xml-testlist XML_TESTLIST]
                    [--compiler COMPILER] [-n] [-p PROJECT] [-t TEST_ID]
                    [-j PARALLEL_JOBS] [--proc-pool PROC_POOL]
                    [--walltime WALLTIME] [-q QUEUE] [-f TESTFILE] [-o]
@@ -62,7 +67,7 @@ usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
                    [--force-procs FORCE_PROCS] [--force-threads FORCE_THREADS]
                    [-i INPUT_DIR] [--pesfile PESFILE] [--retry RETRY]
                    [--mail-user MAIL_USER] [-M MAIL_TYPE]
-                   testargs [testargs ...]
+                   [testargs [testargs ...]]
 
 Script to create, build and run CIME tests. This script can:
 
@@ -88,11 +93,11 @@ If this tool is missing any feature that you need, please add an issue on
 https://github.com/ESMCI/cime
 
 positional arguments:
-  testargs              Tests or test suites to run. Testname form is TEST.GRID.COMPSET[.MACHINE_COMPILER]
+  testargs              Tests to run. Testname form is TEST.GRID.COMPSET[.MACHINE_COMPILER]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cime/scripts/create_test.log
+  -d, --debug           Print debug information (very verbose) to file /home/aliceb/CESM/cime/scripts/create_test.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --no-run              Do not run generated tests
@@ -124,12 +129,22 @@ optional arguments:
                         only be used if you are an expert.
   --mpilib MPILIB       Specify the mpilib. To see list of supported MPI libraries for each machine, 
                         invoke ./query_config. The default is the first listing .
-  -b BASELINE_NAME, --baseline-name BASELINE_NAME
-                        If comparing or generating baselines, use this directory under baseline root. 
-                        Default will be current branch name.
-  -c, --compare         While testing, compare baselines
-  -g, --generate        While testing, generate baselines. 
+  -c COMPARE, --compare COMPARE
+                        While testing, compare baselines against the given compare directory. 
+  -g GENERATE, --generate GENERATE
+                        While testing, generate baselines in the given generate directory. 
                         NOTE: this can also be done after the fact with bless_test_results
+  --xml-machine XML_MACHINE
+                        Use this machine key in the lookup in testlist.xml. 
+                        The default is all if any --xml- argument is used.
+  --xml-compiler XML_COMPILER
+                        Use this compiler key in the lookup in testlist.xml. 
+                        The default is all if any --xml- argument is used.
+  --xml-category XML_CATEGORY
+                        Use this category key in the lookup in testlist.xml. 
+                        The default is all if any --xml- argument is used.
+  --xml-testlist XML_TESTLIST
+                        Use this testlist to lookup tests.The default is specified in config_files.xml
   --compiler COMPILER   Compiler for building cime. Default will be the name in the 
                         Testname or the default defined for the machine.
   -n, --namelists-only  Only perform namelist actions for tests
@@ -243,7 +258,7 @@ optional arguments:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

@@ -9,10 +9,13 @@
     <title>Driver XML Files &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME" href="../CIME_api/modules.html" />
@@ -2685,18 +2688,27 @@ to define behavior.</p>
     &lt;desc&gt;External script to be run after model completion&lt;/desc&gt;
   &lt;/entry&gt;
 
+ &lt;entry id=&quot;EXTERNAL_WORKFLOW&quot;&gt;
+   &lt;type&gt;logical&lt;/type&gt;
+   &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
+   &lt;default_value&gt;FALSE&lt;/default_value&gt;
+   &lt;group&gt;external_tools&lt;/group&gt;
+   &lt;file&gt;env_run.xml&lt;/file&gt;
+   &lt;desc&gt;whether the case uses an external workflow driver &lt;/desc&gt;
+ &lt;/entry&gt;
+
  &lt;!-- Job Submission stuff --&gt;
  &lt;entry id=&quot;USER_REQUESTED_QUEUE&quot;&gt;
    &lt;type&gt;char&lt;/type&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
-   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;file&gt;env_workflow.xml&lt;/file&gt;
    &lt;desc&gt;Store user override for queue&lt;/desc&gt;
  &lt;/entry&gt;
 
  &lt;entry id=&quot;USER_REQUESTED_WALLTIME&quot;&gt;
    &lt;type&gt;char&lt;/type&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
-   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;file&gt;env_workflow.xml&lt;/file&gt;
    &lt;desc&gt;Store user override for walltime&lt;/desc&gt;
  &lt;/entry&gt;
 
@@ -2705,7 +2717,7 @@ to define behavior.</p>
    &lt;valid_values&gt;&lt;/valid_values&gt;
    &lt;default_value&gt;&lt;/default_value&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
-   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;file&gt;env_workflow.xml&lt;/file&gt;
    &lt;desc&gt;The machine queue in which to submit the job.  Default determined in config_machines.xml can be overwritten by testing&lt;/desc&gt;
  &lt;/entry&gt;
 
@@ -2714,7 +2726,7 @@ to define behavior.</p>
    &lt;valid_values&gt;&lt;/valid_values&gt;
    &lt;default_value&gt;&lt;/default_value&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
-   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;file&gt;env_workflow.xml&lt;/file&gt;
    &lt;desc&gt;The machine wallclock setting.  Default determined in config_machines.xml can be overwritten by testing&lt;/desc&gt;
  &lt;/entry&gt;
 
@@ -2723,7 +2735,7 @@ to define behavior.</p>
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;&lt;/default_value&gt;
     &lt;group&gt;job_submission&lt;/group&gt;
-    &lt;file&gt;env_batch.xml&lt;/file&gt;
+    &lt;file&gt;env_workflow.xml&lt;/file&gt;
     &lt;desc&gt;Override the batch submit command this job. Do not include executable or dependencies&lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -2731,7 +2743,7 @@ to define behavior.</p>
    &lt;type&gt;char&lt;/type&gt;
    &lt;default_value&gt;&lt;/default_value&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
-   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;file&gt;env_workflow.xml&lt;/file&gt;
    &lt;desc&gt;project for project-sensitive build and run paths, and job scripts&lt;/desc&gt;
  &lt;/entry&gt;
 
@@ -2739,7 +2751,7 @@ to define behavior.</p>
    &lt;type&gt;char&lt;/type&gt;
    &lt;default_value&gt;&lt;/default_value&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
-   &lt;file&gt;env_batch.xml&lt;/file&gt;
+   &lt;file&gt;env_workflow.xml&lt;/file&gt;
    &lt;desc&gt;project to charge in scripts if different from PROJECT&lt;/desc&gt;
  &lt;/entry&gt;
 
@@ -2759,6 +2771,7 @@ to define behavior.</p>
    &lt;file&gt;env_batch.xml&lt;/file&gt;
    &lt;desc&gt;whether the PROJECT value is required on this machine&lt;/desc&gt;
  &lt;/entry&gt;
+
 
  &lt;help&gt;
     =========================================
@@ -3733,7 +3746,9 @@ to define behavior.</p>
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_CAM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_DATM&quot;&gt;none&lt;/value&gt;
-      &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%CPLHIST.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%IAF.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%JRA.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;SSP.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
@@ -3873,6 +3888,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_XOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_SOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_NEMO&quot;&gt;24&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3956,6 +3972,7 @@ to define behavior.</p>
       &lt;value compset=&quot;DATM.+POP\d&quot;&gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;DATM.+DOCN%IAF&quot;&gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;DATM%CPLHIST.+POP\d&quot;&gt;FALSE&lt;/value&gt;
+      &lt;value compset=&quot;DOCN%AQP11&quot;&gt;TRUE&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_cpl&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4083,7 +4100,8 @@ to define behavior.</p>
     &lt;default_value&gt;284.7&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;^2000&quot;&gt;367.0&lt;/value&gt;
-      &lt;value compset=&quot;DATM.*POP2%ECO&quot;&gt;284.7&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_POP2%[^_]*ECO&quot;&gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_POP2%[^_]*ECOCESM20&quot;&gt;284.7&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_co2&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -8728,6 +8746,44 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;seq_flux_mct_albdif&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;category&gt;seq_flux_mct&lt;/category&gt;
+    &lt;group&gt;seq_flux_mct_inparm&lt;/group&gt;
+    &lt;desc&gt;
+       Surface albedo for direct radiation
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;0.06&lt;/value&gt;
+      &lt;value aqua_planet_sst_type=&quot;sst_aquap_constant&quot;&gt;0.07&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;seq_flux_mct_albdir&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;category&gt;seq_flux_mct&lt;/category&gt;
+    &lt;group&gt;seq_flux_mct_inparm&lt;/group&gt;
+    &lt;desc&gt;
+       Surface albedo for diffuse radiation
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;0.07&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;seq_flux_atmocn_minwind&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;category&gt;seq_flux_mct&lt;/category&gt;
+    &lt;group&gt;seq_flux_mct_inparm&lt;/group&gt;
+    &lt;desc&gt;
+       minimum wind speed for atmOcn flux calculations
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;0.5&lt;/value&gt;
+      &lt;value aqua_planet_sst_type=&quot;sst_aquap_constant&quot;&gt;1.0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
 &lt;/entry_id&gt;
 </pre></div>
 </div>
@@ -9100,7 +9156,7 @@ to define behavior.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Driver XML Files</a><ul>
 <li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config">CIMEROOT/src/drivers/mct/cime_config</a></li>
@@ -9159,7 +9215,7 @@ to define behavior.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

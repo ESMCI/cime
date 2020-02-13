@@ -9,14 +9,17 @@
     <title>jenkins_generic_job &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="jenkins_script" href="jenkins_script.html" />
-    <link rel="prev" title="getTiming" href="getTiming.html" /> 
+    <link rel="prev" title="grids.txt" href="grids.txt.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -31,7 +34,7 @@
           <a href="jenkins_script.html" title="jenkins_script"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="getTiming.html" title="getTiming"
+          <a href="grids.txt.html" title="grids.txt"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">User Tools</a> &#187;</li> 
@@ -49,78 +52,14 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./jenkins_generic_job --help
-usage: 
-jenkins_generic_job [-g] [-d] [--verbose]
-OR
-jenkins_generic_job --help
-
-[1mEXAMPLES:[0m
-    [1;32m# Run the tests and compare baselines [0m
-    &gt; jenkins_generic_job
-    [1;32m# Run the tests, compare baselines, and update dashboard [0m
-    &gt; jenkins_generic_job -d
-    [1;32m# Run the tests, generating a full set of baselines (useful for first run on a machine) [0m
-    &gt; jenkins_generic_job -g
-
-Jenkins runs this script to perform a test of an e3sm test suite. Essentially,
-a wrapper around create_test and wait_for_tests that handles cleanup of old
-test results and ensures that the batch system is left in a clean state.
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/
-                        aliceb/cime/scripts/Tools/jenkins_generic_job.log
-                        (default: False)
-  -v, --verbose         Add additional context (time and file) to log messages
-                        (default: False)
-  -s, --silent          Print only warnings and error messages (default:
-                        False)
-  -g, --generate-baselines
-                        Generate baselines (default: False)
-  --baseline-compare BASELINE_COMPARE
-                        Do baseline comparisons (yes/no) (default: None)
-  --submit-to-cdash     Send results to CDash (default: False)
-  --no-batch            Do not use batch system even if on batch machine
-                        (default: False)
-  -c CDASH_BUILD_NAME, --cdash-build-name CDASH_BUILD_NAME
-                        Build name to use for CDash submission. Default will
-                        be &lt;TEST_SUITE&gt;_&lt;BRANCH&gt;_&lt;COMPILER&gt; (default: None)
-  -p CDASH_PROJECT, --cdash-project CDASH_PROJECT
-                        The name of the CDash project where results should be
-                        uploaded (default: ACME_Climate)
-  -b BASELINE_NAME, --baseline-name BASELINE_NAME
-                        Baseline name for baselines to use. Also impacts
-                        dashboard job name. Useful for testing a branch other
-                        than next or master (default: maint-5_6)
-  -O OVERRIDE_BASELINE_NAME, --override-baseline-name OVERRIDE_BASELINE_NAME
-                        Force comparison with these baseines without impacting
-                        dashboard or test-id. (default: None)
-  -t TEST_SUITE, --test-suite TEST_SUITE
-                        Override default e3sm test suite that will be run
-                        (default: None)
-  -r SCRATCH_ROOT, --scratch-root SCRATCH_ROOT
-                        Override default e3sm scratch root. Use this to avoid
-                        conflicting with other jenkins jobs (default: None)
-  --cdash-build-group CDASH_BUILD_GROUP
-                        The build group to be used to display results on the
-                        CDash dashboard. (default: ACME_Latest)
-  -j PARALLEL_JOBS, --parallel-jobs PARALLEL_JOBS
-                        Number of tasks create_test should perform
-                        simultaneously. Default will be min(num_cores,
-                        num_tests). (default: None)
-  --walltime WALLTIME   Force a specific walltime for all tests. (default:
-                        None)
-  -m MACHINE, --machine MACHINE
-                        The machine for which to build tests, this machine
-                        must be defined in the config_machines.xml file for
-                        the given model. Default is to match the name of the
-                        machine in the test name or the name of the machine
-                        this script is run on to the NODENAME_REGEX field in
-                        config_machines.xml. This option is highly unsafe and
-                        should only be used if you know what you&#39;re doing.
-                        (default: None)
-  --compiler COMPILER   Compiler to use to build cime. Default will be the
-                        default defined for the machine. (default: None)
+Traceback (most recent call last):
+  File &quot;./jenkins_generic_job&quot;, line 137, in &lt;module&gt;
+    _main_func(__doc__)
+  File &quot;./jenkins_generic_job&quot;, line 129, in _main_func
+    parse_command_line(sys.argv, description)
+  File &quot;./jenkins_generic_job&quot;, line 45, in parse_command_line
+    default_baseline = default_baseline.replace(&quot;.&quot;, &quot;_&quot;).replace(&quot;/&quot;, &quot;_&quot;) # Dots or slashes will mess things up
+AttributeError: &#39;NoneType&#39; object has no attribute &#39;replace&#39;
 </pre></div>
 </div>
 </div>
@@ -132,8 +71,8 @@ optional arguments:
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="getTiming.html"
-                        title="previous chapter">getTiming</a></p>
+  <p class="topless"><a href="grids.txt.html"
+                        title="previous chapter">grids.txt</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="jenkins_script.html"
                         title="next chapter">jenkins_script</a></p>
@@ -173,7 +112,7 @@ optional arguments:
           <a href="jenkins_script.html" title="jenkins_script"
              >next</a> |</li>
         <li class="right" >
-          <a href="getTiming.html" title="getTiming"
+          <a href="grids.txt.html" title="grids.txt"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >User Tools</a> &#187;</li> 
@@ -181,7 +120,7 @@ optional arguments:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

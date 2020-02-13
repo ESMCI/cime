@@ -9,10 +9,13 @@
     <title>create_clone &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="create_newcase" href="create_newcase.html" />
@@ -50,13 +53,13 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./create_clone --help
 usage: create_clone [-h] [-d] [-v] [-s] --case CASE --clone CLONE
-                    [--user-mods-dir USER_MODS_DIR] [--keepexe]
-                    [--mach-dir MACH_DIR] [--project PROJECT]
+                    [--ensemble ENSEMBLE] [--user-mods-dir USER_MODS_DIR]
+                    [--keepexe] [--mach-dir MACH_DIR] [--project PROJECT]
                     [--cime-output-root CIME_OUTPUT_ROOT]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cime/scripts/create_clone.log
+  -d, --debug           Print debug information (very verbose) to file /home/aliceb/CESM/cime/scripts/create_clone.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --case CASE, -case CASE
@@ -65,6 +68,9 @@ optional arguments:
   --clone CLONE, -clone CLONE
                         (required) Specify a case to be cloned. If not a full pathname, 
                         the case to be cloned is assumed to be under then current working directory.
+  --ensemble ENSEMBLE   clone an ensemble of cases, the case name argument must end in an integer.
+                        for example: ./create_clone --clone case.template --case case.001 --ensemble 4 
+                        will create case.001, case.002, case.003, case.004 from existing case.template
   --user-mods-dir USER_MODS_DIR
                         Full pathname to a directory containing any combination of user_nl_* files 
                         and shell_commands script (typically containing xmlchange commands). 
@@ -145,7 +151,7 @@ optional arguments:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

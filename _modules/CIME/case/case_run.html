@@ -9,10 +9,13 @@
     <title>CIME.case.case_run &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -69,7 +72,10 @@
         <span class="n">safe_copy</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
 
     <span class="c1"># check for locked files.</span>
-    <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">()</span>
+    <span class="n">skip</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXTERNAL_WORKFLOW&quot;</span><span class="p">):</span>
+        <span class="n">skip</span> <span class="o">=</span> <span class="s2">&quot;env_batch&quot;</span>
+    <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="n">skip</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;check_lockedfiles OK&quot;</span><span class="p">)</span>
 
     <span class="c1"># check that build is done</span>
@@ -273,6 +279,8 @@
 
         <span class="n">case</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">job</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;resubmit after check is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resubmit</span><span class="p">))</span>
+
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_do_external</span><span class="p">(</span><span class="n">script_name</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
@@ -343,10 +351,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>
                        <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT_SETS_CONTINUE_RUN&quot;</span><span class="p">))</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;check for resubmit&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">submit_resubmits</span><span class="p">:</span>
-        <span class="n">_resubmit_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
+    <span class="n">external_workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXTERNAL_WORKFLOW&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">external_workflow</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;check for resubmit&quot;</span><span class="p">)</span>
+    
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;submit_resubmits is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">submit_resubmits</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">submit_resubmits</span><span class="p">:</span>
+            <span class="n">_resubmit_check</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        
     <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
 
@@ -386,7 +398,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

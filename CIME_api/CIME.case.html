@@ -9,10 +9,13 @@
     <title>CIME.case package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.tests package" href="CIME.tests.html" />
@@ -190,7 +193,7 @@ Return True if no files missing</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.configure">
-<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em>, <em>workflowid='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -200,7 +203,7 @@ Return True if no files missing</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.create" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em>, <em>workflowid='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -267,6 +270,11 @@ directories. It is an error to provide exeroot if keepexe is True.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="CIME.case.case.Case.get_first_job">
+<code class="descname">get_first_job</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_first_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_first_job" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="CIME.case.case.Case.get_job_info">
 <code class="descname">get_job_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_job_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_job_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get information on batch jobs associated with this case</p>
@@ -281,7 +289,7 @@ coupler_log_path directory</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.get_mpirun_cmd">
-<code class="descname">get_mpirun_cmd</code><span class="sig-paren">(</span><em>job=None</em>, <em>allow_unresolved_envvars=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_mpirun_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_mpirun_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_mpirun_cmd</code><span class="sig-paren">(</span><em>job=None</em>, <em>allow_unresolved_envvars=True</em>, <em>overrides=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_mpirun_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_mpirun_cmd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -655,7 +663,7 @@ create_dirs and create_namelists are members of Class case from file case.py</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CIME.case package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -726,7 +734,7 @@ create_dirs and create_namelists are members of Class case from file case.py</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

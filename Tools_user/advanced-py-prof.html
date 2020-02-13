@@ -9,10 +9,13 @@
     <title>advanced-py-prof &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="archive_metadata" href="archive_metadata.html" />
@@ -49,9 +52,16 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./advanced-py-prof --help
-basename: illegal option -- -
-usage: basename string [suffix]
-       basename [-a] [-s suffix] string [...]
+Traceback (most recent call last):
+  File &quot;/usr/local/anaconda-2.7.14/lib/python2.7/runpy.py&quot;, line 174, in _run_module_as_main
+    &quot;__main__&quot;, fname, loader, pkg_name)
+  File &quot;/usr/local/anaconda-2.7.14/lib/python2.7/runpy.py&quot;, line 72, in _run_code
+    exec code in run_globals
+  File &quot;/usr/local/anaconda-2.7.14/lib/python2.7/cProfile.py&quot;, line 199, in &lt;module&gt;
+    main()
+  File &quot;/usr/local/anaconda-2.7.14/lib/python2.7/cProfile.py&quot;, line 185, in main
+    with open(progname, &#39;rb&#39;) as fp:
+IOError: [Errno 2] No such file or directory: &#39;basename&#39;
 </pre></div>
 </div>
 </div>
@@ -112,7 +122,7 @@ usage: basename string [suffix]
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

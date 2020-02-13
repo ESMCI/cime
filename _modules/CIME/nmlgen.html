@@ -9,10 +9,13 @@
     <title>CIME.nmlgen &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
   </head><body>
@@ -53,7 +56,8 @@
     <span class="n">character_literal_to_string</span><span class="p">,</span> <span class="n">string_to_character_literal</span><span class="p">,</span> \
     <span class="n">expand_literal_list</span><span class="p">,</span> <span class="n">compress_literal_list</span><span class="p">,</span> <span class="n">merge_literal_lists</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.namelist_definition</span> <span class="k">import</span> <span class="n">NamelistDefinition</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.stream</span> <span class="k">import</span> <span class="n">Stream</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -61,7 +65,8 @@
 
 <span class="n">_ymd_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;%(?P&lt;digits&gt;[1-9][0-9]*)?y(?P&lt;month&gt;m(?P&lt;day&gt;d)?)?&quot;</span><span class="p">)</span>
 
-<span class="n">_stream_file_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_stream_file_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="s2">&lt;file id=&quot;stream&quot; version=&quot;1.0&quot;&gt;</span>
 <span class="s2">&lt;dataSource&gt;</span>
 <span class="s2">   GENERIC</span>
 <span class="s2">&lt;/dataSource&gt;</span>
@@ -90,6 +95,7 @@
 <span class="s2">      </span><span class="si">{offset}</span><span class="s2"></span>
 <span class="s2">   &lt;/offset&gt;</span>
 <span class="s2">&lt;/fieldInfo&gt;</span>
+<span class="s2">&lt;/file&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NamelistGenerator"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator">[docs]</a><span class="k">class</span> <span class="nc">NamelistGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -450,7 +456,7 @@
                     <span class="n">new_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_line</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_lines</span><span class="p">)</span>
 
-<div class="viewcode-block" id="NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_file_and_update_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="c1">#pylint:disable=too-many-locals</span>
+<div class="viewcode-block" id="NamelistGenerator.create_stream_file_and_update_shr_strdata_nml"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.create_stream_file_and_update_shr_strdata_nml">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_file_and_update_shr_strdata_nml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="c1">#pylint:disable=too-many-locals</span>
                            <span class="n">stream</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">,</span> <span class="n">data_list_path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write the pseudo-XML file corresponding to a given stream.</span>
 
@@ -464,55 +470,71 @@
 <span class="sd">        `data_list_path` - Path of file to append input data information to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># Stream-specific configuration.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">stream_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">stream_path</span><span class="p">)</span>
+        <span class="n">user_stream_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;user_&quot;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">stream_path</span><span class="p">))</span>
+
+        <span class="c1"># Use the user&#39;s stream file, or create one if necessary.</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream</span>
 
-        <span class="c1"># Figure out the details of this stream.</span>
-        <span class="k">if</span> <span class="n">stream</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;prescribed&quot;</span><span class="p">,</span> <span class="s2">&quot;copyall&quot;</span><span class="p">):</span>
-            <span class="c1"># Assume only one file for prescribed mode!</span>
-            <span class="n">grid_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_grid_file&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-            <span class="n">domain_filepath</span><span class="p">,</span> <span class="n">domain_filenames</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">grid_file</span><span class="p">)</span>
-            <span class="n">data_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_data_file&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-            <span class="n">data_filepath</span><span class="p">,</span> <span class="n">data_filenames</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+
+        <span class="c1"># Stream-specific configuration.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">user_stream_path</span><span class="p">):</span>
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">user_stream_path</span><span class="p">,</span> <span class="n">stream_path</span><span class="p">)</span>
+            <span class="n">strmobj</span> <span class="o">=</span> <span class="n">Stream</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">stream_path</span><span class="p">)</span>
+            <span class="n">domain_filepath</span> <span class="o">=</span> <span class="n">strmobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;domainInfo/filePath&quot;</span><span class="p">)</span>
+            <span class="n">data_filepath</span> <span class="o">=</span> <span class="n">strmobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;fieldInfo/filePath&quot;</span><span class="p">)</span>
+            <span class="n">domain_filenames</span> <span class="o">=</span> <span class="n">strmobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;domainInfo/fileNames&quot;</span><span class="p">)</span>
+            <span class="n">data_filenames</span> <span class="o">=</span> <span class="n">strmobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;fieldInfo/fileNames&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">domain_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_domdir&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-            <span class="n">domain_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_domfil&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-            <span class="n">data_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_datdir&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-            <span class="n">data_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_datfil&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="c1"># Figure out the details of this stream.</span>
+            <span class="k">if</span> <span class="n">stream</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;prescribed&quot;</span><span class="p">,</span> <span class="s2">&quot;copyall&quot;</span><span class="p">):</span>
+                <span class="c1"># Assume only one file for prescribed mode!</span>
+                <span class="n">grid_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_grid_file&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="n">domain_filepath</span><span class="p">,</span> <span class="n">domain_filenames</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">grid_file</span><span class="p">)</span>
+                <span class="n">data_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_data_file&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="n">data_filepath</span><span class="p">,</span> <span class="n">data_filenames</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">domain_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_domdir&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="n">domain_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_domfil&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="n">data_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_datdir&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="n">data_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_datfil&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="n">domain_varnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_domvar&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-        <span class="n">data_varnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_datvar&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_offset&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-        <span class="n">year_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_start&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-        <span class="n">year_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_end&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-        <span class="n">data_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_paths</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="p">)</span>
-        <span class="n">domain_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_paths</span><span class="p">(</span><span class="n">domain_filenames</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="p">)</span>
+            <span class="n">domain_varnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_domvar&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+            <span class="n">data_varnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_fields</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_datvar&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_offset&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="n">year_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_start&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+            <span class="n">year_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_default</span><span class="p">(</span><span class="s2">&quot;strm_year_end&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+            <span class="n">data_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_paths</span><span class="p">(</span><span class="n">data_filenames</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="p">)</span>
+            <span class="n">domain_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sub_paths</span><span class="p">(</span><span class="n">domain_filenames</span><span class="p">,</span> <span class="n">year_start</span><span class="p">,</span> <span class="n">year_end</span><span class="p">)</span>
 
-        <span class="c1"># Overwrite domain_file if should be set from stream data</span>
-        <span class="k">if</span> <span class="n">domain_filenames</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span><span class="p">:</span>
-            <span class="n">domain_filepath</span> <span class="o">=</span> <span class="n">data_filepath</span>
-            <span class="n">domain_filenames</span> <span class="o">=</span> <span class="n">data_filenames</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Overwrite domain_file if should be set from stream data</span>
+            <span class="k">if</span> <span class="n">domain_filenames</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span><span class="p">:</span>
+                <span class="n">domain_filepath</span> <span class="o">=</span> <span class="n">data_filepath</span>
+                <span class="n">domain_filenames</span> <span class="o">=</span> <span class="n">data_filenames</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">stream_file_text</span> <span class="o">=</span> <span class="n">_stream_file_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">domain_varnames</span><span class="o">=</span><span class="n">domain_varnames</span><span class="p">,</span>
-            <span class="n">domain_filepath</span><span class="o">=</span><span class="n">domain_filepath</span><span class="p">,</span>
-            <span class="n">domain_filenames</span><span class="o">=</span><span class="n">domain_filenames</span><span class="p">,</span>
-            <span class="n">data_varnames</span><span class="o">=</span><span class="n">data_varnames</span><span class="p">,</span>
-            <span class="n">data_filepath</span><span class="o">=</span><span class="n">data_filepath</span><span class="p">,</span>
-            <span class="n">data_filenames</span><span class="o">=</span><span class="n">data_filenames</span><span class="p">,</span>
-            <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
-        <span class="p">)</span>
+            <span class="n">stream_file_text</span> <span class="o">=</span> <span class="n">_stream_file_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">domain_varnames</span><span class="o">=</span><span class="n">domain_varnames</span><span class="p">,</span>
+                <span class="n">domain_filepath</span><span class="o">=</span><span class="n">domain_filepath</span><span class="p">,</span>
+                <span class="n">domain_filenames</span><span class="o">=</span><span class="n">domain_filenames</span><span class="p">,</span>
+                <span class="n">data_varnames</span><span class="o">=</span><span class="n">data_varnames</span><span class="p">,</span>
+                <span class="n">data_filepath</span><span class="o">=</span><span class="n">data_filepath</span><span class="p">,</span>
+                <span class="n">data_filenames</span><span class="o">=</span><span class="n">data_filenames</span><span class="p">,</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+            <span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stream_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream_file</span><span class="p">:</span>
-            <span class="n">stream_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stream_file_text</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stream_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream_file</span><span class="p">:</span>
+                <span class="n">stream_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stream_file_text</span><span class="p">)</span>
 
         <span class="n">lines_hash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_input_file_hash</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_data_list</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">domain_filenames</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">domain_filepath</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="p">:</span>
+                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">domain_filepath</span><span class="p">,</span> <span class="n">filename</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
                 <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;domain</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
                 <span class="n">hashValue</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">hashValue</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lines_hash</span><span class="p">:</span>
@@ -761,7 +783,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

@@ -9,10 +9,13 @@
     <title>mkDepends &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mkSrcfiles" href="mkSrcfiles.html" />
@@ -50,8 +53,22 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./mkDepends --help
 SYNOPSIS
-     mkDepends [-d depfile] [-m mangle_scheme] [-t dir] [-w] Filepath Srcfiles
+     mkDepends [-p [-Dmacro[=val]] [-Umacro] [-Idir]] [-d depfile]
+               [-m mangle_scheme] [-t dir] [-w] Filepath Srcfiles
 OPTIONS
+     -p
+          Preprocess files (suffix .F and .F90) before  searching
+	  for module dependencies. Default CPP preprocessor: cpp.
+	  Set env variables CPP and/or CPPFLAGS to override.
+     -D macro[=val]
+          Define the CPP macro with val as its value.
+	  Ignored when -p option is not active.
+     -U macro
+          Undefine the CPP macro.
+	  Ignored when -p option is not active.
+     -I dir
+          Add dir to the include path for CPP.
+	  Ignored when -p option is not active.
      -d depfile
           Additional file to be added to every .o dependence.
      -m mangle_scheme
@@ -129,7 +146,7 @@ ARGUMENTS
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

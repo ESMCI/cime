@@ -9,10 +9,13 @@
     <title>CIME.Servers package &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME.SystemTests package" href="CIME.SystemTests.html" />
@@ -54,13 +57,18 @@
 <p>FTP Server class.  Interact with a server using FTP protocol</p>
 <dl class="class">
 <dt id="CIME.Servers.ftp.FTP">
-<em class="property">class </em><code class="descclassname">CIME.Servers.ftp.</code><code class="descname">FTP</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.Servers.ftp.</code><code class="descname">FTP</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em>, <em>server=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.Servers.generic_server.GenericServer" title="CIME.Servers.generic_server.GenericServer"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.Servers.generic_server.GenericServer</span></code></a></p>
 <dl class="method">
 <dt id="CIME.Servers.ftp.FTP.fileexists">
 <code class="descname">fileexists</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.fileexists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.fileexists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if rel_path exists on server</p>
 </dd></dl>
+
+<dl class="classmethod">
+<dt id="CIME.Servers.ftp.FTP.ftp_login">
+<em class="property">classmethod </em><code class="descname">ftp_login</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/ftp.html#FTP.ftp_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.ftp.FTP.ftp_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.Servers.ftp.FTP.getdirectory">
@@ -183,6 +191,11 @@ fail if full_path already exists on client, return True if successful</p>
 fail if full_path already exists on client, return True if successful</p>
 </dd></dl>
 
+<dl class="classmethod">
+<dt id="CIME.Servers.wget.WGET.wget_login">
+<em class="property">classmethod </em><code class="descname">wget_login</code><span class="sig-paren">(</span><em>address</em>, <em>user=''</em>, <em>passwd=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/Servers/wget.html#WGET.wget_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.Servers.wget.WGET.wget_login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -197,7 +210,7 @@ fail if full_path already exists on client, return True if successful</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">CIME.Servers package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -262,7 +275,7 @@ fail if full_path already exists on client, return True if successful</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

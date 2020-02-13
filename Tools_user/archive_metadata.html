@@ -9,10 +9,13 @@
     <title>archive_metadata &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bless_test_results" href="bless_test_results.html" />
@@ -51,8 +54,8 @@
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./archive_metadata --help
 usage: archive_metadata [-h] [-d] [-v] [-s] --user USER --password
                         [--caseroot CASEROOT] [--workdir WORKDIR] --expType
-                        {CMIP6,production,tuning} [--title TITLE]
-                        [--ignore-logs] [--ignore-timing]
+                        {CMIP6,production,tuning,lens,C1,C2,C3,C4,C5}
+                        [--title TITLE] [--ignore-logs] [--ignore-timing]
                         [--ignore-repo-update] [--add-files USER_ADD_FILES]
                         [--dryrun] [--query_cmip6 QUERY_CMIP6 QUERY_CMIP6]
                         [--test-post]
@@ -64,8 +67,8 @@ https://csesgweb.cgd.ucar.edu/expdb2.0 for details.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file
-                        /Users/aliceb/cime/scripts/Tools/archive_metadata.log
+  -d, --debug           Print debug information (very verbose) to file /home/a
+                        liceb/CESM/cime/scripts/Tools/archive_metadata.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --user USER           User name for SVN CESM developer access (required)
@@ -81,11 +84,12 @@ optional arguments:
                         to archive a caseroot when the user does not have
                         write permission in the caseroot (optional). Defaults
                         to current working directory.
-  --expType {CMIP6,production,tuning}
+  --expType {CMIP6,production,tuning,lens,C1,C2,C3,C4,C5}
                         Experiment type. For CMIP6 experiments, the case must
                         already exist in the experiments database at URL
                         &quot;http://csegweb.cgd.ucar.edu/expdb2.0&quot; (required).
-                        Must be one of &quot;[&#39;CMIP6&#39;, &#39;production&#39;, &#39;tuning&#39;]&quot;
+                        Must be one of &quot;[&#39;CMIP6&#39;, &#39;production&#39;, &#39;tuning&#39;,
+                        &#39;lens&#39;, &#39;C1&#39;, &#39;C2&#39;, &#39;C3&#39;, &#39;C4&#39;, &#39;C5&#39;]&quot;
   --title TITLE         Title of experiment (optional).
   --ignore-logs         Ignore updating the SVN repository with the
                         caseroot/logs files. The experiments database will be
@@ -178,7 +182,7 @@ optional arguments:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

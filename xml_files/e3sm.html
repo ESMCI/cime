@@ -9,10 +9,13 @@
     <title>E3SM Coupled Model XML Files &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CESM Coupled Model XML Files" href="cesm.html" />
@@ -231,6 +234,15 @@
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;desc&gt;file containing batch system details for target system  (for documentation only - DO NOT EDIT)&lt;/desc&gt;
     &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_batch.xsd&lt;/schema&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;WORKFLOW_SPEC_FILE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;$CIMEROOT/config/$MODEL/machines/config_workflow.xml&lt;/default_value&gt;
+    &lt;group&gt;case_last&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;file containing workflow (for documentation only - DO NOT EDIT)&lt;/desc&gt;
+    &lt;schema&gt;$CIMEROOT/config/xml_schemas/config_workflow.xsd&lt;/schema&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;INPUTDATA_SPEC_FILE&quot;&gt;
@@ -13011,33 +13023,7 @@
       &lt;queue walltimemax=&quot;01:00:00&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
     &lt;/queues&gt;
    &lt;/batch_system&gt;
-
-  &lt;batch_jobs&gt;
-    &lt;!-- order matters, with no-batch jobs will be run in the order listed here --&gt;
-    &lt;job name=&quot;case.run&quot;&gt;
-      &lt;template&gt;template.case.run&lt;/template&gt;
-      &lt;prereq&gt;$BUILD_COMPLETE and not $TEST&lt;/prereq&gt;
-    &lt;/job&gt;
-    &lt;job name=&quot;case.run.sh&quot;&gt;
-      &lt;template&gt;template.case.run.sh&lt;/template&gt;
-      &lt;prereq&gt;False&lt;/prereq&gt;
-    &lt;/job&gt;
-   &lt;job name=&quot;case.test&quot;&gt;
-      &lt;template&gt;template.case.test&lt;/template&gt;
-      &lt;prereq&gt;$BUILD_COMPLETE and $TEST&lt;/prereq&gt;
-    &lt;/job&gt;
-    &lt;job name=&quot;case.st_archive&quot;&gt;
-      &lt;template&gt;template.st_archive&lt;/template&gt;
-      &lt;task_count&gt;1&lt;/task_count&gt;
-      &lt;walltime&gt;0:20:00&lt;/walltime&gt;
-      &lt;!-- If DOUT_S is true and case.run (or case.test) exits successfully then run st_archive--&gt;
-      &lt;dependency&gt;case.run case.test&lt;/dependency&gt;
-      &lt;prereq&gt;$DOUT_S&lt;/prereq&gt;
-    &lt;/job&gt;
-  &lt;/batch_jobs&gt;
-
 &lt;/config_batch&gt;
-
 </pre></div>
 </div>
 <p>E3SM XML settings for supported compilers.</p>
@@ -17988,7 +17974,7 @@ lude &lt;/CFLAGS&gt;
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <h3><a href="../index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">E3SM Coupled Model XML Files</a><ul>
 <li><a class="reference internal" href="#cimeroot-config-e3sm">CIMEROOT/config/e3sm</a></li>
@@ -18048,7 +18034,7 @@ lude &lt;/CFLAGS&gt;
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

@@ -9,10 +9,13 @@
     <title>create_newcase &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="create_test" href="create_test.html" />
@@ -54,16 +57,16 @@ usage: create_newcase [-h] [-d] [-v] [-s] --case CASENAME --compset COMPSET
                       [--multi-driver] [--ninst NINST] [--mpilib MPILIB]
                       [--project PROJECT] [--pecount PECOUNT]
                       [--user-mods-dir USER_MODS_DIR] [--pesfile PESFILE]
-                      [--gridfile GRIDFILE] [--srcroot SRCROOT]
-                      [--output-root OUTPUT_ROOT] [--walltime WALLTIME]
-                      [-q QUEUE] [--handle-preexisting-dirs {a,r,u}]
-                      [-i INPUT_DIR]
+                      [--gridfile GRIDFILE] [--workflow WORKFLOW]
+                      [--srcroot SRCROOT] [--output-root OUTPUT_ROOT]
+                      [--run-unsupported] [--walltime WALLTIME] [-q QUEUE]
+                      [--handle-preexisting-dirs {a,r,u}] [-i INPUT_DIR]
 
 Script to create a new CIME Case Control System (CSS) experimental case.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -d, --debug           Print debug information (very verbose) to file /Users/aliceb/cime/scripts/create_newcase.log
+  -d, --debug           Print debug information (very verbose) to file /home/aliceb/CESM/cime/scripts/create_newcase.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
   --case CASENAME, -case CASENAME
@@ -110,9 +113,11 @@ optional arguments:
                         The file can follow either the config_pes.xml or the env_mach_pes.xml format.
   --gridfile GRIDFILE   Full pathname of config grid file to use. 
                         This should be a copy of config/config_grids.xml with the new user grid changes added to it. 
+  --workflow WORKFLOW   A workflow from config_workflow.xml to apply to this case. 
   --srcroot SRCROOT     Alternative pathname for source root directory. The default is cimeroot/../
   --output-root OUTPUT_ROOT
                         Alternative pathname for the directory where case output is written.
+  --run-unsupported     Force the creation of a case that is not tested or supported by CESM developers.
   --walltime WALLTIME   Set the wallclock limit for this case in the format (the usual format is HH:MM:SS). 
                         You may use env var CIME_GLOBAL_WALLTIME to set this. 
                         If CIME_GLOBAL_WALLTIME is not defined in the environment, then the walltime
@@ -185,7 +190,7 @@ optional arguments:
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>

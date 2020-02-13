@@ -9,10 +9,13 @@
     <title>CIME.case.case_submit &#8212; CIME 5.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -64,7 +67,7 @@
             <span class="n">resubmit_immediate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mail_user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">batch_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">job</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">()</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_first_job</span><span class="p">()</span>
 
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">job</span> <span class="o">!=</span> <span class="s2">&quot;case.test&quot;</span><span class="p">:</span>
@@ -75,8 +78,8 @@
     <span class="c1"># if case.submit is called with the no_batch flag then we assume that this</span>
     <span class="c1"># flag will stay in effect for the duration of the RESUBMITs</span>
     <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">resubmit</span> <span class="ow">and</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_batch_system_type</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+    <span class="n">external_workflow</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXTERNAL_WORKFLOW&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resubmit</span> <span class="ow">and</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_batch_system_type</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span> <span class="ow">or</span> <span class="n">external_workflow</span><span class="p">:</span>
         <span class="n">no_batch</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">no_batch</span><span class="p">:</span>
         <span class="n">batch_system</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
@@ -86,12 +89,13 @@
     <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">,</span> <span class="n">batch_system</span><span class="p">)</span>
 
     <span class="n">env_batch_has_changed</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">env_batch_has_changed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">external_workflow</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">check_lockedfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">env_batch</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">env_batch_has_changed</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">if</span> <span class="n">batch_system</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span> <span class="ow">and</span> <span class="n">env_batch_has_changed</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">batch_system</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span> <span class="ow">and</span> <span class="n">env_batch_has_changed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">external_workflow</span><span class="p">:</span>
         <span class="c1"># May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>\
 <span class="sd">&quot;&quot;&quot;</span>
@@ -260,7 +264,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.
     </div>
   </body>
 </html>
