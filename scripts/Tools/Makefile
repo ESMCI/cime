@@ -161,9 +161,8 @@ ifdef CPRE
   CONTIGUOUS_FLAG := $(patsubst -D%,$(CPRE)%,$(CONTIGUOUS_FLAG))
 endif
 
-ifndef AR
-   AR := ar
-endif
+AR ?= ar
+ARFLAGS ?= -r
 
 ifdef NETCDF_C_PATH
   ifndef NETCDF_FORTRAN_PATH
@@ -543,6 +542,10 @@ ifdef LIB_MPI
    endif
 endif
 
+ifdef XIOS_PATH
+  SLIBS += -L$(XIOS_PATH)/lib -lxios -lstdc++
+endif
+
 # For compiling and linking with external ESMF.
 # If linking to external ESMF library then include esmf.mk
 # ESMF_F90COMPILEPATHS
@@ -710,6 +713,10 @@ OBJS    := $(addsuffix .o, $(BASENAMES))
 INCS    := $(foreach dir,$(cpp_dirs),-I$(dir))
 
 CURDIR := $(shell pwd)
+
+ifeq ($(MODEL),nemo)
+  USER_MKDEPENDS_OPTS := -p $(CPPDEFS) $(INCLDIR) $(INCS)
+endif
 
 Depends: Srcfiles Deppath
 	$(CASETOOLS)/mkDepends $(USER_MKDEPENDS_OPTS) Deppath Srcfiles > $@
