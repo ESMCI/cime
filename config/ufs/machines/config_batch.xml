@@ -229,8 +229,8 @@
       <directive>--partition=hera</directive>
     </directives>
     <queues>
-      <queue walltimemax="08:00:00" nodemin="1" nodemax="210">batch</queue>
-      <queue default="true" walltimemax="00:30:00" nodemin="1" nodemax="210">debug</queue>
+      <queue default="true" walltimemax="08:00:00" nodemin="1" nodemax="210">batch</queue>
+      <queue walltimemax="00:30:00" nodemin="1" nodemax="210">debug</queue>
     </queues>
   </batch_system>
 
