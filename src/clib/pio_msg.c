@@ -175,7 +175,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int use_ext_ncid;
     char ncidp_present;
 #ifdef NETCDF_INTEGRATION
-    int iosysid = 0;
+    int iosysid;
 #endif /* NETCDF_INTEGRATION */
     int mpierr;
 
@@ -1982,7 +1982,7 @@ int open_file_handler(iosystem_desc_t *ios)
     int mode;
     int use_ext_ncid;
 #ifdef NETCDF_INTEGRATION
-    int iosysid = 0;
+    int iosysid;
 #endif /* NETCDF_INTEGRATION */
     int mpierr;
 
