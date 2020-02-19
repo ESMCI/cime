@@ -262,56 +262,6 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
-<compiler COMPILER="intel19">
-  <CFLAGS>
-    <base>  -fp-model precise </base>
-    <append compile_threaded="true"> -qopenmp </append>
-    <append DEBUG="FALSE"> -O2 -debug minimal </append>
-    <append DEBUG="TRUE"> -O0 -g </append>
-  </CFLAGS>
-  <CPPDEFS>
-    <!-- http://software.intel.com/en-us/articles/intel-composer-xe/ -->
-    <append> -DFORTRANUNDERSCORE -DNO_R16 -DCPRINTEL</append>
-  </CPPDEFS>
-  <CXX_LDFLAGS>
-    <base> -cxxlib </base>
-  </CXX_LDFLAGS>
-  <CXX_LINKER>FORTRAN</CXX_LINKER>
-  <FC_AUTO_R8>
-    <base> -r8 </base>
-  </FC_AUTO_R8>
-  <FFLAGS>
-    <base> -fp-model source -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs  </base>
-    <append compile_threaded="true"> -qopenmp </append>
-    <append DEBUG="TRUE"> -O0 -g -check uninit -check bounds -check pointers -fpe0 -check noarg_temp_created </append>
-    <append DEBUG="FALSE"> -O2 -debug minimal </append>
-    <append MPILIB="mpi-serial"> -mcmodel medium </append>
-  </FFLAGS>
-  <FFLAGS_NOOPT>
-    <base> -O0 </base>
-  </FFLAGS_NOOPT>
-  <FIXEDFLAGS>
-    <base> -fixed -132 </base>
-  </FIXEDFLAGS>
-  <FREEFLAGS>
-    <base> -free </base>
-  </FREEFLAGS>
-  <LDFLAGS>
-    <append compile_threaded="true"> -qopenmp </append>
-  </LDFLAGS>
-  <MPICC> mpicc  </MPICC>
-  <MPICXX> mpicxx </MPICXX>
-  <MPIFC> mpif90 </MPIFC>
-  <SCC> icc </SCC>
-  <SCXX> icpc </SCXX>
-  <SFC> ifort </SFC>
-  <SLIBS>
-    <append MPILIB="mpich2"> -mkl=cluster </append>
-    <append MPILIB="mpi-serial"> -mkl </append>
-  </SLIBS>
-  <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
-</compiler>
-
 <compiler COMPILER="nag">
   <CFLAGS>
     <base> -std=gnu99 </base>
@@ -1249,7 +1199,7 @@ using a fortran linker.
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <CPPDEFS>
     <!-- these flags enable nano timers -->
-    <append> -DHAVE_NANOTIME </append>
+    <append> -DNO_R16 -DHAVE_NANOTIME </append>
   </CPPDEFS>
   <FFLAGS>
     <append MODEL="nemo"> $(FC_AUTO_R8) -O3 -assume norealloc_lhs </append>
@@ -1259,25 +1209,26 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="zeus" COMPILER="intel19">
+<compiler MACH="zeus" COMPILER="intel">
   <AR>xiar</AR>
   <ARFLAGS>
     <base>cru</base>
   </ARFLAGS>
   <FFLAGS>
-    <append MPILIB="mpich2">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="impi">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="mpi-serial"> -mcmodel medium </append>
     <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
   </FFLAGS>
   <CFLAGS>
-    <append MPILIB="mpich2">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma -std=c11 </append>
-    <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma -std=c11 </append>
+    <append MPILIB="impi">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
   </CFLAGS>
   <LDFLAGS>
-    <append MPILIB="mpich2">  -mkl=cluster </append>
+    <append MPILIB="impi">  -mkl=cluster </append>
     <append MPILIB="mpi-serial">  -mkl -lstdc++ </append>
   </LDFLAGS>
   <SLIBS>
-    <append MPILIB="mpich2">  -lstdc++ </append>
+    <append MPILIB="impi">  -lstdc++ </append>
     <append MPILIB="mpi-serial">  -lstdc++ </append>
   </SLIBS>
   <MPICC>mpiicc</MPICC>

@@ -2340,10 +2340,10 @@ This allows using a different mpirun command to launch unit tests
 
   <machine MACH="zeus">
     <DESC> CMCC Lenovo ThinkSystem SD530, os is Linux, 36 pes/node, batch system is LSF</DESC>
-    <NODENAME_REGEX>.*-ib</NODENAME_REGEX>
+    <NODENAME_REGEX>(login[1,2]-ib|n[0-9][0-9][0-9]-ib)</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>intel19</COMPILERS>
-    <MPILIBS>mpich2,mpi-serial</MPILIBS>
+    <COMPILERS>intel</COMPILERS>
+    <MPILIBS>impi,mpi-serial</MPILIBS>
     <CIME_OUTPUT_ROOT>/work/$ENV{DIVISION}/$ENV{USER}/CESM2</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>$DIN_LOC_ROOT/atm/datm7</DIN_LOC_ROOT_CLMFORC>
@@ -2372,7 +2372,7 @@ This allows using a different mpirun command to launch unit tests
       <modules>
         <command name="purge"/>
       </modules>
-      <modules compiler="intel19">
+      <modules compiler="intel">
         <command name="load">intel19.5/19.5.281</command>
         <command name="load">intel19.5/szip/2.1.1</command>
         <command name="load">cmake/3.15.0</command>
@@ -2389,34 +2389,31 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">impi19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
         <command name="load">impi19.5/parallel-netcdf/1.12.0</command>
       </modules>
-      <modules compiler="intel19" mpilib="!mpi-serial" DEBUG="TRUE">
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
         <command name="load">impi19.5/esmf/8.0.0-intelmpi-64-g</command>
       </modules>
-      <modules compiler="intel19" mpilib="!mpi-serial" DEBUG="FALSE">
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
         <command name="load">impi19.5/esmf/8.0.0-intelmpi-64-O</command>
       </modules>
-      <modules compiler="intel19" mpilib="mpi-serial" DEBUG="TRUE">
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
         <command name="load">intel19.5/esmf/8.0.0-mpiuni-64-g</command>
       </modules>
-      <modules compiler="intel19" mpilib="mpi-serial" DEBUG="FALSE">
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
         <command name="load">intel19.5/esmf/8.0.0-mpiuni-64-O</command>
       </modules>
     </module_system>
     <environment_variables>
-      <env name="OMP_STACKSIZE">256M</env>
+      <env name="XIOS_PATH">/work/csp/cmip01/csm/xios</env>
     </environment_variables>
-    <environment_variables compiler="intel19">
+    <environment_variables compiler="intel">
       <env name="I_MPI_EXTRA_FILESYSTEM">1</env>
       <env name="I_MPI_EXTRA_FILESYSTEM_FORCE">gpfs</env>
-      <env name="I_MPI_DEBUG">60</env>
       <env name="GPFSMPIO_TUNEBLOCKING">0</env>
+      <env name="I_MPI_DEBUG">60</env>
       <env name="I_MPI_PLATFORM">skx</env>
       <env name="I_MPI_SHM">skx_avx512</env>
       <env name="I_MPI_HYDRA_BOOTSTRAP">lsf</env>
       <env name="I_MPI_LSF_USE_COLLECTIVE_LAUNCH">1</env>
-      <env name="XIOS_PATH">/work/csp/cmip01/csm/xios</env>
-      <env name="NETCDF_PATH">$ENV{NETCDF}</env>
-      <env name="PNETCDF_PATH">$ENV{PNETCDF}</env>
     </environment_variables>
   </machine>
 
