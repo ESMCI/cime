@@ -42,6 +42,11 @@
       <!-- If DOUT_S is true and case.run (or case.test) exits successfully then run st_archive-->
       <dependency>case.run or case.test</dependency>
       <prereq>$DOUT_S</prereq>
+      <runtime_parameters MACH="zeus">
+	<task_count>1</task_count>
+	<tasks_per_node>1</tasks_per_node>
+	<walltime>0:20</walltime>
+      </runtime_parameters>
       <runtime_parameters>
 	<task_count>1</task_count>
 	<tasks_per_node>1</tasks_per_node>

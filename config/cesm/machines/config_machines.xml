@@ -2494,6 +2494,84 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
   </machine>
 
+  <machine MACH="zeus">
+    <DESC> CMCC Lenovo ThinkSystem SD530, os is Linux, 36 pes/node, batch system is LSF</DESC>
+    <NODENAME_REGEX>(login[1,2]-ib|n[0-9][0-9][0-9]-ib)</NODENAME_REGEX>
+    <OS>LINUX</OS>
+    <COMPILERS>intel</COMPILERS>
+    <MPILIBS>impi,mpi-serial</MPILIBS>
+    <CIME_OUTPUT_ROOT>/work/$ENV{DIVISION}/$ENV{USER}/CESM2</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$DIN_LOC_ROOT/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>$ENV{CESMDATAROOT}/ccsm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>$ENV{CESMDATAROOT}/cesm2_tools/cprnc/cprnc</CCSM_CPRNC>
+    <PERL5LIB>/usr/lib64/perl5:/usr/share/perl5</PERL5LIB>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>lsf</BATCH_SYSTEM>
+    <SUPPORTED_BY>cmcc</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>72</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable> mpirun </executable>
+    </mpirun>
+    <module_system type="module">
+      <init_path lang="perl">/usr/share/Modules/init/perl.pm</init_path>
+      <init_path lang="python">/usr/share/Modules/init/python.py</init_path>
+      <init_path lang="csh">/usr/share/Modules/init/csh</init_path>
+      <init_path lang="sh">/usr/share/Modules/init/sh</init_path>
+      <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
+      <cmd_path lang="python">/usr/bin/modulecmd python </cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules>
+        <command name="purge"/>
+      </modules>
+      <modules compiler="intel">
+        <command name="load">intel19.5/19.5.281</command>
+        <command name="load">intel19.5/szip/2.1.1</command>
+        <command name="load">cmake/3.15.0</command>
+        <command name="load">curl/7.66.0</command>
+      </modules>
+      <modules mpilib="mpi-serial">
+        <command name="load">intel19.5/hdf5/1.10.5</command>
+        <command name="load">intel19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
+      </modules>
+      <modules mpilib="!mpi-serial">
+        <command name="load">impi19.5/19.5.281</command>
+        <command name="load">impi19.5/hdf5/1.10.5</command>
+        <command name="load">impi19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
+        <command name="load">impi19.5/parallel-netcdf/1.12.0</command>
+      </modules>
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
+        <command name="load">impi19.5/esmf/8.0.0-intelmpi-64-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
+        <command name="load">impi19.5/esmf/8.0.0-intelmpi-64-O</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
+        <command name="load">intel19.5/esmf/8.0.0-mpiuni-64-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
+        <command name="load">intel19.5/esmf/8.0.0-mpiuni-64-O</command>
+      </modules>
+    </module_system>
+    <environment_variables>
+      <env name="XIOS_PATH">/work/csp/cmip01/csm/xios</env>
+    </environment_variables>
+    <environment_variables compiler="intel">
+      <env name="I_MPI_EXTRA_FILESYSTEM">1</env>
+      <env name="I_MPI_EXTRA_FILESYSTEM_FORCE">gpfs</env>
+      <env name="GPFSMPIO_TUNEBLOCKING">0</env>
+      <env name="I_MPI_DEBUG">60</env>
+      <env name="I_MPI_PLATFORM">skx</env>
+      <env name="I_MPI_SHM">skx_avx512</env>
+      <env name="I_MPI_HYDRA_BOOTSTRAP">lsf</env>
+      <env name="I_MPI_LSF_USE_COLLECTIVE_LAUNCH">1</env>
+    </environment_variables>
+  </machine>
+
   <default_run_suffix>
     <default_run_exe>${EXEROOT}/cesm.exe </default_run_exe>
     <default_run_misc_suffix> >> cesm.log.$LID 2>&amp;1 </default_run_misc_suffix>
