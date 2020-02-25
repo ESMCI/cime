@@ -584,10 +584,13 @@ class EnvBatch(EnvBase):
             run_args_str += " {}".format(logging_options)
 
         batch_env_flag = self.get_value("batch_env", subgroup=None)
+        batch_system = self.get_value("BATCH_SYSTEM", subgroup=None)
         if not batch_env_flag:
             return run_args_str
+        elif batch_system == "lsf":
+            return "{} \"all, ARGS_FOR_SCRIPT={}\"".format(batch_env_flag, run_args_str)
         else:
-            return "{} ARGS_FOR_SCRIPT=\'{}\'".format(batch_env_flag, run_args_str)
+            return "{} ARGS_FOR_SCRIPT='{}'".format(batch_env_flag, run_args_str)
 
     def _submit_single_job(self, case, job, dep_jobs=None, allow_fail=False,
                            no_batch=False, skip_pnl=False, mail_user=None, mail_type=None,
@@ -681,7 +684,7 @@ class EnvBatch(EnvBase):
         batch_env_flag = self.get_value("batch_env", subgroup=None)
         run_args = self._build_run_args_str(job, False, skip_pnl=skip_pnl, set_continue_run=resubmit_immediate,
                                             submit_resubmits=not resubmit_immediate)
-        if batch_system == 'lsf':
+        if batch_system == 'lsf' and batch_env_flag == 'none':
             sequence = (run_args, batchsubmit, submitargs, batchredirect, get_batch_script_for_job(job))
         elif batch_env_flag:
             sequence = (batchsubmit, submitargs, run_args, batchredirect, get_batch_script_for_job(job))
