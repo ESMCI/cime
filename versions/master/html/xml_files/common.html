@@ -1,0 +1,1048 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Common XML Files &mdash; CIME master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data, Stub and Driver Component XML Files" href="components.html" />
+    <link rel="prev" title="CESM Coupled Model XML Files" href="cesm.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">XML Files</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="e3sm.html">E3SM Coupled Model XML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Common XML Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cimeroot-config-config-headers-xml">CIMEROOT/config/config_headers.xml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cimeroot-config-config-tests-xml">CIMEROOT/config/config_tests.xml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drivers.html">Driver XML Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">XML Files</a> &raquo;</li>
+        
+      <li>Common XML Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/xml_files/common.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="common-xml-files">
+<span id="common"></span><h1>Common XML Files<a class="headerlink" href="#common-xml-files" title="Permalink to this headline">¶</a></h1>
+<p>Common XML files in CIMEROOT/config.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="cimeroot-config-config-headers-xml">
+<h2>CIMEROOT/config/config_headers.xml<a class="headerlink" href="#cimeroot-config-config-headers-xml" title="Permalink to this headline">¶</a></h2>
+<p>Headers for the CASEROOT env_*.xml files created by create_newcase.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;config_definition.xsl&quot; ?&gt;
+
+&lt;files&gt;
+  &lt;file name=&quot;env_batch.xml&quot;&gt;
+    &lt;header&gt;
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_workflow.xml&quot;&gt;
+    &lt;header&gt;
+      These variables may be changed anytime during a run, they
+      control jobs that will be submitted and their dependancies.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_case.xml&quot;&gt;
+    &lt;header&gt;
+    These variables CANNOT BE CHANGED once a case has been created.
+    Invoke create_newcase again if a different grid or component
+    combination is required.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name =&quot;env_run.xml&quot;&gt;
+    &lt;header&gt;
+    These variables MAY BE CHANGED ANYTIME during a run.
+    Additional machine speific variables that can be changed
+    during a run are contained in the env_mach_specific file
+    Note1: users SHOULD NOT modify BUILD_COMPETE in env_build.xml
+    this is done automatically by the scripts.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name =&quot;env_mach_specific.xml&quot;&gt;
+    &lt;header&gt;
+    These variables control the machine dependent environment including
+    the paths to compilers and libraries external to cime such as netcdf,
+    environment variables for use in the running job should also be set	here.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_build.xml&quot;&gt;
+    &lt;header&gt;
+    These variables SHOULD NOT be changed once the model has been built.
+    urrently, these variables are not cached.
+    Note1: users SHOULD NOT modify BUILD_COMPETE below
+    this is done automatically by the scripts.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_mach_pes.xml&quot;&gt;
+    &lt;header&gt;
+    These variables CANNOT be modified once case_setup has been
+    invoked without first invoking case_setup -reset
+
+    NTASKS: the total number of MPI tasks, a negative value indicates nodes rather than tasks.
+    NTHRDS: the number of OpenMP threads per MPI task.
+    ROOTPE: the global mpi task of the component root task, if negative, indicates nodes rather than tasks.
+    PSTRID: the stride of MPI tasks across the global set of pes (for now set to 1)
+    NINST : the number of component instances (will be spread evenly across NTASKS)
+
+    for example, for NTASKS = 8, NTHRDS = 2, ROOTPE = 32, NINST  = 2
+    the MPI tasks would be placed starting on global pe 32 and each pe would be threaded 2-ways
+    These tasks will be divided amongst both instances (4 tasks each).
+
+    Note: PEs that support threading never have an MPI task associated
+    with them for performance reasons.  As a result, NTASKS and ROOTPE
+    are relatively independent of NTHRDS and they determine
+    the layout of mpi processors between components.  NTHRDS is used
+    to determine how those mpi tasks should be placed across the machine.
+
+    The following values should not be set by the user since they&#39;ll be
+    overwritten by scripts: TOTALPES, NTASKS_PER_INST
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_archive.xml&quot;&gt;
+    &lt;header&gt;
+      These are the variables specific to the short term archiver.
+      See  ./case.st_archive --help for details on running the short term archiver script.
+      To validate the env_archive.xml file using xmllint, run
+      xmllint -schema $SRCROOT/cime/config/xml_schemas/env_archive.xsd env_archive.xml
+      from the case root.
+      The patterns below are Python regular expressions.
+      The file names created from these patterns will add an optional digit
+      to them and will enclose them in a pair of &#39;.&#39;.
+      Some useful Python metacharacters are:
+         [] = any single character inside the brackets
+         \d = a digit = [0123456789] = [0-9]
+          ? = 0 or 1 of the previous character
+          * = 0 or more of the previous character (greedy!)
+          + = 1 or more of the previous character (greedy!)
+         \. = a period
+          . = any non-newline character
+      Use them carefully.  They&#39;re often confused with shell-type
+      wild card characters.
+    &lt;/header&gt;
+  &lt;/file&gt;
+
+  &lt;file name=&quot;env_test.xml&quot;&gt;
+    &lt;header&gt;These are the variables specific to a test case.&lt;/header&gt;
+  &lt;/file&gt;
+
+&lt;/files&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="cimeroot-config-config-tests-xml">
+<h2>CIMEROOT/config/config_tests.xml<a class="headerlink" href="#cimeroot-config-config-tests-xml" title="Permalink to this headline">¶</a></h2>
+<p>Descriptions and XML settings for the CIME regression tests.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;!--
+
+The following are the test functionality categories:
+   1) smoke tests
+   2) basic reproducibility tests
+   3) restart tests
+   4) threading/pe-count modification tests
+   5) sequencing (layout) modification tests
+   6) multi-instance tests
+   7) archiving (short-term and long-term) tests
+   8) performance tests
+   9) spinup tests
+  10) data assimilation tests
+  11) other component-specific tests
+
+NOTES:
+- specifying the attribute INFRASTRUCTURE_TEST=&quot;TRUE&quot; declares the given
+  test type to be an infrastructure-only test that is only meant to be
+  run by scripts_regression_tests.
+- unless otherwise noted everything is run in one executable directory
+- suffix: denotes the component history file suffixes that are added as part of the test
+- IOP test is done along with regular tests - not as a separate test
+- IOP test is only currently valid for SMS, ERS and PET
+
+======================================================================
+    Smoke Tests
+======================================================================
+
+SMS    smoke startup test (default length)
+       do a 5 day initial test (suffix: base)
+       if $IOP_ON is set then suffix is base_iop
+       success for non-iop is just a successful coupler
+
+SBN    smoke build-namelist test (just run preview_namelist and check_input_data)
+
+======================================================================
+    Basic reproducibility Tests
+======================================================================
+
+REP    reproducibility: do two identical runs give the same results?
+
+======================================================================
+    Restart Tests
+======================================================================
+
+ERS    exact restart from startup (default 6 days + 5 days)
+       do an 11 day initial test - write a restart at day 6     (suffix: base)
+       if $IOP_ON is set then suffix is base_iop
+       do a  5  day restart test starting from restart at day 6 (suffix: rest)
+       if $IOP_ON is set then suffix is rest_iop
+       compare component history files &quot;.base&quot; and &quot;.rest&quot; at day 11
+
+ERS2    exact restart from startup (default 6 days + 5 days)
+       do an 11 day initial test without making restarts     (suffix: base)
+       if $IOP_ON is set then suffix is base_iop
+       do an 11 day restart test stopping at day 6 with a restart, then resuming from restart at day 6 (suffix: rest)
+       if $IOP_ON is set then suffix is rest_iop
+       compare component history files &quot;.base&quot; and &quot;.rest&quot; at day 11
+
+ERP    pes counts hybrid (open-MP/MPI) restart bfb test from startup, default 6 days + 5 days (previousy PER)
+       initial pes set up out of the box
+       do an 11 day initial test - write a restart at day 6     (suffix base)
+       half the number of tasks and threads for each component
+       do a  5  day restart test starting from restart at day 6 (suffix rest)
+       this is just like an ERS test but the pe-counts/threading count are modified on retart
+
+ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
+       (1) ref1case
+           do an initial for ${STOP_N}/6 writing restarts at ${STOP_N}/6
+           ref1 case is a clone of the main case (by default this will be 4 days)
+           short term archiving is on
+       (2) ref2case
+           do a hybrid for ${STOP_N}-${STOP_N}/6 running with ref1 restarts from ${STOP_N}/6
+           and writing restarts at ( ${STOP_N} - ${STOP_N}/6 )/2 +1
+	   (by default will run for 18 days and write a restart after 10 days)
+           ref2 case is a clone of the main case
+           short term archiving is on
+       (3) case
+           do a branch run starting from restart written in ref2 case
+           and run for ???  days
+       (4) case do a restart run from the branch case
+
+======================================================================
+    Threading/PE-Counts/Pe-Sequencing Tests
+======================================================================
+
+PET    modified threading openmp bfb test (seq tests)
+       do an initial run where all components are threaded by default (suffix: base)
+       do another initial run with nthrds=1 for all components        (suffix: single_thread)
+       compare base and single_thread
+
+PEM    modified pe counts mpi bfb test (seq tests)
+       do an initial run with default pe layout                               (suffix: base)
+       do another initial run with modified pes (NTASKS_XXX =&gt; NTASKS_XXX/2)  (suffix: modpes)
+       compare base and single_thread
+
+PMT    modified-task and modified-thread count bfb test (previousy OEM)
+       do an initial run                              (suffix: base)
+       do a second run with half tasks, twice threads (suffix: modpes)
+       (***note that PTM_script and PEM_script are the same - but PEM_build.csh and PTM_build.csh are different***)
+       *** REMOVING  this test in the pythonized version ***
+
+PEA    single pe bfb test
+       do an initial run on 1 pe with mpi     (suffix: base)
+       do the same run on 1 pe with mpiserial (suffix: mpiserial)
+
+======================================================================
+    Sequencing (layout) Tests (smoke)
+======================================================================
+
+SEQ    different sequencing bfb test
+       do an initial run test with out-of-box PE-layout (suffix: base)
+       do a second run where all root pes are at pe-0   (suffix: seq)
+       compare base and seq
+
+======================================================================
+    Multi-Instance Tests (smoke)
+======================================================================
+
+NCK    multi-instance validation vs single instance - sequential PE for instances (default length)
+       do an initial run test with NINST 1 (suffix: base)
+       do an initial run test with NINST 2 (suffix: multiinst for both _0001 and _0002)
+       compare base and _0001 and _0002
+
+NCR    multi-instance validation vs single instance - concurrent PE for instances  (default length)
+       do an initial run test with NINST 1 (suffix: base)
+       do an initial run test with NINST 2 (suffix: multiinst for both _0001 and _0002)
+        compare base and _0001 and _0002
+
+NOC    multi-instance validation for single instance ocean (default length)
+       do an initial run test with NINST 2 (other than ocn), with mod to instance 1 (suffix: inst1_base, inst2_mod)
+       do an initial run test with NINST 2 (other than ocn), with mod to instance 2 (suffix: inst1_base, inst2_mod)
+       compare inst1_base with inst2_base
+       compare inst1_mod  with inst2_mod
+
+======================================================================
+    Performance Tests
+======================================================================
+
+PFS    system performance test
+ICP    cice performance test
+OCP    pop performance test
+
+======================================================================
+    SPINUP tests
+======================================================================
+
+SPO    smoke spinup-ocean test
+
+======================================================================
+    Archiving Tests
+======================================================================
+
+LAR    long term archive test
+
+======================================================================
+    Data Assimilation Tests
+======================================================================
+
+DAE    data assimilation test: non answer changing
+
+PRE    pause-resume test: by default a BFB test of pause-resume cycling
+
+======================================================================
+    Other component-specific tests should be located with components
+======================================================================
+
+
+======================================================================
+    Infrastructural tests for CIME. These are used by scripts_regression_tests.
+    Users won&#39;t generally run these.
+======================================================================
+
+
+TESTBUILDFAIL     Insta-fail build step. Used to confirm that failed
+                  builds are caught and reported correctly.
+
+TESTBUILDFAILEXC  Insta-fail build step by failing to init. Used to test
+                  correct behavior when exceptions are generated.
+
+TESTRUNFAIL       Insta-fail run step. Used to confirm that model run
+                  failures are caught and reported correctly.
+
+TESTRUNFAILEXC    Insta-fail run step via exception. Used to test correct
+                  correct behavior when exceptions are generated.
+
+TESTRUNSTARCFAIL  Insta-fail st_archive step via exception. Used to test correct
+                  behavior when exceptions are generated within in run_phase
+                  for phases other than RUN.
+
+TESTRUNPASS       Insta-pass run step. Used to test that run that work
+                  are reported correctly.
+
+TESTMEMLEAKFAIL   Insta-fail memleak step. Used to test that memleaks are
+                  detected and reported correctly.
+
+TESTMEMLEAKPASS   Insta-pass memleak step. Used to test that non-memleaks are
+                  reported correctly.
+
+TESTRUNDIFF       Produces a canned hist file. Env var TESTRUNDIFF_ALTERNATE can
+                  be used to cause a DIFF. Used to check that baseline diffs are
+                  detected and reported correctly.
+
+TESTTESTDIFF      Simulates internal test diff (non baseline). Used to check that
+                  internal comparison failures are detected and reported correctly.
+
+TESTRUNSLOWPASS   After 5 minutes of sleep, pass run step. Used to test timeouts
+                  and kills.
+
+NODEFAIL          Tests restart upon detected node failure. Generates fake failures,
+                  the number of which is controlled by NODEFAIL_NUM_FAILS.
+
+--&gt;
+
+&lt;config_test&gt;
+
+  &lt;test NAME=&quot;DAE&quot;&gt;
+    &lt;DESC&gt;data assimilation test, default two 2-day DA cycles, no data modification&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;4&lt;/STOP_N&gt;
+    &lt;HIST_OPTION&gt;ndays&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;1&lt;/HIST_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERI&quot;&gt;
+    &lt;DESC&gt;hybrid/branch/exact restart test, default 3+19/10+9/5+4 days&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;22&lt;/STOP_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;RUN_TYPE&gt;startup&lt;/RUN_TYPE&gt;
+    &lt;RUN_REFCASE&gt;case.std&lt;/RUN_REFCASE&gt;
+    &lt;RUN_REFDATE&gt;0001-01-01&lt;/RUN_REFDATE&gt;
+    &lt;RUN_REFTOD&gt;00000&lt;/RUN_REFTOD&gt;
+    &lt;REST_OPTION&gt;ndays&lt;/REST_OPTION&gt;
+    &lt;REST_N&gt;$STOP_N&lt;/REST_N&gt;
+    &lt;GET_REFCASE&gt;FALSE&lt;/GET_REFCASE&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;HIST_OPTION&gt;never&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;-999&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERP&quot;&gt;
+    &lt;DESC&gt;pes counts hybrid (open-MP/MPI) restart bfb test from startup, default 6 days + 5 days&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;BFBFLAG&gt;TRUE&lt;/BFBFLAG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;FORCE_BUILD_SMP&gt;TRUE&lt;/FORCE_BUILD_SMP&gt;
+    &lt;REST_N&gt;$STOP_N / 2 + 1 &lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERS&quot;&gt;
+    &lt;DESC&gt;exact restart from startup, default 6 days + 5 days&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N / 2 + 1&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERS2&quot;&gt;
+    &lt;DESC&gt;exact restart from startup, default 6 days + 5 days&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;IRT&quot;&gt;
+    &lt;DESC&gt;exact restart from startup, default 4 days + 7 days with restart from interim file&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N / 2 - 1&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;DOUT_S_SAVE_INTERIM_RESTART_FILES&gt;TRUE&lt;/DOUT_S_SAVE_INTERIM_RESTART_FILES&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERIO&quot;&gt;
+    &lt;DESC&gt;exact restart from startup with different PIO methods, default 6 days + 5 days&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERR&quot;&gt;
+    &lt;DESC&gt;exact restart from startup with resubmit, default 4 days + 3 days&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;7&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N / 2 + 1&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;RESUBMIT&gt;1&lt;/RESUBMIT&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERRI&quot;&gt;
+    &lt;DESC&gt;exact restart from startup with resubmit, default 4 days + 3 days. Tests incomplete logs option for st_archive&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;7&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N / 2 + 1&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;DOUT_S&gt;TRUE&lt;/DOUT_S&gt;
+    &lt;RESUBMIT&gt;1&lt;/RESUBMIT&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ERT&quot;&gt;
+    &lt;DESC&gt;exact restart from startup, default 2 month + 1 month (ERS with info dbug = 1)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;nmonths&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;&lt;/STOP_N&gt;
+    &lt;AVGHIST_OPTION&gt;nmonths&lt;/AVGHIST_OPTION&gt;
+    &lt;AVGHIST_N&gt;1&lt;/AVGHIST_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;HOMME&quot;&gt;
+    &lt;DESC&gt;Run homme tests. Only works with the ACME version of the atmosphere component.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;FUNIT&quot;&gt;
+    &lt;DESC&gt;Run fortran unit tests. Grid and compset (and most case settings) are ignored.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;LDSTA&quot;&gt;
+    &lt;DESC&gt;Tests the short term archiver&#39;s last date functionality.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;HIST_OPTION&gt;ndays&lt;/HIST_OPTION&gt;
+    &lt;REST_OPTION&gt;ndays&lt;/REST_OPTION&gt;
+    &lt;STOP_N&gt;10&lt;/STOP_N&gt;
+    &lt;HIST_N&gt;1&lt;/HIST_N&gt;
+    &lt;REST_N&gt;1&lt;/REST_N&gt;
+    &lt;RUN_STARTDATE&gt;0001-12-29&lt;/RUN_STARTDATE&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;PRE&quot;&gt;
+    &lt;DESC&gt;pause/resume test, default 5 hours, five pause/resume cycles, no data modification&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;nhours&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;5&lt;/STOP_N&gt;
+    &lt;HIST_OPTION&gt;nhours&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;1&lt;/HIST_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTBUILDFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail build step.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTBUILDFAILEXC&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail build step by failing to init.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail run step.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNSTARCFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail st archive test with exception.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNFAILEXC&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail run step via exception.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNPASS&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-pass run step.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTMEMLEAKFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-fail memleak step.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTMEMLEAKPASS&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Insta-pass memleak step.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNDIFF&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Produces a canned hist file.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTTESTDIFF&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Simulates internal test diff (non baseline)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNSLOWPASS&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. After 5 minutes of sleep, pass run step.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;NODEFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Tests restart upon detected node failure&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;nsteps&lt;/STOP_OPTION&gt;
+    &lt;OCN_NCPL&gt;$ATM_NCPL&lt;/OCN_NCPL&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N / 2 + 1&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;NODE_FAIL_REGEX&gt;JGF FAKE NODE FAIL&lt;/NODE_FAIL_REGEX&gt;
+    &lt;FORCE_SPARE_NODES&gt;3&lt;/FORCE_SPARE_NODES&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;ICP&quot;&gt;
+    &lt;DESC&gt;cice performance test&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;0&lt;/STOP_N&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;COMP_RUN_BARRIERS&gt;TRUE&lt;/COMP_RUN_BARRIERS&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;PEA&quot;&gt;
+    &lt;DESC&gt;single pe bfb test (default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;never&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;PEM&quot;&gt;
+    &lt;DESC&gt;pes counts mpi bfb test (seq tests; default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;BFBFLAG&gt;TRUE&lt;/BFBFLAG&gt;
+    &lt;REST_OPTION&gt;never&lt;/REST_OPTION&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;PET&quot;&gt;
+    &lt;DESC&gt;openmp bfb test (seq tests; default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;BFBFLAG&gt;TRUE&lt;/BFBFLAG&gt;
+    &lt;FORCE_BUILD_SMP&gt;TRUE&lt;/FORCE_BUILD_SMP&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;RESUBMIT&gt;1&lt;/RESUBMIT&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;PFS&quot;&gt;
+    &lt;DESC&gt;performance test setup&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;20&lt;/STOP_N&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;MCC&quot;&gt;
+    &lt;DESC&gt;multi-driver validation vs single-instance (default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;MULTI_DRIVER&gt;TRUE&lt;/MULTI_DRIVER&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;MVK&quot;&gt;
+    &lt;DESC&gt;climate reproducibility test using the multivariate K-S test&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;STOP_OPTION&gt;nmonths&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;2&lt;/STOP_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;REST_N&gt;$STOP_N&lt;/REST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;RESUBMIT&gt;6&lt;/RESUBMIT&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;NCK&quot;&gt;
+    &lt;DESC&gt;multi-instance validation vs single instance (default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;NCR&quot;&gt;
+    &lt;!-- Note that this is untested and may not be working currently --&gt;
+    &lt;DESC&gt;multi-instance validation sequential vs concurrent (default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;OCP&quot;&gt;
+    &lt;DESC&gt;pop performance test&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;10&lt;/STOP_N&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;COMP_RUN_BARRIERS&gt;TRUE&lt;/COMP_RUN_BARRIERS&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;REP&quot;&gt;
+    &lt;DESC&gt;reproducibility test: do two runs give the same answers?&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;never&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;SBN&quot;&gt;
+    &lt;DESC&gt;smoke build-namelist test (just run preview_namelist and check_input_data)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;SEQ&quot;&gt;
+    &lt;DESC&gt;sequencing bfb test (10 day seq,conc tests)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;BFBFLAG&gt;TRUE&lt;/BFBFLAG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;10&lt;/STOP_N&gt;
+    &lt;REST_OPTION&gt;never&lt;/REST_OPTION&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;PGN&quot;&gt;
+    &lt;DESC&gt;solution reproducibility test&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TSC&quot;&gt;
+    &lt;DESC&gt;solution reproducibility test based on time-step convergence&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;SMS&quot;&gt;
+    &lt;DESC&gt;smoke startup test (default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+  &lt;/test&gt;
+
+&lt;/config_test&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="components.html" class="btn btn-neutral float-right" title="Data, Stub and Driver Component XML Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="cesm.html" class="btn btn-neutral" title="CESM Coupled Model XML Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'master',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" src="../_static/pop_ver.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>12. Directory content &mdash; CIME master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Models" href="../data_models/index.html" />
+    <link rel="prev" title="11. Workflows" href="workflows.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                master
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cime-internals.html">1. Main Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compsets.html">2. Component sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grids.html">3. Model grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="machine.html">4. Defining the machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pes-threads.html">5. Controlling processors and threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porting-cime.html">6. Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">7. Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">8. Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html">9. Fortran Unit Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">10. Multi-instance component functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflows.html">11. Workflows</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12. Directory content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
+        
+      <li>12. Directory content</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/users_guide/cime-dir.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="directory-content">
+<span id="cime-dir"></span><h1>12. Directory content<a class="headerlink" href="#directory-content" title="Permalink to this headline">¶</a></h1>
+<p>If you use CIME as part of a climate model or standalone, the content of the <strong>cime</strong> directory is the same.</p>
+<p>If you are using it as part of a climate model, <strong>cime</strong> is usually one of the first subdirectories under the main directory.</p>
+<table border="1" class="docutils" id="id1">
+<caption><span class="caption-text"><strong>CIME directory in a climate model</strong></span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="39%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Directory or Filename</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>README, etc.</td>
+<td>typical top-level directory content</td>
+</tr>
+<tr class="row-odd"><td>components/</td>
+<td>source code for active models</td>
+</tr>
+<tr class="row-even"><td>cime/</td>
+<td>All of CIME code</td>
+</tr>
+</tbody>
+</table>
+<p>CIME’s content is split into several subdirectories. Users should start in the <strong>scripts/</strong> subdirectory.</p>
+<table border="1" class="docutils" id="id2">
+<caption><span class="caption-text"><strong>CIME directory content</strong></span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Directory or Filename</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>CMakeLists.txt</td>
+<td>For building with CMake</td>
+</tr>
+<tr class="row-odd"><td>ChangeLog</td>
+<td>Developer-maintained record of changes to CIME</td>
+</tr>
+<tr class="row-even"><td>ChangeLog_template</td>
+<td>Template for an entry in ChangeLog</td>
+</tr>
+<tr class="row-odd"><td>LICENSE.TXT</td>
+<td>The CIME license</td>
+</tr>
+<tr class="row-even"><td>README</td>
+<td>Brief intro to CIME</td>
+</tr>
+<tr class="row-odd"><td>README.md</td>
+<td>README in markdown language</td>
+</tr>
+<tr class="row-even"><td>README.unit_testing</td>
+<td>Instructions for running unit tests with CIME</td>
+</tr>
+<tr class="row-odd"><td><strong>config/</strong></td>
+<td><strong>Shared and model-specific configuration files</strong></td>
+</tr>
+<tr class="row-even"><td>config/cesm/</td>
+<td>CESM-specific configuration options</td>
+</tr>
+<tr class="row-odd"><td>config/e3sm/</td>
+<td>E3SM-specific configuration options</td>
+</tr>
+<tr class="row-even"><td><strong>scripts/</strong></td>
+<td><strong>The CIME user interface</strong></td>
+</tr>
+<tr class="row-odd"><td>scripts/lib/</td>
+<td>Infrastructure source code for CIME scripts and functions</td>
+</tr>
+<tr class="row-even"><td>scripts/Tools/</td>
+<td>Auxiliary tools; scripts and functions</td>
+</tr>
+<tr class="row-odd"><td><strong>src/</strong></td>
+<td><strong>Model source code provided by CIME</strong></td>
+</tr>
+<tr class="row-even"><td>src/components/</td>
+<td>CIME-provided components including data and stub models</td>
+</tr>
+<tr class="row-odd"><td>src/drivers/</td>
+<td>CIME-provided main driver for a climate model</td>
+</tr>
+<tr class="row-even"><td>src/externals/</td>
+<td>Software provided with CIME for building a climate model</td>
+</tr>
+<tr class="row-odd"><td>src/share/</td>
+<td>Model source code provided by CIME and used by multiple components</td>
+</tr>
+<tr class="row-even"><td><strong>tests/</strong></td>
+<td><strong>Tests</strong></td>
+</tr>
+<tr class="row-odd"><td><strong>tools/</strong></td>
+<td><strong>Standalone climate modeling tools</strong></td>
+</tr>
+<tr class="row-even"><td>utils/</td>
+<td>Some Perl source code needed by some prognostic components</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../data_models/index.html" class="btn btn-neutral float-right" title="Data Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="workflows.html" class="btn btn-neutral" title="11. Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'master',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" src="../_static/pop_ver.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

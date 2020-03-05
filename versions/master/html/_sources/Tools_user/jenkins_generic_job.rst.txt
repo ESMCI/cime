@@ -1,0 +1,14 @@
+
+.. _jenkins_generic_job:
+
+####################################################
+jenkins_generic_job 
+####################################################
+
+**jenkins_generic_job** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./jenkins_generic_job --help
+   :cwd: ../../../scripts/Tools
