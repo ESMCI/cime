@@ -25,19 +25,27 @@
   
 
   
+  
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="8. Testing" href="testing.html" />
-    <link rel="prev" title="6. Porting and validating CIME on a new platform" href="porting-cime.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME master documentation" href="../index.html"/>
+        <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html"/>
+        <link rel="next" title="8. Testing" href="testing.html"/>
+        <link rel="prev" title="6. Porting and validating CIME on a new platform" href="porting-cime.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -59,7 +67,20 @@
             
             
               <div class="version">
-                master
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
               </div>
             
           
@@ -129,7 +150,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">CIME</a>
@@ -137,10 +158,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -197,11 +217,11 @@ also have GPTL timers in their code and very detailed timing information can be 
 The following describes the most important parts of this timing file:</p>
 <p>An example timing file of this type is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">----------------</span> <span class="n">TIMING</span> <span class="n">PROFILE</span> <span class="o">---------------------</span>
-<span class="n">Case</span>        <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297</span><span class="n">_02</span>
+<span class="n">Case</span>        <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297_02</span>
 <span class="n">LID</span>         <span class="p">:</span> <span class="mf">9459679.</span><span class="n">chadmin1</span><span class="o">.</span><span class="mi">180517</span><span class="o">-</span><span class="mi">114852</span>
 <span class="n">Machine</span>     <span class="p">:</span> <span class="n">cheyenne</span>
-<span class="n">Caseroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297</span><span class="n">_02</span>
-<span class="n">Timeroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297</span><span class="n">_02</span><span class="o">/</span><span class="n">Tools</span>
+<span class="n">Caseroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297_02</span>
+<span class="n">Timeroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="o">.</span><span class="mi">20</span><span class="n">thC</span><span class="o">.</span><span class="mi">297_02</span><span class="o">/</span><span class="n">Tools</span>
 <span class="n">User</span>        <span class="p">:</span> <span class="n">hannay</span>
 <span class="n">Curr</span> <span class="n">Date</span>   <span class="p">:</span> <span class="n">Thu</span> <span class="n">May</span> <span class="mi">17</span> <span class="mi">12</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">27</span> <span class="mi">2018</span>
 <span class="n">grid</span>        <span class="p">:</span> <span class="n">a</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="o">.</span><span class="mi">25</span><span class="n">_l</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="o">.</span><span class="mi">25</span><span class="n">_oi</span><span class="o">%</span><span class="n">gx1v7_r</span><span class="o">%</span><span class="n">r05_g</span><span class="o">%</span><span class="n">gland4_w</span><span class="o">%</span><span class="n">ww3a_m</span><span class="o">%</span><span class="n">gx1v7</span>
@@ -349,7 +369,9 @@ year/job. In this example, set your wallclock at 12 hours and invoke
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -371,7 +393,7 @@ year/job. In this example, set your wallclock at 12 hours and invoke
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
      
 <script>var version_json_loc = "../../../versions.json";</script>
 
@@ -389,22 +411,14 @@ year/job. In this example, set your wallclock at 12 hours and invoke
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'master',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/language_data.js"></script>
-      <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
 
   
 
@@ -413,11 +427,14 @@ year/job. In this example, set your wallclock at 12 hours and invoke
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>

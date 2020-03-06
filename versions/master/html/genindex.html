@@ -26,17 +26,24 @@
   
 
   
+  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="#"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="CIME master documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -58,7 +65,20 @@
             
             
               <div class="version">
-                master
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
               </div>
             
           
@@ -108,7 +128,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">CIME</a>
@@ -116,10 +136,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -629,12 +648,12 @@
 </li>
       <li><a href="CIME_api/CIME.html#module-CIME.test_utils">CIME.test_utils (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="CIME_api/CIME.tests.html#module-CIME.tests">CIME.tests (module)</a>
 </li>
       <li><a href="CIME_api/CIME.tests.html#module-CIME.tests.case_fake">CIME.tests.case_fake (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="CIME_api/CIME.tests.html#module-CIME.tests.custom_assertions_test_status">CIME.tests.custom_assertions_test_status (module)</a>
 </li>
       <li><a href="CIME_api/CIME.tests.SystemTests.html#module-CIME.tests.SystemTests">CIME.tests.SystemTests (module)</a>
@@ -902,14 +921,6 @@
       <li><a href="CIME_api/CIME.html#CIME.cs_status.cs_status">cs_status() (in module CIME.cs_status)</a>
 </li>
       <li><a href="CIME_api/CIME.tests.html#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus">CustomAssertionsTestStatus (class in CIME.tests.custom_assertions_test_status)</a>
-</li>
-      <li><a href="Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_batch_job_template">cylc_batch_job_template() (in module Tools.generate_cylc_workflow)</a>
-</li>
-      <li><a href="Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_case_path_string">cylc_get_case_path_string() (in module Tools.generate_cylc_workflow)</a>
-</li>
-      <li><a href="Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_get_ensemble_first_and_last">cylc_get_ensemble_first_and_last() (in module Tools.generate_cylc_workflow)</a>
-</li>
-      <li><a href="Tools_api/Tools.html#Tools.generate_cylc_workflow.cylc_script_job_template">cylc_script_job_template() (in module Tools.generate_cylc_workflow)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1409,8 +1420,6 @@
 </li>
       <li><a href="CIME_api/CIME.html#CIME.test_scheduler.TestScheduler.get_testnames">get_testnames() (CIME.test_scheduler.TestScheduler method)</a>
 </li>
-      <li><a href="Tools_api/Tools.html#Tools.testreporter.get_testreporter_xml">get_testreporter_xml() (in module Tools.testreporter)</a>
-</li>
       <li><a href="CIME_api/CIME.XML.html#CIME.XML.testlist.Testlist.get_tests">get_tests() (CIME.XML.testlist.Testlist method)</a>
 </li>
       <li><a href="CIME_api/CIME.html#CIME.test_utils.get_tests_from_xml">get_tests_from_xml() (in module CIME.test_utils)</a>
@@ -1773,12 +1782,6 @@
 </li>
       <li><a href="CIME_api/CIME.html#CIME.utils.parse_args_and_handle_standard_logging_options">parse_args_and_handle_standard_logging_options() (in module CIME.utils)</a>
 </li>
-      <li><a href="Tools_api/Tools.html#Tools.generate_cylc_workflow.parse_command_line">parse_command_line() (in module Tools.generate_cylc_workflow)</a>
-
-      <ul>
-        <li><a href="Tools_api/Tools.html#Tools.testreporter.parse_command_line">(in module Tools.testreporter)</a>
-</li>
-      </ul></li>
       <li><a href="CIME_api/CIME.html#CIME.buildlib.parse_input">parse_input() (in module CIME.buildlib)</a>
 
       <ul>
@@ -1799,10 +1802,10 @@
 </li>
       <li><a href="CIME_api/CIME.html#CIME.test_status.TestStatus.phase_statuses_dump">phase_statuses_dump() (CIME.test_status.TestStatus method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="CIME_api/CIME.XML.html#CIME.XML.pio.PIO">PIO (class in CIME.XML.pio)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="CIME_api/CIME.XML.html#CIME.XML.generic_xml.GenericXML.pop">pop() (CIME.XML.generic_xml.GenericXML method)</a>
 </li>
       <li><a href="CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific.populate">populate() (CIME.XML.env_mach_specific.EnvMachSpecific method)</a>
@@ -2331,10 +2334,10 @@
 </li>
       <li><a href="CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run2_fails">test_run2_fails() (CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo method)</a>
 </li>
-      <li><a href="CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls">test_run_phase_internal_calls() (CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls">test_run_phase_internal_calls() (CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo method)</a>
+</li>
       <li><a href="CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1">test_run_phase_internal_calls_multisubmit_phase1() (CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo method)</a>
 </li>
       <li><a href="CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2">test_run_phase_internal_calls_multisubmit_phase2() (CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo method)</a>
@@ -2429,11 +2432,7 @@
 </li>
       <li><a href="Tools_api/Tools.html#module-Tools">Tools (module)</a>
 </li>
-      <li><a href="Tools_api/Tools.html#module-Tools.generate_cylc_workflow">Tools.generate_cylc_workflow (module)</a>
-</li>
       <li><a href="Tools_api/Tools.html#module-Tools.standard_script_setup">Tools.standard_script_setup (module)</a>
-</li>
-      <li><a href="Tools_api/Tools.html#module-Tools.testreporter">Tools.testreporter (module)</a>
 </li>
       <li><a href="CIME_api/CIME.html#CIME.utils.touch">touch() (in module CIME.utils)</a>
 </li>
@@ -2565,7 +2564,9 @@
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -2578,7 +2579,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
      
 <script>var version_json_loc = "../../versions.json";</script>
 
@@ -2596,22 +2597,14 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'master',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/language_data.js"></script>
-      <script type="text/javascript" src="_static/pop_ver.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/pop_ver.js"></script>
+    
 
   
 
@@ -2620,11 +2613,14 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>

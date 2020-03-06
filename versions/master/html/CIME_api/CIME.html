@@ -25,19 +25,27 @@
   
 
   
+  
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.BuildTools package" href="CIME.BuildTools.html" />
-    <link rel="prev" title="CIME" href="modules.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME master documentation" href="../index.html"/>
+        <link rel="up" title="CIME" href="modules.html"/>
+        <link rel="next" title="CIME.BuildTools package" href="CIME.BuildTools.html"/>
+        <link rel="prev" title="CIME" href="modules.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -59,7 +67,20 @@
             
             
               <div class="version">
-                master
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
               </div>
             
           
@@ -150,7 +171,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">CIME</a>
@@ -158,10 +179,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -555,7 +575,7 @@ there was at least one FAIL result.</p>
 of the tests in one or more test suites</p>
 <dl class="function">
 <dt id="CIME.cs_status.cs_status">
-<code class="descclassname">CIME.cs_status.</code><code class="descname">cs_status</code><span class="sig-paren">(</span><em>test_paths</em>, <em>summary=False</em>, <em>fails_only=False</em>, <em>count_fails_phase_list=None</em>, <em>expected_fails_filepath=None</em>, <em>out=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/cs_status.html#cs_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.cs_status.cs_status" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.cs_status.</code><code class="descname">cs_status</code><span class="sig-paren">(</span><em>test_paths</em>, <em>summary=False</em>, <em>fails_only=False</em>, <em>count_fails_phase_list=None</em>, <em>expected_fails_filepath=None</em>, <em>out=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/cs_status.html#cs_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.cs_status.cs_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the test statuses of all tests in test_paths. The default
 is to print to stdout, but this can be overridden with the ‘out’
 argument.</p>
@@ -605,7 +625,8 @@ what you want.</dd>
 <dl class="class">
 <dt id="CIME.date.date">
 <em class="property">class </em><code class="descclassname">CIME.date.</code><code class="descname">date</code><span class="sig-paren">(</span><em>year=1</em>, <em>month=1</em>, <em>day=1</em>, <em>hour=0</em>, <em>minute=0</em>, <em>second=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/date.html#date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.date.date" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple struct for holding dates and the time of day and performing comparisons</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Simple struct for holding dates and the time of day and performing comparisons</p>
 <p>Difference in Hour, Minute, or Second
 &gt;&gt;&gt; date(4, 5, 6, 9) == date(4, 5, 6, 8)
 False
@@ -2336,7 +2357,7 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 <dl class="exception">
 <dt id="CIME.utils.CIMEError">
 <em class="property">exception </em><code class="descclassname">CIME.utils.</code><code class="descname">CIMEError</code><a class="reference internal" href="../_modules/CIME/utils.html#CIMEError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.CIMEError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.SystemExit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SystemExit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
 <dl class="class">
@@ -2979,22 +3000,22 @@ parse and return the partial results.</p>
 
 <dl class="function">
 <dt id="CIME.utils.redirect_logger">
-<code class="descclassname">CIME.utils.</code><code class="descname">redirect_logger</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_logger" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">redirect_logger</code><span class="sig-paren">(</span><em>new_target</em>, <em>logger_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_logger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.redirect_stderr">
-<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stderr</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stderr" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stderr</code><span class="sig-paren">(</span><em>new_target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stderr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.redirect_stdout">
-<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stdout</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stdout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stdout" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stdout</code><span class="sig-paren">(</span><em>new_target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stdout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stdout" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.redirect_stdout_stderr">
-<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stdout_stderr</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stdout_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stdout_stderr" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">redirect_stdout_stderr</code><span class="sig-paren">(</span><em>new_target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#redirect_stdout_stderr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.redirect_stdout_stderr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -3245,7 +3266,9 @@ recursively.</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -3267,7 +3290,7 @@ recursively.</p>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
      
 <script>var version_json_loc = "../../../versions.json";</script>
 
@@ -3285,22 +3308,14 @@ recursively.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'master',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/language_data.js"></script>
-      <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
 
   
 
@@ -3309,11 +3324,14 @@ recursively.</p>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>

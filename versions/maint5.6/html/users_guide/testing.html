@@ -25,19 +25,27 @@
   
 
   
+  
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="9. Fortran Unit Testing" href="unit_testing.html" />
-    <link rel="prev" title="7. Timers and timing" href="timers.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME cime5.6 documentation" href="../index.html"/>
+        <link rel="up" title="Case Control System Part 1: Basic Usage" href="index.html"/>
+        <link rel="next" title="9. Fortran Unit Testing" href="unit_testing.html"/>
+        <link rel="prev" title="7. Timers and timing" href="timers.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -59,7 +67,20 @@
             
             
               <div class="version">
-                cime5.6
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>cime5.6</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
               </div>
             
           
@@ -132,7 +153,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">CIME</a>
@@ -140,10 +161,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -658,7 +678,7 @@ such as queue, walltime, etc..</p>
 <p>Interpreting test output is pretty easy, looking at an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
 
-<span class="n">Creating</span> <span class="n">test</span> <span class="n">directory</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
+<span class="n">Creating</span> <span class="n">test</span> <span class="n">directory</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504_163152_31</span><span class="n">aahy</span>
 <span class="n">RUNNING</span> <span class="n">TESTS</span><span class="p">:</span>
   <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span>
 <span class="n">Starting</span> <span class="n">CREATE_NEWCASE</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">1</span> <span class="n">procs</span>
@@ -675,7 +695,7 @@ such as queue, walltime, etc..</p>
 <span class="n">Finished</span> <span class="n">RUN</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">35.068546</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span><span class="o">.</span> <span class="p">[</span><span class="n">COMPLETED</span> <span class="mi">1</span> <span class="n">of</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">At</span> <span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">close</span><span class="p">,</span> <span class="n">state</span> <span class="ow">is</span><span class="p">:</span>
 <span class="n">PASS</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="n">RUN</span>
-  <span class="n">Case</span> <span class="nb">dir</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504</span><span class="n">_163152_31aahy</span>
+  <span class="n">Case</span> <span class="nb">dir</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="o">.</span><span class="mi">20170504_163152_31</span><span class="n">aahy</span>
 <span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">took</span> <span class="mf">154.780044079</span> <span class="n">seconds</span>
 </pre></div>
 </div>
@@ -774,7 +794,9 @@ examine.</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -796,7 +818,7 @@ examine.</p>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
      
 <script>var version_json_loc = "../../../versions.json";</script>
 
@@ -814,22 +836,14 @@ examine.</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'cime5.6',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="../_static/language_data.js"></script>
-      <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
 
   
 
@@ -838,11 +852,14 @@ examine.</p>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>
