@@ -1,0 +1,990 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME Wave Data and Stub XML Files &mdash; CIME master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME master documentation" href="../index.html"/>
+        <link rel="up" title="Data, Stub and Driver Component XML Files" href="components.html"/>
+        <link rel="next" title="Driver XML Files" href="drivers.html"/>
+        <link rel="prev" title="CIME Sea Ice Data and Stub XML Files" href="seaice.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">XML Files</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="e3sm.html">E3SM Coupled Model XML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cesm.html">CESM Coupled Model XML Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common.html">Common XML Files</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="components.html">Data, Stub and Driver Component XML Files</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="atmosphere.html">CIME Atmosphere Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="esp.html">CIME ESP Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="land.html">CIME Land Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="landice.html">CIME Land Ice Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ocean.html">CIME Ocean Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="river.html">CIME River Runoff Data and Stub XML Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="seaice.html">CIME Sea Ice Data and Stub XML Files</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME Wave Data and Stub XML Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-data-comps-dwav-cime-config">CIMEROOT/src/components/data_comps/dwav/cime_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-stub-comps-swav-cime-config">CIMEROOT/src/components/stub_comps/swav/cime_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cimeroot-src-components-xcpl-comps-xwav-cime-config">CIMEROOT/src/components/xcpl_comps/xwav/cime_config</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="drivers.html">Driver XML Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CIME_api/modules.html">CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">XML Files</a> &raquo;</li>
+        
+          <li><a href="components.html">Data, Stub and Driver Component XML Files</a> &raquo;</li>
+        
+      <li>CIME Wave Data and Stub XML Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/xml_files/wave.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cime-wave-data-and-stub-xml-files">
+<span id="wave"></span><h1>CIME Wave Data and Stub XML Files<a class="headerlink" href="#cime-wave-data-and-stub-xml-files" title="Permalink to this headline">¶</a></h1>
+<p>Wave component XML files for data, stub, and dead components.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="cimeroot-src-components-data-comps-dwav-cime-config">
+<h2>CIMEROOT/src/components/data_comps/dwav/cime_config<a class="headerlink" href="#cimeroot-src-components-data-comps-dwav-cime-config" title="Permalink to this headline">¶</a></h2>
+<p>Wave data model, <strong>dwav</strong>, XML files and settings.</p>
+<p>XML specification for archiving dwav output files.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
+  &lt;comp_archive_spec compname=&quot;dwav&quot; compclass=&quot;wav&quot;&gt;
+    &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
+    &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
+    &lt;rpointer&gt;
+      &lt;rpointer_file&gt;rpointer.wav$NINST_STRING&lt;/rpointer_file&gt;
+      &lt;rpointer_content &gt;$CASE.dwav$NINST_STRING.r.$DATENAME.nc,$CASE.dwav$NINST_STRING.rs1.$DATENAME.bin&lt;/rpointer_content&gt;
+    &lt;/rpointer&gt;
+  &lt;/comp_archive_spec&gt;
+&lt;/components&gt;
+</pre></div>
+</div>
+<p>XML variables and component descriptions specific to dwav.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;entry_id version=&quot;3.0&quot;&gt;
+
+  &lt;!-- modifier_mode allowed values are
+       &#39;*&#39; 0 or more modifiers (default)
+       &#39;1&#39; exactly 1 modifier
+       &#39;?&#39; 0 or 1 modifiers
+       &#39;+&#39; 1 or more modifiers
+
+       This file may have wav desc entries.
+  --&gt;
+  &lt;description modifier_mode=&quot;1&quot;&gt;
+    &lt;desc wav=&quot;DWAV[%NULL][%CLIMO]&quot;&gt;Data wave model (DWAV)&lt;/desc&gt;
+    &lt;desc option=&quot;NULL&quot;&gt;null mode&lt;/desc&gt;
+    &lt;desc option=&quot;CLIMO&quot;&gt;climatological mode&lt;/desc&gt;
+  &lt;/description&gt;
+
+  &lt;entry id=&quot;COMP_WAV&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;dwav&lt;/valid_values&gt;
+    &lt;default_value&gt;dwav&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of wave component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;DWAV_MODE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;NULL,CLIMO&lt;/valid_values&gt;
+    &lt;default_value&gt;NULL&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DWAV%NULL&quot;&gt;NULL&lt;/value&gt;
+      &lt;value compset=&quot;_DWAV%CLIMO&quot;&gt;CLIMO&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_dwav&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;DWAV mode. Values are null and copyall.
+      In null mode, land forcing is set to zero and not used.
+      default is copyall&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;help&gt;
+    =========================================
+    DWAV naming conventions
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+<p>XML variables and component descriptions specific to dwav.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;entry_id version=&quot;3.0&quot;&gt;
+
+  &lt;!-- modifier_mode allowed values are
+       &#39;*&#39; 0 or more modifiers (default)
+       &#39;1&#39; exactly 1 modifier
+       &#39;?&#39; 0 or 1 modifiers
+       &#39;+&#39; 1 or more modifiers
+
+       This file may have wav desc entries.
+  --&gt;
+  &lt;description modifier_mode=&quot;1&quot;&gt;
+    &lt;desc wav=&quot;DWAV[%NULL][%CLIMO]&quot;&gt;Data wave model (DWAV)&lt;/desc&gt;
+    &lt;desc option=&quot;NULL&quot;&gt;null mode&lt;/desc&gt;
+    &lt;desc option=&quot;CLIMO&quot;&gt;climatological mode&lt;/desc&gt;
+  &lt;/description&gt;
+
+  &lt;entry id=&quot;COMP_WAV&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;dwav&lt;/valid_values&gt;
+    &lt;default_value&gt;dwav&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of wave component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;DWAV_MODE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;NULL,CLIMO&lt;/valid_values&gt;
+    &lt;default_value&gt;NULL&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_DWAV%NULL&quot;&gt;NULL&lt;/value&gt;
+      &lt;value compset=&quot;_DWAV%CLIMO&quot;&gt;CLIMO&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;run_component_dwav&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;DWAV mode. Values are null and copyall.
+      In null mode, land forcing is set to zero and not used.
+      default is copyall&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;help&gt;
+    =========================================
+    DWAV naming conventions
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+<p>XML namelist definitions for dwav.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;namelist_definition.xsl&quot;?&gt;
+
+&lt;entry_id version=&quot;2.0&quot;&gt;
+
+  &lt;!--
+     Values to use by default for creation of DWAV model dwav namelists.
+     The element names are the same as the corresponding namelist
+     variables.  Values that depend on the model configuration use
+     attributes to express the dependency.  The recognized attributes
+     are: grid.attributes from the config_cache.xml file (with keys converted to upper-case).
+
+     strm_year_first is the first year of the stream data that will be used
+     strm_year_last  is the last  year of the stream data that will be used
+     strm_year_align is the model year that will be aligned with stream data for year_first
+
+     For cplhist forcing - the following substitutions will be made below
+     Replace any instance of the following substring indicators with the appropriate values:
+     %y    =&gt; year from the range yearfirst to yearlast
+              obtained from values of &lt;strm_year_start&gt; -&gt; &lt;strm_year_end&gt; below
+     %ym   =&gt; year-month from the range yearfirst to yearlast with all 12 months
+              obtained from values of &lt;strm_year_start&gt; -&gt; &lt;strm_year_end&gt; below
+     %ymd  =&gt; year-month-day from the range yearfirst to yearlast with all 12 months
+              obtained from values of &lt;strm_year_start&gt; -&gt; &lt;strm_year_end&gt; below
+
+     Replace any instance of $VARNAME with the xml variable value obtained from any
+     of the $CASEROOT/env*xml files
+
+     In dwav_in,  streams namelist input has the form
+     streams = &#39;stream1.txt year_align year_first year_last &#39;,
+               &#39;stream2.txt year_align year_first year_last &#39;,
+               ...
+               &#39;streamN.txt year_align year_first year_last &#39;
+
+     Currently the following streams are supported
+         wav.cplhist
+         wav.diatren_ann_rx1
+         wav.diatren_iaf_rx1
+   --&gt;
+
+  &lt;!-- ========================================================================================  --&gt;
+  &lt;!-- Stream file variables                                                                     --&gt;
+  &lt;!-- ========================================================================================  --&gt;
+
+  &lt;entry id=&quot;streamslist&quot;&gt;
+    &lt;type&gt;char(100)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;List of streams used for the given dwav_mode.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value dwav_mode=&quot;NULL&quot;&gt;null&lt;/value&gt;
+      &lt;value dwav_mode=&quot;CLIMO&quot;&gt;climo&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_domdir&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream domain file directory.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;$DIN_LOC_ROOT/wav/dwav&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_domfil&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream domain file path(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;waveclim.mon.ww3a.150612.nc&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_domvar&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream domain variable name(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;
+        time   time
+        xc     lon
+        yc     lat
+        area   area
+        mask   mask
+      &lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_datdir&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream data file directory.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;$DIN_LOC_ROOT/wav/dwav&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_datfil&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream data file path(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;waveclim.mon.ww3a.150612.nc&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_datvar&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream data variable name(s).&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;
+        lamult  lamult
+        ustokes ustokes
+        vstokes vstokes
+      &lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_offset&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Stream offset.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_year_align&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Simulation year to align stream to.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;1&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_year_start&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;First year of stream.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value stream=&quot;climo&quot;&gt;1&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;strm_year_end&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;streams_file&lt;/group&gt;
+    &lt;desc&gt;Last year of stream.&lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value   stream=&quot;climo&quot;&gt;1&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;!-- ========================================================================================  --&gt;
+  &lt;!-- DWAV Namelists                                                                            --&gt;
+  &lt;!-- ========================================================================================  --&gt;
+
+  &lt;!-- =========================================  --&gt;
+  &lt;!--- shr_strmdata_nml --&gt;
+  &lt;!-- =========================================  --&gt;
+
+  &lt;entry id=&quot;datamode&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;NULL,COPYALL&lt;/valid_values&gt;
+    &lt;desc&gt;
+      The wave data is associated with the wave model
+      and is normally on a different grid than the ocean data.
+      datamode = &quot;NULL&quot;
+      Is always a valid option and means no data will be generated.
+      Turns off the data model as a provider of data to the coupler.
+      datamode = &quot;COPYALL&quot;
+      Copies all fields directly from the input data streams Any required
+      fields not found on an input stream will be set to zero.
+      Set by the following xml variables in env_run.xml DWAV_MODE
+      specifies values for wav mode: copyall,null
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;COPYALL&lt;/value&gt;
+      &lt;value dwav_mode=&quot;NULL&quot;&gt;NULL&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;domainfile&quot; skip_default_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      spatial gridfile associated with the strdata.  grid information will
+      be read from this file and that grid will serve as the target grid
+      for all input data for this strdata input.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillalgo&quot;  per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;copy,bilinear,nn,nnoni,nnonj,spval&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of fill algorithms associated with the array
+      of streams.  valid options are just copy (ie. no fill), special value,
+      nearest neighbor, nearest neighbor in &quot;i&quot; direction, or nearest
+      neighbor in &quot;j&quot; direction.
+      valid values:  &#39;copy&#39;,&#39;spval&#39;,&#39;nn&#39;,&#39;nnoni&#39;,&#39;nnonj&#39;
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;nn&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillmask&quot;  per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;nomask,srcmask,dstmask,bothmask&lt;/valid_values&gt;
+    &lt;desc&gt;
+      plays no role is fill algorithm at the present time.
+      valid values: &quot;nomask,srcmask,dstmask,bothmask&quot;
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;nomask&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillread&quot;  per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of filenames associated with the array of
+      streams.  specifies the weights file to read in instead of computing the
+      weights on the fly for the fill operation.  if this is set, fillalgo
+      and fillmask are ignored.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;fillwrite&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements)  of filenames associated with the array of
+      streams.  specifies the weights file to generate after weights are
+      computed on the fly for the fill operation.  this allows a user to
+      save and reuse a set of weights later.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapmask&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;nomask,srcmask,dstmask,bothmask&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of masking algorithms for mapping input data
+      associated with the array of streams.  valid options are map only from
+      valid src points, map only to valid destination points, ignore all
+      masks, map only from valid src points to valid destination points.
+      valid values: srcmask, dstmask, nomask,bothmask
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;dstmask&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapalgo&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;copy,bilinear,nn,nnoni,nnonj,spval&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of fill algorithms associated with the array
+      of streams.  valid options are copy by index, set to special value,
+      nearest neighbor, nearest neighbor in &quot;i&quot; direction, nearest neighbor
+      in &quot;j&quot; direction, or bilinear.
+      valid values: copy,spval,nn,nnoni,nnonj,bilinear
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;bilinear&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapread&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of filenames associated with the array of
+      streams.  specifies the weights file to read instead of computing
+      weights on the fly for the mapping (interpolation) operation.  if this
+      is set, mapalgo and mapmask are ignored.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;mapwrite&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of filenames associated with the array of
+      streams.  specifies the weights file to generate after weights are
+      computed on the fly for the mapping (interpolation) operation.  this
+      allows a user to save and reuse a set of weights later.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;NOT_SET&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;tintalgo&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;coszen,nearest,linear,lower,upper&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of time interpolation options associated with the array of
+      streams.
+      valid values: lower,upper,nearest,linear,coszen
+      lower   = Use lower time-value
+      upper   = Use upper time-value
+      nearest = Use the nearest time-value
+      linear  = Linearly interpolate between the two time-values
+      coszen  = Scale according to the cosine of the solar zenith angle (for solar)
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;linear&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;taxmode&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;extend,cycle,limit&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array of time axis modes associated with the array of streams for
+      handling data outside the specified stream time axis.
+      valid options are to cycle the data based on the first, last, and
+      align settings associated with the stream dataset, to extend the first
+      and last valid value indefinitely, or to limit the interpolated data
+      to fall only between the least and greatest valid value of the time array.
+      valid values: cycle,extend,limit
+      extend = extrapolate before and after the period by using the first or last value.
+      cycle  = cycle between the range of data
+      limit  = restrict to the period for which the data is valid
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;cycle&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;readmode&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;valid_values&gt;single,full_file&lt;/valid_values&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of reading mode associated with the array of
+      streams.  specifies the mode of reading temporal stream dataset.
+      valid options are &quot;single&quot; (read temporal dataset one at a time) or
+      &quot;full_file&quot; (read all entires of temporal dataset in a given netcdf file)
+      valid values: single,full_file
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;single&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;dtlimit&quot; per_stream_entry=&quot;true&quot;&gt;
+    &lt;type&gt;real(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      array (up to 30 elements) of delta time ratio limits placed on the
+      time interpolation associated with the array of streams.  this real
+      value causes the model to stop if the ratio of the running maximum
+      delta time divided by the minimum delta time is greater than the
+      dtlimit for that stream.  for instance, with daily data, the delta
+      time should be exactly one day throughout the dataset and the computed
+      maximum divided by minimum delta time should always be 1.0.  for
+      monthly data, the delta time should be between 28 and 31 days and the
+      maximum ratio should be about 1.1.  the running value of the delta
+      time is computed as data is read and any wraparound or cycling is also
+      included.  this input helps trap missing data or errors in cycling.
+      to turn off trapping, set the value to 1.0e30 or something similar.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;1.5e0&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;vectors&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      list of paired colon delimited field names that should be treated as
+      vectors when carrying out spatial interpolation.  unlike other
+      character arrays in this namelist, this array is completely decoupled
+      from the list of streams.  this is a list of vector pairs that span
+      all input streams where different fields of the vector pair could
+      appear in different streams.
+      for example, vectors = &#39;u:v&#39;,&#39;taux:tauy&#39;.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;null&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;streams&quot;&gt;
+    &lt;type&gt;char(30)&lt;/type&gt;
+    &lt;category&gt;streams&lt;/category&gt;
+    &lt;group&gt;shr_strdata_nml&lt;/group&gt;
+    &lt;desc&gt;
+      character array (up to 30 elements) of stream input files.  this
+      string is actually parsed by a stream method and so the format is
+      specified by the stream module.  this string consists of a
+      &quot;stream_input_filename year_align year_first year_last&quot;.  the
+      stream_input_filename is a stream text input file and the format and
+      options are described elsewhere.  year_align, year_first, and
+      year_last provide information about the time axis of the file and how
+      to relate the input time axis to the model time axis.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;!-- =========================================  --&gt;
+  &lt;!--- dwav_nml --&gt;
+  &lt;!-- =========================================  --&gt;
+
+  &lt;entry id=&quot;decomp&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;dwav&lt;/category&gt;
+    &lt;group&gt;dwav_nml&lt;/group&gt;
+    &lt;valid_values&gt;1d,root&lt;/valid_values&gt;
+    &lt;desc&gt;
+      DWAV Decomposition strategy
+      1d   = Vector decomposition
+      root = run only on the master task
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;1d&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;restfilm&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;dwav&lt;/category&gt;
+    &lt;group&gt;dwav_nml&lt;/group&gt;
+    &lt;desc&gt;
+      Master restart file name for dwav model
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;undefined&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;restfils&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;dwav&lt;/category&gt;
+    &lt;group&gt;dwav_nml&lt;/group&gt;
+    &lt;desc&gt;
+      Stream restart file name for dwav model, needed for branch simulations
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;undefined&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;force_prognostic_true&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;dwav&lt;/category&gt;
+    &lt;group&gt;dwav_nml&lt;/group&gt;
+    &lt;desc&gt;If TRUE, prognostic is forced to true. &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;.false.&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="cimeroot-src-components-stub-comps-swav-cime-config">
+<h2>CIMEROOT/src/components/stub_comps/swav/cime_config<a class="headerlink" href="#cimeroot-src-components-stub-comps-swav-cime-config" title="Permalink to this headline">¶</a></h2>
+<p>The wave stub model, <strong>swav</strong>, does not output any files in the RUNDIR nor
+does it have any namelist settings.</p>
+<p>XML variables and component descriptions specific to swav.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;entry_id.xsl&quot; ?&gt;
+
+&lt;entry_id version=&quot;3.0&quot;&gt;
+
+  &lt;description&gt;
+    &lt;desc wav=&quot;SWAV&quot;&gt;Stub wave component&lt;/desc&gt;
+  &lt;/description&gt;
+
+  &lt;entry id=&quot;COMP_WAV&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;swav&lt;/valid_values&gt;
+    &lt;default_value&gt;swav&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of wave component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;help&gt;
+    =========================================
+    SWAV naming conventions in compset name
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="cimeroot-src-components-xcpl-comps-xwav-cime-config">
+<h2>CIMEROOT/src/components/xcpl_comps/xwav/cime_config<a class="headerlink" href="#cimeroot-src-components-xcpl-comps-xwav-cime-config" title="Permalink to this headline">¶</a></h2>
+<p>The wave dead model, <strong>xwav</strong>, does not output any files in the RUNDIR nor
+does it have any namelist settings.</p>
+<p>XML variables and component descriptions specific to xwav.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
+
+&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;entry_id.xsl&quot; ?&gt;
+
+&lt;entry_id version=&quot;3.0&quot;&gt;
+  &lt;description&gt;
+    &lt;desc wav=&quot;XWAV&quot;&gt;Dead wave component&lt;/desc&gt;
+  &lt;/description&gt;
+
+
+  &lt;entry id=&quot;COMP_WAV&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;xwav&lt;/valid_values&gt;
+    &lt;default_value&gt;xwav&lt;/default_value&gt;
+    &lt;group&gt;case_comp&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Name of wave component&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;help&gt;
+    =========================================
+    XWAV naming conventions in compset name
+    =========================================
+  &lt;/help&gt;
+
+&lt;/entry_id&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="drivers.html" class="btn btn-neutral float-right" title="Driver XML Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="seaice.html" class="btn btn-neutral" title="CIME Sea Ice Data and Stub XML Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
