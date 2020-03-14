@@ -206,13 +206,13 @@
 <li><p class="first"><code class="docutils literal notranslate"><span class="pre">CIME_MODEL=[e3sm,</span> <span class="pre">cesm]</span></code></p>
 </li>
 <li><p class="first"><code class="docutils literal notranslate"><span class="pre">PROJECT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
-<p>Used to specify a project id for compute accounting and directory permissions when on a batch system.</p>
+<p>This is your project account code for batch submission and/or directory priveleges</p>
 </li>
 <li><p class="first"><code class="docutils literal notranslate"><span class="pre">CHARGE_ACCOUNT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
-<p>Used to override the accounting (only) aspect of PROJECT</p>
+<p>An alternative to PROJECT for batch charging&gt;</p>
 </li>
 <li><p class="first"><code class="docutils literal notranslate"><span class="pre">MAIL_USER=&lt;email</span> <span class="pre">address&gt;</span></code></p>
-<p>Used to request a non-default email for batch summary output</p>
+<p>Used request a non-default email for batch summary output</p>
 </li>
 <li><p class="first"><code class="docutils literal notranslate"><span class="pre">MAIL_TYPE=[never,all,begin,fail,end]</span></code></p>
 <p>Any <strong>or</strong> all the above valid values can be set to list the batch events that emails will be sent for.</p>
@@ -245,8 +245,8 @@ MAIL_TYPE=fail
    &lt;compiler COMPILER=&quot;ibm&quot; OS=&quot;BGQ&quot;&gt;
       &lt;FFLAGS&gt; -g -qfullpath -qmaxmem=-1 -qspillsize=2500 -qextname=flush &lt;/FFLAGS&gt;
       &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot;&gt; -O3 -qstrict -qinline=auto &lt;/ADD_FFLAGS&gt;
-      &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;TRUE&quot;&gt; -qsmp=omp &lt;/ADD_FFLAGS&gt;
-      &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot; compile_threaded=&quot;TRUE&quot;&gt; -qsmp=omp:noopt &lt;/ADD_FFLAGS&gt;
+      &lt;ADD_FFLAGS DEBUG=&quot;FALSE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp &lt;/ADD_FFLAGS&gt;
+      &lt;ADD_FFLAGS DEBUG=&quot;TRUE&quot; compile_threaded=&quot;true&quot;&gt; -qsmp=omp:noopt &lt;/ADD_FFLAGS&gt;
       &lt;ADD_CPPDEFS&gt; -DLINUX  &lt;/ADD_CPPDEFS&gt;
       &lt;CONFIG_ARGS&gt; --build=powerpc-bgp-linux --host=powerpc64-suse-linux &lt;/CONFIG_ARGS&gt;
       &lt;LDFLAGS&gt;  -Wl,--relax -Wl,--allow-multiple-definition &lt;/LDFLAGS&gt;

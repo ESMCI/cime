@@ -278,7 +278,7 @@
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="NamelistGenerator.init_defaults"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.init_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">init_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infiles</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_entry_loop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="NamelistGenerator.init_defaults"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.init_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">init_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infiles</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_entry_loop</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return array of names of all definition nodes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># first clean out any settings left over from previous calls</span>
@@ -311,8 +311,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_entry_loop</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entry_nodes</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
-
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entry_nodes</span><span class="p">]</span></div>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entry_nodes</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.quote_string"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.quote_string">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">quote_string</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
@@ -329,39 +329,37 @@
         <span class="sd">&quot;&quot;&quot;Transform a literal list as needed for `get_value`.&quot;&quot;&quot;</span>
         <span class="n">var_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">var_size</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">expand_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">expand_literal_list</span><span class="p">(</span><span class="n">literals</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">scalar</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span><span class="p">:</span>
-                <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">character_literal_to_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
-
+                <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">character_literal_to_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var_size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">values</span>
+            <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">_to_namelist_literals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_to_namelist_literals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transform a literal list as needed for `set_value`.</span>
 
 <span class="sd">        This is the inverse of `_to_python_value`, except that many of the</span>
 <span class="sd">        changes have potentially already been performed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">var_type</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">var_size</span><span class="p">,</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">var_size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">var_size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scalar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">scalar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">elif</span> <span class="n">var_type</span> <span class="o">==</span> <span class="s1">&#39;character&#39;</span><span class="p">:</span>
                 <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
-                <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
+                <span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span><span class="n">scalar</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compress_literal_list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">compress_literal_list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NamelistGenerator.get_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the current value of a given namelist variable.</span>
@@ -481,6 +479,7 @@
         <span class="sd">&quot;&quot;&quot; Clean the object just enough to introduce a new instance &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_streams</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">clean_groups</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_sub_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varnames</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Substitute indicators with given values in a list of fields.</span>
@@ -773,7 +772,7 @@
                         <span class="k">continue</span>
                     <span class="n">file_path</span> <span class="o">=</span> <span class="n">character_literal_to_string</span><span class="p">(</span><span class="n">literal</span><span class="p">)</span>
                     <span class="c1"># NOTE - these are hard-coded here and a better way is to make these extensible</span>
-                    <span class="k">if</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span> <span class="ow">or</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap&#39;</span> <span class="ow">or</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap_ignore&#39;</span> <span class="ow">or</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;unset&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;UNSET&#39;</span> <span class="ow">or</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap&#39;</span> <span class="ow">or</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;idmap_ignore&#39;</span><span class="p">:</span>
                         <span class="k">continue</span>
                     <span class="k">if</span> <span class="n">file_path</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span><span class="p">:</span>
                         <span class="k">continue</span>
@@ -875,35 +874,17 @@
         <span class="k">if</span> <span class="n">data_list_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_input_files</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span></div>
 
-
-    <span class="c1"># For MCT</span>
 <div class="viewcode-block" id="NamelistGenerator.add_nmlcontents"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.add_nmlcontents">[docs]</a>    <span class="k">def</span> <span class="nf">add_nmlcontents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nmlcontents&quot;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Write only contents of nml group &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="n">group</span><span class="p">],</span> <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.write_seq_maps"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_seq_maps">[docs]</a>    <span class="k">def</span> <span class="nf">write_seq_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write mct out seq_maps.rc&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Write out seq_maps.rc&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;seq_maps&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;rc&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NamelistGenerator.write_modelio_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_modelio_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write mct component modelio files&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;modelio&quot;</span><span class="p">,</span> <span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div>
-
-    <span class="c1"># For NUOPC</span>
-<div class="viewcode-block" id="NamelistGenerator.write_nuopc_modelio_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_modelio_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_modelio_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write nuopc component modelio files&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div>
-
-
-    <span class="c1"># For NUOPC</span>
-<div class="viewcode-block" id="NamelistGenerator.write_nuopc_config_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">data_list_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Write the nuopc config file&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_definition</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="p">)</span>
-        <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="n">skip_comps</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s1">&#39;nuopc&#39;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">data_list_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># append to input_data_list file</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_input_files</span><span class="p">(</span><span class="n">data_list_path</span><span class="p">)</span></div></div>
+        <span class="sd">&quot;&quot;&quot; Write  component modelio files&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_namelist</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;modelio&quot;</span><span class="p">,</span> <span class="s2">&quot;pio_inparm&quot;</span><span class="p">],</span> <span class="n">format_</span><span class="o">=</span><span class="s2">&quot;nml&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

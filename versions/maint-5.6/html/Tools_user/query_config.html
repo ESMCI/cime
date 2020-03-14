@@ -118,7 +118,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User Tools</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="advanced-py-prof.html">advanced-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="archive_metadata.html">archive_metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bld_diff.html">bld_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bless_test_results.html">bless_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.build.html">case.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
@@ -133,6 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime_bisect.html">cime_bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cimeteststatus.html">cimeteststatus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code_checker.html">code_checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_namelists.html">compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_test_results.html">compare_test_results</a></li>
@@ -150,7 +150,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_generic_job.html">jenkins_generic_job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_script.html">jenkins_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
@@ -249,12 +248,12 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./query_config --help
-usage: query_config [-h] [-d] [-v] [-s] [--xml]
-                    [--compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo}]]
-                    [--components [{all,None,datm,satm,xatm,cam,ufsatm,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,mom,nemo,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,siac,xiac,desp,sesp}]]
+usage: query_config [-h] [-d] [-v] [-s]
+                    [--compsets [{all,allactive,drv,cam,cism,clm,cice,pop,nemo}]]
+                    [--components [{all,mct,drv,datm,satm,xatm,cam,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,nemo,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,desp,sesp}]]
                     [--grids]
-                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,bishorn}]]
-                    [--long] [--comp_interface {mct,moab}]
+                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,zeus,bishorn}]]
+                    [--long]
 
 Displays information about available compsets, component settings, grids and/or
 machines. Typically run with one of the arguments --compsets, --settings,
@@ -266,20 +265,17 @@ optional arguments:
   -d, --debug           Print debug information (very verbose) to file /Users/sacks/cime/scripts/query_config.log
   -v, --verbose         Add additional context (time and file) to log messages
   -s, --silent          Print only warnings and error messages
-  --xml                 Output in xml format.
-  --compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo}]
+  --compsets [{all,allactive,drv,cam,cism,clm,cice,pop,nemo}]
                         Query compsets corresponding to the target component for the cesm model. If no component is given, lists compsets defined by all components
-  --components [{all,None,datm,satm,xatm,cam,ufsatm,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,mom,nemo,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,siac,xiac,desp,sesp}]
+  --components [{all,mct,drv,datm,satm,xatm,cam,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,nemo,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,desp,sesp}]
                         Query component settings corresponding to the target component for cesm model.
                         If the option is empty, then the lists settings defined by all components is output
   --grids               Query supported model grids for cesm model.
-  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,bishorn}]
+  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,zeus,bishorn}]
                         Query supported machines for cesm model.
                         If option is left empty then all machines are listed,
                         If the option is &#39;current&#39; then only the current machine details are listed.
   --long                Provide long output for queries
-  --comp_interface {mct,moab}
-                        Coupler/Driver interface
 </pre></div>
 </div>
 </div>

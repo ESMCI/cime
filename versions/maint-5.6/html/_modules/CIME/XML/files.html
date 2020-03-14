@@ -192,7 +192,7 @@
 
 <div class="viewcode-block" id="Files"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.files.Files">[docs]</a><span class="k">class</span> <span class="nc">Files</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="s2">&quot;mct&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
 
@@ -208,7 +208,7 @@
         <span class="n">config_files_override</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">),</span><span class="s2">&quot;.config_files.xml&quot;</span><span class="p">)</span>
         <span class="c1"># variables COMP_ROOT_DIR_{} are mutable, all other variables are read only</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">COMP_ROOT_DIR</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="n">comp_interface</span>
+
         <span class="c1"># .config_file.xml at the top level may overwrite COMP_ROOT_DIR_ nodes in config_files</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_files_override</span><span class="p">):</span>
@@ -236,9 +236,10 @@
             <span class="k">if</span> <span class="n">resolved</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="o">+</span><span class="n">comp_root_dir_var_name</span><span class="p">,</span> <span class="n">comp_root_dir</span><span class="p">)</span>
 
+
         <span class="k">if</span> <span class="n">resolved</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$COMP_INTERFACE&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">value</span></div>
 
 <div class="viewcode-block" id="Files.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.files.Files.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span><span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

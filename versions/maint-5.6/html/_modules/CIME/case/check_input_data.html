@@ -200,10 +200,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">inputdata</span> <span class="o">=</span> <span class="n">Inputdata</span><span class="p">()</span>
     <span class="n">protocol</span> <span class="o">=</span> <span class="s2">&quot;svn&quot;</span>
-    <span class="n">chksum_found</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="c1"># download and merge all available chksum files.</span>
     <span class="k">while</span> <span class="n">protocol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">chksum_file</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">inputdata</span><span class="o">.</span><span class="n">get_next_server</span><span class="p">()</span>
+        <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">chksum_file</span> <span class="o">=</span> <span class="n">inputdata</span><span class="o">.</span><span class="n">get_next_server</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">protocol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">CIME</span><span class="o">.</span><span class="n">Servers</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Client protocol </span><span class="si">{}</span><span class="s2"> not enabled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol</span><span class="p">))</span>
             <span class="k">continue</span>
@@ -219,10 +218,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Unsupported inputdata protocol: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">chksum_file</span><span class="p">:</span>
-            <span class="n">chksum_found</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">continue</span>
 
         <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">rel_path</span> <span class="o">=</span> <span class="n">chksum_file</span>
@@ -251,7 +246,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not automatically download file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
                                    <span class="nb">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">chksum_found</span>
+
 
 <span class="k">def</span> <span class="nf">_reformat_chksum_file</span><span class="p">(</span><span class="n">chksum_file</span><span class="p">,</span> <span class="n">server_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -287,7 +282,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">isdirectory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">,</span> <span class="n">isdirectory</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if successfully downloaded</span>
 <span class="sd">    server is an object handle of type CIME.Servers</span>
@@ -298,9 +293,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">rel_path</span> <span class="ow">or</span> <span class="n">server</span><span class="o">.</span><span class="n">fileexists</span><span class="p">(</span><span class="n">rel_path</span><span class="p">)):</span>
         <span class="k">return</span> <span class="kc">False</span>
+
     <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ic_filepath</span><span class="p">:</span>
-        <span class="n">full_path</span> <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ic_filepath</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Trying to download file: &#39;</span><span class="si">{}</span><span class="s2">&#39; to path &#39;</span><span class="si">{}</span><span class="s2">&#39; using </span><span class="si">{}</span><span class="s2"> protocol.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span> <span class="n">full_path</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">server</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
     <span class="c1"># Make sure local path exists, create if it does not</span>
     <span class="k">if</span> <span class="n">isdirectory</span> <span class="ow">or</span> <span class="n">full_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">):</span>
@@ -341,13 +335,13 @@
                                         <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="n">chksum</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">chksum</span><span class="p">:</span>
-            <span class="n">chksum_found</span> <span class="o">=</span> <span class="n">_download_checksum_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
+            <span class="n">_download_checksum_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
 
         <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_input_data</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                        <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="n">chksum</span> <span class="ow">and</span> <span class="n">chksum_found</span><span class="p">)</span>
+                                        <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="n">chksum</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">download</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">chksum</span><span class="p">:</span>
-                <span class="n">chksum_found</span> <span class="o">=</span> <span class="n">_download_checksum_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
+                <span class="n">_download_checksum_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">))</span>
             <span class="n">success</span> <span class="o">=</span> <span class="n">_downloadfromserver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="p">)</span>
 
     <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">download</span> <span class="ow">or</span> <span class="p">(</span><span class="n">download</span> <span class="ow">and</span> <span class="n">success</span><span class="p">),</span> <span class="s2">&quot;Could not find all inputdata on any server&quot;</span><span class="p">)</span>
@@ -365,12 +359,12 @@
         <span class="n">input_data_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DIN_LOC_ROOT&#39;</span><span class="p">)</span>
 
     <span class="k">while</span> <span class="ow">not</span> <span class="n">success</span> <span class="ow">and</span> <span class="n">protocol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ic_filepath</span> <span class="o">=</span> <span class="n">inputdata</span><span class="o">.</span><span class="n">get_next_server</span><span class="p">()</span>
+        <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">inputdata</span><span class="o">.</span><span class="n">get_next_server</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking server </span><span class="si">{}</span><span class="s2"> with protocol </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="p">))</span>
         <span class="n">success</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">check_input_data</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                         <span class="n">input_data_root</span><span class="o">=</span><span class="n">input_data_root</span><span class="p">,</span>
                                         <span class="n">data_list_dir</span><span class="o">=</span><span class="n">data_list_dir</span><span class="p">,</span>
-                                        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">passwd</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="n">ic_filepath</span><span class="p">)</span>
+                                        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="n">passwd</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">success</span>
 
 <div class="viewcode-block" id="stage_refcase"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.stage_refcase">[docs]</a><span class="k">def</span> <span class="nf">stage_refcase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -445,7 +439,7 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;svn&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span>
-                     <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                     <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chksum</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    For a given case check for the relevant input data as specified in data_list_dir/*.input_data_list</span>
 <span class="sd">    in the directory input_data_root, if not found optionally download it using the servers specified</span>
@@ -457,12 +451,11 @@
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="c1"># Fill in defaults as needed</span>
     <span class="n">input_data_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">input_data_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">input_data_root</span>
-    <span class="n">input_ic_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_IC&quot;</span><span class="p">)</span>
+
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">),</span> <span class="s2">&quot;Invalid data_list_dir directory: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
 
     <span class="n">data_list_files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">,</span> <span class="s2">&quot;*.input_data_list&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">data_list_files</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: No .input_data_list files found in dir &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">data_list_files</span><span class="p">,</span> <span class="s2">&quot;No .input_data_list files found in dir &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
 
     <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
@@ -490,7 +483,6 @@
 
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="n">use_ic_path</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)):</span>
                 <span class="n">tokens</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
                 <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -499,18 +491,7 @@
                 <span class="k">if</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
                     <span class="c1"># expand xml variables</span>
                     <span class="n">full_path</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">input_ic_root</span> <span class="ow">and</span> <span class="n">input_ic_root</span> <span class="ow">in</span> <span class="n">full_path</span> \
-                       <span class="ow">and</span> <span class="n">ic_filepath</span><span class="p">:</span>
-                        <span class="n">rel_path</span> <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">input_ic_root</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="p">)</span>
-                        <span class="n">use_ic_path</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">elif</span> <span class="n">input_data_root</span> <span class="ow">in</span> <span class="n">full_path</span><span class="p">:</span>
-                        <span class="n">rel_path</span>  <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">input_ic_root</span> <span class="ow">and</span> \
-                         <span class="p">(</span><span class="n">input_ic_root</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_data_root</span> <span class="ow">and</span> <span class="n">input_ic_root</span> <span class="ow">in</span> <span class="n">full_path</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">ic_filepath</span><span class="p">:</span>
-                            <span class="n">rel_path</span>  <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">input_ic_root</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="p">)</span>
-                        <span class="n">use_ic_path</span> <span class="o">=</span> <span class="kc">True</span>
-
+                    <span class="n">rel_path</span>  <span class="o">=</span> <span class="n">full_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
                     <span class="n">model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
                     <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">rel_path</span> <span class="ow">and</span> <span class="n">rel_path</span> <span class="o">==</span> <span class="n">full_path</span><span class="p">):</span>
@@ -536,16 +517,12 @@
                         <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">rel_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">)):</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model </span><span class="si">{}</span><span class="s2"> missing file </span><span class="si">{}</span><span class="s2"> = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
                             <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
+
                             <span class="k">if</span> <span class="p">(</span><span class="n">download</span><span class="p">):</span>
-                                <span class="k">if</span> <span class="n">use_ic_path</span><span class="p">:</span>
-                                    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
-                                                                            <span class="n">input_ic_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
-                                                                            <span class="n">isdirectory</span><span class="o">=</span><span class="n">isdirectory</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="n">ic_filepath</span><span class="p">)</span>
-                                <span class="k">else</span><span class="p">:</span>
-                                    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
-                                                                            <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
-                                                                            <span class="n">isdirectory</span><span class="o">=</span><span class="n">isdirectory</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="n">ic_filepath</span><span class="p">)</span>
-                                <span class="k">if</span> <span class="n">no_files_missing</span> <span class="ow">and</span> <span class="n">chksum</span><span class="p">:</span>
+                                <span class="n">no_files_missing</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
+                                                                        <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
+                                                                        <span class="n">isdirectory</span><span class="o">=</span><span class="n">isdirectory</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">no_files_missing</span><span class="p">:</span>
                                     <span class="n">verify_chksum</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">isdirectory</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">chksum</span><span class="p">:</span>
@@ -566,8 +543,7 @@
     <span class="n">hashfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">local_chksum_file</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">chksum_hash</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">hashfile</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to find or download file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hashfile</span><span class="p">))</span>
-            <span class="k">return</span>
+            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Failed to find or download file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hashfile</span><span class="p">))</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">hashfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
@@ -577,7 +553,6 @@
                     <span class="n">expect</span><span class="p">(</span><span class="n">chksum_hash</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span> <span class="o">==</span> <span class="n">fchksum</span><span class="p">,</span> <span class="s2">&quot; Inconsistent hashes in chksum for file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">chksum_hash</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span> <span class="o">=</span> <span class="n">fchksum</span>
-
     <span class="k">if</span> <span class="n">isdirectory</span><span class="p">:</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s2">&quot;*.*&quot;</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
@@ -593,6 +568,8 @@
                 <span class="n">expect</span><span class="p">(</span><span class="n">chksum</span> <span class="o">==</span> <span class="n">chksum_hash</span><span class="p">[</span><span class="n">fname</span><span class="p">],</span>
                        <span class="s2">&quot;chksum mismatch for file </span><span class="si">{}</span><span class="s2"> expected </span><span class="si">{}</span><span class="s2"> found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
                        <span class="nb">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span><span class="n">fname</span><span class="p">),</span><span class="n">chksum</span><span class="p">,</span> <span class="n">chksum_hash</span><span class="p">[</span><span class="n">fname</span><span class="p">]))</span></div>
+
+
 
 <div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>

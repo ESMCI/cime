@@ -239,12 +239,12 @@
         <span class="c1"># sure to leave TestStatus in the appropriate state if that</span>
         <span class="c1"># happens.</span>
         <span class="n">test</span> <span class="o">=</span> <span class="n">find_system_test</span><span class="p">(</span><span class="n">testname</span><span class="p">,</span> <span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+    <span class="k">except</span><span class="p">:</span>
         <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
             <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;failed to initialize&quot;</span><span class="p">)</span>
         <span class="n">append_testlog</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="k">raise</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reset test to initial conditions and exit&quot;</span><span class="p">)</span>

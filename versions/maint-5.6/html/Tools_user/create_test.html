@@ -118,7 +118,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User Tools</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="advanced-py-prof.html">advanced-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="archive_metadata.html">archive_metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bld_diff.html">bld_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bless_test_results.html">bless_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.build.html">case.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
@@ -133,6 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime_bisect.html">cime_bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cimeteststatus.html">cimeteststatus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code_checker.html">code_checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_namelists.html">compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_test_results.html">compare_test_results</a></li>
@@ -152,7 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_generic_job.html">jenkins_generic_job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_script.html">jenkins_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
@@ -250,23 +249,20 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./create_test --help
 usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
-                   [-u] [--save-timing] [--no-batch] [--single-exe]
-                   [--single-submit] [-r TEST_ROOT]
-                   [--output-root OUTPUT_ROOT] [--baseline-root BASELINE_ROOT]
-                   [--clean] [-m MACHINE] [--mpilib MPILIB] [-c COMPARE]
-                   [-g GENERATE] [--xml-machine XML_MACHINE]
-                   [--xml-compiler XML_COMPILER] [--xml-category XML_CATEGORY]
-                   [--xml-testlist XML_TESTLIST]
-                   [--xml-driver {mct,nuopc,moab}] [--compiler COMPILER] [-n]
-                   [-p PROJECT] [-t TEST_ID] [-j PARALLEL_JOBS]
-                   [--proc-pool PROC_POOL] [--walltime WALLTIME] [-q QUEUE]
-                   [-f TESTFILE] [-o] [--wait] [--allow-pnl]
-                   [--wait-check-throughput] [--wait-check-memory]
+                   [-u] [--save-timing] [--no-batch] [--single-submit]
+                   [-r TEST_ROOT] [--output-root OUTPUT_ROOT]
+                   [--baseline-root BASELINE_ROOT] [--clean] [-m MACHINE]
+                   [--mpilib MPILIB] [-c COMPARE] [-g GENERATE]
+                   [--xml-machine XML_MACHINE] [--xml-compiler XML_COMPILER]
+                   [--xml-category XML_CATEGORY] [--xml-testlist XML_TESTLIST]
+                   [--compiler COMPILER] [-n] [-p PROJECT] [-t TEST_ID]
+                   [-j PARALLEL_JOBS] [--proc-pool PROC_POOL]
+                   [--walltime WALLTIME] [-q QUEUE] [-f TESTFILE] [-o]
+                   [--wait] [--wait-check-throughput] [--wait-check-memory]
                    [--wait-ignore-namelists] [--wait-ignore-memleak]
                    [--force-procs FORCE_PROCS] [--force-threads FORCE_THREADS]
-                   [-i INPUT_DIR] [--pesfile PESFILE] [--retry RETRY] [-N]
-                   [--workflow WORKFLOW] [--mail-user MAIL_USER]
-                   [-M MAIL_TYPE]
+                   [-i INPUT_DIR] [--pesfile PESFILE] [--retry RETRY]
+                   [--mail-user MAIL_USER] [-M MAIL_TYPE]
                    [testargs [testargs ...]]
 
 Script to create, build and run CIME tests. This script can:
@@ -286,8 +282,6 @@ Script to create, build and run CIME tests. This script can:
    ./create_test SUITE ^TESTNAME
   - Run all tests in a suite except for tests that are in another suite
    ./create_test SUITE1 ^SUITE2
-  - Run all tests in a suite with baseline comparisons against master baselines
-   ./create_test SUITE1 -c -b master
 4) Run a CESM test suite(s):
    ./create_test --xml-category XML_CATEGORY [--xml-machine XML_MACHINE] [--xml-compiler XML_COMPILER] [ --xml-testlist XML_TESTLIST]
 
@@ -310,10 +304,6 @@ optional arguments:
   --save-timing         Enable archiving of performance data.
   --no-batch            Do not submit jobs to batch system, run locally.
                         If false, this will default to machine setting.
-  --single-exe          Use a single build for all cases. This can 
-                        drastically improve test throughput but is currently use-at-your-own risk.
-                        It&#39;s up to the user to ensure that all cases are build-compatible.
-                        E3SM tests belonging to a suite with share enabled will always share exes.
   --single-submit       Use a single interactive allocation to run all the tests. This can 
                         drastically reduce queue waiting but only makes sense on batch machines.
   -r TEST_ROOT, --test-root TEST_ROOT
@@ -351,16 +341,13 @@ optional arguments:
                         The default is all if any --xml- argument is used.
   --xml-testlist XML_TESTLIST
                         Use this testlist to lookup tests.The default is specified in config_files.xml
-  --xml-driver {mct,nuopc,moab}
-                        Override driver specified in tests and use this one.
   --compiler COMPILER   Compiler for building cime. Default will be the name in the 
                         Testname or the default defined for the machine.
   -n, --namelists-only  Only perform namelist actions for tests
   -p PROJECT, --project PROJECT
                         Specify a project id for the case (optional).
-                        Used for accounting and directory permissions when on a batch system.
-                        The default is user or machine specified by PROJECT.
-                        Accounting (only) may be overridden by user or machine specified CHARGE_ACCOUNT.
+                        Used for accounting when on a batch system.
+                        The default is user-specified environment variable PROJECT
   -t TEST_ID, --test-id TEST_ID
                         Specify an &#39;id&#39; for the test. This is simply a string that is appended 
                         to the end of a test name. If no test-id is specified, a time stamp plus a 
@@ -386,7 +373,6 @@ optional arguments:
                         an existing baseline directory will raise an error. WARNING: Specifying this 
                         option will allow existing baseline directories to be silently overwritten.
   --wait                On batch systems, wait for submitted jobs to complete
-  --allow-pnl           Do not pass skip-pnl to case.submit
   --wait-check-throughput
                         If waiting, fail if throughput check fails
   --wait-check-memory   If waiting, fail if memory check fails
@@ -403,8 +389,6 @@ optional arguments:
   --pesfile PESFILE     Full pathname of an optional pes specification file. The file
                         can follow either the config_pes.xml or the env_mach_pes.xml format.
   --retry RETRY         Automatically retry failed tests. &gt;0 implies --wait
-  -N, --non-local       Use when you&#39;ve requested a machine that you aren&#39;t on. Will reduce errors for missing directories etc.
-  --workflow WORKFLOW   A workflow from config_workflow.xml to apply to this case. 
   --mail-user MAIL_USER
                         Email to be used for batch notification.
   -M MAIL_TYPE, --mail-type MAIL_TYPE

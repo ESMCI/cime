@@ -239,8 +239,8 @@
 <span class="sd">        &gt;&gt;&gt; import io</span>
 <span class="sd">        &gt;&gt;&gt; s = io.StringIO()</span>
 <span class="sd">        &gt;&gt;&gt; MakeMacroWriter(s).set_variable(&quot;foo&quot;, &quot;bar&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; str(s.getvalue())</span>
-<span class="sd">        &#39;foo := bar\\n&#39;</span>
+<span class="sd">        &gt;&gt;&gt; s.getvalue()</span>
+<span class="sd">        u&#39;foo := bar\\n&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Note that &quot;:=&quot; is used so that we can control the behavior for</span>
         <span class="c1"># both Makefile and CMake variables similarly.</span>
@@ -252,8 +252,8 @@
 <span class="sd">        &gt;&gt;&gt; import io</span>
 <span class="sd">        &gt;&gt;&gt; s = io.StringIO()</span>
 <span class="sd">        &gt;&gt;&gt; MakeMacroWriter(s).start_ifeq(&quot;foo&quot;, &quot;bar&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; str(s.getvalue())</span>
-<span class="sd">        &#39;ifeq (foo,bar)\\n&#39;</span>
+<span class="sd">        &gt;&gt;&gt; s.getvalue()</span>
+<span class="sd">        u&#39;ifeq (foo,bar)\\n&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_line</span><span class="p">(</span><span class="s2">&quot;ifeq (&quot;</span> <span class="o">+</span> <span class="n">left</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">right</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indent_right</span><span class="p">()</span></div>
@@ -267,8 +267,8 @@
 <span class="sd">        &gt;&gt;&gt; writer.start_ifeq(&quot;foo&quot;, &quot;bar&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; writer.set_variable(&quot;foo2&quot;, &quot;bar2&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; writer.end_ifeq()</span>
-<span class="sd">        &gt;&gt;&gt; str(s.getvalue())</span>
-<span class="sd">        &#39;ifeq (foo,bar)\\n  foo2 := bar2\\nendif\\n&#39;</span>
+<span class="sd">        &gt;&gt;&gt; s.getvalue()</span>
+<span class="sd">        u&#39;ifeq (foo,bar)\\n  foo2 := bar2\\nendif\\n&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indent_left</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_line</span><span class="p">(</span><span class="s2">&quot;endif&quot;</span><span class="p">)</span></div></div>

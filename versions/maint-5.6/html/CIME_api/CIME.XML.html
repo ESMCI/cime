@@ -137,10 +137,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
@@ -261,48 +258,24 @@
 <em class="property">class </em><code class="descclassname">CIME.XML.archive_base.</code><code class="descname">ArchiveBase</code><span class="sig-paren">(</span><em>infile=None</em>, <em>schema=None</em>, <em>root_name_override=None</em>, <em>root_attrib_override=None</em>, <em>read_only=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
 <dl class="method">
-<dt id="CIME.XML.archive_base.ArchiveBase.get_all_hist_files">
-<code class="descname">get_all_hist_files</code><span class="sig-paren">(</span><em>casename</em>, <em>model</em>, <em>from_dir</em>, <em>suffix=''</em>, <em>ref_case=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_all_hist_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_all_hist_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>gets all history files in directory from_dir with suffix (if provided)
-ignores files with ref_case in the name if ref_case is provided</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="CIME.XML.archive_base.ArchiveBase.get_entry">
 <code class="descname">get_entry</code><span class="sig-paren">(</span><em>compname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_entry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an xml node corresponding to compname in comp_archive_spec</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.archive_base.ArchiveBase.get_entry_value">
 <code class="descname">get_entry_value</code><span class="sig-paren">(</span><em>name</em>, <em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_entry_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_entry_value" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the xml text associated with name under root archive_entry
-returns None if no entry is found, expects only one entry</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.archive_base.ArchiveBase.get_hist_file_extensions">
 <code class="descname">get_hist_file_extensions</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_hist_file_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_hist_file_extensions" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the xml text associated with each of the hist_file_extensions
-based at root archive_entry (root is based on component name)
-returns a list of text entries or
-an empty list if no entries are found</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="CIME.XML.archive_base.ArchiveBase.get_latest_hist_files">
-<code class="descname">get_latest_hist_files</code><span class="sig-paren">(</span><em>casename</em>, <em>model</em>, <em>from_dir</em>, <em>suffix=''</em>, <em>ref_case=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_latest_hist_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_latest_hist_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the most recent history files in directory from_dir with suffix if provided</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.archive_base.ArchiveBase.get_rest_file_extensions">
 <code class="descname">get_rest_file_extensions</code><span class="sig-paren">(</span><em>archive_entry</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/archive_base.html#ArchiveBase.get_rest_file_extensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.archive_base.ArchiveBase.get_rest_file_extensions" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the xml text associated with each of the rest_file_extensions
-based at root archive_entry (root is based on component name)
-returns a list of text entries or
-an empty list if no entries are found</p>
-</dd></dl>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -355,7 +328,7 @@ and the second a dict of qualifiers for the job</p>
 <p>Classes used to build the CIME Macros file.</p>
 <p>The main “public” class here is Build. It is initialized with machine-specific
 information, and its write_macros method is the driver for translating the
-config_compilers.xml file into a Makefile or CMake-format Macros file.</p>
+config_build.xml file into a Makefile or CMake-format Macros file.</p>
 <p>For developers, here’s the role of the other classes in the process:</p>
 <ul class="simple">
 <li>A CompilerBlock is responsible for translating the XML code in a &lt;compiler&gt;
@@ -379,7 +352,7 @@ associated with it.</p>
 <li><p class="first">For each &lt;compiler&gt; element, Build.write_macros creates a CompilerBlock
 instance. This object is responsible for translating the XML in its block, in
 order to populate the PossibleValues instances. This includes handling the
-$VAR, $ENV{…} and $SHELL{…} and keeping track of dependencies induced by one
+&lt;var&gt;/&lt;env&gt;/&lt;shell&gt; tags, and keeping track of dependencies induced by one
 variable referencing another’s value.</p>
 </li>
 <li><p class="first">The PossibleValues object holds the information about how one variable can be
@@ -436,8 +409,8 @@ value_lists - A dictionary of PossibleValues, containing the lists</p>
 <dl class="method">
 <dt id="CIME.XML.compilerblock.CompilerBlock.matches_machine">
 <code class="descname">matches_machine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/compilerblock.html#CompilerBlock.matches_machine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.compilerblock.CompilerBlock.matches_machine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check whether this block matches a machine/os.
-This also sets the specificity of the block, so this must be called
+<dd><p>Check whether this block matches a machine/os.</p>
+<p>This also sets the specificity of the block, so this must be called
 before add_settings_to_lists if machine-specific output is needed.</p>
 </dd></dl>
 
@@ -529,8 +502,7 @@ and matches</p>
 <dl class="method">
 <dt id="CIME.XML.component.Component.return_values">
 <code class="descname">return_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/component.html#Component.return_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.component.Component.return_values" title="Permalink to this definition">¶</a></dt>
-<dd><p>return a list of hashes from target config_component.xml file
-This routine is used by external tools in <a class="reference external" href="https://github.com/NCAR/CESM_xml2html">https://github.com/NCAR/CESM_xml2html</a></p>
+<dd><p>return a list of hashes from target config_component.xml file</p>
 </dd></dl>
 
 </dd></dl>
@@ -713,7 +685,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <p>Interface to the env_archive.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_archive.EnvArchive">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_archive.</code><code class="descname">EnvArchive</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_archive.xml'</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_archive.</code><code class="descname">EnvArchive</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_archive.xml'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_archive.html#EnvArchive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_archive.EnvArchive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.archive_base.ArchiveBase" title="CIME.XML.archive_base.ArchiveBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.archive_base.ArchiveBase</span></code></a>, <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_archive.EnvArchive.get_entries">
@@ -743,7 +715,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <p>Base class for env files.  This class inherits from EntryID.py</p>
 <dl class="class">
 <dt id="CIME.XML.env_base.EnvBase">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_base.</code><code class="descname">EnvBase</code><span class="sig-paren">(</span><em>case_root</em>, <em>infile</em>, <em>schema=None</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_base.html#EnvBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_base.EnvBase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_base.</code><code class="descname">EnvBase</code><span class="sig-paren">(</span><em>case_root</em>, <em>infile</em>, <em>schema=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_base.html#EnvBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_base.EnvBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.entry_id.EntryID" title="CIME.XML.entry_id.EntryID"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.entry_id.EntryID</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_base.EnvBase.change_file">
@@ -808,7 +780,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <p>Interface to the env_batch.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_batch.EnvBatch">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_batch.</code><code class="descname">EnvBatch</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_batch.xml'</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_batch.</code><code class="descname">EnvBatch</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_batch.xml'</em>, <em>schema=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.cancel_job">
@@ -833,7 +805,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_all_queues">
-<code class="descname">get_all_queues</code><span class="sig-paren">(</span><em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_all_queues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_all_queues" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_all_queues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_all_queues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_all_queues" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -881,8 +853,8 @@ with the key attribute but you don’t care what its value is.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_queue_specs">
-<code class="descname">get_queue_specs</code><span class="sig-paren">(</span><em>qnode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_queue_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_queue_specs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get queue specifications from node.</p>
+<code class="descname">get_queue_specs</code><span class="sig-paren">(</span><em>queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_queue_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_queue_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get queue specifications by name.</p>
 <p>Returns (nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, is_strict)</p>
 </dd></dl>
 
@@ -925,7 +897,7 @@ with the key attribute but you don’t care what its value is.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.select_best_queue">
-<code class="descname">select_best_queue</code><span class="sig-paren">(</span><em>num_nodes</em>, <em>num_tasks</em>, <em>name=None</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.select_best_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.select_best_queue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">select_best_queue</code><span class="sig-paren">(</span><em>num_nodes</em>, <em>num_tasks</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.select_best_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.select_best_queue" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -951,17 +923,8 @@ with the key attribute but you don’t care what its value is.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.submit_jobs">
-<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>case</em>, <em>no_batch=False</em>, <em>job=None</em>, <em>user_prereq=None</em>, <em>skip_pnl=False</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em>, <em>workflow=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.submit_jobs" title="Permalink to this definition">¶</a></dt>
-<dd><p>no_batch indicates that the jobs should be run directly rather that submitted to a queueing system
-job is the first job in the workflow sequence to start
-user_prereq is a batch system prerequisite as requested by the user
-skip_pnl indicates that the preview_namelist should not be run by this job
-allow_fail indicates that the prereq job need only complete not nessasarily successfully to start the next job
-resubmit_immediate indicates that all jobs indicated by the RESUBMIT option should be submitted at the same time instead of</p>
-<blockquote>
-<div>waiting to resubmit at the end of the first sequence</div></blockquote>
-<p>workflow is a logical indicating whether only “job” is submitted or the workflow sequence starting with “job” is submitted</p>
-</dd></dl>
+<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>case</em>, <em>no_batch=False</em>, <em>job=None</em>, <em>user_prereq=None</em>, <em>skip_pnl=False</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -971,7 +934,7 @@ resubmit_immediate indicates that all jobs indicated by the RESUBMIT option shou
 <p>Interface to the env_build.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_build.EnvBuild">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_build.</code><code class="descname">EnvBuild</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_build.xml'</em>, <em>components=None</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_build.html#EnvBuild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_build.EnvBuild" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_build.</code><code class="descname">EnvBuild</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_build.xml'</em>, <em>components=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_build.html#EnvBuild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_build.EnvBuild" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 </dd></dl>
 
@@ -981,7 +944,7 @@ resubmit_immediate indicates that all jobs indicated by the RESUBMIT option shou
 <p>Interface to the env_case.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_case.EnvCase">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_case.</code><code class="descname">EnvCase</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_case.xml'</em>, <em>components=None</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_case.html#EnvCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_case.EnvCase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_case.</code><code class="descname">EnvCase</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_case.xml'</em>, <em>components=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_case.html#EnvCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_case.EnvCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 </dd></dl>
 
@@ -991,7 +954,7 @@ resubmit_immediate indicates that all jobs indicated by the RESUBMIT option shou
 <p>Interface to the env_mach_pes.xml file.  This class inherits from EntryID</p>
 <dl class="class">
 <dt id="CIME.XML.env_mach_pes.EnvMachPes">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_mach_pes.</code><code class="descname">EnvMachPes</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_mach_pes.xml'</em>, <em>components=None</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_pes.html#EnvMachPes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_pes.EnvMachPes" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_mach_pes.</code><code class="descname">EnvMachPes</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_mach_pes.xml'</em>, <em>components=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_pes.html#EnvMachPes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_pes.EnvMachPes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_mach_pes.EnvMachPes.add_comment">
@@ -1049,7 +1012,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <p>Interface to the env_mach_specific.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_mach_specific.</code><code class="descname">EnvMachSpecific</code><span class="sig-paren">(</span><em>caseroot=None</em>, <em>infile='env_mach_specific.xml'</em>, <em>components=None</em>, <em>unit_testing=False</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_mach_specific.</code><code class="descname">EnvMachSpecific</code><span class="sig-paren">(</span><em>caseroot=None</em>, <em>infile='env_mach_specific.xml'</em>, <em>components=None</em>, <em>unit_testing=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific.allow_error">
@@ -1124,7 +1087,7 @@ save it to file.</p>
 <p>Interface to the env_run.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_run.EnvRun">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_run.</code><code class="descname">EnvRun</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_run.xml'</em>, <em>components=None</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_run.html#EnvRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_run.EnvRun" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_run.</code><code class="descname">EnvRun</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_run.xml'</em>, <em>components=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_run.html#EnvRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_run.EnvRun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 </dd></dl>
 
@@ -1134,7 +1097,7 @@ save it to file.</p>
 <p>Interface to the env_test.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_test.EnvTest">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_test.</code><code class="descname">EnvTest</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_test.xml'</em>, <em>components=None</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_test.html#EnvTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_test.EnvTest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_test.</code><code class="descname">EnvTest</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_test.xml'</em>, <em>components=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_test.html#EnvTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_test.EnvTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_test.EnvTest.add_test">
@@ -1205,7 +1168,7 @@ otherwise create a node and initialize it to value</p>
 <p>Interface to the env_workflow.xml file.  This class inherits from EnvBase</p>
 <dl class="class">
 <dt id="CIME.XML.env_workflow.EnvWorkflow">
-<em class="property">class </em><code class="descclassname">CIME.XML.env_workflow.</code><code class="descname">EnvWorkflow</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_workflow.xml'</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.env_workflow.</code><code class="descname">EnvWorkflow</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_workflow.xml'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.env_workflow.EnvWorkflow.create_job_groups">
@@ -1222,7 +1185,7 @@ with the key attribute but you don’t care what its value is.</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_workflow.EnvWorkflow.get_job_specs">
-<code class="descname">get_job_specs</code><span class="sig-paren">(</span><em>case</em>, <em>job</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_job_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_job_specs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_job_specs</code><span class="sig-paren">(</span><em>job</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_workflow.html#EnvWorkflow.get_job_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_workflow.EnvWorkflow.get_job_specs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1250,85 +1213,12 @@ with the key attribute but you don’t care what its value is.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-CIME.XML.expected_fails_file">
-<span id="cime-xml-expected-fails-file-module"></span><h2>CIME.XML.expected_fails_file module<a class="headerlink" href="#module-CIME.XML.expected_fails_file" title="Permalink to this headline">¶</a></h2>
-<p>Interface to an expected failure xml file</p>
-<p>Here is an example:</p>
-<p>&lt;?xml version= “1.0”?&gt;</p>
-<dl class="docutils">
-<dt>&lt;expectedFails version=”1.1”&gt;</dt>
-<dd><dl class="first docutils">
-<dt>&lt;test name=”ERP_D_Ld10_P36x2.f10_f10_musgs.IHistClm50BgcCrop.cheyenne_intel.clm-ciso_decStart”&gt;</dt>
-<dd><dl class="first docutils">
-<dt>&lt;phase name=”RUN”&gt;</dt>
-<dd>&lt;status&gt;FAIL&lt;/status&gt;
-&lt;issue&gt;#404&lt;/issue&gt;</dd>
-</dl>
-<p>&lt;/phase&gt;
-&lt;phase name=”COMPARE_base_rest”&gt;</p>
-<blockquote>
-<div>&lt;status&gt;PEND&lt;/status&gt;
-&lt;issue&gt;#404&lt;/issue&gt;
-&lt;comment&gt;Because of the RUN failure, this phase is listed as PEND&lt;/comment&gt;</div></blockquote>
-<p class="last">&lt;/phase&gt;</p>
-</dd>
-</dl>
-<p>&lt;/test&gt;
-&lt;test name=”PFS_Ld20.f09_g17.I2000Clm50BgcCrop.cheyenne_intel”&gt;</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>&lt;phase name=”GENERATE”&gt;</dt>
-<dd>&lt;status&gt;FAIL&lt;/status&gt;
-&lt;issue&gt;ESMCI/cime#2917&lt;/issue&gt;</dd>
-</dl>
-<p>&lt;/phase&gt;
-&lt;phase name=”BASELINE”&gt;</p>
-<blockquote>
-<div>&lt;status&gt;FAIL&lt;/status&gt;
-&lt;issue&gt;ESMCI/cime#2917&lt;/issue&gt;</div></blockquote>
-<p>&lt;/phase&gt;</p>
-</div></blockquote>
-<p class="last">&lt;/test&gt;</p>
-</dd>
-</dl>
-<p>&lt;/expectedFails&gt;</p>
-<p>However, many of the above elements are optional, for human consumption only (i.e., not
-parsed here). The only required elements are given by this example:</p>
-<p>&lt;?xml version= “1.0”?&gt;</p>
-<dl class="docutils">
-<dt>&lt;expectedFails version=”1.1”&gt;</dt>
-<dd><dl class="first docutils">
-<dt>&lt;test name=”…”&gt;</dt>
-<dd><dl class="first docutils">
-<dt>&lt;phase name=”…”&gt;</dt>
-<dd>&lt;status&gt;…&lt;/status&gt;</dd>
-</dl>
-<p class="last">&lt;/phase&gt;</p>
-</dd>
-</dl>
-<p class="last">&lt;/test&gt;</p>
-</dd>
-</dl>
-<p>&lt;/expectedFails&gt;</p>
-<dl class="class">
-<dt id="CIME.XML.expected_fails_file.ExpectedFailsFile">
-<em class="property">class </em><code class="descclassname">CIME.XML.expected_fails_file.</code><code class="descname">ExpectedFailsFile</code><span class="sig-paren">(</span><em>infile</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/expected_fails_file.html#ExpectedFailsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.expected_fails_file.ExpectedFailsFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
-<dl class="method">
-<dt id="CIME.XML.expected_fails_file.ExpectedFailsFile.get_expected_fails">
-<code class="descname">get_expected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/expected_fails_file.html#ExpectedFailsFile.get_expected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.expected_fails_file.ExpectedFailsFile.get_expected_fails" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a dictionary of ExpectedFails objects, where the keys are test names</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-CIME.XML.files">
 <span id="cime-xml-files-module"></span><h2>CIME.XML.files module<a class="headerlink" href="#module-CIME.XML.files" title="Permalink to this headline">¶</a></h2>
 <p>Interface to the config_files.xml file.  This class inherits from EntryID.py</p>
 <dl class="class">
 <dt id="CIME.XML.files.Files">
-<em class="property">class </em><code class="descclassname">CIME.XML.files.</code><code class="descname">Files</code><span class="sig-paren">(</span><em>comp_interface='mct'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/files.html#Files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.files.Files" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.XML.files.</code><code class="descname">Files</code><a class="reference internal" href="../_modules/CIME/XML/files.html#Files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.files.Files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.entry_id.EntryID" title="CIME.XML.entry_id.EntryID"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.entry_id.EntryID</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.files.Files.get_components">
@@ -1367,30 +1257,6 @@ be used by other XML interface modules and not directly.</p>
 <dt id="CIME.XML.generic_xml.GenericXML">
 <em class="property">class </em><code class="descclassname">CIME.XML.generic_xml.</code><code class="descname">GenericXML</code><span class="sig-paren">(</span><em>infile=None</em>, <em>schema=None</em>, <em>root_name_override=None</em>, <em>root_attrib_override=None</em>, <em>read_only=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="class">
-<dt id="CIME.XML.generic_xml.GenericXML.CacheEntry">
-<em class="property">class </em><code class="descname">CacheEntry</code><span class="sig-paren">(</span><em>tree</em>, <em>root</em>, <em>modtime</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.CacheEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<dl class="attribute">
-<dt id="CIME.XML.generic_xml.GenericXML.CacheEntry.modtime">
-<code class="descname">modtime</code><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.CacheEntry.modtime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="CIME.XML.generic_xml.GenericXML.CacheEntry.root">
-<code class="descname">root</code><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.CacheEntry.root" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="CIME.XML.generic_xml.GenericXML.CacheEntry.tree">
-<code class="descname">tree</code><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.CacheEntry.tree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="attribute">
 <dt id="CIME.XML.generic_xml.GenericXML.DISABLE_CACHING">
 <code class="descname">DISABLE_CACHING</code><em class="property"> = False</em><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.DISABLE_CACHING" title="Permalink to this definition">¶</a></dt>
@@ -1410,11 +1276,6 @@ be used by other XML interface modules and not directly.</p>
 <dl class="method">
 <dt id="CIME.XML.generic_xml.GenericXML.change_file">
 <code class="descname">change_file</code><span class="sig-paren">(</span><em>newfile</em>, <em>copy=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.change_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.change_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="CIME.XML.generic_xml.GenericXML.check_timestamp">
-<code class="descname">check_timestamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.check_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.check_timestamp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1501,11 +1362,6 @@ the value was not found in the class.</p>
 <dl class="method">
 <dt id="CIME.XML.generic_xml.GenericXML.has">
 <code class="descname">has</code><span class="sig-paren">(</span><em>node</em>, <em>attrib_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.has" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt id="CIME.XML.generic_xml.GenericXML.invalidate">
-<em class="property">classmethod </em><code class="descname">invalidate</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/generic_xml.html#GenericXML.invalidate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.generic_xml.GenericXML.invalidate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1631,7 +1487,7 @@ This is not an abstract class - but inherits from the abstact class GenericXML</
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.generic_xml.GenericXML" title="CIME.XML.generic_xml.GenericXML"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.XML.generic_xml.GenericXML</span></code></a></p>
 <dl class="method">
 <dt id="CIME.XML.grids.Grids.get_grid_info">
-<code class="descname">get_grid_info</code><span class="sig-paren">(</span><em>name</em>, <em>compset</em>, <em>driver</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/grids.html#Grids.get_grid_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.grids.Grids.get_grid_info" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_grid_info</code><span class="sig-paren">(</span><em>name</em>, <em>compset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/grids.html#Grids.get_grid_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.grids.Grids.get_grid_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the matching grid node</p>
 </dd></dl>
 
@@ -1744,7 +1600,7 @@ if it is a valid setting for the machine</p>
 <dt id="CIME.XML.machines.Machines.has_batch_system">
 <code class="descname">has_batch_system</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.has_batch_system"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.has_batch_system" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return if this machine has a batch system</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;cori-knl&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;edison&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">has_batch_system</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="s2">&quot;melvin&quot;</span><span class="p">)</span>
@@ -1759,7 +1615,7 @@ if it is a valid setting for the machine</p>
 <dt id="CIME.XML.machines.Machines.is_valid_MPIlib">
 <code class="descname">is_valid_MPIlib</code><span class="sig-paren">(</span><em>mpilib</em>, <em>attributes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.is_valid_MPIlib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.is_valid_MPIlib" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check the MPILIB is valid for the current machine</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;cori-knl&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;edison&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_MPIlib</span><span class="p">(</span><span class="s2">&quot;mpi-serial&quot;</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_MPIlib</span><span class="p">(</span><span class="s2">&quot;fake-mpi&quot;</span><span class="p">)</span>
@@ -1772,7 +1628,7 @@ if it is a valid setting for the machine</p>
 <dt id="CIME.XML.machines.Machines.is_valid_compiler">
 <code class="descname">is_valid_compiler</code><span class="sig-paren">(</span><em>compiler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.is_valid_compiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.is_valid_compiler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check the compiler is valid for the current machine</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;cori-knl&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;edison&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">get_default_compiler</span><span class="p">()</span>
 <span class="go">&#39;intel&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="s2">&quot;gnu&quot;</span><span class="p">)</span>
@@ -1804,9 +1660,7 @@ in the NODENAME_REGEX field in the file.   First match wins.</p>
 <dl class="method">
 <dt id="CIME.XML.machines.Machines.return_values">
 <code class="descname">return_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.return_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.return_values" title="Permalink to this definition">¶</a></dt>
-<dd><p>return a dictionary of machine info
-This routine is used by external tools in <a class="reference external" href="https://github.com/NCAR/CESM_xml2html">https://github.com/NCAR/CESM_xml2html</a></p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.machines.Machines.set_machine">
@@ -1815,10 +1669,10 @@ This routine is used by external tools in <a class="reference external" href="ht
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;melvin&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
 <span class="go">&#39;melvin&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="s2">&quot;trump&quot;</span><span class="p">)</span> <span class="c1"># doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="s2">&quot;trump&quot;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
-<span class="gr">CIMEError</span>: <span class="n">ERROR: No machine trump found</span>
+<span class="gr">SystemExit</span>: <span class="n">ERROR: No machine trump found</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1837,25 +1691,6 @@ This routine is used by external tools in <a class="reference external" href="ht
 <p>Interface to <cite>namelist_definition.xml</cite>.</p>
 <p>This module contains only one class, <cite>NamelistDefinition</cite>, inheriting from
 <cite>EntryID</cite>.</p>
-<dl class="class">
-<dt id="CIME.XML.namelist_definition.CaseInsensitiveDict">
-<em class="property">class </em><code class="descclassname">CIME.XML.namelist_definition.</code><code class="descname">CaseInsensitiveDict</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#CaseInsensitiveDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
-<p>Basic case insensitive dict with strings only keys.
-From <a class="reference external" href="https://stackoverflow.com/a/27890005">https://stackoverflow.com/a/27890005</a></p>
-<dl class="method">
-<dt id="CIME.XML.namelist_definition.CaseInsensitiveDict.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>k</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#CaseInsensitiveDict.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the value for key if key is in the dictionary, else default.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="CIME.XML.namelist_definition.CaseInsensitiveDict.proxy">
-<code class="descname">proxy</code><em class="property"> = {}</em><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.proxy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="class">
 <dt id="CIME.XML.namelist_definition.NamelistDefinition">
 <em class="property">class </em><code class="descclassname">CIME.XML.namelist_definition.</code><code class="descname">NamelistDefinition</code><span class="sig-paren">(</span><em>infile</em>, <em>files=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#NamelistDefinition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.NamelistDefinition" title="Permalink to this definition">¶</a></dt>
@@ -2085,7 +1920,6 @@ apply to all machines/compilers for this test:</p>
 <li>walltime: sets the wallclock limit in the queuing system</li>
 <li>memleak_tolerance: specifies the relative memory growth expected for this test</li>
 <li>comment: has no effect, but is written out when printing the test list</li>
-<li>workflow: adds a workflow to the test</li>
 </ul>
 <dl class="class">
 <dt id="CIME.XML.testlist.Testlist">

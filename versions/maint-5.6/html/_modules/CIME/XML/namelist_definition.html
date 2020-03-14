@@ -206,38 +206,6 @@
 
 <span class="n">_array_size_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?P&lt;type&gt;[^(]+)\((?P&lt;size&gt;[^)]+)\)$&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CaseInsensitiveDict"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.CaseInsensitiveDict">[docs]</a><span class="k">class</span> <span class="nc">CaseInsensitiveDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot;Basic case insensitive dict with strings only keys.</span>
-<span class="sd">        From https://stackoverflow.com/a/27890005 &quot;&quot;&quot;</span>
-
-    <span class="n">proxy</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span>
-
-    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CaseInsensitiveDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CaseInsensitiveDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-
-<div class="viewcode-block" id="CaseInsensitiveDict.get"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.CaseInsensitiveDict.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">else</span> <span class="n">default</span></div>
-
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">CaseInsensitiveDict</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">k</span></div>
-
 <div class="viewcode-block" id="NamelistDefinition"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition">[docs]</a><span class="k">class</span> <span class="nc">NamelistDefinition</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;Class representing variable definitions for a namelist.</span>
@@ -267,7 +235,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_entry_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_valid_values</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entry_types</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span> <span class="o">=</span> <span class="n">CaseInsensitiveDict</span><span class="p">({})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_group_names</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="NamelistDefinition.set_nodes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.namelist_definition.NamelistDefinition.set_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">set_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -473,6 +441,7 @@
 <span class="sd">        appear in the namelist (even for scalar variables, in which case the</span>
 <span class="sd">        length of the list is always 1).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="c1"># Separate into a type, optional length, and optional size.</span>
         <span class="n">type_</span><span class="p">,</span> <span class="n">max_len</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_type_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">invalid</span> <span class="o">=</span> <span class="p">[]</span>
@@ -517,9 +486,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="nf">_expect_variable_in_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variable_template</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Used to get a better error message for an unexpected variable.</span>
-<span class="sd">             case insensitve match&quot;&quot;&quot;</span>
-
+        <span class="sd">&quot;&quot;&quot;Used to get a better error message for an unexpected variable.&quot;&quot;&quot;</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry_ids</span><span class="p">,</span>
                <span class="p">(</span><span class="n">variable_template</span> <span class="o">+</span> <span class="s2">&quot; is not in the namelist definition.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
 

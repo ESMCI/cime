@@ -505,10 +505,6 @@ TESTRUNFAIL       Insta-fail run step. Used to confirm that model run
 TESTRUNFAILEXC    Insta-fail run step via exception. Used to test correct
                   correct behavior when exceptions are generated.
 
-TESTRUNSTARCFAIL  Insta-fail st_archive step via exception. Used to test correct
-                  behavior when exceptions are generated within in run_phase
-                  for phases other than RUN.
-
 TESTRUNPASS       Insta-pass run step. Used to test that run that work
                   are reported correctly.
 
@@ -671,15 +667,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;FUNIT&quot;&gt;
-    &lt;DESC&gt;Run fortran unit tests. Grid and compset (and most case settings) are ignored.&lt;/DESC&gt;
-    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
-    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
-    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
-    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
-    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
-  &lt;/test&gt;
-
   &lt;test NAME=&quot;LDSTA&quot;&gt;
     &lt;DESC&gt;Tests the short term archiver&#39;s last date functionality.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
@@ -723,15 +710,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
 
   &lt;test NAME=&quot;TESTRUNFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail run step.&lt;/DESC&gt;
-    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
-    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
-    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
-    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
-    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
-  &lt;/test&gt;
-
-  &lt;test NAME=&quot;TESTRUNSTARCFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
-    &lt;DESC&gt;For testing infra only. Insta-fail st archive test with exception.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
     &lt;STOP_N&gt;11&lt;/STOP_N&gt;
@@ -883,20 +861,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;MULTI_DRIVER&gt;TRUE&lt;/MULTI_DRIVER&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;MVK&quot;&gt;
-    &lt;DESC&gt;climate reproducibility test using the multivariate K-S test&lt;/DESC&gt;
-    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
-    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
-    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
-    &lt;STOP_OPTION&gt;nmonths&lt;/STOP_OPTION&gt;
-    &lt;STOP_N&gt;2&lt;/STOP_N&gt;
-    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
-    &lt;REST_N&gt;$STOP_N&lt;/REST_N&gt;
-    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
-    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
-    &lt;RESUBMIT&gt;6&lt;/RESUBMIT&gt;
-  &lt;/test&gt;
-
   &lt;test NAME=&quot;NCK&quot;&gt;
     &lt;DESC&gt;multi-instance validation vs single instance (default length)&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
@@ -956,24 +920,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
     &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
     &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
-  &lt;/test&gt;
-
-  &lt;test NAME=&quot;PGN&quot;&gt;
-    &lt;DESC&gt;solution reproducibility test&lt;/DESC&gt;
-    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
-    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
-    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
-    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
-    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
-    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
-  &lt;/test&gt;
-
-  &lt;test NAME=&quot;TSC&quot;&gt;
-    &lt;DESC&gt;solution reproducibility test based on time-step convergence&lt;/DESC&gt;
-    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
-    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
-    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
-    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;SMS&quot;&gt;

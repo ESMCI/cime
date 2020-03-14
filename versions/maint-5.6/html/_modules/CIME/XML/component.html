@@ -397,14 +397,14 @@
 <span class="sd">        (False, None)</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;?&quot;)</span>
 <span class="sd">        (True, [&#39;DATM&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;1&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;1&quot;)</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        CIMEError: ERROR: Expected exactly one modifer found 0 in [&#39;DATM&#39;]</span>
-<span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM%CRU%HSI_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;1&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">        SystemExit: ERROR: Expected exactly one modifer found 0 in [&#39;DATM&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_DATM%CRU%HSI_Barn&quot;,set([&quot;DATM&quot;]), set([&quot;DATM&quot;,&quot;CRU&quot;,&quot;HSI&quot;]), &quot;1&quot;)</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        CIMEError: ERROR: Expected exactly one modifer found 2 in [&#39;DATM&#39;, &#39;CRU&#39;, &#39;HSI&#39;]</span>
+<span class="sd">        SystemExit: ERROR: Expected exactly one modifer found 2 in [&#39;DATM&#39;, &#39;CRU&#39;, &#39;HSI&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; obj._get_description_match(&quot;1850_CAM50%WCCM%RCO2_Barn&quot;,set([&quot;CAM50&quot;, &quot;WCCM&quot;]), set([&quot;CAM50&quot;,&quot;WCCM&quot;,&quot;RCO2&quot;]), &quot;*&quot;)</span>
 <span class="sd">        (True, [&#39;CAM50&#39;, &#39;WCCM&#39;, &#39;RCO2&#39;])</span>
 
@@ -467,7 +467,6 @@
 <div class="viewcode-block" id="Component.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.component.Component.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return a list of hashes from target config_component.xml file</span>
-<span class="sd">        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">entry_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>

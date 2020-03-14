@@ -335,7 +335,7 @@
             <span class="k">for</span> <span class="n">cond_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">cond_val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">env_ref</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">variable_string</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
+                <span class="n">env_ref</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">environment_variable_string</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
                 <span class="n">writer</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="n">env_ref</span><span class="p">,</span> <span class="n">cond_val</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_branches</span><span class="p">[</span><span class="n">cond_val</span><span class="p">]</span><span class="o">.</span><span class="n">write_out</span><span class="p">(</span><span class="n">writer</span><span class="p">)</span>
                 <span class="n">writer</span><span class="o">.</span><span class="n">end_ifeq</span><span class="p">()</span></div></div>

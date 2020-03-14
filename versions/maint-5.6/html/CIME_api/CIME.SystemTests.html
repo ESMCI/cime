@@ -137,10 +137,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
@@ -313,7 +310,7 @@ This is the subclass’ extension point if they need to define a custom run phas
 <p>CIME ERP test.  This class inherits from RestartTest</p>
 <p>This is a pes counts hybrid (open-MP/MPI) restart bfb test from
 startup.  This is just like an ERS test but the pe-counts/threading
-count are modified on restart.
+count are modified on retart.
 (1) Do an initial run with pes set up out of the box (suffix base)
 (2) Do a restart test with half the number of tasks and threads (suffix rest)</p>
 <dl class="class">
@@ -392,40 +389,6 @@ Exact restart from startup, default 2 month + 1 month</p>
 <dl class="method">
 <dt id="CIME.SystemTests.ert.ERT.run_phase">
 <code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/ert.html#ERT.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.ert.ERT.run_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the default run phase implementation, it just does an individual run.
-This is the subclass’ extension point if they need to define a custom run phase.</p>
-<p>PLEASE THROW AN EXCEPTION ON FAIL</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-CIME.SystemTests.funit">
-<span id="cime-systemtests-funit-module"></span><h2>CIME.SystemTests.funit module<a class="headerlink" href="#module-CIME.SystemTests.funit" title="Permalink to this headline">¶</a></h2>
-<p>CIME FUNIT test. This class inherits from SystemTestsCommon. It runs
-the fortran unit tests; grid and compset are ignored.</p>
-<dl class="class">
-<dt id="CIME.SystemTests.funit.FUNIT">
-<em class="property">class </em><code class="descclassname">CIME.SystemTests.funit.</code><code class="descname">FUNIT</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/funit.html#FUNIT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.funit.FUNIT" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.SystemTests.system_tests_common.SystemTestsCommon</span></code></a></p>
-<dl class="method">
-<dt id="CIME.SystemTests.funit.FUNIT.build_phase">
-<code class="descname">build_phase</code><span class="sig-paren">(</span><em>sharedlib_only=False</em>, <em>model_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/funit.html#FUNIT.build_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.funit.FUNIT.build_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the default build phase implementation, it just does an individual build.
-This is the subclass’ extension point if they need to define a custom build
-phase.</p>
-<p>PLEASE THROW EXCEPTION ON FAIL</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="CIME.SystemTests.funit.FUNIT.get_test_spec_dir">
-<code class="descname">get_test_spec_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/funit.html#FUNIT.get_test_spec_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.funit.FUNIT.get_test_spec_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Override this to change what gets tested.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="CIME.SystemTests.funit.FUNIT.run_phase">
-<code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/funit.html#FUNIT.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.funit.FUNIT.run_phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the default run phase implementation, it just does an individual run.
 This is the subclass’ extension point if they need to define a custom run phase.</p>
 <p>PLEASE THROW AN EXCEPTION ON FAIL</p>
@@ -540,9 +503,6 @@ This is the subclass’ extension point if they need to define a custom run phas
 </dd></dl>
 
 </div>
-<div class="section" id="cime-systemtests-mvk-module">
-<h2>CIME.SystemTests.mvk module<a class="headerlink" href="#cime-systemtests-mvk-module" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="module-CIME.SystemTests.nck">
 <span id="cime-systemtests-nck-module"></span><h2>CIME.SystemTests.nck module<a class="headerlink" href="#module-CIME.SystemTests.nck" title="Permalink to this headline">¶</a></h2>
 <p>Implementation of the CIME NCK test: Tests multi-instance</p>
@@ -649,9 +609,6 @@ This is the subclass’ extension point if they need to define a custom run phas
 
 </dd></dl>
 
-</div>
-<div class="section" id="cime-systemtests-pgn-module">
-<h2>CIME.SystemTests.pgn module<a class="headerlink" href="#cime-systemtests-pgn-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-CIME.SystemTests.pre">
 <span id="cime-systemtests-pre-module"></span><h2>CIME.SystemTests.pre module<a class="headerlink" href="#module-CIME.SystemTests.pre" title="Permalink to this headline">¶</a></h2>
@@ -941,12 +898,6 @@ phase.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="CIME.SystemTests.system_tests_common.TESTRUNSTARCFAIL">
-<em class="property">class </em><code class="descclassname">CIME.SystemTests.system_tests_common.</code><code class="descname">TESTRUNSTARCFAIL</code><span class="sig-paren">(</span><em>case</em>, <em>expected=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_common.html#TESTRUNSTARCFAIL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_common.TESTRUNSTARCFAIL" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.TESTRUNPASS" title="CIME.SystemTests.system_tests_common.TESTRUNPASS"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.SystemTests.system_tests_common.TESTRUNPASS</span></code></a></p>
-</dd></dl>
-
-<dl class="class">
 <dt id="CIME.SystemTests.system_tests_common.TESTTESTDIFF">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.system_tests_common.</code><code class="descname">TESTTESTDIFF</code><span class="sig-paren">(</span><em>case</em>, <em>expected=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_common.html#TESTTESTDIFF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_common.TESTTESTDIFF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.FakeTest" title="CIME.SystemTests.system_tests_common.FakeTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.SystemTests.system_tests_common.FakeTest</span></code></a></p>
@@ -1003,7 +954,7 @@ Use this to do arbitrary actions immediately after running case two</li>
 </ol>
 <dl class="class">
 <dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo">
-<em class="property">class </em><code class="descclassname">CIME.SystemTests.system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwo</code><span class="sig-paren">(</span><em>case</em>, <em>separate_builds=False</em>, <em>run_two_suffix='test'</em>, <em>run_one_description=''</em>, <em>run_two_description=''</em>, <em>multisubmit=False</em>, <em>ignore_fieldlist_diffs=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_compare_two.html#SystemTestsCompareTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.SystemTests.system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwo</code><span class="sig-paren">(</span><em>case</em>, <em>separate_builds=False</em>, <em>run_two_suffix='test'</em>, <em>run_one_description=''</em>, <em>run_two_description=''</em>, <em>multisubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_compare_two.html#SystemTestsCompareTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.SystemTests.system_tests_common.SystemTestsCommon</span></code></a></p>
 <dl class="method">
 <dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase">
@@ -1033,9 +984,6 @@ If success_change is True, success requires some files to be different</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="cime-systemtests-tsc-module">
-<h2>CIME.SystemTests.tsc module<a class="headerlink" href="#cime-systemtests-tsc-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-CIME.SystemTests">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-CIME.SystemTests" title="Permalink to this headline">¶</a></h2>

@@ -83,14 +83,6 @@ CIME.SystemTests.ert module
     :undoc-members:
     :show-inheritance:
 
-CIME.SystemTests.funit module
------------------------------
-
-.. automodule:: CIME.SystemTests.funit
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 CIME.SystemTests.homme module
 -----------------------------
 
@@ -127,14 +119,6 @@ CIME.SystemTests.mcc module
 ---------------------------
 
 .. automodule:: CIME.SystemTests.mcc
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.SystemTests.mvk module
----------------------------
-
-.. automodule:: CIME.SystemTests.mvk
     :members:
     :undoc-members:
     :show-inheritance:
@@ -195,14 +179,6 @@ CIME.SystemTests.pfs module
     :undoc-members:
     :show-inheritance:
 
-CIME.SystemTests.pgn module
----------------------------
-
-.. automodule:: CIME.SystemTests.pgn
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 CIME.SystemTests.pre module
 ---------------------------
 
@@ -255,14 +231,6 @@ CIME.SystemTests.system\_tests\_compare\_two module
 ---------------------------------------------------
 
 .. automodule:: CIME.SystemTests.system_tests_compare_two
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.SystemTests.tsc module
----------------------------
-
-.. automodule:: CIME.SystemTests.tsc
     :members:
     :undoc-members:
     :show-inheritance:

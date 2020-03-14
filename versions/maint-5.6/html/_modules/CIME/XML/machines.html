@@ -340,10 +340,10 @@
 <span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;melvin&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; machobj.get_machine_name()</span>
 <span class="sd">        &#39;melvin&#39;</span>
-<span class="sd">        &gt;&gt;&gt; machobj.set_machine(&quot;trump&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">        &gt;&gt;&gt; machobj.set_machine(&quot;trump&quot;)</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        CIMEError: ERROR: No machine trump found</span>
+<span class="sd">        SystemExit: ERROR: No machine trump found</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">machine</span> <span class="o">==</span> <span class="s2">&quot;Query&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span>
@@ -371,6 +371,12 @@
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if all else fails</span>
+            <span class="c1">#pylint: disable=assignment-from-none</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">GenericXML</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">resolved</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -427,7 +433,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the compiler is valid for the current machine</span>
 
-<span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;cori-knl&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;edison&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; machobj.get_default_compiler()</span>
 <span class="sd">        &#39;intel&#39;</span>
 <span class="sd">        &gt;&gt;&gt; machobj.is_valid_compiler(&quot;gnu&quot;)</span>
@@ -441,7 +447,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check the MPILIB is valid for the current machine</span>
 
-<span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;cori-knl&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;edison&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; machobj.is_valid_MPIlib(&quot;mpi-serial&quot;)</span>
 <span class="sd">        True</span>
 <span class="sd">        &gt;&gt;&gt; machobj.is_valid_MPIlib(&quot;fake-mpi&quot;)</span>
@@ -454,7 +460,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return if this machine has a batch system</span>
 
-<span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;cori-knl&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; machobj = Machines(machine=&quot;edison&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; machobj.has_batch_system()</span>
 <span class="sd">        True</span>
 <span class="sd">        &gt;&gt;&gt; machobj.set_machine(&quot;melvin&quot;)</span>
@@ -509,9 +515,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      max_tasks/node &quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">max_tasks_per_node</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Machines.return_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.return_values">[docs]</a>    <span class="k">def</span> <span class="nf">return_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; return a dictionary of machine info</span>
-<span class="sd">        This routine is used by external tools in https://github.com/NCAR/CESM_xml2html</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># return a dictionary of machine info</span>
         <span class="n">machines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;machine&quot;</span><span class="p">)</span>
         <span class="n">mach_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Machines return values&quot;</span><span class="p">)</span>

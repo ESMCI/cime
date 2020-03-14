@@ -117,9 +117,8 @@
 <li class="toctree-l2"><a class="reference internal" href="cime-config.html">8. CIME user config directory</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">9. Troubleshooting</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#troubleshooting-case-creation">9.1. Troubleshooting case creation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-problems-in-cime-scripts">9.2. Troubleshooting problems in cime scripts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-job-submission">9.3. Troubleshooting job submission</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-runtime-problems">9.4. Troubleshooting runtime problems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-job-submission">9.2. Troubleshooting job submission</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting-runtime-problems">9.3. Troubleshooting runtime problems</a></li>
 </ul>
 </li>
 </ul>
@@ -211,12 +210,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="troubleshooting-problems-in-cime-scripts">
-<h2>9.2. Troubleshooting problems in cime scripts<a class="headerlink" href="#troubleshooting-problems-in-cime-scripts" title="Permalink to this headline">¶</a></h2>
-<p>If any of the python-based cime scripts are dying in a mysterious way, more information can be obtained by rerunning the script with the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> option.</p>
-</div>
 <div class="section" id="troubleshooting-job-submission">
-<h2>9.3. Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this headline">¶</a></h2>
+<h2>9.2. Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this headline">¶</a></h2>
 <p>Most problems associated with submission or launch are site-specific.
 The batch and run aspects of the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script are created by parsing the variables in <strong>$CASEROOT/env_batch.xml</strong> file.</p>
 <p>Take these steps to check for problems:</p>
@@ -226,7 +221,7 @@ The batch and run aspects of the <a class="reference external" href="../Tools_us
 </ol>
 </div>
 <div class="section" id="troubleshooting-runtime-problems">
-<h2>9.4. Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Permalink to this headline">¶</a></h2>
+<h2>9.3. Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Permalink to this headline">¶</a></h2>
 <p>To see if a run completed successfully, check the last several lines of the <strong>cpl.log</strong> file for a string like <code class="docutils literal notranslate"><span class="pre">SUCCESSFUL</span> <span class="pre">TERMINATION</span></code>. A successful job also usually copies the log files to the <strong>$CASEROOT/logs</strong> directory.</p>
 <p>Check these things first when a job fails:</p>
 <ul class="simple">
@@ -279,22 +274,6 @@ With the exception of the CAM and CLM history files, all the restart files have 
 <p>Compare the restart files against the sizes of a previous restart. If they don’t match, remove them and move the previous restart into place before resubmitting the job.
 See <a class="reference external" href="http://esmci.github.io/cime/users_guide/running-a-case.html#restarting-a-run">Restarting a run</a>.</p>
 <p>It is not uncommon for nodes to fail on HPC systems or for access to large file systems to hang. Before you file a bug report, make sure a case fails consistently in the same place.</p>
-<p><strong>Rerunning with additional debugging information</strong></p>
-<p>There are a few changes you can make to your case to get additional information that aids in debugging:</p>
-<ul class="simple">
-<li>Increase the value of the run-time xml variable <code class="docutils literal notranslate"><span class="pre">INFO_DBUG</span></code>: <code class="docutils literal notranslate"><span class="pre">./xmlchange</span> <span class="pre">INFO_DBUG=2</span></code>.
-This adds more information to the cpl.log file that can be useful if you can’t tell what component is aborting the run, or where bad coupling fields are originating.
-(This does NOT require rebuilding.)</li>
-<li>Try rebuilding and rerunning with the build-time xml variable <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>: <code class="docutils literal notranslate"><span class="pre">./xmlchange</span> <span class="pre">DEBUG=TRUE</span></code>.<ul>
-<li>This adds various runtime checks that trap conditions such as out-of-bounds array indexing, divide by 0, and other floating point exceptions (the exact conditions checked depend on flags set in <code class="docutils literal notranslate"><span class="pre">config_compilers.xml</span></code>).</li>
-<li>The best way to do this is often to create a new case and run <code class="docutils literal notranslate"><span class="pre">./xmlchange</span> <span class="pre">DEBUG=TRUE</span></code> before running <code class="docutils literal notranslate"><span class="pre">./case.build</span></code>.
-However, if it is hard for you to recreate your case, then you can run that xmlchange command from your existing case; then you must run <code class="docutils literal notranslate"><span class="pre">./case.build</span> <span class="pre">--clean-all</span></code> before rerunning <code class="docutils literal notranslate"><span class="pre">./case.build</span></code>.</li>
-<li>Note that the model will run significantly slower in this mode, so this may not be feasible if the model has to run a long time before producing the error.
-(Sometimes it works well to run the model until shortly before the error in non-debug mode, have it write restart files, then restart after rebuilding in debug mode.)
-Also note that answers will change slightly, so if the error arises from a rare condition, then it may not show up in this mode.</li>
-</ul>
-</li>
-</ul>
 </div>
 </div>
 

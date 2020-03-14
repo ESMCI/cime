@@ -225,11 +225,6 @@
       &lt;rpointer_file&gt;rpointer.ice$NINST_STRING&lt;/rpointer_file&gt;
       &lt;rpointer_content&gt;$CASE.dice$NINST_STRING.r.$DATENAME.nc,$CASE.dice$NINST_STRING.rs1.$DATENAME.bin&lt;/rpointer_content&gt;
     &lt;/rpointer&gt;
-    &lt;test_file_names&gt;
-      &lt;tfile disposition=&quot;copy&quot;&gt;casename.dice.r.1976-01-01-00000.nc&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;copy&quot;&gt;rpointer.ice_0001&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;copy&quot;&gt;rpointer.ice&lt;/tfile&gt;
-    &lt;/test_file_names&gt;
   &lt;/comp_archive_spec&gt;
 &lt;/components&gt;
 </pre></div>
@@ -1028,6 +1023,18 @@
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;0.&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;force_prognostic_true&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;dice&lt;/category&gt;
+    &lt;group&gt;dice_nml&lt;/group&gt;
+    &lt;desc&gt;
+      If true, prognostic is forced to true.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;.false.&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 

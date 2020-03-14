@@ -211,7 +211,6 @@
         <span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">passwd</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">chksum_file</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">ic_filepath</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">servernodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span> <span class="o">=</span> <span class="n">servernodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -236,11 +235,7 @@
             <span class="n">csnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;checksum&quot;</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">csnode</span><span class="p">:</span>
                 <span class="n">chksum_file</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">csnode</span><span class="p">)</span>
-            <span class="n">icnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;ic_filepath&quot;</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servernode</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">icnode</span><span class="p">:</span>
-                <span class="n">ic_filepath</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">icnode</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">chksum_file</span><span class="p">,</span> <span class="n">ic_filepath</span></div></div>
+        <span class="k">return</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">,</span> <span class="n">chksum_file</span></div></div>
 </pre></div>
 
            </div>

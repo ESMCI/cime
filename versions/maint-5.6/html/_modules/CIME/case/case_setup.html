@@ -211,22 +211,18 @@
 
     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">),</span>
            <span class="s2">&quot;cannot find cime_config directory </span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">comp</span><span class="p">))</span>
-    <span class="n">comp_interface</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
-    <span class="n">multi_driver</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">)</span>
     <span class="n">ninst</span> <span class="o">=</span> <span class="mi">1</span>
-
+    <span class="n">multi_driver</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
         <span class="n">ninst_max</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_MAX&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DRV&quot;</span><span class="p">,</span><span class="s2">&quot;CPL&quot;</span><span class="p">,</span><span class="s2">&quot;ESP&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;DRV&quot;</span><span class="p">,</span><span class="s2">&quot;CPL&quot;</span><span class="p">,</span><span class="s2">&quot;ESP&quot;</span><span class="p">):</span>
             <span class="n">ninst_model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">ninst_model</span><span class="o">==</span><span class="n">ninst_max</span><span class="p">,</span><span class="s2">&quot;MULTI_DRIVER mode, all components must have same NINST value.  NINST_</span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">ninst_max</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">):</span>
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">),</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-            <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ninst</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ninst</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
         <span class="n">nlfile</span> <span class="o">=</span> <span class="s2">&quot;user_nl_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
         <span class="n">model_nl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">nlfile</span><span class="p">)</span>
@@ -252,14 +248,11 @@
 <span class="c1">###############################################################################</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
 
-    <span class="n">non_local</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NONLOCAL&quot;</span><span class="p">)</span>
-
     <span class="c1"># Check that $DIN_LOC_ROOT exists - and abort if not a namelist compare tests</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">non_local</span><span class="p">:</span>
-        <span class="n">din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
-        <span class="n">testcase</span>     <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">)</span> <span class="ow">and</span> <span class="n">testcase</span> <span class="o">!=</span> <span class="s2">&quot;SBN&quot;</span><span class="p">),</span>
-               <span class="s2">&quot;inputdata root is not a directory or is not readable: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">))</span>
+    <span class="n">din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
+    <span class="n">testcase</span>     <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">)</span> <span class="ow">and</span> <span class="n">testcase</span> <span class="o">!=</span> <span class="s2">&quot;SBN&quot;</span><span class="p">),</span>
+           <span class="s2">&quot;inputdata root is not a directory or is not readable: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">))</span>
 
     <span class="c1"># Remove batch scripts</span>
     <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="n">clean</span><span class="p">:</span>
@@ -274,8 +267,7 @@
             <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">clean</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">non_local</span><span class="p">:</span>
-            <span class="n">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
 
         <span class="n">models</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
         <span class="n">mach</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
@@ -283,17 +275,12 @@
         <span class="n">debug</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
         <span class="n">mpilib</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
         <span class="n">sysos</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">)</span>
-        <span class="n">comp_interface</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">mach</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;xml variable MACH is not set&quot;</span><span class="p">)</span>
 
         <span class="c1"># creates the Macros.make, Depends.compiler, Depends.machine, Depends.machine.compiler</span>
         <span class="c1"># and env_mach_specific.xml if they don&#39;t already exist.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;Macros.make&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">):</span>
-            <span class="n">configure</span><span class="p">(</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">mach</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Makefile&quot;</span><span class="p">],</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">)</span>
-
-        <span class="c1"># Also write out Cmake macro file</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;Macros.cmake&quot;</span><span class="p">):</span>
-            <span class="n">configure</span><span class="p">(</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">mach</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;CMake&quot;</span><span class="p">],</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">)</span>
+            <span class="n">configure</span><span class="p">(</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">mach</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Makefile&quot;</span><span class="p">],</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">sysos</span><span class="p">)</span>
 
         <span class="c1"># Set tasks to 1 if mpi-serial library</span>
         <span class="k">if</span> <span class="n">mpilib</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span><span class="p">:</span>
@@ -301,22 +288,15 @@
 
         <span class="c1"># Check ninst.</span>
         <span class="c1"># In CIME there can be multiple instances of each component model (an ensemble) NINST is the instance of that component.</span>
-        <span class="n">comp_interface</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-            <span class="n">ninst</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST&quot;</span><span class="p">)</span>
-
         <span class="n">multi_driver</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">)</span>
-
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
             <span class="n">ntasks</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-                <span class="n">ninst</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+            <span class="n">ninst</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">comp_interface</span> <span class="o">!=</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
-                    <span class="n">expect</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_LAYOUT_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;concurrent&quot;</span><span class="p">,</span>
-                           <span class="s2">&quot;If multi_driver is TRUE, NINST_LAYOUT_</span><span class="si">{}</span><span class="s2"> must be concurrent&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_LAYOUT_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;concurrent&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;If multi_driver is TRUE, NINST_LAYOUT_</span><span class="si">{}</span><span class="s2"> must be concurrent&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
                 <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_PER_INST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ntasks</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ninst</span> <span class="o">&gt;</span> <span class="n">ntasks</span><span class="p">:</span>
@@ -356,6 +336,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">total_tasks</span><span class="o">*</span><span class="n">case</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
 
+
             <span class="c1"># May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)</span>
             <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
             <span class="n">env_batch</span><span class="o">.</span><span class="n">set_job_defaults</span><span class="p">([(</span><span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">(),</span> <span class="p">{})],</span> <span class="n">case</span><span class="p">)</span>
@@ -394,7 +375,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;If an old case build already exists, might want to run </span><span class="se">\&#39;</span><span class="s2">case.build --clean</span><span class="se">\&#39;</span><span class="s2"> before building&quot;</span><span class="p">)</span>
 
         <span class="c1"># Some tests need namelists created here (ERP) - so do this if we are in test mode</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">test_mode</span> <span class="ow">or</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">non_local</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">test_mode</span> <span class="ow">or</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating component namelists as part of setup&quot;</span><span class="p">)</span>
             <span class="n">case</span><span class="o">.</span><span class="n">create_namelists</span><span class="p">()</span>
 
@@ -402,8 +383,7 @@
         <span class="n">env_module</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
         <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="s2">&quot;sh&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
         <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="s2">&quot;csh&quot;</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">non_local</span><span class="p">:</span>
-            <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="s2">&quot;software_environment.txt&quot;</span><span class="p">)</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="s2">&quot;software_environment.txt&quot;</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;You can now run &#39;./preview_run&#39; to get more info on how your case will be run&quot;</span><span class="p">)</span>
 
@@ -419,7 +399,7 @@
         <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="n">test_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span> <span class="c1"># Want to catch KeyboardInterrupt too</span>
+            <span class="k">except</span><span class="p">:</span>
                 <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SETUP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
                 <span class="k">raise</span>
             <span class="k">else</span><span class="p">:</span>

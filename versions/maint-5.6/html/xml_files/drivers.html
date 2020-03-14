@@ -209,9 +209,7 @@ to define behavior.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
   &lt;comp_archive_spec compname=&quot;drv&quot; compclass=&quot;cpl&quot;&gt;
     &lt;rest_file_extension&gt;r&lt;/rest_file_extension&gt;
-    &lt;hist_file_extension&gt;hi\..*\.nc$&lt;/hist_file_extension&gt;
-    &lt;hist_file_extension&gt;ha\..*\.nc$&lt;/hist_file_extension&gt;
-    &lt;hist_file_extension&gt;h\w+\..*\.nc$&lt;/hist_file_extension&gt;
+    &lt;hist_file_extension&gt;hi?\d*.*\.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer$NINST_STRING.drv&lt;/rpointer_file&gt;
@@ -220,11 +218,6 @@ to define behavior.</p>
     &lt;test_file_names&gt;
       &lt;tfile disposition=&quot;move&quot;&gt;cpl_0001.log.5548574.chadmin1.180228-124723.gz&lt;/tfile&gt;
       &lt;tfile disposition=&quot;copy&quot;&gt;casename.cpl.r.1976-01-01-00000.nc&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;move&quot;&gt;casename.cpl.hi.1976-01-01-00000.nc&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;move&quot;&gt;casename.cpl.ha.1976-01-01-00000.nc&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;move&quot;&gt;casename.cpl.ha2x1d.1976-01-01-00000.nc&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;move&quot;&gt;casename.cpl.ha2x1h.1976-01-01-00000.nc&lt;/tfile&gt;
-      &lt;tfile disposition=&quot;move&quot;&gt;casename.cpl.hl2x1yr_glc.1976-01-01-00000.nc&lt;/tfile&gt;
       &lt;tfile disposition=&quot;copy&quot;&gt;rpointer.drv_0001&lt;/tfile&gt;
       &lt;tfile disposition=&quot;copy&quot;&gt;rpointer.drv&lt;/tfile&gt;
       &lt;tfile disposition=&quot;ignore&quot;&gt;casenamenot.cpl.r.1976-01-01-00000.nc&lt;/tfile&gt;
@@ -248,7 +241,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;COMP_CLASSES&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;CPL,ATM,LND,ICE,OCN,ROF,GLC,WAV,IAC,ESP&lt;/default_value&gt;
+    &lt;default_value&gt;CPL,ATM,LND,ICE,OCN,ROF,GLC,WAV,ESP&lt;/default_value&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;group&gt;case_comp&lt;/group&gt;
     &lt;desc&gt;List of component classes supported by this driver&lt;/desc&gt;
@@ -287,15 +280,6 @@ to define behavior.</p>
     &lt;group&gt;case_def&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;desc&gt;full pathname of case&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;NONLOCAL&quot;&gt;
-    &lt;type&gt;logical&lt;/type&gt;
-    &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
-    &lt;default_value&gt;FALSE&lt;/default_value&gt;
-    &lt;group&gt;case_def&lt;/group&gt;
-    &lt;file&gt;env_case.xml&lt;/file&gt;
-    &lt;desc&gt;user is not on the requested machine&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;CASETOOLS&quot;&gt;
@@ -645,7 +629,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ICE&quot;&gt;FALSE&lt;/value&gt;
       &lt;value compclass=&quot;ROF&quot;&gt;FALSE&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;FALSE&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;FALSE&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -896,7 +879,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;COMP_INTERFACE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;mct,nuopc,moab&lt;/valid_values&gt;
+    &lt;valid_values&gt;mct,nuopc&lt;/valid_values&gt;
     &lt;default_value&gt;mct&lt;/default_value&gt;
     &lt;group&gt;build_def&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
@@ -933,8 +916,8 @@ to define behavior.</p>
     &lt;group&gt;build_def&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
     &lt;desc&gt;TRUE implies always build model for openmp capability
-      If FALSE, component libraries are built with OpenMP capability if
-      the NTHREADS_ setting for any component is greater than 1 in env_mach_pes.xml.
+      If FALSE, component libraries are built with OpenMP capability only if
+      the NTHREADS_ setting for that component is greater than 1 in env_mach_pes.xml.
       If TRUE, the component libraries are always built with OpenMP capability.&lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -1299,7 +1282,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;GLC_GRID&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;gland20,gland10,gland5,gland5UM,gland4,mpas.aisgis20km,mpas.gis20km,mpas.ais20km,null&lt;/valid_values&gt;
+    &lt;valid_values&gt;gland20,gland10,gland5,gland5UM,gland4,mpas.gis20km,mpas.ais20km,null&lt;/valid_values&gt;
     &lt;default_value&gt;gland5UM&lt;/default_value&gt;
     &lt;group&gt;build_grid&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
@@ -1345,30 +1328,6 @@ to define behavior.</p>
     &lt;group&gt;build_grid&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
     &lt;desc&gt;number of wav cells in j direction - DO NOT EDIT (for experts only)&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC_GRID&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;UNSET&lt;/default_value&gt;
-    &lt;group&gt;build_grid&lt;/group&gt;
-    &lt;file&gt;env_build.xml&lt;/file&gt;
-    &lt;desc&gt;iac model (iac) grid&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC_NX&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
-    &lt;group&gt;build_grid&lt;/group&gt;
-    &lt;file&gt;env_build.xml&lt;/file&gt;
-    &lt;desc&gt;number of iac cells in i direction - DO NOT EDIT (for experts only)&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC_NY&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
-    &lt;group&gt;build_grid&lt;/group&gt;
-    &lt;file&gt;env_build.xml&lt;/file&gt;
-    &lt;desc&gt;number of iac cells in j direction - DO NOT EDIT (for experts only)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;MASK_GRID&quot;&gt;
@@ -1470,22 +1429,6 @@ to define behavior.</p>
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;path of wav domain file&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC_DOMAIN_FILE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;UNSET&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac domain file&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC_DOMAIN_PATH&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;$DIN_LOC_ROOT/share/domains&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;path of iac domain file&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;ICE_DOMAIN_FILE&quot;&gt;
@@ -1863,42 +1806,6 @@ to define behavior.</p>
     &lt;desc&gt;glc2lnd state mapping file decomp type&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;GLC2ICE_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ice flux mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
-    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2ICE_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;X&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ice flux mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2ICE_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ice state mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
-    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2ICE_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;X&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ice state mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;GLC2ICE_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
@@ -1915,42 +1822,6 @@ to define behavior.</p>
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;glc2ice runoff mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2OCN_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn flux mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
-    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2OCN_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;Y&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn flux mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2OCN_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn state mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
-    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;GLC2OCN_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;Y&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;glc2ocn state mapping file decomp type&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;
@@ -1987,42 +1858,6 @@ to define behavior.</p>
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;glc2ocn runoff mapping file decomp type for ice runoff&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;OCN2GLC_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ocn2glc flux mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
-    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;OCN2GLC_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;Y&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ocn2glc flux mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;OCN2GLC_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ocn2glc state mapping file - the default value idmap_ignore, if set, will be ignored by buildnml and
-    will generate a runtime error if in fact a file is required for the given compset&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;OCN2GLC_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;Y&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ocn2glc state mapping file decomp type&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;OCN2WAV_SMAPNAME&quot;&gt;
@@ -2074,74 +1909,6 @@ to define behavior.</p>
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;wav2ocn state mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2ATM_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2atm flux mapping file&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2ATM_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;X&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2atm flux mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2ATM_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2atm state mapping file&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2ATM_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;X&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2atm state mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2LND_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2lnd flux mapping file&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2LND_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;X&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2lnd flux mapping file decomp type&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2LND_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;idmap&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2lnd state mapping file&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;IAC2LND_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
-    &lt;default_value&gt;X&lt;/default_value&gt;
-    &lt;group&gt;run_domain&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;iac2lnd state mapping file decomp type&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;VECT_MAP&quot;&gt;
@@ -2203,7 +1970,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;EPS_OGRID&quot;&gt;
     &lt;type&gt;real&lt;/type&gt;
-    &lt;default_value&gt;1.0e-01&lt;/default_value&gt;
+    &lt;default_value&gt;1.0e-02&lt;/default_value&gt;
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Error tolerance for differences in ocean/ice lon/lat in domain checking&lt;/desc&gt;
@@ -2378,7 +2145,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt; $MAX_MPITASKS_PER_NODE&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt; $MAX_MPITASKS_PER_NODE&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt; $MAX_MPITASKS_PER_NODE&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt; $MAX_MPITASKS_PER_NODE&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2396,7 +2162,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt; 0&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt; 0&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt; 0&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt; 0&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2415,7 +2180,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2434,7 +2198,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;0&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;0&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;0&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;0&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2464,7 +2227,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2485,7 +2247,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;concurrent&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;concurrent&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;concurrent&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2504,7 +2265,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2689,7 +2449,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;default&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;default&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;default&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;default&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2711,7 +2470,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;64bit_offset&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;64bit_offset&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;64bit_offset&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2733,7 +2491,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2754,7 +2511,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2773,7 +2529,6 @@ to define behavior.</p>
       &lt;value component=&quot;ROF&quot;&gt;1&lt;/value&gt;
       &lt;value component=&quot;LND&quot;&gt;1&lt;/value&gt;
       &lt;value component=&quot;ESP&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;IAC&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2795,7 +2550,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ROF&quot;&gt;-99&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;-99&lt;/value&gt;
       &lt;value compclass=&quot;ESP&quot;&gt;-99&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;-99&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2948,7 +2702,7 @@ to define behavior.</p>
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;test&lt;/group&gt;
     &lt;file&gt;env_test.xml&lt;/file&gt;
-    &lt;desc&gt;standard full pathname of the cprnc executable. One can skip defining the xml entry, CCSM_CPRNC, and the sharedlib build system will automatically build cprnc&lt;/desc&gt;
+    &lt;desc&gt;standard full pathname of the cprnc executable&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;!-- ===================================================================== --&gt;
@@ -3063,7 +2817,6 @@ to define behavior.</p>
       &lt;value compclass=&quot;ICE&quot;&gt;FALSE&lt;/value&gt;
       &lt;value compclass=&quot;ROF&quot;&gt;FALSE&lt;/value&gt;
       &lt;value compclass=&quot;LND&quot;&gt;FALSE&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;FALSE&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -3123,11 +2876,7 @@ to define behavior.</p>
    &lt;default_value&gt;&lt;/default_value&gt;
    &lt;group&gt;job_submission&lt;/group&gt;
    &lt;file&gt;env_workflow.xml&lt;/file&gt;
-   &lt;desc&gt;The machine wallclock setting.  Default determined in
-   config_machines.xml can be overwritten by testing.  Format is
-   DD:HH:MM with DD assumed 0 if not present, this is translated to
-   the format specified by walltime format defined in
-   config_batch.xml&lt;/desc&gt;
+   &lt;desc&gt;The machine wallclock setting.  Default determined in config_machines.xml can be overwritten by testing&lt;/desc&gt;
  &lt;/entry&gt;
 
   &lt;entry id=&quot;BATCH_COMMAND_FLAGS&quot;&gt;
@@ -3172,14 +2921,6 @@ to define behavior.</p>
    &lt;desc&gt;whether the PROJECT value is required on this machine&lt;/desc&gt;
  &lt;/entry&gt;
 
- &lt;entry id=&quot;COMPARE_TO_NUOPC&quot;&gt;
-   &lt;type&gt;logical&lt;/type&gt;
-   &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
-   &lt;default_value&gt;FALSE&lt;/default_value&gt;
-   &lt;group&gt;comparison_to_nuopc&lt;/group&gt;
-   &lt;file&gt;env_build.xml&lt;/file&gt;
-   &lt;desc&gt;TRUE=&gt;turn on CPP variable COMPARE_TO_NUOPC&lt;/desc&gt;
- &lt;/entry&gt;
 
  &lt;help&gt;
     =========================================
@@ -3199,7 +2940,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;MODEL_DOI_URL&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;default_value&gt;https://doi.org/10.11578/E3SM/dc.20180418.36&lt;/default_value&gt;
+    &lt;default_value&gt;unset&lt;/default_value&gt;
     &lt;group&gt;run_metadata&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;desc&gt;run DOI&lt;/desc&gt;
@@ -3213,26 +2954,6 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Turns on component varying thread control in the driver.
     Used to set the driver namelist variable &quot;drv_threading&quot;.&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;INFO_TASKMAP_MODEL&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;valid_values&gt;0,1,2&lt;/valid_values&gt;
-    &lt;default_value&gt;2&lt;/default_value&gt;
-    &lt;group&gt;run_flags&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Sets level of task-to-node mapping output for the whole model 
-    (0: no output; 1: compact; 2: verbose).&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;INFO_TASKMAP_COMP&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;valid_values&gt;0,1,2&lt;/valid_values&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
-    &lt;group&gt;run_flags&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Sets level of task-to-node mapping output for supported component models
-    (0: no output; 1: compact; 2: verbose).&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;SAVE_TIMING&quot;&gt;
@@ -3283,11 +3004,7 @@ to define behavior.</p>
     &lt;default_value&gt;12&lt;/default_value&gt;
     &lt;group&gt;run_flags&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Sets maximum number of run loop timing data checkpoints.
-    This sets values for tprof_option and tprof_n that determine
-    the timing output file frequency. If less than one, uses
-    defaults for tprof_option and tprof_n and also allows them
-    to be set in user_nl_cpl.&lt;/desc&gt;
+    &lt;desc&gt;timer detail FIXME - add documentation&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DOUT_S_SAVE_INTERIM_RESTART_FILES&quot;&gt;
@@ -3367,7 +3084,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;CESM1_MOD&lt;/value&gt;
       &lt;value compset=&quot;_SOCN&quot;                     &gt;CESM1_MOD&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot;                    &gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI.*_MPASO&quot;           &gt;RASM_OPTION1&lt;/value&gt;
+      &lt;value compset=&quot;_MPASCICE.*_MPASO&quot;           &gt;RASM_OPTION1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3391,26 +3108,22 @@ to define behavior.</p>
 
   &lt;entry id=&quot;CCSM_BGC&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;none,CO2A,CO2A_OI,CO2B,CO2C,CO2C_OI,CO2_DMSA&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,CO2A,CO2A_OI,CO2B,CO2C,CO2_DMSA&lt;/valid_values&gt;
     &lt;default_value&gt;none&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_CAM\d+&quot;     &gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_DATM&quot;    &gt;none&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
+      &lt;value compset=&quot;_BGC%BDRD&quot;&gt;CO2C&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%(QIA|CRU|GSW)&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;20TR.*_DATM%(QIA|CRU|GSW)&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;RCP.*_DATM%(QIA|CRU|GSW)&quot; &gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_DATM%IAF.*_MPASO%OECO&quot; &gt;CO2A&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI%BGC.*_MPASO%OIECO&quot; &gt;CO2A_OI&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI%BGC.*_MPASO%TOIECO_&quot; &gt;CO2A_OI&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI_MPASO_.*_BGC%BCRC&quot; &gt;CO2C&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI_MPASO_.*_BGC%BCRD&quot; &gt;CO2C&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI_MPASO_.*_BGC%BDRC&quot; &gt;CO2C&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI_MPASO_.*_BGC%BDRD&quot; &gt;CO2C&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI%BGC.*_MPASO%OIECO.*_BGC%BCRC&quot; &gt;CO2C_OI&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI%BGC.*_MPASO%OIECO.*_BGC%BCRD&quot; &gt;CO2C_OI&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI%BGC.*_MPASO%OIECO.*_BGC%BDRC&quot; &gt;CO2C_OI&lt;/value&gt;
-      &lt;value compset=&quot;_MPASSI%BGC.*_MPASO%OIECO.*_BGC%BDRD&quot; &gt;CO2C_OI&lt;/value&gt;
+      &lt;value compset=&quot;_MPASCICE%BGC.*_MPASO%OIECO&quot; &gt;CO2A_OI&lt;/value&gt;
+      &lt;value compset=&quot;_MPASCICE%BGC.*_MPASO%TOIECO_&quot; &gt;CO2A_OI&lt;/value&gt;
+      &lt;value compset=&quot;_BGC%BCRD&quot;&gt;CO2C&lt;/value&gt;
+      &lt;value compset=&quot;_BGC%BDRC&quot;&gt;CO2C&lt;/value&gt;
+      &lt;value compset=&quot;_BGC%BCRC&quot;&gt;CO2C&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3498,7 +3211,6 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU480&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU240&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU240wLI&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oQU120&quot;&gt;24&lt;/value&gt;
@@ -3509,14 +3221,11 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS30to10wLI&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS18to6v3&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS15to5&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oARRM60to6&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%0.23x0.31&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne4np4&quot;&gt;12&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne4np4.pg2&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
@@ -3552,7 +3261,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
@@ -3572,7 +3281,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;$ATM_NCPL&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
@@ -3599,7 +3308,6 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU480&quot;&gt;6&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU240&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU240wLI&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oQU120&quot;&gt;24&lt;/value&gt;
@@ -3610,8 +3318,6 @@ to define behavior.</p>
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oRRS30to10wLI&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oRRS18to6v3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oRRS15to5&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oARRM60to6&quot;&gt;48&lt;/value&gt;
 
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
@@ -3696,15 +3402,6 @@ to define behavior.</p>
     where basedt is equal to NCPL_BASE_PERIOD in seconds.&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;IAC_NCPL&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;$ATM_NCPL&lt;/default_value&gt;
-    &lt;group&gt;run_coupling&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Number of iac coupling intervals per NCPL_BASE_PERIOD.
-      This is used to set the driver namelist iac_cpl_dt, equal to basedt/IAC_NCPL
-      where basedt is equal to NCPL_BASE_PERIOD in seconds.&lt;/desc&gt;
-  &lt;/entry&gt;
 
   &lt;!-- Logic for CPL_ALBAV should be reworked to depend on datm forcing rather
        than compset: see https://github.com/ESMCI/cime/issues/120 --&gt;
@@ -3849,8 +3546,6 @@ to define behavior.</p>
       &lt;value compset=&quot;^2000.+AV1C-H01C&quot;				&gt;368.865&lt;/value&gt;
       &lt;value compset=&quot;^1850.+CMIP6&quot;                             &gt;284.317&lt;/value&gt;
       &lt;value compset=&quot;^1950.+CMIP6&quot;                             &gt;312.821&lt;/value&gt;
-      &lt;value compset=&quot;^2010.+CMIP6&quot;                             &gt;388.717&lt;/value&gt;
-      &lt;value compset=&quot;^SSP585.+CMIP6&quot;				&gt;0.000001&lt;/value&gt;
       &lt;!-- Override values based on CAM (WACCM) chemistry --&gt;
       &lt;value compset=&quot;CAM[45]%W&quot;				&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;CAM[45]%SSOA&quot;				&gt;0.000001&lt;/value&gt;
@@ -3878,14 +3573,6 @@ to define behavior.</p>
     &lt;file&gt;env_case.xml&lt;/file&gt;
     &lt;desc&gt;If set to off, this component set/ grid specification is not scientifically supported.
     If set to on, this component set/ grid specification is scientifically supported&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;MAX_GB_OLD_TEST_DATA&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;500&lt;/default_value&gt;
-    &lt;group&gt;case_def&lt;/group&gt;
-    &lt;file&gt;env_case.xml&lt;/file&gt;
-    &lt;desc&gt;How much old test to allow&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC_NEC&quot;&gt;
@@ -3924,6 +3611,74 @@ to define behavior.</p>
       compsets.&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;OCN2GLC_FMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc flux mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;OCN2GLC_FMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc flux mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;OCN2GLC_SMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc state mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;OCN2GLC_SMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;ocn2glc state mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_FMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn flux mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_FMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn flux mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_SMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn state mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;GLC2OCN_SMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;Y&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;glc2ocn state mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;CCSM_GCOST&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
@@ -3955,7 +3710,6 @@ to define behavior.</p>
     &lt;desc compset=&quot;HIST_&quot;&gt;Historical 1850 to 2000 transient:&lt;/desc&gt;
     &lt;desc compset=&quot;20TR_&quot;&gt;Historical 1850 to 2000 transient:&lt;/desc&gt;
     &lt;desc compset=&quot;AMIP_&quot;&gt;AMIP for stand-alone cam:&lt;/desc&gt;
-    &lt;desc compset=&quot;SSP585_&quot;&gt;Future transient using CMIP6 SSP5_8.5 scenario:&lt;/desc&gt;
     &lt;desc compset=&quot;C2R[68]_&quot;&gt;CCMI REFC2 1950 to 2100 transient:&lt;/desc&gt;
     &lt;desc compset=&quot;C2R4_&quot;&gt;CCMI REFC2 2004 to 2100 transient:&lt;/desc&gt;
     &lt;desc compset=&quot;4804_&quot;&gt;1948 to 2004 transient:&lt;/desc&gt;
@@ -4046,26 +3800,6 @@ to define behavior.</p>
     Used to set the driver namelist variable &quot;drv_threading&quot;.&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;INFO_TASKMAP_MODEL&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;valid_values&gt;0,1,2&lt;/valid_values&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
-    &lt;group&gt;run_flags&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Sets level of task-to-node mapping output for the whole model
-    (0: no output; 1: compact; 2: verbose).&lt;/desc&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;INFO_TASKMAP_COMP&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;valid_values&gt;0,1,2&lt;/valid_values&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
-    &lt;group&gt;run_flags&lt;/group&gt;
-    &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Sets level of task-to-node mapping output for supported component models
-    (0: no output; 1: compact; 2: verbose).&lt;/desc&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;SAVE_TIMING&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
@@ -4091,7 +3825,7 @@ to define behavior.</p>
     &lt;group&gt;run_flags&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;
-    integer indicating maximum detail level to profile. This xml
+      integer indicating maximum detail level to profile. This xml
     variable is used to set the namelist variable
     timing_detail_limit. This namelist variable is used by perf_mod
     (in $CIMEROOT/src/share/timing/perf_mod.F90) to turn timers off
@@ -4100,6 +3834,10 @@ to define behavior.</p>
     timer detail level is incremented by 1 and compared to the
     time_detail_limit obtained from the namelist.  If the limit is
     exceeded then the timer is turned off.
+
+
+
+
     &lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -4157,7 +3895,9 @@ to define behavior.</p>
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_CAM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_DATM&quot;&gt;none&lt;/value&gt;
-      &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%CPLHIST.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%IAF.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%JRA.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;SSP.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
@@ -4223,13 +3963,10 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM%COPYALL_NPS&quot;&gt;72&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_CLM&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2&quot;&gt;4&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_DICE.*_MOM6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*_CICE.*_POP2&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_SLND.*_CICE.*_MOM6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_CICE.*_DOCN&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DOCN%US20&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_DATM%CPLHIST.+MOM\d&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPAS&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%0.23x0.31&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4&quot;&gt;96&lt;/value&gt;
@@ -4242,14 +3979,7 @@ to define behavior.</p>
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4&quot;&gt;384&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg2&quot;&gt;384&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg3&quot;&gt;384&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4CONUS.ne30x8&quot;&gt;384&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4.ARCTIC.ne30x4&quot;&gt;192&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4.ARCTICGRIS.ne30x8&quot;&gt;384&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%C24&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%C48&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%C96&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%C192&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%C384&quot;&gt;192&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4CONUS.ne30x8&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T42&quot;&gt;72&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T85&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T341&quot;&gt;288&lt;/value&gt;
@@ -4259,9 +3989,7 @@ to define behavior.</p>
       &lt;value compset=&quot;.+&quot; grid=&quot;1x1_vancou&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2.*_WW3&quot;&gt;4&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_DICE.*_MOM6.*_WW3&quot;&gt;4&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2.*_DWAV&quot;&gt;4&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_DICE.*_MOM6.*_DWAV&quot;&gt;4&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4301,7 +4029,6 @@ to define behavior.</p>
     &lt;default_value&gt;$ATM_NCPL&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_POP2&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_MOM6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%tx0.1v2&quot;&gt;4&lt;/value&gt;
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v7&quot;&gt;24&lt;/value&gt;
@@ -4326,7 +4053,6 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SGLC&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_XGLC&quot;&gt;$ATM_NCPL&lt;/value&gt;
-      &lt;value compset=&quot;_MOM6&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4359,11 +4085,9 @@ to define behavior.</p>
     &lt;default_value&gt;8&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DATM.*_POP2.*_DROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_MOM6.*_DROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DOCN%SOM&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*_DICE.*_DOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;8&lt;/value&gt;
-      &lt;value compset=&quot;_DATM%CPLHIST.+MOM\d&quot;&gt;8&lt;/value&gt;
       &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SROF&quot;&gt;$ATM_NCPL&lt;/value&gt;
@@ -4395,11 +4119,9 @@ to define behavior.</p>
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;DATM.+POP\d&quot;&gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;DATM.+MOM\d&quot;&gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;DATM.+DOCN%IAF&quot;&gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;DATM%CPLHIST.+POP\d&quot;&gt;FALSE&lt;/value&gt;
       &lt;value compset=&quot;DOCN%AQP11&quot;&gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;DATM%CPLHIST.+MOM\d&quot;&gt;FALSE&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_cpl&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4442,23 +4164,23 @@ to define behavior.</p>
 
   &lt;entry id=&quot;CPL_SEQ_OPTION&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2,NUOPC,NUOPC_TIGHT&lt;/valid_values&gt;
+    &lt;valid_values&gt;CESM1_ORIG,CESM1_ORIG_TIGHT,CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2&lt;/valid_values&gt;
     &lt;default_value&gt;CESM1_MOD_TIGHT&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;_DATM.*_DOCN%SOM&quot;			&gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_POP2&quot;				&gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_MOM6&quot;				&gt;RASM_OPTION1&lt;/value&gt;
-      &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v6&quot;		&gt;RASM_OPTION1&lt;/value&gt;
-      &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v7&quot;		&gt;RASM_OPTION1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM%NYF.*_SLND.*_DICE.*_DOCN&quot;	&gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;	&gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_SOCN&quot;				&gt;CESM1_MOD&lt;/value&gt;
-      &lt;value compset=&quot;_MPAS&quot;				&gt;CESM1_MOD&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_DOCN%SOM&quot;          &gt;CESM1_MOD&lt;/value&gt;
+      &lt;value compset=&quot;_POP2&quot;                     &gt;CESM1_MOD&lt;/value&gt;
+      &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v6&quot;     &gt;RASM_OPTION1&lt;/value&gt;
+      &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v7&quot;     &gt;RASM_OPTION1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%NYF.*_SLND.*_DICE.*_DOCN&quot;&gt;CESM1_MOD&lt;/value&gt;
+      &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;CESM1_MOD&lt;/value&gt;
+      &lt;value compset=&quot;_SOCN&quot;                     &gt;CESM1_MOD&lt;/value&gt;
+      &lt;value compset=&quot;_MPAS&quot;                     &gt;CESM1_MOD&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;
       Coupler sequencing option. This is used to set the driver namelist variable cpl_seq_option.
+      CESM1_ORIG is the cesm1.1 implementation.
       CESM1_MOD includes a cesm1.3 mod that swaps ocean merging and atm/ocn flux
       computation.
       RASM_OPTION1 runs prep ocean before the ocean coupling reducing
@@ -4467,7 +4189,10 @@ to define behavior.</p>
       RASM_OPTION2 is similar to RASM_OPTION1
       but sequences the ice model, prep ocean and ocean model in that order.  The
       ocean model loses some of the concurrency with the ice model.
-      CESM1_MOD_TIGHT are consistent with the old variables ocean_tight_coupling = true in the driver.
+      CESM1_ORIG_TIGHT and CESM1_MOD_TIGHT are consistent with the old variables
+      ocean_tight_coupling = true in the driver.  That namelist is gone and the
+      cpl_seq_option flags take it&#39;s place.
+      TIGHT coupling makes no sense with the OPTION5 and OPTION6 flags.
     &lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -4524,7 +4249,8 @@ to define behavior.</p>
     &lt;default_value&gt;284.7&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;^2000&quot;&gt;367.0&lt;/value&gt;
-      &lt;value compset=&quot;DATM.*POP2%ECO&quot;&gt;284.7&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_POP2%[^_]*ECO&quot;&gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_POP2%[^_]*ECOCESM20&quot;&gt;284.7&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_co2&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4550,11 +4276,16 @@ to define behavior.</p>
 
   &lt;entry id=&quot;GLC_NEC&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
-    &lt;valid_values&gt;1,3,5,10,36&lt;/valid_values&gt;
+    &lt;valid_values&gt;0,1,3,5,10,36&lt;/valid_values&gt;
     &lt;default_value&gt;10&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_CLM40.*_SGLC&quot;&gt;0&lt;/value&gt;
+    &lt;/values&gt;
     &lt;group&gt;run_glc&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Number of glacier elevation classes used in CLM.
+    0 implies no glacier_mec (glacier multiple elevation classes)
+    landunit in CLM. 0 is only valid for CLM40.
     Used by both CLM and the coupler (even if CISM is not running, and only SGLC is used).&lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -4563,7 +4294,8 @@ to define behavior.</p>
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;_CLM.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;_CLM45.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;_CLM50.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
       &lt;!-- Turn on two-way coupling for TG compsets - even though there are no
            feedbacks for a TG compset, this will give us additional diagnostics --&gt;
       &lt;value compset=&quot;_DLND.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
@@ -4619,7 +4351,6 @@ to define behavior.</p>
     ROF  = [DROF, SROF, XROF]
     GLC  = [      SGLC      ]
     WAV  = [DWAV, SWAV      ]
-    IAC  = [      SIAC      ]
     ESP  = [DESP, SESP      ]
 
     The OPTIONAL %phys attributes specify submodes of the given system
@@ -4636,7 +4367,7 @@ to define behavior.</p>
 
   &lt;compset&gt;
     &lt;alias&gt;A&lt;/alias&gt;
-    &lt;lname&gt;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SIAC&lt;/lname&gt;
+    &lt;lname&gt;2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV&lt;/lname&gt;
   &lt;/compset&gt;
 
   &lt;compset&gt;
@@ -4721,8 +4452,7 @@ to define behavior.</p>
 	  &lt;ntasks_cpl&gt;-1&lt;/ntasks_cpl&gt;
 	  &lt;ntasks_lnd&gt;-1&lt;/ntasks_lnd&gt;
 	  &lt;ntasks_glc&gt;-1&lt;/ntasks_glc&gt;
-    &lt;ntasks_wav&gt;-1&lt;/ntasks_wav&gt;
-    &lt;ntasks_iac&gt;-1&lt;/ntasks_iac&gt;
+	  &lt;ntasks_wav&gt;-1&lt;/ntasks_wav&gt;
 	  &lt;ntasks_esp&gt;-1&lt;/ntasks_esp&gt;
 	&lt;/ntasks&gt;
 	&lt;nthrds&gt;
@@ -4732,8 +4462,7 @@ to define behavior.</p>
 	  &lt;nthrds_ice&gt;1&lt;/nthrds_ice&gt;
 	  &lt;nthrds_ocn&gt;1&lt;/nthrds_ocn&gt;
 	  &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
-    &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
-    &lt;nthrds_iac&gt;1&lt;/nthrds_iac&gt;
+	  &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
 	  &lt;nthrds_esp&gt;1&lt;/nthrds_esp&gt;
 	  &lt;nthrds_cpl&gt;1&lt;/nthrds_cpl&gt;
 	&lt;/nthrds&gt;
@@ -4745,8 +4474,7 @@ to define behavior.</p>
 	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
 	  &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
 	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
-    &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
-    &lt;rootpe_iac&gt;0&lt;/rootpe_iac&gt;
+	  &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
 	  &lt;rootpe_esp&gt;0&lt;/rootpe_esp&gt;
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
@@ -5606,8 +5334,6 @@ to define behavior.</p>
     &lt;values&gt;
       &lt;value cime_model=&#39;e3sm&#39;&gt;.false.&lt;/value&gt;
       &lt;value cime_model=&#39;cesm&#39;&gt;.true.&lt;/value&gt;
-      &lt;value cime_model=&#39;cesm&#39; atm_grid=&quot;T62&quot;&gt;.false.&lt;/value&gt;
-      &lt;value cime_model=&#39;cesm&#39; atm_grid=&quot;TL319&quot;&gt;.false.&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -5622,22 +5348,7 @@ to define behavior.</p>
      &lt;values&gt;
       &lt;value&gt;.false.&lt;/value&gt;
      &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;ocn_surface_flux_scheme&quot;&gt;
-     &lt;type&gt;integer&lt;/type&gt;
-     &lt;category&gt;control&lt;/category&gt;
-     &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
-     &lt;desc&gt;
-      0: standard surface flux calculation as in E3SMv1 
-      1: COAREv3.0 flux computation (Fairall et al., 2003)
-      2: University of Arizona algorithm (Zeng et al., 1998)
-      default: 0
-     &lt;/desc&gt;
-     &lt;values&gt;
-      &lt;value&gt;0&lt;/value&gt;
-     &lt;/values&gt;
-  &lt;/entry&gt;
+   &lt;/entry&gt;
 
   &lt;entry id=&quot;flux_convergence&quot;&gt;
     &lt;type&gt;real&lt;/type&gt;
@@ -5666,6 +5377,18 @@ to define behavior.</p>
     &lt;values&gt;
       &lt;value cime_model=&#39;cesm&#39;&gt;5&lt;/value&gt;
       &lt;value cime_model=&#39;e3sm&#39;&gt;2&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;gust_fac&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;category&gt;control&lt;/category&gt;
+    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      wind gustiness factor
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;0.0D0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -5750,18 +5473,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$WAV_GRID&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac_gnam&quot; modify_via_xml=&quot;IAC_GRID&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      IAC_GRID values passed into driver.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC_GRID&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -5862,7 +5573,7 @@ to define behavior.</p>
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;expdef&lt;/category&gt;
     &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
-    &lt;valid_values&gt;CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2,NUOPC,NUOPC_TIGHT&lt;/valid_values&gt;
+    &lt;valid_values&gt;CESM1_ORIG,CESM1_MOD,CESM1_ORIG_TIGHT,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2&lt;/valid_values&gt;
     &lt;desc&gt;
       Set the coupler sequencing.
     &lt;/desc&gt;
@@ -6239,19 +5950,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;histavg_iac&quot;&gt;
-    &lt;type&gt;logical&lt;/type&gt;
-    &lt;category&gt;history&lt;/category&gt;
-    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      writes iac fields in coupler average history files.
-      default: true
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;.true.&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;histavg_xao&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;category&gt;history&lt;/category&gt;
@@ -6435,19 +6133,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;reprosum_allow_infnan&quot;&gt;
-    &lt;type&gt;logical&lt;/type&gt;
-    &lt;category&gt;reprosum&lt;/category&gt;
-    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      Allow INF and NaN in summands
-      default: .false.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;.false.&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;reprosum_diffmax&quot;&gt;
     &lt;type&gt;real&lt;/type&gt;
     &lt;category&gt;reprosum&lt;/category&gt;
@@ -6588,19 +6273,6 @@ to define behavior.</p>
     &lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;iac_cpl_dt&quot; modify_via_xml=&quot;IAC_NCPL&quot; skip_default_entry=&quot;true&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;time&lt;/category&gt;
-    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      iac coupling interval in seconds
-      set via IAC_NCPL in env_run.xml.
-      IAC_NCPL is the number of times the iac is coupled per NCPL_BASE_PERIOD
-      NCPL_BASE_PERIOD is also set in env_run.xml and is the base period
-      associated with NCPL coupling frequency, nad has valid values: hour,day,year,decade
-    &lt;/desc&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;esp_cpl_dt&quot; skip_default_entry=&quot;true&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;category&gt;time&lt;/category&gt;
@@ -6684,18 +6356,6 @@ to define behavior.</p>
     &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
     &lt;desc&gt;
       wav coupling interval offset in seconds default: 0
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;0&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac_cpl_offset&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;time&lt;/category&gt;
-    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      iac coupling interval offset in seconds default: 0
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;0&lt;/value&gt;
@@ -7180,18 +6840,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$PAUSE_ACTIVE_WAV&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;pause_active_iac&quot; modify_via_xml=&quot;PAUSE_ACTIVE_IAC&quot;&gt;
-    &lt;type&gt;logical&lt;/type&gt;
-    &lt;category&gt;time&lt;/category&gt;
-    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      Whether Pause signals are active for component iac
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$PAUSE_ACTIVE_IAC&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -7694,71 +7342,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;iac_ntasks&quot; modify_via_xml=&quot;NTASKS_IAC&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;desc&gt;
-      the number of mpi tasks assigned to the iac components.
-      set by NTASKS_IAC in env_configure.xml.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$NTASKS_IAC&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac_nthreads&quot; modify_via_xml=&quot;NTHRDS_IAC&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;desc&gt;
-      the number of threads per mpi task for the iac component.
-      set by NTHRDS_IAC in env_configure.xml.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$NTHRDS_IAC&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac_rootpe&quot; modify_via_xml=&quot;ROOTPE_IAC&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;desc&gt;
-      the global mpi task rank of the root processor assigned to the iac component.
-      set by ROOTPE_IAC in env_configure.xml.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$ROOTPE_IAC&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac_pestride&quot; modify_via_xml=&quot;PSTRID_IAC&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;desc&gt;
-      the mpi global processors stride associated with the mpi tasks for the iac component.
-      set by PSTRID_IAC in env_configure.xml.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$PSTRID_IAC&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac_layout&quot; modify_via_xml=&quot;NINST_IAC_LAYOUT&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;valid_values&gt;concurrent,sequential&lt;/valid_values&gt;
-    &lt;desc&gt;
-      Layout of multi-instance iacs (if there are more than 1)
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$NINST_IAC_LAYOUT&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;rof_ntasks&quot; modify_via_xml=&quot;NTASKS_ROF&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;category&gt;cime_pes&lt;/category&gt;
@@ -7938,32 +7521,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$PSTRID_CPL&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;info_taskmap_model&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;desc&gt;
-      level of task-to-node mapping output for the whole model 
-      (0: no output; 1: compact; 2: verbose)
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$INFO_TASKMAP_MODEL&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;info_taskmap_comp&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;category&gt;cime_pes&lt;/category&gt;
-    &lt;group&gt;cime_pes&lt;/group&gt;
-    &lt;desc&gt;
-      level of task-to-node mapping output for individual component models
-      (0: no output; 1: compact; 2: verbose)
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$INFO_TASKMAP_COMP&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -8836,66 +8393,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;glc2ocn_fmapname&quot;    modify_via_xml=&quot;GLC2OCN_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      glc to ocn flux mapping file for fluxes
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2OCN_FMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;glc2ocn_fmaptype&quot;    modify_via_xml=&quot;GLC2OCN_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2OCN_FMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;glc2ocn_smapname&quot;    modify_via_xml=&quot;GLC2OCN_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      glc to ocn state mapping file for states
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2OCN_SMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;glc2ocn_smaptype&quot;    modify_via_xml=&quot;GLC2OCN_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2OCN_SMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;glc2ocn_liq_rmapname&quot;    modify_via_xml=&quot;GLC2OCN_LIQ_RMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;mapping&lt;/category&gt;
@@ -8952,66 +8449,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$GLC2OCN_ICE_RMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;ocn2glc_fmapname&quot;    modify_via_xml=&quot;OCN2GLC_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      ocn to glc flux mapping file for fluxes
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$OCN2GLC_FMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;ocn2glc_fmaptype&quot;    modify_via_xml=&quot;OCN2GLC_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$OCN2GLC_FMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;ocn2glc_smapname&quot;    modify_via_xml=&quot;OCN2GLC_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      ocn to glc state mapping file for states
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$OCN2GLC_SMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;ocn2glc_smaptype&quot;    modify_via_xml=&quot;OCN2GLC_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$OCN2GLC_SMAPTYPE&lt;/value&gt;
       &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -9227,66 +8664,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;glc2ice_fmapname&quot;    modify_via_xml=&quot;GLC2ICE_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      glc to ice flux mapping file for fluxes
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2ICE_FMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;glc2ice_fmaptype&quot;    modify_via_xml=&quot;GLC2ICE_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2ICE_FMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;glc2ice_smapname&quot;    modify_via_xml=&quot;GLC2ICE_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      glc to ice state mapping file for states
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2ICE_SMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;glc2ice_smaptype&quot;    modify_via_xml=&quot;GLC2ICE_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$GLC2ICE_SMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;atm2wav_smapname&quot;    modify_via_xml=&quot;ATM2WAV_SMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;mapping&lt;/category&gt;
@@ -9422,126 +8799,6 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;iac2atm_fmapname&quot;    modify_via_xml=&quot;IAC2ATM_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      iac to atm mapping file for fluxes
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2ATM_FMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2atm_fmaptype&quot;    modify_via_xml=&quot;IAC2ATM_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2ATM_FMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2atm_smapname&quot;    modify_via_xml=&quot;IAC2ATM_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      iac to atm mapping file for states
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2ATM_SMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2atm_smaptype&quot;    modify_via_xml=&quot;IAC2ATM_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2ATM_SMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2lnd_fmapname&quot;    modify_via_xml=&quot;IAC2LND_FMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      iac to lnd mapping file for fluxes
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2LND_FMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2lnd_fmaptype&quot;    modify_via_xml=&quot;IAC2LND_FMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2LND_FMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2lnd_smapname&quot;    modify_via_xml=&quot;IAC2LND_SMAPNAME&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      iac to lnd mapping file for states
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2LND_SMAPNAME&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;iac2lnd_smaptype&quot;    modify_via_xml=&quot;IAC2LND_SMAPTYPE&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;mapping&lt;/category&gt;
-    &lt;group&gt;seq_maps&lt;/group&gt;
-    &lt;desc&gt;
-      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
-      X is associated with rearrangement of the source grid to the
-      destination grid and then local mapping.  Y is associated with mapping
-      on the source grid and then rearrangement and sum to the destination
-      grid.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$IAC2LND_SMAPTYPE&lt;/value&gt;
-      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
   &lt;entry id=&quot;data_assimilation_atm&quot; modify_via_xml=&quot;DATA_ASSIMILATION_ATM&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;category&gt;data_assimilation&lt;/category&gt;
@@ -9587,18 +8844,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$DATA_ASSIMILATION_WAV&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;data_assimilation_iac&quot; modify_via_xml=&quot;DATA_ASSIMILATION_IAC&quot;&gt;
-    &lt;type&gt;logical&lt;/type&gt;
-    &lt;category&gt;data_assimilation&lt;/category&gt;
-    &lt;group&gt;seq_timemgr_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      Whether Data Assimilation is on for component iac
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$DATA_ASSIMILATION_IAC&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -9658,8 +8903,8 @@ to define behavior.</p>
        Surface albedo for direct radiation
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;0.06D0&lt;/value&gt;
-      &lt;value aqua_planet_sst_type=&quot;sst_aquap11&quot;&gt;0.07D0&lt;/value&gt;
+      &lt;value&gt;0.06&lt;/value&gt;
+      &lt;value aqua_planet_sst_type=&quot;sst_aquap_constant&quot;&gt;0.07&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -9671,7 +8916,7 @@ to define behavior.</p>
        Surface albedo for diffuse radiation
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;0.07D0&lt;/value&gt;
+      &lt;value&gt;0.07&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -9683,8 +8928,8 @@ to define behavior.</p>
        minimum wind speed for atmOcn flux calculations
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;0.5D0&lt;/value&gt;
-      &lt;value aqua_planet_sst_type=&quot;sst_aquap11&quot;&gt;1.0D0&lt;/value&gt;
+      &lt;value&gt;0.5&lt;/value&gt;
+      &lt;value aqua_planet_sst_type=&quot;sst_aquap_constant&quot;&gt;1.0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -9905,7 +9150,6 @@ to define behavior.</p>
     &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_STRIDE&lt;/value&gt;
     &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_STRIDE&lt;/value&gt;
     &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_STRIDE&lt;/value&gt;
-    &lt;value component=&quot;iac&quot;&gt;$IAC_PIO_STRIDE&lt;/value&gt;
     &lt;value component=&quot;esp&quot;&gt;-99&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -9926,7 +9170,6 @@ to define behavior.</p>
     &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_ROOT&lt;/value&gt;
     &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_ROOT&lt;/value&gt;
     &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_ROOT&lt;/value&gt;
-    &lt;value component=&quot;iac&quot;&gt;$IAC_PIO_ROOT&lt;/value&gt;
     &lt;value component=&quot;esp&quot;&gt;-99&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -9948,7 +9191,6 @@ to define behavior.</p>
     &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_REARRANGER&lt;/value&gt;
     &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_REARRANGER&lt;/value&gt;
     &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_REARRANGER&lt;/value&gt;
-    &lt;value component=&quot;iac&quot;&gt;$IAC_PIO_REARRANGER&lt;/value&gt;
     &lt;value component=&quot;esp&quot;&gt;-99&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -9969,7 +9211,6 @@ to define behavior.</p>
     &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_NUMTASKS&lt;/value&gt;
     &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_NUMTASKS&lt;/value&gt;
     &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_NUMTASKS&lt;/value&gt;
-    &lt;value component=&quot;iac&quot;&gt;$IAC_PIO_NUMTASKS&lt;/value&gt;
     &lt;value component=&quot;esp&quot;&gt;-99&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -9992,7 +9233,6 @@ to define behavior.</p>
     &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_TYPENAME&lt;/value&gt;
     &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_TYPENAME&lt;/value&gt;
     &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_TYPENAME&lt;/value&gt;
-    &lt;value component=&quot;iac&quot;&gt;$IAC_PIO_TYPENAME&lt;/value&gt;
     &lt;value component=&quot;esp&quot;&gt;nothing&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -10016,7 +9256,6 @@ to define behavior.</p>
     &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_NETCDF_FORMAT&lt;/value&gt;
     &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_NETCDF_FORMAT&lt;/value&gt;
     &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_NETCDF_FORMAT&lt;/value&gt;
-    &lt;value component=&quot;iac&quot;&gt;$IAC_PIO_NETCDF_FORMAT&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 

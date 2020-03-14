@@ -184,7 +184,7 @@
 
 <span class="sd">The main &quot;public&quot; class here is Build. It is initialized with machine-specific</span>
 <span class="sd">information, and its write_macros method is the driver for translating the</span>
-<span class="sd">config_compilers.xml file into a Makefile or CMake-format Macros file.</span>
+<span class="sd">config_build.xml file into a Makefile or CMake-format Macros file.</span>
 
 <span class="sd">For developers, here&#39;s the role of the other classes in the process:</span>
 
@@ -211,7 +211,7 @@
 <span class="sd">- For each &lt;compiler&gt; element, Build.write_macros creates a CompilerBlock</span>
 <span class="sd">  instance. This object is responsible for translating the XML in its block, in</span>
 <span class="sd">  order to populate the PossibleValues instances. This includes handling the</span>
-<span class="sd">  $VAR, $ENV{...} and $SHELL{...} and keeping track of dependencies induced by one</span>
+<span class="sd">  &lt;var&gt;/&lt;env&gt;/&lt;shell&gt; tags, and keeping track of dependencies induced by one</span>
 <span class="sd">  variable referencing another&#39;s value.</span>
 
 <span class="sd">- The PossibleValues object holds the information about how one variable can be</span>
@@ -282,8 +282,8 @@
     <span class="k">def</span> <span class="nf">_handle_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elem</span><span class="p">,</span> <span class="n">set_up</span><span class="p">,</span> <span class="n">tear_down</span><span class="p">,</span> <span class="n">depends</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Expand markup used internally.</span>
 
-<span class="sd">        This function is responsible for expanding $ENV{...}, $VAR, and</span>
-<span class="sd">        $SHELL{...} syntax into Makefile/CMake syntax.</span>
+<span class="sd">        This function is responsible for expanding &lt;env&gt;, &lt;var&gt;, and</span>
+<span class="sd">        &lt;shell&gt; tags into Makefile/CMake syntax.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">        elem - An ElementTree.Element containing text to expand.</span>
@@ -299,11 +299,14 @@
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initial output=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
         <span class="n">reference_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\${?(\w+)}?&#39;</span><span class="p">)</span>
         <span class="n">env_ref_re</span>   <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\$ENV\{(\w+)\}&#39;</span><span class="p">)</span>
-        <span class="n">shell_prefix</span> <span class="o">=</span> <span class="s2">&quot;$SHELL{&quot;</span>
+        <span class="n">shell_ref_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\$SHELL\{([^}]+)\}&#39;</span><span class="p">)</span>
+        <span class="n">nesting_ref_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\$SHELL\{[^}]+\$\w*\{&#39;</span><span class="p">)</span>
+
+        <span class="n">expect</span><span class="p">(</span><span class="n">nesting_ref_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="s2">&quot;Nesting not allowed in this syntax, use xml syntax &lt;shell&gt; &lt;env&gt; if nesting is required&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">reference_re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
             <span class="n">var_name</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -321,23 +324,12 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;postenv pass output=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
 
-        <span class="k">while</span> <span class="n">shell_prefix</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
-            <span class="n">sidx</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">shell_prefix</span><span class="p">)</span>
-            <span class="n">brace_count</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sidx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">shell_prefix</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;{&quot;</span><span class="p">:</span>
-                    <span class="n">brace_count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">elif</span> <span class="n">output</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;}&quot;</span><span class="p">:</span>
-                    <span class="n">brace_count</span> <span class="o">-=</span> <span class="mi">1</span>
-                    <span class="k">if</span> <span class="n">brace_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="k">break</span>
-
-            <span class="n">command</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="n">sidx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">shell_prefix</span><span class="p">)</span> <span class="p">:</span> <span class="n">idx</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shell_ref_re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;execute </span><span class="si">{}</span><span class="s2"> in shell, command </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">command</span><span class="p">))</span>
             <span class="n">new_set_up</span><span class="p">,</span> <span class="n">inline</span><span class="p">,</span> <span class="n">new_tear_down</span> <span class="o">=</span> \
                 <span class="n">writer</span><span class="o">.</span><span class="n">shell_command_strings</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">sidx</span><span class="p">:</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">inline</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">group</span><span class="p">(),</span> <span class="n">inline</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">new_set_up</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">set_up</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_set_up</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">new_tear_down</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -345,6 +337,38 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set_up </span><span class="si">{}</span><span class="s2"> inline </span><span class="si">{}</span><span class="s2"> tear_down </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_set_up</span><span class="p">,</span><span class="n">inline</span><span class="p">,</span><span class="n">new_tear_down</span><span class="p">))</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;First pass output=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">elem</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;env&quot;</span><span class="p">:</span>
+                <span class="c1"># &lt;env&gt; tags just need to be expanded by the writer.</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">writer</span><span class="o">.</span><span class="n">environment_variable_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;shell&quot;</span><span class="p">:</span>
+                <span class="c1"># &lt;shell&gt; tags can contain other tags, so handle those.</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_references</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">set_up</span><span class="p">,</span> <span class="n">tear_down</span><span class="p">,</span>
+                                                  <span class="n">depends</span><span class="p">)</span>
+                <span class="n">new_set_up</span><span class="p">,</span> <span class="n">inline</span><span class="p">,</span> <span class="n">new_tear_down</span> <span class="o">=</span> \
+                                    <span class="n">writer</span><span class="o">.</span><span class="n">shell_command_strings</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">inline</span>
+                <span class="k">if</span> <span class="n">new_set_up</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">set_up</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_set_up</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_tear_down</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">tear_down</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_tear_down</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;set_up </span><span class="si">{}</span><span class="s2"> inline </span><span class="si">{}</span><span class="s2"> tear_down </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_set_up</span><span class="p">,</span><span class="n">inline</span><span class="p">,</span><span class="n">new_tear_down</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;var&quot;</span><span class="p">:</span>
+                <span class="c1"># &lt;var&gt; commands also need expansion by the writer, and can</span>
+                <span class="c1"># add dependencies.</span>
+                <span class="n">var_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">writer</span><span class="o">.</span><span class="n">variable_string</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+                <span class="n">depends</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="s2">&quot;Unexpected tag &quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; encountered in &quot;</span>
+                       <span class="s2">&quot;config_build.xml. Check that the file is valid &quot;</span>
+                       <span class="s2">&quot;according to the schema.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">+=</span> <span class="n">child</span><span class="o">.</span><span class="n">xml_element</span><span class="o">.</span><span class="n">tail</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Second pass output=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">output</span>
 
@@ -369,10 +393,8 @@
         <span class="n">value_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_references</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">set_up</span><span class="p">,</span>
                                              <span class="n">tear_down</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
         <span class="c1"># Create the setting object.</span>
-        <span class="n">append</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;append&quot;</span>
-        <span class="n">setting</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="n">value_text</span><span class="p">,</span> <span class="n">append</span><span class="p">,</span>
+        <span class="n">setting</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="n">value_text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;append&quot;</span><span class="p">,</span>
                                <span class="n">conditions</span><span class="p">,</span> <span class="n">set_up</span><span class="p">,</span> <span class="n">tear_down</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="p">(</span><span class="n">setting</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_elem_to_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">elem</span><span class="p">,</span> <span class="n">value_lists</span><span class="p">):</span>
@@ -389,7 +411,8 @@
             <span class="n">value_lists</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PossibleValues</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">setting</span><span class="p">,</span>
                                                <span class="bp">self</span><span class="o">.</span><span class="n">_specificity</span><span class="p">,</span> <span class="n">depends</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">value_lists</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">add_setting</span><span class="p">(</span><span class="n">setting</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specificity</span><span class="p">,</span><span class="n">depends</span><span class="p">)</span>
+            <span class="n">value_lists</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">add_setting</span><span class="p">(</span><span class="n">setting</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_specificity</span><span class="p">,</span>
+                                          <span class="n">depends</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CompilerBlock.add_settings_to_lists"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilerblock.CompilerBlock.add_settings_to_lists">[docs]</a>    <span class="k">def</span> <span class="nf">add_settings_to_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag_vars</span><span class="p">,</span> <span class="n">value_lists</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add all data in the &lt;compiler&gt; element to lists of settings.</span>
@@ -409,6 +432,7 @@
 
 <div class="viewcode-block" id="CompilerBlock.matches_machine"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.compilerblock.CompilerBlock.matches_machine">[docs]</a>    <span class="k">def</span> <span class="nf">matches_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Check whether this block matches a machine/os.</span>
+
 <span class="sd">        This also sets the specificity of the block, so this must be called</span>
 <span class="sd">        before add_settings_to_lists if machine-specific output is needed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

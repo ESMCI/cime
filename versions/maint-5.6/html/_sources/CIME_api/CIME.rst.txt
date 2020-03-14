@@ -80,34 +80,10 @@ CIME.compare\_test\_results module
     :undoc-members:
     :show-inheritance:
 
-CIME.cs\_status module
-----------------------
-
-.. automodule:: CIME.cs_status
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.cs\_status\_creator module
--------------------------------
-
-.. automodule:: CIME.cs_status_creator
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 CIME.date module
 ----------------
 
 .. automodule:: CIME.date
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-CIME.expected\_fails module
----------------------------
-
-.. automodule:: CIME.expected_fails
     :members:
     :undoc-members:
     :show-inheritance:

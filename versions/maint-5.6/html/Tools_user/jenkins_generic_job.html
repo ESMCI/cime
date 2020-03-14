@@ -38,7 +38,7 @@
     <link rel="top" title="CIME master documentation" href="../index.html"/>
         <link rel="up" title="User Tools" href="index.html"/>
         <link rel="next" title="jenkins_script" href="jenkins_script.html"/>
-        <link rel="prev" title="get_standard_makefile_args" href="get_standard_makefile_args.html"/> 
+        <link rel="prev" title="getTiming" href="getTiming.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -118,7 +118,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User Tools</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="advanced-py-prof.html">advanced-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="archive_metadata.html">archive_metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bld_diff.html">bld_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bless_test_results.html">bless_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.build.html">case.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
@@ -133,6 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime_bisect.html">cime_bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cimeteststatus.html">cimeteststatus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code_checker.html">code_checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_namelists.html">compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_test_results.html">compare_test_results</a></li>
@@ -150,7 +150,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">jenkins_generic_job</a><ul class="simple">
 </ul>
 </li>
@@ -280,8 +279,6 @@ optional arguments:
   --baseline-compare BASELINE_COMPARE
                         Do baseline comparisons (yes/no) (default: None)
   --submit-to-cdash     Send results to CDash (default: False)
-  --update-success      Record test success in baselines. Only the nightly
-                        process should use this in general. (default: False)
   --no-batch            Do not use batch system even if on batch machine
                         (default: False)
   -c CDASH_BUILD_NAME, --cdash-build-name CDASH_BUILD_NAME
@@ -293,10 +290,8 @@ optional arguments:
   -b BASELINE_NAME, --baseline-name BASELINE_NAME
                         Baseline name for baselines to use. Also impacts
                         dashboard job name. Useful for testing a branch other
-                        than next or master (default: versioned_docs3)
-  -B BASELINE_ROOT, --baseline-root BASELINE_ROOT
-                        Baseline area for baselines to use. Default will be
-                        config_machine value for machine (default: None)
+                        than next or master (default:
+                        versioned_docs_for_maint56)
   -O OVERRIDE_BASELINE_NAME, --override-baseline-name OVERRIDE_BASELINE_NAME
                         Force comparison with these baseines without impacting
                         dashboard or test-id. (default: None)
@@ -343,7 +338,7 @@ optional arguments:
         <a href="jenkins_script.html" class="btn btn-neutral float-right" title="jenkins_script" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="get_standard_makefile_args.html" class="btn btn-neutral" title="get_standard_makefile_args" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="getTiming.html" class="btn btn-neutral" title="getTiming" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

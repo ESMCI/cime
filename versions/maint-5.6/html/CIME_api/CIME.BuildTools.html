@@ -137,10 +137,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
@@ -257,8 +254,8 @@ class inherits from.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;foo2&quot;</span><span class="p">,</span> <span class="s2">&quot;bar2&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">end_ifeq</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
-<span class="go">&#39;if(&quot;foo&quot; STREQUAL &quot;bar&quot;)\n  set(foo2 &quot;bar2&quot;)\nendif()\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">u&#39;if(&quot;foo&quot; STREQUAL &quot;bar&quot;)\n  set(foo2 &quot;bar2&quot;)\nendif()\n&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -282,8 +279,8 @@ class inherits from.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
-<span class="go">&#39;set(foo &quot;bar&quot;)\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">u&#39;set(foo &quot;bar&quot;)\n&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -312,8 +309,8 @@ class inherits from.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">CMakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
-<span class="go">&#39;if(&quot;foo&quot; STREQUAL &quot;bar&quot;)\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">u&#39;if(&quot;foo&quot; STREQUAL &quot;bar&quot;)\n&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -349,7 +346,7 @@ respectively. These can be changed by setting the environment variables
 COMPILER, MPILIB, and DEBUG, respectively.</p>
 <dl class="class">
 <dt id="CIME.BuildTools.configure.FakeCase">
-<em class="property">class </em><code class="descclassname">CIME.BuildTools.configure.</code><code class="descname">FakeCase</code><span class="sig-paren">(</span><em>compiler</em>, <em>mpilib</em>, <em>debug</em>, <em>comp_interface</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.BuildTools.configure.</code><code class="descname">FakeCase</code><span class="sig-paren">(</span><em>compiler</em>, <em>mpilib</em>, <em>debug</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#FakeCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.FakeCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="CIME.BuildTools.configure.FakeCase.get_value">
@@ -360,7 +357,7 @@ COMPILER, MPILIB, and DEBUG, respectively.</p>
 
 <dl class="function">
 <dt id="CIME.BuildTools.configure.configure">
-<code class="descclassname">CIME.BuildTools.configure.</code><code class="descname">configure</code><span class="sig-paren">(</span><em>machobj</em>, <em>output_dir</em>, <em>macros_format</em>, <em>compiler</em>, <em>mpilib</em>, <em>debug</em>, <em>comp_interface</em>, <em>sysos</em>, <em>unit_testing=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.BuildTools.configure.</code><code class="descname">configure</code><span class="sig-paren">(</span><em>machobj</em>, <em>output_dir</em>, <em>macros_format</em>, <em>compiler</em>, <em>mpilib</em>, <em>debug</em>, <em>sysos</em>, <em>unit_testing=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/configure.html#configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.configure.configure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add Macros, Depends, and env_mach_specific files to a directory.</p>
 <p>Arguments:
 machobj - Machines argument for this machine.
@@ -557,6 +554,13 @@ only if they are equal.</p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="CIME.BuildTools.macrowriterbase.write_macros_file_v1">
+<code class="descclassname">CIME.BuildTools.macrowriterbase.</code><code class="descname">write_macros_file_v1</code><span class="sig-paren">(</span><em>macros</em>, <em>compiler</em>, <em>os_</em>, <em>machine</em>, <em>macros_file='Macros'</em>, <em>output_format='make'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/macrowriterbase.html#write_macros_file_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.macrowriterbase.write_macros_file_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the config_compiler.xml file into a Macros file for the
+given machine and compiler.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-CIME.BuildTools.makemacroswriter">
 <span id="cime-buildtools-makemacroswriter-module"></span><h2>CIME.BuildTools.makemacroswriter module<a class="headerlink" href="#module-CIME.BuildTools.makemacroswriter" title="Permalink to this headline">¶</a></h2>
@@ -583,8 +587,8 @@ class inherits from.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;foo2&quot;</span><span class="p">,</span> <span class="s2">&quot;bar2&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">writer</span><span class="o">.</span><span class="n">end_ifeq</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
-<span class="go">&#39;ifeq (foo,bar)\n  foo2 := bar2\nendif\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">u&#39;ifeq (foo,bar)\n  foo2 := bar2\nendif\n&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -608,8 +612,8 @@ class inherits from.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
-<span class="go">&#39;foo := bar\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">u&#39;foo := bar\n&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -633,8 +637,8 @@ class inherits from.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">io</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">MakeMacroWriter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">start_ifeq</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
-<span class="go">&#39;ifeq (foo,bar)\n&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="go">u&#39;ifeq (foo,bar)\n&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -676,11 +680,12 @@ settings - The current list of possible initial settings for the</p>
 <dt>append_settings - A dictionary of lists of possible appending settings</dt>
 <dd>for the variable, with the specificity of each list
 as the associated dictionary key.</dd>
+<dt>depends - The current list of variables that this variable depends on</dt>
+<dd>to get its value.</dd>
 </dl>
 <p>Public methods:
 add_setting
 ambiguity_check
-dependencies
 to_cond_trees</p>
 <dl class="method">
 <dt id="CIME.BuildTools.possiblevalues.PossibleValues.add_setting">
@@ -690,28 +695,28 @@ to_cond_trees</p>
 setting - A ValueSetting to start the list.
 specificity - An integer representing how specific the setting is.</p>
 <blockquote>
-<div>Low-specificity settings that will never be used will be
-dropped from the list. The lowest allowed specificity is
-0.</div></blockquote>
+<div>Only the initial settings with the highest
+specificity and appending settings with at least that
+specificity will actually be kept in the list. The
+lowest allowed specificity is 0.</div></blockquote>
 <dl class="docutils">
 <dt>depends - A set of variable names, specifying the variables that</dt>
 <dd>have to be set before this setting can be used (e.g. if
 SLIBS refers to NETCDF_PATH, then NETCDF_PATH has to be
 set first).</dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CIME.BuildTools.valuesetting</span> <span class="k">import</span> <span class="n">ValueSetting</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span> <span class="o">=</span> <span class="n">PossibleValues</span><span class="p">(</span><span class="s1">&#39;var&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dep1&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span><span class="o">.</span><span class="n">add_setting</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dep2&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">settings</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">settings</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;dep1&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">dependencies</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;dep2&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">dependencies</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;dep1&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">depends</span> <span class="ow">and</span> <span class="s1">&#39;dep2&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">depends</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span><span class="o">.</span><span class="n">add_setting</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dep1&#39;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">settings</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">settings</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;dep1&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">dependencies</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">&#39;dep2&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">dependencies</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;dep1&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">depends</span> <span class="ow">and</span> <span class="s1">&#39;dep2&#39;</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">depends</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -725,23 +730,15 @@ set first).</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="CIME.BuildTools.possiblevalues.PossibleValues.dependencies">
-<code class="descname">dependencies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/possiblevalues.html#PossibleValues.dependencies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.possiblevalues.PossibleValues.dependencies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a set of names of variables needed to set this variable.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="CIME.BuildTools.possiblevalues.PossibleValues.to_cond_trees">
 <code class="descname">to_cond_trees</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/possiblevalues.html#PossibleValues.to_cond_trees"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.possiblevalues.PossibleValues.to_cond_trees" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert this object to a pair of MacroConditionTree objects.</p>
 <p>This represents the step where the list of possible values is
 frozen and we’re ready to convert it into an actual text file. This
 object is checked for ambiguities before conversion.</p>
-<p>The return value is a tuple of two items. The first is a dict of
-condition trees containing all initial settings, with the specificities
-as the dictionary keys. The second is a single tree containing all
-appending settings. If the appending tree would be empty, None is
-returned instead.</p>
+<p>The return value is a tuple of two trees. The first contains all
+initial settings, and the second contains all appending settings.
+If either would be empty, None is returned instead.</p>
 </dd></dl>
 
 </dd></dl>
@@ -773,42 +770,7 @@ DEBUG=”TRUE” might be a condition on a debug flag).</dd>
 <dd>after setting the variable.</dd>
 </dl>
 <p>Public methods:
-is_ambiguous_with
-has_special_case</p>
-<dl class="method">
-<dt id="CIME.BuildTools.valuesetting.ValueSetting.has_special_case">
-<code class="descname">has_special_case</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/valuesetting.html#ValueSetting.has_special_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.valuesetting.ValueSetting.has_special_case" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check to see if another setting is a special case of this one.</p>
-<p>The purpose of this routine is to see if one of the settings requires
-conditions that are a strict subset of another’s conditions. This is
-used to check whether a setting can be thrown out entirely in favor of a
-more general, but machine-specific setting.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span> <span class="s2">&quot;mpich2&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">,</span> <span class="s2">&quot;compile_threaded&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;FALSE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">has_special_case</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
-</div>
-</dd></dl>
-
+is_ambiguous_with</p>
 <dl class="method">
 <dt id="CIME.BuildTools.valuesetting.ValueSetting.is_ambiguous_with">
 <code class="descname">is_ambiguous_with</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/valuesetting.html#ValueSetting.is_ambiguous_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.valuesetting.ValueSetting.is_ambiguous_with" title="Permalink to this definition">¶</a></dt>

@@ -15,7 +15,6 @@ and **case.setup**.
 
    advanced-py-prof
    archive_metadata
-   bld_diff
    bless_test_results
    case.build
    case.cmpgen_namelists
@@ -30,6 +29,7 @@ and **case.setup**.
    check_input_data
    check_lockedfiles
    cime_bisect
+   cimeteststatus
    code_checker
    compare_namelists
    compare_test_results
@@ -47,7 +47,6 @@ and **case.setup**.
    e3sm_cime_split
    generate_cylc_workflow.py
    getTiming
-   get_standard_makefile_args
    jenkins_generic_job
    jenkins_script
    list_e3sm_tests

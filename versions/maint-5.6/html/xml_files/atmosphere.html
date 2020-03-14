@@ -242,13 +242,12 @@
        This file may have atm desc entries.
   --&gt;
   &lt;description modifier_mode=&quot;1&quot;&gt;
-    &lt;desc atm=&quot;DATM[%QIA][%WISOQIA][%CRU][%CRUv7][%GSWP3v1][%NLDAS2][%CPLHIST][%1PT][%NYF][%IAF][%JRA][%JRA-1p4-2018]&quot;&gt; Data driven ATM &lt;/desc&gt;
+    &lt;desc atm=&quot;DATM[%QIA][%WISOQIA][%CRU][%CRUv7][%GSWP3v1][%CPLHIST][%1PT][%NYF][%IAF][%JRA][%JRA-1p4-2018]&quot;&gt; Data driven ATM &lt;/desc&gt;
     &lt;desc option=&quot;QIA&quot;&gt; QIAN data set &lt;/desc&gt;
     &lt;desc option=&quot;WISOQIA&quot;&gt;QIAN with water isotopes&lt;/desc&gt;
     &lt;desc option=&quot;CRU&quot;&gt; CRUNCEP data set &lt;/desc&gt;
     &lt;desc option=&quot;CRUv7&quot;&gt; CLM CRU NCEP v7 data set &lt;/desc&gt;
     &lt;desc option=&quot;GSWP3v1&quot;&gt; GSWP3v1 data set &lt;/desc&gt;
-    &lt;desc option=&quot;NLDAS2&quot;&gt; NLDAS2 regional 0.125 degree data set over the U.S. (25-53N, 235-293E). WARNING: Garbage data will be produced for runs extending beyond this regional domain. &lt;/desc&gt;
     &lt;desc option=&quot;CPLHIST&quot;&gt; Coupler hist data set (in this mode, it is strongly recommended that the model domain and the coupler history forcing are on the same domain)&lt;/desc&gt;
     &lt;desc option=&quot;1PT&quot;&gt;single point tower site data set &lt;/desc&gt;
     &lt;desc option=&quot;NYF&quot;&gt;COREv2 normal year forcing&lt;/desc&gt;
@@ -268,14 +267,13 @@
 
   &lt;entry id=&quot;DATM_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,CLM1PT,CLMCRUNCEP,CLMCRUNCEPv7,CLMGSWP3v1,CLMNLDAS2,CPLHIST,CORE_IAF_JRA,CORE_IAF_JRA_1p4_2018&lt;/valid_values&gt;
+    &lt;valid_values&gt;CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,CLM1PT,CLMCRUNCEP,CLMCRUNCEPv7,CLMGSWP3v1,CPLHIST,CORE_IAF_JRA,CORE_IAF_JRA_1p4_2018&lt;/valid_values&gt;
     &lt;default_value&gt;CORE2_NYF&lt;/default_value&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Mode for data atmosphere component.
       CORE2_NYF (CORE2 normal year forcing) are modes used in forcing prognostic ocean/sea-ice components.
-      CLM_QIAN, CLMCRUNCEP, CLMCRUNCEPv7, CLMGSWP3v1, CLMNLDAS2 and CLM1PT are modes using observational data for forcing prognostic land components.
-      WARNING for CLMNLDAS2: This is a regional forcing dataset over the U.S. (25-53N, 235-293E). Garbage data will be produced for runs extending beyond this regional domain. &lt;/desc&gt;
+      CLM_QIAN, CLMCRUNCEP, CLMCRUNCEPv7, CLMGSWP3v1 and CLM1PT are modes using observational data for forcing prognostic land components.&lt;/desc&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;%NYF&quot;&gt;CORE2_NYF&lt;/value&gt;
       &lt;value compset=&quot;%IAF&quot;&gt;CORE2_IAF&lt;/value&gt;
@@ -286,7 +284,6 @@
       &lt;value compset=&quot;%CRU&quot;&gt;CLMCRUNCEP&lt;/value&gt;
       &lt;value compset=&quot;%CRUv7&quot;&gt;CLMCRUNCEPv7&lt;/value&gt;
       &lt;value compset=&quot;%GSWP3v1&quot;&gt;CLMGSWP3v1&lt;/value&gt;
-      &lt;value compset=&quot;%NLDAS2&quot;&gt;CLMNLDAS2&lt;/value&gt;
       &lt;value compset=&quot;%1PT&quot;&gt;CLM1PT&lt;/value&gt;
       &lt;value compset=&quot;%CPLHIST&quot;&gt;CPLHIST&lt;/value&gt;
     &lt;/values&gt;
@@ -294,7 +291,7 @@
 
   &lt;entry id=&quot;DATM_PRESAERO&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;none,clim_1850,clim_2000,clim_2010,trans_1850-2000,SSP1-1.9,SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP4-3.4,SSP4-6.0,SSP5-3.4,SSP5-8.5,cplhist&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,clim_1850,clim_2000,clim_2010,trans_1850-2000,SSP1-1.9,SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP4-3.4,SSP4-6.0,SSP5-3.4,SSP5-8.5,cesm2_omip,cplhist&lt;/valid_values&gt;
     &lt;default_value&gt;clim_2000&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;^1850_&quot;   &gt;clim_1850&lt;/value&gt;
@@ -310,8 +307,10 @@
       &lt;value compset=&quot;^SSP585_&quot; &gt;SSP5-8.5&lt;/value&gt;
       &lt;value compset=&quot;^HIST_&quot;   &gt;trans_1850-2000&lt;/value&gt;
       &lt;value compset=&quot;^20TR_&quot;   &gt;trans_1850-2000&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%IAF&quot; cime_model=&quot;cesm&quot;&gt;cesm2_omip&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%JRA&quot; cime_model=&quot;cesm&quot;&gt;cesm2_omip&lt;/value&gt;
       &lt;value compset=&quot;_DATM%CPLHIST&quot;&gt;cplhist&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_DICE.*_DOCN.*_DROF&quot;&gt;none&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_DICE.*_DOCN.*_DROF&quot;&gt;none&lt;/value&gt; 
     &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -335,7 +334,7 @@
 
   &lt;entry id=&quot;DATM_CO2_TSERIES&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;none,20tr,20tr.latbnd,SSP1-1.9,SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP4-3.4,SSP4-6.0,SSP5-3.4,SSP5-8.5,SSP1-1.9.latbnd,SSP1-2.6.latbnd,SSP2-4.5.latbnd,SSP3-7.0.latbnd,SSP4-3.4.latbnd,SSP4-6.0.latbnd,SSP5-3.4.latbnd,SSP5-8.5.latbnd&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,20tr,20tr.latbnd,omip,SSP1-1.9,SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP4-3.4,SSP4-6.0,SSP5-3.4,SSP5-8.5,SSP1-1.9.latbnd,SSP1-2.6.latbnd,SSP2-4.5.latbnd,SSP3-7.0.latbnd,SSP4-3.4.latbnd,SSP4-6.0.latbnd,SSP5-3.4.latbnd,SSP5-8.5.latbnd&lt;/valid_values&gt;
     &lt;default_value&gt;none&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;^SSP119_&quot;&gt;SSP1-1.9&lt;/value&gt;
@@ -348,6 +347,8 @@
       &lt;value compset=&quot;^SSP585_&quot;&gt;SSP5-8.5&lt;/value&gt;
       &lt;value compset=&quot;^HIST&quot;   &gt;20tr&lt;/value&gt;
       &lt;value compset=&quot;^20TR&quot;   &gt;20tr&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%IAF.*_POP2%[^_]*ECO&quot;&gt;omip&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%JRA.*_POP2%[^_]*ECO&quot;&gt;omip&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -438,7 +439,6 @@
       &lt;value compset=&quot;HIST.*_DATM%QIA&quot;&gt;1895&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%CRU&quot;&gt;1901&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%GSW&quot;&gt;1901&lt;/value&gt;
-      &lt;value compset=&quot;HIST.*_DATM%NLDAS2&quot;&gt;$DATM_CLMNCEP_YR_START&lt;/value&gt;
       &lt;value compset=&quot;20TR.*_DATM%QIA&quot;&gt;1895&lt;/value&gt;
       &lt;value compset=&quot;20TR.*_DATM%CRU&quot;&gt;1901&lt;/value&gt;
       &lt;value compset=&quot;20TR.*_DATM%GSW&quot;&gt;1901&lt;/value&gt;
@@ -466,17 +466,14 @@
       &lt;value compset=&quot;1850.*_DATM%QIA&quot;&gt;1948&lt;/value&gt;
       &lt;value compset=&quot;1850.*_DATM%CRU&quot;&gt;1901&lt;/value&gt;
       &lt;value compset=&quot;1850.*_DATM%GSW&quot;&gt;1901&lt;/value&gt;
-      &lt;value compset=&quot;1850.*_DATM%NLDAS2&quot;&gt;0&lt;/value&gt;  &lt;!-- Unsupported --&gt;
       &lt;value compset=&quot;2000.*_DATM%WISOQIA&quot;&gt;2000&lt;/value&gt;
       &lt;value compset=&quot;2000.*_DATM%QIA&quot;&gt;1972&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%QIA&quot;&gt;1948&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%CRU&quot;&gt;1901&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%GSW&quot;&gt;1901&lt;/value&gt;
-      &lt;value compset=&quot;HIST.*_DATM%NLDAS2&quot;&gt;0&lt;/value&gt;  &lt;!-- Unsupported --&gt;
       &lt;value compset=&quot;20TR.*_DATM%QIA&quot;&gt;1948&lt;/value&gt;
       &lt;value compset=&quot;20TR.*_DATM%CRU&quot;&gt;1901&lt;/value&gt;
       &lt;value compset=&quot;20TR.*_DATM%GSW&quot;&gt;1901&lt;/value&gt;
-      &lt;value compset=&quot;20TR.*_DATM%NLDAS2&quot;&gt;0&lt;/value&gt;  &lt;!-- Unsupported --&gt;
       &lt;value compset=&quot;4804.*_DATM%QIA&quot;&gt;1948&lt;/value&gt;
       &lt;value compset=&quot;SSP.*_DATM%QIA&quot; &gt;1995&lt;/value&gt;
       &lt;value compset=&quot;SSP.*_DATM%CRU&quot; &gt;2001&lt;/value&gt;
@@ -490,9 +487,6 @@
       &lt;value compset=&quot;2000.*_DATM%GSW&quot;&gt;1991&lt;/value&gt;
       &lt;value compset=&quot;2010.*_DATM%GSW&quot;&gt;2005&lt;/value&gt;
       &lt;value compset=&quot;2003.*_DATM%GSW&quot;&gt;2002&lt;/value&gt;
-      &lt;value compset=&quot;2000.*_DATM%NLDAS2&quot;&gt;1980&lt;/value&gt;
-      &lt;value compset=&quot;2010.*_DATM%NLDAS2&quot;&gt;2005&lt;/value&gt;
-      &lt;value compset=&quot;2003.*_DATM%NLDAS2&quot;&gt;2002&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -508,17 +502,14 @@
       &lt;value   compset=&quot;1850.*_DATM%QIA&quot;&gt;1972&lt;/value&gt;
       &lt;value   compset=&quot;1850.*_DATM%CRU&quot;&gt;1920&lt;/value&gt;
       &lt;value   compset=&quot;1850.*_DATM%GSW&quot;&gt;1920&lt;/value&gt;
-      &lt;value   compset=&quot;1850.*_DATM%NLDAS2&quot;&gt;-1&lt;/value&gt;  &lt;!-- Unsupported --&gt;
       &lt;value   compset=&quot;2000.*_DATM%WISOQIA&quot;&gt;2004&lt;/value&gt;
       &lt;value   compset=&quot;2000.*_DATM%QIA&quot;&gt;2004&lt;/value&gt;
       &lt;value   compset=&quot;HIST.*_DATM%QIA&quot;&gt;1972&lt;/value&gt;
       &lt;value   compset=&quot;HIST.*_DATM%CRU&quot;&gt;1920&lt;/value&gt;
       &lt;value   compset=&quot;HIST.*_DATM%GSW&quot;&gt;1920&lt;/value&gt;
-      &lt;value   compset=&quot;HIST.*_DATM%NLDAS2&quot;&gt;-1&lt;/value&gt;  &lt;!-- Unsupported --&gt;
       &lt;value   compset=&quot;20TR.*_DATM%QIA&quot;&gt;1972&lt;/value&gt;
       &lt;value   compset=&quot;20TR.*_DATM%CRU&quot;&gt;1920&lt;/value&gt;
       &lt;value   compset=&quot;20TR.*_DATM%GSW&quot;&gt;1920&lt;/value&gt;
-      &lt;value   compset=&quot;20TR.*_DATM%NLDAS2&quot;&gt;-1&lt;/value&gt;  &lt;!-- Unsupported --&gt;
       &lt;value   compset=&quot;4804.*_DATM%QIA&quot;&gt;2004&lt;/value&gt;
       &lt;value   compset=&quot;SSP.*_DATM%QIA&quot;&gt;2004&lt;/value&gt;
       &lt;value   compset=&quot;SSP.*_DATM%CRU&quot;&gt;2016&lt;/value&gt;
@@ -532,9 +523,6 @@
       &lt;value   compset=&quot;2000.*_DATM%GSW&quot;&gt;2010&lt;/value&gt;
       &lt;value   compset=&quot;2010.*_DATM%GSW&quot;&gt;2014&lt;/value&gt;
       &lt;value   compset=&quot;2003.*_DATM%GSW&quot;&gt;2003&lt;/value&gt;
-      &lt;value   compset=&quot;2000.*_DATM%NLDAS2&quot;&gt;2018&lt;/value&gt;
-      &lt;value   compset=&quot;2010.*_DATM%NLDAS2&quot;&gt;2014&lt;/value&gt;
-      &lt;value   compset=&quot;2003.*_DATM%NLDAS2&quot;&gt;2003&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -589,7 +577,6 @@
     CLMCRUNCEP		= Run with the CLM CRU NCEP V4 ( default ) forcing valid from 1900 to 2010 (force CLM)
     CLMCRUNCEPv7 	= Run with the CLM CRU NCEP V7 forcing valid from 1900 to 2010 (force CLM)
     CLMGSWP3v1		= Run with the CLM GSWP3 V1 forcing (force CLM)
-    CLMNLDAS2		= Run with the CLM NLDAS2 regional forcing valid from 1980 to 2018 (force CLM)
     CLM1PT		= Run with supplied single point data (force CLM)
     CORE2_NYF		= CORE2 normal year forcing (for forcing POP and CICE)
     CORE2_IAF		= CORE2 intra-annual year forcing (for forcing POP and CICE)
@@ -651,12 +638,9 @@
     CLMGSWP3v1.Precip
     CLMGSWP3v1.TPQW
 
-    CLMNLDAS2.Solar
-    CLMNLDAS2.Precip
-    CLMNLDAS2.TPQW
-
     co2tseries.20tr
     co2tseries.20tr.latbnd
+    co2tseries.omip
     co2tseries.SSP1-1.9
     co2tseries.SSP1-2.6
     co2tseries.SSP2-4.5
@@ -709,6 +693,7 @@
     presaero.SSP4-6.0
     presaero.SSP5-3.4
     presaero.SSP5-8.5
+    presaero.cesm2_omip
     presaero.cplhist
 
     topo.observed
@@ -746,11 +731,10 @@
       &lt;value datm_mode=&quot;CLMCRUNCEP$&quot;&gt;CLMCRUNCEP.Solar,CLMCRUNCEP.Precip,CLMCRUNCEP.TPQW&lt;/value&gt;
       &lt;value datm_mode=&quot;CLMCRUNCEPv7&quot;&gt;CLMCRUNCEPv7.Solar,CLMCRUNCEPv7.Precip,CLMCRUNCEPv7.TPQW&lt;/value&gt;
       &lt;value datm_mode=&quot;CLMGSWP3v1&quot;&gt;CLMGSWP3v1.Solar,CLMGSWP3v1.Precip,CLMGSWP3v1.TPQW&lt;/value&gt;
-      &lt;value datm_mode=&quot;CLMNLDAS2&quot;&gt;CLMNLDAS2.Solar,CLMNLDAS2.Precip,CLMNLDAS2.TPQW&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_NYF&quot; &gt;CORE2_NYF.GISS,CORE2_NYF.GXGXS,CORE2_NYF.NCEP&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_IAF&quot; &gt;CORE2_IAF.GCGCS.PREC,CORE2_IAF.GISS.LWDN,CORE2_IAF.GISS.SWDN,CORE2_IAF.GISS.SWUP,CORE2_IAF.NCEP.DN10,CORE2_IAF.NCEP.Q_10,CORE2_IAF.NCEP.SLP_,CORE2_IAF.NCEP.T_10,CORE2_IAF.NCEP.U_10,CORE2_IAF.NCEP.V_10,CORE2_IAF.CORE2.ArcFactor&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE_IAF_JRA_1p4_2018&quot; &gt;CORE_IAF_JRA_1p4_2018.GCGCS.PREC,CORE_IAF_JRA_1p4_2018.GISS.LWDN,CORE_IAF_JRA_1p4_2018.GISS.SWDN,CORE_IAF_JRA_1p4_2018.NCEP.Q_10,CORE_IAF_JRA_1p4_2018.NCEP.SLP_,CORE_IAF_JRA_1p4_2018.NCEP.T_10,CORE_IAF_JRA_1p4_2018.NCEP.U_10,CORE_IAF_JRA_1p4_2018.NCEP.V_10&lt;/value&gt;
-      &lt;value datm_mode=&quot;CORE_IAF_JRA&quot; &gt;CORE_IAF_JRA.GCGCS.PREC,CORE_IAF_JRA.GISS.LWDN,CORE_IAF_JRA.GISS.SWDN,CORE_IAF_JRA.NCEP.Q_10,CORE_IAF_JRA.NCEP.SLP_,CORE_IAF_JRA.NCEP.T_10,CORE_IAF_JRA.NCEP.U_10,CORE_IAF_JRA.NCEP.V_10,,CORE_IAF_JRA.CORE2.ArcFactor&lt;/value&gt;
+      &lt;value datm_mode=&quot;CORE_IAF_JRA&quot; &gt;CORE_IAF_JRA.GCGCS.PREC,CORE_IAF_JRA.GISS.LWDN,CORE_IAF_JRA.GISS.SWDN,CORE_IAF_JRA.NCEP.Q_10,CORE_IAF_JRA.NCEP.SLP_,CORE_IAF_JRA.NCEP.T_10,CORE_IAF_JRA.NCEP.U_10,CORE_IAF_JRA.NCEP.V_10&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_IAF&quot; atm_grid=&quot;01col&quot; &gt;CORE2_IAF.NCEP.DENS.SOFS,CORE2_IAF.NCEP.PSLV.SOFS,CORE2_IAF.PREC.SOFS.DAILY,CORE2_IAF.LWDN.SOFS.DAILY,CORE2_IAF.SWDN.SOFS.DAILY,CORE2_IAF.SWUP.SOFS.DAILY,CORE2_IAF.SHUM.SOFS.6HOUR,CORE2_IAF.TBOT.SOFS.6HOUR,CORE2_IAF.U.SOFS.6HOUR,CORE2_IAF.V.SOFS.6HOUR,CORE2_IAF.CORE2.ArcFactor&lt;/value&gt;
       &lt;value datm_mode=&quot;CPLHIST&quot;&gt;CPLHISTForcing.Solar,CPLHISTForcing.nonSolarFlux,CPLHISTForcing.State3hr,CPLHISTForcing.State1hr&lt;/value&gt;
     &lt;/values&gt;
@@ -773,7 +757,6 @@
       &lt;value stream=&quot;CLMCRUNCEP\.&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP_V5&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.cruncep_qianFill.0.5d.V5.c140715&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.GSWP3.0.5d.v1.c170516&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.clm&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF&quot;&gt;$DIN_LOC_ROOT/atm/datm7/NYF&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;$DIN_LOC_ROOT/atm/datm7/CORE2&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.DENS.SOFS&quot;&gt;$DIN_LOC_ROOT/share/domains&lt;/value&gt;
@@ -796,7 +779,6 @@
       &lt;value stream=&quot;CORE2_IAF.NCEP.T_10&quot;&gt;$DIN_LOC_ROOT/atm/datm7&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.U_10&quot;&gt;$DIN_LOC_ROOT/atm/datm7&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.V_10&quot;&gt;$DIN_LOC_ROOT/atm/datm7&lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;$DIN_LOC_ROOT/atm/datm7/CORE2&lt;/value&gt;
       &lt;value stream=&quot;CORE_IAF_JRA.*&quot;&gt;$DIN_LOC_ROOT/atm/datm7/JRA55&lt;/value&gt;
       &lt;value stream=&quot;co2tseries&quot;&gt;$DIN_LOC_ROOT/atm/datm7/CO2 &lt;/value&gt;
       &lt;value stream=&quot;BC.QIAN.Precip&quot;&gt;$DIN_LOC_ROOT/atm/datm7/bias_correction/precip/gpcp/qian&lt;/value&gt;
@@ -810,6 +792,7 @@
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;$DIN_LOC_ROOT/atm/cam/chem/trop_mozart_aero/aero&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-3.4&quot;&gt;null&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP&quot;&gt;$DIN_LOC_ROOT/atm/cam/chem/trop_mozart_aero/aero&lt;/value&gt;
+      &lt;value stream=&quot;presaero.cesm2_omip&quot;&gt;$DIN_LOC_ROOT/atm/cam/chem/trop_mozart_aero/aero&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;$DIN_LOC_ROOT/atm/datm7/topo_forcing&lt;/value&gt;
       &lt;value stream=&quot;topo.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
@@ -833,7 +816,6 @@
       &lt;value stream=&quot;CLMCRUNCEP&quot;&gt;domain.lnd.360x720.130305.nc&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3v1&quot;&gt;domain.lnd.360x720_gswp3.0v1.c170606.nc&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3&quot;&gt;domain.lnd.360x720_gswp3.0v1.c170606.nc&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2&quot;&gt;domain.lnd.0.125nldas2_0.125nldas2.190410.nc&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF.GISS&quot;&gt;nyf.giss.T62.051007.nc&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF.GXGXS&quot;&gt;nyf.gxgxs.T62.051007.nc&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF.NCEP&quot;&gt;nyf.ncep.T62.050923.nc&lt;/value&gt;
@@ -858,11 +840,10 @@
       &lt;value stream=&quot;CORE2_IAF.NCEP.U_10&quot;&gt;domain.T62.050609.nc&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.V_10&quot;&gt;domain.T62.050609.nc&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;CORE2.t_10.ArcFactor.T62.1997-2004.nc&lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;CORE2.t_10.ArcFactor.T62.1997-2004.nc&lt;/value&gt;
       &lt;value stream=&quot;CORE_IAF_JRA.*&quot;&gt;domain.atm.TL319.151007.nc&lt;/value&gt;
-      &lt;value stream=&quot;co2tseries.20tr&quot; cime_model=&quot;e3sm&quot;&gt;fco2_datm_1765-2007_c100614.nc&lt;/value&gt;
-      &lt;value stream=&quot;co2tseries.20tr&quot; cime_model=&quot;cesm&quot;&gt;fco2_datm_global_simyr_1750-2014_CMIP6_c180929.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.20tr.latbnd&quot;&gt;fco2_datm_lat-bands_simyr_1750-2015_CMIP6_c180929.nc&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.20tr&quot;&gt;fco2_datm_global_simyr_1750-2014_CMIP6_c180929.nc&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.omip&quot;&gt;fco2_datm_global_ssp585_simyr_1750-2020_CMIP6_c190522.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP1-1.9.latbnd&quot;&gt;fco2_datm_lat-bandsSSP1-1.9_simyr_2014-2500_CMIP6_c190514.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP1-2.6.latbnd&quot;&gt;fco2_datm_lat-bandsSSP1-2.6__simyr_2014-2500_CMIP6_c190506.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP2-4.5.latbnd&quot;&gt;fco2_datm_lat-bandsSSP2-4.5__simyr_2014-2500_CMIP6_c190506.nc&lt;/value&gt;
@@ -893,18 +874,17 @@
       &lt;value stream=&quot;presaero.SSP4-6.0&quot; atm_grid=&quot;CLM_USRDAT&quot;&gt;aerosoldep_SSP4-6.0_monthly_1849-2101_${CLM_USRDAT_NAME}.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-3.4&quot; atm_grid=&quot;CLM_USRDAT&quot;&gt;aerosoldep_SSP5-3.4_monthly_1849-2101_${CLM_USRDAT_NAME}.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-8.5&quot; atm_grid=&quot;CLM_USRDAT&quot;&gt;aerosoldep_SSP5-8.5_monthly_1849-2101_${CLM_USRDAT_NAME}.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;e3sm&quot;&gt;aerosoldep_monthly_1850_mean_1.9x2.5_c090421.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;e3sm&quot;&gt;aerosoldep_monthly_2000_mean_1.9x2.5_c090421.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.trans_1850-2000&quot; cime_model=&quot;e3sm&quot;&gt;aerosoldep_monthly_1849-2006_1.9x2.5_c090803.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2010&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.trans_1850-2000&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
 
+      &lt;value stream=&quot;presaero.clim_1850&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2000&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2010&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
+      &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
+      &lt;value stream=&quot;presaero.SSP1-2.6&quot;&gt;aerodep_clm_SSP126_b.e21.BSSP126cmip6.f09_g17.CMIP6-SSP1-2.6.001_2014-2101_monthly_0.9x1.25_c190523.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP2-4.5&quot;&gt;aerodep_clm_SSP245_b.e21.BWSSP245cmip6.f09_g17.CMIP6-SSP2-4.5-WACCM.001_2014-2101_monthly_0.9x1.25_c190401.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP3-7.0&quot;&gt;aerodep_clm_SSP370_b.e21.BWSSP370cmip6.f09_g17.CMIP6-SSP3-7.0-WACCM.001_2014-2101_monthly_0.9x1.25_c190402.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-3.4&quot;&gt;null&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-8.5&quot;&gt;aerodep_clm_SSP585_b.e21.BSSP585cmip6.f09_g17.CMIP6-SSP5-8.5.001_2014-2101_monthly_0.9x1.25_c190419.nc&lt;/value&gt;
+      &lt;value stream=&quot;presaero.cesm2_omip&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;topodata_0.9x1.25_USGS_070110_stream_c151201.nc&lt;/value&gt;
       &lt;value stream=&quot;topo.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
@@ -978,7 +958,7 @@
       &lt;value stream=&quot;CLM_QIAN.TPQW&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing.datm7.Qian.T62.c080727/TmpPrsHumWnd3Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLM_QIAN_WISO.Solar&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing_iso.datm7.Qian.T62.c080727/Solar6Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLM_QIAN_WISO.Precip&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing_iso.datm7.Qian.T62.c080727/Precip6Hrly&lt;/value&gt;
-      &lt;value stream=&quot;CLM_QIAN_WISO.TPQW&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing_iso.datm7.Qian.T62.c080727/TmpPrsHumWnd3Hrly&lt;/value&gt;
+      &lt;value stream=&quot;CLM_QIAN_WISO.TPQW	&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing_iso.datm7.Qian.T62.c080727/TmpPrsHumWnd3Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP.Solar&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.cruncep_qianFill.0.5d.V4.c130305/Solar6Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP.Precip&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.cruncep_qianFill.0.5d.V4.c130305/Precip6Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP.TPQW&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.cruncep_qianFill.0.5d.V4.c130305/TPHWL6Hrly&lt;/value&gt;
@@ -994,13 +974,9 @@
       &lt;value stream=&quot;CLMGSWP3.Solar&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.GSWP3.0.5d.v1.c170516/Solar3Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3.Precip&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.GSWP3.0.5d.v1.c170516/Precip3Hrly&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3.TPQW&quot;&gt;$DIN_LOC_ROOT_CLMFORC/atm_forcing.datm7.GSWP3.0.5d.v1.c170516/TPHWL3Hrly&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2.Solar&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing.datm7.NLDAS2.0.125d.v1/Solar&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2.Precip&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing.datm7.NLDAS2.0.125d.v1/Precip&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2.TPQW&quot;&gt;$DIN_LOC_ROOT/atm/datm7/atm_forcing.datm7.NLDAS2.0.125d.v1/TPQWL&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF&quot;&gt;$DIN_LOC_ROOT/atm/datm7/NYF&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;$DIN_LOC_ROOT/atm/datm7/CORE2&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF&quot;&gt;$DIN_LOC_ROOT/ocn/iaf&lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;$DIN_LOC_ROOT/atm/datm7/CORE2&lt;/value&gt;
       &lt;value stream=&quot;CORE_IAF_JRA.*&quot;&gt;$DIN_LOC_ROOT/ocn/jra55/v1.3_noleap&lt;/value&gt;
       &lt;value stream=&quot;co2tseries&quot;&gt;$DIN_LOC_ROOT/atm/datm7/CO2&lt;/value&gt;
       &lt;value stream=&quot;BC.QIAN.Precip&quot;&gt;$DIN_LOC_ROOT/atm/datm7/bias_correction/precip/gpcp/qian&lt;/value&gt;
@@ -1064,9 +1040,6 @@
       &lt;value  stream=&quot;CLMGSWP3v1.Solar&quot;&gt;clmforc.GSWP3.c2011.0.5x0.5.Solr.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CLMGSWP3v1.Precip&quot;&gt;clmforc.GSWP3.c2011.0.5x0.5.Prec.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CLMGSWP3v1.TPQW&quot;&gt;clmforc.GSWP3.c2011.0.5x0.5.TPQWL.%ym.nc&lt;/value&gt;
-      &lt;value  stream=&quot;CLMNLDAS2.Solar&quot;&gt;ctsmforc.NLDAS2.0.125d.v1.Solr.%ym.nc&lt;/value&gt;
-      &lt;value  stream=&quot;CLMNLDAS2.Precip&quot;&gt;ctsmforc.NLDAS2.0.125d.v1.Prec.%ym.nc&lt;/value&gt;
-      &lt;value  stream=&quot;CLMNLDAS2.TPQW&quot;&gt;ctsmforc.NLDAS2.0.125d.v1.TPQWL.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CORE2_NYF.GISS&quot;&gt;nyf.giss.T62.051007.nc&lt;/value&gt;
       &lt;value  stream=&quot;CORE2_NYF.GXGXS&quot;&gt;nyf.gxgxs.T62.051007.nc&lt;/value&gt;
       &lt;value  stream=&quot;CORE2_NYF.NCEP&quot;&gt;nyf.ncep.T62.050923.nc&lt;/value&gt;
@@ -2651,8 +2624,7 @@
         JRA.v1.3.v_10.TL319.2014.171019.nc
         JRA.v1.3.v_10.TL319.2015.171019.nc
         JRA.v1.3.v_10.TL319.2016.171019.nc
-      &lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;CORE2.t_10.ArcFactor.T62.1997-2004.nc&lt;/value&gt;
+      &lt;/value&gt; 
       &lt;value  stream=&quot;CORE_IAF_JRA_1p4_2018.NCEP.V_10&quot;&gt;
         JRA.v1.3.v_10.TL319.1958.190528.nc
         JRA.v1.3.v_10.TL319.1959.190528.nc
@@ -2717,8 +2689,8 @@
         JRA.v1.3.v_10.TL319.2018.190528.nc
       &lt;/value&gt; 
       &lt;value stream=&quot;co2tseries.20tr.latbnd&quot;&gt;fco2_datm_lat-bands_simyr_1750-2015_CMIP6_c180929.nc&lt;/value&gt;
-      &lt;value stream=&quot;co2tseries.20tr&quot; cime_model=&quot;cesm&quot;&gt;fco2_datm_global_simyr_1750-2014_CMIP6_c180929.nc&lt;/value&gt;
-      &lt;value stream=&quot;co2tseries.20tr&quot; cime_model=&quot;e3sm&quot;&gt;fco2_datm_1765-2007_c100614.nc&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.20tr&quot;&gt;fco2_datm_global_simyr_1750-2014_CMIP6_c180929.nc&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.omip&quot;&gt;fco2_datm_global_ssp585_simyr_1750-2020_CMIP6_c190522.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP1-1.9.latbnd&quot;&gt;fco2_datm_lat-bandsSSP1-1.9_simyr_2014-2500_CMIP6_c190514.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP1-2.6.latbnd&quot;&gt;fco2_datm_lat-bandsSSP1-2.6__simyr_2014-2500_CMIP6_c190506.nc&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP2-4.5.latbnd&quot;&gt;fco2_datm_lat-bandsSSP2-4.5__simyr_2014-2500_CMIP6_c190506.nc&lt;/value&gt;
@@ -2747,19 +2719,10 @@
       &lt;value stream=&quot;Anomaly.Forcing.Shortwave&quot;&gt;af.rsds.ccsm4.rcp45.2006-2300.nc&lt;/value&gt;
       &lt;value stream=&quot;Anomaly.Forcing.Longwave&quot;&gt;af.rlds.ccsm4.rcp45.2006-2300.nc&lt;/value&gt;
 
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;e3sm&quot;&gt;aerosoldep_monthly_1850_mean_1.9x2.5_c090421.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;e3sm&quot;&gt;aerosoldep_monthly_2000_mean_1.9x2.5_c090421.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.trans_1850-2000&quot; cime_model=&quot;e3sm&quot;&gt;aerosoldep_monthly_1849-2006_1.9x2.5_c090803.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2010&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-      &lt;value stream=&quot;presaero.trans_1850-2000&quot; cime_model=&quot;cesm&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-
       &lt;value stream=&quot;presaero.clim_1850&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.clim_2000&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.clim_2010&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc&lt;/value&gt;
-
       &lt;value stream=&quot;presaero.SSP1-1.9&quot; atm_grid=&quot;CLM_USRDAT&quot;&gt;aerosoldep_SSP1-1.9_monthly_1849-2101_${CLM_USRDAT_NAME}.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP1-2.6&quot; atm_grid=&quot;CLM_USRDAT&quot;&gt;aerosoldep_SSP1-2.6_monthly_1849-2101_${CLM_USRDAT_NAME}.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP2-4.5&quot; atm_grid=&quot;CLM_USRDAT&quot;&gt;aerosoldep_SSP2-4.5_monthly_1849-2101_${CLM_USRDAT_NAME}.nc&lt;/value&gt;
@@ -2774,6 +2737,11 @@
       &lt;value stream=&quot;presaero.SSP3-7.0&quot;&gt;aerodep_clm_SSP370_b.e21.BWSSP370cmip6.f09_g17.CMIP6-SSP3-7.0-WACCM.001_2014-2101_monthly_0.9x1.25_c190402.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-3.4&quot;&gt;null&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP5-8.5&quot;&gt;aerodep_clm_SSP585_b.e21.BSSP585cmip6.f09_g17.CMIP6-SSP5-8.5.001_2014-2101_monthly_0.9x1.25_c190419.nc&lt;/value&gt;
+      &lt;value stream=&quot;presaero.cesm2_omip&quot;&gt;
+        aerosoldep_WACCM.ensmean_1849vals_1637-1848_CMIP6_c190522.nc
+        aerosoldep_WACCM.ensmean_monthly_hist_1849-2015_0.9x1.25_CMIP6_c180926.nc
+        aerosoldep_WACCM.ensmean_2015vals_2016-2019_CMIP6_c190522.nc
+      &lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;topodata_0.9x1.25_USGS_070110_stream_c151201.nc&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -2920,19 +2888,6 @@
         PSRF     pbot
         FLDS     lwdn
       &lt;/value&gt;
-      &lt;value  stream=&quot;CLMNLDAS2.Solar&quot;&gt;
-        FSDS swdn
-      &lt;/value&gt;
-      &lt;value  stream=&quot;CLMNLDAS2.Precip&quot;&gt;
-        PRECTmms precn
-      &lt;/value&gt;
-      &lt;value  stream=&quot;CLMNLDAS2.TPQW&quot;&gt;
-        TBOT     tbot
-        WIND     wind
-        QBOT     shum
-        PSRF     pbot
-        FLDS     lwdn
-      &lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF.GISS&quot;&gt;
         lwdn  lwdn
         swdn  swdn
@@ -3036,10 +2991,10 @@
       &lt;value  stream=&quot;CORE_IAF_JRA.*.NCEP.V_10&quot;&gt;
         v_10  v
       &lt;/value&gt;
-      &lt;value  stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;
-        TarcFactor tarcf
-      &lt;/value&gt;
       &lt;value  stream=&quot;co2tseries.20tr&quot;&gt;
+        CO2        co2diag
+      &lt;/value&gt;
+      &lt;value  stream=&quot;co2tseries.omip&quot;&gt;
         CO2        co2diag
       &lt;/value&gt;
       &lt;value  stream=&quot;co2tseries.SSP&quot;&gt;
@@ -3131,7 +3086,6 @@
       &lt;value stream=&quot;CLM_QIAN&quot;&gt;$DATM_CLMNCEP_YR_ALIGN&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP&quot;&gt;$DATM_CLMNCEP_YR_ALIGN&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3&quot;&gt;$DATM_CLMNCEP_YR_ALIGN&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2&quot;&gt;$DATM_CLMNCEP_YR_ALIGN&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF&quot;&gt;1&lt;/value&gt;
@@ -3146,14 +3100,12 @@
       &lt;value stream=&quot;BC.CRUNCEP.CMAP.Precip&quot;&gt;1979&lt;/value&gt;
       &lt;value stream=&quot;Anomaly.Forcing&quot;&gt;2006&lt;/value&gt;
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;$DATM_CPLHIST_YR_ALIGN&lt;/value&gt;
-
-      &lt;value stream=&quot;presaero.clim&quot; cime_model=&quot;e3sm&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;cesm&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;cesm&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2010&quot; cime_model=&quot;cesm&quot;&gt;1&lt;/value&gt;
-
+      &lt;value stream=&quot;presaero.clim_1850&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2000&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2010&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;1849&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP&quot;&gt;2015&lt;/value&gt;
+      &lt;value stream=&quot;presaero.cesm2_omip&quot;&gt;0&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;topo.cplhist&quot;&gt;$DATM_CPLHIST_YR_ALIGN&lt;/value&gt;
     &lt;/values&gt;
@@ -3175,7 +3127,6 @@
       &lt;value stream=&quot;CLM_QIAN&quot;&gt;$DATM_CLMNCEP_YR_START&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP&quot;&gt;$DATM_CLMNCEP_YR_START&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3&quot;&gt;$DATM_CLMNCEP_YR_START&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2&quot;&gt;$DATM_CLMNCEP_YR_START&lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.DENS.SOFS&quot;&gt;2010&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.PSLV.SOFS&quot;&gt;2010&lt;/value&gt;
@@ -3198,20 +3149,17 @@
       &lt;value stream=&quot;CORE2_IAF.NCEP.U_10&quot;&gt;1948&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.V_10&quot;&gt;1948&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;1948&lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;1958&lt;/value&gt;
       &lt;value stream=&quot;CORE_IAF_JRA.*&quot;&gt;1958&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.20tr&quot;&gt;1850&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.omip&quot;&gt;1850&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP&quot;&gt;2015&lt;/value&gt;
       &lt;value stream=&quot;BC.QIAN&quot;&gt;1979&lt;/value&gt;
       &lt;value stream=&quot;BC.CRUNCEP&quot;&gt;1979&lt;/value&gt;
       &lt;value stream=&quot;Anomaly.Forcing&quot;&gt;2006&lt;/value&gt;
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;$DATM_CPLHIST_YR_START&lt;/value&gt;
-
-      &lt;value stream=&quot;presaero.clim&quot; cime_model=&quot;e3sm&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;cesm&quot;&gt;1850&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;cesm&quot;&gt;2000&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2010&quot; cime_model=&quot;cesm&quot;&gt;2010&lt;/value&gt;
-
+      &lt;value stream=&quot;presaero.clim_1850&quot;&gt;1850&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2000&quot;&gt;2000&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2010&quot;&gt;2010&lt;/value&gt;
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;1849&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP&quot;&gt;2015&lt;/value&gt;
       &lt;!-- year_start-(ncycles-1)*(year_end-year_start+1)-1 --&gt;
@@ -3238,7 +3186,6 @@
       &lt;value stream=&quot;CLM_QIAN&quot;&gt;$DATM_CLMNCEP_YR_END  &lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP&quot;&gt;$DATM_CLMNCEP_YR_END  &lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3&quot;&gt;$DATM_CLMNCEP_YR_END  &lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2&quot;&gt;$DATM_CLMNCEP_YR_END  &lt;/value&gt;
       &lt;value stream=&quot;CORE2_NYF&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.DENS.SOFS&quot;&gt;2011&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.PSLV.SOFS&quot;&gt;2011&lt;/value&gt;
@@ -3261,25 +3208,20 @@
       &lt;value stream=&quot;CORE2_IAF.NCEP.U_10&quot;&gt;2009&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.NCEP.V_10&quot;&gt;2009&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;2009&lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;2016&lt;/value&gt;
-      &lt;value stream=&quot;co2tseries.20tr&quot; cime_model=&quot;e3sm&quot;&gt;2007&lt;/value&gt;
-      &lt;value stream=&quot;co2tseries.20tr&quot; cime_model=&quot;cesm&quot;&gt;2014&lt;/value&gt;
       &lt;value stream=&quot;CORE_IAF_JRA.*2018&quot;&gt;2018&lt;/value&gt;
       &lt;value stream=&quot;CORE_IAF_JRA.*&quot;&gt;2016&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.20tr&quot;&gt;2014&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.omip&quot;&gt;2019&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP&quot;&gt;2500&lt;/value&gt;
       &lt;value stream=&quot;BC.QIAN.Precip&quot;&gt;2004&lt;/value&gt;
       &lt;value stream=&quot;BC.CRUNCEP.GPCP.Precip&quot;&gt;2012&lt;/value&gt;
       &lt;value stream=&quot;BC.CRUNCEP.CMAP.Precip&quot;&gt;2010&lt;/value&gt;
       &lt;value stream=&quot;Anomaly.Forcing&quot;&gt;2300&lt;/value&gt;
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;$DATM_CPLHIST_YR_END&lt;/value&gt;
-
-      &lt;value stream=&quot;presaero.clim&quot; cime_model=&quot;e3sm&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;presaero.trans_1850-2000&quot; cime_model=&quot;e3sm&quot;&gt;2006&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_1850&quot; cime_model=&quot;cesm&quot;&gt;1850&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2000&quot; cime_model=&quot;cesm&quot;&gt;2000&lt;/value&gt;
-      &lt;value stream=&quot;presaero.clim_2010&quot; cime_model=&quot;cesm&quot;&gt;2010&lt;/value&gt;
-      &lt;value stream=&quot;presaero.trans_1850-2000&quot; cime_model=&quot;cesm&quot;&gt;2014&lt;/value&gt;
-
+      &lt;value stream=&quot;presaero.clim_1850&quot;&gt;1850&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2000&quot;&gt;2000&lt;/value&gt;
+      &lt;value stream=&quot;presaero.clim_2010&quot;&gt;2010&lt;/value&gt;
+      &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;2014&lt;/value&gt;
       &lt;value stream=&quot;presaero.SSP&quot;&gt;2101&lt;/value&gt;
       &lt;!-- year_end+1 --&gt;
       &lt;value stream=&quot;presaero.cesm2_omip&quot; datm_mode=&quot;CORE2_IAF&quot;&gt;2010&lt;/value&gt;    &lt;!-- 2009+1 --&gt;
@@ -3484,7 +3426,6 @@
       &lt;value datm_mode=&quot;CLM1PT&quot;&gt;nn&lt;/value&gt;
       &lt;value stream=&quot;CLMCRUNCEP&quot; atm_grid=&quot;hcru&quot;&gt;copy&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3&quot; atm_grid=&quot;hcru&quot;&gt;copy&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2&quot; atm_grid=&quot;0.125nldas2&quot;&gt;copy&lt;/value&gt;
       &lt;value stream=&quot;co2tseries&quot;&gt;nn&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -3556,8 +3497,6 @@
       &lt;value stream=&quot;CLMCRUNCEPv7.Precip&quot;&gt;nearest&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3v1.Solar&quot;&gt;coszen&lt;/value&gt;
       &lt;value stream=&quot;CLMGSWP3v1.Precip&quot;&gt;nearest&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2.Solar&quot;&gt;coszen&lt;/value&gt;
-      &lt;value stream=&quot;CLMNLDAS2.Precip&quot;&gt;nearest&lt;/value&gt;
       &lt;value stream=&quot;BC.CRUNCEP.GPCP.Precip&quot;&gt;nearest&lt;/value&gt;
       &lt;value stream=&quot;BC.CRUNCEP.CMAP.Precip&quot;&gt;nearest&lt;/value&gt;
       &lt;value stream=&quot;Anomaly.Forcing.Precip&quot;&gt;nearest&lt;/value&gt;
@@ -3595,7 +3534,9 @@
     &lt;values&gt;
       &lt;value&gt;cycle&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.20tr&quot;&gt;extend&lt;/value&gt;
+      &lt;value stream=&quot;co2tseries.omip&quot;&gt;extend&lt;/value&gt;
       &lt;value stream=&quot;co2tseries.SSP&quot;&gt;extend&lt;/value&gt;
+      &lt;value stream=&quot;presaero.cesm2_omip&quot;&gt;limit&lt;/value&gt;
       &lt;value datm_mode=&quot;CLM1PT&quot;&gt;extend&lt;/value&gt;
       &lt;value atm_grid=&quot;CLM_USRDAT&quot;&gt;cycle&lt;/value&gt;
     &lt;/values&gt;
@@ -3639,7 +3580,6 @@
     &lt;values&gt;
       &lt;value&gt;1.5&lt;/value&gt;
       &lt;value stream=&quot;CORE2_IAF.CORE2.ArcFactor&quot;&gt;1.e30&lt;/value&gt;
-      &lt;value stream=&quot;CORE_IAF_JRA.CORE2.ArcFactor&quot;&gt;1.e30&lt;/value&gt;
       &lt;value stream=&quot;CPLHISTForcing.Solar&quot;&gt;3.0&lt;/value&gt;
       &lt;value stream=&quot;CPLHISTForcing.nonSolarFlux&quot;&gt;3.0&lt;/value&gt;
       &lt;value stream=&quot;CPLHISTForcing.State3hr&quot;&gt;3.0&lt;/value&gt;

@@ -219,7 +219,6 @@
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="k">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="k">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">get_model</span>
-<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
 
@@ -233,8 +232,7 @@
                  <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
                  <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                 <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+                 <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a SystemTestsCompareTwo object. Individual test cases that</span>
 <span class="sd">        inherit from SystemTestsCompareTwo MUST call this __init__ method.</span>
@@ -253,16 +251,10 @@
 <span class="sd">                when starting the second run. Defaults to &#39;&#39;.</span>
 <span class="sd">            multisubmit (bool): Do first and second runs as different submissions.</span>
 <span class="sd">                Designed for tests with RESUBMIT=1</span>
-<span class="sd">            ignore_fieldlist_diffs (bool): If True, then: If the two cases differ only in</span>
-<span class="sd">                their field lists (i.e., all shared fields are bit-for-bit, but one case</span>
-<span class="sd">                has some diagnostic fields that are missing from the other case), treat</span>
-<span class="sd">                the two cases as identical. (This is needed for tests where one case</span>
-<span class="sd">                exercises an option that produces extra diagnostic fields.)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span> <span class="o">=</span> <span class="n">separate_builds</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span> <span class="o">=</span> <span class="n">ignore_fieldlist_diffs</span>
 
         <span class="c1"># run_one_suffix is just used as the suffix for the netcdf files</span>
         <span class="c1"># produced by the first case; we may eventually remove this, but for now</span>
@@ -296,8 +288,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases_if_not_yet_done</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="n">multisubmit</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="o">=</span> <span class="n">multisubmit</span>
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Methods that MUST be implemented by specific tests that inherit from this</span>
     <span class="c1"># base class</span>
@@ -361,37 +352,33 @@
     <span class="c1"># ========================================================================</span>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># Subtle issue: case1 is already in a writeable state since it tends to be opened</span>
-        <span class="c1"># with a with statement in all the API entrances in CIME. case2 was created via clone,</span>
-        <span class="c1"># not a with statement, so it&#39;s not in a writeable state, so we need to use a with</span>
-        <span class="c1"># statement here to put it in a writeable state.</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
-                <span class="c1"># Although we&#39;re doing separate builds, it still makes sense</span>
-                <span class="c1"># to share the sharedlibroot area with case1 so we can reuse</span>
-                <span class="c1"># pieces of the build from there.</span>
-                <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
-                    <span class="c1"># We need to turn off this change for E3SM because it breaks</span>
-                    <span class="c1"># the MPAS build system</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">,</span>
-                                          <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
+            <span class="c1"># Although we&#39;re doing separate builds, it still makes sense</span>
+            <span class="c1"># to share the sharedlibroot area with case1 so we can reuse</span>
+            <span class="c1"># pieces of the build from there.</span>
+            <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+                <span class="c1"># We need to turn off this change for E3SM because it breaks</span>
+                <span class="c1"># the MPAS build system</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SHAREDLIBROOT&quot;</span><span class="p">))</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
-                <span class="c1"># pio_typename may be changed during the build if the default is not a</span>
-                <span class="c1"># valid value for this build, update case2 to reflect this change</span>
-                <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
-                    <span class="n">comp_pio_typename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_PIO_TYPENAME&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
+            <span class="c1"># pio_typename may be changed during the build if the default is not a</span>
+            <span class="c1"># valid value for this build, update case2 to reflect this change</span>
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
+                <span class="n">comp_pio_typename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_PIO_TYPENAME&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">comp_pio_typename</span><span class="p">))</span>
 
-                <span class="c1"># The following is needed when _case_two_setup has a case_setup call</span>
-                <span class="c1"># despite sharing the build (e.g., to change NTHRDS)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="c1"># The following is needed when _case_two_setup has a case_setup call</span>
+            <span class="c1"># despite sharing the build (e.g., to change NTHRDS)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -404,12 +391,6 @@
         <span class="c1"># First run</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multisubmit</span> <span class="ow">or</span> <span class="n">first_phase</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Doing first run: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_description</span><span class="p">)</span>
-
-            <span class="c1"># Add a PENDing compare phase so that we&#39;ll notice if the second part of compare two</span>
-            <span class="c1"># doesn&#39;t run.</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">COMPARE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">),</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_case_one_custom_prerun_action</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">)</span>
@@ -438,9 +419,7 @@
             <span class="c1"># Case1 is the &quot;main&quot; case, and we need to do the comparisons from there</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">,</span>
-                                         <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">,</span>
-                                         <span class="n">ignore_fieldlist_diffs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ignore_fieldlist_diffs</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCompareTwo.copy_case1_restarts_to_case2"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.copy_case1_restarts_to_case2">[docs]</a>    <span class="k">def</span> <span class="nf">copy_case1_restarts_to_case2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -557,7 +536,7 @@
                     <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_case2_rundir</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_write_info_to_case2_output_root</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="k">except</span><span class="p">:</span>
                 <span class="c1"># If a problem occurred in setting up the test cases, it&#39;s</span>
                 <span class="c1"># important to remove the case2 directory: If it&#39;s kept around,</span>
                 <span class="c1"># that would signal that test setup was done successfully, and</span>
@@ -658,10 +637,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Set up case 2</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_common_setup</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_setup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_setup</span><span class="p">()</span>
+        <span class="c1"># Flush the case so that, if errors occur later, then at least case2 is</span>
+        <span class="c1"># in a correct, post-setup state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
         <span class="c1"># Go back to case 1 to ensure that&#39;s where we are for any following code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>

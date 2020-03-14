@@ -118,7 +118,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User Tools</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="advanced-py-prof.html">advanced-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="archive_metadata.html">archive_metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bld_diff.html">bld_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bless_test_results.html">bless_test_results</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">case.build</a><ul class="simple">
 </ul>
@@ -135,6 +134,7 @@
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime_bisect.html">cime_bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cimeteststatus.html">cimeteststatus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code_checker.html">code_checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_namelists.html">compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_test_results.html">compare_test_results</a></li>
@@ -152,7 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_generic_job.html">jenkins_generic_job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_script.html">jenkins_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
@@ -250,11 +249,11 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./case.build --help
 usage: case.build [-h] [-d] [-v] [-s]
-                  [--sharedlib-only | -m | -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
+                  [--sharedlib-only | -m | -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]
                   | --skip-provenance-check | --clean-all | --clean
-                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]]
+                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]]
                   | --clean-depends
-                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare} ...]]]
+                  [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} ...]]]
                   [caseroot]
 
 Builds the case.
@@ -308,17 +307,17 @@ optional arguments:
   -s, --silent          Print only warnings and error messages
   --sharedlib-only      Only build shared libraries.
   -m, --model-only      Assume shared libraries are already built.
-  -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...], --build {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]
+  -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...], --build {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]
                         Libraries to build.
                         Will cause namelist generation to be skipped.
   --skip-provenance-check
                         Do not check and save build provenance
   --clean-all           Clean all objects (including sharedlib objects that may be
                         used by other builds).
-  --clean [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare,mct,pio,gptl} ...]]
+  --clean [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]]
                         Clean objects associated with specific libraries.
                         With no arguments, clean all objects other than sharedlib objects.
-  --clean-depends [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,iac,csmshare} ...]]
+  --clean-depends [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare} ...]]
                         Clean Depends and Srcfiles only.
                         This allows you to rebuild after adding new
                         files in the source tree or in SourceMods.

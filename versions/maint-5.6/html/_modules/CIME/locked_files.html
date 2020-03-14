@@ -181,8 +181,6 @@
   <h1>Source code for CIME.locked_files</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">safe_copy</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="k">import</span> <span class="n">GenericXML</span>
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">LOCKED_DIR</span> <span class="o">=</span> <span class="s2">&quot;LockedFiles&quot;</span>
@@ -202,8 +200,7 @@
     <span class="c1"># GenericXML instances that represent this file and all caching that may</span>
     <span class="c1"># have involved this file. We should probably seek a safer way of locking</span>
     <span class="c1"># files.</span>
-    <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fulllockdir</span><span class="p">,</span> <span class="n">newname</span><span class="p">))</span>
-    <span class="n">GenericXML</span><span class="o">.</span><span class="n">invalidate</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fulllockdir</span><span class="p">,</span> <span class="n">newname</span><span class="p">))</span></div>
+    <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fulllockdir</span><span class="p">,</span> <span class="n">newname</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="unlock_file"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.locked_files.unlock_file">[docs]</a><span class="k">def</span> <span class="nf">unlock_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">expect</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;Please just provide basename of locked file&quot;</span><span class="p">)</span>

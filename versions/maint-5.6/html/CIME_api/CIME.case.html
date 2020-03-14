@@ -137,10 +137,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
@@ -340,7 +337,7 @@ server at address using protocol.  Perform a chksum of the downloaded file.</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.check_input_data">
-<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em>, <em>user=None</em>, <em>passwd=None</em>, <em>chksum=False</em>, <em>ic_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">check_input_data</code><span class="sig-paren">(</span><em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em>, <em>user=None</em>, <em>passwd=None</em>, <em>chksum=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.check_input_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a given case check for the relevant input data as specified in data_list_dir/<a href="#id3"><span class="problematic" id="id4">*</span></a>.input_data_list
 in the directory input_data_root, if not found optionally download it using the servers specified
 in config_inputdata.xml.  If a chksum file is available compute the chksum and compare it to that
@@ -367,18 +364,13 @@ Return True if no files missing</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="CIME.case.case.Case.check_timestamps">
-<code class="descname">check_timestamps</code><span class="sig-paren">(</span><em>short_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.check_timestamps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.check_timestamps" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="CIME.case.case.Case.clean_up_lookups">
 <code class="descname">clean_up_lookups</code><span class="sig-paren">(</span><em>allow_undefined=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.clean_up_lookups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.clean_up_lookups" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.configure">
-<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em>, <em>workflowid='default'</em>, <em>non_local=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em>, <em>workflowid='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -388,7 +380,7 @@ Return True if no files missing</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em>, <em>workflowid='default'</em>, <em>non_local=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.create" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em>, <em>driver=None</em>, <em>workflowid='default'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -398,7 +390,7 @@ Return True if no files missing</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.create_clone">
-<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcaseroot</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.create_clone" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.create_clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a case clone</p>
 <p>If exeroot or rundir are provided (not None), sets these directories
 to the given paths; if not provided, uses default values for these
@@ -446,7 +438,7 @@ directories. It is an error to provide exeroot if keepexe is True.</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.get_compset_var_settings">
-<code class="descname">get_compset_var_settings</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_compset_var_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_compset_var_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_compset_var_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_compset_var_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_compset_var_settings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -467,7 +459,7 @@ directories. It is an error to provide exeroot if keepexe is True.</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.get_latest_cpl_log">
-<code class="descname">get_latest_cpl_log</code><span class="sig-paren">(</span><em>coupler_log_path=None</em>, <em>cplname='cpl'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_latest_cpl_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_latest_cpl_log" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_latest_cpl_log</code><span class="sig-paren">(</span><em>coupler_log_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.get_latest_cpl_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.get_latest_cpl_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>find and return the latest cpl log file in the
 coupler_log_path directory</p>
 </dd></dl>
@@ -545,7 +537,7 @@ specified for the current machine</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.restore_from_archive">
-<code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>rest_dir=None</em>, <em>dout_s_root=None</em>, <em>rundir=None</em>, <em>test=False</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.restore_from_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>rest_dir=None</em>, <em>dout_s_root=None</em>, <em>rundir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.restore_from_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent
 restore_from_archive is a member of Class Case</p>
 </dd></dl>
@@ -584,11 +576,10 @@ restore_from_archive is a member of Class Case</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.set_value">
-<code class="descname">set_value</code><span class="sig-paren">(</span><em>item</em>, <em>value</em>, <em>subgroup=None</em>, <em>ignore_type=False</em>, <em>allow_undefined=False</em>, <em>return_file=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.set_value" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_value</code><span class="sig-paren">(</span><em>item</em>, <em>value</em>, <em>subgroup=None</em>, <em>ignore_type=False</em>, <em>allow_undefined=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.set_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>If a file has been defined, and the variable is in the file,
-then that value will be set in the file object and the resovled value
-is returned unless return_file is True, in which case (resolved_value, filename)
-is returned where filename is the name of the modified file.</p>
+then that value will be set in the file object and the file
+name is returned</p>
 </dd></dl>
 
 <dl class="method">
@@ -601,12 +592,12 @@ a single file at a time.</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.submit">
-<code class="descname">submit</code><span class="sig-paren">(</span><em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit=False</em>, <em>resubmit_immediate=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>workflow=True</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.submit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">submit</code><span class="sig-paren">(</span><em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit=False</em>, <em>resubmit_immediate=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#CIME.case.case.Case.submit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.submit_jobs">
-<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>skip_pnl=None</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em>, <em>workflow=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
+<code class="descname">submit_jobs</code><span class="sig-paren">(</span><em>no_batch=False</em>, <em>job=None</em>, <em>skip_pnl=None</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit_immediate=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>dry_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.submit_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.submit_jobs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -621,15 +612,8 @@ a single file at a time.</p>
 
 <dl class="method">
 <dt id="CIME.case.case.Case.update_env">
-<code class="descname">update_env</code><span class="sig-paren">(</span><em>new_object</em>, <em>env_file</em>, <em>blow_away=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.update_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.update_env" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_env</code><span class="sig-paren">(</span><em>new_object</em>, <em>env_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.update_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.update_env" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace a case env object file</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="CIME.case.case.Case.valid_compset">
-<code class="descname">valid_compset</code><span class="sig-paren">(</span><em>compset_name</em>, <em>compset_alias</em>, <em>files</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case.html#Case.valid_compset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case.Case.valid_compset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add stub models missing in &lt;compset_name&gt;, return full compset name.
-&lt;files&gt; is used to collect set of all supported components.</p>
 </dd></dl>
 
 </dd></dl>
@@ -640,7 +624,7 @@ a single file at a time.</p>
 <p>create_clone is a member of the Case class from file case.py</p>
 <dl class="function">
 <dt id="CIME.case.case_clone.create_clone">
-<code class="descclassname">CIME.case.case_clone.</code><code class="descname">create_clone</code><span class="sig-paren">(</span><em>self</em>, <em>newcaseroot</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_clone.html#create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_clone.create_clone" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_clone.</code><code class="descname">create_clone</code><span class="sig-paren">(</span><em>self</em>, <em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_clone.html#create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_clone.create_clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a case clone</p>
 <p>If exeroot or rundir are provided (not None), sets these directories
 to the given paths; if not provided, uses default values for these
@@ -712,7 +696,7 @@ files that are associated with these restart files.)</p>
 
 <dl class="function">
 <dt id="CIME.case.case_st_archive.restore_from_archive">
-<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>self</em>, <em>rest_dir=None</em>, <em>dout_s_root=None</em>, <em>rundir=None</em>, <em>test=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#restore_from_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.restore_from_archive" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_st_archive.</code><code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>self</em>, <em>rest_dir=None</em>, <em>dout_s_root=None</em>, <em>rundir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_st_archive.html#restore_from_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_st_archive.restore_from_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent
 restore_from_archive is a member of Class Case</p>
 </dd></dl>
@@ -746,7 +730,7 @@ submit, check_case and check_da_settings are members of class Case in file case.
 
 <dl class="function">
 <dt id="CIME.case.case_submit.submit">
-<code class="descclassname">CIME.case.case_submit.</code><code class="descname">submit</code><span class="sig-paren">(</span><em>self</em>, <em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit=False</em>, <em>resubmit_immediate=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em>, <em>workflow=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_submit.html#submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_submit.submit" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.case_submit.</code><code class="descname">submit</code><span class="sig-paren">(</span><em>self</em>, <em>job=None</em>, <em>no_batch=False</em>, <em>prereq=None</em>, <em>allow_fail=False</em>, <em>resubmit=False</em>, <em>resubmit_immediate=False</em>, <em>skip_pnl=False</em>, <em>mail_user=None</em>, <em>mail_type=None</em>, <em>batch_args=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/case_submit.html#submit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.case_submit.submit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -774,7 +758,7 @@ server at address using protocol.  Perform a chksum of the downloaded file.</p>
 
 <dl class="function">
 <dt id="CIME.case.check_input_data.check_input_data">
-<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em>, <em>user=None</em>, <em>passwd=None</em>, <em>chksum=False</em>, <em>ic_filepath=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case.check_input_data.</code><code class="descname">check_input_data</code><span class="sig-paren">(</span><em>case</em>, <em>protocol='svn'</em>, <em>address=None</em>, <em>input_data_root=None</em>, <em>data_list_dir='Buildconf'</em>, <em>download=False</em>, <em>user=None</em>, <em>passwd=None</em>, <em>chksum=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case/check_input_data.html#check_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.check_input_data.check_input_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>For a given case check for the relevant input data as specified in data_list_dir/<a href="#id7"><span class="problematic" id="id8">*</span></a>.input_data_list
 in the directory input_data_root, if not found optionally download it using the servers specified
 in config_inputdata.xml.  If a chksum file is available compute the chksum and compare it to that

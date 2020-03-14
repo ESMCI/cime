@@ -245,16 +245,13 @@
   --&gt;
 
   &lt;description modifier_mode=&quot;1&quot;&gt;
-    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%IAFAIS00][%IAFAIS45][%IAFAIS55][%CPLHIST][%JRA][%JRA-1p4-2018]&quot;&gt;Data runoff model&lt;/desc&gt;
-    &lt;desc option=&quot;NULL&quot;     &gt;NULL mode&lt;/desc&gt;
-    &lt;desc option=&quot;NYF&quot;      &gt;COREv2 normal year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAF&quot;      &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAFAIS00&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAFAIS45&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAFAIS55&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;CPLHIST&quot;  &gt;CPLHIST mode:&lt;/desc&gt;
+    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%CPLHIST][%JRA][%JRA-1p4-2018]&quot;&gt;Data runoff model&lt;/desc&gt;
+    &lt;desc option=&quot;NULL&quot;&gt;NULL mode&lt;/desc&gt;
+    &lt;desc option=&quot;NYF&quot; &gt;COREv2 normal year forcing:&lt;/desc&gt;
+    &lt;desc option=&quot;IAF&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
+    &lt;desc option=&quot;CPLHIST&quot;&gt;CPLHIST mode:&lt;/desc&gt;
+    &lt;desc option=&quot;JRA&quot;&gt;JRA55 interannual forcing&lt;/desc&gt;
     &lt;desc option=&quot;JRA-1p4-2018&quot;&gt;JRA55 interannual forcing, v1.4, through 2018&lt;/desc&gt;
-    &lt;desc option=&quot;JRA&quot;      &gt;JRA55 interannual forcing&lt;/desc&gt;
   &lt;/description&gt;
 
   &lt;entry id=&quot;COMP_ROF&quot;&gt;
@@ -268,18 +265,12 @@
 
   &lt;entry id=&quot;DROF_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,DIATREN_IAF_AIS00_RX1,DIATREN_IAF_AIS45_RX1,DIATREN_IAF_AIS55_RX1,IAF_JRA,IAF_JRA_1p4_2018,NULL&lt;/valid_values&gt;
+    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,IAF_JRA,IAF_JRA_1p4_2018,NULL&lt;/valid_values&gt;
     &lt;default_value&gt;DIATREN_ANN_RX1&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DROF%NULL&quot;&gt;NULL&lt;/value&gt;
       &lt;value compset=&quot;_DROF%NYF&quot; &gt;DIATREN_ANN_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%NYFAIS00&quot; &gt;DIATREN_ANN_AIS00_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%NYFAIS45&quot; &gt;DIATREN_ANN_AIS45_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%NYFAIS55&quot; &gt;DIATREN_ANN_AIS55_RX1&lt;/value&gt;
       &lt;value compset=&quot;_DROF%IAF&quot; &gt;DIATREN_IAF_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%IAFAIS00&quot; &gt;DIATREN_IAF_AIS00_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%IAFAIS45&quot; &gt;DIATREN_IAF_AIS45_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%IAFAIS55&quot; &gt;DIATREN_IAF_AIS55_RX1&lt;/value&gt;
       &lt;value compset=&quot;_DROF%CPLHIST&quot;&gt;CPLHIST&lt;/value&gt;
       &lt;value compset=&quot;_DROF%JRA&quot; &gt;IAF_JRA&lt;/value&gt;
       &lt;value compset=&quot;_DROF%JRA-1p4-2018&quot; &gt;IAF_JRA_1p4_2018&lt;/value&gt;
@@ -395,16 +386,13 @@
   --&gt;
 
   &lt;description modifier_mode=&quot;1&quot;&gt;
-    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%IAFAIS00][%IAFAIS45][%IAFAIS55][%CPLHIST][%JRA][%JRA-1p4-2018]&quot;&gt;Data runoff model&lt;/desc&gt;
-    &lt;desc option=&quot;NULL&quot;     &gt;NULL mode&lt;/desc&gt;
-    &lt;desc option=&quot;NYF&quot;      &gt;COREv2 normal year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAF&quot;      &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAFAIS00&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAFAIS45&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;IAFAIS55&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
-    &lt;desc option=&quot;CPLHIST&quot;  &gt;CPLHIST mode:&lt;/desc&gt;
+    &lt;desc rof=&quot;DROF[%NULL][%NYF][%IAF][%CPLHIST][%JRA][%JRA-1p4-2018]&quot;&gt;Data runoff model&lt;/desc&gt;
+    &lt;desc option=&quot;NULL&quot;&gt;NULL mode&lt;/desc&gt;
+    &lt;desc option=&quot;NYF&quot; &gt;COREv2 normal year forcing:&lt;/desc&gt;
+    &lt;desc option=&quot;IAF&quot; &gt;COREv2 interannual year forcing:&lt;/desc&gt;
+    &lt;desc option=&quot;CPLHIST&quot;&gt;CPLHIST mode:&lt;/desc&gt;
+    &lt;desc option=&quot;JRA&quot;&gt;JRA55 interannual forcing&lt;/desc&gt;
     &lt;desc option=&quot;JRA-1p4-2018&quot;&gt;JRA55 interannual forcing, v1.4, through 2018&lt;/desc&gt;
-    &lt;desc option=&quot;JRA&quot;      &gt;JRA55 interannual forcing&lt;/desc&gt;
   &lt;/description&gt;
 
   &lt;entry id=&quot;COMP_ROF&quot;&gt;
@@ -418,18 +406,12 @@
 
   &lt;entry id=&quot;DROF_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,DIATREN_IAF_AIS00_RX1,DIATREN_IAF_AIS45_RX1,DIATREN_IAF_AIS55_RX1,IAF_JRA,IAF_JRA_1p4_2018,NULL&lt;/valid_values&gt;
+    &lt;valid_values&gt;CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,IAF_JRA,IAF_JRA_1p4_2018,NULL&lt;/valid_values&gt;
     &lt;default_value&gt;DIATREN_ANN_RX1&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DROF%NULL&quot;&gt;NULL&lt;/value&gt;
       &lt;value compset=&quot;_DROF%NYF&quot; &gt;DIATREN_ANN_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%NYFAIS00&quot; &gt;DIATREN_ANN_AIS00_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%NYFAIS45&quot; &gt;DIATREN_ANN_AIS45_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%NYFAIS55&quot; &gt;DIATREN_ANN_AIS55_RX1&lt;/value&gt;
       &lt;value compset=&quot;_DROF%IAF&quot; &gt;DIATREN_IAF_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%IAFAIS00&quot; &gt;DIATREN_IAF_AIS00_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%IAFAIS45&quot; &gt;DIATREN_IAF_AIS45_RX1&lt;/value&gt;
-      &lt;value compset=&quot;_DROF%IAFAIS55&quot; &gt;DIATREN_IAF_AIS55_RX1&lt;/value&gt;
       &lt;value compset=&quot;_DROF%CPLHIST&quot;&gt;CPLHIST&lt;/value&gt;
       &lt;value compset=&quot;_DROF%JRA&quot; &gt;IAF_JRA&lt;/value&gt;
       &lt;value compset=&quot;_DROF%JRA-1p4-2018&quot; &gt;IAF_JRA_1p4_2018&lt;/value&gt;
@@ -581,18 +563,12 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;List of streams used for the given drof_mode.&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value drof_mode=&quot;NULL&quot;                 &gt;NULL&lt;/value&gt;
-      &lt;value drof_mode=&quot;CPLHIST&quot;              &gt;rof.cplhist&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_ANN_RX1&quot;      &gt;rof.diatren_ann_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_ANN_AIS00_RX1&quot;&gt;rof.diatren_ann_ais00_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_ANN_AIS45_RX1&quot;&gt;rof.diatren_ann_ais45_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_ANN_AIS55_RX1&quot;&gt;rof.diatren_ann_ais55_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_IAF_RX1&quot;      &gt;rof.diatren_iaf_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_IAF_AIS00_RX1&quot;&gt;rof.diatren_iaf_ais00_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_IAF_AIS45_RX1&quot;&gt;rof.diatren_iaf_ais45_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;DIATREN_IAF_AIS55_RX1&quot;&gt;rof.diatren_iaf_ais55_rx1&lt;/value&gt;
-      &lt;value drof_mode=&quot;IAF_JRA_1p4_2018&quot;     &gt;rof.iaf_jra_1p4_2018&lt;/value&gt;
-      &lt;value drof_mode=&quot;IAF_JRA&quot;              &gt;rof.iaf_jra&lt;/value&gt;
+      &lt;value drof_mode=&quot;NULL&quot;           &gt;NULL&lt;/value&gt;
+      &lt;value drof_mode=&quot;CPLHIST&quot;        &gt;rof.cplhist&lt;/value&gt;
+      &lt;value drof_mode=&quot;DIATREN_ANN_RX1&quot;&gt;rof.diatren_ann_rx1&lt;/value&gt;
+      &lt;value drof_mode=&quot;DIATREN_IAF_RX1&quot;&gt;rof.diatren_iaf_rx1&lt;/value&gt;
+      &lt;value drof_mode=&quot;IAF_JRA_1p4_2018&quot;&gt;rof.iaf_jra_1p4_2018&lt;/value&gt;
+      &lt;value drof_mode=&quot;IAF_JRA&quot;        &gt;rof.iaf_jra&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -602,17 +578,10 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Stream domain file directory.&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;      &gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais00_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais45_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais55_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;      &gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra.*&quot;            &gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
-      &lt;value stream=&quot;rof.cplhist&quot;              &gt;null&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
+      &lt;value stream=&quot;rof.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -622,16 +591,10 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Stream domain file path(s).&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;      &gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais00_rx1&quot;&gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais45_rx1&quot;&gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais55_rx1&quot;&gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;      &gt;runoff.daitren.iaf.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;runoff.daitren.iaf-AISx00.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;runoff.daitren.iaf-AISx45.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;runoff.daitren.iaf-AISx55.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra.*&quot;            &gt;domain.roff.JRA025.170111.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.cplhist&quot;              &gt;null&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;runoff.daitren.annual.090225.nc&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;runoff.daitren.iaf.20120419.nc&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;domain.roff.JRA025.170111.nc&lt;/value&gt;
+      &lt;value stream=&quot;rof.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -655,27 +618,6 @@
         arear  area
         mask   mask
       &lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;
-        time   time
-        xc     lon
-        yc     lat
-        arear  area
-        mask   mask
-      &lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;
-        time   time
-        xc     lon
-        yc     lat
-        arear  area
-        mask   mask
-      &lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;
-        time   time
-        xc     lon
-        yc     lat
-        arear  area
-        mask   mask
-      &lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;
         time           time
         domrb_lon      lon
@@ -692,17 +634,10 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Stream data file directory.&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;      &gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais00_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais45_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais55_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;      &gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra.*&quot;            &gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
-      &lt;value stream=&quot;rof.cplhist&quot;              &gt;$DROF_CPLHIST_DIR&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/RX1&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;$DIN_LOC_ROOT/lnd/dlnd7/JRA55&lt;/value&gt;
+      &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_DIR&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -712,75 +647,8 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Stream data file path(s).&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;      &gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais00_rx1&quot;&gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais45_rx1&quot;&gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais55_rx1&quot;&gt;runoff.daitren.annual.20190226.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;      &gt;runoff.daitren.iaf.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;runoff.daitren.iaf-AISx00.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;runoff.daitren.iaf-AISx45.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;runoff.daitren.iaf-AISx55.20120419.nc&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;
-           JRA.v1.1.runoff.1958.170807.nc
-           JRA.v1.1.runoff.1959.170807.nc
-           JRA.v1.1.runoff.1960.170807.nc
-           JRA.v1.1.runoff.1961.170807.nc
-           JRA.v1.1.runoff.1962.170807.nc
-           JRA.v1.1.runoff.1963.170807.nc
-           JRA.v1.1.runoff.1964.170807.nc
-           JRA.v1.1.runoff.1965.170807.nc
-           JRA.v1.1.runoff.1966.170807.nc
-           JRA.v1.1.runoff.1967.170807.nc
-           JRA.v1.1.runoff.1968.170807.nc
-           JRA.v1.1.runoff.1969.170807.nc
-           JRA.v1.1.runoff.1970.170807.nc
-           JRA.v1.1.runoff.1971.170807.nc
-           JRA.v1.1.runoff.1972.170807.nc
-           JRA.v1.1.runoff.1973.170807.nc
-           JRA.v1.1.runoff.1974.170807.nc
-           JRA.v1.1.runoff.1975.170807.nc
-           JRA.v1.1.runoff.1976.170807.nc
-           JRA.v1.1.runoff.1977.170807.nc
-           JRA.v1.1.runoff.1978.170807.nc
-           JRA.v1.1.runoff.1979.170807.nc
-           JRA.v1.1.runoff.1980.170807.nc
-           JRA.v1.1.runoff.1981.170807.nc
-           JRA.v1.1.runoff.1982.170807.nc
-           JRA.v1.1.runoff.1983.170807.nc
-           JRA.v1.1.runoff.1984.170807.nc
-           JRA.v1.1.runoff.1985.170807.nc
-           JRA.v1.1.runoff.1986.170807.nc
-           JRA.v1.1.runoff.1987.170807.nc
-           JRA.v1.1.runoff.1988.170807.nc
-           JRA.v1.1.runoff.1989.170807.nc
-           JRA.v1.1.runoff.1990.170807.nc
-           JRA.v1.1.runoff.1991.170807.nc
-           JRA.v1.1.runoff.1992.170807.nc
-           JRA.v1.1.runoff.1993.170807.nc
-           JRA.v1.1.runoff.1994.170807.nc
-           JRA.v1.1.runoff.1995.170807.nc
-           JRA.v1.1.runoff.1996.170807.nc
-           JRA.v1.1.runoff.1997.170807.nc
-           JRA.v1.1.runoff.1998.170807.nc
-           JRA.v1.1.runoff.1999.170807.nc
-           JRA.v1.1.runoff.2000.170807.nc
-           JRA.v1.1.runoff.2001.170807.nc
-           JRA.v1.1.runoff.2002.170807.nc
-           JRA.v1.1.runoff.2003.170807.nc
-           JRA.v1.1.runoff.2004.170807.nc
-           JRA.v1.1.runoff.2005.170807.nc
-           JRA.v1.1.runoff.2006.170807.nc
-           JRA.v1.1.runoff.2007.170807.nc
-           JRA.v1.1.runoff.2008.170807.nc
-           JRA.v1.1.runoff.2009.170807.nc
-           JRA.v1.1.runoff.2010.170807.nc
-           JRA.v1.1.runoff.2011.170807.nc
-           JRA.v1.1.runoff.2012.170807.nc
-           JRA.v1.1.runoff.2013.170807.nc
-           JRA.v1.1.runoff.2014.170807.nc
-           JRA.v1.1.runoff.2015.170807.nc
-           JRA.v1.1.runoff.2016.170807.nc
-      &lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;runoff.daitren.annual.090225.nc&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;runoff.daitren.iaf.20120419.nc&lt;/value&gt;
       &lt;value stream=&quot;rof.iaf_jra_1p4_2018&quot;&gt;
            JRA.v1.4.runoff.1958.190214.nc
            JRA.v1.4.runoff.1959.190214.nc
@@ -915,16 +783,10 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Stream data variable name(s).&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;
-        runoff rofl
-      &lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;
         runoff rofl
       &lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;
-        runoff rofl
-      &lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;
         runoff rofl
       &lt;/value&gt;
       &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;
@@ -955,10 +817,8 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Simulation year to align stream to.&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;1&lt;/value&gt;
       &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_YR_ALIGN&lt;/value&gt;
     &lt;/values&gt;
@@ -970,16 +830,10 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;First year of stream.&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;      &gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais00_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais45_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais55_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;      &gt;1948&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;1948&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;1948&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;1948&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra.*&quot;            &gt;1958&lt;/value&gt;
-      &lt;value stream=&quot;rof.cplhist&quot;              &gt;$DROF_CPLHIST_YR_START&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;1948&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra.*&quot;&gt;1958&lt;/value&gt;
+      &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_YR_START&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -989,17 +843,11 @@
     &lt;group&gt;streams_file&lt;/group&gt;
     &lt;desc&gt;Last year of stream.&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;      &gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais00_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais45_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_ann_ais55_rx1&quot;&gt;1&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;      &gt;2009&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais00_rx1&quot;&gt;2009&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais45_rx1&quot;&gt;2009&lt;/value&gt;
-      &lt;value stream=&quot;rof.diatren_iaf_ais55_rx1&quot;&gt;2009&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra_1p4_2018&quot;     &gt;2018&lt;/value&gt;
-      &lt;value stream=&quot;rof.iaf_jra&quot;              &gt;2016&lt;/value&gt;
-      &lt;value stream=&quot;rof.cplhist&quot;              &gt;$DROF_CPLHIST_YR_END&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_ann_rx1&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;rof.diatren_iaf_rx1&quot;&gt;2009&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra_1p4_2018&quot;&gt;2018&lt;/value&gt;
+      &lt;value stream=&quot;rof.iaf_jra&quot;&gt;2016&lt;/value&gt;
+      &lt;value stream=&quot;rof.cplhist&quot;&gt;$DROF_CPLHIST_YR_END&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 

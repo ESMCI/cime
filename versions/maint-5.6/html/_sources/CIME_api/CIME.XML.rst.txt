@@ -148,14 +148,6 @@ CIME.XML.env\_workflow module
     :undoc-members:
     :show-inheritance:
 
-CIME.XML.expected\_fails\_file module
--------------------------------------
-
-.. automodule:: CIME.XML.expected_fails_file
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 CIME.XML.files module
 ---------------------
 

@@ -252,7 +252,7 @@ These consist of:</p>
 <li>CMake tools to support building and running tests via CMake and CTest.</li>
 <li>A Python script that provides a simple front end for the CMake-based tests.</li>
 </ol>
-<p>The Fortran unit tests use <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">pFUnit</a>, which is a Fortran testing framework that follows conventions of other xUnit frameworks.</p>
+<p>The Fortran unit tests use <a class="reference external" href="https://sourceforge.net/projects/pfunit/">pFUnit</a>, which is a Fortran testing framework that follows conventions of other xUnit frameworks.</p>
 </div>
 </div>
 <div class="section" id="running-cime-s-fortran-unit-tests">
@@ -308,10 +308,7 @@ At this time, however, no unit tests require parallel support so no benefit is g
 <h3>9.3.1. Building pFUnit<a class="headerlink" href="#building-pfunit" title="Permalink to this headline">¶</a></h3>
 <p>For a serial build of pFUnit, follow these instructions:</p>
 <ol class="arabic">
-<li><p class="first">Obtain pFUnit from <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">https://github.com/Goddard-Fortran-Ecosystem/pFUnit</a> (see
-<a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit#obtaining-pfunit">https://github.com/Goddard-Fortran-Ecosystem/pFUnit#obtaining-pfunit</a> for details; note
-that if you have an older version of cmake you may also need to use an older version of
-pFUnit)</p>
+<li><p class="first">Download pFUnit from <a class="reference external" href="https://sourceforge.net/projects/pfunit/">https://sourceforge.net/projects/pfunit/</a>.</p>
 </li>
 <li><p class="first">Set up your environment to be similar to the environment used in CIME system builds.
 For example, load the appropriate compilers into your path.
@@ -321,12 +318,6 @@ An easy way to achieve this is to run the following with an optional compiler ar
 </div>
 <p>If you are doing an MPI-enabled build, also change the <code class="docutils literal notranslate"><span class="pre">--mpilib</span></code> argument.
 Then source either <strong>./.env_mach_specific.sh</strong> or <strong>./.env_mach_specific.csh</strong>, depending on your shell.</p>
-<p>On some systems, you may still need to explicitly set the <code class="docutils literal notranslate"><span class="pre">FC</span></code> and <code class="docutils literal notranslate"><span class="pre">CC</span></code> environment
-variables, e.g., with:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; <span class="nb">export</span> <span class="nv">FC</span><span class="o">=</span>ifort
-&gt; <span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>icc
-</pre></div>
-</div>
 </li>
 <li><p class="first">For convenience, set the <code class="docutils literal notranslate"><span class="pre">PFUNIT</span></code> environment variable to point to the location where you want to install pFUnit. For example (in bash):</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt; <span class="nb">export</span> <span class="nv">PFUNIT</span><span class="o">=</span>/glade/p/cesmdata/cseg/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP
@@ -360,7 +351,7 @@ Make sure to choose a different installation directory for each build by setting
 <p>After you build pFUnit, tell CIME about your build or builds.
 To do this, specify the appropriate path(s) using the <code class="docutils literal notranslate"><span class="pre">PFUNIT_PATH</span></code> element in <strong>config_compilers.xml</strong>.
 For a serial build, your setting will look like this example:</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PFUNIT_PATH</span> <span class="na">MPILIB=</span><span class="s">&quot;mpi-serial&quot;</span> <span class="na">compile_threaded=</span><span class="s">&quot;FALSE&quot;</span><span class="nt">&gt;</span>$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP<span class="nt">&lt;/PFUNIT_PATH&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;PFUNIT_PATH</span> <span class="na">MPILIB=</span><span class="s">&quot;mpi-serial&quot;</span> <span class="na">compile_threaded=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP<span class="nt">&lt;/PFUNIT_PATH&gt;</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">MPILIB</span></code> attribute should be either:</p>
@@ -368,7 +359,7 @@ For a serial build, your setting will look like this example:</p>
 <li><code class="docutils literal notranslate"><span class="pre">mpi-serial</span></code> for a pFUnit build where <code class="docutils literal notranslate"><span class="pre">-DMPI=NO</span></code>, or</li>
 <li>the name of the MPI library you used for a pFUnit build where <code class="docutils literal notranslate"><span class="pre">-DMPI=YES</span></code>. (For example, you might use <code class="docutils literal notranslate"><span class="pre">mpich</span></code>, which should be one of the machine’s MPI libraries specified by <code class="docutils literal notranslate"><span class="pre">MPILIBS</span></code> in <strong>config_machines.xml</strong>.)</li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">compile_threaded</span></code> attribute should be either <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> or <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> depending on the value of <code class="docutils literal notranslate"><span class="pre">-DOPENMP</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">compile_threaded</span></code> attribute should be either <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> depending on the value of <code class="docutils literal notranslate"><span class="pre">-DOPENMP</span></code>.</p>
 <p>Once you have specified the path for your build(s), you should be able to run the unit tests by following the instructions in <a class="reference internal" href="#running-unit-tests"><span class="std std-ref">Running CIME’s Fortran unit tests</span></a>.</p>
 </div>
 </div>
@@ -571,8 +562,9 @@ You can find them by looking for files with the “.pf” extension:</p>
 </div>
 <div class="section" id="other-pfunit-documentation-sources">
 <h3>9.7.2. Other pFUnit documentation sources<a class="headerlink" href="#other-pfunit-documentation-sources" title="Permalink to this headline">¶</a></h3>
-<p>Extensive documentation and examples are included in the following when you obtain
-pFUnit from <a class="reference external" href="https://github.com/Goddard-Fortran-Ecosystem/pFUnit">https://github.com/Goddard-Fortran-Ecosystem/pFUnit</a>:</p>
+<p>Some pFUnit documentation is available here: <a class="reference external" href="http://pfunit.sourceforge.net/">http://pfunit.sourceforge.net/</a>.</p>
+<p>Extensive documentation and examples are included in the following when you download
+pFUnit from <a class="reference external" href="http://sourceforge.net/projects/pfunit/">http://sourceforge.net/projects/pfunit/</a>:</p>
 <ul class="simple">
 <li>documentation/pFUnit3-ReferenceManual.pdf</li>
 <li>Examples/</li>

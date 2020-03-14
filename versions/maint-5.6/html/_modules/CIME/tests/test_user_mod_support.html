@@ -186,9 +186,7 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">CIME.user_mod_support</span> <span class="k">import</span> <span class="n">apply_user_mods</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">CIMEError</span>
 <span class="kn">import</span> <span class="nn">six</span>
-
 <span class="c1"># ========================================================================</span>
 <span class="c1"># Define some parameters</span>
 <span class="c1"># ========================================================================</span>
@@ -297,7 +295,7 @@
 
 <div class="viewcode-block" id="TestUserModSupport.test_keepexe"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe">[docs]</a>    <span class="k">def</span> <span class="nf">test_keepexe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">six</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CIMEError</span><span class="p">,</span> <span class="s2">&quot;cannot have any source mods&quot;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">six</span><span class="o">.</span><span class="n">assertRaisesRegex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">,</span> <span class="s2">&quot;cannot have any source mods&quot;</span><span class="p">):</span>
             <span class="n">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span>
                             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 

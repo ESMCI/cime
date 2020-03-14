@@ -118,7 +118,6 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User Tools</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="advanced-py-prof.html">advanced-py-prof</a></li>
 <li class="toctree-l2"><a class="reference internal" href="archive_metadata.html">archive_metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bld_diff.html">bld_diff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bless_test_results.html">bless_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.build.html">case.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
@@ -133,6 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="check_input_data.html">check_input_data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="check_lockedfiles.html">check_lockedfiles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime_bisect.html">cime_bisect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cimeteststatus.html">cimeteststatus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="code_checker.html">code_checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_namelists.html">compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_test_results.html">compare_test_results</a></li>
@@ -152,7 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_generic_job.html">jenkins_generic_job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_script.html">jenkins_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
@@ -249,47 +248,29 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./cs.status --help
-usage: cs.status [-h] [-s | -f] [-c PHASE] [-p] [-x EXPECTED_FAILS_FILE]
-                 [-t TEST_ID] [-r TEST_ROOT]
-                 [paths [paths ...]]
+usage: 
+cs.status &lt;Glob of TestStatus&gt; [&lt;Path/Glob to TestStatus&gt; ...]  [--verbose]
+OR
+cs.status --help
 
-List test results based on TestStatus files.
+[1mEXAMPLES:[0m
+    [1;32m# Wait for all tests in a test area[0m
+    &gt; cs.status path/to/testarea/*/TestStatus
 
-Typical usage:
-    ./cs.status /path/to/testroot/*.testid/TestStatus
-
-Returns True if no errors occured (not based on test statuses).
+List test results based on TestStatus files. Returns True if no errors occured
+(not based on test statuses).
 
 positional arguments:
-  paths                 Paths to TestStatus files.
+  paths                 Paths to TestStatus files. (default: None)
 
 optional arguments:
   -h, --help            show this help message and exit
-  -s, --summary         Only show summary
-  -f, --fails-only      Only show non-PASSes (this includes PENDs as well as FAILs)
-  -c PHASE, --count-fails PHASE
-                        For this phase, do not give line-by-line output; instead, just report
-                        the total number of tests that have not PASSed this phase
-                        (this includes PENDs as well as FAILs).
-                        This is typically used with the --fails-only option,
-                        but it can also be used without that option.
-                        (However, it cannot be used with the --summary option.)
-                        (Can be specified multiple times.)
-  -p, --count-performance-fails
-                        For phases that involve performance comparisons with baseline:
-                        Do not give line-by-line output; instead, just report the total number
-                        of tests that have not PASSed this phase.
-                        (This can be useful because these performance comparisons can be
-                        subject to machine variability.)
-                        This is equivalent to specifying:
-                        --count-fails TPUTCOMP --count-fails MEMCOMP
-  -x EXPECTED_FAILS_FILE, --expected-fails-file EXPECTED_FAILS_FILE
-                        Path to XML file listing expected failures for this test suite
+  -s, --summary         Only show summary (default: False)
   -t TEST_ID, --test-id TEST_ID
-                        Include all tests with this test id.
-                        (Can be specified multiple times.)
+                        Only show summary (default: [])
   -r TEST_ROOT, --test-root TEST_ROOT
-                        Test root used when --test-id is given
+                        Only show summary (default:
+                        /Users/sacks/cime/scripts/Tools)
 </pre></div>
 </div>
 </div>

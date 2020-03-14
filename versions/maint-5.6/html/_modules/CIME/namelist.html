@@ -288,7 +288,7 @@
 <span class="c1"># pylint: disable=wildcard-import,unused-wildcard-import</span>
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">string_in_list</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span>
 <span class="kn">import</span> <span class="nn">six</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -296,7 +296,7 @@
 <span class="c1"># Fortran syntax regular expressions.</span>
 <span class="c1"># Variable names.</span>
 <span class="c1">#FORTRAN_NAME_REGEX = re.compile(r&quot;(^[a-z][a-z0-9_]{0,62})(\([+-]?\d*:?[+-]?\d*:?[+-]?\d*\))?$&quot;, re.IGNORECASE)</span>
-<span class="n">FORTRAN_NAME_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;(^[a-z][a-z0-9_@]{0,62})                            #  The variable name</span>
+<span class="n">FORTRAN_NAME_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;(^[a-z][a-z0-9_]{0,62})                             #  The variable name</span>
 <span class="s2">                                  (\(                                                   # begin optional index expression</span>
 <span class="s2">                                  (([+-]?\d+)                                           # Single valued index</span>
 <span class="s2">                                  |                                                     # or</span>
@@ -801,24 +801,24 @@
 <span class="sd">    True</span>
 <span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;Fortune&quot;)</span>
 <span class="sd">    False</span>
-<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;bacon&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;bacon&quot;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">    ...</span>
-<span class="sd">    CIMEError: ERROR: &#39;bacon&#39; is not a valid literal for any Fortran type.</span>
+<span class="sd">    SystemExit: ERROR: &#39;bacon&#39; is not a valid literal for any Fortran type.</span>
 <span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;1&quot;, type_=&quot;real&quot;)</span>
 <span class="sd">    1.0</span>
-<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;bacon&quot;, type_=&quot;logical&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;bacon&quot;, type_=&quot;logical&quot;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">    ...</span>
-<span class="sd">    CIMEError: ERROR: &#39;bacon&#39; is not a valid literal of type &#39;logical&#39;.</span>
-<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;1&quot;, type_=&quot;booga&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    SystemExit: ERROR: &#39;bacon&#39; is not a valid literal of type &#39;logical&#39;.</span>
+<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;1&quot;, type_=&quot;booga&quot;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">    ...</span>
-<span class="sd">    CIMEError: ERROR: Invalid Fortran type for a namelist: &#39;booga&#39;</span>
-<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;2*1&quot;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    SystemExit: ERROR: Invalid Fortran type for a namelist: &#39;booga&#39;</span>
+<span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;2*1&quot;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">    ...</span>
-<span class="sd">    CIMEError: ERROR: Cannot use repetition syntax in literal_to_python_value</span>
+<span class="sd">    SystemExit: ERROR: Cannot use repetition syntax in literal_to_python_value</span>
 <span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; literal_to_python_value(&quot;-1.D+10&quot;)</span>
 <span class="sd">    -10000000000.0</span>
@@ -1039,13 +1039,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+    <span class="k">except</span><span class="p">:</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">eclass</span><span class="p">):</span>
             <span class="k">raise</span>
         <span class="k">return</span>
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Expected exception </span><span class="si">%s</span><span class="s2"> not raised&quot;</span> <span class="o">%</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">eclass</span><span class="p">))</span></div>
+
+
 
 <div class="viewcode-block" id="Namelist"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist">[docs]</a><span class="k">class</span> <span class="nc">Namelist</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -1077,9 +1079,12 @@
         <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
                 <span class="n">expect</span><span class="p">(</span><span class="n">group_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot; Got None in groups </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">groups</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+                <span class="n">group_lc</span> <span class="o">=</span> <span class="n">group_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_lc</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">variable_name</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span>
+                    <span class="n">variable_lc</span> <span class="o">=</span> <span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_lc</span><span class="p">][</span><span class="n">variable_lc</span><span class="p">]</span> <span class="o">=</span> \
+                                        <span class="n">groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Namelist.clean_groups"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.clean_groups">[docs]</a>    <span class="k">def</span> <span class="nf">clean_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span></div>
@@ -1111,10 +1116,10 @@
 <span class="sd">        &gt;&gt;&gt; sorted(x.get_variable_names(&#39;fOo&#39;))</span>
 <span class="sd">        [&#39;bar(::)&#39;, &#39;bazz&#39;, &#39;bazz(2)&#39;, &#39;bazz(:2:)&#39;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">gn</span><span class="p">:</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="n">group_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">group_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Namelist.get_variable_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_variable_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_variable_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the value of the specified variable.</span>
@@ -1130,12 +1135,13 @@
 <span class="sd">        &gt;&gt;&gt; parse(text=&#39;&amp;foo bar=1,2 /&#39;).get_variable_value(&#39;foO&#39;, &#39;Bar&#39;)</span>
 <span class="sd">        [&#39;1&#39;, &#39;2&#39;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">gn</span><span class="p">:</span>
-            <span class="n">vn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">vn</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span></div>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="n">group_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">variable_name</span> <span class="o">=</span> <span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">group_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="ow">or</span> \
+           <span class="n">variable_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Namelist.get_value"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the value of a uniquely-named variable.</span>
@@ -1144,10 +1150,10 @@
 <span class="sd">        not require a `group_name`, and it requires that the `variable_name` be</span>
 <span class="sd">        unique across all groups.</span>
 
-<span class="sd">        &gt;&gt;&gt; parse(text=&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;).get_value(&#39;bar&#39;)  # doctest: +ELLIPSIS +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">        &gt;&gt;&gt; parse(text=&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;).get_value(&#39;bar&#39;)  # doctest: +ELLIPSIS</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        CIMEError: ERROR: Namelist.get_value: Variable {} is present in multiple groups: ...</span>
+<span class="sd">        SystemExit: ERROR: Namelist.get_value: Variable {} is present in multiple groups: ...</span>
 <span class="sd">        &gt;&gt;&gt; parse(text=&#39;&amp;foo bar=1 / &amp;bazz /&#39;).get_value(&#39;Bar&#39;)</span>
 <span class="sd">        [&#39;1&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; parse(text=&#39;&amp;foo bar(2)=1 / &amp;bazz /&#39;).get_value(&#39;Bar(2)&#39;)</span>
@@ -1155,18 +1161,14 @@
 <span class="sd">        &gt;&gt;&gt; parse(text=&#39;&amp;foo / &amp;bazz /&#39;).get_value(&#39;bar&#39;)</span>
 <span class="sd">        [&#39;&#39;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">possible_groups</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">vn</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
-            <span class="n">vnt</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">vnt</span><span class="p">:</span>
-                <span class="n">vn</span> <span class="o">=</span> <span class="n">vnt</span>
-                <span class="n">possible_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group_name</span><span class="p">)</span>
+        <span class="n">variable_name</span> <span class="o">=</span> <span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">possible_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">group_name</span> <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span>
+                           <span class="k">if</span> <span class="n">variable_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]]</span>
         <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">possible_groups</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span>
                <span class="s2">&quot;Namelist.get_value: Variable </span><span class="si">{}</span><span class="s2"> is present in multiple groups: &quot;</span>
                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">possible_groups</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">possible_groups</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">possible_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">vn</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">possible_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">variable_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span></div>
 
@@ -1195,33 +1197,32 @@
 <span class="sd">        &gt;&gt;&gt; x.get_variable_value(&#39;foo&#39;, &#39;red&#39;)</span>
 <span class="sd">        [&#39;&#39;, &#39;2&#39;, &#39;&#39;, &#39;4&#39;, &#39;&#39;, &#39;6&#39;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="n">group_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
         <span class="n">minindex</span><span class="p">,</span> <span class="n">maxindex</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">var_size</span><span class="p">)</span>
-        <span class="n">variable_name</span> <span class="o">=</span> <span class="n">get_fortran_name_only</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+        <span class="n">variable_name</span> <span class="o">=</span> <span class="n">get_fortran_name_only</span><span class="p">(</span><span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
         <span class="n">expect</span><span class="p">(</span><span class="n">minindex</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Indices &lt; 1 not supported in CIME interface to fortran namelists... lower bound=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">minindex</span><span class="p">))</span>
-        <span class="n">gn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">gn</span><span class="p">:</span>
-            <span class="n">gn</span> <span class="o">=</span> <span class="n">group_name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="k">if</span> <span class="n">group_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">tlen</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">vn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">vn</span><span class="p">:</span>
-            <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">variable_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]:</span>
+            <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">vn</span> <span class="o">=</span> <span class="n">variable_name</span>
             <span class="n">tlen</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">minindex</span> <span class="o">&gt;</span> <span class="n">tlen</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">minindex</span><span class="o">-</span><span class="n">tlen</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">minindex</span><span class="o">-</span><span class="n">tlen</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">minindex</span><span class="p">,</span> <span class="n">maxindex</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">step</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">][</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">][</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">break</span></div>
+
 
 <div class="viewcode-block" id="Namelist.delete_variable"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.delete_variable">[docs]</a>    <span class="k">def</span> <span class="nf">delete_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Delete a variable from a specified group.</span>
@@ -1237,11 +1238,11 @@
 <span class="sd">        &gt;&gt;&gt; x.get_variable_names(&#39;brack&#39;)</span>
 <span class="sd">        []</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gn</span> <span class="o">=</span> <span class="n">string_in_list</span><span class="p">(</span><span class="n">group_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">gn</span><span class="p">:</span>
-            <span class="n">vn</span><span class="o">=</span><span class="n">string_in_list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">vn</span><span class="p">:</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">gn</span><span class="p">][</span><span class="n">vn</span><span class="p">]</span></div>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="n">group_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">variable_name</span> <span class="o">=</span> <span class="n">variable_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="ow">and</span> \
+           <span class="n">variable_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">][</span><span class="n">variable_name</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Namelist.merge_nl"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.merge_nl">[docs]</a>    <span class="k">def</span> <span class="nf">merge_nl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Merge this namelist object with another.</span>
@@ -1312,8 +1313,8 @@
             <span class="n">group_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">group_variables</span></div>
 
-<div class="viewcode-block" id="Namelist.write"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Write a the output data (normally fortran namelist) to the  out_file</span>
+<div class="viewcode-block" id="Namelist.write"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write a Fortran namelist to a file.</span>
 
 <span class="sd">        As with `parse`, the `out_file` argument can be either a file name, or a</span>
 <span class="sd">        file object with a `write` method that accepts unicode. If specified,</span>
@@ -1327,22 +1328,16 @@
 <span class="sd">        specifies the file format. Formats other than &#39;nml&#39; may not support all</span>
 <span class="sd">        possible output values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">format_</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="s1">&#39;rc&#39;</span><span class="p">,</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">,</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">),</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">format_</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="s1">&#39;rc&#39;</span><span class="p">,</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">),</span>
                <span class="s2">&quot;Namelist.write: unexpected output format </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">format_</span><span class="p">)))</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing namelist to: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_file</span><span class="p">))</span>
             <span class="n">flag</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span> <span class="k">if</span> <span class="n">append</span> <span class="k">else</span> <span class="s1">&#39;w&#39;</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="n">skip_comps</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing namelist to file object&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="n">skip_comps</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unwrapped version of `write` assuming that a file object is input.&quot;&quot;&quot;</span>
@@ -1353,69 +1348,15 @@
         <span class="k">elif</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;rc&#39;</span><span class="p">:</span>
             <span class="n">equals</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">sorted_groups</span><span class="p">):</span>
-            <span class="n">group_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">)</span>
+            <span class="n">group_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">group_names</span> <span class="o">=</span> <span class="n">groups</span>
         <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">group_names</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nml&#39;</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&amp;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_name</span><span class="p">))</span>
-            <span class="c1"># allow empty group</span>
-            <span class="k">if</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">:</span>
-                <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                    <span class="n">values</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-                    <span class="c1"># @ is used in a namelist to put the same namelist variable in multiple groups</span>
-                    <span class="c1"># in the write phase, all characters in the namelist variable name after</span>
-                    <span class="c1"># the @ and including the @ should be removed</span>
-                    <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
-                        <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;@.+$&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-
-                    <span class="c1"># To prettify things for long lists of values, build strings</span>
-                    <span class="c1"># line-by-line.</span>
-                    <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
-                        <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span><span class="s2">&quot;.true.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span><span class="s2">&quot;.false.&quot;</span><span class="p">)</span>
-                    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;  </span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-                    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
-                            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span><span class="s2">&quot;.true.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span><span class="s2">&quot;.false.&quot;</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">77</span><span class="p">:</span>
-                            <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="n">value</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;,</span><span class="se">\n</span><span class="s2">&quot;</span>
-                            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;      &quot;</span> <span class="o">+</span> <span class="n">value</span><span class="p">)</span>
-                    <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-                        <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nml&#39;</span><span class="p">:</span>
-                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;/</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">:</span>
-                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">,</span> <span class="n">skip_comps</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Unwrapped version of `write` assuming that a file object is input.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">sorted_groups</span><span class="p">):</span>
-            <span class="n">group_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">group_names</span> <span class="o">=</span> <span class="n">groups</span>
-
-        <span class="k">for</span> <span class="n">group_name</span> <span class="ow">in</span> <span class="n">group_names</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;_attributes&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group_name</span> <span class="ow">and</span> <span class="s2">&quot;nuopc_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group_name</span> <span class="ow">and</span> <span class="s2">&quot;_no_group&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group_name</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="s2">&quot;_attributes&quot;</span> <span class="ow">in</span> <span class="n">group_name</span><span class="p">:</span>
-                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">::</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_name</span><span class="p">))</span>
-
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
                 <span class="n">values</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-                <span class="k">if</span> <span class="s2">&quot;component_list&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">skip_comp</span> <span class="ow">in</span> <span class="n">skip_comps</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">skip_comp</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                            <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">skip_comp</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
                 <span class="c1"># @ is used in a namelist to put the same namelist variable in multiple groups</span>
                 <span class="c1"># in the write phase, all characters in the namelist variable name after</span>
@@ -1423,20 +1364,11 @@
                 <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
                     <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;@.+$&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-                <span class="n">equals</span> <span class="o">=</span> <span class="s2">&quot; =&quot;</span>
-                <span class="k">if</span> <span class="s2">&quot;_var&quot;</span> <span class="ow">in</span> <span class="n">group_name</span><span class="p">:</span>
-                    <span class="n">equals</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span>
-
                 <span class="c1"># To prettify things for long lists of values, build strings</span>
                 <span class="c1"># line-by-line.</span>
                 <span class="k">if</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
                     <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span><span class="s2">&quot;.true.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span><span class="s2">&quot;.false.&quot;</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="s2">&quot;_attribute&quot;</span> <span class="ow">in</span> <span class="n">group_name</span><span class="p">:</span>
-                    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;     </span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-
+                <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;  </span><span class="si">{}{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">equals</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
                 <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
                     <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span><span class="p">:</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">,</span><span class="s2">&quot;.true.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;False&quot;</span><span class="p">,</span><span class="s2">&quot;.false.&quot;</span><span class="p">)</span>
@@ -1447,11 +1379,12 @@
                         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;      &quot;</span> <span class="o">+</span> <span class="n">value</span><span class="p">)</span>
                 <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nml&#39;</span><span class="p">:</span>
+                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;/</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">:</span>
+                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-            <span class="k">if</span> <span class="s2">&quot;_attribute&quot;</span> <span class="ow">in</span> <span class="n">group_name</span><span class="p">:</span>
-                <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;::</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <span class="k">class</span> <span class="nc">_NamelistEOF</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
@@ -1756,7 +1689,7 @@
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;abc &#39;)._parse_variable_name()</span>
 <span class="sd">        &#39;abc&#39;</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;ABC &#39;)._parse_variable_name()</span>
-<span class="sd">        &#39;ABC&#39;</span>
+<span class="sd">        &#39;abc&#39;</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;abc\n&#39;)._parse_variable_name()</span>
 <span class="sd">        &#39;abc&#39;</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;abc%fred\n&#39;)._parse_variable_name()</span>
@@ -1765,8 +1698,8 @@
 <span class="sd">        &#39;abc(2)@fred&#39;</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;abc(1:2:3)\n&#39;)._parse_variable_name()</span>
 <span class="sd">        &#39;abc(1:2:3)&#39;</span>
-<span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;aBc=&#39;)._parse_variable_name()</span>
-<span class="sd">        &#39;aBc&#39;</span>
+<span class="sd">        &gt;&gt;&gt; _NamelistParser(&#39;abc=&#39;)._parse_variable_name()</span>
+<span class="sd">        &#39;abc&#39;</span>
 <span class="sd">        &gt;&gt;&gt; try:</span>
 <span class="sd">        ...     _NamelistParser(&#39;abc(1,2) &#39;)._parse_variable_name()</span>
 <span class="sd">        ...     raise AssertionError(&quot;_NamelistParseError not raised&quot;)</span>
@@ -1811,7 +1744,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">err_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{!r}</span><span class="s2"> is not a valid variable name&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">_NamelistParseError</span><span class="p">(</span><span class="n">err_str</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">text</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">name</span>
 
     <span class="k">def</span> <span class="nf">_parse_character_literal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Parse and return a character literal (a string).</span>
@@ -2209,10 +2144,10 @@
 <span class="sd">        (&#39;foo&#39;, [&#39;2&#39;], False)</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&quot;foo=1,2&quot;)._parse_name_and_values(allow_eof_end=True)</span>
 <span class="sd">        (&#39;foo&#39;, [&#39;1&#39;, &#39;2&#39;], False)</span>
-<span class="sd">        &gt;&gt;&gt; _NamelistParser(&quot;foo(1:2)=1,2,3 &quot;)._parse_name_and_values(allow_eof_end=True) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">        &gt;&gt;&gt; _NamelistParser(&quot;foo(1:2)=1,2,3 &quot;)._parse_name_and_values(allow_eof_end=True)</span>
 <span class="sd">        Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">        CIMEError: ERROR: Too many values for array foo(1:2)</span>
+<span class="sd">        SystemExit: ERROR: Too many values for array foo(1:2)</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&quot;foo=1,&quot;)._parse_name_and_values(allow_eof_end=True)</span>
 <span class="sd">        (&#39;foo&#39;, [&#39;1&#39;, &#39;&#39;], False)</span>
 <span class="sd">        &gt;&gt;&gt; _NamelistParser(&quot;foo+=1&quot;)._parse_name_and_values(allow_eof_end=True)</span>

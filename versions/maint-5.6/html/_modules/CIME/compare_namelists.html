@@ -182,7 +182,7 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">six</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>  <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">CIMEError</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>  <span class="k">import</span> <span class="n">expect</span>
 <span class="n">logger</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># pragma pylint: disable=unsubscriptable-object</span>
@@ -258,7 +258,7 @@
                     <span class="n">sub_tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)]</span>
                     <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sub_tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Incorrect usage of multiplication in token &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>
                     <span class="n">new_tokens</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">sub_tokens</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sub_tokens</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">except</span><span class="p">:</span>
                     <span class="c1"># User probably did not intend to use the * operator as a namelist multiplier</span>
                     <span class="n">new_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -305,36 +305,36 @@
 <span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;)</span>
 <span class="sd">    OrderedDict([(&#39;fire_emis_nl&#39;, OrderedDict([(&#39;fire_emis_factors_file&#39;, &quot;&#39;fire_emis_factors_c140116.nc&#39;&quot;), (&#39;fire_emis_specifier&#39;, [&quot;&#39;bc_a1 = BC&#39;&quot;, &quot;&#39;pom_a1 = 1.4*OC&#39;&quot;, &quot;&#39;pom_a2 = A*B*C&#39;&quot;, &quot;&#39;SO2 = SO2&#39;&quot;])]))])</span>
 
-<span class="sd">    &gt;&gt;&gt; _parse_namelists(&#39;blah&#39;, &#39;foo&#39;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    &gt;&gt;&gt; _parse_namelists(&#39;blah&#39;, &#39;foo&#39;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">    CIMEError: ERROR: File &#39;foo&#39; does not appear to be a namelist file, skipping</span>
+<span class="sd">    SystemExit: ERROR: File &#39;foo&#39; does not appear to be a namelist file, skipping</span>
 
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;&amp;nml</span>
 <span class="sd">    ... val = &#39;one&#39;, &#39;two&#39;,</span>
 <span class="sd">    ... val2 = &#39;three&#39;</span>
 <span class="sd">    ... /&#39;&#39;&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">    CIMEError: ERROR: In file &#39;foo&#39;, Incomplete multiline variable: &#39;val&#39;</span>
+<span class="sd">    SystemExit: ERROR: In file &#39;foo&#39;, Incomplete multiline variable: &#39;val&#39;</span>
 
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;&amp;nml</span>
 <span class="sd">    ... val = &#39;one&#39;, &#39;two&#39;,</span>
 <span class="sd">    ... /&#39;&#39;&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">    CIMEError: ERROR: In file &#39;foo&#39;, Incomplete multiline variable: &#39;val&#39;</span>
+<span class="sd">    SystemExit: ERROR: In file &#39;foo&#39;, Incomplete multiline variable: &#39;val&#39;</span>
 
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;&amp;nml</span>
 <span class="sd">    ... val = &#39;one&#39;, &#39;two&#39;,</span>
 <span class="sd">    ...       &#39;three -&gt; four&#39;</span>
 <span class="sd">    ... /&#39;&#39;&#39;</span>
-<span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;) # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    &gt;&gt;&gt; _parse_namelists(teststr.splitlines(), &#39;foo&#39;)</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">    CIMEError: ERROR: In file &#39;foo&#39;, multiline list variable &#39;val&#39; had dict entries</span>
+<span class="sd">    SystemExit: ERROR: In file &#39;foo&#39;, multiline list variable &#39;val&#39; had dict entries</span>
 
 <span class="sd">    &gt;&gt;&gt; teststr = &#39;&#39;&#39;&amp;nml</span>
 <span class="sd">    ... val = 2, 2*13</span>
@@ -725,7 +725,7 @@
 <span class="c1">###############################################################################</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">compare_namelist_files</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">CIMEError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">except</span> <span class="ne">SystemExit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">assert</span> <span class="s2">&quot;does not appear to be a namelist file&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span></div>
