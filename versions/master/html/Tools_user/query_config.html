@@ -253,7 +253,7 @@ usage: query_config [-h] [-d] [-v] [-s] [--xml]
                     [--compsets [{all,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo,allactive,drv,cam,ufsatm,cism,clm,cice,pop,mom,nemo}]]
                     [--components [{all,None,datm,satm,xatm,cam,ufsatm,clm,dlnd,slnd,xlnd,cice,dice,sice,xice,pop,mom,nemo,docn,socn,xocn,rtm,mosart,drof,srof,xrof,cism,dglc,sglc,xglc,ww3,dwav,swav,xwav,siac,xiac,desp,sesp}]]
                     [--grids]
-                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,bishorn}]]
+                    [--machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,thunder,bishorn}]]
                     [--long] [--comp_interface {mct,moab}]
 
 Displays information about available compsets, component settings, grids and/or
@@ -273,7 +273,7 @@ optional arguments:
                         Query component settings corresponding to the target component for cesm model.
                         If the option is empty, then the lists settings defined by all components is output
   --grids               Query supported model grids for cesm model.
-  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,bishorn}]
+  --machines [{all,current,aleph,athena,bluewaters,centos7-linux,cheyenne,coeus,constance,cori-haswell,cori-knl,daint,eastwind,edison,euler2,euler3,euler4,gaea,hobart,homebrew,izumi,laramie,lawrencium-lr3,lawrencium-lr2,lonestar5,melvin,mira,modex,olympus,pleiades-bro,pleiades-has,pleiades-san,pleiades-ivy,sandia-srn-sems,sandiatoss3,stampede2-skx,stampede2-knl,theia,theta,thunder,bishorn}]
                         Query supported machines for cesm model.
                         If option is left empty then all machines are listed,
                         If the option is &#39;current&#39; then only the current machine details are listed.

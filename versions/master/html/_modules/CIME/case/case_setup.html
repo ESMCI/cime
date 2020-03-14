@@ -263,11 +263,13 @@
 
     <span class="c1"># Remove batch scripts</span>
     <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="n">clean</span><span class="p">:</span>
-        <span class="c1"># clean batch script</span>
+        <span class="c1"># clean setup-generated files</span>
         <span class="n">batch_script</span> <span class="o">=</span> <span class="n">get_batch_script_for_job</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_primary_job</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">batch_script</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">batch_script</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully cleaned batch script </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">batch_script</span><span class="p">))</span>
+        <span class="n">files_to_clean</span> <span class="o">=</span> <span class="p">[</span><span class="n">batch_script</span><span class="p">,</span> <span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;Macros.make&quot;</span><span class="p">,</span> <span class="s2">&quot;Macros.cmake&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">file_to_clean</span> <span class="ow">in</span> <span class="n">files_to_clean</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_to_clean</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_to_clean</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully cleaned </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_to_clean</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">test_mode</span><span class="p">:</span>
             <span class="c1"># rebuild the models (even on restart)</span>
