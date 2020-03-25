@@ -8,6 +8,7 @@ module ice_comp_nuopc
   use NUOPC             , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
   use NUOPC             , only : NUOPC_CompAttributeGet, NUOPC_Advertise
   use NUOPC_Model       , only : model_routine_SS        => SetServices
+  use NUOPC_Model       , only : SetVM
   use NUOPC_Model       , only : model_label_Advance     => label_Advance
   use NUOPC_Model       , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model       , only : model_label_Finalize    => label_Finalize
@@ -26,7 +27,7 @@ module ice_comp_nuopc
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -452,7 +453,7 @@ contains
 
     rc = ESMF_SUCCESS
 
-    ! Start from index 2 in order to skip the scalar field 
+    ! Start from index 2 in order to skip the scalar field
     do nf = 2,fldsFrIce_num
        if (fldsFrIce(nf)%ungridded_ubound == 0) then
           call field_setexport(exportState, trim(fldsFrIce(nf)%stdname), lon, lat, nf=nf, rc=rc)

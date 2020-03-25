@@ -8,6 +8,7 @@ module atm_comp_nuopc
   use NUOPC             , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
   use NUOPC             , only : NUOPC_CompAttributeGet, NUOPC_Advertise
   use NUOPC_Model       , only : model_routine_SS        => SetServices
+  use NUOPC_Model       , only : SetVM
   use NUOPC_Model       , only : model_label_Advance     => label_Advance
   use NUOPC_Model       , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model       , only : model_label_Finalize    => label_Finalize
@@ -26,7 +27,7 @@ module atm_comp_nuopc
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -411,16 +412,21 @@ contains
   !===============================================================================
 
   subroutine ModelAdvance(gcomp, rc)
+!$  use omp_lib, only: OMP_GET_THREAD_NUM, OMP_GET_NUM_THREADS, OMP_GET_MAX_THREADS, OMP_GET_NUM_PROCS
+    use ESMF, only : ESMF_VM, ESMF_VMGet, ESMF_GridCompGet
 
     ! input/output variables
     type(ESMF_GridComp)  :: gcomp
     integer, intent(out) :: rc
 
     ! local variables
+    type(ESMF_VM)            :: vm
     type(ESMF_Clock)  :: clock
     type(ESMF_State)  :: exportState
     real(r8)          :: nextsw_cday
     integer           :: shrlogunit ! original log unit
+    integer                  :: localPet, localPEcount
+    character(len=ESMF_MAXSTR) :: msgString
     character(len=*),parameter  :: subname=trim(modName)//':(ModelAdvance) '
     !-------------------------------------------------------------------------------
 
@@ -434,6 +440,24 @@ contains
     call shr_file_getLogUnit (shrlogunit)
     call shr_file_setLogUnit (logunit)
 
+    !--------------------------------
+    ! Test OpenMP interface
+    !--------------------------------
+    call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    call ESMF_VMGet(vm, pet=localPet, peCount=localPeCount, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+!$  call omp_set_num_threads(localPeCount)
+!$omp parallel private(msgString)
+!$omp critical
+!$      write(msgString,*) subname, ": thread_num=", omp_get_thread_num(), &
+!$      "   num_threads=", omp_get_num_threads(), &
+!$      "   max_threads=", omp_get_max_threads(), &
+!$      "   num_procs=", omp_get_num_procs()
+!$      call ESMF_LogWrite(msgString, ESMF_LOGMSG_INFO, rc=rc)
+!$omp end critical
+!$omp end parallel
     !--------------------------------
     ! Pack export state
     !--------------------------------
@@ -483,7 +507,7 @@ contains
 
     rc = ESMF_SUCCESS
 
-    ! Start from index 2 in order to Skip the scalar field here  
+    ! Start from index 2 in order to Skip the scalar field here
     do nf = 2,fldsFrAtm_num
        if (fldsFrAtm(nf)%ungridded_ubound == 0) then
           call field_setexport(exportState, trim(fldsFrAtm(nf)%stdname), lon, lat, nf=nf, rc=rc)

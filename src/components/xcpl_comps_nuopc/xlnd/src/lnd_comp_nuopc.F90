@@ -8,6 +8,7 @@ module lnd_comp_nuopc
   use NUOPC            , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
   use NUOPC            , only : NUOPC_CompAttributeGet, NUOPC_Advertise
   use NUOPC_Model      , only : model_routine_SS        => SetServices
+  use NUOPC_Model      , only : SetVM
   use NUOPC_Model      , only : model_label_Advance     => label_Advance
   use NUOPC_Model      , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model      , only : model_label_Finalize    => label_Finalize
@@ -26,7 +27,7 @@ module lnd_comp_nuopc
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -42,7 +43,7 @@ module lnd_comp_nuopc
   type (fld_list_type)   :: fldsToLnd(fldsMax)
   type (fld_list_type)   :: fldsFrLnd(fldsMax)
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
-  integer                :: glc_nec 
+  integer                :: glc_nec
 
   real(r8), pointer      :: gbuf(:,:)            ! model info
   real(r8), pointer      :: lat(:)
@@ -464,7 +465,7 @@ contains
 
     rc = ESMF_SUCCESS
 
-    ! Start from index 2 in order to Skip the scalar field here  
+    ! Start from index 2 in order to Skip the scalar field here
     do nf = 2,fldsFrLnd_num
        if (fldsFrLnd(nf)%ungridded_ubound == 0) then
           call field_setexport(exportState, trim(fldsFrLnd(nf)%stdname), lon, lat, nf=nf, rc=rc)

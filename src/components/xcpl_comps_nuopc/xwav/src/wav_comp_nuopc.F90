@@ -8,6 +8,7 @@ module wav_comp_nuopc
   use NUOPC             , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
   use NUOPC             , only : NUOPC_CompAttributeGet, NUOPC_Advertise
   use NUOPC_Model       , only : model_routine_SS        => SetServices
+  use NUOPC_Model       , only : SetVM
   use NUOPC_Model       , only : model_label_Advance     => label_Advance
   use NUOPC_Model       , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model       , only : model_label_Finalize    => label_Finalize
@@ -26,7 +27,7 @@ module wav_comp_nuopc
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -420,9 +421,9 @@ contains
     !--------------------------------------------------
 
     rc = ESMF_SUCCESS
-    
+
     nfstart = 0 ! for fields that have ubound > 0
-    do nf = 2,fldsFrWav_num ! Start from index 2 in order to skip the scalar field 
+    do nf = 2,fldsFrWav_num ! Start from index 2 in order to skip the scalar field
        ubound = fldsFrWav(nf)%ungridded_ubound
        if (ubound == 0) then
           call field_setexport(exportState, trim(fldsFrWav(nf)%stdname), lon, lat, nf=nf, rc=rc)

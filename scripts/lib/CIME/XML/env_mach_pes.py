@@ -80,38 +80,50 @@ class EnvMachPes(EnvBase):
                 max_threads = threads
         return max_threads
 
-    def get_total_tasks(self, comp_classes):
+    def get_total_tasks(self, comp_classes, driver=None):
         total_tasks = 0
         maxinst = self.get_value("NINST")
-        if maxinst:
-            comp_interface = "nuopc"
-        else:
-            comp_interface = 'unknown'
-            maxinst = 1
+        if not driver:
+            if maxinst:
+                driver = "nuopc"
+            else:
+                driver = 'unknown'
+                maxinst = 1
+
         for comp in comp_classes:
             ntasks = self.get_value("NTASKS", attribute={"compclass":comp})
+            # only use threads in this calculation for nuopc driver
+            nthrds = 1
+            if driver == "nuopc":
+                nthrds = self.get_value("NTHRDS", attribute={"compclass":comp})
             rootpe = self.get_value("ROOTPE", attribute={"compclass":comp})
             pstrid = self.get_value("PSTRID", attribute={"compclass":comp})
-            if comp != "CPL" and comp_interface!="nuopc":
+            if comp != "CPL" and driver != "nuopc":
                 ninst = self.get_value("NINST", attribute={"compclass":comp})
                 maxinst = max(maxinst, ninst)
-            tt = rootpe + (ntasks - 1) * pstrid + 1
+            tt = rootpe + nthrds*((ntasks - 1) * pstrid + 1)
             total_tasks = max(tt, total_tasks)
         if self.get_value("MULTI_DRIVER"):
             total_tasks *= maxinst
         return total_tasks
 
-    def get_tasks_per_node(self, total_tasks, max_thread_count):
+    def get_tasks_per_node(self, total_tasks, max_thread_count, driver='mct'):
         expect(total_tasks > 0,"totaltasks > 0 expected, totaltasks = {}".format(total_tasks))
-        tasks_per_node = min(self.get_value("MAX_TASKS_PER_NODE")// max_thread_count,
-                             self.get_value("MAX_MPITASKS_PER_NODE"), total_tasks)
+        if driver == 'nuopc':
+            tasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
+        else:
+            tasks_per_node = min(self.get_value("MAX_TASKS_PER_NODE")// max_thread_count,
+                                 self.get_value("MAX_MPITASKS_PER_NODE"), total_tasks)
         return tasks_per_node if tasks_per_node > 0 else 1
 
-    def get_total_nodes(self, total_tasks, max_thread_count):
+    def get_total_nodes(self, total_tasks, max_thread_count, driver="mct"):
         """
         Return (num_active_nodes, num_spare_nodes)
         """
-        tasks_per_node = self.get_tasks_per_node(total_tasks, max_thread_count)
+        if driver == "nuopc":
+            # threads have already been accounted for
+            max_thread_count = 1
+        tasks_per_node = self.get_tasks_per_node(total_tasks, max_thread_count, driver)
         num_nodes = int(math.ceil(float(total_tasks) / tasks_per_node))
         return num_nodes, self.get_spare_nodes(num_nodes)
 

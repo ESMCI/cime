@@ -129,7 +129,7 @@ class Case(object):
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
-            self.initialize_derived_attributes()
+            self.initialize_derived_attributes(driver=self.get_value("COMP_INTERFACE"))
 
     def check_if_comp_var(self, vid):
         for env_file in self._env_entryid_files:
@@ -139,7 +139,7 @@ class Case(object):
 
         return vid, None, False
 
-    def initialize_derived_attributes(self):
+    def initialize_derived_attributes(self, driver="mct"):
         """
         These are derived variables which can be used in the config_* files
         for variable substitution using the {{ var }} syntax
@@ -165,10 +165,10 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes)
-            self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count)
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes, driver=driver)
+            self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count, driver)
 
-            self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count)
+            self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count, driver)
             self.num_nodes += self.spare_nodes
 
         logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
@@ -180,7 +180,10 @@ class Case(object):
         threads_per_core = 1 if (threads_per_node <= max_mpitasks_per_node) else smt_factor
         self.cores_per_task = self.thread_count / threads_per_core
 
-        os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
+        if self.get_build_threaded():
+            os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
+        elif "OMP_NUM_THREADS" in os.environ:
+            del os.environ["OMP_NUM_THREADS"]
 
         self.srun_binding = smt_factor*max_mpitasks_per_node / self.tasks_per_node
 
@@ -1072,7 +1075,7 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        self.initialize_derived_attributes()
+        self.initialize_derived_attributes(driver=driver)
 
         #--------------------------------------------
         # batch system (must come after initialize_derived_attributes)

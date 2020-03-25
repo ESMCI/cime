@@ -170,7 +170,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             case.flush()
             case.check_lockedfiles()
 
-            case.initialize_derived_attributes()
+            case.initialize_derived_attributes(driver=comp_interface)
 
             cost_per_node = case.get_value("COSTPES_PER_NODE")
             case.set_value("COST_PES", case.num_nodes * cost_per_node)
