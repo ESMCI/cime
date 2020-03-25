@@ -396,12 +396,31 @@ contains
 !$      call ESMF_LogWrite(msgString, ESMF_LOGMSG_INFO, rc=rc)
 !$omp end critical
 !$omp end parallel
-    !--------------------------------
-    ! Pack export state
-    !--------------------------------
 
     call NUOPC_ModelGet(gcomp, modelClock=clock, exportState=exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    !--------------------------------
+    ! Test OpenMP interface
+    !--------------------------------
+    call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    call ESMF_VMGet(vm, pet=localPet, peCount=localPeCount, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+!$  call omp_set_num_threads(localPeCount)
+!$omp parallel private(msgString)
+!$omp critical
+!$      write(msgString,*) subname, ": thread_num=", omp_get_thread_num(), &
+!$      "   num_threads=", omp_get_num_threads(), &
+!$      "   max_threads=", omp_get_max_threads(), &
+!$      "   num_procs=", omp_get_num_procs()
+!$      call ESMF_LogWrite(msgString, ESMF_LOGMSG_INFO, rc=rc)
+!$omp end critical
+!$omp end parallel
+    !--------------------------------
+    ! Pack export state
+    !--------------------------------
 
     call State_SetExport(exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
