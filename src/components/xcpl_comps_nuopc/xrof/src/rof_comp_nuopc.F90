@@ -378,10 +378,6 @@ contains
 
     call shr_file_getLogUnit (shrlogunit)
     call shr_file_setLogUnit (logunit)
-
-    call NUOPC_ModelGet(gcomp, modelClock=clock, exportState=exportState, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
     !--------------------------------
     ! Test OpenMP interface
     !--------------------------------
@@ -403,6 +399,9 @@ contains
     !--------------------------------
     ! Pack export state
     !--------------------------------
+
+    call NUOPC_ModelGet(gcomp, modelClock=clock, exportState=exportState, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     call State_SetExport(exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
