@@ -443,7 +443,7 @@ contains
     !--------------------------------
     ! Test OpenMP interface
     !--------------------------------
-    call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
+    call ESMF_GridCompGet(gcomp, vm=vm, localPet=localPet, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     call ESMF_VMGet(vm, pet=localPet, peCount=localPeCount, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
