@@ -163,7 +163,7 @@ contains
 
     call ESMF_VMGetCurrent(vm, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_VMGet(vm, localPet=mype, peCount=totpe, rc=rc)
+    call ESMF_VMGet(vm, localPet=mype, petCount=totpe, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     if ( decomp_type == 1 .or. &
@@ -673,7 +673,7 @@ contains
   end subroutine ModelSetRunClock
 
   !===============================================================================
-  
+
   subroutine dead_meshinit(gcomp, nx_global, ny_global, gindex, lon, lat, Emesh, rc)
 
     !-----------------------------------------
