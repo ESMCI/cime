@@ -156,6 +156,12 @@ FC_FUNC( mpi_init_fort , MPI_INIT_FORT)
     abort();
 }
 
+int MPI_Init_thread(int *argc, char **argv[], int required, int *provided)
+{
+    *provided = required;
+    return MPI_Init(argc, argv);
+}
+
 int MPI_Init(int *argc, char **argv[])
 {
   MPI_Comm my_comm_world;
