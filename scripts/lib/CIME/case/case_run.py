@@ -179,7 +179,7 @@ def _post_run_check(case, lid):
 
     fv3_standalone = False
 
-    if "CPL" not in case.get_values("COMP_CLASSES"):
+    if "CPL" not in case.get_values("COMP_CLASSES") and model == 'ufs':
         fv3_standalone = True
     if driver == 'nuopc':
         if fv3_standalone:
