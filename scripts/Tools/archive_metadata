@@ -318,6 +318,7 @@ def get_diag_dates(comp, pp_dir):
     model_dates = ''
     pp_vars = _pp_diag_vars.get(comp)
     for pp_var in pp_vars:
+        pp_value = ''
         cmd = ['./pp_config', '--get', pp_var, '--value']
         try:
             pp_value = subprocess.check_output(cmd)
