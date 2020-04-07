@@ -36,7 +36,8 @@ def _download_checksum_file(rundir):
             server = CIME.Servers.WGET.wget_login(address, user, passwd)
         else:
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
-
+        if server is None:
+            continue
 
         success = False
         rel_path = chksum_file
@@ -362,7 +363,8 @@ def verify_chksum(input_data_root, rundir, filename, isdirectory):
     hashfile = os.path.join(rundir, local_chksum_file)
     if not chksum_hash:
         if not os.path.isfile(hashfile):
-            expect(False, "Failed to find or download file {}".format(hashfile))
+            logger.warning("Failed to find or download file {}".format(hashfile))
+            return
 
         with open(hashfile) as fd:
             lines = fd.readlines()
