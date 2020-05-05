@@ -102,8 +102,8 @@
       <value compset="^RCP4">rcp4.5</value>
       <value compset="^RCP2">rcp2.6</value>
       <value compset="^HIST">20tr</value>
-      <value compset="20TR_DATM%IAF.*_MICOM%ECO" cime_model="cesm">20tr</value>
-      <value compset="20TR_DATM%JRA.*_MICOM%ECO" cime_model="cesm">omip2</value>
+      <value compset="20TR_DATM%IAF.*_BLOM%ECO" cime_model="cesm">20tr</value>
+      <value compset="20TR_DATM%JRA.*_BLOM%ECO" cime_model="cesm">omip2</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
