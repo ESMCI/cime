@@ -31,19 +31,17 @@ do
     fi
 done
 
-PIO_TESTS_8=''
-#PIO_TESTS_8='test_async_multi2  test_async_manyproc'
+PIO_TESTS_8='test_async_multi2  test_async_manyproc'
 
-#for TEST in $PIO_TESTS_8
-#do
-#    success2=false
-#    echo "running ${TEST}"
-#    mpiexec -n 8 ./${TEST} && success2=true
-#    if test $success2 = false; then
-#        break
-#    fi
-#done
-success2=true
+for TEST in $PIO_TESTS_8
+do
+    success2=false
+    echo "running ${TEST}"
+    mpiexec -n 8 ./${TEST} && success2=true
+    if test $success2 = false; then
+        break
+    fi
+done
 
 # Did we succeed?
 if test x$success1 = xtrue -a x$success2 = xtrue; then
