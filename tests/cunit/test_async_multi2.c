@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              3, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Is the current process a computation task? */    
