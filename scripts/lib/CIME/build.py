@@ -17,9 +17,16 @@ _CMD_ARGS_FOR_BUILD = \
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
      "OCN_SUBMODEL", "CISM_USE_TRILINOS", "USE_TRILINOS", "USE_ALBANY", "USE_PETSC")
 
-def get_standard_makefile_args(case, shared_lib=False):
+def get_standard_makefile_args(case, shared_lib=False, smp=False, compclass=None, compname=None):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " compile_threaded={} ".format(stringify_bool(case.get_build_threaded()))
+    if compclass:
+        make_args += " MODEL={} COMP_CLASS={} ".format(compclass)
+    if compname:
+        make_args += " COMP_NAME={} ".format(compname)
+    if smp:
+        make_args += " SMP={} ".format(stringify_bool(smp))
+
     if not shared_lib:
         make_args += " USE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
     for var in _CMD_ARGS_FOR_BUILD:
@@ -66,7 +73,7 @@ def uses_kokkos(case):
     return get_model() == "e3sm" and cam_target in ("preqx_kokkos", "theta-l")
 
 ###############################################################################
-def _build_model(build_threaded, exeroot, incroot, complist,
+def _build_model(case, build_threaded, exeroot, incroot, complist,
                  lid, caseroot, cimeroot, compiler, buildlist, comp_interface):
 ###############################################################################
     logs = []
@@ -110,7 +117,7 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         # thread_bad_results captures error output from thread (expected to be empty)
         # logs is a list of log files to be compressed and added to the case logs/bld directory
         t = threading.Thread(target=_build_model_thread,
-            args=(config_dir, model, comp, caseroot, libroot, bldroot, incroot, file_build,
+            args=(case, config_dir, model, comp, caseroot, libroot, bldroot, incroot, file_build,
                   thread_bad_results, smp, compiler))
         t.start()
 
@@ -397,7 +404,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             # thread_bad_results captures error output from thread (expected to be empty)
             # logs is a list of log files to be compressed and added to the case logs/bld directory
             thread_bad_results = []
-            _build_model_thread(config_lnd_dir, "lnd", comp_lnd, caseroot, libroot, bldroot, incroot,
+            _build_model_thread(case, config_lnd_dir, "lnd", comp_lnd, caseroot, libroot, bldroot, incroot,
                                 file_build, thread_bad_results, smp, compiler)
             logs.append(file_build)
             expect(not thread_bad_results, "\n".join(thread_bad_results))
@@ -406,8 +413,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     return logs
 
 ###############################################################################
-def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldroot, incroot, file_build,
-                        thread_bad_results, smp, compiler):
+def _build_model_thread(case, config_dir, compclass, compname, caseroot, libroot,
+                        bldroot, incroot, file_build, thread_bad_results, smp, compiler):
 ###############################################################################
     logger.info("Building {} with output to {}".format(compclass, file_build))
     t1 = time.time()
@@ -418,23 +425,22 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
         cmd = os.path.join(config_dir, "buildlib")
         expect(os.path.isfile(cmd), "Could not find buildlib for {}".format(compname))
 
-    compile_cmd = "MODEL={compclass} COMP_CLASS={compclass} COMP_NAME={compname} {cmd} {caseroot} {libroot} {bldroot} ".\
-        format(compclass=compclass, compname=compname, cmd=cmd, caseroot=caseroot, libroot=libroot, bldroot=bldroot)
-    if get_model() != "ufs":
-        compile_cmd = "SMP={} {}".format(stringify_bool(smp), compile_cmd)
+#    compile_cmd = "{cmd} {caseroot} {libroot} {bldroot} ".\
+#        format(caseroot=caseroot, libroot=libroot, bldroot=bldroot)
+#
+#    if check_for_python(cmd):
+#        logging_options = get_logging_options()
+#        if logging_options != "":
+#            compile_cmd = compile_cmd + logging_options
+    run_sub_or_cmd(cmd, [caseroot, libroot, bldroot], 'buildlib',
+                       [case, libroot, bldroot, compname], logfile=file_build)
 
-    if check_for_python(cmd):
-        logging_options = get_logging_options()
-        if logging_options != "":
-            compile_cmd = compile_cmd + logging_options
-
-    with open(file_build, "w") as fd:
-        stat = run_cmd(compile_cmd,
-                       from_dir=bldroot,  arg_stdout=fd,
-                       arg_stderr=subprocess.STDOUT)[0]
-
-    if stat != 0:
-        thread_bad_results.append("BUILD FAIL: {}.buildlib failed, cat {}".format(compname, file_build))
+#    with open(file_build, "w") as fd:
+#        stat = run_cmd(compile_cmd,
+#                       from_dir=bldroot,  arg_stdout=fd,
+#                       arg_stderr=subprocess.STDOUT)[0]
+#    if stat != 0:
+#        thread_bad_results.append("BUILD FAIL: {}.buildlib failed, cat {}".format(compname, file_build))
 
     analyze_build_log(compclass, file_build, compiler)
 
@@ -641,7 +647,7 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
                                            comp_interface, sharedpath, ninja, dry_run, case))
         else:
             os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
-            logs.extend(_build_model(build_threaded, exeroot, incroot, complist,
+            logs.extend(_build_model(case, build_threaded, exeroot, incroot, complist,
                                      lid, caseroot, cimeroot, compiler, buildlist, comp_interface))
 
         if not buildlist:

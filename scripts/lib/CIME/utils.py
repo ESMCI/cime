@@ -391,7 +391,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
     if not do_run_cmd:
         try:
             mod = imp.load_source(subname, cmd)
-            logger.info("   Calling {}".format(cmd))
+            logger.info("   Calling {} with output to {}".format(cmd, logfile))
             # Careful: logfile code is not thread safe!
             if logfile:
                 with open(logfile,"w") as log_fd:
@@ -402,6 +402,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
                 getattr(mod, subname)(*subargs)
 
         except (SyntaxError, AttributeError) as _:
+            logger.info("Error in sub call")
             pass # Need to try to run as shell command
 
         except Exception:
