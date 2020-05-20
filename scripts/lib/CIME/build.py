@@ -3,7 +3,9 @@ functions for building CIME models
 """
 import glob, shutil, time, threading, subprocess, imp
 from CIME.XML.standard_module_setup  import *
-from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
+from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status
+from CIME.utils                 import get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file
+from CIME.utils                 import safe_copy, check_for_python, get_logging_options, start_thread_logging, stop_thread_logging
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
 
@@ -417,6 +419,8 @@ def _build_model_thread(case, config_dir, compclass, compname, caseroot, libroot
                         bldroot, incroot, file_build, thread_bad_results, smp, compiler):
 ###############################################################################
     logger.info("Building {} with output to {}".format(compclass, file_build))
+    thread_log_handler = start_thread_logging(log_file=file_build)
+
     t1 = time.time()
     cmd = os.path.join(caseroot, "SourceMods", "src." + compname, "buildlib")
     if os.path.isfile(cmd):
@@ -433,7 +437,7 @@ def _build_model_thread(case, config_dir, compclass, compname, caseroot, libroot
 #        if logging_options != "":
 #            compile_cmd = compile_cmd + logging_options
     run_sub_or_cmd(cmd, [caseroot, libroot, bldroot], 'buildlib',
-                       [case, libroot, bldroot, compname], logfile=file_build)
+                       [case, libroot, bldroot, compname])
 
 #    with open(file_build, "w") as fd:
 #        stat = run_cmd(compile_cmd,
@@ -448,6 +452,7 @@ def _build_model_thread(case, config_dir, compclass, compname, caseroot, libroot
         safe_copy(mod_file, incroot)
 
     t2 = time.time()
+    stop_thread_logging(thread_log_handler)
     logger.info("{} built in {:f} seconds".format(compname, (t2 - t1)))
 
 ###############################################################################
