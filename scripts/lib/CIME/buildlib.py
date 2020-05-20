@@ -42,7 +42,8 @@ def parse_input(argv):
 ###############################################################################
 def build_cime_component_lib(case, compname, libroot, bldroot, use_old=True):
 ###############################################################################
-
+    logger.info("Building library for {}".format(compname))
+    logger.debug("DEBUG Building library for {}".format(compname))
     cimeroot  = case.get_value("CIMEROOT")
     casebuild = case.get_value("CASEBUILD")
     compclass = compname[1:] # This very hacky
