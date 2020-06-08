@@ -33,6 +33,9 @@ MODULE pio_tutil
   INTEGER, PARAMETER, PUBLIC :: fc_real   = selected_real_kind(6)
   INTEGER, PARAMETER, PUBLIC :: fc_double = selected_real_kind(13)
 
+  ! Short integer type
+  INTEGER, PARAMETER, PUBLIC :: fc_short = selected_int_kind(5)
+
   ! Misc constants
   INTEGER, PARAMETER :: PIO_TF_MAX_STR_LEN=100
 
