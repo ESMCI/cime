@@ -56,7 +56,7 @@ sub init_predef_types
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_int");
   push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_short");
-  push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "int(kind=fc_short");
+  push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer(kind=fc_short)");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_real");
   push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "real(kind=fc_real)");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_double");
