@@ -309,7 +309,6 @@ contains
   !<
   subroutine read_darray_{DIMS}d_{TYPE} (File,varDesc, ioDesc, array, iostat)
     use iso_c_binding
-!    use ifcore, only: tracebackqq
 
     type (File_desc_t), intent(inout) :: &
          File                   ! file information
