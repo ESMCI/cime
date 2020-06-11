@@ -6,7 +6,7 @@
   
   <server>
     <protocol>wget</protocol>
-    <address>http://ns2345k.web.sigma2.no/inputdata</address>
+    <address>https://www.noresm.org/inputdata</address>
   </server>
   
   <server>
