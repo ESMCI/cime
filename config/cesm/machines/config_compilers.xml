@@ -887,6 +887,10 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="izumi" COMPILER="intel">
+  <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="false">/fs/cgd/csm/tools/pFUnit/pFUnit3.3.3_izumi_Intel19.0.1_noMPI_noOpenMP</PFUNIT_PATH>
+</compiler>
+
 <compiler MACH="hobart" COMPILER="intel">
   <CFLAGS>
     <append> -lifcore</append>
@@ -1250,6 +1254,49 @@ using a fortran linker.
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -L$(NETCDF_DIR)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF_DIR)/lib </append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="zeus">
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+  <CPPDEFS>
+    <!-- these flags enable nano timers -->
+    <append> -DNO_R16 -DHAVE_NANOTIME </append>
+  </CPPDEFS>
+  <FFLAGS>
+    <append MODEL="nemo"> $(FC_AUTO_R8) -O3 -assume norealloc_lhs </append>
+  </FFLAGS>
+  <SLIBS>
+    <append> $SHELL{${NETCDF_PATH}/bin/nc-config --flibs}</append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="zeus" COMPILER="intel">
+  <AR>xiar</AR>
+  <ARFLAGS>
+    <base>cru</base>
+  </ARFLAGS>
+  <FFLAGS>
+    <append MPILIB="impi">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="mpi-serial"> -mcmodel medium </append>
+    <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append MPILIB="impi">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+  </CFLAGS>
+  <LDFLAGS>
+    <append MPILIB="impi">  -mkl=cluster </append>
+    <append MPILIB="mpi-serial">  -mkl -lstdc++ </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append MPILIB="impi">  -lstdc++ </append>
+    <append MPILIB="mpi-serial">  -lstdc++ </append>
+  </SLIBS>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <MPIFC>mpiifort</MPIFC>
 </compiler>
 
 <compiler MACH="userdefined">

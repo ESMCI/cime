@@ -221,7 +221,8 @@ class EnvBatch(EnvBase):
 
             walltime    = case.get_value("USER_REQUESTED_WALLTIME", subgroup=job) if case.get_value("USER_REQUESTED_WALLTIME", subgroup=job) else None
             force_queue = case.get_value("USER_REQUESTED_QUEUE", subgroup=job) if case.get_value("USER_REQUESTED_QUEUE", subgroup=job) else None
-            logger.info("job is {} USER_REQUESTED_WALLTIME {} USER_REQUESTED_QUEUE {}".format(job, walltime, force_queue))
+            walltime_format = case.get_value("walltime_format", subgroup=job) if case.get_value("walltime_format", subgroup=job) else None
+            logger.info("job is {} USER_REQUESTED_WALLTIME {} USER_REQUESTED_QUEUE {} WALLTIME_FORMAT {}".format(job, walltime, force_queue, walltime_format))
             task_count = int(jsect["task_count"]) if "task_count" in jsect else case.total_tasks
             walltime = jsect["walltime"] if ("walltime" in jsect and walltime is None) else walltime
             if "task_count" in jsect:
@@ -273,6 +274,18 @@ class EnvBatch(EnvBase):
                     walltime = specs[3]
 
                 walltime = self._default_walltime if walltime is None else walltime # last-chance fallback
+            else:
+                # Set the walltime to the correct walltime_format, if set.
+                # Assuming correct format is #H:#M or %H:%M:%S.
+                if walltime_format is not None:
+                    components=walltime.split(":")
+                    if len(components) > len(walltime_format.split(":")):
+                        walltime = ':'.join(components[:len(walltime_format.split(":"))])
+                        logger.info(" Changing USER_REQUESTED_WALLTIME to {} to match walltime_format {}".format(walltime,walltime_format))
+                    if len(components) < len(walltime_format.split(":")):
+                        walltime = walltime + ':' + ':'.join(["00"]*(len(walltime_format.split(":")) - len(components)))
+                        logger.info(" Changing USER_REQUESTED_WALLTIME to {} to match walltime_format {}".format(walltime,walltime_format))
+
             env_workflow.set_value("JOB_QUEUE", queue, subgroup=job, ignore_type=specs is None)
             env_workflow.set_value("JOB_WALLCLOCK_TIME", walltime, subgroup=job)
             logger.debug("Job {} queue {} walltime {}".format(job, queue, walltime))
@@ -435,6 +448,7 @@ class EnvBatch(EnvBase):
         alljobs = env_workflow.get_jobs()
         alljobs = [j for j in alljobs
                    if os.path.isfile(os.path.join(self._caseroot,get_batch_script_for_job(j)))]
+
         startindex = 0
         jobs = []
         firstjob = job
@@ -459,6 +473,7 @@ class EnvBatch(EnvBase):
 
             if self._batchtype == "cobalt":
                 break
+
         depid = OrderedDict()
         jobcmds = []
 
@@ -569,10 +584,13 @@ class EnvBatch(EnvBase):
             run_args_str += " {}".format(logging_options)
 
         batch_env_flag = self.get_value("batch_env", subgroup=None)
+        batch_system = self.get_value("BATCH_SYSTEM", subgroup=None)
         if not batch_env_flag:
             return run_args_str
+        elif batch_system == "lsf":
+            return "{} \"all, ARGS_FOR_SCRIPT={}\"".format(batch_env_flag, run_args_str)
         else:
-            return "{} ARGS_FOR_SCRIPT=\'{}\'".format(batch_env_flag, run_args_str)
+            return "{} ARGS_FOR_SCRIPT='{}'".format(batch_env_flag, run_args_str)
 
     def _submit_single_job(self, case, job, dep_jobs=None, allow_fail=False,
                            no_batch=False, skip_pnl=False, mail_user=None, mail_type=None,
@@ -666,7 +684,7 @@ class EnvBatch(EnvBase):
         batch_env_flag = self.get_value("batch_env", subgroup=None)
         run_args = self._build_run_args_str(job, False, skip_pnl=skip_pnl, set_continue_run=resubmit_immediate,
                                             submit_resubmits=not resubmit_immediate)
-        if batch_system == 'lsf':
+        if batch_system == 'lsf' and batch_env_flag == 'none':
             sequence = (run_args, batchsubmit, submitargs, batchredirect, get_batch_script_for_job(job))
         elif batch_env_flag:
             sequence = (batchsubmit, submitargs, run_args, batchredirect, get_batch_script_for_job(job))

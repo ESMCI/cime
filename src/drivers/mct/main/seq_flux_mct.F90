@@ -109,8 +109,9 @@ module seq_flux_mct
   real(r8),parameter :: const_deg2rad = const_pi/180.0_r8  ! deg to rads
 
   ! albedo reference variables - set via namelist
-  real(r8)  :: seq_flux_mct_albdif  ! albedo, diffuse
-  real(r8)  :: seq_flux_mct_albdir  ! albedo, direct
+  real(r8)  :: seq_flux_mct_albdif = -1.0_r8  ! albedo, diffuse
+  real(r8)  :: seq_flux_mct_albdir = -1.0_r8  ! albedo, direct
+  real(r8)  :: seq_flux_atmocn_minwind ! minimum wind temperature for atmocn flux routines
 
   ! Coupler field indices
 
@@ -476,7 +477,7 @@ contains
 
     character(len=256) :: cime_model
 
-    namelist /seq_flux_mct_inparm/ seq_flux_mct_albdif, seq_flux_mct_albdir
+    namelist /seq_flux_mct_inparm/ seq_flux_mct_albdif, seq_flux_mct_albdir, seq_flux_atmocn_minwind
 
     character(len=*),parameter :: subname = '(seq_flux_readnl_mct) '
 
@@ -486,7 +487,7 @@ contains
     if (seq_comm_iamroot(ID)) then
 
        !---------------------------------------------------------------------------
-       ! Read in namelist 
+       ! Read in namelist
        !---------------------------------------------------------------------------
 
         unitn = shr_file_getUnit()
@@ -507,9 +508,11 @@ contains
 
      end if
 
-     call shr_mpi_bcast(seq_flux_mct_albdif, mpicom)
-     call shr_mpi_bcast(seq_flux_mct_albdir, mpicom)
-
+     if (seq_comm_iamin(ID)) then
+        call shr_mpi_bcast(seq_flux_mct_albdif, mpicom)
+        call shr_mpi_bcast(seq_flux_mct_albdir, mpicom)
+        call shr_mpi_bcast(seq_flux_atmocn_minwind, mpicom)
+     endif
   end subroutine seq_flux_readnl_mct
 
   !===============================================================================
@@ -786,6 +789,9 @@ contains
     update_alb = .false.
 
     if (first_call) then
+       if (seq_flux_mct_albdif < 0 .or. seq_flux_mct_albdir < 0) then
+          call shr_sys_abort(trim(subname)//' ERROR seq_flux_mct_inparm namelist not initialized')
+       endif
        index_xao_So_anidr  = mct_aVect_indexRA(xao_o,'So_anidr')
        index_xao_So_anidf  = mct_aVect_indexRA(xao_o,'So_anidf')
        index_xao_So_avsdr  = mct_aVect_indexRA(xao_o,'So_avsdr')
@@ -896,7 +902,6 @@ contains
           update_alb = .true.
        endif    ! nextsw_cday
     end if   ! flux_albav
-
     !--- update current ifrad/ofrad values if albedo was updated
 
     if (update_alb) then
@@ -1069,7 +1074,8 @@ contains
     if (flux_diurnal) then
        call shr_flux_atmocn_diurnal (nloc_a2o , zbot , ubot, vbot, thbot, &
             shum , shum_16O , shum_HDO, shum_18O, dens , tbot, uocn, vocn , &
-            tocn , emask, sen , lat , lwup , &
+            tocn , emask, seq_flux_atmocn_minwind, &
+            sen , lat , lwup , &
             roce_16O, roce_HDO, roce_18O,    &
             evap , evap_16O, evap_HDO, evap_18O, taux , tauy, tref, qref , &
             uGust, lwdn , swdn , swup, prec, &
@@ -1084,7 +1090,8 @@ contains
     else
        call shr_flux_atmocn (nloc_a2o , zbot , ubot, vbot, thbot, prec_gust, gust_fac, &
             shum , shum_16O , shum_HDO, shum_18O, dens , tbot, uocn, vocn , &
-            tocn , emask, sen , lat , lwup , &
+            tocn , emask, seq_flux_atmocn_minwind, &
+            sen , lat , lwup , &
             roce_16O, roce_HDO, roce_18O,    &
             evap , evap_16O, evap_HDO, evap_18O, taux, tauy, tref, qref , &
             duu10n,ustar, re  , ssq , missval = 0.0_r8 )
@@ -1477,7 +1484,8 @@ contains
     if (flux_diurnal) then
        call shr_flux_atmocn_diurnal (nloc , zbot , ubot, vbot, thbot, &
             shum , shum_16O , shum_HDO, shum_18O, dens , tbot, uocn, vocn , &
-            tocn , emask, sen , lat , lwup , &
+            tocn , emask, seq_flux_atmocn_minwind, &
+            sen , lat , lwup , &
             roce_16O, roce_HDO, roce_18O,    &
             evap , evap_16O, evap_HDO, evap_18O, taux , tauy, tref, qref , &
             uGust, lwdn , swdn , swup, prec, &
@@ -1495,7 +1503,8 @@ contains
     else
        call shr_flux_atmocn (nloc , zbot , ubot, vbot, thbot, prec_gust, gust_fac, &
             shum , shum_16O , shum_HDO, shum_18O, dens , tbot, uocn, vocn , &
-            tocn , emask, sen , lat , lwup , &
+            tocn , emask, seq_flux_atmocn_minwind, &
+            sen , lat , lwup , &
             roce_16O, roce_HDO, roce_18O,    &
             evap , evap_16O, evap_HDO, evap_18O, taux , tauy, tref, qref , &
             duu10n,ustar, re  , ssq)

@@ -31,12 +31,13 @@ def _download_checksum_file(rundir):
         elif protocol == "gftp":
             server = CIME.Servers.GridFTP(address, user, passwd)
         elif protocol == "ftp":
-            server = CIME.Servers.FTP(address, user, passwd)
+            server = CIME.Servers.FTP.ftp_login(address, user, passwd)
         elif protocol == "wget":
-            server = CIME.Servers.WGET(address, user, passwd)
+            server = CIME.Servers.WGET.wget_login(address, user, passwd)
         else:
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
-
+        if server is None:
+            continue
 
         success = False
         rel_path = chksum_file
@@ -287,11 +288,13 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
         elif protocol == "gftp":
             server = CIME.Servers.GridFTP(address, user, passwd)
         elif protocol == "ftp":
-            server = CIME.Servers.FTP(address, user, passwd)
+            server = CIME.Servers.FTP.ftp_login(address, user, passwd)
         elif protocol == "wget":
-            server = CIME.Servers.WGET(address, user, passwd)
+            server = CIME.Servers.WGET.wget_login(address, user, passwd)
         else:
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
+        if not server:
+            return False
 
     for data_list_file in data_list_files:
         logging.info("Loading input file list: '{}'".format(data_list_file))
@@ -360,7 +363,8 @@ def verify_chksum(input_data_root, rundir, filename, isdirectory):
     hashfile = os.path.join(rundir, local_chksum_file)
     if not chksum_hash:
         if not os.path.isfile(hashfile):
-            expect(False, "Failed to find or download file {}".format(hashfile))
+            logger.warning("Failed to find or download file {}".format(hashfile))
+            return
 
         with open(hashfile) as fd:
             lines = fd.readlines()

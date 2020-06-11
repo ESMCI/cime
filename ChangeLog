@@ -1,6 +1,334 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 1-30-2020
+Tag: cime5.6.32
+Answer Changes: None
+Tests: Prealpha tests on izumi
+Dependencies:
+
+Brief Summary:
+    - Update intel and cprnc on izumi
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+7a0b1a48f Merge pull request #3382 from ESMCI/fischer/izumi
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_machines.xml
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 1-28-2020
+Tag: cime5.6.31
+Answer Changes: None
+Tests: scripts_regression_tests, f19_g17.I1850Clm50BgcCropCmip6waccm, T62_g16.GIAF
+Dependencies:
+
+Brief Summary:
+
+User interface changes: 
+    - Fixes domain filename in input_data_list.
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+    - c55bcd226 Merge pull request #3378 from ESMCI/fischer/domainfile
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/nmlgen.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 1-24-2020
+Tag: cime5.6.30
+Answer Changes: None
+Tests: scripts_regression_tests, hand testing of downloads
+Dependencies:
+
+Brief Summary:
+    - Add timeouts for ftp and wget logins.
+    - Fix chmod command in safe_copy
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+291fc8e41 Merge pull request #3367 from jedwards4b/server_timeouts
+3688f02bb Merge pull request #3364 from billsacks/fix_safe_copy
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/Servers/ftp.py
+M       scripts/lib/CIME/Servers/wget.py
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/lib/CIME/utils.py
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 1-22-2020
+Tag: cime5.6.29
+Answer Changes: None
+Tests: examine namelist for GIAF_JRA..., scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Stampede2 module updates.
+    - Restore 2.1.1 behavior for JRA compsets.
+    - Allow writing T-forcing cplhist files even when running with SGLC.
+    - Updates for the cesm2 ensemble run on aleph.
+    - Convert user requested walltime to match walltime_format.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+7489690af Merge pull request #3362 from ESMCI/fischer/stampede2
+be1255262 Merge pull request #3361 from klindsay28/cesm2_omip_take2
+123742d6e Merge pull request #3356 from billsacks/t_forcing_cplhist_with_sglc
+77e30d80d Merge pull request #3355 from jedwards4b/aleph_updates
+22afa61fe Merge pull request #3342 from ESMCI/fischer/walltime_format
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_machines.xml
+M       config/cesm/machines/config_workflow.xml
+M       config/cesm/machines/cylc_suite.rc.template
+M       scripts/lib/CIME/XML/env_batch.py
+M       src/components/data_comps/datm/cime_config/config_component.xml
+M       src/components/data_comps/datm/cime_config/namelist_definition_datm.xml
+M       src/components/data_comps/drof/cime_config/config_component.xml
+M       src/components/data_comps/drof/cime_config/namelist_definition_drof.xml
+M       src/drivers/mct/main/cime_comp_mod.F90
+M       src/drivers/mct/main/prep_glc_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer
+Date: 12-12-2019 
+Tag: cime5.6.28
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Update CIME_OUTPUT_ROOT for aleph.
+    - Update exp_types.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+fd98044f7 Merge branch 'maint-5.6' of https://github.com/ESMCI/cime into maint-5.6
+cfcce68b9 update scratch directory
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/archive_metadata
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 12-2-2019
+Tag: cime5.6.27
+Answer Changes: Only RCE
+Tests: QPRCEMIP 
+Dependencies:
+
+Brief Summary:
+    - Change sst_aquap11 to sst_aquap_constant.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+b92cea675 Merge pull request #3316 from cacraigucar/maint-5.6
+
+
+Modified files: git diff --name-status [previous_tag]
+M       src/drivers/mct/cime_config/namelist_definition_drv.xml
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 11-25-2019
+Tag: cime5.6.26
+Answer Changes: None
+Tests: CLM PFunit testing on izumi, scripts_regression_tests
+       SMS_Ld5.f09_g16.B1850G.cheyenne_intel.allactive-cism-test_coupling
+Dependencies:
+
+Brief Summary:
+    - Add path for PFUNIT on izumi and add path for batch commands to $PATH.
+    - Initialize albdif and albdir
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+0f0531e18 Merge pull request #3302 from ekluzek/izumipgi
+21476986b Merge pull request #3295 from jedwards4b/seq_flux_vars_init
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       src/drivers/mct/main/seq_flux_mct.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 10-25-2019
+Tag: cime5.6.25
+Answer Changes: None
+Tests: SMS_Ld1_D.f19_g17.I1850Clm50BgcCropCmip6.cheyenne_gnu.clm-default
+Dependencies:
+
+Brief Summary:
+    - Cherry-picked AQPCONST changes.
+    - Fix mpi_bcast in seq_flux_mct.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+03cb90660 Merge pull request #3266 from ESMCI/aqp_cherrypick
+f75914619 Merge pull request #3261 from jedwards4b/seq_flux_mct_fix
+
+Modified files: git diff --name-status [previous_tag]
+M       src/components/data_comps/docn/cime_config/buildnml
+M       src/components/data_comps/docn/cime_config/config_component.xml
+M       src/components/data_comps/docn/cime_config/namelist_definition_docn.xml
+M       src/components/data_comps/docn/docn_comp_mod.F90
+M       src/components/data_comps/docn/docn_shr_mod.F90
+M       src/drivers/mct/main/seq_flux_mct.F90
+M       src/share/util/shr_scam_mod.F90
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 9-30-2019
+Tag: cime5.6.24
+Answer Changes: None
+Tests: aux_cam tests, cime_developer tests, scripts_regression_tests 
+       tested workflow by hand
+Dependencies:
+
+Brief Summary:
+    - Add namelist for minimum wind speed for atmOcn fluxes.
+    - Address objection to using case in workflow.
+    - Fix case of workflow job prior to case.run or case.test.
+    - Fix bug in SCAM.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+cf62e3524 Merge pull request #3251 from cacraigucar/atmOcn_wind
+98d8115ac Merge pull request #3246 from jedwards4b/workflow_casetoworkflow_id
+829138e73 Merge pull request #3242 from jedwards4b/workflow_before_run_fix
+7b1b3208c Merge pull request #3238 from cacraigucar/maint-5.6
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_workflow.xml
+M       config/e3sm/machines/config_workflow.xml
+M       config/xml_schemas/config_workflow.xsd
+M       scripts/Tools/preview_run
+M       scripts/create_newcase
+M       scripts/lib/CIME/XML/env_batch.py
+M       scripts/lib/CIME/XML/workflow.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_submit.py
+M       src/drivers/mct/cime_config/namelist_definition_drv.xml
+M       src/drivers/mct/main/seq_flux_mct.F90
+M       src/share/util/shr_flux_mod.F90
+M       src/share/util/shr_scam_mod.F90
+
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 9-11-2019
+Tag: cime5.6.23
+Answer Changes: climate changing for C & G compsets.
+Tests: cime_developers, aux_cam, scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Change rce_sst to fixed_sst to better reflect its purpose.
+    - Fix wallclocks in testlists.
+    - Archive metadata add support for lens experiment type.
+    - Changes to support Radiative Convective Equilibrium.
+    - Add support for CMIP6 OMIP, update JRA forcing files.
+    - Make the streams file legitiment xml files.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+e7e14698a Merge pull request #3236 from cacraigucar/fixed_sst
+189ac85c6 Merge pull request #3234 from ESMCI/fischer/wallclocks
+751d24c99 Merge pull request #3228 from bertinia/maint-5.6_archive_metadata
+3a3fa6fab Merge pull request #3231 from cacraigucar/rce_release
+3418675b0 Merge pull request #3223 from klindsay28/cesm2_omip
+38117f02d Merge pull request #3217 from jedwards4b/maint-5.6_user_streamfix
+
+Modified files: git diff --name-status [previous_tag]
+M	config/cesm/config_archive.xml
+M	config/cesm/config_grids.xml
+M	scripts/Tools/archive_metadata
+A	scripts/lib/CIME/XML/stream.py
+M	scripts/lib/CIME/case/case_setup.py
+M	scripts/lib/CIME/nmlgen.py
+M	src/components/data_comps/datm/cime_config/buildnml
+M	src/components/data_comps/datm/cime_config/config_component.xml
+M	src/components/data_comps/datm/cime_config/namelist_definition_datm.xml
+M	src/components/data_comps/datm/datm_comp_mod.F90
+M	src/components/data_comps/dice/cime_config/buildnml
+M	src/components/data_comps/dlnd/cime_config/buildnml
+M	src/components/data_comps/docn/cime_config/buildnml
+M	src/components/data_comps/docn/cime_config/config_component.xml
+M	src/components/data_comps/docn/cime_config/namelist_definition_docn.xml
+M	src/components/data_comps/docn/docn_comp_mod.F90
+M	src/components/data_comps/docn/docn_shr_mod.F90
+M	src/components/data_comps/drof/cime_config/buildnml
+M	src/components/data_comps/drof/cime_config/namelist_definition_drof.xml
+M	src/components/data_comps/dwav/cime_config/buildnml
+M	src/drivers/mct/cime_config/buildnml
+M	src/drivers/mct/cime_config/config_component_cesm.xml
+M	src/drivers/mct/cime_config/namelist_definition_drv.xml
+M	src/drivers/mct/cime_config/testdefs/testlist_drv.xml
+M	src/drivers/mct/main/cime_comp_mod.F90
+M	src/drivers/mct/main/seq_flux_mct.F90
+M	src/drivers/mct/shr/seq_infodata_mod.F90
+M	src/share/streams/shr_tInterp_mod.F90
+M	src/share/util/shr_orb_mod.F90
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-26-2019
 Tag: cime5.6.22
 Answer Changes: None
