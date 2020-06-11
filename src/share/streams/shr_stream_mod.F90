@@ -1516,6 +1516,7 @@ contains
     integer(SHR_KIND_IN)   :: ndate         ! calendar date of time value
     real(SHR_KIND_R8)      :: nsec          ! elapsed secs on calendar date
     real(SHR_KIND_R8),allocatable :: tvar(:)
+    real(SHR_KIND_R8)      :: fillvalue
     !----- formats -----
     character(*),parameter :: subname = '(shr_stream_readTCoord) '
     character(*),parameter :: F01   = "('(shr_stream_readTCoord) ',a,2i7)"
@@ -1565,12 +1566,27 @@ contains
     allocate(tvar(nt))
     rcode = nf90_get_var(fid,vid,tvar)
     if (rcode /= nf90_noerr) call shr_sys_abort(subname//' ERROR: nf90_get_var')
+
+    rcode = nf90_get_att(fid, vid, '_FillValue', fillvalue)
+    if (rcode /= nf90_noerr) fillvalue = NF90_FILL_FLOAT
+
     rCode = nf90_close(fid)
     if (rcode /= nf90_noerr) call shr_sys_abort(subname//' ERROR: nf90_close')
+    if (maxval(tvar(1:nt)) == fillvalue) then
+       print *,__FILE__,__LINE__,strm%file(k)%name
+       print *,__FILE__,__LINE__,k,nt,tvar
+    endif
     do n = 1,nt
-       call shr_cal_advDate(tvar(n),bunits,bdate,bsec,ndate,nsec,calendar)
-       strm%file(k)%date(n) = ndate
-       strm%file(k)%secs(n) = nint(nsec)
+       if(tvar(n) /= fillvalue) then
+          call shr_cal_advDate(tvar(n),bunits,bdate,bsec,ndate,nsec,calendar)
+          strm%file(k)%date(n) = ndate
+          strm%file(k)%secs(n) = nint(nsec)
+       else
+          strm%file(k)%date(n) = -1
+          strm%file(k)%secs(n) = -1
+          strm%file(k)%nt = n-1
+          exit
+       endif
     enddo
     deallocate(tvar)
 

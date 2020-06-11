@@ -38,6 +38,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
     # flag will stay in effect for the duration of the RESUBMITs
     env_batch = case.get_env("batch")
     external_workflow = case.get_value("EXTERNAL_WORKFLOW")
+
     if resubmit and env_batch.get_batch_system_type() == "none" or external_workflow:
         no_batch = True
     if no_batch:
@@ -54,7 +55,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
         except:
             env_batch_has_changed = True
 
-    if batch_system != "none" and env_batch_has_changed or external_workflow:
+    if batch_system != "none" and (env_batch_has_changed or external_workflow):
         # May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)
         logger.warning(\
 """
