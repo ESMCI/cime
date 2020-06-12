@@ -229,6 +229,7 @@ using a fortran linker.
     <append compile_threaded="true"> -qopenmp </append>
     <append DEBUG="TRUE"> -O0 -g -check uninit -check bounds -check pointers -fpe0 -check noarg_temp_created </append>
     <append DEBUG="FALSE"> -O2 -debug minimal </append>
+    <append MODEL="cice"> -init=zero,arrays </append>
   </FFLAGS>
   <FFLAGS_NOOPT>
     <base> -O0 </base>
@@ -1185,7 +1186,6 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 -xAVX </append>
     <append MODEL="blom"> -r8 </append>
-    <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
@@ -1207,7 +1207,6 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
     <append MODEL="blom"> -r8 </append>
-    <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
   <MPICC> mpiicc </MPICC>
   <MPICXX> mpiicpc </MPICXX>
