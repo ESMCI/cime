@@ -2365,6 +2365,32 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="tetralith">
+    <DESC>Tetralith Linux Cluster (NSC, Sweden), 32 pes/node, batch system SLURM</DESC>
+    <OS>LINUX</OS>
+    <COMPILERS>intel</COMPILERS>
+    <MPILIBS>impi</MPILIBS>
+    <PROJECT>snic2019-1-2</PROJECT>
+    <CHARGE_ACCOUNT>bolinc</CHARGE_ACCOUNT>
+    <CIME_OUTPUT_ROOT>/proj/$CHARGE_ACCOUNT/users/$ENV{USER}/noresm2</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/proj/cesm_input-data/inputdata/</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/proj/cesm_input-data/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/cesm_archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>$CIME_OUTPUT_ROOT/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc</CCSM_CPRNC>
+    <GMAKE_J>4</GMAKE_J>
+    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+    <SUPPORTED_BY>snic</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>32</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>32</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>mpprun</executable>
+    </mpirun>
+    <module_system type="none">
+    </module_system>
+  </machine>
+
   <default_run_suffix>
     <default_run_exe>${EXEROOT}/cesm.exe </default_run_exe>
     <default_run_misc_suffix> >> cesm.log.$LID 2>&amp;1 </default_run_misc_suffix>
