@@ -381,9 +381,9 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     if get_model() != "e3sm" and (buildlist is None or "lnd" in buildlist):
         comp_lnd = case.get_value("COMP_LND")
         if comp_lnd == "clm":
-            logging.info("         - Building clm library ")
+            logging.info("         - Building CTSM library ")
             esmfdir = "esmf" if case.get_value("USE_ESMF_LIB") else "noesmf"
-            bldroot = os.path.join(sharedlibroot, sharedpath, comp_interface, esmfdir, "clm","obj" )
+            bldroot = os.path.join(sharedlibroot, sharedpath, comp_interface, esmfdir, "ctsm","obj" )
             libroot = os.path.join(exeroot, sharedpath, comp_interface, esmfdir, "lib")
             incroot = os.path.join(exeroot, sharedpath, comp_interface, esmfdir, "include")
             file_build = os.path.join(exeroot, "lnd.bldlog.{}".format( lid))

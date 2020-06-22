@@ -144,7 +144,7 @@
     <valid_values>none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end</valid_values>
     <default_value>never</default_value>
     <values match="last">
-      <value compset="_DATM.+_CLM">ndays</value>
+      <value compset="_DATM.+_CLM|_DATM.+CTSM">ndays</value>
     </values>
     <group>run_begin_stop_restart</group>
     <file>env_run.xml</file>
@@ -165,6 +165,8 @@
       <value compset="^OMIP_DATM%JRA.*_POP2%[^_]*ECO">CO2A</value>
       <value compset="HIST.*_DATM.*_CLM">CO2A</value>
       <value compset="SSP.*_DATM.*_CLM">CO2A</value>
+      <value compset="HIST.*_DATM.*_CTSM">CO2A</value>
+      <value compset="SSP.*_DATM.*_CTSM">CO2A</value>
       <value compset="_BGC%BPRP">CO2C</value>
       <value compset="_BGC%BDRD">CO2C</value>
     </values>
@@ -227,6 +229,7 @@
       <value compset="_CAM\d+%WCXI">288</value>
       <value compset="_DATM%COPYALL_NPS">72</value>
       <value compset="_DATM.*_CLM">48</value>
+      <value compset="_DATM.*_CTSM">48</value>
       <value compset="_DATM.*_DICE.*_POP2">4</value>
       <value compset="_DATM.*_DICE.*_MOM6">24</value>
       <value compset="_DATM.*_SLND.*_CICE.*_POP2">24</value>
@@ -538,7 +541,7 @@
     <file>env_run.xml</file>
     <desc>
       Mechanism for setting the CO2 value in ppmv for
-      CLM if CLM_CO2_TYPE is constant or for
+      CTSM if CLM_CO2_TYPE is constant or for
       POP if OCN_CO2_TYPE is constant.
     </desc>
   </entry>
@@ -562,8 +565,8 @@
     <default_value>10</default_value>
     <group>run_glc</group>
     <file>env_run.xml</file>
-    <desc>Number of glacier elevation classes used in CLM.
-    Used by both CLM and the coupler (even if CISM is not running, and only SGLC is used).</desc>
+    <desc>Number of glacier elevation classes used in CTSM.
+    Used by both CTSM and the coupler (even if CISM is not running, and only SGLC is used).</desc>
   </entry>
 
   <entry id="GLC_TWO_WAY_COUPLING">
@@ -572,6 +575,7 @@
     <default_value>FALSE</default_value>
     <values match="last">
       <value compset="_CLM.+CISM\d">TRUE</value>
+      <value compset="_CTSM.+CISM\d">TRUE</value>
       <!-- Turn on two-way coupling for TG compsets - even though there are no
            feedbacks for a TG compset, this will give us additional diagnostics -->
       <value compset="_DLND.+CISM\d">TRUE</value>
@@ -580,7 +584,7 @@
     <file>env_run.xml</file>
     <desc>Whether the glacier component feeds back to the rest of the system
       This affects:
-      (1) Whether CLM updates its areas based on glacier areas sent from GLC
+      (1) Whether CTSM updates its areas based on glacier areas sent from GLC
       (2) Whether GLC sends fluxes (e.g., calving fluxes) to the coupler
       Note that this is set to TRUE by default for TG compsets - even though there are
       no feedbacks for TG compsets, this enables extra coupler diagnostics for these

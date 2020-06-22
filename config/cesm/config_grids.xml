@@ -67,55 +67,55 @@
       <support>Non-standard grid for running POP in true 1D mode</support>
     </model_grid>
 
-    <model_grid alias="CLM_USRDAT" compset="DATM.+CLM">
+    <model_grid alias="CLM_USRDAT" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">CLM_USRDAT</grid>
       <grid name="lnd">CLM_USRDAT</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_numaIA" compset="DATM.+CLM">
+    <model_grid alias="1x1_numaIA" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_numaIA</grid>
       <grid name="lnd">1x1_numaIA</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_brazil" compset="DATM.+CLM">
+    <model_grid alias="1x1_brazil" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_brazil</grid>
       <grid name="lnd">1x1_brazil</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_smallvilleIA" compset="DATM.+CLM">
+    <model_grid alias="1x1_smallvilleIA" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_smallvilleIA</grid>
       <grid name="lnd">1x1_smallvilleIA</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_camdenNJ" compset="DATM.+CLM">
+    <model_grid alias="1x1_camdenNJ" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_camdenNJ</grid>
       <grid name="lnd">1x1_camdenNJ</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_mexicocityMEX" compset="DATM.+CLM">
+    <model_grid alias="1x1_mexicocityMEX" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_mexicocityMEX</grid>
       <grid name="lnd">1x1_mexicocityMEX</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_vancouverCAN" compset="DATM.+CLM">
+    <model_grid alias="1x1_vancouverCAN" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_vancouverCAN</grid>
       <grid name="lnd">1x1_vancouverCAN</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="1x1_urbanc_alpha" compset="DATM.+CLM">
+    <model_grid alias="1x1_urbanc_alpha" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">1x1_urbanc_alpha</grid>
       <grid name="lnd">1x1_urbanc_alpha</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
-    <model_grid alias="5x5_amazon" compset="DATM.+CLM">
+    <model_grid alias="5x5_amazon" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">5x5_amazon</grid>
       <grid name="lnd">5x5_amazon</grid>
       <grid name="rof">null</grid>
@@ -123,7 +123,7 @@
 
     <!-- Regional NLDAS-2 grid over the U.S. (0.125 degree resolution;
          25-53N, 235-293E), with mask from NLDAS-2 atmospheric drivers -->
-    <model_grid alias="nldas2_rnldas2_mnldas2" compset="DATM.+CLM">
+    <model_grid alias="nldas2_rnldas2_mnldas2" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">0.125nldas2</grid>
       <grid name="lnd">0.125nldas2</grid>
       <grid name="ocnice">0.125nldas2</grid>
@@ -131,7 +131,7 @@
       <mask>nldas2</mask>
     </model_grid>
 
-    <model_grid alias="hcru_hcru" compset="DATM.+CLM">
+    <model_grid alias="hcru_hcru" compset="DATM.+CLM|DATM.+CTSM">
       <grid name="atm">360x720cru</grid>
       <grid name="lnd">360x720cru</grid>
     </model_grid>
@@ -925,14 +925,14 @@
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="ne60pg2_ne60pg2_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne60pg2_ne60pg2_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne60np4.pg2</grid>
       <grid name="lnd">ne60np4.pg2</grid>
       <grid name="ocnice">ne60np4.pg2</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="ne120pg2_ne120pg2_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne120pg2_ne120pg2_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne120np4.pg2</grid>
       <grid name="lnd">ne120np4.pg2</grid>
       <grid name="ocnice">ne120np4.pg2</grid>
@@ -946,7 +946,7 @@
       <mask>tx0.1v2</mask>
     </model_grid>
 
-    <model_grid alias="ne240pg2_ne240pg2_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne240pg2_ne240pg2_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne240np4.pg2</grid>
       <grid name="lnd">ne240np4.pg2</grid>
       <grid name="ocnice">ne240np4.pg2</grid>
@@ -962,7 +962,7 @@
       <mask>gx3v7</mask>
     </model_grid>
 
-    <model_grid alias="ne16pg3_ne16pg3_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne16pg3_ne16pg3_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne16np4.pg3</grid>
       <grid name="lnd">ne16np4.pg3</grid>
       <grid name="ocnice">ne16np4.pg3</grid>
@@ -976,7 +976,7 @@
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="ne60pg3_ne60pg3_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne60pg3_ne60pg3_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne60np4.pg3</grid>
       <grid name="lnd">ne60np4.pg3</grid>
       <grid name="ocnice">ne60np4.pg3</grid>
@@ -997,7 +997,7 @@
       <mask>tx0.1v3</mask>
     </model_grid>
 
-    <model_grid alias="ne240pg3_ne240pg3_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne240pg3_ne240pg3_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne240np4.pg3</grid>
       <grid name="lnd">ne240np4.pg3</grid>
       <grid name="ocnice">ne240np4.pg3</grid>
@@ -1020,28 +1020,28 @@
 
     <!--  spectral element grids with 4x4 FVM physics grid -->
 
-    <model_grid alias="ne5pg4_ne5pg4_mg37" not_compset="_POP|_CLM">
+    <model_grid alias="ne5pg4_ne5pg4_mg37" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne5np4.pg4</grid>
       <grid name="lnd">ne5np4.pg4</grid>
       <grid name="ocnice">ne5np4.pg4</grid>
       <mask>gx3v7</mask>
     </model_grid>
 
-    <model_grid alias="ne30pg4_ne30pg4_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne30pg4_ne30pg4_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne30np4.pg4</grid>
       <grid name="lnd">ne30np4.pg4</grid>
       <grid name="ocnice">ne30np4.pg4</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="ne60pg4_ne60pg4_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne60pg4_ne60pg4_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne60np4.pg4</grid>
       <grid name="lnd">ne60np4.pg4</grid>
       <grid name="ocnice">ne60np4.pg4</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="ne120pg4_ne120pg4_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne120pg4_ne120pg4_mg17" not_compset="_POP|_CLM|_CTSM">
       <grid name="atm">ne120np4.pg4</grid>
       <grid name="lnd">ne120np4.pg4</grid>
       <grid name="ocnice">ne120np4.pg4</grid>
@@ -1235,63 +1235,63 @@
       <nx>1</nx> <ny>1</ny>
       <file>$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>user specified domain - only valid for DATM/CLM compset</desc>
+      <desc>user specified domain - only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_numaIA">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Numa Iowa -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_brazil">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Brazil -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_smallvilleIA">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_camdenNJ">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Camden New Jersey -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_mexicocityMEX">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Mexico City Mexico -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_vancouverCAN">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Vancouver Canada -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="1x1_urbanc_alpha">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
+      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="5x5_amazon">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.5x5pt-amazon_navy.090715.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>5x5 Amazon regional case -- only valid for DATM/CLM compset</desc>
+      <desc>5x5 Amazon regional case -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <!-- This grid is also used by ROF -->
@@ -1308,7 +1308,7 @@
       <nx>720</nx> <ny>360</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.360x720_cruncep.100429.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
-      <desc>Exact half-degree CRUNCEP datm forcing grid with CRUNCEP land-mask -- only valid for DATM/CLM compset</desc>
+      <desc>Exact half-degree CRUNCEP datm forcing grid with CRUNCEP land-mask -- only valid for DATM/CTSM compset</desc>
     </domain>
 
     <domain name="0.23x0.31">
