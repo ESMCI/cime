@@ -814,7 +814,7 @@ contains
         write(shr_log_unit, *) "Resetting PIO rearranger comm max pend req (comp2io) to 0. (Since"
         write(shr_log_unit, *) "we have only 1 MPI process for this component)"
         buf(3) = 0
-      else if((pio_rearr_comm_max_pend_req_comp2io <= 0) .and. &
+      else if((pio_rearr_comm_max_pend_req_comp2io < 0) .and. &
           (pio_rearr_comm_max_pend_req_comp2io /= PIO_REARR_COMM_UNLIMITED_PEND_REQ)) then
 
         ! Small multiple of pio_numiotasks has proven to perform
@@ -822,7 +822,7 @@ contains
         ! very large process count runs. Can improve this by
         ! communicating between iotasks first, and then non-iotasks
         ! to iotasks (TO DO)
-        write(shr_log_unit, *) "Invalid PIO rearranger comm max pend req (comp2io), ",&
+        write(shr_log_unit, *) "User-specified PIO rearranger comm max pend req (comp2io) = ",&
              pio_rearr_comm_max_pend_req_comp2io
         write(shr_log_unit, *) "Resetting PIO rearranger comm max pend req (comp2io) to ", &
              max(PIO_REARR_COMM_DEF_MAX_PEND_REQ, 2 * pio_numiotasks)
@@ -850,9 +850,9 @@ contains
         write(shr_log_unit, *) "Resetting PIO rearranger comm max pend req (io2comp) to 0. (Since"
         write(shr_log_unit, *) "we have only 1 MPI process for this component)"
         buf(6) = 0
-      else if((pio_rearr_comm_max_pend_req_io2comp <= 0) .and. &
+      else if((pio_rearr_comm_max_pend_req_io2comp < 0) .and. &
           (pio_rearr_comm_max_pend_req_io2comp /= PIO_REARR_COMM_UNLIMITED_PEND_REQ)) then
-        write(shr_log_unit, *) "Invalid PIO rearranger comm max pend req (io2comp), ", pio_rearr_comm_max_pend_req_io2comp
+        write(shr_log_unit, *) "User-specified PIO rearranger comm max pend req (io2comp) = ", pio_rearr_comm_max_pend_req_io2comp
         write(shr_log_unit, *) "Resetting PIO rearranger comm max pend req (io2comp) to ", PIO_REARR_COMM_DEF_MAX_PEND_REQ
         buf(6) = PIO_REARR_COMM_DEF_MAX_PEND_REQ
       else
