@@ -320,12 +320,12 @@ This allows using a different mpirun command to launch unit tests
       <executable></executable>
     </mpirun>
     <module_system type="module">
-      <init_path lang="sh">/apps/lmod/init/sh</init_path>
-      <init_path lang="csh">/apps/lmod/init/csh</init_path>
-      <init_path lang="python">/apps/lmod/init/env_modules_python.py</init_path>
+      <init_path lang="sh">/apps/lmod/lmod/init/sh</init_path>
+      <init_path lang="csh">/apps/lmod/lmod/init/csh</init_path>
+      <init_path lang="python">/apps/lmod/lmod/init/env_modules_python.py</init_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
-      <cmd_path lang="python">/apps/lmod/libexec/lmod python</cmd_path>
+      <cmd_path lang="python">/apps/lmod/lmod/libexec/lmod python</cmd_path>
       <modules compiler="intel">
         <command name="purge"/>
         <command name="load">intel/2020</command>
@@ -336,9 +336,10 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">impi/2020</command>
       </modules>
     </module_system>
-    <environment_variables comp_interface="nuopc">
+    <environment_variables>
       <env name="ESMF_RUNTIME_PROFILE">ON</env>
       <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
+      <env name="NETCDF_PATH">$ENV{NETCDF}</env>
     </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>

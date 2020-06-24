@@ -130,15 +130,17 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         cime_model = get_model()
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
 
-        config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
-        if not os.path.isdir(config_dir):
-            config_dir = os.path.join(cimeroot,"..","src","model","NEMS","cime","cime_config")
+        if cime_model == 'ufs' and "cpl" not in complist:
+            config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
+        else:
+            config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
+
         expect(os.path.exists(config_dir), "Config directory not found {}".format(config_dir))
         if "cpl" in complist:
             bldroot = os.path.join(exeroot, "cpl", "obj")
             if not os.path.isdir(bldroot):
                 os.makedirs(bldroot)
-        logger.info("Building {} with output to {} ".format(cime_model, file_build))
+        logger.info("Building {} from {}/buildexe with output to {} ".format(cime_model, config_dir, file_build))
 
         with open(file_build, "w") as fd:
             stat = run_cmd("{}/buildexe {} {} {} "
