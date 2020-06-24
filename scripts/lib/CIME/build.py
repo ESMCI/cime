@@ -3,7 +3,7 @@ functions for building CIME models
 """
 import glob, shutil, time, threading, subprocess, imp
 from CIME.XML.standard_module_setup  import *
-from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy
+from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
 
@@ -34,9 +34,9 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     ocn_model = case.get_value("COMP_OCN")
     atm_model = case.get_value("COMP_ATM")
     if ocn_model == 'mom' or atm_model == "fv3gfs":
-        cmake_args += " -DUSE_FMS=TRUE"
+        cmake_args += " -DUSE_FMS=TRUE "
 
-    cmake_args += " -DINSTALL_SHAREDPATH={}".format(os.path.join(case.get_value("EXEROOT"), sharedpath))
+    cmake_args += " -DINSTALL_SHAREDPATH={} ".format(os.path.join(case.get_value("EXEROOT"), sharedpath))
 
     if not shared_lib:
         cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
@@ -173,6 +173,8 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
 
+    # Components-specific cmake args
+    cmp_cmake_args = ""
     for model, _, _, _, config_dir in complist:
         if buildlist is not None and model.lower() not in buildlist:
             continue
@@ -181,7 +183,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
         if model == "cpl":
             config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
 
-        _create_build_metadata_for_component(config_dir, libroot, bldroot, case)
+        cmp_cmake_args += _create_build_metadata_for_component(config_dir, libroot, bldroot, case)
 
     # Call CMake
     cmake_args = get_standard_cmake_args(case, sharedpath)
@@ -191,7 +193,12 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
         cmake_args += " -GNinja "
         cmake_env += "PATH={}:$PATH ".format(ninja_path)
 
-    cmake_cmd = "{}cmake {} {}/components".format(cmake_env, cmake_args, srcroot)
+    # Glue all pieces together:
+    #  - cmake environment
+    #  - common (i.e. project-wide) cmake args
+    #  - component-specific cmake args
+    #  - path to src folder
+    cmake_cmd = "{}cmake {} {} {}/components".format(cmake_env, cmake_args, cmp_cmake_args, srcroot)
     stat = 0
     if dry_run:
         logger.info("CMake cmd:\ncd {} && {}\n\n".format(bldroot, cmake_cmd))
@@ -328,8 +335,19 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
 
+    if comp_interface == "nuopc":
+        libs.insert(0, "fox")
+
     if uses_kokkos(case):
         libs.append("kokkos")
+
+    # Build shared code of CDEPS nuopc data models
+    cdeps_build_script = None
+    if comp_interface == "nuopc":
+        compset = case.get_value("COMPSET")
+        if "_D" in compset:
+            libs.append("CDEPS")
+            cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
@@ -363,7 +381,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(full_lib_path)
 
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
-        my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
+        if lib == "CDEPS":
+            my_file = cdeps_build_script
+        else:
+            my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
 
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
@@ -423,6 +444,11 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
     if get_model() != "ufs":
         compile_cmd = "SMP={} {}".format(stringify_bool(smp), compile_cmd)
 
+    if check_for_python(cmd):
+        logging_options = get_logging_options()
+        if logging_options != "":
+            compile_cmd = compile_cmd + logging_options
+
     with open(file_build, "w") as fd:
         stat = run_cmd(compile_cmd,
                        from_dir=bldroot,  arg_stdout=fd,
@@ -449,7 +475,8 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
     bc_path = os.path.join(config_dir, "buildlib_cmake")
     expect(os.path.exists(bc_path), "Missing: {}".format(bc_path))
     buildlib = imp.load_source("buildlib_cmake", os.path.join(config_dir, "buildlib_cmake"))
-    buildlib.buildlib(bldroot, libroot, case)
+    cmake_args = buildlib.buildlib(bldroot, libroot, case)
+    return "" if cmake_args is None else cmake_args
 
 ###############################################################################
 def _clean_impl(case, cleanlist, clean_all, clean_depends):
