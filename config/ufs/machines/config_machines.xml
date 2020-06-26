@@ -300,20 +300,21 @@ This allows using a different mpirun command to launch unit tests
       <executable></executable>
     </mpirun>
     <module_system type="module">
-      <init_path lang="sh">/apps/lmod/init/sh</init_path>
-      <init_path lang="csh">/apps/lmod/init/csh</init_path>
-      <init_path lang="python">/apps/lmod/init/env_modules_python.py</init_path>
+      <init_path lang="sh">/apps/lmod/lmod/init/sh</init_path>
+      <init_path lang="csh">/apps/lmod/lmod/init/csh</init_path>
+      <init_path lang="python">/apps/lmod/lmod/init/env_modules_python.py</init_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
-      <cmd_path lang="python">/apps/lmod/libexec/lmod python</cmd_path>
+      <cmd_path lang="python">/apps/lmod/lmod/libexec/lmod python</cmd_path>
       <modules compiler="intel">
         <command name="purge"/>
         <command name="load">intel/2020</command>
         <command name="load">netcdf/4.7.2</command>
-        <command name="load">cmake/3.15.4</command>
+        <command name="load">cmake/3.17.3</command>
       </modules>
       <modules mpilib="impi">
         <command name="load">impi/2020</command>
+	<command name="load">pnetcdf/1.12.0</command>
       </modules>
     </module_system>
     <environment_variables comp_interface="nuopc">
