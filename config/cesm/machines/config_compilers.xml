@@ -1232,4 +1232,28 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="tetralith" COMPILER="intel">
+  <MPICC> mpiicc  </MPICC>
+  <MPICXX> mpiicpc </MPICXX>
+  <MPIFC> mpiifort </MPIFC>
+  <PNETCDF_PATH>$ENV{PNETCDF_DIR}</PNETCDF_PATH>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+  <SLIBS>
+    <append>-L$(NETCDF_PATH)/lib -lnetcdf -lnetcdff</append>
+  </SLIBS>
+  <FFLAGS>
+    <append> -xCORE-AVX2 -fPIC -mcmodel=large -no-fma </append>
+  </FFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append> -xCORE-AVX2 -fPIC -mcmodel=large -no-fma </append>
+  </CFLAGS>
+  <LDFLAGS>
+    <append> -mkl </append>
+  </LDFLAGS>
+</compiler>
+
 </config_compilers>
