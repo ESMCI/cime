@@ -153,8 +153,8 @@ module pio_types
   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double; !< double fill value
 
   enum, bind(c)
-     enumerator :: PIO_rearr_comm_p2p = 0
-     enumerator :: PIO_rearr_comm_coll
+     enumerator :: PIO_rearr_comm_p2p = 0 !< rearranger peer to peer
+     enumerator :: PIO_rearr_comm_coll    !< rearranger collective
   end enum
 
   !>

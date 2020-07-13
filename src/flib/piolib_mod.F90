@@ -1245,7 +1245,7 @@ contains
   !! Finalizes an IO System. This is a collective call.
   !!
   !! @param iosystem @copydoc io_desc_t
-  !! @retval ierr @copydoc error_return
+  !! @param ierr @copydoc error_return
   !! @author Jim Edwards
   !<
   subroutine finalize(iosystem,ierr)
