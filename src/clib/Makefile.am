@@ -13,7 +13,7 @@ endif # BUILD_NCINT
 # These linker flags specify libtool version info.
 # See http://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
 # for information regarding incrementing `-version-info`.
-libpioc_la_LDFLAGS = -version-info 4:0:3
+libpioc_la_LDFLAGS = -version-info 4:1:3
 
 # The library header file will be installed in include dir.
 include_HEADERS = pio.h uthash.h
