@@ -403,7 +403,6 @@ contains
   !! @param file @copydoc file_desc_t
   !! @param method error handling method
   !! @param oldmethod old error handling method
-  !! @copydoc PIO_error_method
   !! @author Jim Edwards
   !<
   subroutine seterrorhandlingfile(file, method, oldmethod)
