@@ -403,7 +403,6 @@ contains
   !! @param file @copydoc file_desc_t
   !! @param method error handling method
   !! @param oldmethod old error handling method
-  !! @copydoc PIO_error_method
   !! @author Jim Edwards
   !<
   subroutine seterrorhandlingfile(file, method, oldmethod)
@@ -1245,7 +1244,7 @@ contains
   !! Finalizes an IO System. This is a collective call.
   !!
   !! @param iosystem @copydoc io_desc_t
-  !! @retval ierr @copydoc error_return
+  !! @param ierr @copydoc error_return
   !! @author Jim Edwards
   !<
   subroutine finalize(iosystem,ierr)
