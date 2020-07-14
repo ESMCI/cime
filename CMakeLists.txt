@@ -258,6 +258,36 @@ if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
 
+# Include this so we can check values in netcdf_meta.h.
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(FindNetCDF)
+find_package (NetCDF REQUIRED)
+find_package (PnetCDF)
+
+
+SET(STATUS_PNETCDF PnetCDF_C_FOUND)
+
+###
+# Check to see if szip write capability is present in netcdf-c.
+###
+SET(CMAKE_REQUIRED_INCLUDES ${NetCDF_C_INCLUDE_DIR})
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_SZIP_WRITE
+      choke me
+#endif
+int main() {return 0;}" HAVE_SZIP_WRITE)
+
+###
+# Check to see if szip write capability is present in netcdf-c.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_PAR_FILTERS
+      choke me
+#endif
+int main() {return 0;}" HDF5_HAS_PAR_FILTERS)
+
 #####
 # Configure and print the libpio.settings file.
 #####
