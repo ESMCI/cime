@@ -347,12 +347,11 @@ AC_DEFUN([AX_SET_META],[
 ])
 
 #####
-# Define values used in include/netcdf_meta.h
+# Define values used in include/pio_meta.h
 #####
-AX_SET_META([NC_HAS_NC4],[$enable_netcdf_4],[yes])
-AX_SET_META([NC_HAS_SZIP],[$ac_cv_func_H5Z_SZIP],[yes])
-AX_SET_META([NC_HAS_PNETCDF],[$enable_pnetcdf],[yes])
-AX_SET_META([NC_HAS_PAR_FILTERS], [$hdf5_supports_par_filters],[yes])
+AX_SET_META([PIO_HAS_SZIP],[$have_szip_write],[yes])
+AX_SET_META([PIO_HAS_PNETCDF],[$enable_pnetcdf],[yes])
+AX_SET_META([PIO_HAS_PAR_FILTERS], [$have_par_filters],[yes])
 
 # Create output variables from various shell variables, for use in
 # generating libpio.settings.
