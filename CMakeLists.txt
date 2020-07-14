@@ -8,6 +8,9 @@ set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
+# This is needed for the libpio.settings file.
+SET(PACKAGE_VERSION ${VERSION})
+
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
 	EXECUTE_PROCESS(
@@ -259,6 +262,26 @@ endif ()
 # Configure and print the libpio.settings file.
 #####
 
+# Get system configuration, Use it to determine osname, os release, cpu. These
+# will be used when committing to CDash.
+find_program(UNAME NAMES uname)
+IF(UNAME)
+  macro(getuname name flag)
+    exec_program("${UNAME}" ARGS "${flag}" OUTPUT_VARIABLE "${name}")
+  endmacro(getuname)
+  getuname(osname -s)
+  getuname(osrel  -r)
+  getuname(cpu    -m)
+  set(TMP_BUILDNAME "${osname}-${osrel}-${cpu}")
+ENDIF()
+
+# Set
+SET(prefix ${CMAKE_INSTALL_PREFIX})
+SET(exec_prefix ${CMAKE_INSTALL_PREFIX})
+SET(libdir ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+SET(includedir ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR})
+SET(CC ${CMAKE_C_COMPILER})
+
 # Set variables to mirror those used by autoconf.
 # This way we don't need to maintain two separate template
 # files.
@@ -278,29 +301,12 @@ SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BU
 is_disabled(BUILD_SHARED_LIBS enable_static)
 is_enabled(BUILD_SHARED_LIBS enable_shared)
 
-is_enabled(ENABLE_V2_API HAS_NC2)
 is_enabled(ENABLE_NETCDF_4 HAS_NC4)
-is_enabled(ENABLE_HDF4 HAS_HDF4)
-is_enabled(ENABLE_NETCDF_4 HAS_HDF5)
 is_enabled(USE_SZIP HAS_SZIP)
 is_enabled(USE_SZIP HAS_SZIP_WRITE)
 is_enabled(STATUS_PNETCDF HAS_PNETCDF)
-is_enabled(STATUS_PARALLEL HAS_PARALLEL)
-is_enabled(ENABLE_PARALLEL4 HAS_PARALLEL4)
-is_enabled(ENABLE_DAP HAS_DAP)
-is_enabled(ENABLE_DAP HAS_DAP2)
-is_enabled(ENABLE_DAP4 HAS_DAP4)
-is_enabled(ENABLE_BYTERANGE HAS_BYTERANGE)
-is_enabled(ENABLE_DISKLESS HAS_DISKLESS)
-is_enabled(USE_MMAP HAS_MMAP)
-is_enabled(JNA HAS_JNA)
-is_enabled(ENABLE_ZERO_LENGTH_COORD_BOUND RELAX_COORD_BOUND)
-is_enabled(USE_CDF5 HAS_CDF5)
-is_enabled(ENABLE_ERANGE_FILL HAS_ERANGE_FILL)
 is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
 is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
-is_enabled(ENABLE_NCZARR HAS_NCZARR)
-is_enabled(ENABLE_S3_SDK HAS_S3_SDK)
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"
