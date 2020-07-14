@@ -8,6 +8,11 @@ set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
+# Create version info in autotools parlance for pio_meta.h.
+set(PIO_VERSION_MAJOR ${VERSION_MAJOR})
+set(PIO_VERSION_MINOR ${VERSION_MINOR})
+set(PIO_VERSION_PATCH ${VERSION_PATCH})
+
 # This is needed for the libpio.settings file.
 SET(PACKAGE_VERSION ${VERSION})
 
@@ -36,10 +41,10 @@ ENDIF()
 FUNCTION(is_enabled feature ret_val)
   IF(${feature})
     SET(${ret_val} "yes" PARENT_SCOPE)
-    SET("NC_${ret_val}" 1 PARENT_SCOPE)
+    SET("PIO_${ret_val}" 1 PARENT_SCOPE)
   ELSE()
     SET(${ret_val} "no" PARENT_SCOPE)
-    SET("NC_${ret_val}" 0 PARENT_SCOPE)
+    SET("PIO_${ret_val}" 0 PARENT_SCOPE)
   ENDIF(${feature})
 ENDFUNCTION()
 
@@ -54,7 +59,7 @@ FUNCTION(is_disabled feature ret_val)
     SET(${ret_val} "no" PARENT_SCOPE)
   ELSE()
     SET(${ret_val} "yes" PARENT_SCOPE)
-    SET("NC_${ret_val}" 1 PARENT_SCOPE)
+    SET("PIO_${ret_val}" 1 PARENT_SCOPE)
   ENDIF(${feature})
 ENDFUNCTION()
 
@@ -331,7 +336,6 @@ SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BU
 is_disabled(BUILD_SHARED_LIBS enable_static)
 is_enabled(BUILD_SHARED_LIBS enable_shared)
 
-is_enabled(USE_SZIP HAS_SZIP)
 is_enabled(USE_SZIP HAS_SZIP_WRITE)
 is_enabled(STATUS_PNETCDF HAS_PNETCDF)
 is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
