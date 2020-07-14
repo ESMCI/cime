@@ -287,6 +287,9 @@ AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
+# Create the build summary file. 
+AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
+
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
 # Create the config.h file.
@@ -315,3 +318,6 @@ AC_OUTPUT(Makefile
           examples/f03/Makefile
           cmake/Makefile
           scripts/Makefile)
+
+# Show the build summary.
+cat libnetcdf.settings
