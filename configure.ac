@@ -19,6 +19,15 @@ AC_SUBST([VERSION_PATCH], [1-development])
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
 
+# Configuration date. This follows convention of allowing
+# SOURCE_DATE_EPOCH to be used to specify a timestamp, to allow
+# byte-for-byte reproducable software builds.
+if test "x$SOURCE_DATE_EPOCH" != "x" ; then
+    AC_SUBST([CONFIG_DATE]) CONFIG_DATE="`date -u -d "${SOURCE_DATE_EPOCH}"`"
+else
+    AC_SUBST([CONFIG_DATE]) CONFIG_DATE="`date`"
+fi
+
 # Libtool initialisation.
 LD=ld # Required for MPE to work.
 LT_INIT
@@ -288,7 +297,7 @@ AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 # Create the build summary file. 
-AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
+AC_CONFIG_FILES([libpio.settings])
 
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
@@ -320,4 +329,4 @@ AC_OUTPUT(Makefile
           scripts/Makefile)
 
 # Show the build summary.
-cat libnetcdf.settings
+cat libpio.settings
