@@ -35,6 +35,27 @@ LT_INIT
 # Find and learn about the C compiler.
 AC_PROG_CC
 
+# Compiler with version information. This consists of the full path
+# name of the compiler and the reported version number.
+AC_SUBST([CC_VERSION])
+# Strip anything that looks like a flag off of $CC
+CC_NOFLAGS=`echo $CC | sed 's/ -.*//'`
+
+if `echo $CC_NOFLAGS | grep ^/ >/dev/null 2>&1`; then
+  CC_VERSION="$CC"
+else
+  CC_VERSION="$CC";
+  for x in `echo $PATH | sed -e 's/:/ /g'`; do
+    if test -x $x/$CC_NOFLAGS; then
+      CC_VERSION="$x/$CC"
+      break
+    fi
+  done
+fi
+if test -n "$cc_version_info"; then
+  CC_VERSION="$CC_VERSION ( $cc_version_info)"
+fi
+
 # Find and learn about the Fortran compiler.
 AC_PROG_FC
 
@@ -295,6 +316,46 @@ AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
 AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
+
+# Args:
+# 1. netcdf_meta.h variable
+# 2. conditional variable that is yes or no.
+# 3. default condition
+#
+# example: AX_SET_META([NC_HAS_NC2],[$nc_build_v2],[]) # Because it checks for no.
+#          AX_SET_META([NC_HAS_HDF4],[$enable_hdf4],[yes])
+AC_DEFUN([AX_SET_META],[
+  if [ test "x$2" = x$3 ]; then
+     AC_SUBST([$1]) $1=1
+  else
+     AC_SUBST([$1]) $1=0
+  fi
+])
+
+#####
+# Define values used in include/netcdf_meta.h
+#####
+AX_SET_META([NC_HAS_NC4],[$enable_netcdf_4],[yes])
+AX_SET_META([NC_HAS_SZIP],[$ac_cv_func_H5Z_SZIP],[yes])
+AX_SET_META([NC_HAS_PNETCDF],[$enable_pnetcdf],[yes])
+AX_SET_META([NC_HAS_PAR_FILTERS], [$hdf5_supports_par_filters],[yes])
+
+# Create output variables from various shell variables, for use in
+# generating libpio.settings.
+AC_SUBST([enable_shared])
+AC_SUBST([enable_static])
+AC_SUBST([CFLAGS])
+AC_SUBST([CPPFLAGS])
+AC_SUBST([LDFLAGS])
+AC_SUBST([AM_CFLAGS])
+AC_SUBST([AM_CPPFLAGS])
+AC_SUBST([AM_LDFLAGS])
+AC_SUBST(HAS_NC4,[$enable_netcdf_4])
+AC_SUBST(HAS_PNETCDF,[$enable_pnetcdf])
+AC_SUBST(HAS_LOGGING, [$enable_logging])
+AC_SUBST(HAS_SZIP,[$enable_szlib])
+AC_SUBST(HAS_SZIP_WRITE, [$enable_szlib])
+AC_SUBST([HAS_PAR_FILTERS], [$hdf5_supports_par_filters])
 
 # Create the build summary file. 
 AC_CONFIG_FILES([libpio.settings])
