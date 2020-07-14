@@ -159,7 +159,9 @@ class Pes(GenericXML):
                         pes_pstrid[self.name(child).upper()] = int(self.text(child))
             # if the value is already upper case its something else we are trying to set
                 elif vid == self.name(node):
-                    other_settings[vid] = self.text(node)
+                    text = self.text(node).strip()
+                    if len(text):
+                        other_settings[vid] = self.text(node)
             if grid_choice != 'any' or logger.isEnabledFor(logging.DEBUG):
                 logger.info("Pes setting: grid match    is {} ".format(grid_choice ))
             if mach_choice != 'any' or logger.isEnabledFor(logging.DEBUG):

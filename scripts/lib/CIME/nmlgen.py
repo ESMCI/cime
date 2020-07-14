@@ -170,7 +170,7 @@ class NamelistGenerator(object):
     def _to_python_value(self, name, literals):
         """Transform a literal list as needed for `get_value`."""
         var_type, _, var_size, = self._definition.split_type_string(name)
-        if len(literals) > 0:
+        if len(literals) > 0 and literals[0] is not None:
             values = expand_literal_list(literals)
         else:
             return ""
@@ -245,7 +245,8 @@ class NamelistGenerator(object):
         var_group = self._definition.get_group(name)
         literals = self._to_namelist_literals(name, value)
         _, _, var_size, = self._definition.split_type_string(name)
-        self._namelist.set_variable_value(var_group, name, literals, var_size)
+        if len(literals) > 0 and literals[0] is not None:
+            self._namelist.set_variable_value(var_group, name, literals, var_size)
 
     def get_default(self, name, config=None, allow_none=False):
         """Get the value of a variable from the namelist definition file.
@@ -292,11 +293,14 @@ class NamelistGenerator(object):
             match = _var_ref_re.search(scalar)
             while match:
                 env_val = self._case.get_value(match.group('name'))
-                expect(env_val is not None,
-                       "Namelist default for variable {} refers to unknown XML variable {}.".
+                if env_val is not None:
+                    scalar = scalar.replace(match.group(0), str(env_val), 1)
+                    match = _var_ref_re.search(scalar)
+                else:
+                    scalar = None
+                    logger.warning("Namelist default for variable {} refers to unknown XML variable {}.".
                        format(name, match.group('name')))
-                scalar = scalar.replace(match.group(0), str(env_val), 1)
-                match = _var_ref_re.search(scalar)
+                    match = None
             default[i] = scalar
 
         # Deal with missing quotes.

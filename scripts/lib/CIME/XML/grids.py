@@ -217,7 +217,6 @@ class Grids(GenericXML):
 
         for grid in grids:
             grid_name = component_grids[grid[1]]
-
             # Determine grid name with no nlev suffix if there is one
             grid_name_nonlev = grid_name
             levmatch = re.match(atmlevregex, grid_name)
