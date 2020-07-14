@@ -530,6 +530,9 @@ class Case(object):
         elif progcomps["LND"] and progcomps["OCN"] and progcomps["ICE"]:
             # this is a "J" compset
             primary_component = "allactive"
+        elif progcomps["ATM"] and progcomps["OCN"] and progcomps["ICE"]:
+            # this is a ufs s2s compset
+            primary_component = "allactive"
         elif progcomps["ATM"]:
             if "DOCN%SOM" in self._compsetname and progcomps["LND"]:
                 # This is an "E" compset
@@ -861,6 +864,7 @@ class Case(object):
         mach_pes_obj.add_comment(comment)
 
         if other is not None:
+            logger.info("setting additional fields from config_pes: {}".format(other))
             for key, value in other.items():
                 self.set_value(key, value)
 
@@ -930,7 +934,6 @@ class Case(object):
         grids = Grids(gridfile)
 
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname, driver=driver)
-
         self._gridname = gridinfo["GRID"]
         for key,value in gridinfo.items():
             logger.debug("Set grid {} {}".format(key,value))
