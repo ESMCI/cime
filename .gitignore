@@ -4,6 +4,7 @@ html/
 \#*\#
 *.o
 Makefile.in
+*.F90.in
 *.lo
 *.la
 Makefile
