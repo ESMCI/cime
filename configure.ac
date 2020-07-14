@@ -238,6 +238,20 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 #endif]
 ])], [have_netcdf_par=yes], [have_netcdf_par=no])
 
+# Do we have szip?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_SZIP_WRITE
+# error
+#endif]
+])], [have_szip_write=yes], [have_szip_write=no])
+
+# Do we have parallel filter support?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_PAR_FILTERS
+# error
+#endif]
+])], [have_par_filters=yes], [have_par_filters=no])
+
 AC_MSG_CHECKING([whether netCDF provides parallel IO])
 AC_MSG_RESULT([${have_netcdf_par}])
 if test x$have_netcdf_par = xyes; then
@@ -350,12 +364,10 @@ AC_SUBST([LDFLAGS])
 AC_SUBST([AM_CFLAGS])
 AC_SUBST([AM_CPPFLAGS])
 AC_SUBST([AM_LDFLAGS])
-AC_SUBST(HAS_NC4,[$enable_netcdf_4])
 AC_SUBST(HAS_PNETCDF,[$enable_pnetcdf])
 AC_SUBST(HAS_LOGGING, [$enable_logging])
-AC_SUBST(HAS_SZIP,[$enable_szlib])
-AC_SUBST(HAS_SZIP_WRITE, [$enable_szlib])
-AC_SUBST([HAS_PAR_FILTERS], [$hdf5_supports_par_filters])
+AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
+AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
 
 # Create the build summary file. 
 AC_CONFIG_FILES([libpio.settings])

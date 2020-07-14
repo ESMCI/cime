@@ -24,9 +24,7 @@ Extra libraries:	@LIBS@
 
 # Features
 --------
-NetCDF-4 API:		@HAS_NC4@
 PnetCDF Support:	@HAS_PNETCDF@
-SZIP Support:           @HAS_SZIP@
 SZIP Write Support:     @HAS_SZIP_WRITE@
 Parallel Filters:       @HAS_PAR_FILTERS@
 
