@@ -15,9 +15,6 @@ C Compiler:		@CC_VERSION@
 CFLAGS:			@CFLAGS@
 CPPFLAGS:		@CPPFLAGS@
 LDFLAGS:		@LDFLAGS@
-AM_CFLAGS:		@AM_CFLAGS@
-AM_CPPFLAGS:		@AM_CPPFLAGS@
-AM_LDFLAGS:		@AM_LDFLAGS@
 Shared Library:		@enable_shared@
 Static Library:		@enable_static@
 Extra libraries:	@LIBS@

@@ -370,8 +370,9 @@ AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
 AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
 
 # Create the build summary file. 
-AC_CONFIG_FILES([libpio.settings])
-
+AC_CONFIG_FILES([libpio.settings
+                 src/clib/pio_meta.h
+		 ])
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
 # Create the config.h file.
