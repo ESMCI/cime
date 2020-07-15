@@ -8,6 +8,61 @@ set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
+# Create version info in autotools parlance for pio_meta.h.
+set(PIO_VERSION_MAJOR ${VERSION_MAJOR})
+set(PIO_VERSION_MINOR ${VERSION_MINOR})
+set(PIO_VERSION_PATCH ${VERSION_PATCH})
+
+# This is needed for the libpio.settings file.
+SET(PACKAGE_VERSION ${VERSION})
+
+# Determine the configure date.
+IF(DEFINED ENV{SOURCE_DATE_EPOCH})
+	EXECUTE_PROCESS(
+	  COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
+	  OUTPUT_VARIABLE CONFIG_DATE
+	  )
+ELSE()
+	EXECUTE_PROCESS(
+	  COMMAND date
+	  OUTPUT_VARIABLE CONFIG_DATE
+	  )
+ENDIF()
+IF(CONFIG_DATE)
+	string(STRIP ${CONFIG_DATE} CONFIG_DATE)
+ENDIF()
+
+# A function used to create autotools-style 'yes/no' definitions.
+# If a variable is set, it 'yes' is returned. Otherwise, 'no' is
+# returned.
+#
+# Also creates a version of the ret_val prepended with 'NC',
+# when feature is true, which is used to generate netcdf_meta.h.
+FUNCTION(is_enabled feature ret_val)
+  IF(${feature})
+    SET(${ret_val} "yes" PARENT_SCOPE)
+    SET("PIO_${ret_val}" 1 PARENT_SCOPE)
+  ELSE()
+    SET(${ret_val} "no" PARENT_SCOPE)
+    SET("PIO_${ret_val}" 0 PARENT_SCOPE)
+  ENDIF(${feature})
+ENDFUNCTION()
+
+# A function used to create autotools-style 'yes/no' definitions.
+# If a variable is set, it 'yes' is returned. Otherwise, 'no' is
+# returned.
+#
+# Also creates a version of the ret_val prepended with 'NC',
+# when feature is true, which is used to generate netcdf_meta.h.
+FUNCTION(is_disabled feature ret_val)
+  IF(${feature})
+    SET(${ret_val} "no" PARENT_SCOPE)
+  ELSE()
+    SET(${ret_val} "yes" PARENT_SCOPE)
+    SET("PIO_${ret_val}" 1 PARENT_SCOPE)
+  ENDIF(${feature})
+ENDFUNCTION()
+
 # The size of the data buffer for write/read_darray().
 set(PIO_BUFFER_SIZE 134217728)
 
@@ -207,3 +262,109 @@ endif ()
 if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
+
+# Include this so we can check values in netcdf_meta.h.
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(FindNetCDF)
+find_package (NetCDF REQUIRED)
+find_package (PnetCDF)
+
+
+SET(STATUS_PNETCDF PnetCDF_C_FOUND)
+
+###
+# Check to see if szip write capability is present in netcdf-c.
+###
+SET(CMAKE_REQUIRED_INCLUDES ${NetCDF_C_INCLUDE_DIR})
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_SZIP_WRITE
+      choke me
+#endif
+int main() {return 0;}" HAVE_SZIP_WRITE)
+
+###
+# Check to see if szip write capability is present in netcdf-c.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_PAR_FILTERS
+      choke me
+#endif
+int main() {return 0;}" HDF5_HAS_PAR_FILTERS)
+
+#####
+# Configure and print the libpio.settings file.
+#####
+
+# Get system configuration, Use it to determine osname, os release, cpu. These
+# will be used when committing to CDash.
+find_program(UNAME NAMES uname)
+IF(UNAME)
+  macro(getuname name flag)
+    exec_program("${UNAME}" ARGS "${flag}" OUTPUT_VARIABLE "${name}")
+  endmacro(getuname)
+  getuname(osname -s)
+  getuname(osrel  -r)
+  getuname(cpu    -m)
+  set(TMP_BUILDNAME "${osname}-${osrel}-${cpu}")
+ENDIF()
+
+# Set
+SET(prefix ${CMAKE_INSTALL_PREFIX})
+SET(exec_prefix ${CMAKE_INSTALL_PREFIX})
+SET(libdir ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+SET(includedir ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR})
+SET(CC ${CMAKE_C_COMPILER})
+
+# Set variables to mirror those used by autoconf.
+# This way we don't need to maintain two separate template
+# files.
+SET(host_cpu "${cpu}")
+SET(host_vendor "${osname}")
+SET(host_os "${osrel}")
+SET(abs_top_builddir "${CMAKE_CURRENT_BINARY_DIR}")
+SET(abs_top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
+
+SET(CC_VERSION "${CMAKE_C_COMPILER}")
+
+# Build *FLAGS for libpio.settings.
+SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
+SET(CPPFLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_CPP_FLAGS_${CMAKE_BUILD_TYPE}}")
+SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
+
+is_disabled(BUILD_SHARED_LIBS enable_static)
+is_enabled(BUILD_SHARED_LIBS enable_shared)
+
+is_enabled(USE_SZIP HAS_SZIP_WRITE)
+is_enabled(STATUS_PNETCDF HAS_PNETCDF)
+is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
+is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
+
+# Generate file from template.
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/libpio.settings"
+  @ONLY)
+
+# Read in settings file, print out.
+# Avoid using system-specific calls so that this
+# might also work on Windows.
+FILE(READ "${CMAKE_CURRENT_BINARY_DIR}/libpio.settings"
+  LIBPIO_SETTINGS)
+MESSAGE(STATUS ${LIBPIO_SETTINGS})
+
+# Install libpio.settings file into same location
+# as the libraries.
+INSTALL(FILES "${PIO_BINARY_DIR}/libpio.settings"
+  DESTINATION lib
+  COMPONENT libraries)
+
+#####
+# Create pio_meta.h include file.
+#####
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h @ONLY)
+
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/clib/)
