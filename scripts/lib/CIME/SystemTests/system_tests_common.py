@@ -153,7 +153,11 @@ class SystemTestsCommon(object):
             else:
                 resub_val = True
 
+            print("wpc0a. resub_val {}\n".format(resub_val))
             self.run_phase()
+            print("wpc1 in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+            logger.info("wpc1 in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+            append_testlog("wpc1 in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
             if self._case.get_value("GENERATE_BASELINE") and resub_val:
                 self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
 
