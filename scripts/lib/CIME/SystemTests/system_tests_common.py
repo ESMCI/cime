@@ -155,9 +155,9 @@ class SystemTestsCommon(object):
 
             print("wpc0a. resub_val {}\n".format(resub_val))
             self.run_phase()
-            print("wpc1 in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
-            logger.info("wpc1 in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
-            append_testlog("wpc1 in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
+            print("wpc1a in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+            logger.info("wpc1b in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+            append_testlog("wpc1c in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
             if self._case.get_value("GENERATE_BASELINE") and resub_val:
                 self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
 
@@ -165,10 +165,19 @@ class SystemTestsCommon(object):
                 self._phase_modifying_call(BASELINE_PHASE,   self._compare_baseline)
                 self._phase_modifying_call(MEMCOMP_PHASE,    self._compare_memory)
                 self._phase_modifying_call(THROUGHPUT_PHASE, self._compare_throughput)
+                print("wpc2a in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+                logger.info("wpc2b in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+                append_testlog("wpc2c in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
+            
 
             self._phase_modifying_call(MEMLEAK_PHASE, self._check_for_memleak)
 
             self._phase_modifying_call(STARCHIVE_PHASE, self._st_archive_case_test)
+
+            print("wpc3a in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+            logger.info("wpc3b in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")))
+            append_testlog("wpc3c in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
+            
 
         except BaseException as e: # We want KeyboardInterrupts to generate FAIL status
             success = False
@@ -186,6 +195,7 @@ class SystemTestsCommon(object):
             # Writing the run status should be the very last thing due to wait_for_tests
             time_taken = time.time() - start_time
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
+            append_testlog("wpc5a in system_tests_common.py in finally block: status is: {}.\nsuccess is: {}.\nself._test_status is: {}".format(status, success, self._test_status), self._orig_caseroot)
             with self._test_status:
                 self._test_status.set_status(RUN_PHASE, status, comments=("time={:d}".format(int(time_taken))))
 
@@ -197,6 +207,7 @@ class SystemTestsCommon(object):
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
                 overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
+                append_testlog("wpc5b in system_tests_common.py in finally block: status is: {}.\nsuccess is: {}.\noverall_status is: {}".format(status, success, overall_status), self._orig_caseroot)
                 if overall_status != TEST_PASS_STATUS:
                     srcroot = self._case.get_value("CIMEROOT")
                     worked_before, last_pass, last_fail_transition = \
@@ -533,11 +544,16 @@ class SystemTestsCommon(object):
         with self._test_status:
             # compare baseline
             success, comments = compare_baseline(self._case)
+            append_testlog("wpc4c in system_tests_common.py in _compare_baseline: success is: {}.\nself._test_status is: {}.\ncomments is: {}".format(success, self._test_status, comments), self._orig_caseroot)
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
             ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
+            append_testlog("wpc4d in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
             self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
+            self._test_status.set_status(MEMLEAK_PHASE, status, comments="wpc4d+ append to TestStatus check")
+            append_testlog("wpc4e in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
+                   
 
     def _generate_baseline(self):
         """
