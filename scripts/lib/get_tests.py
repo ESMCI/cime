@@ -1,5 +1,5 @@
 import CIME.utils
-from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root, get_model
+from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root
 from CIME.XML.machines import Machines
 import six, sys, os
 
