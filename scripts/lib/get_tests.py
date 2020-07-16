@@ -1,12 +1,13 @@
 import CIME.utils
-from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root, get_model
+from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root
 from CIME.XML.machines import Machines
 import six, sys, os
 
 # Expect that, if a model wants to use python-based test lists, they will have a file
-# config/$model/tests.py , containing a test dictionary called _TESTS
+# $model/cime_config/tests.py , containing a test dictionary called _TESTS. Currently,
+# only E3SM is using this feature.
 
-sys.path.insert(0, os.path.join(get_cime_root(), "config", get_model()))
+sys.path.insert(0, os.path.join(get_cime_root(), "../cime_config"))
 _ALL_TESTS = {}
 try:
     from tests import _TESTS # pylint: disable=import-error
