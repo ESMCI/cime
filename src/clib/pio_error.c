@@ -7,6 +7,8 @@
  * @see https://github.com/NCAR/ParallelIO
  */
 
+#include <pio_error.h>
+
 /**
  * Global err buffer for MPI. When there is an MPI error, this buffer
  * is used to store the error message that is associated with the MPI
