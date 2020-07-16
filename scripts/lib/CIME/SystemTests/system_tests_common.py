@@ -149,7 +149,6 @@ class SystemTestsCommon(object):
                 self._test_status.set_status(RUN_PHASE, TEST_PEND_STATUS)
 
             self.run_phase()
-
             if self._case.get_value("GENERATE_BASELINE"):
                 self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
 
