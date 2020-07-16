@@ -525,16 +525,11 @@ class SystemTestsCommon(object):
         with self._test_status:
             # compare baseline
             success, comments = compare_baseline(self._case)
-            append_testlog("wpc4c in system_tests_common.py in _compare_baseline: success is: {}.\nself._test_status is: {}.\ncomments is: {}".format(success, self._test_status, comments), self._orig_caseroot)
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
             ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
-            append_testlog("wpc4d in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
             self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
-            self._test_status.set_status(MEMLEAK_PHASE, status, comments="wpc4d+ append to TestStatus check")
-            append_testlog("wpc4e in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
-                   
 
     def _generate_baseline(self):
         """
