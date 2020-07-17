@@ -101,7 +101,7 @@ def verify_perms(test_obj, root_dir):
 ###############################################################################
 def get_casedir(test_obj, case_fragment, all_cases):
 ###############################################################################
-    potential_matches = [item for item in cases if item.startswith(case_fragment)]
+    potential_matches = [item for item in all_cases if item.startswith(case_fragment)]
     test_obj.assertTrue(len(potential_matches) == 1, "Ambiguous casedir selection for {}".format(case_fragment))
     return potential_matches[0]
 
@@ -2173,8 +2173,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS.f19_g16_rx1.A"
-        machine, compiler = "blues", "gnu"
-        casedir = self._create_test(["--no-setup", "--machine={}".format(machine), test_name], test_id=self._baseline_name,
+        casedir = self._create_test(["--no-setup", "--machine=blues", test_name], test_id=self._baseline_name,
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
@@ -2190,8 +2189,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
-        machine, compiler = "blues", "gnu"
-        casedir = self._create_test(["--no-setup", "--machine={}".format(machine), test_name], test_id=self._baseline_name,
+        casedir = self._create_test(["--no-setup", "--machine=blues", test_name], test_id=self._baseline_name,
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
@@ -2207,8 +2205,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
-        machine, compiler = "blues", "gnu"
-        casedir = self._create_test(["--no-setup", "--machine={}".format(machine), "--walltime=0:10:00", test_name], test_id=self._baseline_name,
+        casedir = self._create_test(["--no-setup", "--machine=blues", "--walltime=0:10:00", test_name], test_id=self._baseline_name,
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
@@ -2224,8 +2221,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
-        machine, compiler = "blues", "gnu"
-        casedir = self._create_test(["--no-setup", "--machine={}".format(machine), "--walltime=2:00:00", test_name], test_id=self._baseline_name,
+        casedir = self._create_test(["--no-setup", "--machine=blues", "--walltime=2:00:00", test_name], test_id=self._baseline_name,
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
@@ -2241,8 +2237,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
-        machine, compiler = "blues", "gnu"
-        casedir = self._create_test(["--no-setup", "--machine={}".format(machine), test_name], test_id=self._baseline_name,
+        casedir = self._create_test(["--no-setup", "--machine=blues", test_name], test_id=self._baseline_name,
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         run_cmd_assert_result(self, "./xmlchange JOB_QUEUE=slartibartfast --subgroup=case.test", from_dir=casedir, expected_stat=1)
