@@ -101,8 +101,8 @@ def verify_perms(test_obj, root_dir):
 ###############################################################################
 def get_casedir(test_obj, case_fragment, all_cases):
 ###############################################################################
-    potential_matches = [item for item in all_cases if item.startswith(case_fragment)]
-    test_obj.assertTrue(len(potential_matches) == 1, "Ambiguous casedir selection for {}".format(case_fragment))
+    potential_matches = [item for item in all_cases if case_fragment in item]
+    test_obj.assertTrue(len(potential_matches) == 1, "Ambiguous casedir selection for {}, found  {}  among  {}".format(case_fragment, potential_matches, all_cases))
     return potential_matches[0]
 
 ###############################################################################
