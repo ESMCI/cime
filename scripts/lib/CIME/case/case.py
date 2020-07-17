@@ -875,7 +875,7 @@ class Case(object):
 
         if not test and not run_unsupported and self._cime_model == "cesm":
             if grid_name in science_support:
-                logger.info("\nThis is a CESM scientifically supported compset at this resolution.\n")
+                logger.info("\nThis is a CESM or NorESM scientifically supported compset at this resolution.\n")
             else:
                 self._check_testlists(compset_alias, grid_name, files)
 

@@ -1186,6 +1186,7 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 -xAVX </append>
     <append MODEL="blom"> -r8 </append>
+    <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
@@ -1207,6 +1208,7 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
     <append MODEL="blom"> -r8 </append>
+    <append MODEL="cam"> -init=zero,arrays </append>
   </FFLAGS>
   <MPICC> mpiicc </MPICC>
   <MPICXX> mpiicpc </MPICXX>
