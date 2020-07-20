@@ -17,7 +17,7 @@ _CMD_ARGS_FOR_BUILD = \
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
      "OCN_SUBMODEL", "CISM_USE_TRILINOS", "USE_TRILINOS", "USE_ALBANY", "USE_PETSC")
 
-def get_standard_makefile_args(case, shared_lib=False):
+def get_standard_makefile_args(case, shared_lib=False): # pylint: disable=unused-argument
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
     expect(not uses_kokkos(case), "Kokkos is not supported for classic Makefile build system")
