@@ -6,11 +6,8 @@ AC_INIT(pio, 2.5.1-development)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
-# The PIO version, again.
-#AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
-#AC_DEFINE([PIO_VERSION_MINOR], [5], [PIO minor version])
-#AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
-
+# The PIO version, again. Use AC_SUBST for pio_meta.h and
+# AC_DEFINE_UNQUOTED for config.h.
 AC_SUBST([PIO_VERSION_MAJOR]) PIO_VERSION_MAJOR=2
 AC_SUBST([PIO_VERSION_MINOR]) PIO_VERSION_MINOR=5
 AC_SUBST([PIO_VERSION_PATCH]) PIO_VERSION_PATCH=1
