@@ -21,7 +21,7 @@
 #define PIO_VERSION_MAJOR @PIO_VERSION_MAJOR@ /*!< pio-c major version. */
 #define PIO_VERSION_MINOR @PIO_VERSION_MINOR@ /*!< pio-c minor version. */
 #define PIO_VERSION_PATCH @PIO_VERSION_PATCH@ /*!< pio-c patch version. */
-#define PIO_VERSION       "@VERSION@"
+#define PIO_VERSION       "@PACKAGE_VERSION@"
 
 #define PIO_HAS_SZIP_WRITE @PIO_HAS_SZIP_WRITE@ /*!< szip write support */
 #define PIO_HAS_PNETCDF   @PIO_HAS_PNETCDF@ /*!< PnetCDF support. */
