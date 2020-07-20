@@ -345,6 +345,7 @@ class Grids(GenericXML):
                 if grid1_value != grid2_value and grid1_value != 'null' and grid2_value != 'null':
                     map_ = gridmaps[self.text(node)]
                     if map_ == 'idmap':
+                        print "DEBUG: idmap set for ",grid1_value,grid2_value
                         if grid1_name == "ocn_grid" and grid1_value == atm_gridvalue:
                             logger.debug('ocn_grid == atm_grid so this is not an idmap error')
                         else:
