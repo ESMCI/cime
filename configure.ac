@@ -356,7 +356,7 @@ AC_DEFUN([AX_SET_META],[
 #####
 # Define values used in include/pio_meta.h
 #####
-AX_SET_META([PIO_HAS_SZIP],[$have_szip_write],[yes])
+AX_SET_META([PIO_HAS_SZIP_WRITE],[$have_szip_write],[yes])
 AX_SET_META([PIO_HAS_PNETCDF],[$enable_pnetcdf],[yes])
 AX_SET_META([PIO_HAS_PAR_FILTERS], [$have_par_filters],[yes])
 
