@@ -343,13 +343,13 @@ def cprnc(model, file1, file2, case, rundir, multiinst_driver_compare=False, out
     if outfile_suffix:
         output_filename += ".{}".format(outfile_suffix)
 
-    # Remove existing output file if it exists
-    if os.path.exists(output_filename):
-        os.remove(output_filename)
-
     if outfile_suffix is None:
         cpr_stat, out, _ = run_cmd("{} -m {} {}".format(cprnc_exe, file1, file2), combine_output=True)
     else:
+        # Remove existing output file if it exists
+        if os.path.exists(output_filename):
+            os.remove(output_filename)
+
         cpr_stat = run_cmd("{} -m {} {}".format(cprnc_exe, file1, file2), combine_output=True, arg_stdout=output_filename)[0]
         with open(output_filename, "r") as fd:
             out = fd.read()
