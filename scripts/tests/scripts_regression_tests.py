@@ -1769,7 +1769,7 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
                 compargs.append("--wait")
                 self._create_test(compargs, test_id=test_id, run_errors=True)
             else:
-                self._create_test(compargs, test_id=test_id, run_errors=True)
+                self._create_test(compargs, test_id=test_id)
 
             # compare_test_results should detect the fail
             cpr_cmd = "{}/compare_test_results --test-root {} -t {} 2>&1" \
