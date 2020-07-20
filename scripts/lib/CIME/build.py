@@ -482,46 +482,46 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 def _clean_impl(case, cleanlist, clean_all, clean_depends):
 ###############################################################################
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
+    case.load_env()
     if clean_all:
         # If cleanlist is empty just remove the bld directory
         expect(exeroot is not None,"No EXEROOT defined in case")
         if os.path.isdir(exeroot):
             logging.info("cleaning directory {}".format(exeroot))
             shutil.rmtree(exeroot)
+
         # if clean_all is True also remove the sharedlibpath
         sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
         expect(sharedlibroot is not None,"No SHAREDLIBROOT defined in case")
         if sharedlibroot != exeroot and os.path.isdir(sharedlibroot):
             logging.warning("cleaning directory {}".format(sharedlibroot))
             shutil.rmtree(sharedlibroot)
+
     else:
         expect((cleanlist is not None and len(cleanlist) > 0) or
                (clean_depends is not None and len(clean_depends)),"Empty cleanlist not expected")
         gmake = case.get_value("GMAKE")
 
-        if os.path.exists(os.path.join(exeroot, "cmake-bld")):
-            # Cmake build system
-            for thing_to_clean in [cleanlist, clean_depends]:
-                if thing_to_clean is not None:
-                    for item in thing_to_clean:
-                        logging.info("Cleaning {}".format(item))
-                        cmd = "{} clean".format(gmake)
-                        run_cmd_no_fail(cmd, from_dir=os.path.join(exeroot, "cmake-bld", "cmake", item))
-        else:
-            # legacy build system
-            casetools = case.get_value("CASETOOLS")
-            cmd = gmake + " -f " + os.path.join(casetools, "Makefile")
-            cmd += " {}".format(get_standard_makefile_args(case))
-            if cleanlist is not None:
-                for item in cleanlist:
-                    tcmd = cmd + " clean" + item
-                    logger.info("calling {} ".format(tcmd))
-                    run_cmd_no_fail(tcmd)
+        cleanlist = [] if cleanlist is None else cleanlist
+        clean_depends = [] if clean_depends is None else clean_depends
+        things_to_clean = cleanlist + clean_depends
+
+        cmake_comp_root = os.path.join(exeroot, "cmake-bld", "cmake")
+        casetools = case.get_value("CASETOOLS")
+        classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"), get_standard_makefile_args(case))
+
+        for clean_item in things_to_clean:
+            logging.info("Cleaning {}".format(clean_item))
+            cmake_path = os.path.join(cmake_comp_root, clean_item)
+            if os.path.exists(cmake_path):
+                # Item was created by cmake build system
+                clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
             else:
-                for item in clean_depends:
-                    tcmd = cmd + " clean_depends" + item
-                    logger.info("calling {} ".format(tcmd))
-                    run_cmd_no_fail(tcmd)
+                # Item was created by classic build system
+                clean_cmd = "{} {}{}".format(classic_cmd, "clean" if clean_item in cleanlist else "clean_depends", clean_item)
+
+            logger.info("calling {}".format(clean_cmd))
+            run_cmd_no_fail(clean_cmd)
 
     # unlink Locked files directory
     unlock_file("env_build.xml")
