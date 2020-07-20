@@ -243,6 +243,7 @@ add_subdirectory (src)
 
 # Custom "piotests" target (builds the test executables)
 add_custom_target (tests)
+add_dependencies (tests pioc piof)
 
 # Custom "check" target that depends upon "tests"
 add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
