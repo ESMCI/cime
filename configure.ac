@@ -7,14 +7,21 @@ AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
 # The PIO version, again.
-AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
-AC_DEFINE([PIO_VERSION_MINOR], [5], [PIO minor version])
-AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
+#AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
+#AC_DEFINE([PIO_VERSION_MINOR], [5], [PIO minor version])
+#AC_DEFINE([PIO_VERSION_PATCH], [1], [PIO patch version])
+
+AC_SUBST([PIO_VERSION_MAJOR]) PIO_VERSION_MAJOR=2
+AC_SUBST([PIO_VERSION_MINOR]) PIO_VERSION_MINOR=5
+AC_SUBST([PIO_VERSION_PATCH]) PIO_VERSION_PATCH=1
+AC_DEFINE_UNQUOTED([PIO_VERSION_MAJOR], [$PIO_VERSION_MAJOR], [PIO major version])
+AC_DEFINE_UNQUOTED([PIO_VERSION_MINOR], [$PIO_VERSION_MINOR], [PIO minor version])
+AC_DEFINE_UNQUOTED([PIO_VERSION_PATCH], [$PIO_VERSION_PATCH], [PIO patch version])
 
 # Once more for the documentation.
 AC_SUBST([VERSION_MAJOR], [2])
 AC_SUBST([VERSION_MINOR], [5])
-AC_SUBST([VERSION_PATCH], [1-development])
+AC_SUBST([VERSION_PATCH], [1])
 
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
