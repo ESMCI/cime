@@ -30,7 +30,7 @@ from six.moves      import configparser, urllib
 # define global constants
 logger = logging.getLogger(__name__)
 _svn_expdb_url = 'https://svn-cesm2-expdb.cgd.ucar.edu'
-_exp_types = ['CMIP6', 'production', 'tuning','lens','C1','C2','C3','C4','C5']
+#_exp_types = ['CMIP6', 'production', 'tuning','lens','C1','C2','C3','C4','C5']
 _xml_vars = ['CASE', 'COMPILER', 'COMPSET', 'CONTINUE_RUN', 'DOUT_S', 'DOUT_S_ROOT',
              'GRID', 'MACH', 'MPILIB', 'MODEL', 'MODEL_VERSION', 'REST_N', 'REST_OPTION',
              'RUNDIR', 'RUN_REFCASE', 'RUN_REFDATE', 'RUN_STARTDATE', 'RUN_TYPE',
@@ -156,11 +156,12 @@ def commandline_options(args):
                         'does not have write permission in the caseroot (optional). ' \
                         'Defaults to current working directory.'.format(_svn_expdb_url))
 
-    parser.add_argument('--expType', dest='expType', nargs=1, required=True, choices=_exp_types,
+    parser.add_argument('--expType', dest='expType', nargs=1, 
                         help='Experiment type. For CMIP6 experiments, the case must already ' \
                         'exist in the experiments database at URL ' \
-                        ' "http://csegweb.cgd.ucar.edu/expdb2.0" (required). ' \
-                        'Must be one of "{0}"'.format(_exp_types))
+                        ' "http://csegweb.cgd.ucar.edu/expdb2.0"  ' \
+                        'Run archive_metadata --query-expType to see a complete list ' \
+                        'of supported experiment types (required unless --query-expType is specified).')
 
     parser.add_argument('--title', nargs=1, required=False, default=None,
                         help='Title of experiment (optional).')
@@ -192,6 +193,10 @@ def commandline_options(args):
                         'for specified CMIP6 casename as argument 1. ' \
                         'Writes a json formatted output file, specified by argument 2, ' \
                         'to subdir archive_files (optional).')
+
+    parser.add_argument('--query-expType', dest='query_expType', action='store_true',
+                        help='Query the experiments database for supported ' \
+                        'experiment types (optional).')
 
     parser.add_argument('--test-post', dest='test_post', action='store_true',
                         help='Post metadata to the test expdb2.0 web application server ' \
@@ -611,9 +616,36 @@ def check_expdb_case(case_dict, username, password):
     return int(output['case_id'])
 
 # ---------------------------------------------------------------------
+def query_expdb_expType(case_dict, username, password):
+# ---------------------------------------------------------------------
+    """ query_expdb_expType
+    Query the expdb for a dictionary of supported experiment types.
+
+    Arguments:
+        case_dict (dict) - case dictionary to store XML variables
+        username (string) - SVN developer's username
+        password (string) - SVN developer's password
+
+    """
+    logger.debug('query_expdb_expType')
+    output = list()
+    data_dict = {'queryType':'expTypes'}
+    data = json.dumps(data_dict)
+    params = urllib.parse.urlencode(dict(username=username, password=password, data=data))
+    try:
+        response = urllib.request.urlopen(case_dict['query_expdb_url'], params, context=_context)
+        output = json.load(response)
+    except urllib.error.HTTPError as http_e:
+        logger.info('ERROR archive_metadata HTTP post failed "%s"', http_e.code)
+    except urllib.error.URLError as url_e:
+        logger.info('ERROR archive_metadata URL failed "%s"', url_e.reason)
+
+    return output
+
+# ---------------------------------------------------------------------
 def query_expdb_cmip6(case_dict, username, password):
 # ---------------------------------------------------------------------
-    """ query_exp_case
+    """ query_expdb_cmip6
     Query the expdb for CMIP6 casename = case_dict['q_casename'] metadata.
     Write out a json file to case_dict['q_outfile'].
 
@@ -1429,6 +1461,23 @@ def main_func(options):
 
     (case_dict, username, password) = initialize_main(options)
 
+    # check if query-expType argument is specified
+    if options.query_expType:
+        if case_dict['dryrun']:
+            logger.info('Dryrun - calling query_expdb_expType for supported experiment types')
+        else:
+            exp_types = query_expdb_expType(case_dict, username, password)
+            if exp_types:
+                for exp_type in exp_types:
+                    logger.info('expType: %s', exp_type["name"])
+                    logger.info('description: %s', exp_type["description"])
+                    logger.info('')
+                logger.info('Successful completion of archive_metadata')
+                sys.exit(0)
+            else:
+                logger.info('ERROR archive_metadata failed to query experiment types')
+                sys.exit(1)
+
     # check if query_cmip6 argument is specified
     if options.query_cmip6:
         if case_dict['dryrun']:
@@ -1447,6 +1496,13 @@ def main_func(options):
                             'in experiments database at "%s".',
                             case_dict['q_casename'], case_dict['query_expdb_url'])
                 sys.exit(1)
+
+    # check if expType argument is specified
+    if not options.expType:
+        logger.info('ERROR archive_metadata requires a valid expType. '\
+                    'Run archive_metadata --exp-types to see a complete list '\
+                    'of supported experiment types.')
+        sys.exit(1)
 
     # loop through the _xml_vars gathering values
     with Case(case_dict['CASEROOT'], read_only=True) as case:
