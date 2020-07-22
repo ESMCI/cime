@@ -119,11 +119,11 @@ int main(int argc, char **argv)
 	    if (ret != PIO_ENOTNC4)
 		ERR(ERR_WRONG);
 	}
-	else if (flavor[f] == PIO_IOTYPE_NETCDF4P)
-	{
-	    if (ret != NC_EINVAL)
-		ERR(ERR_WRONG);
-	}
+	/* else if (flavor[f] == PIO_IOTYPE_NETCDF4P) */
+	/* { */
+	/*     if (ret != NC_EINVAL) */
+	/* 	ERR(ERR_WRONG); */
+	/* } */
 	else
 	{
 	    if (ret)

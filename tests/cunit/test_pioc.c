@@ -1570,18 +1570,9 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
-            /* Setting deflate should not work with parallel iotype. */
-            ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
-            if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-            {
-                if (ret == PIO_NOERR)
-                    ERR(ERR_WRONG);
-            }
-            else
-            {
-                if (ret != PIO_NOERR)
-                    ERR(ERR_WRONG);
-            }
+            /* Setting deflate works with parallel iotype starting with netcdf-c-4.7.4. */
+            if ((ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1)))
+		ERR(ret);
 
             /* Check that the inq_varname function works. */
             if ((ret = PIOc_inq_varname(ncid, 0, NULL)))
@@ -1611,9 +1602,9 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 if (shuffle || !deflate || deflate_level != 1)
                     ERR(ERR_AWFUL);
 
-            /* For parallel netCDF-4, no compression available. :-( */
+            /* For parallel netCDF-4, we turned on deflate above. */
             if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-                if (shuffle || deflate)
+               if (shuffle || !deflate || deflate_level != 1)
                     ERR(ERR_AWFUL);
 
             /* Check setting the chunk cache for the variable. */

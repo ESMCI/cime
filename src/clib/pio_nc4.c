@@ -84,11 +84,8 @@ PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-        if (file->iotype == PIO_IOTYPE_NETCDF4P)
-            ierr = NC_EINVAL;
-        else
-            if (file->do_io)
-                ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
+	if (file->do_io)
+	    ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
 #endif
     }
 
