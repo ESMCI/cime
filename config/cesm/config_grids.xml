@@ -1799,7 +1799,7 @@
 
     <domain name="HDMA">
       <nx>295335</nx> <ny>1</ny>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMA_global_ESMFmesh_c20191209.nc</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMA_global_ctrcrd_cdf5_ESMFmesh_c20200718.nc</mesh>
       <desc>HDMA is a medium resolution river routing grid for mizuRoute:</desc>
     </domain>
 
