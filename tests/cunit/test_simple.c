@@ -49,7 +49,9 @@ int main(int argc, char **argv)
 	return ERR_AWFUL;
     }
 
-    PIOc_set_log_level(3);
+    /* Turn off logging, to prevent error messages from being logged
+     * when we intentionally call functions we know will fail. */
+    PIOc_set_log_level(-1);
 
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -81,10 +83,7 @@ int main(int argc, char **argv)
     if (!(data = malloc(elements_per_pe * sizeof(int))))
 	ERR(ERR_MEM);
     for (i = 0; i < elements_per_pe; i++)
-    {
 	data[i] = my_rank + i;
-	printf("%d: data[%d] = %d\n", my_rank, i, data[i]);
-    }
 
     /* Storage to read one record back in. */
     if (!(data_in = malloc(elements_per_pe * sizeof(int))))
@@ -110,12 +109,34 @@ int main(int argc, char **argv)
 	if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM2, dimid, &varid)))
 	    ERR(ret);
 
+	/* Try to turn on deflate, it will only work for netCDF-4
+	 * serial, and perhaps netCDF-4 parallel. */
+	ret = PIOc_def_var_deflate(ncid, varid, 0, 1, 1);
+	if (flavor[f] == PIO_IOTYPE_PNETCDF || flavor[f] == PIO_IOTYPE_NETCDF)
+	{
+	    /* Pnetcdf and netcdf classic formats do not support
+	     * compression. An error will be returned. */
+	    if (ret != PIO_ENOTNC4)
+		ERR(ERR_WRONG);
+	}
+	else if (flavor[f] == PIO_IOTYPE_NETCDF4P)
+	{
+	    if (ret != NC_EINVAL)
+		ERR(ERR_WRONG);
+	}
+	else
+	{
+	    if (ret)
+		ERR(ret);
+	}
+
 	if ((ret = PIOc_enddef(ncid)))
 	    ERR(ret);
 
+	/* Write a record of data. Each compute task writes its local
+	 * array of data. */
 	if ((ret = PIOc_setframe(ncid, varid, 0)))
 	    ERR(ret);
-
 	if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, data, NULL)))
 	    ERR(ret);
 	
@@ -129,7 +150,7 @@ int main(int argc, char **argv)
 	    if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[f], filename, NC_NOWRITE)))
 		ERR(ret);
 
-	    /* Read the data. */
+	    /* Read the local array of data for this task and confirm correctness. */
 	    if ((ret = PIOc_setframe(ncid, varid, 0)))
 		ERR(ret);
 	    if ((ret = PIOc_read_darray(ncid, varid, ioid, elements_per_pe, data_in)))
