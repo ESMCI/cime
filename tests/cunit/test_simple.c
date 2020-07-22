@@ -22,11 +22,12 @@ int main(int argc, char **argv)
     int ntasks; 
     int num_iotasks = 1;
     int iosysid, ioid; 
-    int gdimlen, maplen;
+    int gdimlen, elements_per_pe;
     PIO_Offset *compmap;
     int ncid, dimid[NDIM2], varid;
     int num_flavors;         /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    int *data;
     int i, f;
     int ret; 
 
@@ -48,6 +49,8 @@ int main(int argc, char **argv)
 	return ERR_AWFUL;
     }
 
+    PIOc_set_log_level(3);
+
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         ERR(ret);
@@ -64,15 +67,25 @@ int main(int argc, char **argv)
 
     /* Initialize the decomposition. */
     gdimlen = DIM_LEN;
-    maplen = DIM_LEN/ntasks;
-    if (!(compmap = malloc(maplen * sizeof(PIO_Offset))))
+    elements_per_pe = DIM_LEN/ntasks;
+    if (!(compmap = malloc(elements_per_pe * sizeof(PIO_Offset))))
 	ERR(ERR_MEM);
-    for (i = 0; i < maplen; i++)
-	compmap[i] = i * my_rank;
-    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, &gdimlen, maplen, compmap,
+    for (i = 0; i < elements_per_pe; i++)
+	compmap[i] = my_rank + i;
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, &gdimlen, elements_per_pe, compmap,
 				&ioid, PIO_REARR_BOX, NULL, NULL)))
 	ERR(ret);
     free(compmap);
+
+    /* Create one record of data. */
+    if (!(data = malloc(elements_per_pe * sizeof(int))))
+	ERR(ERR_MEM);
+    for (i = 0; i < elements_per_pe; i++)
+    {
+	data[i] = my_rank + i;
+	printf("%d: data[%d] = %d\n", my_rank, i, data[i]);
+    }
+    
 
     /* Create a file with each available IOType. */
     for (f = 0; f < num_flavors; f++)
@@ -96,6 +109,12 @@ int main(int argc, char **argv)
 
 	if ((ret = PIOc_enddef(ncid)))
 	    ERR(ret);
+
+	if ((ret = PIOc_setframe(ncid, varid, 0)))
+	    ERR(ret);
+
+	if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, data, NULL)))
+	    ERR(ret);
 	
 	/* Close the file. */
 	if ((ret = PIOc_closefile(ncid)))
@@ -113,7 +132,8 @@ int main(int argc, char **argv)
 	}
     } /* next IOType */
 
-    /* Free the decomposition. */
+    /* Free resources. */
+    free(data);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
 	ERR(ret);
 
