@@ -20,7 +20,7 @@ _CMD_ARGS_FOR_BUILD = \
 def get_standard_makefile_args(case, shared_lib=False): # pylint: disable=unused-argument
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
-    expect(not uses_kokkos(case), "Kokkos is not supported for classic Makefile build system")
+    expect(not (uses_kokkos(case) and not shared_lib), "Kokkos is not supported for classic Makefile build system")
     for var in _CMD_ARGS_FOR_BUILD:
         make_args += xml_to_make_variable(case, var)
 
