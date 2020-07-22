@@ -9,6 +9,10 @@
 
 /* The name of this test. */
 #define TEST_NAME "test_simple"
+#define DIM_NAME "a_dim"
+#define VAR_NAME "a_var"
+#define DIM_LEN 4
+#define NDIM1 1
 
 int main(int argc, char **argv)
 {
@@ -16,7 +20,7 @@ int main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int num_iotasks = 1;
     int iosysid; /* The ID for the parallel I/O system. */
-    int ncid;
+    int ncid, dimid, varid;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int f;
@@ -53,14 +57,36 @@ int main(int argc, char **argv)
     {
 	char filename[NC_MAX_NAME + 1];
 
-	sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[f]);
 	/* Create a file. */
+	sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[f]);
 	if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[f], filename, NC_CLOBBER)))
+	    ERR(ret);
+
+	/* Define a dim. */
+	if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
+	    ERR(ret);
+
+	/* Define a var. */
+	if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM1, &dimid, &varid)))
+	    ERR(ret);
+
+	if ((ret = PIOc_enddef(ncid)))
 	    ERR(ret);
 	
 	/* Close the file. */
 	if ((ret = PIOc_closefile(ncid)))
 	    ERR(ret);
+
+	/* Check the file. */
+	{
+	    /* Reopen the file. */
+	    if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[f], filename, NC_NOWRITE)))
+		ERR(ret);
+	    
+	    /* Close the file. */
+	    if ((ret = PIOc_closefile(ncid)))
+		ERR(ret);
+	}
     } /* next IOType */
 
     /* Finalize the IOsystem. */
