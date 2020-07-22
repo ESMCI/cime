@@ -65,6 +65,7 @@ test_perf2_SOURCES = test_perf2.c test_common.c pio_tests.h
 test_async_perf_SOURCES = test_async_perf.c test_common.c pio_tests.h
 test_darray_vard_SOURCES = test_darray_vard.c test_common.c pio_tests.h
 test_async_1d_SOURCES = test_async_1d.c pio_tests.h
+test_simple_SOURCES = test_simple.c test_common.c pio_tests.h
 
 # Distribute the test script.
 EXTRA_DIST = run_tests.sh CMakeLists.txt test_darray_frame.c

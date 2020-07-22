@@ -16,8 +16,10 @@ int main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int num_iotasks = 1;
     int iosysid; /* The ID for the parallel I/O system. */
-    /* int num_flavors; /\* Number of PIO netCDF flavors in this build. *\/ */
-    /* int flavor[NUM_FLAVORS]; /\* iotypes for the supported netCDF IO flavors. *\/ */
+    int ncid;
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    int f;
     int ret; /* Return code. */
 
     /* Initialize MPI. */
@@ -40,6 +42,26 @@ int main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, num_iotasks, 1, 0, PIO_REARR_BOX,
 				   &iosysid)))
 	ERR(ret);
+
+    /* Find out which IOtypes are available in this build by calling
+     * this function from test_common.c. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
+
+    /* Create a file with each available IOType. */
+    for (f = 0; f < num_flavors; f++)
+    {
+	char filename[NC_MAX_NAME + 1];
+
+	sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[f]);
+	/* Create a file. */
+	if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[f], filename, NC_CLOBBER)))
+	    ERR(ret);
+	
+	/* Close the file. */
+	if ((ret = PIOc_closefile(ncid)))
+	    ERR(ret);
+    } /* next IOType */
 
     /* Finalize the IOsystem. */
     if ((ret = PIOc_finalize(iosysid)))
