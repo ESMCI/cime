@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     int ncid, dimid[NDIM2], varid;
     int num_flavors;         /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    int *data;
+    int *data, *data_in;
     int i, f;
     int ret; 
 
@@ -85,7 +85,10 @@ int main(int argc, char **argv)
 	data[i] = my_rank + i;
 	printf("%d: data[%d] = %d\n", my_rank, i, data[i]);
     }
-    
+
+    /* Storage to read one record back in. */
+    if (!(data_in = malloc(elements_per_pe * sizeof(int))))
+	ERR(ERR_MEM);
 
     /* Create a file with each available IOType. */
     for (f = 0; f < num_flavors; f++)
@@ -125,6 +128,12 @@ int main(int argc, char **argv)
 	    /* Reopen the file. */
 	    if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[f], filename, NC_NOWRITE)))
 		ERR(ret);
+
+	    /* Read the data. */
+	    if ((ret = PIOc_setframe(ncid, varid, 0)))
+		ERR(ret);
+	    if ((ret = PIOc_read_darray(ncid, varid, ioid, elements_per_pe, data_in)))
+		ERR(ret);
 	    
 	    /* Close the file. */
 	    if ((ret = PIOc_closefile(ncid)))
@@ -134,6 +143,7 @@ int main(int argc, char **argv)
 
     /* Free resources. */
     free(data);
+    free(data_in);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
 	ERR(ret);
 
