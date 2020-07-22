@@ -64,6 +64,7 @@ void test_stop_mpe_log(int state, const char *msg);
 #define ERR_WRONG 1112
 #define ERR_GPTL 1113
 #define ERR_MPI 1114
+#define ERR_MEM 1115
 
 /** The meaning of life, the universe, and everything. */
 #define TEST_VAL_42 42

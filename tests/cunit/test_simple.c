@@ -10,21 +10,25 @@
 /* The name of this test. */
 #define TEST_NAME "test_simple"
 #define DIM_NAME "a_dim"
+#define DIM_NAME_UNLIM "an_unlimited_dim"
 #define VAR_NAME "a_var"
 #define DIM_LEN 4
 #define NDIM1 1
+#define NDIM2 2
 
 int main(int argc, char **argv)
 {
-    int my_rank; /* Zero-based rank of processor. */
-    int ntasks; /* Number of processors involved in current execution. */
+    int my_rank; 
+    int ntasks; 
     int num_iotasks = 1;
-    int iosysid; /* The ID for the parallel I/O system. */
-    int ncid, dimid, varid;
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int iosysid, ioid; 
+    int gdimlen, maplen;
+    PIO_Offset *compmap;
+    int ncid, dimid[NDIM2], varid;
+    int num_flavors;         /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    int f;
-    int ret; /* Return code. */
+    int i, f;
+    int ret; 
 
     /* Initialize MPI. */
     if ((ret = MPI_Init(&argc, &argv)))
@@ -37,6 +41,12 @@ int main(int argc, char **argv)
         MPIERR(ret);
 
     /* PIOc_set_log_level(4); */
+    if (ntasks != 1 && ntasks != 4)
+    {
+	if (!my_rank)
+	    printf("Test must be run on 1 or 4 tasks.\n");
+	return ERR_AWFUL;
+    }
 
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -52,6 +62,18 @@ int main(int argc, char **argv)
     if ((ret = get_iotypes(&num_flavors, flavor)))
 	ERR(ret);
 
+    /* Initialize the decomposition. */
+    gdimlen = DIM_LEN;
+    maplen = DIM_LEN/ntasks;
+    if (!(compmap = malloc(maplen * sizeof(PIO_Offset))))
+	ERR(ERR_MEM);
+    for (i = 0; i < maplen; i++)
+	compmap[i] = i * my_rank;
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, &gdimlen, maplen, compmap,
+				&ioid, PIO_REARR_BOX, NULL, NULL)))
+	ERR(ret);
+    free(compmap);
+
     /* Create a file with each available IOType. */
     for (f = 0; f < num_flavors; f++)
     {
@@ -62,12 +84,14 @@ int main(int argc, char **argv)
 	if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[f], filename, NC_CLOBBER)))
 	    ERR(ret);
 
-	/* Define a dim. */
-	if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
+	/* Define dims. */
+	if ((ret = PIOc_def_dim(ncid, DIM_NAME_UNLIM, PIO_UNLIMITED, &dimid[0])))
+	    ERR(ret);
+	if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid[1])))
 	    ERR(ret);
 
 	/* Define a var. */
-	if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM1, &dimid, &varid)))
+	if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM2, dimid, &varid)))
 	    ERR(ret);
 
 	if ((ret = PIOc_enddef(ncid)))
@@ -88,6 +112,10 @@ int main(int argc, char **argv)
 		ERR(ret);
 	}
     } /* next IOType */
+
+    /* Free the decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+	ERR(ret);
 
     /* Finalize the IOsystem. */
     if ((ret = PIOc_finalize(iosysid)))
