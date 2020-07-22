@@ -134,6 +134,8 @@ int main(int argc, char **argv)
 		ERR(ret);
 	    if ((ret = PIOc_read_darray(ncid, varid, ioid, elements_per_pe, data_in)))
 		ERR(ret);
+	    for (i = 0; i < elements_per_pe; i++)
+		if (data_in[i] != data[i]) ERR(ERR_WRONG);
 	    
 	    /* Close the file. */
 	    if ((ret = PIOc_closefile(ncid)))
