@@ -813,30 +813,30 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="cray">
 	<command name="load">PrgEnv-cray</command>
-	<command name="switch">cce cce/8.6.5</command>
+	<command name="switch">cce cce/8.7.9</command>
       </modules>
       <modules compiler="gnu">
 	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/7.3.0</command>
+	<command name="switch">gcc gcc/8.3.0</command>
       </modules>
       <modules>
 	<command name="load">cray-memkind</command>
-	<command name="swap">craype craype/2.5.18</command>
+	<command name="swap">craype craype/2.6.2</command>
       </modules>
       <modules>
-	<command name="switch">cray-libsci/19.02.1</command>
+	<command name="switch">cray-libsci/19.06.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.8</command>
+	<command name="load">cray-mpich/7.7.10</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.5.0</command>
-	<command name="load">cray-netcdf/4.6.3.0</command>
+	<command name="load">cray-hdf5/1.10.5.2</command>
+	<command name="load">cray-netcdf/4.6.3.2</command>
       </modules>
       <modules mpilib="!mpi-serial">
-	<command name="load">cray-netcdf-hdf5parallel/4.6.3.0</command>
-	<command name="load">cray-hdf5-parallel/1.10.5.0</command>
-	<command name="load">cray-parallel-netcdf/1.11.1.0</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
+	<command name="load">cray-hdf5-parallel/1.10.5.2</command>
+	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
       </modules>
       <modules>
 	<command name="load">cmake/3.14.4</command>
@@ -918,31 +918,31 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="cray">
 	<command name="load">PrgEnv-cray</command>
-	<command name="switch">cce cce/8.6.5</command>
+	<command name="switch">cce cce/9.1.0</command>
       </modules>
       <modules compiler="gnu">
 	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/7.3.0</command>
+	<command name="switch">gcc gcc/8.3.0</command>
       </modules>
       <modules>
 	<command name="load">cray-memkind</command>
-	<command name="swap">craype craype/2.5.18</command>
+	<command name="swap">craype craype/2.6.2</command>
 	<command name="load">craype-mic-knl</command>
       </modules>
       <modules>
-	<command name="switch">cray-libsci/19.02.1</command>
+	<command name="switch">cray-libsci/19.06.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.7.8</command>
+	<command name="load">cray-mpich/7.7.10</command>
       </modules>
       <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.5.0</command>
-	<command name="load">cray-netcdf/4.6.3.0</command>
+	<command name="load">cray-hdf5/1.10.5.2</command>
+	<command name="load">cray-netcdf/4.6.3.2</command>
       </modules>
       <modules mpilib="!mpi-serial">
-	<command name="load">cray-netcdf-hdf5parallel/4.6.3.0</command>
-	<command name="load">cray-hdf5-parallel/1.10.5.0</command>
-	<command name="load">cray-parallel-netcdf/1.11.1.0</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
+	<command name="load">cray-hdf5-parallel/1.10.5.2</command>
+	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
       </modules>
     </module_system>
     <environment_variables>
