@@ -19,9 +19,11 @@ Shared Library:		@enable_shared@
 Static Library:		@enable_static@
 Extra libraries:	@LIBS@
 
+Fortran Compiler:       @FC_VERSION@
+FFLAGS:                 @FFLAGS@
+
 # Features
 --------
 PnetCDF Support:	@HAS_PNETCDF@
 SZIP Write Support:     @HAS_SZIP_WRITE@
 Parallel Filters:       @HAS_PAR_FILTERS@
-

@@ -29,18 +29,15 @@ target_compile_definitions (pioc
 
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-  target_compile_options (pioc
-    PRIVATE -std=c99)
+  list(INSERT CMAKE_C_FLAGS 0 "-std=c99 ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "PGI")
-  target_compile_options (pioc
-    PRIVATE -c99)
+  list(INSERT CMAKE_C_FLAGS 0 "-c99 ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
-  target_compile_options (pioc
-    PRIVATE -std=c99 -debug minimal)
+  list(INSERT CMAKE_C_FLAGS 0 "-std=c99 -debug minimal")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  target_compile_options (pioc
-    PRIVATE -std=c99)
+  list(INSERT CMAKE_C_FLAGS 0 "-std=c99 ")
 endif()
+target_compile_options (pioc PRIVATE ${CMAKE_C_FLAGS})
 
 #==============================================================================
 #  DEFINE THE INSTALL
@@ -161,3 +158,6 @@ CHECK_TYPE_SIZE("long long" SIZEOF_LONG_LONG)
 if (NOT ${SIZEOF_SIZE_T} EQUAL ${SIZEOF_LONG_LONG})
   message (FATAL_ERROR "size_t and long long must be the same size!")
 endif ()
+
+set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}" PARENT_SCOPE)
+set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_CPP_FLAGS_${CMAKE_BUILD_TYPE}}" PARENT_SCOPE)
