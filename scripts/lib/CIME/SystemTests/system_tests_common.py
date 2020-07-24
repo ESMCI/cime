@@ -194,7 +194,6 @@ class SystemTestsCommon(object):
             # Writing the run status should be the very last thing due to wait_for_tests
             time_taken = time.time() - start_time
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
-            append_testlog("wpc5a in system_tests_common.py in finally block: status is: {}.\nsuccess is: {}.\nself._test_status is: {}".format(status, success, self._test_status), self._orig_caseroot)
             with self._test_status:
                 self._test_status.set_status(RUN_PHASE, status, comments=("time={:d}".format(int(time_taken))))
 
@@ -206,7 +205,6 @@ class SystemTestsCommon(object):
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
                 overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
-                append_testlog("wpc5b in system_tests_common.py in finally block: status is: {}.\nsuccess is: {}.\noverall_status is: {}".format(status, success, overall_status), self._orig_caseroot)
                 if overall_status != TEST_PASS_STATUS:
                     srcroot = self._case.get_value("CIMEROOT")
                     worked_before, last_pass, last_fail_transition = \
@@ -543,16 +541,17 @@ class SystemTestsCommon(object):
         with self._test_status:
             # compare baseline
             success, comments = compare_baseline(self._case)
-            append_testlog("wpc4c in system_tests_common.py in _compare_baseline: success is: {}.\nself._test_status is: {}.\ncomments is: {}".format(success, self._test_status, comments), self._orig_caseroot)
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
             ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
-            append_testlog("wpc4d in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
             self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
+<<<<<<< HEAD
             self._test_status.set_status(MEMLEAK_PHASE, status, comments="wpc4d+ append to TestStatus check")
             append_testlog("wpc4e in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
 
+=======
+>>>>>>> origin/master
 
     def _generate_baseline(self):
         """
