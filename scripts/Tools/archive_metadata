@@ -639,8 +639,10 @@ def query_expdb_expType(case_dict, username, password):
         output = json.load(response)
     except urllib.error.HTTPError as http_e:
         logger.error('ERROR archive_metadata HTTP post failed "%s"', http_e.code)
+        sys.exit(1)
     except urllib.error.URLError as url_e:
         logger.error('ERROR archive_metadata URL failed "%s"', url_e.reason)
+        sys.exit(1)
 
     return output
 
@@ -669,8 +671,10 @@ def query_expdb_cmip6(case_dict, username, password):
         output = json.load(response)
     except urllib.error.HTTPError as http_e:
         logger.error('ERROR archive_metadata HTTP post failed "%s"', http_e.code)
+        sys.exit(1)
     except urllib.error.URLError as url_e:
         logger.error('ERROR archive_metadata URL failed "%s"', url_e.reason)
+        sys.exit(1)
 
     if output:
         if not os.path.exists('{0}/archive_files'.format(case_dict['workdir'])):
@@ -729,8 +733,10 @@ def post_json(case_dict, username, password):
         urllib.request.urlopen(case_dict['json_expdb_url'], params, context=_context)
     except urllib.error.HTTPError as http_e:
         logger.error('ERROR archive_metadata HTTP post failed "%s"', http_e.code)
+        sys.exit(1)
     except urllib.error.URLError as url_e:
         logger.error('ERROR archive_metadata URL failed "%s"', url_e.reason)
+        sys.exit(1)
 
 # ---------------------------------------------------------------------
 def check_svn():
@@ -1474,11 +1480,10 @@ def main_func(options):
                     print('expType: {}'.format(exp_type["name"]))
                     print('description: {}'.format(exp_type["description"]))
                     print('')
-                logger.info('Successful completion of archive_metadata')
-                sys.exit(0)
             else:
                 logger.error('ERROR archive_metadata failed to query experiment types')
                 sys.exit(1)
+        return 0
 
     # check if expType argument is a valid expType
     if not any(exp_type["name"] == options.expType[0] for exp_type in exp_types):
@@ -1499,7 +1504,6 @@ def main_func(options):
                             case_dict['workdir'], case_dict['q_casename'],
                             case_dict['q_outfile'], case_dict['query_expdb_url'])
                 logger.info('Successful completion of archive_metadata')
-                sys.exit(0)
             else:
                 logger.error('ERROR archive_metadata failed to find "%s" '\
                             'in experiments database at "%s".',
