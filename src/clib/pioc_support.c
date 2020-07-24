@@ -2412,10 +2412,8 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
                 /* Only first dim may be unlimited, for PIO. */
                 if (unlim_found)
                 {
-                    if (d == 0){
+                    if (d == 0)
                         (*rec_var)[v] = 1;
-			break;
-		    }
                     else
                         return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
 
@@ -2424,9 +2422,7 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
                     (*rec_var)[v] = 0;
 
             }
-	    PLOG((2,"varid %d var_ndims %d nunlimdims %d rec_var %d unlimdimids[0]=%d var_dimids[0]=%d\n",v,var_ndims, nunlimdims, (*rec_var)[v], unlimdimids[0], var_dimids[0]));
         }
-
     } /* next var */
 
     /* Free resources. */
