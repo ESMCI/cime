@@ -1753,9 +1753,6 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
                            "--baseline-root ", self._baseline_area]
                 compargs = ["-c", self._baseline_name, test_name,
                             "--baseline-root ", self._baseline_area]
-            if test_name == "TESTRUNDIFFRESUBMIT_P1.f19_g16_rx1.A":
-                genargs.append("--wait")
-                compargs.append("--wait")
 
             self._create_test(genargs)
             # Hist compare should pass
@@ -1766,7 +1763,6 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
             # Hist compare should now fail
             test_id = "%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
             if test_name == "TESTRUNDIFF_P1.f19_g16_rx1.A":
-                compargs.append("--wait")
                 self._create_test(compargs, test_id=test_id, run_errors=True)
             else:
                 self._create_test(compargs, test_id=test_id)
