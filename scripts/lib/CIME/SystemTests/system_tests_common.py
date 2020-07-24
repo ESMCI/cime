@@ -145,37 +145,38 @@ class SystemTestsCommon(object):
         self._skip_pnl = skip_pnl
         try:
             self._resetup_case(RUN_PHASE)
-            resub_val = True
+            do_baseline_ops = True
             with self._test_status:
                 self._test_status.set_status(RUN_PHASE, TEST_PEND_STATUS)
 
-            append_testlog("wpc0 in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
+            # We do not want to do multiple repetitions of baseline operations for
+            # multi-submit tests. We just want to do them upon the final submission.
+            # Other submissions will need to mark those phases as PEND to ensure wait_for_tests
+            # waits for them.
             if self._case.get_value("BATCH_SYSTEM") != "none":
-                #resub_val = self._case.get_value("IS_FIRST_RUN")
-                resub_val = self._case.get_value("RESUBMIT") == 0
+                do_baseline_ops = self._case.get_value("RESUBMIT") == 0
 
             self.run_phase()
-            append_testlog("wpc1 in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
-            if self._case.get_value("GENERATE_BASELINE") and resub_val:
-                append_testlog("wpc2a in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('GENERATE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("GENERATE_BASELINE")), self._orig_caseroot)
-                self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
-                append_testlog("wpc2b in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('GENERATE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("GENERATE_BASELINE")), self._orig_caseroot)
-                
+            if self._case.get_value("GENERATE_BASELINE"):
+                if do_baseline_ops:
+                    self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
+                else:
+                    with self._test_status:
+                        self._test_status.set_status(GENERATE_PHASE, TEST_PEND_STATUS)
 
-            if self._case.get_value("COMPARE_BASELINE") and resub_val:
-                append_testlog("wpc2aa in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
-                self._phase_modifying_call(BASELINE_PHASE,   self._compare_baseline)
-                self._phase_modifying_call(MEMCOMP_PHASE,    self._compare_memory)
-                self._phase_modifying_call(THROUGHPUT_PHASE, self._compare_throughput)
-                append_testlog("wpc2bb in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
-            
+            if self._case.get_value("COMPARE_BASELINE"):
+                if do_baseline_ops:
+                    self._phase_modifying_call(BASELINE_PHASE,   self._compare_baseline)
+                    self._phase_modifying_call(MEMCOMP_PHASE,    self._compare_memory)
+                    self._phase_modifying_call(THROUGHPUT_PHASE, self._compare_throughput)
+                else:
+                    with self._test_status:
+                        self._test_status.set_status(BASELINE_PHASE,   TEST_PEND_STATUS)
+                        self._test_status.set_status(MEMCOMP_PHASE,    TEST_PEND_STATUS)
+                        self._test_status.set_status(THROUGHPUT_PHASE, TEST_PEND_STATUS)
 
-            self._phase_modifying_call(MEMLEAK_PHASE, self._check_for_memleak)
-
+            self._phase_modifying_call(MEMLEAK_PHASE,   self._check_for_memleak)
             self._phase_modifying_call(STARCHIVE_PHASE, self._st_archive_case_test)
-
-            append_testlog("wpc3c in system_tests_common.py: resub_val is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('COMPARE_BASELINE') is: {}".format(resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("COMPARE_BASELINE")), self._orig_caseroot)
-            append_testlog("wpc3d in system_tests_common.py: resub_val type is {}, resub_val value is: {}.\nself._case.get_value('BATCH_SYSTEM') is: {}.\nself._case.get_value('GENERATE_BASELINE') is: {}".format(type(resub_val), resub_val, self._case.get_value("BATCH_SYSTEM"), self._case.get_value("GENERATE_BASELINE")), self._orig_caseroot)
 
         except BaseException as e: # We want KeyboardInterrupts to generate FAIL status
             success = False
@@ -551,7 +552,7 @@ class SystemTestsCommon(object):
             self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
             self._test_status.set_status(MEMLEAK_PHASE, status, comments="wpc4d+ append to TestStatus check")
             append_testlog("wpc4e in system_tests_common.py in _compare_baseline: success is: {}.\nstatus is: {}.\nts_comments is: {}".format(success, status, ts_comments), self._orig_caseroot)
-                   
+
 
     def _generate_baseline(self):
         """
