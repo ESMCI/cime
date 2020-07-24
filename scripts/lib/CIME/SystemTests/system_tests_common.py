@@ -189,7 +189,7 @@ class SystemTestsCommon(object):
                 # If overall things did not pass, offer the user some insight into what might have broken things
                 overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
                 if overall_status != TEST_PASS_STATUS:
-                    srcroot = self._case.get_value("CIMEROOT")
+                    srcroot = self._case.get_value("SRCROOT")
                     worked_before, last_pass, last_fail_transition = \
                         get_test_success(baseline_root, srcroot, self._casebaseid)
 

@@ -500,7 +500,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     if get_model() == "e3sm":
         bless_log = os.path.join(basegen_dir, BLESS_LOG_NAME)
         with open(bless_log, "a") as fd:
-            fd.write("sha:{} date:{}\n".format(get_current_commit(repo=case.get_value("CIMEROOT")),
+            fd.write("sha:{} date:{}\n".format(get_current_commit(repo=case.get_value("SRCROOT")),
                                                get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")))
 
     return True, comments
