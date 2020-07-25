@@ -190,10 +190,10 @@ def create_cdash_xml_fakes(results, cdash_build_name, cdash_build_group, utc_tim
     # We assume all cases were created from the same code repo
     first_result_case = os.path.dirname(list(results.items())[0][1][0])
     try:
-        srcroot = run_cmd_no_fail("./xmlquery --value CIMEROOT", from_dir=first_result_case)
+        srcroot = run_cmd_no_fail("./xmlquery --value SRCROOT", from_dir=first_result_case)
     except CIMEError:
         # Use repo containing this script as last resort
-        srcroot = CIME.utils.get_cime_root()
+        srcroot = os.path.join(CIME.utils.get_cime_root(), "..")
 
     git_commit = CIME.utils.get_current_commit(repo=srcroot)
 
@@ -457,7 +457,7 @@ def wait_for_tests(test_paths,
         if update_success:
             caseroot = os.path.dirname(test_data[0])
             with Case(caseroot, read_only=True) as case:
-                srcroot = case.get_value("CIMEROOT")
+                srcroot = case.get_value("SRCROOT")
                 baseline_root = case.get_value("BASELINE_ROOT")
                 save_test_success(baseline_root, srcroot, test_name, test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS])
 

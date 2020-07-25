@@ -31,18 +31,18 @@ def _get_batch_job_id_for_syslog(case):
     return None
 
 def _save_build_provenance_e3sm(case, lid):
-    cimeroot = case.get_value("CIMEROOT")
+    srcroot = case.get_value("SRCROOT")
     exeroot = case.get_value("EXEROOT")
     caseroot = case.get_value("CASEROOT")
 
     # Save git describe
     describe_prov = os.path.join(exeroot, "GIT_DESCRIBE.{}".format(lid))
-    desc = get_current_commit(tag=True, repo=cimeroot)
+    desc = get_current_commit(tag=True, repo=srcroot)
     with open(describe_prov, "w") as fd:
         fd.write(desc)
 
     # Save HEAD
-    headfile = os.path.join(cimeroot, ".git", "logs", "HEAD")
+    headfile = os.path.join(srcroot, ".git", "logs", "HEAD")
     headfile_prov = os.path.join(exeroot, "GIT_LOGS_HEAD.{}".format(lid))
     if os.path.exists(headfile_prov):
         os.remove(headfile_prov)
@@ -137,7 +137,7 @@ def _save_prerun_timing_e3sm(case, lid):
     rundir = case.get_value("RUNDIR")
     blddir = case.get_value("EXEROOT")
     caseroot = case.get_value("CASEROOT")
-    cimeroot = case.get_value("CIMEROOT")
+    srcroot = case.get_value("SRCROOT")
     base_case = case.get_value("CASE")
     full_timing_dir = os.path.join(timing_dir, "performance_archive", getpass.getuser(), base_case, lid)
     if os.path.exists(full_timing_dir):
@@ -239,7 +239,7 @@ def _save_prerun_timing_e3sm(case, lid):
             safe_copy(item, os.path.join(full_timing_dir, os.path.basename(item) + "." + lid), preserve_meta=False)
 
     # Save state of repo
-    from_repo = cimeroot if os.path.exists(os.path.join(cimeroot, ".git")) else os.path.dirname(cimeroot)
+    from_repo = srcroot if os.path.exists(os.path.join(srcroot, ".git")) else os.path.dirname(srcroot)
     desc = get_current_commit(tag=True, repo=from_repo)
     with open(os.path.join(full_timing_dir, "GIT_DESCRIBE.{}".format(lid)), "w") as fd:
         fd.write(desc)
