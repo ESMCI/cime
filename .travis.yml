@@ -51,8 +51,7 @@ script:
   - rm -rf build
   - mkdir build
   - cd build
-  - unset CFLAGS FFLAGS FCFLAGS DISTCHECK_CONFIGURE_FLAGS
   - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
   - make VERBOSE=1
   - make tests VERBOSE=1
-  - make test VERBOSE=1
+  - ctest -VV

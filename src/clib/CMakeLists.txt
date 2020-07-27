@@ -29,13 +29,13 @@ target_compile_definitions (pioc
 
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-  list(INSERT CMAKE_C_FLAGS 0 "-std=c99 ")
+  string(PREPEND CMAKE_C_FLAGS  "-std=c99 " )
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "PGI")
-  list(INSERT CMAKE_C_FLAGS 0 "-c99 ")
+  string(PREPEND CMAKE_C_FLAGS  "-c99 ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
-  list(INSERT CMAKE_C_FLAGS 0 "-std=c99 -debug minimal")
+  string(PREPEND CMAKE_C_FLAGS  "-std=c99 -debug minimal ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  list(INSERT CMAKE_C_FLAGS 0 "-std=c99 ")
+  string(PREPEND CMAKE_C_FLAGS  "-std=c99 ")
 endif()
 target_compile_options (pioc PRIVATE ${CMAKE_C_FLAGS})
 
