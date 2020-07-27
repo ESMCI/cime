@@ -40,7 +40,5 @@ jobs:
       run: autoreconf -i
     - name: configure
       run: ./configure
-    - name: make
-      run: make
     - name: make distcheck
       run: make distcheck
