@@ -40,7 +40,7 @@ jobs:
       run: ./configure
       env:
         CFLAGS: "-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-#        FFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
-#        FCFLAGS: "-fsanitize=address -fno-omit-frame-pointer -Werror"
+        FFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
+        FCFLAGS: "-fsanitize=address -fno-omit-frame-pointer -Werror"
      - name: make -j distcheck
        run: make -j distcheck
