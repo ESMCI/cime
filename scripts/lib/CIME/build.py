@@ -17,7 +17,7 @@ _CMD_ARGS_FOR_BUILD = \
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
      "OCN_SUBMODEL", "CISM_USE_TRILINOS", "USE_TRILINOS", "USE_ALBANY", "USE_PETSC")
 
-def get_standard_makefile_args(case, shared_lib=False): # pylint: disable=unused-argument
+def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
     expect(not (uses_kokkos(case) and not shared_lib), "Kokkos is not supported for classic Makefile build system")
@@ -512,7 +512,8 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
 
         cmake_comp_root = os.path.join(exeroot, "cmake-bld", "cmake")
         casetools = case.get_value("CASETOOLS")
-        classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"), get_standard_makefile_args(case))
+        classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"),
+                                           get_standard_makefile_args(case, shared_lib=True))
 
         for clean_item in things_to_clean:
             logging.info("Cleaning {}".format(clean_item))
