@@ -252,10 +252,10 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_multivar2
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_darray_multivar3
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_multivar3
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  # add_mpi_test(test_darray_multivar3
+  #   EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_multivar3
+  #   NUMPROCS ${AT_LEAST_FOUR_TASKS}
+  #   TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_darray_1d
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_1d
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
