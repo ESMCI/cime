@@ -78,21 +78,22 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     int custom_fillvalue_int = -TEST_VAL_42;
     float custom_fillvalue_float = -42.5;
     int test_data_int[arraylen];
-    float test_data_float[arraylen];
+    /* float test_data_float[arraylen]; */
     int ret;       /* Return code. */
 
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
     {
         test_data_int[f] = my_rank * 10 + f;
-        test_data_float[f] = my_rank * 10 + f + 0.5;
+        /* test_data_float[f] = my_rank * 10 + f + 0.5; */
     }
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        for (int use_fv = 0; use_fv < NUM_FV_TESTS; use_fv++)
+        /* for (int use_fv = 0; use_fv < NUM_FV_TESTS; use_fv++) */
+        for (int use_fv = 0; use_fv < 1; use_fv++)
         {
             /* Create the filename. */
             sprintf(filename, "data_%s_iotype_%d_use_fv_%d.nc", TEST_NAME, flavor[fmt], use_fv);
@@ -150,17 +151,17 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
             /* This should not work since we cannot mix record and not
              * record vars. */
-	    int frame[NUM_VAR] = {0, 0, 0};
+	    /* int frame[NUM_VAR] = {0, 0, 0}; */
 
-            if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
-                                        frame, NULL, 0) != PIO_EVARDIMMISMATCH)
-                ERR(ERR_WRONG);
+            /* if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float, */
+            /*                             frame, NULL, 0) != PIO_EVARDIMMISMATCH) */
+            /*     ERR(ERR_WRONG); */
 
 	    /* This should work since int and float are the same size
              * and both are record vars. */
-            if ((ret = PIOc_write_darray_multi(ncid, varid+1, ioid, NUM_VAR-1, arraylen * (NUM_VAR-1), test_data_float,
-					       frame, NULL, 0)))
-                ERR(ret);
+            /* if ((ret = PIOc_write_darray_multi(ncid, varid+1, ioid, NUM_VAR-1, arraylen * (NUM_VAR-1), test_data_float, */
+	    /* 				       frame, NULL, 0))) */
+            /*     ERR(ret); */
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
@@ -169,7 +170,6 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             /* Check the file contents. */
             {
                 int ncid2;            /* The ncid of the re-opened netCDF file. */
-                int test_data_int_in[arraylen];
                 /* float test_data_float_in[arraylen]; */
 
                 /* Reopen the file. */
@@ -181,12 +181,14 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 {
                     if (v < NUM_VAR - 1)
                     {
+			int test_data_int_in[arraylen];
+
                         if ((ret = PIOc_setframe(ncid2, varid[v], 0)))
                             ERR(ret);
 
                         /* Read the data. */
-                        /* if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
-                        /*     ERR(ret); */
+                        if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in)))
+                            ERR(ret);
 
                         /* /\* Check the results. *\/ */
                         /* for (int f = 0; f < arraylen; f++) */
@@ -195,23 +197,23 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                     }
                 } /* next var */
 
-                /* Now read the fill values. */
-                PIO_Offset idx[NDIM] = {0, 0, 3};
-                int file_fv_int;
-                float file_fv_float;
+                /* /\* Now read the fill values. *\/ */
+                /* PIO_Offset idx[NDIM] = {0, 0, 3}; */
+                /* int file_fv_int; */
+                /* float file_fv_float; */
 
-                /* Check an int fill value. */
-                if ((ret = PIOc_get_var1_int(ncid2, 1, idx, &file_fv_int)))
-                    return ret;
-                if (use_fv)
-                {
-                    if (file_fv_int != custom_fillvalue_int)
-                        return ERR_WRONG;
-                }
+                /* /\* Check an int fill value. *\/ */
+                /* if ((ret = PIOc_get_var1_int(ncid2, 1, idx, &file_fv_int))) */
+                /*     return ret; */
+                /* if (use_fv) */
+                /* { */
+                /*     if (file_fv_int != custom_fillvalue_int) */
+                /*         return ERR_WRONG; */
+                /* } */
 
-                /* Check the float fill value. */
-                if ((ret = PIOc_get_var1_float(ncid2, 2, idx, &file_fv_float)))
-                    return ret;
+                /* /\* Check the float fill value. *\/ */
+                /* if ((ret = PIOc_get_var1_float(ncid2, 2, idx, &file_fv_float))) */
+                /*     return ret; */
                 /* if (use_fv) */
                 /* { */
                 /*     if (file_fv_float != custom_fillvalue_float) */
