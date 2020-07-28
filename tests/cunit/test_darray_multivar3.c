@@ -167,61 +167,61 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 ERR(ret);
 
             /* Check the file contents. */
-            /* { */
-            /*     int ncid2;            /\* The ncid of the re-opened netCDF file. *\/ */
-            /*     int test_data_int_in[arraylen]; */
-            /*     /\* float test_data_float_in[arraylen]; *\/ */
+            {
+                int ncid2;            /* The ncid of the re-opened netCDF file. */
+                int test_data_int_in[arraylen];
+                /* float test_data_float_in[arraylen]; */
 
-            /*     /\* Reopen the file. *\/ */
-            /*     if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
-            /*         ERR(ret); */
+                /* Reopen the file. */
+                if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+                    ERR(ret);
 
-            /*     /\* Read the var data with read_darray(). *\/ */
-            /*     for (int v = 0; v < NUM_VAR; v++) */
-            /*     { */
-            /*         if (v < NUM_VAR - 1) */
-            /*         { */
-            /*             if ((ret = PIOc_setframe(ncid2, varid[v], 0))) */
-            /*                 ERR(ret); */
+                /* Read the var data with read_darray(). */
+                for (int v = 0; v < NUM_VAR; v++)
+                {
+                    if (v < NUM_VAR - 1)
+                    {
+                        if ((ret = PIOc_setframe(ncid2, varid[v], 0)))
+                            ERR(ret);
 
-            /*             /\* Read the data. *\/ */
-            /*             if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
-            /*                 ERR(ret); */
+                        /* Read the data. */
+                        /* if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
+                        /*     ERR(ret); */
 
-            /*             /\* Check the results. *\/ */
-            /*             for (int f = 0; f < arraylen; f++) */
-            /*                 if (test_data_int_in[f] != test_data_int[f]) */
-            /*                     return ERR_WRONG; */
-            /*         } */
-            /*     } /\* next var *\/ */
+                        /* /\* Check the results. *\/ */
+                        /* for (int f = 0; f < arraylen; f++) */
+                        /*     if (test_data_int_in[f] != test_data_int[f]) */
+                        /*         return ERR_WRONG; */
+                    }
+                } /* next var */
 
-            /*     /\* Now read the fill values. *\/ */
-            /*     PIO_Offset idx[NDIM] = {0, 0, 3}; */
-            /*     int file_fv_int; */
-            /*     float file_fv_float; */
+                /* Now read the fill values. */
+                PIO_Offset idx[NDIM] = {0, 0, 3};
+                int file_fv_int;
+                float file_fv_float;
 
-            /*     /\* Check an int fill value. *\/ */
-            /*     if ((ret = PIOc_get_var1_int(ncid2, 1, idx, &file_fv_int))) */
-            /*         return ret; */
-            /*     if (use_fv) */
-            /*     { */
-            /*         if (file_fv_int != custom_fillvalue_int) */
-            /*             return ERR_WRONG; */
-            /*     } */
+                /* Check an int fill value. */
+                if ((ret = PIOc_get_var1_int(ncid2, 1, idx, &file_fv_int)))
+                    return ret;
+                if (use_fv)
+                {
+                    if (file_fv_int != custom_fillvalue_int)
+                        return ERR_WRONG;
+                }
 
-            /*     /\* Check the float fill value. *\/ */
-            /*     if ((ret = PIOc_get_var1_float(ncid2, 2, idx, &file_fv_float))) */
-            /*         return ret; */
-            /*     /\* if (use_fv) *\/ */
-            /*     /\* { *\/ */
-            /*     /\*     if (file_fv_float != custom_fillvalue_float) *\/ */
-            /*     /\*         return ERR_WRONG; *\/ */
-            /*     /\* } *\/ */
+                /* Check the float fill value. */
+                if ((ret = PIOc_get_var1_float(ncid2, 2, idx, &file_fv_float)))
+                    return ret;
+                /* if (use_fv) */
+                /* { */
+                /*     if (file_fv_float != custom_fillvalue_float) */
+                /*         return ERR_WRONG; */
+                /* } */
 
-            /*     /\* Close the netCDF file. *\/ */
-            /*     if ((ret = PIOc_closefile(ncid2))) */
-            /*         ERR(ret); */
-            /* } */
+                /* Close the netCDF file. */
+                if ((ret = PIOc_closefile(ncid2)))
+                    ERR(ret);
+            }
         }
     }
 
