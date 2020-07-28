@@ -1257,9 +1257,7 @@ class TestCreateTestCommon(unittest.TestCase):
         full_run = (set(extra_args) & set(["-n", "--namelist-only", "--no-setup", "--no-build"])) == set()
 
         if self._hasbatch:
-            expected_stat = 0 if not pre_run_errors and not run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
-            if env_changes=="NODEFAIL_NUM_FAILS=5":
-                expected_stat = 0 if not pre_run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
+            expected_stat = 0 if not pre_run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
         else:
             expected_stat = 0 if not pre_run_errors and not run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
 
@@ -1768,9 +1766,6 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
                            "--baseline-root ", self._baseline_area]
                 compargs = ["-c", self._baseline_name, test_name,
                             "--baseline-root ", self._baseline_area]
-            if test_name == "TESTRUNDIFFRESUBMIT_P1.f19_g16_rx1.A":
-                genargs.append("--wait")
-                compargs.append("--wait")
 
             self._create_test(genargs)
             # Hist compare should pass
@@ -1780,11 +1775,7 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
 
             # Hist compare should now fail
             test_id = "%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
-            if test_name == "TESTRUNDIFF_P1.f19_g16_rx1.A":
-                compargs.append("--wait")
-                self._create_test(compargs, test_id=test_id, run_errors=True)
-            else:
-                self._create_test(compargs, test_id=test_id, run_errors=True)
+            self._create_test(compargs, test_id=test_id, run_errors=True)
 
             # compare_test_results should detect the fail
             cpr_cmd = "{}/compare_test_results --test-root {} -t {} 2>&1" \
