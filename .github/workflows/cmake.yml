@@ -37,7 +37,7 @@ jobs:
       run: |
         which ncdump
         ls -l /usr/lib
-        find / -name libnetcdf.so
+        find /usr -name libnetcdf.so
         ls -l /usr
         mkdir build
         cd build
