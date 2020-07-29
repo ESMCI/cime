@@ -56,6 +56,7 @@ else
     fi
   done
 fi
+
 if test -n "$cc_version_info"; then
   CC_VERSION="$CC_VERSION ( $cc_version_info)"
 fi
