@@ -37,10 +37,10 @@ jobs:
     - name: autoreconf
       run: autoreconf -i
     - name: configure
-      run: ./configure
-      env:
-        CFLAGS: "-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-        FFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
-        FCFLAGS: "-fsanitize=address -fno-omit-frame-pointer -Werror"
+      run: |
+          export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
+          export FFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+          export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
+          ./configure
     - name: make -j distcheck
       run: make -j distcheck
