@@ -214,7 +214,7 @@ This allows using a different mpirun command to launch unit tests
     <MPILIBS compiler="intel" >mpt,openmpi</MPILIBS>
     <MPILIBS compiler="pgi" >mpt</MPILIBS>
     <MPILIBS compiler="gnu" >openmpi</MPILIBS>
-    <PROJECT>UESM0007</PROJECT>
+    <PROJECT>UESM0008</PROJECT>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
