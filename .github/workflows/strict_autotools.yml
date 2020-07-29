@@ -15,7 +15,6 @@ jobs:
       CC: mpicc
       FC: mpifort
       CPPFLAGS: "-I/usr/include -I/usr/local/include"
-      DISTCHECK_CONFIGURE_FLAGS: "--enable-fortran --enable-docs"
 
     steps:
     - uses: actions/checkout@v2
@@ -41,6 +40,7 @@ jobs:
           export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
           export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
           export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
+          export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran --enable-docs"
           ./configure
     - name: make -j distcheck
       run: make -j distcheck
