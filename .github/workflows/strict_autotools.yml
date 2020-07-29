@@ -15,7 +15,7 @@ jobs:
       CC: mpicc
       FC: mpifort
       CPPFLAGS: "-I/usr/include -I/usr/local/include"
-      DISTCHECK_CONFIGURE_FLAGS: "--enable-fortran"
+      DISTCHECK_CONFIGURE_FLAGS: "--enable-fortran --enable-docs"
 
     steps:
     - uses: actions/checkout@v2
@@ -29,7 +29,7 @@ jobs:
         tar -xzvf pnetcdf-1.12.1.tar.gz
         ls -l
         pushd pnetcdf-1.12.1
-        ./configure --prefix=/usr --enable-shared
+        ./configure --prefix=/usr --enable-shared --disable-cxx
         make
         sudo make install
         popd
@@ -39,7 +39,7 @@ jobs:
     - name: configure
       run: |
           export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-          export FFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+          export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
           export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
           ./configure
     - name: make -j distcheck
