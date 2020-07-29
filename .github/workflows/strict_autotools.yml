@@ -43,5 +43,5 @@ jobs:
           ./configure
     - name: make -j distcheck
       run: |
-        export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran --enable-docs"
+        export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran"
         make -j distcheck
