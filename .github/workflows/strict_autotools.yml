@@ -40,7 +40,8 @@ jobs:
           export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
           export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
           export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
-          export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran --enable-docs"
           ./configure
     - name: make -j distcheck
-      run: make -j distcheck
+      run: |
+        export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran --enable-docs"
+        make -j distcheck
