@@ -63,6 +63,27 @@ fi
 # Find and learn about the Fortran compiler.
 AC_PROG_FC
 
+# Compiler with version information. This consists of the full path
+# name of the compiler and the reported version number.
+AC_SUBST([FC_VERSION])
+# Strip anything that looks like a flag off of $FC
+FC_NOFLAGS=`echo $FC | sed 's/ -.*//'`
+
+if `echo $FC_NOFLAGS | grep ^/ >/dev/null 2>&1`; then
+  FC_VERSION="$FC"
+else
+  FC_VERSION="$FC";
+  for x in `echo $PATH | sed -e 's/:/ /g'`; do
+    if test -x $x/$FC_NOFLAGS; then
+      FC_VERSION="$x/$FC"
+      break
+    fi
+  done
+fi
+if test -n "$fc_version_info"; then
+  FC_VERSION="$FC_VERSION ( $fc_version_info)"
+fi
+
 # Always use malloc in autotools builds.
 AC_DEFINE([PIO_USE_MALLOC], [1], [use malloc for memory])
 
@@ -363,10 +384,10 @@ AC_SUBST([enable_shared])
 AC_SUBST([enable_static])
 AC_SUBST([CFLAGS])
 AC_SUBST([CPPFLAGS])
+AC_SUBST([FFLAGS])
+AC_SUBST([FCFLAGS])
 AC_SUBST([LDFLAGS])
-AC_SUBST([AM_CFLAGS])
-AC_SUBST([AM_CPPFLAGS])
-AC_SUBST([AM_LDFLAGS])
+AC_SUBST([FPPFLAGS]) # ignored by autotools
 AC_SUBST(HAS_PNETCDF,[$enable_pnetcdf])
 AC_SUBST(HAS_LOGGING, [$enable_logging])
 AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
