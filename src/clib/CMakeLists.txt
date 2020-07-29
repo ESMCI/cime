@@ -29,17 +29,13 @@ target_compile_definitions (pioc
 
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-  target_compile_options (pioc
-    PRIVATE -std=c99)
+  string(APPEND CMAKE_C_FLAGS  " -std=c99 " )
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "PGI")
-  target_compile_options (pioc
-    PRIVATE -c99)
+  string(APPEND CMAKE_C_FLAGS  " -c99 ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
-  target_compile_options (pioc
-    PRIVATE -std=c99 -debug minimal)
+  string(APPEND CMAKE_C_FLAGS  " -std=c99 -debug minimal ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  target_compile_options (pioc
-    PRIVATE -std=c99)
+  string(APPEND CMAKE_C_FLAGS  " -std=c99 ")
 endif()
 
 #==============================================================================
@@ -161,3 +157,16 @@ CHECK_TYPE_SIZE("long long" SIZEOF_LONG_LONG)
 if (NOT ${SIZEOF_SIZE_T} EQUAL ${SIZEOF_LONG_LONG})
   message (FATAL_ERROR "size_t and long long must be the same size!")
 endif ()
+
+set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}" PARENT_SCOPE)
+get_target_property(cppdefs pioc COMPILE_DEFINITIONS)
+get_target_property(includes pioc INCLUDE_DIRECTORIES)
+foreach(x IN LISTS cppdefs)
+  string(APPEND CPPFLAGS " -D${x}")
+endforeach()
+foreach(x IN LISTS includes)
+  if (x)
+    string(APPEND CPPFLAGS " -I${x}")
+  endif()
+endforeach()
+set(CPPFLAGS ${CPPFLAGS} PARENT_SCOPE)
