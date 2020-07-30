@@ -27,5 +27,8 @@ FPPFLAGS:               @FPPFLAGS@
 # Features
 --------
 PnetCDF Support:	@HAS_PNETCDF@
-SZIP Write Support:     @HAS_SZIP_WRITE@
-Parallel Filters:       @HAS_PAR_FILTERS@
+SZIP Write Support:	@HAS_SZIP_WRITE@
+Parallel Filters:	@HAS_PAR_FILTERS@
+NetCDF/HDF5 Support:	@HAS_NETCDF4@
+NetCDF/HDF5 Par I/O:	@HAS_NETCDF4_PAR@
+

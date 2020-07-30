@@ -274,6 +274,28 @@ find_package (PnetCDF)
 SET(STATUS_PNETCDF PnetCDF_C_FOUND)
 
 ###
+# Check to see if netcdf-4 capability is present in netcdf-c.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_NC4
+      choke me
+#endif
+int main() {return 0;}" HAVE_NETCDF4)
+
+###
+# Check to see if netcdf-4 parallel I/O capability is present in
+# netcdf-c. (Really we should be checking NC_HAS_PARALLEL4, but that
+# was only recently introduced, so we will go with NC_HAS_PARALLEL.)
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_PARALLEL
+      choke me
+#endif
+int main() {return 0;}" HAVE_NETCDF_PAR)
+
+###
 # Check to see if szip write capability is present in netcdf-c.
 ###
 SET(CMAKE_REQUIRED_INCLUDES ${NetCDF_C_INCLUDE_DIR})
@@ -285,7 +307,7 @@ CHECK_C_SOURCE_COMPILES("
 int main() {return 0;}" HAVE_SZIP_WRITE)
 
 ###
-# Check to see if szip write capability is present in netcdf-c.
+# Check to see if parallel filters are supported by HDF5/netcdf-c.
 ###
 CHECK_C_SOURCE_COMPILES("
 #include <netcdf_meta.h>
@@ -339,6 +361,8 @@ is_enabled(USE_SZIP HAS_SZIP_WRITE)
 is_enabled(STATUS_PNETCDF HAS_PNETCDF)
 is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
 is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
+is_enabled(HAVE_NETCDF4 HAS_NETCDF4)
+is_enabled(HAVE_NETCDF_PAR HAS_NETCDF4_PAR)
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"
