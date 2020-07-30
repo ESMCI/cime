@@ -284,11 +284,13 @@ CHECK_C_SOURCE_COMPILES("
 int main() {return 0;}" HAVE_NETCDF4)
 
 ###
-# Check to see if netcdf-4 parallel I/O capability is present in netcdf-c.
+# Check to see if netcdf-4 parallel I/O capability is present in
+# netcdf-c. (Really we should be checking NC_HAS_PARALLEL4, but that
+# was only recently introduced, so we will go with NC_HAS_PARALLEL.)
 ###
 CHECK_C_SOURCE_COMPILES("
 #include <netcdf_meta.h>
-#if !NC_HAS_PARALLEL4
+#if !NC_HAS_PARALLEL
       choke me
 #endif
 int main() {return 0;}" HAVE_NETCDF_PAR)
@@ -305,7 +307,7 @@ CHECK_C_SOURCE_COMPILES("
 int main() {return 0;}" HAVE_SZIP_WRITE)
 
 ###
-# Check to see if paraellel filters are supported by HDF5/netcdf-c.
+# Check to see if parallel filters are supported by HDF5/netcdf-c.
 ###
 CHECK_C_SOURCE_COMPILES("
 #include <netcdf_meta.h>

@@ -266,9 +266,11 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 AC_MSG_CHECKING([whether netCDF provides netCDF/HDF5])
 AC_MSG_RESULT([${have_netcdf4}])
 
-# Do we have a parallel build of netCDF-4?
+# Do we have a parallel build of netCDF-4? (Really we should be
+# checking NC_HAS_PARALLEL4, but that was only recently introduced, so
+# we will go with NC_HAS_PARALLEL.)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_PARALLEL4
+[[#if !NC_HAS_PARALLEL
 # error
 #endif]
 ])], [have_netcdf_par=yes], [have_netcdf_par=no])
