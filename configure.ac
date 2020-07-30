@@ -257,12 +257,23 @@ if test x$ac_cv_lib_pnetcdf_ncmpi_create = xyes; then
    AC_DEFINE([USE_PNETCDF_VARN_ON_READ], [1], [defined by CMake build])
 fi
 
+# Do we have netCDF-4?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_NC4
+# error
+#endif]
+])], [have_netcdf4=yes], [have_netcdf4=no])
+AC_MSG_CHECKING([whether netCDF provides netCDF/HDF5])
+AC_MSG_RESULT([${have_netcdf4}])
+
 # Do we have a parallel build of netCDF-4?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
-[[#if !NC_HAS_PARALLEL
+[[#if !NC_HAS_PARALLEL4
 # error
 #endif]
 ])], [have_netcdf_par=yes], [have_netcdf_par=no])
+AC_MSG_CHECKING([whether netCDF provides parallel I/O for netCDF/HDF5])
+AC_MSG_RESULT([${have_netcdf_par}])
 
 # Do we have szip?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
@@ -270,6 +281,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 # error
 #endif]
 ])], [have_szip_write=yes], [have_szip_write=no])
+AC_MSG_CHECKING([whether netCDF provides szip write capability])
+AC_MSG_RESULT([${have_szip_write}])
 
 # Do we have parallel filter support?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
@@ -277,9 +290,10 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 # error
 #endif]
 ])], [have_par_filters=yes], [have_par_filters=no])
+AC_MSG_CHECKING([whether netCDF provides parallel filter support])
+AC_MSG_RESULT([${have_par_filters}])
 
-AC_MSG_CHECKING([whether netCDF provides parallel IO])
-AC_MSG_RESULT([${have_netcdf_par}])
+# Set some build settings for when netcdf-4 is supported.
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
 fi
@@ -378,6 +392,8 @@ AC_DEFUN([AX_SET_META],[
 AX_SET_META([PIO_HAS_SZIP_WRITE],[$have_szip_write],[yes])
 AX_SET_META([PIO_HAS_PNETCDF],[$enable_pnetcdf],[yes])
 AX_SET_META([PIO_HAS_PAR_FILTERS], [$have_par_filters],[yes])
+AX_SET_META([PIO_HAS_NETCDF4], [$have_netcdf4],[yes])
+AX_SET_META([PIO_HAS_NETCDF4_PAR], [$have_netcdf_par],[yes])
 
 # Create output variables from various shell variables, for use in
 # generating libpio.settings.
@@ -393,6 +409,8 @@ AC_SUBST(HAS_PNETCDF,[$enable_pnetcdf])
 AC_SUBST(HAS_LOGGING, [$enable_logging])
 AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
 AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
+AC_SUBST([HAS_NETCDF4], [$have_netcdf4])
+AC_SUBST([HAS_NETCDF4_PAR], [$have_netcdf_par])
 
 # Create the build summary file. 
 AC_CONFIG_FILES([libpio.settings
