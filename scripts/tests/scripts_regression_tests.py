@@ -1254,7 +1254,7 @@ class TestCreateTestCommon(unittest.TestCase):
             extra_args.append("--mpilib={}".format(TEST_MPILIB))
         extra_args.append("--test-root={0} --output-root={0}".format(self._testroot))
 
-        full_run = (set(extra_args) & set(["-n", "--namelist-only", "--no-setup", "--no-build"])) == set()
+        full_run = (set(extra_args) & set(["-n", "--namelist-only", "--no-setup", "--no-build", "--no-run"])) == set()
 
         if self._hasbatch:
             expected_stat = 0 if not pre_run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
