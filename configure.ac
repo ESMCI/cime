@@ -207,6 +207,7 @@ if test -z "$DOXYGEN" -a "x$enable_docs" = xyes; then
    AC_MSG_ERROR([Doxygen not found but --enable-docs used.])
 fi
 
+AC_MSG_NOTICE([processing doxyfile])
 # If building docs, process Doxyfile.in into Doxyfile.
 if test "x$enable_docs" = xyes; then
    AC_SUBST([CMAKE_CURRENT_SOURCE_DIR], ["."])
@@ -223,6 +224,7 @@ if test "x$enable_docs" = xyes; then
    AC_CONFIG_FILES([doc/Doxyfile])
 fi
 
+AC_MSG_NOTICE([setting flags])
 # NetCDF (at least classic) is required for PIO to build.
 AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
 
