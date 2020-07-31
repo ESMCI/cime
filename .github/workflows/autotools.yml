@@ -39,6 +39,6 @@ jobs:
     - name: autoreconf
       run: autoreconf -i
     - name: configure
-      run: ./configure --enable-fortran
+      run: ./configure --enable-fortran --enable-docs
     - name: make check
       run: make -j check
