@@ -31,14 +31,14 @@ jobs:
         tar -xzvf pnetcdf-1.11.0.tar.gz
         ls -l
         pushd pnetcdf-1.11.0
-        ./configure --prefix=/usr --enable-shared
+        ./configure --prefix=/usr --enable-shared --disable-cxx
         make
         sudo make install
         popd
 
     - name: autoreconf
       run: autoreconf -i
-    - name: configure
+    - name: configure --enable-fortran
       run: ./configure
-    - name: make distcheck
-      run: make distcheck
+    - name: make check
+      run: make -j check
