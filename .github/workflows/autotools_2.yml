@@ -41,7 +41,7 @@ jobs:
     - name: configure
       run: |
         doxygen --version
-        ./configure --enable-docs
+        ./configure --enable-docs --enable-fortran
         cat config.log
     - name: make check
       run: make check
