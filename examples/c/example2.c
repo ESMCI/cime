@@ -43,14 +43,11 @@
  * are using three-dimensional data. */
 #define NDIM 3
 
-/** The length of our sample data along each dimension. There will be
- * a total of 16 integers in each timestep of our data, and
- * responsibilty for writing and reading them will be spread between
- * all the processors used to run this example. */
-/**@{*/
+/** Length along x dimension. */
 #define X_DIM_LEN 20
+
+/** Length along y dimension. */
 #define Y_DIM_LEN 30
-/**@}*/
 
 /** The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 6
@@ -128,21 +125,30 @@ PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 /**@}*/
 #endif /* HAVE_MPE */
 
-/** Some error codes for when things go wrong. */
-/**@{*/
+/** File error. */
 #define ERR_FILE 1
+/** File error. */
 #define ERR_DUMB 2
+/** Argument error. */
 #define ERR_ARG 3
+/** MPI error. */
 #define ERR_MPI 4
+/** MPI Type error. */
 #define ERR_MPITYPE 5
+/** Logging error. */
 #define ERR_LOGGING 6
+/** Update error. */
 #define ERR_UPDATE 7
+/** Calculation error. */
 #define ERR_CALC 8
+/** Count error. */
 #define ERR_COUNT 9
+/** Write error. */
 #define ERR_WRITE 10
+/** Swap error. */
 #define ERR_SWAP 11
+/** Init error. */
 #define ERR_INIT 12
-/**@}*/
 
 /** This will set up the MPE logging event numbers. 
  *
