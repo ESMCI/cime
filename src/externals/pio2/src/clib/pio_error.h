@@ -74,12 +74,12 @@
  * is used to store the error message that is associated with the MPI
  * error.
  */
-char err_buffer[MPI_MAX_ERROR_STRING];
+extern char err_buffer[MPI_MAX_ERROR_STRING];
 
 /**
  * This is the length of the most recent MPI error message, stored
  * int the global error string.
  */
-int resultlen;
+extern int resultlen;
 
 #endif /* __PIO_ERROR__ */

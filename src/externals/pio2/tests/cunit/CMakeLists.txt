@@ -68,6 +68,8 @@ if (NOT PIO_USE_MPISERIAL)
   target_link_libraries (test_pioc_fill pioc)
   add_executable (test_darray EXCLUDE_FROM_ALL test_darray.c test_common.c)
   target_link_libraries (test_darray pioc)
+  add_executable (test_darray_append EXCLUDE_FROM_ALL test_darray_append.c test_common.c)
+  target_link_libraries (test_darray_append pioc)
   add_executable (test_darray_frame EXCLUDE_FROM_ALL test_darray_frame.c test_common.c)
   target_link_libraries (test_darray_frame pioc)
   add_executable (test_darray_multi EXCLUDE_FROM_ALL test_darray_multi.c test_common.c)
@@ -79,11 +81,11 @@ if (NOT PIO_USE_MPISERIAL)
   add_executable (test_darray_multivar3 EXCLUDE_FROM_ALL test_darray_multivar3.c test_common.c)
   target_link_libraries (test_darray_multivar3 pioc)
   add_executable (test_darray_1d EXCLUDE_FROM_ALL test_darray_1d.c test_common.c)
-  target_link_libraries (test_darray_1d pioc)  
+  target_link_libraries (test_darray_1d pioc)
   add_executable (test_darray_3d EXCLUDE_FROM_ALL test_darray_3d.c test_common.c)
   target_link_libraries (test_darray_3d pioc)
   add_executable (test_decomp_uneven EXCLUDE_FROM_ALL test_decomp_uneven.c test_common.c)
-  target_link_libraries (test_decomp_uneven pioc)  
+  target_link_libraries (test_decomp_uneven pioc)
   add_executable (test_decomps EXCLUDE_FROM_ALL test_decomps.c test_common.c)
   target_link_libraries (test_decomps pioc)
   add_executable (test_rearr EXCLUDE_FROM_ALL test_rearr.c test_common.c)
@@ -122,6 +124,7 @@ add_dependencies (tests test_pioc_unlim)
 add_dependencies (tests test_pioc_putget)
 add_dependencies (tests test_pioc_fill)
 add_dependencies (tests test_darray)
+add_dependencies (tests test_darray_append)
 add_dependencies (tests test_darray_frame)
 add_dependencies (tests test_darray_multi)
 add_dependencies (tests test_darray_multivar)
@@ -236,6 +239,10 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  add_mpi_test(test_darray_append
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_append
+    NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_darray_frame
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_frame
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
@@ -252,10 +259,10 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_multivar2
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_darray_multivar3
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_multivar3
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  # add_mpi_test(test_darray_multivar3
+  #   EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_multivar3
+  #   NUMPROCS ${AT_LEAST_FOUR_TASKS}
+  #   TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_darray_1d
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_1d
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
@@ -311,3 +318,4 @@ else ()
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
+MESSAGE("CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}")

@@ -1283,7 +1283,6 @@ PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
  * @param varid the variable ID or NC_GLOBAL.
  * @param name name of the attribute.
  * @param xtypep a pointer that will get the type of the attribute.

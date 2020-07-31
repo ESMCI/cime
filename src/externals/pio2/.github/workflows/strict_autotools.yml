@@ -1,0 +1,47 @@
+name: strict_autotools
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      CC: mpicc
+      FC: mpifort
+      CPPFLAGS: "-I/usr/include -I/usr/local/include"
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Installs
+      run: |
+        sudo apt-get install netcdf-bin libnetcdf-dev doxygen graphviz wget gfortran libjpeg-dev libz-dev openmpi-bin libopenmpi-dev 
+
+    - name: pnetcdf build
+      run: |
+        wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz 
+        tar -xzvf pnetcdf-1.12.1.tar.gz
+        ls -l
+        pushd pnetcdf-1.12.1
+        ./configure --prefix=/usr --enable-shared --disable-cxx
+        make
+        sudo make install
+        popd
+
+    - name: autoreconf
+      run: autoreconf -i
+    - name: configure
+      run: |
+          export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
+          export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
+          export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
+          ./configure
+    - name: make -j distcheck
+      run: |
+        export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran"
+        make -j distcheck
