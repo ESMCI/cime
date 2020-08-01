@@ -23,10 +23,10 @@ before_script:
   - export CC=mpicc
   - export FC=mpif90
   - export CPPFLAGS='-I/usr/include'
-  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.0.tar.gz 
-  - tar -xzvf pnetcdf-1.11.0.tar.gz
+  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz
+  - tar -xzvf pnetcdf-1.12.1.tar.gz
   - ls -l
-  - pushd pnetcdf-1.11.0
+  - pushd pnetcdf-1.12.1
   - ./configure --prefix=/usr --enable-shared
   - make
   - sudo make install
@@ -38,7 +38,7 @@ env:
     - CPPFLAGS='-I/usr/include'
     - CFLAGS='-std=c99'
     - LDFLAGS='-L/usr/lib'
-  
+
 script:
   - autoreconf -i
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror'
@@ -54,4 +54,4 @@ script:
   - cmake -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
   - make VERBOSE=1
   - make tests VERBOSE=1
-  - make test VERBOSE=1
+  - ctest -VV
