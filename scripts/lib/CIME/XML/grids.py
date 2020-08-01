@@ -287,7 +287,7 @@ class Grids(GenericXML):
                  ("rof_grid","r%"), ("glc_grid","g%"), ("wav_grid","w%"), ("iac_grid","z%")]
         gridmaps = {}
 
-        # (1) set all possibly required gridmaps to 'idmap' for mct and 'unset' for nuopc
+        # (1) set all possibly required gridmaps to 'idmap' for mct and 'unset/idmap' for nuopc
         required_gridmaps_node = self.get_child("required_gridmaps")
         required_gridmap_nodes = self.get_children("required_gridmap", root=required_gridmaps_node)
         tmp_gridmap_nodes = self.get_children("required_gridmap", root=required_gridmaps_node)
@@ -300,7 +300,21 @@ class Grids(GenericXML):
                 continue
             required_gridmap_nodes.append(node)
             if driver == 'nuopc':
-                gridmaps[self.text(node)] = "unset"
+                grid1_name = self.text(node)[0].lower() + '%'
+                grid2_name = self.text(node)[4].lower() + '%'
+                if grid1_name == 'o%':
+                    grid1_name = 'oi%'
+                if grid2_name == 'o%':
+                    grid2_name = 'oi%'
+                grid1 = component_grids[grid1_name]
+                grid2 = component_grids[grid2_name]
+                if grid1 == grid2:
+                    if grid1 != 'null' and grid2 != 'null':
+                        gridmaps[self.text(node)] = "idmap"
+                    else:
+                        gridmaps[self.text(node)] = "unset"
+                else:
+                    gridmaps[self.text(node)] = "unset"
             else:
                 gridmaps[self.text(node)] = "idmap"
 

@@ -1665,6 +1665,7 @@
       <nx>117398</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0np4.ARCTIC.ne30x4_tx0.1v2.200626.nc</file>
       <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0np4.ARCTIC.ne30x4_tx0.1v2.200626.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne0ARCTICne30x4_ESMFmesh_c20200727.nc</mesh>
       <desc>ne0np4.ARCTIC.ne30x4 is a Spectral Elem 1-deg grid with a 1/4 deg refined region over Arctic:</desc>
       <support>Test support only</support>
     </domain>
@@ -1673,6 +1674,7 @@
       <nx>152390</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0np4.ARCTICGRIS.ne30x8_tx0.1v2.200626.nc</file>
       <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0np4.ARCTICGRIS.ne30x8_tx0.1v2.200626.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne0ARCTICGRISne30x8_ESMFmesh_c20200730.nc</mesh>
       <desc>ne0np4.ARCTICGRIS.ne30x8 is a Spectral Elem 1-deg grid with a 1/8 deg refined region over Greenland:</desc>
       <support>Test support only</support>
     </domain>
