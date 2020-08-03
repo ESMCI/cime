@@ -187,7 +187,6 @@ class TestScheduler(object):
 
         self._test_root = os.path.abspath(self._test_root)
         self._test_id   = test_id if test_id is not None else get_timestamp()
-
         self._compiler = self._machobj.get_default_compiler() if compiler is None else compiler
 
         self._clean          = clean
@@ -606,6 +605,10 @@ class TestScheduler(object):
         config_test = Tests()
         testnode = config_test.get_test_node(test_case)
         envtest.add_test(testnode)
+        # nag compiler on izumi wont build openmp, it's the only known nag compiler usage
+        if self._compiler == 'nag':
+            envtest.set_value("FORCE_BUILD_SMP", "FALSE")
+
         # Determine the test_case from the test name
         test_case, case_opts = parse_test_name(test)[:2]
 
