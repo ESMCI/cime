@@ -256,7 +256,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
-    <FORCE_BUILD_SMP>TRUE</FORCE_BUILD_SMP>
     <REST_N>$STOP_N / 2 + 1 </REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
