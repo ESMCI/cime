@@ -996,6 +996,7 @@ using a fortran linker.
 </compiler>
 
 <compiler MACH="izumi" COMPILER="pgi">
+  <CXX_LINKER>FORTRAN</CXX_LINKER>
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
