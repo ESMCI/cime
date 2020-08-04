@@ -556,7 +556,7 @@ class TestScheduler(object):
     ###########################################################################
     def _xml_phase(self, test):
     ###########################################################################
-        test_case,case_opts,_,_,_,compiler,_ = parse_test_name(test)
+        test_case,case_opts,_,_,_,_,_ = parse_test_name(test)
 
         # Create, fill and write an envtest object
         test_dir = self._get_test_dir(test)
@@ -606,9 +606,6 @@ class TestScheduler(object):
         config_test = Tests()
         testnode = config_test.get_test_node(test_case)
         envtest.add_test(testnode)
-
-        if compiler == 'nag':
-            envtest.set_value("FORCE_BUILD_SMP","FALSE")
 
         # Determine case_opts from the test_case
         if case_opts is not None:
