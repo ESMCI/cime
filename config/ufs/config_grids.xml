@@ -127,6 +127,11 @@
       <mask>tx0.25v1</mask>
     </model_grid>
 
+    <model_grid alias="C768r_Atlantic8">
+      <grid name="atm">C768r</grid>
+      <grid name="lnd">C768r</grid>
+      <grid name="ocnice">Atlantic8</grid>
+    </model_grid>
   </grids>
 
   <!-- ======================================================== -->
