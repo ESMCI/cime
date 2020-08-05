@@ -44,7 +44,7 @@ script:
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror'
   - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
   - export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer -Werror'
-  - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran'
+  - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran --enable-netcdf-integration'
   - ./configure --enable-fortran --enable-developer-docs
   - make -j distcheck
   - make -j distclean
