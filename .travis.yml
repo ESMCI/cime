@@ -26,7 +26,7 @@ before_script:
   - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz
   - tar -xzvf pnetcdf-1.12.1.tar.gz
   - pushd pnetcdf-1.12.1
-  - ./configure --prefix=/usr --enable-shared --disable-cxx --disable-fortran
+  - ./configure --prefix=/usr --enable-shared --disable-cxx 
   - make
   - sudo make install
   - popd
