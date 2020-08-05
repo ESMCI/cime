@@ -27,19 +27,15 @@ class ERP(RestartTest):
 
     def _case_two_setup(self):
         # halve the number of tasks and threads
-        case_is_threaded = False
         for comp in self._case.get_values("COMP_CLASSES"):
             ntasks    = self._case1.get_value("NTASKS_{}".format(comp))
             nthreads  = self._case1.get_value("NTHRDS_{}".format(comp))
             rootpe    = self._case1.get_value("ROOTPE_{}".format(comp))
             if ( nthreads > 1 ):
                 self._case.set_value("NTHRDS_{}".format(comp), int(nthreads/2))
-                case_is_threaded = True
             if ( ntasks > 1 ):
                 self._case.set_value("NTASKS_{}".format(comp), int(ntasks/2))
                 self._case.set_value("ROOTPE_{}".format(comp), int(rootpe/2))
-        if case_is_threaded:
-            self._case.set_value("FORCE_BUILD_SMP","TRUE")
 
         RestartTest._case_two_setup(self)
         self._case.case_setup(test_mode=True, reset=True)
