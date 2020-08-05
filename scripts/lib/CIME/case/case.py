@@ -466,7 +466,7 @@ class Case(object):
             else:
                 config['component']='cpl'
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=config)
-        print("HERE comp_root_dir_cpl {} cime_model {} compset_name {}".format(comp_root_dir_cpl, self._cime_model, compset_name))
+
         if self._cime_model == 'cesm':
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
         if self._cime_model in ('cesm','ufs'):
