@@ -275,6 +275,7 @@
     <default_value>unset</default_value>
     <values>
       <value component="cam"   >$SRCROOT/components/cam/cime_config/config_component.xml</value>
+      <value component="scream">$SRCROOT/components/scream/cime_config/config_component.xml</value>
       <value component="datm"  >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/datm/cime_config/config_component.xml</value>
       <value component="satm"  >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm/cime_config/config_component.xml</value>
       <value component="xatm"  >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm/cime_config/config_component.xml</value>
