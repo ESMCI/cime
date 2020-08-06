@@ -121,7 +121,8 @@ endif
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
    ifneq ($(realpath $(INSTALL_SHAREDPATH)/lib/libstreams.a),)
-     FoX_LIBS := $(shell $(INSTALL_SHAREDPATH)/bin/FoX-config --libs)
+     # FoX libraries are provided and built by CDEPS
+     FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
      ULIBS += -ldshr -lstreams
      SLIBS += $(FoX_LIBS)
    endif
