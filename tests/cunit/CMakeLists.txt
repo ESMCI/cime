@@ -113,6 +113,8 @@ if (NOT PIO_USE_MPISERIAL)
     target_link_libraries (test_async_manyproc pioc)
     add_executable (test_async_1d EXCLUDE_FROM_ALL test_async_1d.c)
     target_link_libraries (test_async_1d pioc)
+    add_executable (test_simple EXCLUDE_FROM_ALL test_simple.c test_common.c)
+    target_link_libraries (test_simple pioc)
   endif ()
 endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
@@ -146,6 +148,7 @@ if(PIO_USE_MALLOC)
   add_dependencies (tests test_async_multi2)
   add_dependencies (tests test_async_manyproc)
   add_dependencies (tests test_async_1d)
+  add_dependencies (tests test_simple)
 endif ()
 
 # Test Timeout in seconds.
@@ -162,6 +165,7 @@ set (AT_LEAST_TWO_TASKS 3)
 set (AT_LEAST_THREE_TASKS 4)
 set (AT_LEAST_FOUR_TASKS 5)
 set (AT_LEAST_EIGHT_TASKS 9)
+set (EXACTLY_FOUR_TASKS 4)
 
 if (PIO_USE_MPISERIAL)
   add_test(NAME test_pioc
@@ -316,6 +320,10 @@ else ()
   add_mpi_test(test_decomps
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_decomps
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  add_mpi_test(test_simple
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_simple
+    NUMPROCS ${EXACTLY_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 MESSAGE("CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}")
