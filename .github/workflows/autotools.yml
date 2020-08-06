@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: autotools
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
         tar -xzvf pnetcdf-1.11.0.tar.gz
         ls -l
         pushd pnetcdf-1.11.0
-        ./configure --prefix=/usr --enable-shared
+        ./configure --prefix=/usr --enable-shared --disable-cxx
         make
         sudo make install
         popd
@@ -39,10 +39,6 @@ jobs:
     - name: autoreconf
       run: autoreconf -i
     - name: configure
-      run: ./configure
-    - name: make
-      run: make
+      run: ./configure --enable-fortran --enable-docs
     - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      run: make -j check

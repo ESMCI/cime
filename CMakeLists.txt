@@ -274,6 +274,28 @@ find_package (PnetCDF)
 SET(STATUS_PNETCDF PnetCDF_C_FOUND)
 
 ###
+# Check to see if netcdf-4 capability is present in netcdf-c.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_NC4
+      choke me
+#endif
+int main() {return 0;}" HAVE_NETCDF4)
+
+###
+# Check to see if netcdf-4 parallel I/O capability is present in
+# netcdf-c. (Really we should be checking NC_HAS_PARALLEL4, but that
+# was only recently introduced, so we will go with NC_HAS_PARALLEL.)
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if !NC_HAS_PARALLEL
+      choke me
+#endif
+int main() {return 0;}" HAVE_NETCDF_PAR)
+
+###
 # Check to see if szip write capability is present in netcdf-c.
 ###
 SET(CMAKE_REQUIRED_INCLUDES ${NetCDF_C_INCLUDE_DIR})
@@ -285,7 +307,7 @@ CHECK_C_SOURCE_COMPILES("
 int main() {return 0;}" HAVE_SZIP_WRITE)
 
 ###
-# Check to see if szip write capability is present in netcdf-c.
+# Check to see if parallel filters are supported by HDF5/netcdf-c.
 ###
 CHECK_C_SOURCE_COMPILES("
 #include <netcdf_meta.h>
@@ -327,12 +349,10 @@ SET(host_os "${osrel}")
 SET(abs_top_builddir "${CMAKE_CURRENT_BINARY_DIR}")
 SET(abs_top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 
-SET(CC_VERSION "${CMAKE_C_COMPILER}")
-
-# Build *FLAGS for libpio.settings.
-SET(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
-SET(CPPFLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_CPP_FLAGS_${CMAKE_BUILD_TYPE}}")
-SET(LDFLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
+SET(CC_VERSION "${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
+SET(FC_VERSION "${CMAKE_Fortran_COMPILER_ID} ${CMAKE_Fortran_COMPILER_VERSION}")
+# Build *FLAGS for libpio.settings.  (CFLAGS, CPPFLAGS, FFLAGS promoted from src)
+SET(LDFLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
 
 is_disabled(BUILD_SHARED_LIBS enable_static)
 is_enabled(BUILD_SHARED_LIBS enable_shared)
@@ -341,6 +361,8 @@ is_enabled(USE_SZIP HAS_SZIP_WRITE)
 is_enabled(STATUS_PNETCDF HAS_PNETCDF)
 is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
 is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
+is_enabled(HAVE_NETCDF4 HAS_NETCDF4)
+is_enabled(HAVE_NETCDF_PAR HAS_NETCDF4_PAR)
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"
