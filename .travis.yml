@@ -40,6 +40,7 @@ env:
 
 script:
   - nc-config --all
+  - find / -name netcdf_meta.h|xargs cat
   - cat /usr/include/netcdf_meta.h
   - autoreconf -i
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror'
