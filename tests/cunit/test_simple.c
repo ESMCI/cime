@@ -154,5 +154,8 @@ int main(int argc, char **argv)
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
+    /* Finalize MPI. */
+    MPI_Finalize();
+
     return 0;
 }
