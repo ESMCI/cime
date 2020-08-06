@@ -39,6 +39,7 @@ env:
     - LDFLAGS='-L/usr/lib'
 
 script:
+  - nc-config --all
   - autoreconf -i
   - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror'
   - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
