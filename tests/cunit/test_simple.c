@@ -108,28 +108,6 @@ int main(int argc, char **argv)
 	/* Define a var. */
 	if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM2, dimid, &varid)))
 	    ERR(ret);
-
-	/* Try to turn on deflate, it will only work for netCDF-4
-	 * serial, and perhaps netCDF-4 parallel. */
-	ret = PIOc_def_var_deflate(ncid, varid, 0, 1, 1);
-	if (flavor[f] == PIO_IOTYPE_PNETCDF || flavor[f] == PIO_IOTYPE_NETCDF)
-	{
-	    /* Pnetcdf and netcdf classic formats do not support
-	     * compression. An error will be returned. */
-	    if (ret != PIO_ENOTNC4)
-		ERR(ERR_WRONG);
-	}
-	/* else if (flavor[f] == PIO_IOTYPE_NETCDF4P) */
-	/* { */
-	/*     if (ret != NC_EINVAL) */
-	/* 	ERR(ERR_WRONG); */
-	/* } */
-	else
-	{
-	    if (ret)
-		ERR(ret);
-	}
-
 	if ((ret = PIOc_enddef(ncid)))
 	    ERR(ret);
 
