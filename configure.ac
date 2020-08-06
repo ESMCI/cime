@@ -297,6 +297,18 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 AC_MSG_CHECKING([whether netCDF provides parallel filter support])
 AC_MSG_RESULT([${have_par_filters}])
 
+# Is this version 4.7.2, which does not work?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+# error
+#endif]
+])], [have_472=no], [have_472=yes])
+AC_MSG_CHECKING([whether this is netcdf-c-4.7.2])
+AC_MSG_RESULT([${have_472}])
+if test "x$have_472" = xyes; then
+   AC_MSG_ERROR([PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF version.])
+fi
+
 # Set some build settings for when netcdf-4 is supported.
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
