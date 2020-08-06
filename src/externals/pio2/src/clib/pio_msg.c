@@ -779,7 +779,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     if (start_present)
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-    PLOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
+    /* PLOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims)); */
     if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if (count_present)

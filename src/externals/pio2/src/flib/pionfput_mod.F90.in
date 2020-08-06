@@ -171,7 +171,6 @@ contains
 !! @brief Writes a netCDF scalar variable.
 !! @details
 !! @param File @copydoc file_desc_t
-!! @param File : A file handle returne from \ref PIO_openfile or \ref PIO_createfile.
 !! @param varid : The netcdf variable identifier
 !! @param ival : The value for the netcdf variable
 !! @retval ierr @copydoc error_return
@@ -207,7 +206,6 @@ contains
 !! @brief Writes text data to netcdf variable.
 !! @details
 !! @param File @copydoc file_desc_t
-!! @param File : A file handle returne from \ref PIO_openfile or \ref PIO_createfile.
 !! @param varid : The netcdf variable identifier
 !! @param ival : The value for the netcdf metadata
 !! @retval ierr @copydoc error_return
@@ -273,7 +271,6 @@ contains
 !! @brief Write {TYPE} data to a netCDF varaible of {DIMS} dimension(s).
 !! @details
 !! @param File @copydoc file_desc_t
-!! @param File : A file handle returne from \ref PIO_openfile or \ref PIO_createfile.
 !! @param varid : The netcdf variable identifier
 !! @param ival : The value for the netcdf metadata
 !! @retval ierr @copydoc error_return
@@ -299,7 +296,6 @@ contains
 !! @brief Writes {TYPE} data to a netCDF scalar variable.
 !! @details
 !! @param File @copydoc file_desc_t
-!! @param File : A file handle returne from \ref PIO_openfile or \ref PIO_createfile.
 !! @param varid : The netcdf variable identifier
 !! @param ival : The value for the netcdf metadata
 !! @retval ierr @copydoc error_return

@@ -145,20 +145,37 @@ class SystemTestsCommon(object):
         self._skip_pnl = skip_pnl
         try:
             self._resetup_case(RUN_PHASE)
+            do_baseline_ops = True
             with self._test_status:
                 self._test_status.set_status(RUN_PHASE, TEST_PEND_STATUS)
 
+            # We do not want to do multiple repetitions of baseline operations for
+            # multi-submit tests. We just want to do them upon the final submission.
+            # Other submissions will need to mark those phases as PEND to ensure wait_for_tests
+            # waits for them.
+            if self._case.get_value("BATCH_SYSTEM") != "none":
+                do_baseline_ops = self._case.get_value("RESUBMIT") == 0
+
             self.run_phase()
             if self._case.get_value("GENERATE_BASELINE"):
-                self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
+                if do_baseline_ops:
+                    self._phase_modifying_call(GENERATE_PHASE, self._generate_baseline)
+                else:
+                    with self._test_status:
+                        self._test_status.set_status(GENERATE_PHASE, TEST_PEND_STATUS)
 
             if self._case.get_value("COMPARE_BASELINE"):
-                self._phase_modifying_call(BASELINE_PHASE,   self._compare_baseline)
-                self._phase_modifying_call(MEMCOMP_PHASE,    self._compare_memory)
-                self._phase_modifying_call(THROUGHPUT_PHASE, self._compare_throughput)
+                if do_baseline_ops:
+                    self._phase_modifying_call(BASELINE_PHASE,   self._compare_baseline)
+                    self._phase_modifying_call(MEMCOMP_PHASE,    self._compare_memory)
+                    self._phase_modifying_call(THROUGHPUT_PHASE, self._compare_throughput)
+                else:
+                    with self._test_status:
+                        self._test_status.set_status(BASELINE_PHASE,   TEST_PEND_STATUS)
+                        self._test_status.set_status(MEMCOMP_PHASE,    TEST_PEND_STATUS)
+                        self._test_status.set_status(THROUGHPUT_PHASE, TEST_PEND_STATUS)
 
-            self._phase_modifying_call(MEMLEAK_PHASE, self._check_for_memleak)
-
+            self._phase_modifying_call(MEMLEAK_PHASE,   self._check_for_memleak)
             self._phase_modifying_call(STARCHIVE_PHASE, self._st_archive_case_test)
 
         except BaseException as e: # We want KeyboardInterrupts to generate FAIL status
@@ -189,7 +206,7 @@ class SystemTestsCommon(object):
                 # If overall things did not pass, offer the user some insight into what might have broken things
                 overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
                 if overall_status != TEST_PASS_STATUS:
-                    srcroot = self._case.get_value("CIMEROOT")
+                    srcroot = self._case.get_value("SRCROOT")
                     worked_before, last_pass, last_fail_transition = \
                         get_test_success(baseline_root, srcroot, self._casebaseid)
 
