@@ -5,18 +5,20 @@ module wav_comp_nuopc
   !----------------------------------------------------------------------------
 
   use ESMF
-  use NUOPC            , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
-  use NUOPC            , only : NUOPC_CompAttributeGet, NUOPC_Advertise
-  use NUOPC_Model      , only : model_routine_SS        => SetServices
-  use NUOPC_Model      , only : model_label_Advance     => label_Advance
-  use NUOPC_Model      , only : model_label_SetRunClock => label_SetRunClock
-  use NUOPC_Model      , only : model_label_Finalize    => label_Finalize
-  use NUOPC_Model      , only : NUOPC_ModelGet
-  use shr_sys_mod      , only : shr_sys_abort
-  use shr_kind_mod     , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
-  use dead_methods_mod , only : chkerr, state_setscalar, state_diagnose, memcheck, set_component_logging
-  use dead_nuopc_mod   , only : ModelInitPhase, ModelSetRunClock
-  use dead_nuopc_mod   , only : fld_list_add, fld_list_realize, fldsMax, fld_list_type
+  use NUOPC             , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
+  use NUOPC             , only : NUOPC_CompAttributeGet, NUOPC_Advertise
+  use NUOPC_Model       , only : model_routine_SS        => SetServices
+  use NUOPC_Model       , only : model_label_Advance     => label_Advance
+  use NUOPC_Model       , only : model_label_SetRunClock => label_SetRunClock
+  use NUOPC_Model       , only : model_label_Finalize    => label_Finalize
+  use NUOPC_Model       , only : NUOPC_ModelGet
+  use shr_sys_mod       , only : shr_sys_abort
+  use shr_kind_mod      , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
+  use shr_file_mod      , only : shr_file_getlogunit, shr_file_setlogunit
+  use dead_methods_mod  , only : chkerr, state_setscalar,  state_diagnose, alarmInit, memcheck
+  use dead_methods_mod  , only : set_component_logging, get_component_instance, log_clock_advance
+  use dead_nuopc_mod    , only : dead_read_inparms, ModelInitPhase, ModelSetRunClock
+  use dead_nuopc_mod    , only : fld_list_add, fld_list_realize, fldsMax, fld_list_type
 
   implicit none
   private ! except
@@ -40,13 +42,14 @@ module wav_comp_nuopc
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
 
   type(ESMF_Mesh)        :: mesh
-  real(r8), pointer      :: lat(:)        ! mesh lats
-  real(r8), pointer      :: lon(:)        ! mesh lons
-  integer                :: my_task       ! my task in mpi communicator mpicom
-  integer                :: logunit       ! logging unit number
-  integer    ,parameter  :: master_task=0 ! task number of master task
+  integer                :: nxg                  ! global dim i-direction
+  integer                :: nyg                  ! global dim j-direction
+  integer                :: my_task              ! my task in mpi communicator mpicom
+  integer                :: inst_index           ! number of current instance (ie. 1)
+  character(len=16)      :: inst_suffix = ""     ! char string associated with instance (ie. "_0001" or "")
+  integer                :: logunit              ! logging unit number
   logical                :: mastertask
-  integer                :: dbug = 0
+  integer                :: dbug = 1
   character(*),parameter :: modName =  "(xwav_comp_nuopc)"
   character(*),parameter :: u_FILE_u = &
        __FILE__
@@ -111,7 +114,9 @@ contains
 
     ! local variables
     type(ESMF_VM)     :: vm
+    character(CS)     :: stdname
     integer           :: n
+    integer           :: lsize       ! local array size
     integer           :: shrlogunit  ! original log unit
     character(CL)     :: cvalue
     character(len=CL) :: logmsg
@@ -120,16 +125,27 @@ contains
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
+    call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
+
     call ESMF_VMGet(vm, localpet=my_task, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-    mastertask = (my_task == master_task)
+
+    mastertask = (my_task == 0)
+
+    ! determine instance information
+    call get_component_instance(gcomp, inst_suffix, inst_index, rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     ! set logunit and set shr logging to my log file
     call set_component_logging(gcomp, mastertask, logunit, shrlogunit, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    ! Initialize xwav
+    call dead_read_inparms('wav', inst_suffix, logunit, nxg, nyg)
 
     ! advertise import and export fields
     call NUOPC_CompAttributeGet(gcomp, name="ScalarFieldName", value=cvalue, isPresent=isPresent, isSet=isSet, rc=rc)
@@ -175,35 +191,44 @@ contains
        call shr_sys_abort(subname//'Need to set attribute ScalarFieldIdxGridNY')
     endif
 
-    call fld_list_add(fldsFrWav_num, fldsFrWav, trim(flds_scalar_name))
-    call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_lamult'  )
-    call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_ustokes' )
-    call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_vstokes' )
-    call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_hstokes' )
+    if (nxg /= 0 .and. nyg /= 0) then
 
-    call fld_list_add(fldsToWav_num, fldsToWav, trim(flds_scalar_name))
-    call fld_list_add(fldsToWav_num, fldsToWav, 'Sa_u'       )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'Sa_v'       )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'Sa_tbot'    )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'Si_ifrac'   )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'So_t'       )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'So_u'       )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'So_v'       )
-    call fld_list_add(fldsToWav_num, fldsToWav, 'So_bldepth' )
+       call fld_list_add(fldsFrWav_num, fldsFrWav, trim(flds_scalar_name))
+       call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_lamult'  )
+       call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_ustokes' )
+       call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_vstokes' )
+       call fld_list_add(fldsFrWav_num, fldsFrWav, 'Sw_hstokes' )
 
-    do n = 1,fldsFrWav_num
-       if (mastertask) write(logunit,*)'Advertising From Xwav ',trim(fldsFrWav(n)%stdname)
-       call NUOPC_Advertise(exportState, standardName=fldsFrWav(n)%stdname, &
-            TransferOfferGeomObject='will provide', rc=rc)
-       if (chkerr(rc,__LINE__,u_FILE_u)) return
-    enddo
+       call fld_list_add(fldsToWav_num, fldsToWav, trim(flds_scalar_name))
+       call fld_list_add(fldsToWav_num, fldsToWav, 'Sa_u'       )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'Sa_v'       )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'Sa_tbot'    )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'Si_ifrac'   )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'So_t'       )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'So_u'       )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'So_v'       )
+       call fld_list_add(fldsToWav_num, fldsToWav, 'So_bldepth' )
 
-    do n = 1,fldsToWav_num
-       if(mastertask) write(logunit,*)'Advertising To Xwav ',trim(fldsToWav(n)%stdname)
-       call NUOPC_Advertise(importState, standardName=fldsToWav(n)%stdname, &
-            TransferOfferGeomObject='will provide', rc=rc)
-       if (chkerr(rc,__LINE__,u_FILE_u)) return
-    enddo
+       do n = 1,fldsFrWav_num
+          if (mastertask) write(logunit,*)'Advertising From Xwav ',trim(fldsFrWav(n)%stdname)
+          call NUOPC_Advertise(exportState, standardName=fldsFrWav(n)%stdname, &
+               TransferOfferGeomObject='will provide', rc=rc)
+          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       enddo
+
+       do n = 1,fldsToWav_num
+          if(mastertask) write(logunit,*)'Advertising To Xwav ',trim(fldsToWav(n)%stdname)
+          call NUOPC_Advertise(importState, standardName=fldsToWav(n)%stdname, &
+               TransferOfferGeomObject='will provide', rc=rc)
+          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       enddo
+    end if
+
+    call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    ! Reset shr logging to original values
+    call shr_file_setLogUnit (shrlogunit)
 
   end subroutine InitializeAdvertise
 
@@ -217,15 +242,16 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    integer                :: n, nxg, nyg
+    integer                :: shrlogunit ! original log unit
     character(ESMF_MAXSTR) :: cvalue     ! config data
-    integer                :: spatialDim
-    integer                :: numOwnedElements
-    real(R8), pointer      :: ownedElemCoords(:)
     character(len=*),parameter :: subname=trim(modName)//':(InitializeRealize) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
+
+    ! Reset shr logging to my log file
+    call shr_file_getLogUnit (shrlogunit)
+    call shr_file_setLogUnit (logunit)
 
     ! generate the mesh
     call NUOPC_CompAttributeGet(gcomp, name='mesh_wav', value=cvalue, rc=rc)
@@ -256,22 +282,6 @@ contains
          mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    ! determine the mesh lats and lons (module variables)
-    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    allocate(ownedElemCoords(spatialDim*numOwnedElements))
-    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-
-    allocate(lon(numownedElements))
-    allocate(lat(numownedElements))
-    do n = 1,numownedElements
-       lon(n) = ownedElemCoords(2*n-1)
-       lat(n) = ownedElemCoords(2*n)
-    end do
-    nxg = numownedElements
-    nyg = 1
-
     ! Pack export state
     call State_SetExport(exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -286,6 +296,8 @@ contains
        if (chkerr(rc,__LINE__,u_FILE_u)) return
     endif
 
+    call shr_file_setLogUnit (shrlogunit)
+
   end subroutine InitializeRealize
 
   !===============================================================================
@@ -296,7 +308,9 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    type(ESMF_State) :: exportState
+    type(ESMF_Clock)         :: clock
+    type(ESMF_State)         :: exportState
+    integer                  :: shrlogunit     ! original log unit
     character(len=*),parameter  :: subname=trim(modName)//':(ModelAdvance) '
     !-------------------------------------------------------------------------------
 
@@ -304,8 +318,11 @@ contains
 
     call memcheck(subname, 3, mastertask)
 
+    call shr_file_getLogUnit (shrlogunit)
+    call shr_file_setLogUnit (logunit)
+
     ! Pack export state
-    call NUOPC_ModelGet(gcomp, exportState=exportState, rc=rc)
+    call NUOPC_ModelGet(gcomp, modelClock=clock, exportState=exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     call state_setexport(exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -314,7 +331,13 @@ contains
     if (dbug > 1) then
        call State_diagnose(exportState,subname//':ES',rc=rc)
        if (chkerr(rc,__LINE__,u_FILE_u)) return
+       if ( mastertask) then
+          call log_clock_advance(clock, 'XWAV', logunit, rc)
+          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       endif
     endif
+
+    call shr_file_setLogUnit (shrlogunit)
 
   end subroutine ModelAdvance
 
@@ -326,12 +349,30 @@ contains
     integer          , intent(out)   :: rc
 
     ! local variables
-    integer :: nfstart, ubound
-    integer :: nf, nind
+    integer           :: nfstart, ubound
+    integer           :: n, nf, nind
+    real(r8), pointer :: lat(:)
+    real(r8), pointer :: lon(:)
+    integer           :: spatialDim
+    integer           :: numOwnedElements
+    real(R8), pointer :: ownedElemCoords(:)
     !--------------------------------------------------
 
     rc = ESMF_SUCCESS
     
+    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(ownedElemCoords(spatialDim*numOwnedElements))
+    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    allocate(lon(numownedElements))
+    allocate(lat(numownedElements))
+    do n = 1,numownedElements
+       lon(n) = ownedElemCoords(2*n-1)
+       lat(n) = ownedElemCoords(2*n)
+    end do
+
     nfstart = 0 ! for fields that have ubound > 0
     do nf = 2,fldsFrWav_num ! Start from index 2 in order to skip the scalar field 
        ubound = fldsFrWav(nf)%ungridded_ubound
@@ -347,6 +388,9 @@ contains
           end do
        end if
     end do
+
+    deallocate(lon)
+    deallocate(lat)
 
   end subroutine state_setexport
 

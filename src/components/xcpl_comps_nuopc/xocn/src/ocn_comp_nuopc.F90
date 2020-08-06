@@ -14,8 +14,10 @@ module ocn_comp_nuopc
   use NUOPC_Model      , only : NUOPC_ModelGet
   use shr_sys_mod      , only : shr_sys_abort
   use shr_kind_mod     , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
-  use dead_methods_mod , only : chkerr, state_setscalar, state_diagnose, memcheck, set_component_logging
-  use dead_nuopc_mod   , only : ModelInitPhase, ModelSetRunClock
+  use shr_file_mod     , only : shr_file_getlogunit, shr_file_setlogunit
+  use dead_methods_mod , only : chkerr, state_setscalar,  state_diagnose, alarmInit, memcheck
+  use dead_methods_mod , only : set_component_logging, get_component_instance, log_clock_advance
+  use dead_nuopc_mod   , only : dead_read_inparms, ModelInitPhase, ModelSetRunClock
   use dead_nuopc_mod   , only : fld_list_add, fld_list_realize, fldsMax, fld_list_type
 
   implicit none
@@ -40,11 +42,14 @@ module ocn_comp_nuopc
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
 
   type(ESMF_Mesh)        :: mesh
-  real(r8), pointer      :: lat(:)        ! mesh lats
-  real(r8), pointer      :: lon(:)        ! mesh lons
-  integer                :: my_task       ! my task in mpi communicator mpicom
-  integer                :: logunit       ! logging unit number
-  integer    ,parameter  :: master_task=0 ! task number of master task
+  integer                :: nxg                  ! global dim i-direction
+  integer                :: nyg                  ! global dim j-direction
+  integer                :: my_task              ! my task in mpi communicator mpicom
+  integer                :: inst_index           ! number of current instance (ie. 1)
+  character(len=16)      :: inst_name            ! fullname of current instance (ie. "ocn_0001")
+  character(len=16)      :: inst_suffix = ""     ! char string associated with instance (ie. "_0001" or "")
+  integer                :: logunit              ! logging unit number
+  integer    ,parameter  :: master_task=0        ! task number of master task
   logical                :: mastertask
   integer                :: dbug = 0
   character(*),parameter :: modName =  "(xocn_comp_nuopc)"
@@ -101,6 +106,7 @@ contains
   end subroutine SetServices
 
   !===============================================================================
+
   subroutine InitializeAdvertise(gcomp, importState, exportState, clock, rc)
 
     ! input/output variables
@@ -112,6 +118,7 @@ contains
     ! local variables
     type(ESMF_VM)     :: vm
     integer           :: n
+    integer           :: lsize       ! local array size
     integer           :: shrlogunit  ! original log unit
     character(CL)     :: cvalue
     character(len=CL) :: logmsg
@@ -128,9 +135,16 @@ contains
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     mastertask = (my_task == master_task)
 
+    ! determine instance information
+    call get_component_instance(gcomp, inst_suffix, inst_index, rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
     ! set logunit and set shr logging to my log file
     call set_component_logging(gcomp, my_task==master_task, logunit, shrlogunit, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    ! Initialize xocn
+    call dead_read_inparms('ocn', inst_suffix, logunit, nxg, nyg)
 
     ! advertise import and export fields
     call NUOPC_CompAttributeGet(gcomp, name="ScalarFieldName", value=cvalue, isPresent=isPresent, isSet=isSet, rc=rc)
@@ -176,49 +190,55 @@ contains
        call shr_sys_abort(subname//'Need to set attribute ScalarFieldIdxGridNY')
     endif
 
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, trim(flds_scalar_name))
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_omask"      )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_t"          )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_s"          )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_u"          )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_v"          )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_dhdx"       )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_dhdy"       )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_bldepth"    )
-    call fld_list_add(fldsFrOcn_num, fldsFrOcn, "Fioo_q"        )
+    if (nxg /= 0 .and. nyg /= 0) then
 
-    call fld_list_add(fldsToOcn_num, fldsToOcn, trim(flds_scalar_name))
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_rain"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_snow"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_lwdn"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swndr"    )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swvdr"    )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swndf"    )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swvdf"    )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_taux"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_tauy"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_sen"      )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_lat"      )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_lwup"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_evap"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Fioi_salt"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_rofl"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_rofi"     )
-    call fld_list_add(fldsToOcn_num, fldsToOcn, "Sa_pslv"       )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, trim(flds_scalar_name))
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_omask"      )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_t"          )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_s"          )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_u"          )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_v"          )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_dhdx"       )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_dhdy"       )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "So_bldepth"    )
+       call fld_list_add(fldsFrOcn_num, fldsFrOcn, "Fioo_q"        )
 
-    do n = 1,fldsFrOcn_num
-       if(mastertask) write(logunit,*)'Advertising From Xocn ',trim(fldsFrOcn(n)%stdname)
-       call NUOPC_Advertise(exportState, standardName=fldsFrOcn(n)%stdname, &
-            TransferOfferGeomObject='will provide', rc=rc)
-       if (chkerr(rc,__LINE__,u_FILE_u)) return
-    enddo
+       call fld_list_add(fldsToOcn_num, fldsToOcn, trim(flds_scalar_name))
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_rain"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_snow"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_lwdn"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swndr"    )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swvdr"    )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swndf"    )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Faxa_swvdf"    )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_taux"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_tauy"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_sen"      )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_lat"      )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_lwup"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_evap"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Fioi_salt"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_rofl"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Foxx_rofi"     )
+       call fld_list_add(fldsToOcn_num, fldsToOcn, "Sa_pslv"       )
 
-    do n = 1,fldsToOcn_num
-       if(mastertask) write(logunit,*)'Advertising To Xocn',trim(fldsToOcn(n)%stdname)
-       call NUOPC_Advertise(importState, standardName=fldsToOcn(n)%stdname, &
-            TransferOfferGeomObject='will provide', rc=rc)
-       if (chkerr(rc,__LINE__,u_FILE_u)) return
-    enddo
+       do n = 1,fldsFrOcn_num
+          if(mastertask) write(logunit,*)'Advertising From Xocn ',trim(fldsFrOcn(n)%stdname)
+          call NUOPC_Advertise(exportState, standardName=fldsFrOcn(n)%stdname, &
+               TransferOfferGeomObject='will provide', rc=rc)
+          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       enddo
+
+       do n = 1,fldsToOcn_num
+          if(mastertask) write(logunit,*)'Advertising To Xocn',trim(fldsToOcn(n)%stdname)
+          call NUOPC_Advertise(importState, standardName=fldsToOcn(n)%stdname, &
+               TransferOfferGeomObject='will provide', rc=rc)
+          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       enddo
+    end if
+
+    ! Reset shr logging to original values
+    call shr_file_setLogUnit (shrlogunit)
 
   end subroutine InitializeAdvertise
 
@@ -232,15 +252,16 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    integer                :: n, nxg, nyg
+    integer                :: shrlogunit ! original log unit
     character(ESMF_MAXSTR) :: cvalue     ! config data
-    integer                :: spatialDim
-    integer                :: numOwnedElements
-    real(R8), pointer      :: ownedElemCoords(:)
     character(len=*),parameter :: subname=trim(modName)//':(InitializeRealize: xocn) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
+
+    ! Reset shr logging to my log file
+    call shr_file_getLogUnit (shrlogunit)
+    call shr_file_setLogUnit (logunit)
 
     ! generate the mesh
     call NUOPC_CompAttributeGet(gcomp, name='mesh_ocn', value=cvalue, rc=rc)
@@ -271,22 +292,6 @@ contains
          mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    ! determine the mesh lats and lons (module variables)
-    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    allocate(ownedElemCoords(spatialDim*numOwnedElements))
-    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-
-    allocate(lon(numownedElements))
-    allocate(lat(numownedElements))
-    do n = 1,numownedElements
-       lon(n) = ownedElemCoords(2*n-1)
-       lat(n) = ownedElemCoords(2*n)
-    end do
-    nxg = numownedElements
-    nyg = 1
-
     ! Pack export state
     call state_setexport(exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -301,6 +306,8 @@ contains
        if (chkerr(rc,__LINE__,u_FILE_u)) return
     endif
 
+    call shr_file_setLogUnit (shrlogunit)
+
   end subroutine InitializeRealize
 
   !===============================================================================
@@ -311,7 +318,9 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
+    type(ESMF_Clock)  :: clock
     type(ESMF_State)  :: exportState
+    integer           :: shrlogunit     ! original log unit
     character(len=*),parameter  :: subname=trim(modName)//':(ModelAdvance) '
     !-------------------------------------------------------------------------------
 
@@ -319,8 +328,11 @@ contains
 
     call memcheck(subname, 3, mastertask)
 
+    call shr_file_getLogUnit (shrlogunit)
+    call shr_file_setLogUnit (logunit)
+
     ! Pack export state
-    call NUOPC_ModelGet(gcomp, exportState=exportState, rc=rc)
+    call NUOPC_ModelGet(gcomp, modelClock=clock, exportState=exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     call state_setexport(exportState, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -331,22 +343,42 @@ contains
        if (chkerr(rc,__LINE__,u_FILE_u)) return
     endif
 
+    call shr_file_setLogUnit (shrlogunit)
+
   end subroutine ModelAdvance
 
   !===============================================================================
   subroutine state_setexport(exportState, rc)
 
     ! input/output variables
-    type(ESMF_State) , intent(inout) :: exportState
-    integer          , intent(out) :: rc
+    type(ESMF_State)  , intent(inout) :: exportState
+    integer, intent(out) :: rc
 
     ! local variables
-    integer :: nf, nind
+    integer           :: n, nf, nind
+    real(r8), pointer :: lat(:)
+    real(r8), pointer :: lon(:)
+    integer           :: spatialDim
+    integer           :: numOwnedElements
+    real(R8), pointer :: ownedElemCoords(:)
     !--------------------------------------------------
 
     rc = ESMF_SUCCESS
 
-    ! Start from index 2 in order to Skip the scalar field here
+    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(ownedElemCoords(spatialDim*numOwnedElements))
+    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    allocate(lon(numownedElements))
+    allocate(lat(numownedElements))
+    do n = 1,numownedElements
+       lon(n) = ownedElemCoords(2*n-1)
+       lat(n) = ownedElemCoords(2*n)
+    end do
+
+    ! Start from index 2 in order to Skip the scalar field here  
     do nf = 2,fldsFrOcn_num
        if (fldsFrOcn(nf)%ungridded_ubound == 0) then
           call field_setexport(exportState, trim(fldsFrOcn(nf)%stdname), lon, lat, nf=nf, rc=rc)
@@ -360,9 +392,13 @@ contains
        end if
     end do
 
+    deallocate(lon)
+    deallocate(lat)
+
   end subroutine state_setexport
 
   !===============================================================================
+
   subroutine field_setexport(exportState, fldname, lon, lat, nf, ungridded_index, rc)
 
     use shr_const_mod , only : pi=>shr_const_pi
