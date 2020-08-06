@@ -15,7 +15,6 @@ module dead_nuopc_mod
   implicit none
   private
 
-  public :: dead_read_inparms
   public :: ModelInitPhase
   public :: ModelSetRunClock
   public :: fld_list_add
@@ -38,64 +37,6 @@ module dead_nuopc_mod
 contains
 !===============================================================================
 
-  subroutine dead_read_inparms(model, inst_suffix, logunit, nxg, nyg)
-
-    ! input/output variables
-    character(len=*) , intent(in)    :: model
-    character(len=*) , intent(in)    :: inst_suffix ! char string associated with instance
-    integer          , intent(in)    :: logunit     ! logging unit number
-    integer          , intent(out)   :: nxg         ! global dim i-direction
-    integer          , intent(out)   :: nyg         ! global dim j-direction
-
-    ! local variables
-    type(ESMF_VM)           :: vm
-    character(CL)           :: fileName ! generic file name
-    integer                 :: nunit    ! unit number
-    integer                 :: unitn    ! Unit for namelist file
-    integer                 :: tmp(2)   ! array for broadcast
-    integer                 :: localPet ! mpi id of current task in current context
-    integer                 :: rc       ! return code
-    character(*), parameter :: F00   = "('(dead_read_inparms) ',8a)"
-    character(*), parameter :: F01   = "('(dead_read_inparms) ',a,a,4i8)"
-    character(*), parameter :: F03   = "('(dead_read_inparms) ',a,a,i8,a)"
-    character(*), parameter :: subName = "(dead_read_inpamrs) "
-    !-------------------------------------------------------------------------------
-
-    ! read the input parms (used to configure model)
-    call ESMF_VMGetCurrent(vm, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_VMGet(vm, localPet=localPet, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    nxg = -9999
-    nyg = -9999
-
-    if (localPet==0) then
-       open(newunit=unitn, file='x'//model//'_in'//trim(inst_suffix), status='old' )
-       read(unitn,*) nxg
-       read(unitn,*) nyg
-       close (unitn)
-    endif
-
-    tmp(1) = nxg
-    tmp(2) = nyg
-    call ESMF_VMBroadcast(vm, tmp, 3, 0, rc=rc)
-    nxg = tmp(1)
-    nyg = tmp(2)
-
-    if (localPet==0) then
-       write(logunit,*)' Read in X'//model//' input from file= x'//model//'_in'
-       write(logunit,F00) model
-       write(logunit,F00) model,'         Model  :  ',model
-       write(logunit,F01) model,'           NGX  :  ',nxg
-       write(logunit,F01) model,'           NGY  :  ',nyg
-       write(logunit,F00) model,'    inst_suffix :  ',trim(inst_suffix)
-       write(logunit,F00) model
-    end if
-
-  end subroutine dead_read_inparms
-
-  !===============================================================================
   subroutine fld_list_add(num, fldlist, stdname, ungridded_lbound, ungridded_ubound)
 
     ! input/output variables
