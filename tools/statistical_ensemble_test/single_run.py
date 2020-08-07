@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 from __future__ import print_function
-import sys, getopt, os 
+import sys, getopt, os
 
 #
-# Command options 
+# Command options
 #
 def disp_usage(callType):
     if callType == 'ensemble.py':
@@ -13,7 +13,7 @@ def disp_usage(callType):
         print('  ')
         print('----------------------------')
         print('ensemble.py :')
-    else: 
+    else:
         print('\nSets up a single CESM case. ')
         print('  ')
         print('----------------------------')
@@ -37,7 +37,7 @@ def disp_usage(callType):
     print('  --compset <name>   Compset to use (default = F2000climo (CAM-ECT) or G (POP-ECT))')
     print('  --res <name>       Resolution to run (default = f19_f19 (CAM-ECT) or T62_g17 (POP-ECT))')
     print('  --uf               Enable ninth time step runs (ultra-fast mode for CAM-ECT) - otherwise the default is 12-month runs')
-    if callType == 'ensemble.py': 
+    if callType == 'ensemble.py':
        print('  --nb               Disables auto building the root case of the ensemble')
        print('  --ns               Disables auto submitting any members of the ensemble')
        print('  --ensemble <size>  Build the ensemble (instead of building case(s) with random pertlim values for verification),')
@@ -57,7 +57,7 @@ def process_args_dict(caller, caller_argv):
 
     optkeys=s.split()
 
-    try: 
+    try:
         opts, args = getopt.getopt(caller_argv,"hf:",optkeys)
 
     except getopt.GetoptError:
@@ -65,13 +65,13 @@ def process_args_dict(caller, caller_argv):
         disp_usage(caller)
         sys.exit(2)
 
-    #check for help   
+    #check for help
     for opt,arg in opts:
         if opt == '-h':
             disp_usage(caller)
             sys.exit()
 
-    #opts_dict and defaults    
+    #opts_dict and defaults
     opts_dict={}
     opts_dict['walltime']='00:00'
     opts_dict['pertlim']= '0'
@@ -133,48 +133,48 @@ def process_args_dict(caller, caller_argv):
             opts_dict['ns'] = True
         elif opt == '--verbose':
             opts_dict['verbose'] = True
-            s_case_flags += ' ' + opt 
+            s_case_flags += ' ' + opt
         elif opt == '--silent':
             opts_dict['silent'] = True
-            s_case_flags += ' ' + opt 
+            s_case_flags += ' ' + opt
         elif opt == '--test':
             opts_dict['test'] = True
-            s_case_flags += ' ' + opt 
+            s_case_flags += ' ' + opt
         elif opt == '--multi-driver':
-            opts_dict['multi-driver'] = True        
-            s_case_flags += ' ' + opt 
+            opts_dict['multi-driver'] = True
+            s_case_flags += ' ' + opt
         elif opt == '--nist':
             opts_dict['nist'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--pecount':
-            opts_dict['pecount'] = arg     
+            opts_dict['pecount'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--mpilib':
             opts_dict['mpilib'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--pesfile':
-            opts_dict['pesfile'] = arg     
+            opts_dict['pesfile'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--srcroot':
             opts_dict['srcroot'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--output-root':
-            opts_dict['output-root'] = arg     
+            opts_dict['output-root'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--script-root':
-            opts_dict['script-root'] = arg     
+            opts_dict['script-root'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--queue':
-            opts_dict['queue'] = arg     
+            opts_dict['queue'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--input-dir':
-            opts_dict['input-dir'] = arg     
+            opts_dict['input-dir'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--user-modes-dir':
-            opts_dict['user-modes-dir'] = arg     
+            opts_dict['user-modes-dir'] = arg
             s_case_flags += ' ' + opt + ' ' + arg
         elif opt == '--walltime':
-            opts_dict['walltime'] = arg     
+            opts_dict['walltime'] = arg
             #add below
 
     #check required things: case, machine
@@ -214,14 +214,14 @@ def process_args_dict(caller, caller_argv):
                 opts_dict['walltime'] = '02:00'
             else:
                 opts_dict['walltime'] = '04:30'
-    s_case_flags += ' --walltime ' + opts_dict['walltime']              
+    s_case_flags += ' --walltime ' + opts_dict['walltime']
 
     return opts_dict, s_case_flags
 
 #######
 
 def single_case(opts_dict, case_flags, stat_dir):
-    
+
     #scripts dir
     ret = os.chdir(stat_dir)
     ret = os.chdir('../../scripts')
@@ -238,11 +238,11 @@ def single_case(opts_dict, case_flags, stat_dir):
         print('ERROR: create_newcase returned a non-zero exit code.')
         sys.exit()
 
-    #modify namelist settings 
+    #modify namelist settings
     this_case = opts_dict['case']
     print('STATUS: case  = ' + this_case)
     ret = os.chdir(this_case)
-    
+
     command = 'chmod u+w *'
     ret = os.system(command)
 
@@ -274,11 +274,11 @@ def single_case(opts_dict, case_flags, stat_dir):
             ret = os.system(command)
             command = './xmlchange --file env_run.xml --id STOP_N --val 12'
             ret = os.system(command)
-        
+
     print('STATUS: running setup for single case...')
     command = './case.setup'
     ret = os.system(command)
-    
+
     print("STATUS: Adjusting user_nl_* files....")
 
     #POP-ECT
@@ -286,7 +286,7 @@ def single_case(opts_dict, case_flags, stat_dir):
         if os.path.isfile('user_nl_pop') == True:
             with open("user_nl_pop", "a") as f:
                 if opts_dict['pertlim'] != "0":
-                    text = "\ninit_ts_perturb = " + opts_dict['pertlim']
+                    text = "\ninit_ts_perturb = {}".format(opts_dict['pertlim'])
                     f.write(text)
         else:
             print("Warning: no user_nl_pop found")
@@ -295,19 +295,19 @@ def single_case(opts_dict, case_flags, stat_dir):
         #cam
         if os.path.isfile('user_nl_cam') == True:
             if opts_dict['uf'] == True:
-                text1 = "\navgflag_pertape = 'I'" 
-                text2 = "\nnhtfrq  = 9" 
+                text1 = "\navgflag_pertape = 'I'"
+                text2 = "\nnhtfrq  = 9"
             else:
-                text1 = "\navgflag_pertape = 'A'" 
-                text2 = "\nnhtfrq  = -8760" 
-        
+                text1 = "\navgflag_pertape = 'A'"
+                text2 = "\nnhtfrq  = -8760"
+
             text3 =  "\ninithist = 'NONE'"
-        
+
             with open("user_nl_cam", "a") as f:
                 f.write(text1)
                 f.write(text2)
                 f.write(text3)
-                if opts_dict['pertlim'] != "0":         
+                if opts_dict['pertlim'] != "0":
                     text = "\npertlim = " + opts_dict['pertlim']
                     f.write(text)
         else:
@@ -316,37 +316,37 @@ def single_case(opts_dict, case_flags, stat_dir):
         #clm
         if os.path.isfile('user_nl_clm') == True:
             if opts_dict['uf'] == True:
-                text1 = "\nhist_avgflag_pertape = 'I'" 
-                text2 = "\nhist_nhtfrq  = 9" 
+                text1 = "\nhist_avgflag_pertape = 'I'"
+                text2 = "\nhist_nhtfrq  = 9"
             else:
-                text1 = "\nhist_avgflag_pertape = 'A'" 
-                text2 = "\nhist_nhtfrq  = -8760" 
-        
+                text1 = "\nhist_avgflag_pertape = 'A'"
+                text2 = "\nhist_nhtfrq  = -8760"
+
             with open("user_nl_clm", "a") as f:
                 f.write(text1)
                 f.write(text2)
 
         #disable ice output
         if os.path.isfile('user_nl_cice') == True:
-            text = "\nhistfreq = 'x','x','x','x','x'" 
+            text = "\nhistfreq = 'x','x','x','x','x'"
             with open("user_nl_cice", "a") as f:
                 f.write(text)
 
         #pop
         if os.path.isfile('user_nl_pop') == True:
-            text = ["'\nn_tavg_streams = 1"] 
+            text = ["'\nn_tavg_streams = 1"]
             text.append("\nldiag_bsf = .false.")
             text.append("\nldiag_global_tracer_budgets = .false.")
             text.append("\nldiag_velocity = .false.")
             text.append("\ndiag_gm_bolus = .false." )
-            text.append("\nltavg_nino_diags_requested = .false.") 
+            text.append("\nltavg_nino_diags_requested = .false.")
             text.append("\nmoc_requested = .false." )
-            text.append("\nn_heat_trans_requested = .false.") 
+            text.append("\nn_heat_trans_requested = .false.")
             text.append("\nn_salt_trans_requested = .false." )
-            test.append("\ntavg_freq_opt = 'once', 'never', 'never'") 
-            text.append("\ntavg_file_freq_opt = 'once', 'never', 'never'") 
+            test.append("\ntavg_freq_opt = 'once', 'never', 'never'")
+            text.append("\ntavg_file_freq_opt = 'once', 'never', 'never'")
             text.append("\ndiag_cfl_freq_opt = 'never'" )
-            text.append("\ndiag_global_freq_opt = 'never'") 
+            text.append("\ndiag_global_freq_opt = 'never'")
             text.append("\ndiag_transp_freq_opt = 'never'" )
 
             with open("user_nl_pop", "a") as f:
@@ -357,7 +357,7 @@ def single_case(opts_dict, case_flags, stat_dir):
     print("STATUS: Updating namelists....")
     command = './preview_namelists'
     ret = os.system(command)
-    
+
     # Build executable
     nb = opts_dict["nb"]
     ns = opts_dict["ns"]
