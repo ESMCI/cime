@@ -315,6 +315,11 @@ CHECK_C_SOURCE_COMPILES("
       choke me
 #endif
 int main() {return 0;}" HDF5_HAS_PAR_FILTERS)
+if(HDF5_HAS_PAR_FILTERS)
+  set(HAVE_PAR_FILTERS 1)
+else()
+  set(HAVE_PAR_FILTERS 0)
+endif()
 
 ###
 # Check to see if this is netcdf-c-4.7.2, which won't work.
