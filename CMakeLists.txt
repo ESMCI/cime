@@ -330,6 +330,16 @@ if (HAVE_472)
   message (FATAL_ERROR "PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF library")
 endif ()
 
+###
+# Check to see if dispatch table version 2 is supported for netcdf integration.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_DISPATCH_VERSION != 2
+      choke me
+#endif
+int main() {return 0;}" HAVE_DISPATCH2)
+
 #####
 # Configure and print the libpio.settings file.
 #####

@@ -311,6 +311,19 @@ if test "x$have_472" = xyes; then
    AC_MSG_ERROR([PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF version.])
 fi
 
+# Do we have the correct dispatch table version in netcdf-c for netcdf
+# integration?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if NC_DISPATCH_VERSION != 2
+# error
+#endif]
+])], [have_dispatch2=yes], [have_dispatch2=no])
+AC_MSG_CHECKING([whether netcdf-c supports version 2 of dispatch table for netcdf integration])
+AC_MSG_RESULT([${have_dispatch2}])
+if test "x$enable_netcdf_integration" = xyes -a "x$have_dispatch2" = xno; then
+   AC_MSG_ERROR([NetCDF integration cannot be used with this version of netcdf-c, please upgrade your netCDF version.])
+fi
+
 # Set some build settings for when netcdf-4 is supported.
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
