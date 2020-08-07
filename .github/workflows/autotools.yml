@@ -25,7 +25,14 @@ jobs:
       run: |
         sudo apt-get install netcdf-bin libnetcdf-dev doxygen graphviz wget gfortran libjpeg-dev libz-dev openmpi-bin libopenmpi-dev 
 
+    - name: Cache pnetcdf
+      id: cache-pnetcdf
+      uses: actions/cache@v2
+      with:
+        path: pnetcdf
+        key: ${{ runner.os }}-pnetcdf-1.11.0
     - name: pnetcdf build
+      if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
       run: |
         wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.0.tar.gz 
         tar -xzvf pnetcdf-1.11.0.tar.gz
