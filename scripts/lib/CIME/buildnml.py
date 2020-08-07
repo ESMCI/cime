@@ -47,6 +47,9 @@ def build_xcpl_nml(case, caseroot, compname):
     if not ninst:
         ninst = 1
 
+    nx = case.get_value("{}_NX".format(compclass.upper()))
+    ny = case.get_value("{}_NY".format(compclass.upper()))
+
     if comp_interface != "nuopc":
         if compname == "xrof":
             flood_mode = case.get_value('XROF_FLOOD_MODE')
@@ -73,9 +76,6 @@ def build_xcpl_nml(case, caseroot, compname):
                 extras = [[".true.", "flood flag"]]
             else:
                 extras = [[".false.", "flood flag"]]
-
-    nx = case.get_value("{}_NX".format(compclass.upper()))
-    ny = case.get_value("{}_NY".format(compclass.upper()))
 
     for i in range(1, ninst + 1):
         # If only 1 file, name is 'compclass_in'
