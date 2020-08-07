@@ -289,7 +289,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 AC_MSG_CHECKING([whether netCDF provides szip write capability])
 AC_MSG_RESULT([${have_szip_write}])
 
-# Do we have parallel filter support?
+# Do we have parallel filter support? Parallel filters are required
+# for iotype NETCDF4P to use compression.
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 [[#if !NC_HAS_PAR_FILTERS
 # error
