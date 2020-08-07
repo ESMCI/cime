@@ -1965,7 +1965,6 @@
     <required_gridmap grid1="atm_grid" grid2="wav_grid">ATM2WAV_SMAPNAME</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="wav_grid">OCN2WAV_SMAPNAME</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="wav_grid">ICE2WAV_SMAPNAME</required_gridmap> <!-- ??? -->
-    <!-- <required_gridmap grid1="ocn_grid" grid2="rof_grid" not_compset="_POP">ROF2OCN_FMAPNAME</required_gridmap> ?? -->
     <required_gridmap grid1="ocn_grid" grid2="rof_grid">ROF2OCN_LIQ_RMAPNAME</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="rof_grid">ROF2OCN_ICE_RMAPNAME</required_gridmap>
     <required_gridmap grid1="lnd_grid" grid2="rof_grid">LND2ROF_FMAPNAME</required_gridmap>
@@ -1974,9 +1973,6 @@
     <required_gridmap grid1="lnd_grid" grid2="glc_grid">LND2GLC_FMAPNAME</required_gridmap>
     <required_gridmap grid1="glc_grid" grid2="lnd_grid">GLC2LND_SMAPNAME</required_gridmap>
     <required_gridmap grid1="glc_grid" grid2="lnd_grid">GLC2LND_FMAPNAME</required_gridmap>
-    <!-- <required_gridmap grid1="glc_grid" grid2="ice_grid">GLC2ICE_RMAPNAME</required_gridmap> -->
-    <!-- <required_gridmap grid1="glc_grid" grid2="ocn_grid">GLC2OCN_ICE_RMAPNAME</required_gridmap> -->
-    <!-- <required_gridmap grid1="glc_grid" grid2="ocn_grid">GLC2OCN_LIQ_RMAPNAME</required_gridmap> -->
     <required_gridmap grid1="rof_grid" grid2="ocn_grid">ROF2OCN_FMAPNAME</required_gridmap>
     <required_gridmap grid1="wav_grid" grid2="ocn_grid">WAV2OCN_SMAPNAME</required_gridmap>
   </required_gridmaps>
