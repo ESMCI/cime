@@ -245,6 +245,7 @@ AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on inte
 
 # Check for netCDF library.
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
+AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
 # Check for pnetcdf library.
 AC_CHECK_LIB([pnetcdf], [ncmpi_create], [], [])
@@ -300,9 +301,10 @@ AC_MSG_RESULT([${have_par_filters}])
 # Is this version 4.7.2, which does not work?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 [[#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
 # error
 #endif]
-])], [have_472=no], [have_472=yes])
+])], [have_472=yes], [have_472=no])
 AC_MSG_CHECKING([whether this is netcdf-c-4.7.2])
 AC_MSG_RESULT([${have_472}])
 if test "x$have_472" = xyes; then
