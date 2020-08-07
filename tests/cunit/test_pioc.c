@@ -1570,9 +1570,19 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
-            /* Setting deflate works with parallel iotype starting with netcdf-c-4.7.4. */
-            if ((ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1)))
+            /* Setting deflate works with parallel iotype starting
+	     * with netcdf-c-4.7.4. If present, HAVE_PAR_FILTERS will
+	     * be defined. */
+	    ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
+#ifdef HAVE_PAR_FILTERS
+	    if (ret)
 		ERR(ret);
+#else
+	    if (flavor[fmt] == PIO_IOTYPE_NETCDF4C && ret)
+		ERR(ret);
+	    if (flavor[fmt] == PIO_IOTYPE_NETCDF4P && !ret)
+		ERR(ERR_WRONG);
+#endif
 
             /* Check that the inq_varname function works. */
             if ((ret = PIOc_inq_varname(ncid, 0, NULL)))
@@ -1602,10 +1612,18 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 if (shuffle || !deflate || deflate_level != 1)
                     ERR(ERR_AWFUL);
 
-            /* For parallel netCDF-4, we turned on deflate above. */
+            /* For parallel netCDF-4, we turned on deflate above, if
+	     * HAVE_PAR_FILTERS is defined. */
             if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-               if (shuffle || !deflate || deflate_level != 1)
+	    {
+#ifdef HAVE_PAR_FILTERS
+		if (shuffle || !deflate || deflate_level != 1)
                     ERR(ERR_AWFUL);
+#else
+		if (shuffle || deflate)
+                    ERR(ERR_AWFUL);
+#endif /* HAVE_PAR_FILTERS */
+	    }
 
             /* Check setting the chunk cache for the variable. */
             if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,

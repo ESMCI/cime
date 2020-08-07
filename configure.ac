@@ -297,6 +297,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 ])], [have_par_filters=yes], [have_par_filters=no])
 AC_MSG_CHECKING([whether netCDF provides parallel filter support])
 AC_MSG_RESULT([${have_par_filters}])
+if test "x$have_par_filters" = xyes ; then
+   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netcdf-c supports filters with parallel I/O])
+fi
 
 # Is this version 4.7.2, which does not work?
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
