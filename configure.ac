@@ -245,6 +245,7 @@ AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on inte
 
 # Check for netCDF library.
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
+AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
 
 # Check for pnetcdf library.
 AC_CHECK_LIB([pnetcdf], [ncmpi_create], [], [])
@@ -288,7 +289,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 AC_MSG_CHECKING([whether netCDF provides szip write capability])
 AC_MSG_RESULT([${have_szip_write}])
 
-# Do we have parallel filter support?
+# Do we have parallel filter support? Parallel filters are required
+# for iotype NETCDF4P to use compression.
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 [[#if !NC_HAS_PAR_FILTERS
 # error
@@ -296,6 +298,35 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 ])], [have_par_filters=yes], [have_par_filters=no])
 AC_MSG_CHECKING([whether netCDF provides parallel filter support])
 AC_MSG_RESULT([${have_par_filters}])
+if test "x$have_par_filters" = xyes ; then
+   AC_DEFINE([HAVE_PAR_FILTERS], [1], [if true, netcdf-c supports filters with parallel I/O])
+fi
+
+# Is this version 4.7.2, which does not work?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
+# error
+#endif]
+])], [have_472=yes], [have_472=no])
+AC_MSG_CHECKING([whether this is netcdf-c-4.7.2])
+AC_MSG_RESULT([${have_472}])
+if test "x$have_472" = xyes; then
+   AC_MSG_ERROR([PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF version.])
+fi
+
+# Do we have the correct dispatch table version in netcdf-c for netcdf
+# integration?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if NC_DISPATCH_VERSION != 2
+# error
+#endif]
+])], [have_dispatch2=yes], [have_dispatch2=no])
+AC_MSG_CHECKING([whether netcdf-c supports version 2 of dispatch table for netcdf integration])
+AC_MSG_RESULT([${have_dispatch2}])
+if test "x$enable_netcdf_integration" = xyes -a "x$have_dispatch2" = xno; then
+   AC_MSG_ERROR([NetCDF integration cannot be used with this version of netcdf-c, please upgrade your netCDF version.])
+fi
 
 # Set some build settings for when netcdf-4 is supported.
 if test x$have_netcdf_par = xyes; then

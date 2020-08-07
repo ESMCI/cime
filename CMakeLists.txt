@@ -315,6 +315,35 @@ CHECK_C_SOURCE_COMPILES("
       choke me
 #endif
 int main() {return 0;}" HDF5_HAS_PAR_FILTERS)
+if(HDF5_HAS_PAR_FILTERS)
+  set(HAVE_PAR_FILTERS 1)
+else()
+  set(HAVE_PAR_FILTERS 0)
+endif()
+
+###
+# Check to see if this is netcdf-c-4.7.2, which won't work.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
+      choke me
+#endif
+int main() {return 0;}" HAVE_472)
+if (HAVE_472)
+  message (FATAL_ERROR "PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF library")
+endif ()
+
+###
+# Check to see if dispatch table version 2 is supported for netcdf integration.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_DISPATCH_VERSION != 2
+      choke me
+#endif
+int main() {return 0;}" HAVE_DISPATCH2)
 
 #####
 # Configure and print the libpio.settings file.
