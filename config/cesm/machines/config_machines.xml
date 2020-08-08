@@ -510,23 +510,23 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b21-ncdfio-mpt-O</command>
+        <command name="load">esmf-8.1.0b23-ncdfio-mpt-O</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b21-ncdfio-mpiuni-g</command>
+        <command name="load">esmf-8.1.0b23-ncdfio-mpiuni-g</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b21-ncdfio-mpiuni-O</command>
+        <command name="load">esmf-8.1.0b23-ncdfio-mpiuni-O</command>
       </modules>
       <modules compiler="gnu" mpilib="!mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b21-ncdfio-mpt-g</command>
+        <command name="load">esmf-8.1.0b23-ncdfio-mpt-g</command>
       </modules>
       <modules compiler="gnu" mpilib="!mpi-serial" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b21-ncdfio-mpt-O</command>
+        <command name="load">esmf-8.1.0b23-ncdfio-mpt-O</command>
       </modules>
 
       <modules mpilib="mpt" compiler="gnu">
@@ -1596,6 +1596,12 @@ This allows using a different mpirun command to launch unit tests
       <env name="OMP_STACKSIZE">64M</env>
       <!-- The following is needed in order to run qsub from the compute nodes -->
       <env name="PATH">$ENV{PATH}:/cluster/torque/bin</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc" mpilib="mvapich2" DEBUG="FALSE">
+      <env name="ESMFMKFILE">/scratch/cluster/himanshu/PROGS/esmf/master/mvapich2/2.3.3/intel/20.0.1/lib/libO/Linux.intel.64.mvapich2.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc" mpilib="mvapich2" DEBUG="TRUE">
+      <env name="ESMFMKFILE">/scratch/cluster/himanshu/PROGS/esmf/master/mvapich2/2.3.3/intel/20.0.1/lib/libg/Linux.intel.64.mvapich2.default/esmf.mk</env>
     </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>

@@ -17,10 +17,8 @@ module ice_comp_nuopc
   use shr_file_mod      , only : shr_file_getlogunit, shr_file_setlogunit
   use dead_methods_mod  , only : chkerr, state_setscalar,  state_diagnose, alarmInit, memcheck
   use dead_methods_mod  , only : set_component_logging, get_component_instance, log_clock_advance
-  use dead_nuopc_mod    , only : dead_grid_lat, dead_grid_lon, dead_grid_index
-  use dead_nuopc_mod    , only : dead_init_nuopc, dead_final_nuopc, dead_meshinit
+  use dead_nuopc_mod    , only : dead_read_inparms, ModelInitPhase, ModelSetRunClock
   use dead_nuopc_mod    , only : fld_list_add, fld_list_realize, fldsMax, fld_list_type
-  use dead_nuopc_mod    , only : ModelInitPhase, ModelSetRunClock
 
   implicit none
   private ! except
@@ -42,10 +40,7 @@ module ice_comp_nuopc
   type (fld_list_type)   :: fldsFrIce(fldsMax)
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
 
-  real(r8), pointer      :: gbuf(:,:)            ! model info
-  real(r8), pointer      :: lat(:)
-  real(r8), pointer      :: lon(:)
-  integer , allocatable  :: gindex(:)
+  type(ESMF_Mesh)        :: mesh
   integer                :: nxg                  ! global dim i-direction
   integer                :: nyg                  ! global dim j-direction
   integer                :: my_task              ! my task in mpi communicator mpicom
@@ -54,7 +49,7 @@ module ice_comp_nuopc
   integer                :: logunit              ! logging unit number
   integer    ,parameter  :: master_task=0        ! task number of master task
   logical                :: mastertask
-  integer                :: dbug = 1
+  integer                :: dbug = 0
   character(*),parameter :: modName =  "(xice_comp_nuopc)"
   character(*),parameter :: u_FILE_u = &
        __FILE__
@@ -108,7 +103,6 @@ contains
   end subroutine SetServices
 
   !===============================================================================
-
   subroutine InitializeAdvertise(gcomp, importState, exportState, clock, rc)
 
     ! input/output variables
@@ -158,15 +152,7 @@ contains
     ! Initialize xice
     !----------------------------------------------------------------------------
 
-    call dead_init_nuopc('ice', inst_suffix, logunit, lsize, gbuf, nxg, nyg)
-
-    allocate(gindex(lsize))
-    allocate(lon(lsize))
-    allocate(lat(lsize))
-
-    gindex(:) = gbuf(:,dead_grid_index)
-    lat(:)    = gbuf(:,dead_grid_lat)
-    lon(:)    = gbuf(:,dead_grid_lon)
+    call dead_read_inparms('ice', inst_suffix, logunit, nxg, nyg)
 
     !--------------------------------
     ! advertise import and export fields
@@ -300,7 +286,6 @@ contains
   end subroutine InitializeAdvertise
 
   !===============================================================================
-
   subroutine InitializeRealize(gcomp, importState, exportState, clock, rc)
     type(ESMF_GridComp)  :: gcomp
     type(ESMF_State)     :: importState, exportState
@@ -308,14 +293,13 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    type(ESMF_Mesh)        :: Emesh
     integer                :: shrlogunit                ! original log unit
     integer                :: n
+    character(ESMF_MAXSTR) :: cvalue                ! config data
     character(len=*),parameter :: subname=trim(modName)//':(InitializeRealize) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
     !----------------------------------------------------------------------------
     ! Reset shr logging to my log file
@@ -328,8 +312,11 @@ contains
     ! generate the mesh
     !--------------------------------
 
-    call dead_meshinit(gcomp, nxg, nyg, gindex, lon, lat, Emesh, rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    call NUOPC_CompAttributeGet(gcomp, name='mesh_ice', value=cvalue, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    mesh = ESMF_MeshCreate(filename=trim(cvalue), fileformat=ESMF_FILEFORMAT_ESMFMESH, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
     !--------------------------------
     ! realize the actively coupled fields, now that a mesh is established
@@ -344,7 +331,7 @@ contains
          flds_scalar_name=flds_scalar_name, &
          flds_scalar_num=flds_scalar_num, &
          tag=subname//':diceExport',&
-         mesh=Emesh, rc=rc)
+         mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     call fld_list_realize( &
@@ -354,7 +341,7 @@ contains
          flds_scalar_name=flds_scalar_name, &
          flds_scalar_num=flds_scalar_num, &
          tag=subname//':diceImport',&
-         mesh=Emesh, rc=rc)
+         mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     !--------------------------------
@@ -383,12 +370,9 @@ contains
 
     call shr_file_setLogUnit (shrlogunit)
 
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-
   end subroutine InitializeRealize
 
   !===============================================================================
-
   subroutine ModelAdvance(gcomp, rc)
 
     ! input/output variables
@@ -439,7 +423,6 @@ contains
   end subroutine ModelAdvance
 
   !===============================================================================
-
   subroutine state_setexport(exportState, rc)
 
     ! input/output variables
@@ -447,10 +430,28 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    integer :: nf, nind
+    integer           :: n, nf, nind
+    real(r8), pointer :: lat(:)
+    real(r8), pointer :: lon(:)
+    integer           :: spatialDim
+    integer           :: numOwnedElements
+    real(R8), pointer :: ownedElemCoords(:)
     !--------------------------------------------------
 
     rc = ESMF_SUCCESS
+
+    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(ownedElemCoords(spatialDim*numOwnedElements))
+    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    allocate(lon(numownedElements))
+    allocate(lat(numownedElements))
+    do n = 1,numownedElements
+       lon(n) = ownedElemCoords(2*n-1)
+       lat(n) = ownedElemCoords(2*n)
+    end do
 
     ! Start from index 2 in order to skip the scalar field 
     do nf = 2,fldsFrIce_num
@@ -466,10 +467,12 @@ contains
        end if
     end do
 
+    deallocate(lon)
+    deallocate(lat)
+
   end subroutine state_setexport
 
   !===============================================================================
-
   subroutine field_setexport(exportState, fldname, lon, lat, nf, ungridded_index, rc)
 
     use shr_const_mod , only : pi=>shr_const_pi
@@ -532,26 +535,18 @@ contains
   end subroutine field_setexport
 
   !===============================================================================
-
   subroutine ModelFinalize(gcomp, rc)
     type(ESMF_GridComp)  :: gcomp
     integer, intent(out) :: rc
-
-    ! local variables
-    character(len=*),parameter  :: subname=trim(modName)//':(ModelFinalize) '
     !-------------------------------------------------------------------------------
 
-    !--------------------------------
-    ! Finalize routine
-    !--------------------------------
-
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
-    call dead_final_nuopc('ice', logunit)
-
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-
+    if (mastertask) then
+       write(logunit,*)
+       write(logunit,*) 'xice: end of main integration loop'
+       write(logunit,*)
+    end if
   end subroutine ModelFinalize
 
 end module ice_comp_nuopc

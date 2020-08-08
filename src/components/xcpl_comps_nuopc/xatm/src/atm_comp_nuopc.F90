@@ -17,10 +17,8 @@ module atm_comp_nuopc
   use shr_file_mod      , only : shr_file_getlogunit, shr_file_setlogunit
   use dead_methods_mod  , only : chkerr, state_setscalar,  state_diagnose, alarmInit, memcheck
   use dead_methods_mod  , only : set_component_logging, get_component_instance, log_clock_advance
-  use dead_nuopc_mod    , only : dead_grid_lat, dead_grid_lon, dead_grid_index
-  use dead_nuopc_mod    , only : dead_init_nuopc, dead_final_nuopc, dead_meshinit
+  use dead_nuopc_mod    , only : dead_read_inparms, ModelInitPhase, ModelSetRunClock
   use dead_nuopc_mod    , only : fld_list_add, fld_list_realize, fldsMax, fld_list_type
-  use dead_nuopc_mod    , only : ModelInitPhase, ModelSetRunClock
 
   implicit none
   private ! except
@@ -43,10 +41,7 @@ module atm_comp_nuopc
   type (fld_list_type)   :: fldsFrAtm(fldsMax)
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
 
-  real(r8), pointer      :: gbuf(:,:)   ! model info
-  real(r8), pointer      :: lat(:)
-  real(r8), pointer      :: lon(:)
-  integer , allocatable  :: gindex(:)
+  type(ESMF_Mesh)        :: mesh
   integer                :: nxg         ! global dim i-direction
   integer                :: nyg         ! global dim j-direction
   integer                :: my_task     ! my task in mpi communicator mpicom
@@ -54,7 +49,7 @@ module atm_comp_nuopc
   character(len=5)       :: inst_suffix ! char string associated with instance (ie. "_0001" or "")
   integer                :: logunit     ! logging unit number
   logical                :: mastertask
-  integer                :: dbug = 1
+  integer                :: dbug = 0
   character(*),parameter :: modName =  "(xatm_comp_nuopc)"
   character(*),parameter :: u_FILE_u = &
        __FILE__
@@ -109,7 +104,6 @@ contains
   end subroutine SetServices
 
   !===============================================================================
-
   subroutine InitializeAdvertise(gcomp, importState, exportState, clock, rc)
 
     ! input/output variables
@@ -131,7 +125,6 @@ contains
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
     call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -141,38 +134,18 @@ contains
 
     mastertask = (my_task==0)
 
-    !----------------------------------------------------------------------------
     ! determine instance information
-    !----------------------------------------------------------------------------
-
     call get_component_instance(gcomp, inst_suffix, inst_index, rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
-    !----------------------------------------------------------------------------
     ! set logunit and set shr logging to my log file
-    !----------------------------------------------------------------------------
-
     call set_component_logging(gcomp, mastertask, logunit, shrlogunit, rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
-    !----------------------------------------------------------------------------
     ! Initialize xatm
-    !----------------------------------------------------------------------------
+    call dead_read_inparms('atm', inst_suffix, logunit, nxg, nyg)
 
-    call dead_init_nuopc('atm', inst_suffix, logunit, lsize, gbuf, nxg, nyg)
-
-    allocate(gindex(lsize))
-    allocate(lon(lsize))
-    allocate(lat(lsize))
-
-    gindex(:) = gbuf(:,dead_grid_index)
-    lat(:)    = gbuf(:,dead_grid_lat)
-    lon(:)    = gbuf(:,dead_grid_lon)
-
-    !--------------------------------
     ! advertise import and export fields
-    !--------------------------------
-
     call NUOPC_CompAttributeGet(gcomp, name="ScalarFieldName", value=cvalue, isPresent=isPresent, isSet=isSet, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
     if (isPresent .and. isSet) then
@@ -296,18 +269,12 @@ contains
        enddo
     end if
 
-    !----------------------------------------------------------------------------
     ! Reset shr logging to original values
-    !----------------------------------------------------------------------------
-
     call shr_file_setLogUnit (shrlogunit)
-
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
 
   end subroutine InitializeAdvertise
 
   !===============================================================================
-
   subroutine InitializeRealize(gcomp, importState, exportState, clock, rc)
 
     ! input/output arguments
@@ -317,37 +284,30 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    type(ESMF_Mesh)        :: Emesh
     type(ESMF_Time)        :: nextTime
     real(r8)               :: nextsw_cday
     integer                :: n
     integer                :: shrlogunit                ! original log unit
+    character(ESMF_MAXSTR) :: cvalue                ! config data
     character(len=*),parameter :: subname=trim(modName)//':(InitializeRealize: xatm) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
-    !----------------------------------------------------------------------------
     ! Reset shr logging to my log file
-    !----------------------------------------------------------------------------
-
     call shr_file_getLogUnit (shrlogunit)
     call shr_file_setLogUnit (logUnit)
 
-    !--------------------------------
     ! generate the mesh
-    !--------------------------------
+    call NUOPC_CompAttributeGet(gcomp, name='mesh_atm', value=cvalue, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
-    call dead_meshinit(gcomp, nxg, nyg, gindex, lon, lat, Emesh, rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    mesh = ESMF_MeshCreate(filename=trim(cvalue), fileformat=ESMF_FILEFORMAT_ESMFMESH, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
-    !--------------------------------
     ! realize the actively coupled fields, now that a mesh is established
     ! NUOPC_Realize "realizes" a previously advertised field in the importState and exportState
     ! by replacing the advertised fields with the newly created fields of the same name.
-    !--------------------------------
-
     call fld_list_realize( &
          state=exportState, &
          fldList=fldsFrAtm, &
@@ -355,7 +315,7 @@ contains
          flds_scalar_name=flds_scalar_name, &
          flds_scalar_num=flds_scalar_num, &
          tag=subname//':datmExport',&
-         mesh=Emesh, rc=rc)
+         mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     call fld_list_realize( &
@@ -365,38 +325,26 @@ contains
          flds_scalar_name=flds_scalar_name, &
          flds_scalar_num=flds_scalar_num, &
          tag=subname//':datmImport',&
-         mesh=Emesh, rc=rc)
+         mesh=mesh, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    !--------------------------------
     ! Pack export state
-    !--------------------------------
-
     call state_setexport(exportState, rc=rc)
-
-    call State_SetScalar(dble(nxg),flds_scalar_index_nx, exportState, &
-         flds_scalar_name, flds_scalar_num, rc)
+    call State_SetScalar(dble(nxg),flds_scalar_index_nx, exportState, flds_scalar_name, flds_scalar_num, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call State_SetScalar(dble(nyg),flds_scalar_index_ny, exportState, &
-         flds_scalar_name, flds_scalar_num, rc)
+    call State_SetScalar(dble(nyg),flds_scalar_index_ny, exportState, flds_scalar_name, flds_scalar_num, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     ! Set time of next radiation computation
-
     call ESMF_ClockGetNextTime(clock, nextTime)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     call ESMF_TimeGet(nextTime, dayOfYear_r8=nextsw_cday)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-
     call State_SetScalar(nextsw_cday, flds_scalar_index_nextsw_cday, exportState, &
          flds_scalar_name, flds_scalar_num, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    !--------------------------------
     ! diagnostics
-    !--------------------------------
-
     if (dbug > 1) then
        call State_diagnose(exportState,subname//':ES',rc=rc)
        if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -404,12 +352,9 @@ contains
 
     call shr_file_setLogUnit (shrlogunit)
 
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-
   end subroutine InitializeRealize
 
   !===============================================================================
-
   subroutine ModelAdvance(gcomp, rc)
 
     ! input/output variables
@@ -463,14 +408,9 @@ contains
 
     call shr_file_setLogUnit (shrlogunit)
 
-    if (dbug > 5) then
-       call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-    end if
-
   end subroutine ModelAdvance
 
   !===============================================================================
-
   subroutine state_setexport(exportState, rc)
 
     ! input/output variables
@@ -478,10 +418,28 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    integer :: nf, nind
+    integer           :: n, nf, nind
+    real(r8), pointer :: lat(:)
+    real(r8), pointer :: lon(:)
+    integer           :: spatialDim
+    integer           :: numOwnedElements
+    real(R8), pointer :: ownedElemCoords(:)
     !--------------------------------------------------
 
     rc = ESMF_SUCCESS
+
+    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(ownedElemCoords(spatialDim*numOwnedElements))
+    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    allocate(lon(numownedElements))
+    allocate(lat(numownedElements))
+    do n = 1,numownedElements
+       lon(n) = ownedElemCoords(2*n-1)
+       lat(n) = ownedElemCoords(2*n)
+    end do
 
     ! Start from index 2 in order to Skip the scalar field here  
     do nf = 2,fldsFrAtm_num
@@ -497,10 +455,12 @@ contains
        end if
     end do
 
+    deallocate(lon)
+    deallocate(lat)
+
   end subroutine state_setexport
 
   !===============================================================================
-
   subroutine field_setexport(exportState, fldname, lon, lat, nf, ungridded_index, rc)
 
     use shr_const_mod , only : pi=>shr_const_pi
@@ -553,27 +513,18 @@ contains
   end subroutine field_setexport
 
   !===============================================================================
-
   subroutine ModelFinalize(gcomp, rc)
-
     type(ESMF_GridComp)  :: gcomp
     integer, intent(out) :: rc
-
-    ! local variables
-    character(len=*),parameter  :: subname=trim(modName)//':(ModelFinalize) '
     !-------------------------------------------------------------------------------
 
-    !--------------------------------
-    ! Finalize routine
-    !--------------------------------
-
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
-    call dead_final_nuopc('atm', logunit)
-
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-
+    if (mastertask) then
+       write(logunit,*)
+       write(logunit,*) 'xatm: end of main integration loop'
+       write(logunit,*)
+    end if
   end subroutine ModelFinalize
 
 end module atm_comp_nuopc
