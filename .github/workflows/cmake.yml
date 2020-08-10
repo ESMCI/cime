@@ -47,7 +47,7 @@ jobs:
         set -x
         mkdir build
         cd build
-        cmake -Wno-dev -DNetCDF_C_LIBRARY=/usr/lib/x86_64-linux-gnu/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/usr/include -DCMAKE_PREFIX_PATH='/usr;/home/runner/pnetcdf' -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
+        cmake -Wno-dev -DNetCDF_C_LIBRARY=/usr/lib/x86_64-linux-gnu/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/usr/include -DCMAKE_PREFIX_PATH='/home/runner/pnetcdf' -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off ..
         make VERBOSE=1
         make tests VERBOSE=1
         ctest -VV
