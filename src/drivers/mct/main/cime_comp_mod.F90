@@ -444,6 +444,7 @@ module cime_comp_mod
 
   logical  :: areafact_samegrid      ! areafact samegrid flag
   logical  :: single_column          ! scm mode logical
+  logical  :: iop_mode               ! iop mode logical
   real(r8) :: scmlon                 ! single column lon
   real(r8) :: scmlat                 ! single column lat
   logical  :: aqua_planet            ! aqua planet mode
@@ -1059,6 +1060,7 @@ contains
          esp_present=esp_present                   , &
          iac_present=iac_present                   , &
          single_column=single_column               , &
+         iop_mode=iop_mode                         , &
          aqua_planet=aqua_planet                   , &
          cpl_seq_option=cpl_seq_option             , &
          drv_threading=drv_threading               , &
@@ -1274,6 +1276,7 @@ contains
        call seq_comm_getinfo(OCNID(ens1), mpicom=mpicom_OCNID)
 
        call shr_scam_checkSurface(scmlon, scmlat, &
+            iop_mode,                             &
             OCNID(ens1), mpicom_OCNID,            &
             lnd_present=lnd_present,              &
             ocn_present=ocn_present,              &
@@ -1594,6 +1597,7 @@ contains
 
     if (atm_present) then
        if (lnd_prognostic) atm_c2_lnd = .true.
+       if (lnd_present   ) atm_c2_lnd = .true. ! needed for aream initialization
        if (rof_prognostic .and. rof_heat) atm_c2_rof = .true.
        if (ocn_prognostic) atm_c2_ocn = .true.
        if (ocn_present   ) atm_c2_ocn = .true. ! needed for aoflux calc if aoflux=ocn

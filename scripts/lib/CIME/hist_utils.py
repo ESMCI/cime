@@ -346,6 +346,10 @@ def cprnc(model, file1, file2, case, rundir, multiinst_driver_compare=False, out
     if outfile_suffix is None:
         cpr_stat, out, _ = run_cmd("{} -m {} {}".format(cprnc_exe, file1, file2), combine_output=True)
     else:
+        # Remove existing output file if it exists
+        if os.path.exists(output_filename):
+            os.remove(output_filename)
+
         cpr_stat = run_cmd("{} -m {} {}".format(cprnc_exe, file1, file2), combine_output=True, arg_stdout=output_filename)[0]
         with open(output_filename, "r") as fd:
             out = fd.read()
@@ -360,9 +364,7 @@ def cprnc(model, file1, file2, case, rundir, multiinst_driver_compare=False, out
             # have no differences.
             files_match = " 0 had non-zero differences" in out
         else:
-            if "files seem to be IDENTICAL" in out:
-                files_match = True
-            elif "the two files seem to be DIFFERENT" in out:
+            if "the two files seem to be DIFFERENT" in out:
                 files_match = False
             elif "the two files DIFFER only in their field lists" in out:
                 if ignore_fieldlist_diffs:
@@ -370,11 +372,14 @@ def cprnc(model, file1, file2, case, rundir, multiinst_driver_compare=False, out
                 else:
                     files_match = False
                     comment = CPRNC_FIELDLISTS_DIFFER
+            elif "files seem to be IDENTICAL" in out:
+                files_match = True
             else:
                 expect(False, "Did not find an expected summary string in cprnc output:\n{}".format(out))
     else:
         # If there is an error in cprnc, we do the safe thing of saying the comparison failed
         files_match = False
+
     return (files_match, output_filename, comment)
 
 def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
@@ -495,7 +500,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
     if get_model() == "e3sm":
         bless_log = os.path.join(basegen_dir, BLESS_LOG_NAME)
         with open(bless_log, "a") as fd:
-            fd.write("sha:{} date:{}\n".format(get_current_commit(repo=case.get_value("CIMEROOT")),
+            fd.write("sha:{} date:{}\n".format(get_current_commit(repo=case.get_value("SRCROOT")),
                                                get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")))
 
     return True, comments
