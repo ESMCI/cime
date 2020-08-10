@@ -1,4 +1,4 @@
-name: autotools
+name: autotools_ubuntu_latest
 
 on:
   push:
