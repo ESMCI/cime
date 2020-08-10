@@ -426,5 +426,3 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/src/clib/pio_meta.h @ONLY)
 
-# FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h
-#   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/clib/)
