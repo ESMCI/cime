@@ -16,6 +16,7 @@ jobs:
       FC: mpifort
       CPPFLAGS: "-I/usr/include -I/usr/local/include -I/home/runner/pnetcdf/include"
       LDFLAGS: "-L/home/runner/pnetcdf/lib"
+      LD_LIBRARY_PATH: "/home/runner/pnetcdf/lib"
 
     steps:
     - uses: actions/checkout@v2
