@@ -14,10 +14,8 @@ jobs:
     env:
       CC: mpicc
       FC: mpifort
-      CPPFLAGS: "-I/usr/include -I/usr/local/include"
-#      CFLAGS: "-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-#      FFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
-#      FCFLAGS: "-fsanitize=address -fno-omit-frame-pointer -Werror"
+      CPPFLAGS: "-I/usr/include -I/usr/local/include -I/home/runner/pnetcdf/include"
+      LDFLAGS: "-L/home/runner/pnetcdf/lib"
 
     steps:
     - uses: actions/checkout@v2
@@ -31,7 +29,7 @@ jobs:
         tar -xzvf pnetcdf-1.11.0.tar.gz
         ls -l
         pushd pnetcdf-1.11.0
-        ./configure --prefix=/usr --enable-shared --disable-cxx
+        ./configure --prefix=/home/runner/pnetcdf --enable-shared --disable-cxx
         make
         sudo make install
         popd
