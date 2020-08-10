@@ -134,7 +134,12 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         cime_model = get_model()
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
 
-        if cime_model == 'ufs' and "cpl" not in complist:
+        cpl_in_complist = False
+        for l in complist:
+            if "cpl" in l:
+                cpl_in_complist = True
+
+        if cime_model == 'ufs' and not cpl_in_complist:
             config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
         else:
             config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
