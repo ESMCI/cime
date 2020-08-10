@@ -33,7 +33,6 @@
 #define USE_VARD @USE_VARD@
 
 #cmakedefine HAVE_PAR_FILTERS
-
 #cmakedefine NETCDF_INTEGRATION
 
 #endif /* _PIO_CONFIG_ */
