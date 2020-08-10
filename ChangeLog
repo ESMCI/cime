@@ -1,3 +1,232 @@
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 7-24-2020
+Tag: cime5.8.29
+Answer Changes: MOM6
+Tests: e3sm_land_developer, scripts_regression_tests, aux_cdeps
+Dependencies:
+
+Brief Summary:
+    - Minor fix to 'wget' mode of downloading CESM input data.
+    - stampede2 and cori machine updates.
+    - Modifications in MCT to support MOSART stratification.
+    - Add default ATM_NCPL=72 for ne45 (E3SM).
+    - Remove E3SM CIME subtree managent tools and libraries.
+    - Emergency hotfix for e3sm.
+    - CIME changes to support SCREAM.
+    - Update TL319 -> tx0.1v3 ATM2OCN map.
+    - Fix build clean for e3sm.
+    - Make hist_utils a bit more robust to existing cprnc.out files.
+    - Pet test system tests common fix.
+    - Branch for acme split 2020-07-16 merge.
+    - Gptl threaded.
+    - Reapply PR #3591
+    - Addition of new aux_cdeps tests to CDEPS.
+    - Make cprnc rpath system more robust.
+    - buildlib.cprnc make sure to call cprnc through wrapper.
+    - Branch for acme split 2020-07-07 merge.
+    - Refactor ensemble.py and single_run.py for python3.
+    - Dict has_key is removed in python3.
+    - Update TFREEZE_SALTWATER_OPTION value for MOM6.
+    - Set PIO_REARR_COMM_TYPE: coll for mpi-serial.
+   
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+8cda0e75b Merge pull request #3633 from ESMCI/bdobbins-wget-inputdata-bugfix
+8ac220cfe Merge pull request #3634 from ESMCI/fischer/stampede2_cori_updates
+9a4936785 Merge pull request #3627 from ESMCI/bishtgautam/mosart/stratification
+7b238f284 Merge pull request #3628 from ESMCI/whannah/add_ne45_support
+8e4329c1f Merge pull request #3632 from ESMCI/jgfouca/remove_e3sm_subtree_mgmt_code
+a82674b68 Emergency hotfix for e3sm
+e1ae39f25 Merge pull request #3626 from ESMCI/jgfouca/scream_cime
+cf6c5c3df Merge pull request #3624 from mnlevy1981/update_highres_maps
+df201d467 Merge pull request #3622 from ESMCI/jgfouca/fix_clean
+0d2b31adf Merge pull request #3625 from ESMCI/jgfouca/fix_false_pass
+893441098 Merge pull request #3620 from ESMCI/PET_test_system_tests_common_fix
+283c01819 Merge pull request #3619 from ESMCI/jgfouca/branch-for-acme-split-2020-07-16
+543c3e5cc Merge pull request #3600 from jedwards4b/gptl_threaded
+f2a94676b Merge pull request #3618 from jedwards4b/force_smp_fix_again
+1b973968e Merge pull request #3614 from ESMCI/mvertens/inline_updates
+30470cec1 Merge pull request #3616 from ESMCI/jgfouca/further_cprnc_build_improvements
+8340214b2 Merge pull request #3611 from ESMCI/jgfouca/fix_cprnc_build
+ca7d0bb34 Merge pull request #3610 from ESMCI/jgfouca/branch-for-acme-split-2020-07-07
+3a5df36cf Merge pull request #3609 from johnsonb-ucar/master
+23c3f42d9 Merge pull request #3605 from billsacks/no_has_key
+97cd72c38 Merge pull request #3603 from alperaltuntas/change_tfreeze_saltwater_option
+366ec5c65 Merge pull request #3597 from jedwards4b/redo_mpi_serial_pio_comm_type
+
+
+Modified files: git diff --name-status [previous_tag]
+M	config/cesm/config_files.xml
+M	config/cesm/config_grids.xml
+M	config/cesm/config_grids_mct.xml
+M	config/cesm/config_inputdata.xml
+M	config/cesm/machines/config_machines.xml
+M	config/cesm/machines/config_pio.xml
+D	config/e3sm/allactive/config_compsets.xml
+D	config/e3sm/allactive/config_pesall.xml
+D	config/e3sm/allactive/testlist_allactive.xml
+D	config/e3sm/config_archive.xml
+M	config/e3sm/config_files.xml
+D	config/e3sm/config_grids.xml
+D	config/e3sm/config_inputdata.xml
+D	config/e3sm/machines/Depends.cray
+D	config/e3sm/machines/Depends.cray.cmake
+D	config/e3sm/machines/Depends.gnu
+D	config/e3sm/machines/Depends.gnu.cmake
+D	config/e3sm/machines/Depends.ibm
+D	config/e3sm/machines/Depends.ibm.cmake
+D	config/e3sm/machines/Depends.intel
+D	config/e3sm/machines/Depends.intel.cmake
+D	config/e3sm/machines/Depends.nag
+D	config/e3sm/machines/Depends.nag.cmake
+D	config/e3sm/machines/Depends.summit.cmake
+D	config/e3sm/machines/Depends.summit.pgiacc
+D	config/e3sm/machines/Depends.summit.pgiacc.cmake
+D	config/e3sm/machines/Depends.summit.pgigpu
+D	config/e3sm/machines/Depends.summit.pgigpu.cmake
+D	config/e3sm/machines/Depends.summitdev.pgiacc
+D	config/e3sm/machines/Depends.summitdev.pgiacc.cmake
+D	config/e3sm/machines/README
+D	config/e3sm/machines/config_batch.xml
+D	config/e3sm/machines/config_compilers.xml
+D	config/e3sm/machines/config_machines.xml
+D	config/e3sm/machines/config_pio.xml
+D	config/e3sm/machines/config_workflow.xml
+D	config/e3sm/machines/syslog.anvil
+D	config/e3sm/machines/syslog.compy
+D	config/e3sm/machines/syslog.cori-haswell
+D	config/e3sm/machines/syslog.cori-knl
+D	config/e3sm/machines/syslog.noop
+D	config/e3sm/machines/syslog.summit
+D	config/e3sm/machines/syslog.theta
+D	config/e3sm/machines/syslog.titan
+D	config/e3sm/machines/template.case.run
+D	config/e3sm/machines/template.case.run.sh
+D	config/e3sm/machines/template.case.test
+D	config/e3sm/machines/template.ocn_diagnostics
+D	config/e3sm/machines/template.st_archive
+D	config/e3sm/machines/template.timeseries
+D	config/e3sm/machines/userdefined_laptop_template/README.md
+D	config/e3sm/machines/userdefined_laptop_template/config_compilers.xml
+D	config/e3sm/machines/userdefined_laptop_template/config_machines.xml
+D	config/e3sm/machines/userdefined_laptop_template/config_pes.xml
+D	config/e3sm/testmods_dirs/allactive/force_netcdf_pio/shell_commands
+D	config/e3sm/testmods_dirs/allactive/mach/pet/shell_commands
+D	config/e3sm/testmods_dirs/allactive/mach_mods/shell_commands
+D	config/e3sm/testmods_dirs/allactive/v1bgc/shell_commands
+D	config/e3sm/testmods_dirs/allactive/v1bgc/user_nl_cam
+D	config/e3sm/testmods_dirs/allactive/v1bgc/user_nl_clm
+D	config/e3sm/testmods_dirs/allactive/v1bgc/user_nl_mpaso
+D	config/e3sm/testmods_dirs/allactive/v1bgc_1850/shell_commands
+D	config/e3sm/testmods_dirs/allactive/v1bgc_1850/user_nl_cam
+D	config/e3sm/testmods_dirs/allactive/v1bgc_1850/user_nl_clm
+D	config/e3sm/testmods_dirs/allactive/v1bgc_1850/user_nl_mpaso
+D	config/e3sm/testmods_dirs/allactive/v1bgceca/shell_commands
+D	config/e3sm/testmods_dirs/allactive/v1bgceca/user_nl_cam
+D	config/e3sm/testmods_dirs/allactive/v1bgceca/user_nl_clm
+D	config/e3sm/testmods_dirs/allactive/v1bgceca/user_nl_mpaso
+D	config/e3sm/testmods_dirs/allactive/v1bgceca_1850/shell_commands
+D	config/e3sm/testmods_dirs/allactive/v1bgceca_1850/user_nl_cam
+D	config/e3sm/testmods_dirs/allactive/v1bgceca_1850/user_nl_clm
+D	config/e3sm/testmods_dirs/allactive/v1bgceca_1850/user_nl_mpaso
+D	config/e3sm/testmods_dirs/allactive/v1cmip6/README
+D	config/e3sm/testmods_dirs/allactive/v1cmip6/shell_commands
+D	config/e3sm/testmods_dirs/allactive/v1cmip6/user_nl_cam
+D	config/e3sm/testmods_dirs/allactive/v1cmip6/user_nl_clm
+D	config/e3sm/testmods_dirs/bench/gmpas_noio/shell_commands
+D	config/e3sm/testmods_dirs/bench/gmpas_noio/user_nl_mpaso
+D	config/e3sm/testmods_dirs/bench/gmpas_noio/user_nl_mpassi
+D	config/e3sm/testmods_dirs/bench/wcycl/hires/shell_commands
+D	config/e3sm/testmods_dirs/bench/wcycl/hires/user_nl_cam
+D	config/e3sm/testmods_dirs/bench/wcycl/hires/user_nl_mpaso
+D	config/e3sm/testmods_dirs/bench/wcycl/hires/user_nl_mpassi
+D	config/e3sm/testmods_dirs/bench/wcycl/lores/shell_commands
+D	config/e3sm/testmods_dirs/bench/wcycl/lores/user_nl_cam
+D	config/e3sm/testmods_dirs/bench/wcycl/lores/user_nl_clm
+D	config/e3sm/tests.py
+D	config/e3sm/usermods_dirs/README
+M	config/xml_schemas/config_compilers_v2.xsd
+M	config/xml_schemas/testlist.xsd
+M	scripts/Tools/Makefile
+D	scripts/Tools/e3sm_cime_merge
+D	scripts/Tools/e3sm_cime_split
+M	scripts/Tools/jenkins_generic_job
+M	scripts/lib/CIME/SystemTests/system_tests_common.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/hist_utils.py
+M	scripts/lib/CIME/provenance.py
+M	scripts/lib/CIME/simple_compare.py
+M	scripts/lib/CIME/test_scheduler.py
+D	scripts/lib/e3sm_cime_mgmt.py
+M	scripts/lib/get_tests.py
+M	scripts/tests/scripts_regression_tests.py
+M	src/components/data_comps_mct/datm/cime_config/config_component.xml
+M	src/components/data_comps_mct/datm/cime_config/namelist_definition_datm.xml
+M	src/components/data_comps_mct/dlnd/cime_config/config_component.xml
+M	src/components/data_comps_mct/dlnd/cime_config/namelist_definition_dlnd.xml
+M	src/components/data_comps_mct/dlnd/src/dlnd_comp_mod.F90
+M	src/components/data_comps_mct/docn/cime_config/config_component.xml
+M	src/components/data_comps_mct/docn/src/docn_comp_mod.F90
+M	src/components/data_comps_mct/docn/src/ocn_comp_mct.F90
+M	src/drivers/mct/cime_config/config_component.xml
+M	src/drivers/mct/cime_config/config_component_cesm.xml
+M	src/drivers/mct/cime_config/config_component_e3sm.xml
+M	src/drivers/mct/cime_config/namelist_definition_drv.xml
+M	src/drivers/mct/main/cime_comp_mod.F90
+M	src/drivers/mct/main/prep_rof_mod.F90
+M	src/drivers/mct/shr/seq_flds_mod.F90
+M	src/drivers/mct/shr/seq_infodata_mod.F90
+M	src/externals/mct/configure
+M	src/externals/mct/mpi-serial/configure
+M	src/share/streams/shr_dmodel_mod.F90
+M	src/share/streams/shr_strdata_mod.F90
+M	src/share/timing/Makefile
+M	src/share/util/shr_pio_mod.F90
+M	src/share/util/shr_scam_mod.F90
+M	tools/cprnc/CMakeLists.txt
+M	tools/statistical_ensemble_test/ensemble.py
+M	tools/statistical_ensemble_test/single_run.py
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 6-30-2020
+Tag: cime5.8.28
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Update some domain and mapping files.
+    - Improve error message for create newcase test option.
+    - Clean up screen output & logging in check_input_data.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+a2de0598c Merge pull request #3602 from ESMCI/fischer/mapping_file_update
+01c50ea71 Merge pull request #3599 from ESMCI/wpcoomb/improve_error_message_for_create_newcase_test_option
+87ab750cd Merge pull request #3589 from billsacks/check_input_data_logging
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+M       config/cesm/config_grids_common.xml
+M       config/cesm/config_grids_mct.xml
+M       scripts/create_newcase
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/lib/CIME/test_scheduler.py
+
+
+======================================================================
+
 ======================================================================
 
 Originator: Chris Fischer 

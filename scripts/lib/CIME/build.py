@@ -19,9 +19,8 @@ _CMD_ARGS_FOR_BUILD = \
 
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
-    make_args += " compile_threaded={} ".format(stringify_bool(case.get_build_threaded()))
-    if not shared_lib:
-        make_args += " USE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
+    make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
+    expect(not (uses_kokkos(case) and not shared_lib), "Kokkos is not supported for classic Makefile build system")
     for var in _CMD_ARGS_FOR_BUILD:
         make_args += xml_to_make_variable(case, var)
 
@@ -46,6 +45,9 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     for var in _CMD_ARGS_FOR_BUILD:
         cmake_args += xml_to_make_variable(case, var, cmake=True)
 
+    if atm_model == "scream":
+        cmake_args += xml_to_make_variable(case, "HOMME_TARGET", cmake=True)
+
     # Disable compiler checks
     cmake_args += " -DCMAKE_C_COMPILER_WORKS=1 -DCMAKE_CXX_COMPILER_WORKS=1 -DCMAKE_Fortran_COMPILER_WORKS=1"
 
@@ -63,6 +65,8 @@ def xml_to_make_variable(case, varname, cmake=False):
 def uses_kokkos(case):
 ###############################################################################
     cam_target = case.get_value("CAM_TARGET")
+    # atm_comp   = case.get_value("COMP_ATM") # scream does not use the shared kokkoslib for now
+
     return get_model() == "e3sm" and cam_target in ("preqx_kokkos", "theta-l")
 
 ###############################################################################
@@ -337,9 +341,6 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
 
-    if comp_interface == "nuopc":
-        libs.insert(0, "fox")
-
     if uses_kokkos(case):
         libs.append("kokkos")
 
@@ -484,46 +485,47 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 def _clean_impl(case, cleanlist, clean_all, clean_depends):
 ###############################################################################
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
+    case.load_env()
     if clean_all:
         # If cleanlist is empty just remove the bld directory
         expect(exeroot is not None,"No EXEROOT defined in case")
         if os.path.isdir(exeroot):
             logging.info("cleaning directory {}".format(exeroot))
             shutil.rmtree(exeroot)
+
         # if clean_all is True also remove the sharedlibpath
         sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
         expect(sharedlibroot is not None,"No SHAREDLIBROOT defined in case")
         if sharedlibroot != exeroot and os.path.isdir(sharedlibroot):
             logging.warning("cleaning directory {}".format(sharedlibroot))
             shutil.rmtree(sharedlibroot)
+
     else:
         expect((cleanlist is not None and len(cleanlist) > 0) or
                (clean_depends is not None and len(clean_depends)),"Empty cleanlist not expected")
         gmake = case.get_value("GMAKE")
 
-        if os.path.exists(os.path.join(exeroot, "cmake-bld")):
-            # Cmake build system
-            for thing_to_clean in [cleanlist, clean_depends]:
-                if thing_to_clean is not None:
-                    for item in thing_to_clean:
-                        logging.info("Cleaning {}".format(item))
-                        cmd = "{} clean".format(gmake)
-                        run_cmd_no_fail(cmd, from_dir=os.path.join(exeroot, "cmake-bld", "cmake", item))
-        else:
-            # legacy build system
-            casetools = case.get_value("CASETOOLS")
-            cmd = gmake + " -f " + os.path.join(casetools, "Makefile")
-            cmd += " {}".format(get_standard_makefile_args(case))
-            if cleanlist is not None:
-                for item in cleanlist:
-                    tcmd = cmd + " clean" + item
-                    logger.info("calling {} ".format(tcmd))
-                    run_cmd_no_fail(tcmd)
+        cleanlist = [] if cleanlist is None else cleanlist
+        clean_depends = [] if clean_depends is None else clean_depends
+        things_to_clean = cleanlist + clean_depends
+
+        cmake_comp_root = os.path.join(exeroot, "cmake-bld", "cmake")
+        casetools = case.get_value("CASETOOLS")
+        classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"),
+                                           get_standard_makefile_args(case, shared_lib=True))
+
+        for clean_item in things_to_clean:
+            logging.info("Cleaning {}".format(clean_item))
+            cmake_path = os.path.join(cmake_comp_root, clean_item)
+            if os.path.exists(cmake_path):
+                # Item was created by cmake build system
+                clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
             else:
-                for item in clean_depends:
-                    tcmd = cmd + " clean_depends" + item
-                    logger.info("calling {} ".format(tcmd))
-                    run_cmd_no_fail(tcmd)
+                # Item was created by classic build system
+                clean_cmd = "{} {}{}".format(classic_cmd, "clean" if clean_item in cleanlist else "clean_depends", clean_item)
+
+            logger.info("calling {}".format(clean_cmd))
+            run_cmd_no_fail(clean_cmd)
 
     # unlink Locked files directory
     unlock_file("env_build.xml")

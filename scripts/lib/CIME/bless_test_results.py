@@ -117,7 +117,7 @@ def bless_test_results(baseline_name, baseline_root, test_root, compiler, test_i
                     hist_bless = False
                 elif (run_result != TEST_PASS_STATUS):
                     broken_blesses.append((test_name, "test did not pass"))
-                    logger.warning("Test '{}' did not pass, not safe to bless".format(test_name))
+                    logger.warning("Test '{}' did not pass, not safe to bless, test status = {}".format(test_name, ts.phase_statuses_dump()))
                     hist_bless = False
                 elif no_skip_pass:
                     hist_bless = True
