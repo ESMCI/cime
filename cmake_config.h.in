@@ -32,4 +32,6 @@
 
 #define USE_VARD @USE_VARD@
 
+#define HAVE_PAR_FILTERS @HAVE_PAR_FILTERS@
+
 #endif /* _PIO_CONFIG_ */
