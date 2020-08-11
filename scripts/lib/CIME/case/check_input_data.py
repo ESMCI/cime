@@ -339,7 +339,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # User pointing to a file outside of input_data_root, we cannot determine
                         # rel_path, and so cannot download the file. If it already exists, we can
                         # proceed
-                        if not os.path.exists(full_path):
+                        if not os.path.isfile(full_path):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
                             if download:
                                 logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
@@ -355,7 +355,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # value and ignore it (perhaps with a warning)
                         isdirectory=rel_path.endswith(os.sep)
 
-                        if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
+                        if ("/" in rel_path and not os.path.isfile(full_path) and not full_path.startswith('unknown')):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
                             no_files_missing = False
                             if (download):
