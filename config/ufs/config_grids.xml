@@ -43,6 +43,10 @@
       <grid name="atm">C768</grid>
     </model_grid>
 
+    <model_grid alias="C768r" >
+      <grid name="atm">C768r</grid>
+    </model_grid>
+
     <model_grid alias="T62_Atlantic8">
       <grid name="atm">T62</grid>
       <grid name="lnd">T62</grid>
@@ -58,6 +62,12 @@
     <model_grid alias="TL639_Atlantic8">
       <grid name="atm">TL639</grid>
       <grid name="lnd">TL639</grid>
+      <grid name="ocnice">Atlantic8</grid>
+    </model_grid>
+
+    <model_grid alias="C768r_Atlantic8">
+      <grid name="atm">C768r</grid>
+      <grid name="lnd">C768r</grid>
       <grid name="ocnice">Atlantic8</grid>
     </model_grid>
   </grids>
@@ -136,6 +146,14 @@
       <desc>Atlantic8 is a Atlantic grid for Dorian case at 7-8 km HYCOM grid:</desc>
       <support>For regional HYCOM experiments</support>
     </domain>    
+
+    <!-- domains for regional atmosphere (UFSATM) -->
+    <domain name="C768r">
+      <nx>2561</nx> <ny>2161</ny>
+      <desc>C768r is a regional grid</desc>
+      <support>Standalone Regional (SAR) domian for HAFS application</support>
+    </domain>
+
   </domains>
 
   <!-- ======================================================== -->

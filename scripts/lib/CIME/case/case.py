@@ -460,7 +460,8 @@ class Case(object):
         self.set_lookup_value("COMP_INTERFACE", driver)
         if self._cime_model == 'ufs':
             config = {}
-            if 'ufsatm' in compset_name:
+            # this is not sustainable, need to come up with something better
+            if 'ufsatm' in compset_name or 'HAFS' in compset_name:
                 config['component']='nems'
             else:
                 config['component']='cpl'
