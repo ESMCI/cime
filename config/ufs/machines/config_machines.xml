@@ -143,11 +143,11 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">NCEPlibs/1.0.0</command>
       </modules>
       <modules compiler="intel" mpilib="impi" DEBUG="FALSE" comp_interface="nuopc">
-      <command name="use">/glade/work/turuncu/PROGS/modulefiles/esmfpkgs/intel/19.0.5</command>
+      <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5</command>
       <command name="load">esmf-8.1.0b24-ncdfio-intelmpi-O</command>
       </modules>
       <modules compiler="intel" mpilib="impi" DEBUG="TRUE" comp_interface="nuopc">
-      <command name="use">/glade/work/turuncu/PROGS/modulefiles/esmfpkgs/intel/19.0.5</command>
+      <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5</command>
       <command name="load">esmf-8.1.0b24-ncdfio-intelmpi-g</command>
       </modules>
       <modules compiler="gnu" mpilib="mpi-serial">
