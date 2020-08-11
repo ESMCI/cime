@@ -460,14 +460,8 @@ contains
        end if
 
        write(6,810 ) s1, trim(max_str(1)),trim(min_str(1))
-#if ({ITYPE} == TYPEINT)
-       write(6, 820) s2, max_val(1),min_val(1)
-       write(6, 821) avgval(1)
-
-#else
        write(6, 825) s2, max_val(1),min_val(1)
        write(6, 826) avgval(1)
-#endif
     end if
 
     deallocate(buf, mask)
@@ -493,8 +487,6 @@ contains
              12x,      i8,1x,e23.15,a,e23.15)
 815 format(10x,'avg abs field values:  ',1pe23.15,/, &
              10x,'                       ',  e23.15)
-820 format(12x,i8,1x,2i12)
-821 format(12x,'avg abs field values: ',i12,/)
 825 format(12x,i8,1x,1p2e23.15)
 826 format(12x,'avg abs field values: ',1pe23.15,/)
 902   format(12x,      i8,1x,i8,a,i8)
