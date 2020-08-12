@@ -69,6 +69,7 @@ _stream_nuopc_file_template = """
    <yearAlign>{yearAlign}</yearAlign>
    <stream_vectors>{vectors}</stream_vectors>
    <stream_mesh_file>{data_meshfile}</stream_mesh_file>
+   <stream_lev_dimname>{data_lev_dimname}</stream_lev_dimname>
    <stream_data_files>
       {data_filenames}
    </stream_data_files>
@@ -580,6 +581,7 @@ class NamelistGenerator(object):
                     continue
                 config["stream"] = stream
                 stream_meshfile = self.get_default("strm_mesh", config)
+                stream_lev_dimname = self.get_default("strm_lev_dimname", config)
                 stream_datafiles = self.get_default("strm_datfil", config)
                 stream_variables = self._sub_fields(self.get_default("strm_datvar", config))
 
@@ -609,6 +611,7 @@ class NamelistGenerator(object):
                 stream_file_text = _stream_nuopc_file_template.format(
                     streamname=stream,
                     data_meshfile=stream_meshfile,
+                    data_lev_dimname=stream_lev_dimname,
                     data_filenames=stream_datafiles_delimited,
                     data_varnames=stream_variables,
                     offset=stream_offset,

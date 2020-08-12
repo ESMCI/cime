@@ -352,10 +352,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     # Build shared code of CDEPS nuopc data models
     cdeps_build_script = None
     if comp_interface == "nuopc":
-        compset = case.get_value("COMPSET")
-        if "_D" in compset:
-            libs.append("CDEPS")
-            cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
+        libs.append("CDEPS")
+        cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
