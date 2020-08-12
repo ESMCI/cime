@@ -134,15 +134,22 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         cime_model = get_model()
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
 
-        config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
-        if not os.path.isdir(config_dir):
-            config_dir = os.path.join(cimeroot,"..","src","model","NEMS","cime","cime_config")
+        cpl_in_complist = False
+        for l in complist:
+            if "cpl" in l:
+                cpl_in_complist = True
+
+        if cime_model == 'ufs' and not cpl_in_complist:
+            config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
+        else:
+            config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
+
         expect(os.path.exists(config_dir), "Config directory not found {}".format(config_dir))
         if "cpl" in complist:
             bldroot = os.path.join(exeroot, "cpl", "obj")
             if not os.path.isdir(bldroot):
                 os.makedirs(bldroot)
-        logger.info("Building {} with output to {} ".format(cime_model, file_build))
+        logger.info("Building {} from {}/buildexe with output to {} ".format(cime_model, config_dir, file_build))
 
         with open(file_build, "w") as fd:
             stat = run_cmd("{}/buildexe {} {} {} "
@@ -345,10 +352,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     # Build shared code of CDEPS nuopc data models
     cdeps_build_script = None
     if comp_interface == "nuopc":
-        compset = case.get_value("COMPSET")
-        if "_D" in compset:
-            libs.append("CDEPS")
-            cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
+        libs.append("CDEPS")
+        cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc

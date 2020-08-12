@@ -86,6 +86,13 @@ The files here are:
   - avg decimal digits: 4.0
   - worst decimal digits: 3.0
 
+--- FILES COMPARED AGAINST control_int.nc ---
+
+Note: This file is the same as control.nc, but stores the main variables
+as integers rather than reals.
+
+- int_missing.nc: A variable is missing. The point of this test is to
+  cover code that resulted in https://github.com/ESMCI/cime/issues/3661.
 
 --- FILES COMPARED AGAINST control_multipleTimes_someTimeless.nc ---
 
