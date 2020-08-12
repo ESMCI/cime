@@ -69,9 +69,6 @@ endif
 ifeq ($(strip $(USE_ALBANY)), TRUE)
    USE_CXX = TRUE
 endif
-ifeq ($(strip $(USE_KOKKOS)), TRUE)
-  USE_CXX = TRUE
-endif
 
 SLIBS ?= $(USER_SLIBS)
 
@@ -124,7 +121,8 @@ endif
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
    ifneq ($(realpath $(INSTALL_SHAREDPATH)/lib/libstreams.a),)
-     FoX_LIBS := $(shell $(INSTALL_SHAREDPATH)/bin/FoX-config --libs)
+     # FoX libraries are provided and built by CDEPS
+     FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
      ULIBS += -ldshr -lstreams
      SLIBS += $(FoX_LIBS)
    endif
@@ -133,7 +131,7 @@ else
 endif
 
 ifeq ($(PIO_VERSION),2)
-  ifeq ($(CIME_MODEL),e3sm)
+  ifneq ($(COMPILER),nag)
     # Needed by SCORPIO not default PIO, does not work with NAG compiler
     USE_CXX := TRUE
   endif
@@ -268,13 +266,6 @@ ifeq ($(strip $(USE_ALBANY)), TRUE)
 
   # get the "ALBANY_LINK_LIBS" list as an env var
   include $(ALBANY_PATH)/export_albany.in
-endif
-
-ifeq ($(strip $(USE_KOKKOS)), TRUE)
-  include $(INSTALL_SHAREDPATH)/Makefile.kokkos
-  SLIBS += $(KOKKOS_LIBS)
-  CXXFLAGS += $(KOKKOS_CXXFLAGS)
-  CXX_LDFLAGS += $(KOKKOS_LDFLAGS)
 endif
 
 # Set MOAB info if it is being used
@@ -762,6 +753,14 @@ else ifeq ($(NETCDF_SEPARATE), TRUE)
   # installation of Fortran NetCDF for PIO
   CMAKE_OPTS += -D NetCDF_C_PATH:PATH=$(NETCDF_C_PATH) \
                 -D NetCDF_Fortran_PATH:PATH=$(NETCDF_FORTRAN_PATH)
+endif
+
+ifdef ZLIB_PATH
+        CMAKE_OPTS += -D LIBZ_PATH:STRING="$(ZLIB_PATH)"
+endif
+
+ifdef SZIP_PATH
+        CMAKE_OPTS += -D SZIP_PATH:STRING="$(SZIP_PATH)"
 endif
 
 ifdef HDF5_PATH

@@ -1142,6 +1142,15 @@
     <desc>grid mask - DO NOT EDIT (for experts only)</desc>
   </entry>
 
+  <entry id="IOP_MODE">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>Propogate a single point to the global grid  - DO NOT EDIT (for experts only)</desc>
+  </entry>
+
   <entry id="PTS_MODE">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
@@ -2430,7 +2439,7 @@
     <default_value>64</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
-    <desc>pio rearranger communication max pending requests (io2comp) : -1 implies no bound on max pending requests </desc>
+    <desc>pio rearranger communication max pending requests (io2comp) : 0 implies that CIME internally calculates the value (= 64), -1 implies no bound on max pending requests </desc>
   </entry>
 
   <!-- Handshaking is a very bad idea for large process counts and for -->

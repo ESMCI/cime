@@ -2,22 +2,35 @@
 ## Ed Hartnett 8/16/17
 
 # Initialize autoconf and automake.
-AC_INIT(pio, 2.5.0)
+AC_INIT(pio, 2.5.1-development)
 AC_CONFIG_SRCDIR(src/clib/pio_darray.c)
 AM_INIT_AUTOMAKE([foreign serial-tests])
 
-# The PIO version, again.
-AC_DEFINE([PIO_VERSION_MAJOR], [2], [PIO major version])
-AC_DEFINE([PIO_VERSION_MINOR], [5], [PIO minor version])
-AC_DEFINE([PIO_VERSION_PATCH], [0], [PIO patch version])
+# The PIO version, again. Use AC_SUBST for pio_meta.h and
+# AC_DEFINE_UNQUOTED for config.h.
+AC_SUBST([PIO_VERSION_MAJOR]) PIO_VERSION_MAJOR=2
+AC_SUBST([PIO_VERSION_MINOR]) PIO_VERSION_MINOR=5
+AC_SUBST([PIO_VERSION_PATCH]) PIO_VERSION_PATCH=1
+AC_DEFINE_UNQUOTED([PIO_VERSION_MAJOR], [$PIO_VERSION_MAJOR], [PIO major version])
+AC_DEFINE_UNQUOTED([PIO_VERSION_MINOR], [$PIO_VERSION_MINOR], [PIO minor version])
+AC_DEFINE_UNQUOTED([PIO_VERSION_PATCH], [$PIO_VERSION_PATCH], [PIO patch version])
 
 # Once more for the documentation.
 AC_SUBST([VERSION_MAJOR], [2])
 AC_SUBST([VERSION_MINOR], [5])
-AC_SUBST([VERSION_PATCH], [0])
+AC_SUBST([VERSION_PATCH], [1])
 
 # The m4 directory holds macros for autoconf.
 AC_CONFIG_MACRO_DIR([m4])
+
+# Configuration date. This follows convention of allowing
+# SOURCE_DATE_EPOCH to be used to specify a timestamp, to allow
+# byte-for-byte reproducable software builds.
+if test "x$SOURCE_DATE_EPOCH" != "x" ; then
+    AC_SUBST([CONFIG_DATE]) CONFIG_DATE="`date -u -d "${SOURCE_DATE_EPOCH}"`"
+else
+    AC_SUBST([CONFIG_DATE]) CONFIG_DATE="`date`"
+fi
 
 # Libtool initialisation.
 LD=ld # Required for MPE to work.
@@ -26,8 +39,51 @@ LT_INIT
 # Find and learn about the C compiler.
 AC_PROG_CC
 
+# Compiler with version information. This consists of the full path
+# name of the compiler and the reported version number.
+AC_SUBST([CC_VERSION])
+# Strip anything that looks like a flag off of $CC
+CC_NOFLAGS=`echo $CC | sed 's/ -.*//'`
+
+if `echo $CC_NOFLAGS | grep ^/ >/dev/null 2>&1`; then
+  CC_VERSION="$CC"
+else
+  CC_VERSION="$CC";
+  for x in `echo $PATH | sed -e 's/:/ /g'`; do
+    if test -x $x/$CC_NOFLAGS; then
+      CC_VERSION="$x/$CC"
+      break
+    fi
+  done
+fi
+
+if test -n "$cc_version_info"; then
+  CC_VERSION="$CC_VERSION ( $cc_version_info)"
+fi
+
 # Find and learn about the Fortran compiler.
 AC_PROG_FC
+
+# Compiler with version information. This consists of the full path
+# name of the compiler and the reported version number.
+AC_SUBST([FC_VERSION])
+# Strip anything that looks like a flag off of $FC
+FC_NOFLAGS=`echo $FC | sed 's/ -.*//'`
+
+if `echo $FC_NOFLAGS | grep ^/ >/dev/null 2>&1`; then
+  FC_VERSION="$FC"
+else
+  FC_VERSION="$FC";
+  for x in `echo $PATH | sed -e 's/:/ /g'`; do
+    if test -x $x/$FC_NOFLAGS; then
+      FC_VERSION="$x/$FC"
+      break
+    fi
+  done
+fi
+if test -n "$fc_version_info"; then
+  FC_VERSION="$FC_VERSION ( $fc_version_info)"
+fi
 
 # Always use malloc in autotools builds.
 AC_DEFINE([PIO_USE_MALLOC], [1], [use malloc for memory])
@@ -201,15 +257,45 @@ if test x$ac_cv_lib_pnetcdf_ncmpi_create = xyes; then
    AC_DEFINE([USE_PNETCDF_VARN_ON_READ], [1], [defined by CMake build])
 fi
 
-# Do we have a parallel build of netCDF-4?
+# Do we have netCDF-4?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_NC4
+# error
+#endif]
+])], [have_netcdf4=yes], [have_netcdf4=no])
+AC_MSG_CHECKING([whether netCDF provides netCDF/HDF5])
+AC_MSG_RESULT([${have_netcdf4}])
+
+# Do we have a parallel build of netCDF-4? (Really we should be
+# checking NC_HAS_PARALLEL4, but that was only recently introduced, so
+# we will go with NC_HAS_PARALLEL.)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
 [[#if !NC_HAS_PARALLEL
 # error
 #endif]
 ])], [have_netcdf_par=yes], [have_netcdf_par=no])
-
-AC_MSG_CHECKING([whether netCDF provides parallel IO])
+AC_MSG_CHECKING([whether netCDF provides parallel I/O for netCDF/HDF5])
 AC_MSG_RESULT([${have_netcdf_par}])
+
+# Do we have szip?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_SZIP_WRITE
+# error
+#endif]
+])], [have_szip_write=yes], [have_szip_write=no])
+AC_MSG_CHECKING([whether netCDF provides szip write capability])
+AC_MSG_RESULT([${have_szip_write}])
+
+# Do we have parallel filter support?
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include "netcdf_meta.h"],
+[[#if !NC_HAS_PAR_FILTERS
+# error
+#endif]
+])], [have_par_filters=yes], [have_par_filters=no])
+AC_MSG_CHECKING([whether netCDF provides parallel filter support])
+AC_MSG_RESULT([${have_par_filters}])
+
+# Set some build settings for when netcdf-4 is supported.
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
 fi
@@ -287,6 +373,51 @@ AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
+# Args:
+# 1. netcdf_meta.h variable
+# 2. conditional variable that is yes or no.
+# 3. default condition
+#
+# example: AX_SET_META([NC_HAS_NC2],[$nc_build_v2],[]) # Because it checks for no.
+#          AX_SET_META([NC_HAS_HDF4],[$enable_hdf4],[yes])
+AC_DEFUN([AX_SET_META],[
+  if [ test "x$2" = x$3 ]; then
+     AC_SUBST([$1]) $1=1
+  else
+     AC_SUBST([$1]) $1=0
+  fi
+])
+
+#####
+# Define values used in include/pio_meta.h
+#####
+AX_SET_META([PIO_HAS_SZIP_WRITE],[$have_szip_write],[yes])
+AX_SET_META([PIO_HAS_PNETCDF],[$enable_pnetcdf],[yes])
+AX_SET_META([PIO_HAS_PAR_FILTERS], [$have_par_filters],[yes])
+AX_SET_META([PIO_HAS_NETCDF4], [$have_netcdf4],[yes])
+AX_SET_META([PIO_HAS_NETCDF4_PAR], [$have_netcdf_par],[yes])
+
+# Create output variables from various shell variables, for use in
+# generating libpio.settings.
+AC_SUBST([enable_shared])
+AC_SUBST([enable_static])
+AC_SUBST([CFLAGS])
+AC_SUBST([CPPFLAGS])
+AC_SUBST([FFLAGS])
+AC_SUBST([FCFLAGS])
+AC_SUBST([LDFLAGS])
+AC_SUBST([FPPFLAGS]) # ignored by autotools
+AC_SUBST(HAS_PNETCDF,[$enable_pnetcdf])
+AC_SUBST(HAS_LOGGING, [$enable_logging])
+AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
+AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
+AC_SUBST([HAS_NETCDF4], [$have_netcdf4])
+AC_SUBST([HAS_NETCDF4_PAR], [$have_netcdf_par])
+
+# Create the build summary file. 
+AC_CONFIG_FILES([libpio.settings
+                 src/clib/pio_meta.h
+		 ])
 AC_CONFIG_LINKS([tests/unit/input.nl:tests/unit/input.nl])
 
 # Create the config.h file.
@@ -315,3 +446,8 @@ AC_OUTPUT(Makefile
           examples/f03/Makefile
           cmake/Makefile
           scripts/Makefile)
+
+# Show the build summary.
+cat libpio.settings
+
+

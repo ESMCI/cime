@@ -34,8 +34,14 @@ endif ()
 
 # Build the C library
 add_subdirectory (clib)
+set(CFLAGS ${CFLAGS}  PARENT_SCOPE)
+set(CPPFLAGS ${CPPFLAGS} PARENT_SCOPE)
+
 
 # Build the Fortran library
 if (PIO_ENABLE_FORTRAN)
   add_subdirectory (flib)
+  set(FFLAGS ${FFLAGS} PARENT_SCOPE)
+  set(FCFLAGS ${FCFLAGS} PARENT_SCOPE)
+  set(FPPFLAGS ${FPPFLAGS} PARENT_SCOPE)
 endif ()

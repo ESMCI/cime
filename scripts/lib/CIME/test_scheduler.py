@@ -147,7 +147,8 @@ class TestScheduler(object):
         self._machobj = Machines(machine=machine_name)
 
         if get_model() == "e3sm":
-            self._model_build_cost = int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
+            # Current build system is unlikely to be able to productively use more than 16 cores
+            self._model_build_cost = min(16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1)
         else:
             self._model_build_cost = 4
 
@@ -555,7 +556,7 @@ class TestScheduler(object):
     ###########################################################################
     def _xml_phase(self, test):
     ###########################################################################
-        test_case = parse_test_name(test)[0]
+        test_case,case_opts,_,_,_,compiler,_ = parse_test_name(test)
 
         # Create, fill and write an envtest object
         test_dir = self._get_test_dir(test)
@@ -605,8 +606,9 @@ class TestScheduler(object):
         config_test = Tests()
         testnode = config_test.get_test_node(test_case)
         envtest.add_test(testnode)
-        # Determine the test_case from the test name
-        test_case, case_opts = parse_test_name(test)[:2]
+
+        if compiler == 'nag':
+            envtest.set_value("FORCE_BUILD_SMP","FALSE")
 
         # Determine case_opts from the test_case
         if case_opts is not None:

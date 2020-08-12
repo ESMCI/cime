@@ -286,10 +286,9 @@ class Grids(GenericXML):
                  ("rof_grid","r%"), ("glc_grid","g%"), ("wav_grid","w%"), ("iac_grid","z%")]
         gridmaps = {}
 
-        # (1) set all possibly required gridmaps to idmap
+        # (1) set all possibly required gridmaps to 'idmap' for mct and 'unset/idmap' for nuopc
         required_gridmaps_node = self.get_child("required_gridmaps")
         required_gridmap_nodes = self.get_children("required_gridmap", root=required_gridmaps_node)
-
         tmp_gridmap_nodes = self.get_children("required_gridmap", root=required_gridmaps_node)
         required_gridmap_nodes = []
         for node in tmp_gridmap_nodes:
@@ -299,8 +298,24 @@ class Grids(GenericXML):
                not_compset_att and not_compset_att in compset:
                 continue
             required_gridmap_nodes.append(node)
-            gridmaps[self.text(node)] = "idmap"
-
+            if driver == 'nuopc':
+                grid1_name = self.text(node)[0].lower() + '%'
+                grid2_name = self.text(node)[4].lower() + '%'
+                if grid1_name == 'o%':
+                    grid1_name = 'oi%'
+                if grid2_name == 'o%':
+                    grid2_name = 'oi%'
+                grid1 = component_grids[grid1_name]
+                grid2 = component_grids[grid2_name]
+                if grid1 == grid2:
+                    if grid1 != 'null' and grid2 != 'null':
+                        gridmaps[self.text(node)] = "idmap"
+                    else:
+                        gridmaps[self.text(node)] = "unset"
+                else:
+                    gridmaps[self.text(node)] = "unset"
+            else:
+                gridmaps[self.text(node)] = "idmap"
 
         # (2) determine values gridmaps for target grid
         for idx, grid in enumerate(grids):
@@ -349,7 +364,8 @@ class Grids(GenericXML):
                             if driver == "nuopc":
                                 gridmaps[self.text(node)] = 'unset'
                             else:
-                                logger.warning("Warning: missing non-idmap {} for {}, {} and {} {} ".format(self.text(node), grid1_name, grid1_value, grid2_name, grid2_value))
+                                logger.warning("Warning: missing non-idmap {} for {}, {} and {} {} ".
+                                               format(self.text(node), grid1_name, grid1_value, grid2_name, grid2_value))
 
         return gridmaps
 
