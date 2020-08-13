@@ -459,13 +459,11 @@ class Case(object):
 
         self.set_lookup_value("COMP_INTERFACE", driver)
         if self._cime_model == 'ufs':
-            config = {}
-            # this is not sustainable, need to come up with something better
-            if 'ufsatm' in compset_name or 'HAFS' in compset_name:
-                config['component']='nems'
-            else:
-                config['component']='cpl'
-            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=config)
+            cmeps_driver = os.environ.get("CMEPS_DRIVER")
+            attribute = None
+            if cmeps_driver:
+                attribute = {"component":cmeps_driver}
+            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=attribute)
 
         if self._cime_model == 'cesm':
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
