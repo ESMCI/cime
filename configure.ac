@@ -228,9 +228,6 @@ AC_MSG_NOTICE([setting flags])
 # NetCDF (at least classic) is required for PIO to build.
 AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
 
-# ????
-AC_DEFINE([CPRGNU], [1], [defined by CMake build])
-
 # We must have MPI to build PIO.
 AC_DEFINE([HAVE_MPI], [1], [defined by CMake build])
 
