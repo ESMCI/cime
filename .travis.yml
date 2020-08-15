@@ -23,8 +23,8 @@ before_script:
   - export CC=mpicc
   - export FC=mpif90
   - export CPPFLAGS='-I/usr/include'
-  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz
-  - tar -xzvf pnetcdf-1.12.1.tar.gz
+  - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz &> /dev/null
+  - tar -xzf pnetcdf-1.12.1.tar.gz
   - pushd pnetcdf-1.12.1
   - ./configure --prefix=/usr --enable-shared --disable-cxx 
   - make
@@ -41,9 +41,9 @@ env:
 script:
   - nc-config --all
   - autoreconf -i
-  - export CFLAGS='-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror'
-  - export FFLAGS='-fsanitize=address -fno-omit-frame-pointer'
-  - export FCFLAGS='-fsanitize=address -fno-omit-frame-pointer -Werror'
+  - export CFLAGS='-g -std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror'
+  - export FFLAGS='-g -fsanitize=address -fno-omit-frame-pointer'
+  - export FCFLAGS='-g -fsanitize=address -fno-omit-frame-pointer -Werror'
   - export DISTCHECK_CONFIGURE_FLAGS='--enable-fortran'
   - ./configure --enable-fortran --enable-developer-docs
   - make -j distcheck
