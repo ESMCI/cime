@@ -231,9 +231,6 @@ AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
 # We must have MPI to build PIO.
 AC_DEFINE([HAVE_MPI], [1], [defined by CMake build])
 
-# ???
-AC_DEFINE([INCLUDE_CMAKE_FCI], [1], [defined by CMake build])
-
 # All builds are on LINUX.
 AC_DEFINE([LINUX], [1], [defined by CMake build])
 
