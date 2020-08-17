@@ -770,11 +770,7 @@ program testpio
         !   print *, __FILE__,__LINE__,'>',fname_r8,'<'
         !   print *, __FILE__,__LINE__,'>',fname_i4,'<'
         !   print *, __FILE__,__LINE__,'>',fname_r4,'<'
-#if defined(_NETCDF) || defined(_PNETCDF)
         mode = pio_64bit_offset
-#else
-        mode = 0
-#endif
 
         if(writePhase) then 
            if(TestCombo) then
