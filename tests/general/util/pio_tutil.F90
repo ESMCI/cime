@@ -295,10 +295,8 @@ CONTAINS
       ! netcdf, netcdf4p, netcdf4c
       num_iotypes = num_iotypes + 3
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       num_iotypes = num_iotypes + 1
-#endif
 #endif
 #ifdef _PNETCDF
       ! pnetcdf
@@ -328,12 +326,10 @@ CONTAINS
       iotype_descs(i) = "NETCDF4P"
       i = i + 1
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       iotypes(i) = PIO_iotype_netcdf
       iotype_descs(i) = "NETCDF"
       i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -416,10 +412,8 @@ CONTAINS
       ! netcdf, netcdf4p, netcdf4c
     num_iotypes = num_iotypes + 3
 #else
-#ifdef _NETCDF
-      ! netcdf
+    ! netcdf is always present.
     num_iotypes = num_iotypes + 1
-#endif
 #endif
 #ifdef _PNETCDF
       ! pnetcdf
@@ -449,12 +443,10 @@ CONTAINS
       iotype_descs(i) = "NETCDF4P"
       i = i + 1
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       iotypes(i) = PIO_iotype_netcdf
       iotype_descs(i) = "NETCDF"
       i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
