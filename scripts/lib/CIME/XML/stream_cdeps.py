@@ -48,7 +48,7 @@ class StreamCDEPS(GenericXML):
         """
         Initialize a CDEPS stream object
         """
-        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "stream_cdeps_v1.0.xsd")
+        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "stream_cdeps_v2.0.xsd")
         logger.debug("Verifying using schema {}".format(schema))
         GenericXML.__init__(self, infile, schema)
         if os.path.exists(infile):
@@ -60,7 +60,7 @@ class StreamCDEPS(GenericXML):
         """
         # write header of stream file
         with open(streams_xml_file, 'w') as stream_file:
-            stream_file.write('<?xml version="2.0"?>\n')
+            stream_file.write('<?xml version="1.0"?>\n')
             stream_file.write('<file id="stream" version="2.0">\n')
         # write contents of stream file
         for stream_name in stream_names:
@@ -84,18 +84,21 @@ class StreamCDEPS(GenericXML):
                     stream_meshfile = self._resolve_values(case, stream_meshfile)
                     stream_meshfile = stream_meshfile.strip()
                     stream_vars[node_name] = stream_meshfile
+
                 elif node_name == 'stream_datavars':
                     # Get the resolved stream data variables
                     stream_vars[node_name] = None
                     for child in self.get_children(root=node):
                         datavars = child.xml_element.text.strip()
                         datavars = self._resolve_values(case, datavars)
+                        datavars = self._sub_glc_fields(datavars, case)
                         datavars = self._add_xml_delimiter(datavars.split("\n"), "var")
                         if stream_vars[node_name]:
                             stream_vars[node_name] = stream_vars[node_name] + "\n      " + datavars.strip()
                         else:
                             stream_vars[node_name] = datavars.strip()
                         # endif
+
                 elif node_name == 'stream_datafiles':
                     # Get the resolved stream data files
                     stream_vars[node_name] = ""
@@ -162,6 +165,9 @@ class StreamCDEPS(GenericXML):
                     input_data_list.write(string)
 
     def _get_input_file_hash(self, data_list_file):
+        """
+        Determine a hash for the input data file
+        """
         lines_hash = set()
         if os.path.isfile(data_list_file):
             with open(data_list_file, "r") as input_data_list:
@@ -250,7 +256,7 @@ class StreamCDEPS(GenericXML):
             match = _var_ref_re.search(value)
         return value
 
-    def _sub_glc_fields(self, case, varnames):
+    def _sub_glc_fields(self, datavars, case):
         """Substitute indicators with given values in a list of fields.
 
         Replace any instance of the following substring indicators with the
@@ -275,7 +281,7 @@ class StreamCDEPS(GenericXML):
              s2x_Ss_tsrf02     tsrf02
              s2x_Ss_tsrf03     tsrf03
         """
-        lines = varnames.split("\n")
+        lines = datavars.split("\n")
         new_lines = []
         for line in lines:
             if not line:
