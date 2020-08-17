@@ -117,6 +117,7 @@ test "x$enable_timing" = xyes || enable_timing=no
 AC_MSG_RESULT([$enable_timing])
 if test "x$enable_timing" = xyes; then
    AC_DEFINE([TIMING], 1, [If true, use GPTL timing library.])
+   AC_DEFINE([HAVE_MPI], [1], [required by GPTL timing library])
 fi
 AM_CONDITIONAL(USE_GPTL, [test "x$enable_timing" = xyes])
 
@@ -223,14 +224,6 @@ if test "x$enable_docs" = xyes; then
    fi
    AC_CONFIG_FILES([doc/Doxyfile])
 fi
-
-AC_MSG_NOTICE([setting flags])
-
-# We must have MPI to build PIO.
-AC_DEFINE([HAVE_MPI], [1], [defined by CMake build])
-
-# Define to solve intel compiler warning.
-AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on intel compiler])
 
 AC_MSG_NOTICE([finding libraries])
 
