@@ -339,7 +339,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     mpilib = case.get_value("MPILIB")
     cmeps_driver = os.environ.get("CMEPS_DRIVER")
-    logger.info("CMEPS_DRIVER is set to {}".format(cmeps_driver))
+    if cmeps_driver:
+        logger.info("CMEPS_DRIVER is set to {}".format(cmeps_driver))
     if cmeps_driver and 'nems' in cmeps_driver:
         libs = []
     else:
@@ -353,7 +354,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     cdeps_build_script = None
-    if comp_interface == "nuopc" and cmeps_driver and not 'nems' in cmeps_driver: 
+    if comp_interface == "nuopc" and cmeps_driver and not 'nems' in cmeps_driver:
         libs.append("CDEPS")
         cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
 
