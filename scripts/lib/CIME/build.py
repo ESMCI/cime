@@ -338,10 +338,12 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    if 'CPL' in case.get_values("COMP_CLASSES"):
-        libs = ["gptl", "mct", "pio", "csm_share"]
-    else:
+    cmeps_driver = os.environ.get("CMEPS_DRIVER")
+    logger.info("CMEPS_DRIVER is set to {}".format(cmeps_driver))
+    if cmeps_driver and 'nems' in cmeps_driver:
         libs = []
+    else:
+        libs = ["gptl", "mct", "pio", "csm_share"]
 
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
@@ -351,7 +353,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     cdeps_build_script = None
-    if comp_interface == "nuopc":
+    if comp_interface == "nuopc" and cmeps_driver and not 'nems' in cmeps_driver: 
         libs.append("CDEPS")
         cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
 
