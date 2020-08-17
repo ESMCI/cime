@@ -351,14 +351,6 @@ CONTAINS
 
     num_iotypes = 0
     ! First find the number of io types
-#ifndef _NETCDF
-      ! netcdf
-      num_iotypes = num_iotypes + 1
-#ifndef _NETCDF4
-        ! netcdf4p, netcdf4c
-        num_iotypes = num_iotypes + 2
-#endif
-#endif
 #ifndef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
@@ -374,21 +366,6 @@ CONTAINS
       iotypes(i) = PIO_iotype_pnetcdf
       iotype_descs(i) = "PNETCDF"
       i = i + 1
-#endif
-#ifndef _NETCDF
-      ! netcdf
-      iotypes(i) = PIO_iotype_netcdf
-      iotype_descs(i) = "NETCDF"
-      i = i + 1
-#ifndef _NETCDF4
-        ! netcdf4p, netcdf4c
-        iotypes(i) = PIO_iotype_netcdf4c
-        iotype_descs(i) = "NETCDF4C"
-        i = i + 1
-        iotypes(i) = PIO_iotype_netcdf4p
-        iotype_descs(i) = "NETCDF4P"
-        i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -468,14 +445,6 @@ CONTAINS
 
     ! First find the number of io types
     num_iotypes = 0
-#ifndef _NETCDF
-      ! netcdf
-      num_iotypes = num_iotypes + 1
-#ifndef _NETCDF4
-      ! netcdf4p, netcdf4c
-      num_iotypes = num_iotypes + 2
-#endif
-#endif
 #ifndef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
@@ -486,27 +455,6 @@ CONTAINS
     ALLOCATE(iotype_descs(num_iotypes))
 
     i = 1
-#ifndef _NETCDF
-      ! netcdf
-      iotypes(i) = PIO_iotype_netcdf
-      iotype_descs(i) = "NETCDF"
-      i = i + 1
-#ifndef _PNETCDF
-      ! pnetcdf
-      iotypes(i) = PIO_iotype_pnetcdf
-      iotype_descs(i) = "PNETCDF"
-      i = i + 1
-#endif
-#ifndef _NETCDF4
-      ! netcdf4p, netcdf4c
-      iotypes(i) = PIO_iotype_netcdf4c
-      iotype_descs(i) = "NETCDF4C"
-      i = i + 1
-      iotypes(i) = PIO_iotype_netcdf4p
-      iotype_descs(i) = "NETCDF4P"
-      i = i + 1
-#endif
-#endif
   END SUBROUTINE
 
   ! Returns a list of PIO base types
