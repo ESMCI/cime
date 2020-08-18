@@ -111,9 +111,15 @@ class StreamCDEPS(GenericXML):
                             year_first = max(stream_year_first, data_year_first)
                             year_last = min(stream_year_last, data_year_last)
                             stream_datafiles = self._sub_paths(stream_datafiles, year_first, year_last)
+                            stream_datafiles = stream_datafiles.strip()
+                            stream_vars[node_name] = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
+                        else:
+                            stream_datafiles = stream_datafiles.strip()
+                            if stream_vars[node_name]: 
+                                stream_vars[node_name] += "\n      " + self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
+                            else:
+                                stream_vars[node_name] = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
                         # endif
-                        stream_datafiles = stream_datafiles.strip()
-                        stream_vars[node_name] = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
                 elif node_name.strip():
                     # Get the other dependencies
                     stream_dict = self._add_value_to_dict(stream_vars, case, node)
@@ -379,6 +385,8 @@ class StreamCDEPS(GenericXML):
         for n,item in enumerate(list_to_deliminate):
             if item.strip():
                 list_to_deliminate[n] = pred + item.strip() + postd
+            #endif
+        #endfor
         return "\n      ".join(list_to_deliminate)
 
 
