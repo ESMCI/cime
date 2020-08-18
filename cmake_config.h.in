@@ -32,4 +32,9 @@
 
 #define HAVE_PAR_FILTERS @HAVE_PAR_FILTERS@
 
+#cmakedefine HAVE_PAR_FILTERS
+#cmakedefine NETCDF_INTEGRATION
+#cmakedefine _NETCDF4
+#cmakedefine _PNETCDF
+
 #endif /* _PIO_CONFIG_ */

@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "pionfput_mod.F90"
+#include "config.h"
 !>
 !! @file
 !! @brief Write routines for non-decomposed NetCDF data.

@@ -1,3 +1,4 @@
+#include "config.h"
 #define VARINT 1
 !#define VARREAL 1
 !#define VARDOUBLE 1

@@ -1,3 +1,4 @@
+#include "config.h"
 !>
 !! @file
 !! Derived datatypes and constants for PIO Fortran API.

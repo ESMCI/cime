@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "pionfget_mod.F90"
+#include "config.h"
 !>
 !! @file
 !! @brief Read Routines for non-decomposed NetCDF data.

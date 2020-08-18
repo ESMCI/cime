@@ -1,3 +1,4 @@
+#include "config.h"
 !>
 !! @file
 !! Code to implement the classic netCDF Fortran API in PIO.

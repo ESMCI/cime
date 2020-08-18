@@ -6,8 +6,8 @@
 # Parallel builds don't currently work in this directory.
 .NOTPARALLEL:
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+# Find the pio.mod file.
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
 # Build the test for make check.
 check_PROGRAMS = pio_unit_test_driver
