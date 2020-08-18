@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "pionfatt_mod.F90"
+#include "config.h"
 !>
 !! @file
 !! @brief NetCDF attribute interface to PIO
