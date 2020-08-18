@@ -3,8 +3,8 @@
 
 # Ed Hartnett 7/17/19
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+# Find the pio.mod file.
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
 AM_FCFLAGS = -I$(top_srcdir)/src/flib
 
