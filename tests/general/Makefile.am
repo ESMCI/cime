@@ -7,10 +7,12 @@
 .NOTPARALLEL:
 
 # Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+#include $(top_srcdir)/set_flags.am
 
-LDADD = libpio_tutil.la	\
-${top_builddir}/src/flib/libpiof.la		\
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib -D_NETCDF
+
+# Link to our test, fortran, and C libraries.
+LDADD = libpio_tutil.la ${top_builddir}/src/flib/libpiof.la	\
 ${top_builddir}/src/clib/libpioc.la
 
 # There is a test utility mod file in this subdir which must be built.
