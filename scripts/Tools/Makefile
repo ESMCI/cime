@@ -500,8 +500,8 @@ else
        # GCC needs to be able to link to
        # nagfor runtime to get autoconf
        # tests to work.
-         CFLAGS += -Wl,--as-needed,--allow-shlib-undefined
-         SLIBS += -L$(COMPILER_PATH)/lib/NAG_Fortran -lf62rts
+	 CFLAGS += -Wl,--as-needed,--allow-shlib-undefined
+	 SLIBS += -L$(COMPILER_PATH)/lib/NAG_Fortran -lf62rts
        endif
     endif
   endif
@@ -545,13 +545,9 @@ INCLDIR +=	-I$(INSTALL_SHAREDPATH)/include
 CFLAGS+=$(CPPDEFS)
 CXXFLAGS+=$(CPPDEFS)
 CONFIG_ARGS +=  CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
-                MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
-                CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
-                LDFLAGS="$(LDFLAGS)"
-
-ifeq ($(MODEL), fox)
-  CONFIG_ARGS += --prefix="$(INSTALL_SHAREDPATH)"
-endif
+		MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
+		CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
+		LDFLAGS="$(LDFLAGS)"
 
 ifeq ($(NETCDF_SEPARATE), FALSE)
   CONFIG_ARGS += NETCDF_PATH=$(NETCDF_PATH)
@@ -677,10 +673,6 @@ endif
 # Drive configure scripts for support libraries (mct)
 #------------------------------------------------------------------------------
 
-$(SHAREDLIBROOT)/$(SHAREDPATH)/fox/arch.make:
-	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/fox/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/fox
-
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
 	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct
@@ -737,12 +729,12 @@ endif
 # doesn't seem to be able to differentiate between free & fixed
 # fortran flags)
 CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(INCLDIR)" \
-              -D CMAKE_C_FLAGS:STRING="$(CFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
-              -D CMAKE_CXX_FLAGS:STRING="$(CXXFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
-              -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-              -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
-              -D PIO_ENABLE_TESTS:BOOL=OFF \
-              -D PIO_USE_MALLOC:BOOL=ON \
+	      -D CMAKE_C_FLAGS:STRING="$(CFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
+	      -D CMAKE_CXX_FLAGS:STRING="$(CXXFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
+	      -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
+	      -D PIO_ENABLE_TESTS:BOOL=OFF \
+	      -D PIO_USE_MALLOC:BOOL=ON \
 	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" \
 
 # Allow for separate installations of the NetCDF C and Fortran libraries
@@ -752,25 +744,25 @@ else ifeq ($(NETCDF_SEPARATE), TRUE)
   # NETCDF_Fortran_DIR points to the separate
   # installation of Fortran NetCDF for PIO
   CMAKE_OPTS += -D NetCDF_C_PATH:PATH=$(NETCDF_C_PATH) \
-                -D NetCDF_Fortran_PATH:PATH=$(NETCDF_FORTRAN_PATH)
+		-D NetCDF_Fortran_PATH:PATH=$(NETCDF_FORTRAN_PATH)
 endif
 
 ifdef ZLIB_PATH
-        CMAKE_OPTS += -D LIBZ_PATH:STRING="$(ZLIB_PATH)"
+	CMAKE_OPTS += -D LIBZ_PATH:STRING="$(ZLIB_PATH)"
 endif
 
 ifdef SZIP_PATH
-        CMAKE_OPTS += -D SZIP_PATH:STRING="$(SZIP_PATH)"
+	CMAKE_OPTS += -D SZIP_PATH:STRING="$(SZIP_PATH)"
 endif
 
 ifdef HDF5_PATH
-        CMAKE_OPTS += -D HDF5_PATH:STRING="$(HDF5_PATH)"
+	CMAKE_OPTS += -D HDF5_PATH:STRING="$(HDF5_PATH)"
 endif
 
 ifdef PNETCDF_PATH
 	CMAKE_OPTS += -D PnetCDF_PATH:STRING="$(PNETCDF_PATH)"
 else
-        CMAKE_OPTS += -D WITH_PNETCDF:LOGICAL=FALSE -D PIO_USE_MPIIO:LOGICAL=FALSE
+	CMAKE_OPTS += -D WITH_PNETCDF:LOGICAL=FALSE -D PIO_USE_MPIIO:LOGICAL=FALSE
 endif
 ifdef PIO_FILESYSTEM_HINTS
 	CMAKE_OPTS += -D PIO_FILESYSTEM_HINTS:STRING="$(PIO_FILESYSTEM_HINTS)"
@@ -789,9 +781,9 @@ ifndef CMAKE_ENV_VARS
   CMAKE_ENV_VARS :=
 endif
 CMAKE_ENV_VARS += CC=$(CC) \
-                  CXX=$(CXX) \
-                  FC=$(FC) \
-                  LDFLAGS="$(LDFLAGS)"
+		  CXX=$(CXX) \
+		  FC=$(FC) \
+		  LDFLAGS="$(LDFLAGS)"
 
 
 # We declare $(GLC_DIR)/Makefile to be a phony target so that cmake is
