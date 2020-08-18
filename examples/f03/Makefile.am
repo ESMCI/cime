@@ -14,7 +14,7 @@ ${top_builddir}/src/clib/libpioc.la
 # Build the test for make check.
 check_PROGRAMS = examplePio
 
-examplePio_SOURCES = examplePio.f90
+examplePio_SOURCES = examplePio.F90
 
 if RUN_TESTS
 # Tests will run from a bash script.
