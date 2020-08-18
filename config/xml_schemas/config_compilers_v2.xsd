@@ -197,6 +197,8 @@
       <xs:element name="SLIBS" type="flagsVar"/>
       <xs:element name="SUPPORTS_CXX" type="upperBoolean"/>
       <xs:element name="TRILINOS_PATH" type="systemPath"/>
+      <xs:element name="CUDA_FLAGS" type="flagsVar"/>
+      <xs:element name="USE_CUDA" type="upperBoolean"/>
     </xs:choice>
   </xs:group>
 
