@@ -44,11 +44,10 @@ _stream_nuopc_file_template = """
         
 class StreamCDEPS(GenericXML):
 
-    def __init__(self, infile):
+    def __init__(self, infile, schema):
         """
         Initialize a CDEPS stream object
         """
-        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "stream_cdeps_v2.0.xsd")
         logger.debug("Verifying using schema {}".format(schema))
         GenericXML.__init__(self, infile, schema)
         if os.path.exists(infile):
@@ -76,16 +75,9 @@ class StreamCDEPS(GenericXML):
             stream_vars['streamname'] = stream_name
             attributes = {}
             for node in self.get_children(root=self.stream_nodes):
-                node_name = node.xml_element.tag
-                if node_name == 'stream_meshfile':
-                    # Get the stream meshfile and resolve any xml variable dependencies
-                    attributes['grid'] = case.get_value("GRID")
-                    stream_meshfile = self._get_value_match(node, 'file', attributes=attributes)
-                    stream_meshfile = self._resolve_values(case, stream_meshfile)
-                    stream_meshfile = stream_meshfile.strip()
-                    stream_vars[node_name] = stream_meshfile
+                node_name = node.xml_element.tag.strip()
 
-                elif node_name == 'stream_datavars':
+                if node_name == 'stream_datavars':
                     # Get the resolved stream data variables
                     stream_vars[node_name] = None
                     for child in self.get_children(root=node):
@@ -112,14 +104,23 @@ class StreamCDEPS(GenericXML):
                             year_last = min(stream_year_last, data_year_last)
                             stream_datafiles = self._sub_paths(stream_datafiles, year_first, year_last)
                             stream_datafiles = stream_datafiles.strip()
-                            stream_vars[node_name] = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
+                        #endif
+                        if stream_vars[node_name]: 
+                            stream_vars[node_name] += "\n      " + self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
                         else:
-                            stream_datafiles = stream_datafiles.strip()
-                            if stream_vars[node_name]: 
-                                stream_vars[node_name] += "\n      " + self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
-                            else:
-                                stream_vars[node_name] = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
-                        # endif
+                            stream_vars[node_name] = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
+
+                elif (   node_name == 'stream_meshfile'
+                      or node_name == 'stream_mapalgo' 
+                      or node_name == 'stream_tintalgo' 
+                      or node_name == 'stream_taxmode' 
+                      or node_name == 'stream_dtlimit'):
+                    attributes['grid'] = case.get_value("GRID")
+                    value = self._get_value_match(node, node_name[7:], attributes=attributes)
+                    value = self._resolve_values(case, value)
+                    value = value.strip()
+                    stream_vars[node_name] = value
+
                 elif node_name.strip():
                     # Get the other dependencies
                     stream_dict = self._add_value_to_dict(stream_vars, case, node)
@@ -130,6 +131,7 @@ class StreamCDEPS(GenericXML):
                 stream_file.write(stream_file_text)
 
             # append to input_data_list
+            stream_meshfile = stream_vars['stream_meshfile'].strip()
             self._add_entries_to_inputdata_list(stream_meshfile, stream_datafiles, data_list_file)
 
         # write close of stream xml file
