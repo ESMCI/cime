@@ -6,10 +6,15 @@ project (PIOC C)
 #  DEFINE THE TARGET
 #==============================================================================
 
-add_library (pioc topology.c pio_file.c pioc_support.c pio_lists.c
+set (src topology.c pio_file.c pioc_support.c pio_lists.c
   pioc.c pioc_sc.c pio_spmd.c pio_rearrange.c pio_nc4.c bget.c
   pio_nc.c pio_put_nc.c pio_get_nc.c pio_getput_int.c pio_msg.c
   pio_darray.c pio_darray_int.c pio_get_vard.c pio_put_vard.c pio_error.c)
+if (NETCDF_INTEGRATION)
+  set (src ${src} ../ncint/nc_get_vard.c ../ncint/ncintdispatch.c ../ncint/ncint_pio.c ../ncint/nc_put_vard.c)
+endif ()
+
+add_library (pioc ${src})
 
 # set up include-directories
 include_directories(
@@ -41,10 +46,6 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   string(APPEND CMAKE_C_FLAGS  " -std=c99 ")
 endif()
-
-if (NETCDF_INTEGRATION)
-  target_link_libraries(pioc PUBLIC ncint)
-endif ()
 
 #==============================================================================
 #  DEFINE THE INSTALL
