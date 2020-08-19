@@ -338,9 +338,9 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    cmeps_driver = os.environ.get("CMEPS_DRIVER")
+    cmeps_driver = os.environ.get("UFS_DRIVER")
     if cmeps_driver:
-        logger.info("CMEPS_DRIVER is set to {}".format(cmeps_driver))
+        logger.info("UFS_DRIVER is set to {}".format(cmeps_driver))
     if cmeps_driver and 'nems' in cmeps_driver:
         libs = []
     else:

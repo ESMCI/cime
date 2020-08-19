@@ -459,7 +459,7 @@ class Case(object):
 
         self.set_lookup_value("COMP_INTERFACE", driver)
         if self._cime_model == 'ufs':
-            cmeps_driver = os.environ.get("CMEPS_DRIVER")
+            cmeps_driver = os.environ.get("UFS_DRIVER")
             attribute = None
             if cmeps_driver:
                 attribute = {"component":cmeps_driver}
