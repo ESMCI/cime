@@ -75,7 +75,6 @@ endif ()
 
 #===== GPTL =====
 if (PIO_ENABLE_TIMING)
-  find_package (GPTL COMPONENTS C QUIET)
   if (GPTL_C_FOUND)
     message (STATUS "Found GPTL C: ${GPTL_C_LIBRARIES}")
     target_include_directories (pioc
@@ -116,9 +115,6 @@ else ()
 endif ()
 
 #===== PnetCDF-C =====
-if (WITH_PNETCDF)
-  find_package (PnetCDF "1.7.0" COMPONENTS C)
-endif ()
 if (PnetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
