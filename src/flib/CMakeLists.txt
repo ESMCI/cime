@@ -142,7 +142,6 @@ endforeach ()
 
 #===== MPI =====
 if (PIO_USE_MPISERIAL)
-  find_package (MPISERIAL COMPONENTS Fortran REQUIRED)
   if (MPISERIAL_Fortran_FOUND)
     target_compile_definitions (piof
       PRIVATE _MPISERIAL)
@@ -154,8 +153,6 @@ if (PIO_USE_MPISERIAL)
     set (WITH_PNETCDF FALSE)
     set (MPI_Fortran_INCLUDE_PATH ${MPISERIAL_Fortran_INCLUDE_DIRS})
   endif ()
-else ()
-  find_package (MPI REQUIRED)
 endif ()
 
 # Check MPI I/O capabilities
@@ -184,9 +181,6 @@ endif ()
 find_path(MPIMOD_PATH
   NAMES mpi.mod MPI.mod
   HINTS ${MPI_Fortran_INCLUDE_PATH})
-if (PIO_ENABLE_TIMING)
-  find_package (GPTL COMPONENTS Fortran_Perf QUIET)
-endif ()
 
 check_macro (MPI_HAS_Fortran_MOD
   NAME TryMPIMod.f90
@@ -219,7 +213,6 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-Fortran =====
-find_package (NetCDF "4.3.3" COMPONENTS Fortran)
 if (NetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${NetCDF_Fortran_INCLUDE_DIRS})
@@ -237,9 +230,6 @@ else ()
 endif ()
 
 #===== PnetCDF =====
-if (WITH_PNETCDF)
-  find_package (PnetCDF "1.6" COMPONENTS Fortran REQUIRED)
-endif ()
 if (PnetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${PnetCDF_Fortran_INCLUDE_DIRS})
