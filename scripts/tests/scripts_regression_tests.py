@@ -2171,7 +2171,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         self.assertEqual(result, "00:10:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch")
+        self.assertEqual(result, "biggpu")
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_2(self):
@@ -2184,10 +2184,10 @@ class K_TestCimeCase(TestCreateTestCommon):
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "03:00:00")
+        self.assertEqual(result, "01:00:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch")
+        self.assertEqual(result, "biggpu")
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_3(self):
@@ -2203,7 +2203,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         self.assertEqual(result, "00:10:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch") # Not smart enough to select faster queue
+        self.assertEqual(result, "biggpu") # Not smart enough to select faster queue
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_4(self):
@@ -2216,10 +2216,10 @@ class K_TestCimeCase(TestCreateTestCommon):
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "02:00:00")
+        self.assertEqual(result, "01:00:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch")
+        self.assertEqual(result, "biggpu")
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_5(self):
@@ -2236,7 +2236,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         run_cmd_assert_result(self, "./xmlchange JOB_QUEUE=slartibartfast --force --subgroup=case.test", from_dir=casedir)
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "03:00:00")
+        self.assertEqual(result, "01:00:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
         self.assertEqual(result, "slartibartfast")
