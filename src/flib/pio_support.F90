@@ -1,3 +1,4 @@
+#include "config.h"
 !>
 !! @file
 !! Internal code for compiler workarounds, aborts and debug functions.

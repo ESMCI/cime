@@ -6,8 +6,8 @@
 # Parallel builds don't currently work in this directory.
 .NOTPARALLEL:
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+# Find the pio.mod file.
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
 # Link to test util library and PIO Fortran and C libs.
 LDADD = $(top_builddir)/src/gptl/libperf_mod.la	\

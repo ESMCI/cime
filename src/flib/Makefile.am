@@ -7,8 +7,6 @@
 # The library we are building.
 lib_LTLIBRARIES = libpiof.la
 
-AM_CPPFLAGS = -D_NETCDF -D_NETCDF4 -D_PNETCDF
-
 # These linker flags specify libtool version info.
 # See http://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
 # for information regarding incrementing `-version-info`.
@@ -97,15 +95,15 @@ if BUILD_DOCS
 BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 \
 pionfput_mod.f90 pionfatt_mod_2.f90 pionfget_mod_2.f90
 piodarray.f90: piodarray.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 piolib_mod.f90: piolib_mod.F90
 	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfatt_mod.f90: pionfatt_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfget_mod.f90: pionfget_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfput_mod.f90: pionfput_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 
 # Unfortunately the genf90.pl script which generates these fortran
 # files has no way of handling doxygen documentation. So use sed to

@@ -5,8 +5,6 @@
  */
 #ifndef _PIO_CONFIG_
 #define _PIO_CONFIG_
-/* Set to avoid warning in intel19 compiler wrt strnlen */
-#define _GNU_SOURCE
 
 /** The major part of the version number. */
 #define PIO_VERSION_MAJOR @VERSION_MAJOR@
@@ -34,5 +32,10 @@
 
 #cmakedefine HAVE_PAR_FILTERS
 #cmakedefine NETCDF_INTEGRATION
+
+#cmakedefine HAVE_PAR_FILTERS
+#cmakedefine NETCDF_INTEGRATION
+#cmakedefine _NETCDF4
+#cmakedefine _PNETCDF
 
 #endif /* _PIO_CONFIG_ */

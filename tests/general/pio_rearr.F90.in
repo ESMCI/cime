@@ -1,3 +1,4 @@
+#include "config.h"
 ! Create a file with a global attribute (filename)
 SUBROUTINE create_file(comm, iosys, iotype, fname, attname, dimname, ret)
     use pio_tutil

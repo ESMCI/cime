@@ -3,8 +3,8 @@
 
 # Ed Hartnett 7/3/19
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+# Find the pio.mod file.
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
 # Link to the PIO Fortran and C libraries.
 LDADD = ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpioc.la

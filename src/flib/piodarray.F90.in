@@ -1,4 +1,5 @@
 #define __PIO_FILE__ 'piodarray'
+#include "config.h"
 !>
 !! @file
 !! Read and write routines for decomposed data.

@@ -22,7 +22,7 @@ Extra libraries:	@LIBS@
 Fortran Compiler:       @FC_VERSION@
 FFLAGS:                 @FFLAGS@
 FCFLAGS:                @FCFLAGS@
-FPPFLAGS:               @FPPFLAGS@
+More Fortran Flags:	@FPPFLAGS@
 
 # Features
 --------

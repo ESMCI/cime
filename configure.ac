@@ -117,6 +117,7 @@ test "x$enable_timing" = xyes || enable_timing=no
 AC_MSG_RESULT([$enable_timing])
 if test "x$enable_timing" = xyes; then
    AC_DEFINE([TIMING], 1, [If true, use GPTL timing library.])
+   AC_DEFINE([HAVE_MPI], [1], [required by GPTL timing library])
 fi
 AM_CONDITIONAL(USE_GPTL, [test "x$enable_timing" = xyes])
 
@@ -224,24 +225,7 @@ if test "x$enable_docs" = xyes; then
    AC_CONFIG_FILES([doc/Doxyfile])
 fi
 
-AC_MSG_NOTICE([setting flags])
-# NetCDF (at least classic) is required for PIO to build.
-AC_DEFINE([_NETCDF], [1], [netCDF classic library available])
-
-# ????
-AC_DEFINE([CPRGNU], [1], [defined by CMake build])
-
-# We must have MPI to build PIO.
-AC_DEFINE([HAVE_MPI], [1], [defined by CMake build])
-
-# ???
-AC_DEFINE([INCLUDE_CMAKE_FCI], [1], [defined by CMake build])
-
-# All builds are on LINUX.
-AC_DEFINE([LINUX], [1], [defined by CMake build])
-
-# Define to solve intel compiler warning.
-AC_DEFINE([_GNU_SOURCE], [1], [solve strnlen declared implicitly warning on intel compiler])
+AC_MSG_NOTICE([finding libraries])
 
 # Check for netCDF library.
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
