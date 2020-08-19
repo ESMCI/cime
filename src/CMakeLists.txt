@@ -46,8 +46,4 @@ if (PIO_ENABLE_FORTRAN)
   set(FPPFLAGS ${FPPFLAGS} PARENT_SCOPE)
 endif ()
 
-# Build the netCDF integration layer if desired.
-if (PIO_ENABLE_NETCDF_INTEGRATION)
-  add_subdirectory (ncint)
-endif ()
 
