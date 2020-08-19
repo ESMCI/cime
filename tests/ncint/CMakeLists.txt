@@ -1,3 +1,9 @@
+# This is part of the PIO library.
+#
+# This is the cmake file to build the test directory for netCDF integration.
+#
+# Ed Hartnett 8/19/20
+
 include (LibMPI)
 
 include_directories("${CMAKE_SOURCE_DIR}/tests/ncint")
