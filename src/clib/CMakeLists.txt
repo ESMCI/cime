@@ -92,8 +92,6 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-C =====
-
-message("NetCDF_C_FOUND has value ${NetCDF_C_FOUND}")
 if (NetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${NetCDF_C_INCLUDE_DIRS})
