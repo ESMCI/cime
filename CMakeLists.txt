@@ -347,6 +347,9 @@ CHECK_C_SOURCE_COMPILES("
 int main() {return 0;}" HAVE_DISPATCH2)
 
 if (NETCDF_INTEGRATION)
+  if (NOT HAVE_DISPATCH2)
+    message (FATAL_ERROR "Need newer version of netcdf-c for netcdf integration feature, please upgrade your netCDF library")
+  endif ()
   set(HAVE_NETCDF_INTEGRATION 1)
 else ()
   set(HAVE_NETCDF_INTEGRATION 0)
