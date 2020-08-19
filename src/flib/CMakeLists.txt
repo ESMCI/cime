@@ -31,6 +31,11 @@ set (PIO_Fortran_MODS ${CMAKE_CURRENT_BINARY_DIR}/pio.mod
   ${CMAKE_CURRENT_BINARY_DIR}/pionfatt_mod.mod
   ${CMAKE_CURRENT_BINARY_DIR}/pionfput_mod.mod)
 
+if (NETCDF_INTEGRATION)
+  set (PIO_Fortran_SRCS ${PIO_Fortran_SRCS} ncint_mod.F90)
+  set (PIO_Fortran_MODS ${PIO_Fortran_MODS} ${CMAKE_CURRENT_BINARY_DIR}/ncint_mod.mod)
+endif ()
+
 add_library (piof ${PIO_Fortran_SRCS} ${PIO_GenF90_SRCS})
 if (NOT PIO_ENABLE_FORTRAN)
   set_target_properties(piof PROPERTIES EXCLUDE_FROM_ALL TRUE)
