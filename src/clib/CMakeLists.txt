@@ -42,6 +42,10 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   string(APPEND CMAKE_C_FLAGS  " -std=c99 ")
 endif()
 
+if (NETCDF_INTEGRATION)
+  target_link_libraries(pioc PUBLIC ncint)
+endif ()
+
 #==============================================================================
 #  DEFINE THE INSTALL
 #==============================================================================
