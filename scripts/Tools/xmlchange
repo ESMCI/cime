@@ -186,7 +186,7 @@ def xmlchange(caseroot, listofsettings, xmlfile, xmlid, xmlval, subgroup,
     with Case(caseroot, read_only=False) as case:
         comp_classes = case.get_values("COMP_CLASSES")
         env_test = None
-        if case.get_value("TEST") and not xmlfile or not xmlfile == "env_test.xml":
+        if (case.get_value("TEST") and os.path.exists(os.path.join(caseroot,"env_test.xml"))) and not (xmlfile or xmlfile == "env_test.xml"):
             env_test = case.get_env("test")
 
         if xmlfile:
