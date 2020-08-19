@@ -92,7 +92,8 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-C =====
-find_package (NetCDF "4.3.3" COMPONENTS C)
+
+message("NetCDF_C_FOUND has value ${NetCDF_C_FOUND}")
 if (NetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${NetCDF_C_INCLUDE_DIRS})

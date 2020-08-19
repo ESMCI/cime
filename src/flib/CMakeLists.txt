@@ -219,7 +219,7 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-Fortran =====
-find_package (NetCDF "4.3.3" COMPONENTS Fortran)
+message("NetCDF_Fortran_FOUND is ${NetCDF_Fortran_FOUND}")
 if (NetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${NetCDF_Fortran_INCLUDE_DIRS})

@@ -231,6 +231,17 @@ if (PIO_ENABLE_COVERAGE)
   endif ()
 endif ()
 
+# Include this so we can check values in netcdf_meta.h.
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(FindNetCDF)
+if (PIO_ENABLE_FORTRAN)
+  find_package (NetCDF REQUIRED COMPONENTS C Fortran)
+  find_package (PnetCDF COMPONENTS C Fortran)
+else()
+  find_package (NetCDF REQUIRED COMPONENTS C)
+  find_package (PnetCDF COMPONENTS C)
+endif()
+
 #==============================================================================
 #  INCLUDE SOURCE DIRECTORIES
 #==============================================================================
@@ -265,11 +276,6 @@ if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
 
-# Include this so we can check values in netcdf_meta.h.
-INCLUDE(CheckCSourceCompiles)
-INCLUDE(FindNetCDF)
-find_package (NetCDF REQUIRED)
-find_package (PnetCDF)
 
 
 SET(STATUS_PNETCDF PnetCDF_C_FOUND)
@@ -425,6 +431,3 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
   )
-
-
-
