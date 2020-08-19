@@ -21,6 +21,10 @@ include_directories(
 target_include_directories (pioc
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Include the ncint source directory
+target_include_directories (pioc
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ncint)
+
 # System and compiler CPP directives
 target_compile_definitions (pioc
   PUBLIC ${CMAKE_SYSTEM_DIRECTIVE})
