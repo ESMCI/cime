@@ -30,11 +30,16 @@
 
 #define USE_VARD @USE_VARD@
 
-#define HAVE_PAR_FILTERS @HAVE_PAR_FILTERS@
-
+/* Does netCDF and HDF5 support parallel I/O filters? */
 #cmakedefine HAVE_PAR_FILTERS
+
+/* Was PIO built with netCDF integration? */
 #cmakedefine NETCDF_INTEGRATION
+
+/* Does PIO support netCDF/HDF5 files? */
 #cmakedefine _NETCDF4
+
+/* Does PIO support using pnetcdf for I/O? */
 #cmakedefine _PNETCDF
 
 #endif /* _PIO_CONFIG_ */

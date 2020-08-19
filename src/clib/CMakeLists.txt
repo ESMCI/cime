@@ -6,10 +6,15 @@ project (PIOC C)
 #  DEFINE THE TARGET
 #==============================================================================
 
-add_library (pioc topology.c pio_file.c pioc_support.c pio_lists.c
+set (src topology.c pio_file.c pioc_support.c pio_lists.c
   pioc.c pioc_sc.c pio_spmd.c pio_rearrange.c pio_nc4.c bget.c
   pio_nc.c pio_put_nc.c pio_get_nc.c pio_getput_int.c pio_msg.c
   pio_darray.c pio_darray_int.c pio_get_vard.c pio_put_vard.c pio_error.c)
+if (NETCDF_INTEGRATION)
+  set (src ${src} ../ncint/nc_get_vard.c ../ncint/ncintdispatch.c ../ncint/ncint_pio.c ../ncint/nc_put_vard.c)
+endif ()
+
+add_library (pioc ${src})
 
 # set up include-directories
 include_directories(
@@ -20,6 +25,10 @@ include_directories(
 # Include the clib source directory
 target_include_directories (pioc
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Include the ncint source directory
+target_include_directories (pioc
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ncint)
 
 # System and compiler CPP directives
 target_compile_definitions (pioc

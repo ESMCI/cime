@@ -77,6 +77,7 @@ option (PIO_ENABLE_LOGGING   "Enable debug logging (large output possible)" OFF)
 option (PIO_ENABLE_DOC       "Enable building PIO documentation"            ON)
 option (PIO_ENABLE_COVERAGE  "Enable code coverage"                         OFF)
 option (PIO_ENABLE_EXAMPLES  "Enable PIO examples"                          ON)
+option (PIO_ENABLE_NETCDF_INTEGRATION  "Enable netCDF integration"          OFF)
 option (PIO_INTERNAL_DOC     "Enable PIO developer documentation"           OFF)
 option (PIO_TEST_BIG_ENDIAN  "Enable test to see if machine is big endian"  ON)
 option (PIO_USE_MPIIO        "Enable support for MPI-IO auto detect"        ON)
@@ -104,6 +105,13 @@ if(PIO_ENABLE_LOGGING)
   set(ENABLE_LOGGING 1)
 else()
   set(ENABLE_LOGGING 0)
+endif()
+
+# Set a variable that appears in the config.h.in file.
+if(PIO_ENABLE_NETCDF_INTEGRATION)
+  set(NETCDF_INTEGRATION 1)
+else()
+  set(NETCDF_INTEGRATION 0)
 endif()
 
 if(PIO_USE_MPISERIAL)
@@ -204,13 +212,6 @@ if (CMAKE_Fortran_COMPILER_NAME STREQUAL "XL")
 endif ()
 set (CMAKE_Fortran_COMPILER_DIRECTIVE "CPR${CMAKE_Fortran_COMPILER_NAME}"
   CACHE STRING "Fortran compiler name preprocessor directive")
-
-# configure a header file to pass some of the CMake settings
-# to the source code
-configure_file (
-  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
-  "${PROJECT_BINARY_DIR}/config.h"
-  )
 
 #==============================================================================
 #  SET CODE COVERAGE COMPILER FLAGS
@@ -417,4 +418,13 @@ INSTALL(FILES "${PIO_BINARY_DIR}/libpio.settings"
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/src/clib/pio_meta.h @ONLY)
+
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
+  )
+
+
 
