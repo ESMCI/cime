@@ -1,7 +1,3 @@
-# This is the GitHub workflow file to build and test the PIO library with CMake, and netCDF integration.
-
-# Ed Hartnett 8/19/20
-
   name: cmake_ncint
 
 on:
