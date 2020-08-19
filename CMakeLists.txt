@@ -18,18 +18,18 @@ SET(PACKAGE_VERSION ${PIO_VERSION_MAJOR}.${PIO_VERSION_MINOR}.${PIO_VERSION_PATC
 
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
-	EXECUTE_PROCESS(
-	  COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
-	  OUTPUT_VARIABLE CONFIG_DATE
-	  )
+        EXECUTE_PROCESS(
+          COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
+          OUTPUT_VARIABLE CONFIG_DATE
+          )
 ELSE()
-	EXECUTE_PROCESS(
-	  COMMAND date
-	  OUTPUT_VARIABLE CONFIG_DATE
-	  )
+        EXECUTE_PROCESS(
+          COMMAND date
+          OUTPUT_VARIABLE CONFIG_DATE
+          )
 ENDIF()
 IF(CONFIG_DATE)
-	string(STRIP ${CONFIG_DATE} CONFIG_DATE)
+        string(STRIP ${CONFIG_DATE} CONFIG_DATE)
 ENDIF()
 
 # A function used to create autotools-style 'yes/no' definitions.
@@ -231,6 +231,18 @@ if (PIO_ENABLE_COVERAGE)
   endif ()
 endif ()
 
+# Include this so we can check values in netcdf_meta.h.
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(FindNetCDF)
+message("Fortran Library build is ${PIO_ENABLE_FORTRAN}")
+if (PIO_ENABLE_FORTRAN)
+  find_package (NetCDF REQUIRED COMPONENTS C Fortran)
+  find_package (PnetCDF COMPONENTS C Fortran)
+else()
+  find_package (NetCDF REQUIRED COMPONENTS C)
+  find_package (PnetCDF COMPONENTS C)
+endif()
+
 #==============================================================================
 #  INCLUDE SOURCE DIRECTORIES
 #==============================================================================
@@ -265,11 +277,6 @@ if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
 
-# Include this so we can check values in netcdf_meta.h.
-INCLUDE(CheckCSourceCompiles)
-INCLUDE(FindNetCDF)
-find_package (NetCDF REQUIRED)
-find_package (PnetCDF)
 
 
 SET(STATUS_PNETCDF PnetCDF_C_FOUND)
@@ -425,6 +432,3 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
   )
-
-
-
