@@ -514,6 +514,8 @@ module cime_comp_mod
   integer :: budget_ltann            ! long term budget flag for end of year writing
   integer :: budget_ltend            ! long term budget flag for end of run writing
 
+  character(len=256) :: cime_model
+  
   character(CL) :: hist_a2x_flds     = &
        'Faxa_swndr:Faxa_swvdr:Faxa_swndf:Faxa_swvdf'
 
@@ -530,16 +532,13 @@ module cime_comp_mod
 
   character(CL) :: hist_a2x1hr_flds  = &
        'Sa_u:Sa_v'
-
   character(CL) :: hist_a2x3hr_flds  = &
-       'Sa_z:Sa_topo:Sa_u:Sa_v:Sa_tbot:Sa_ptem:Sa_shum:Sa_dens:Sa_uovern:Sa_pbot:Sa_pslv:Faxa_lwdn:&
+       'Sa_z:Sa_topo:Sa_u:Sa_v:Sa_tbot:Sa_ptem:Sa_shum:Sa_dens:Sa_pbot:Sa_pslv:Faxa_lwdn:&
        &Faxa_rainc:Faxa_rainl:Faxa_snowc:Faxa_snowl:&
        &Faxa_swndr:Faxa_swvdr:Faxa_swndf:Faxa_swvdf:&
        &Sa_co2diag:Sa_co2prog'
-
+  
   ! --- other ---
-  character(len=cs)        :: cime_model
-
   integer  :: driver_id              ! ID for multi-driver setup
   integer  :: ocnrun_count           ! number of times ocn run alarm went on
   logical  :: exists                 ! true if file exists

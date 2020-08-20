@@ -239,7 +239,6 @@ contains
        call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Sa_shum'       )
        call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Sa_pbot'       )
        call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Sa_dens'       )
-       call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Sa_uovern'     )
        call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Sa_pslv'       )
        call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Faxa_rainc'    )
        call fld_list_add(fldsFrAtm_num, fldsFrAtm, 'Faxa_rainl'    )

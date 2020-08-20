@@ -203,7 +203,8 @@ contains
   !===============================================================================
 
   subroutine seq_flux_init_mct(comp, fractions)
-
+    
+    use seq_infodata_mod, only : seq_infodata_type, seq_infodata_GetData
     !-----------------------------------------------------------------------
     !
     ! Arguments
@@ -213,14 +214,17 @@ contains
     !
     ! Local variables
     !
+    type(seq_infodata_type)  :: infodata
     type(mct_gsMap), pointer :: gsMap
     type(mct_gGrid), pointer :: dom
     integer(in)              :: nloc
     integer                  :: ko,ki     ! fractions indices
     integer                  :: ier
     real(r8), pointer        :: rmask(:)  ! ocn domain mask
+    character(len=256) :: cime_model
     character(*),parameter   :: subName =   '(seq_flux_init_mct) '
     !-----------------------------------------------------------------------
+    call seq_infodata_GetData(infodata, cime_model=cime_model)
 
     gsmap => component_get_gsmap_cx(comp)
     dom   => component_get_dom_cx(comp)
@@ -255,9 +259,13 @@ contains
     allocate(dens(nloc),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate dens',ier)
     dens = 0.0_r8
-    allocate(uovern(nloc),stat=ier)
-    if(ier/=0) call mct_die(subName,'allocate uovern',ier)
-    uovern = 0.0_r8
+
+    if (trim(cime_model) == 'e3sm') then
+       allocate(uovern(nloc),stat=ier)
+       if(ier/=0) call mct_die(subName,'allocate uovern',ier)
+       uovern = 0.0_r8
+    end if
+
     allocate(tbot(nloc),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate tbot',ier)
     tbot = 0.0_r8
@@ -1359,7 +1367,7 @@ contains
        index_a2x_Sa_shum_HDO   = mct_aVect_indexRA(a2x,'Sa_shum_HDO', perrWith='quiet')
        index_a2x_Sa_shum_18O   = mct_aVect_indexRA(a2x,'Sa_shum_18O', perrWith='quiet')
        index_a2x_Sa_dens   = mct_aVect_indexRA(a2x,'Sa_dens')
-       index_a2x_Sa_uovern   = mct_aVect_indexRA(a2x,'Sa_uovern')
+      ! index_a2x_Sa_uovern   = mct_aVect_indexRA(a2x,'Sa_uovern')
        index_a2x_Faxa_lwdn = mct_aVect_indexRA(a2x,'Faxa_lwdn')
        index_a2x_Faxa_rainc= mct_aVect_indexRA(a2x,'Faxa_rainc')
        index_a2x_Faxa_rainl= mct_aVect_indexRA(a2x,'Faxa_rainl')
@@ -1415,7 +1423,7 @@ contains
           roce_HDO(n) = 1.0_r8   ! HDO   surface ratio     ~ mol/mol
           roce_18O(n) = 1.0_r8   ! H218O surface ratio     ~ mol/mol
           dens(n) =   1.0_r8 ! atm density                ~ kg/m^3
-          uovern(n) =   1.0_r8 ! atm uovern
+         ! uovern(n) =   1.0_r8 ! atm uovern
           tbot(n) = 300.0_r8 ! atm temperature            ~ Kelvin
           pslv(n) = 101300.0_r8  ! sea level pressure      ~ Pa
           uGust(n)=   0.0_r8
@@ -1459,7 +1467,7 @@ contains
              if ( index_a2x_Sa_shum_HDO /= 0 ) shum_HDO(n) = a2x%rAttr(index_a2x_Sa_shum_HDO,n)
              if ( index_a2x_Sa_shum_18O /= 0 ) shum_18O(n) = a2x%rAttr(index_a2x_Sa_shum_18O,n)
              dens(n) = a2x%rAttr(index_a2x_Sa_dens,n)
-             uovern(n) = a2x%rAttr(index_a2x_Sa_uovern,n)
+            ! uovern(n) = a2x%rAttr(index_a2x_Sa_uovern,n)
              tbot(n) = a2x%rAttr(index_a2x_Sa_tbot,n)
              pslv(n) = a2x%rAttr(index_a2x_Sa_pslv,n)
              tocn(n) = o2x%rAttr(index_o2x_So_t   ,n)
