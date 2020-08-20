@@ -353,6 +353,15 @@ CHECK_C_SOURCE_COMPILES("
 #endif
 int main() {return 0;}" HAVE_DISPATCH2)
 
+if (NETCDF_INTEGRATION)
+  if (NOT HAVE_DISPATCH2)
+    message (FATAL_ERROR "Need newer version of netcdf-c for netcdf integration feature, please upgrade your netCDF library")
+  endif ()
+  set(HAVE_NETCDF_INTEGRATION 1)
+else ()
+  set(HAVE_NETCDF_INTEGRATION 0)
+endif ()
+
 #####
 # Configure and print the libpio.settings file.
 #####
@@ -400,6 +409,7 @@ is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
 is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
 is_enabled(HAVE_NETCDF4 HAS_NETCDF4)
 is_enabled(HAVE_NETCDF_PAR HAS_NETCDF4_PAR)
+is_enabled(HAVE_NETCDF_INTEGRATION HAS_NETCDF_INTEGRATION)
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"

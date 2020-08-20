@@ -413,6 +413,7 @@ AX_SET_META([PIO_HAS_PNETCDF],[$enable_pnetcdf],[yes])
 AX_SET_META([PIO_HAS_PAR_FILTERS], [$have_par_filters],[yes])
 AX_SET_META([PIO_HAS_NETCDF4], [$have_netcdf4],[yes])
 AX_SET_META([PIO_HAS_NETCDF4_PAR], [$have_netcdf_par],[yes])
+AX_SET_META([PIO_HAS_NETCDF_INTEGRATION], [$enable_netcdf_integration],[yes])
 
 # Create output variables from various shell variables, for use in
 # generating libpio.settings.
@@ -430,6 +431,7 @@ AC_SUBST(HAS_SZIP_WRITE, [$have_szip_write])
 AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
 AC_SUBST([HAS_NETCDF4], [$have_netcdf4])
 AC_SUBST([HAS_NETCDF4_PAR], [$have_netcdf_par])
+AC_SUBST([HAS_NETCDF_INTEGRATION], [$enable_netcdf_integration])
 
 # Create the build summary file. 
 AC_CONFIG_FILES([libpio.settings

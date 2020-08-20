@@ -44,13 +44,13 @@ jobs:
 
     - name: autoreconf
       run: autoreconf -i
-    - name: configure
+    - name: build
       run: |
-          export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-          export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
-          export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
-          ./configure
-    - name: make -j distcheck
-      run: |
+        set -x
+        export CFLAGS="-std=c99 -Wall"
+        export FFLAGS="-Wall"
+        export FCFLAGS="-Wall"
         export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran"
+        ./configure
         make -j distcheck
+        
