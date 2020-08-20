@@ -59,3 +59,4 @@ jobs:
         export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Wall"
         export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran"
         make -j distcheck
+        
