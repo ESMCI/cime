@@ -47,9 +47,9 @@ jobs:
     - name: configure
       run: |
         set -x
-        export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror -Wall"
-        export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror -Wall"
-        export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror -Wall"
+        export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Wall"
+        export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Wall"
+        export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Wall"
         ./configure
     - name: make -j distcheck
       run: |
