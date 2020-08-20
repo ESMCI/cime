@@ -46,11 +46,13 @@ jobs:
       run: autoreconf -i
     - name: configure
       run: |
-          export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-          export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
-          export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror"
-          ./configure
+        set -x
+        export CFLAGS="-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror -Wall"
+        export FFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror -Wall"
+        export FCFLAGS="-fsanitize=address -fno-omit-frame-pointer -Werror -Wall"
+        ./configure
     - name: make -j distcheck
       run: |
+        set -x
         export DISTCHECK_CONFIGURE_FLAGS="--enable-fortran"
         make -j distcheck
