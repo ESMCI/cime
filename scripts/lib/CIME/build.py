@@ -331,6 +331,7 @@ ERROR env_build HAS CHANGED
 def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid, compiler, buildlist, comp_interface):
 ###############################################################################
 
+    srcroot    = case.get_value("SRCROOT")
     shared_lib = os.path.join(exeroot, sharedpath, "lib")
     shared_inc = os.path.join(exeroot, sharedpath, "include")
     for shared_item in [shared_lib, shared_inc]:
@@ -356,7 +357,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     cdeps_build_script = None
     if comp_interface == "nuopc" and cmeps_driver and not 'nems' in cmeps_driver:
         libs.append("CDEPS")
-        cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
+        cdeps_build_script = os.path.join(srcroot, "components", "cdeps", "cime_config", "buildlib")
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc

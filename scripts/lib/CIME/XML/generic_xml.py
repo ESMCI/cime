@@ -109,7 +109,7 @@ class GenericXML(object):
             self._FILEMAP[infile] = self.CacheEntry(self.tree, self.root, os.path.getmtime(infile))
 
     def read_fd(self, fd):
-        expect(self.read_only or not self.filename or not self.needsrewrite, "Reading into object marked for rewrite, file {}"               .format(self.filename))
+        expect(self.read_only or not self.filename or not self.needsrewrite, "Reading into object marked for rewrite, file {}".format(self.filename))
         read_only = self.read_only
         if self.tree:
             addroot = _Element(ET.parse(fd).getroot())
