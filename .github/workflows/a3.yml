@@ -47,8 +47,11 @@ jobs:
     - name: build-hdf5
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
-        export CC=mpicc
+        set -x
+        ls -l /home/runner/openmpi/bin
         export PATH="/home/runner/openmpi/bin:$PATH"
+        echo $PATH
+        export CC=mpicc
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.6.tar.gz
         pushd hdf5-1.10.6
