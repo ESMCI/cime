@@ -125,4 +125,4 @@ jobs:
         export PATH="/home/runner/openmpi/bin:$PATH"
         export CC=/home/runner/openmpi/bin/mpicc
         ./configure
-        make
+        make check
