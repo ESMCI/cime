@@ -355,7 +355,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     cdeps_build_script = None
-    if comp_interface == "nuopc" and not cmeps_driver or not 'nems' in cmeps_driver:
+    if comp_interface == "nuopc" and (not cmeps_driver or not 'nems' in cmeps_driver):
         libs.append("CDEPS")
         cdeps_build_script = os.path.join(srcroot, "components", "cdeps", "cime_config", "buildlib")
 
