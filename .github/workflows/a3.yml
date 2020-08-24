@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PATH: "/home/runner/openmpi/bin:$PATH"
       CPPFLAGS: "-I/home/runner/openmpi/include -I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include -I/home/runner/pnetcdf/include"
       LDFLAGS: "-L/home/runner/openmpi/lib -L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib -L/home/runner/pnetcdf/lib"
 
@@ -49,6 +48,7 @@ jobs:
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
         export CC=mpicc
+        export PATH="/home/runner/openmpi/bin:$PATH"
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.6.tar.gz
         pushd hdf5-1.10.6
