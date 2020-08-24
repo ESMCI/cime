@@ -48,15 +48,33 @@ jobs:
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
       run: |
         set -x
-        ls -l /home/runner/openmpi/bin
         export PATH="/home/runner/openmpi/bin:$PATH"
-        echo $PATH
         export CC=/home/runner/openmpi/bin/mpicc
         wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz &> /dev/null
         tar -xzf hdf5-1.10.6.tar.gz
         pushd hdf5-1.10.6
         ./configure --prefix=/home/runner/hdf5 --enable-parallel --disable-tools --disable-fortran --disable-cxx
         make
+        sudo make install
+        popd
+    - name: cache-netcdf-c
+      id: cache-netcdf-c
+      uses: actions/cache@v2
+      with:
+        path: ~/netcdf-c
+        key: netcdf-c-${{ runner.os }}-4.7.4
+
+    - name: build-netcdf-c
+      if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/openmpi/bin:$PATH"
+        export CC=/home/runner/openmpi/bin/mpicc
+        wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-c-4.7.4.tar.gz &> /dev/null
+        tar -xzf netcdf-c-4.7.4.tar.gz
+        pushd netcdf-c-4.7.4
+        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
+        make -j
         sudo make install
         popd
     - name: autoreconf
