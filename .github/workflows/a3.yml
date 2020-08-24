@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      CC: mpicc
-      FC: mpifort
       CPPFLAGS: "-I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include -I/home/runner/pnetcdf/include"
       LDFLAGS: "-L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib -L/home/runner/pnetcdf/lib"
 
