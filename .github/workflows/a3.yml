@@ -77,5 +77,45 @@ jobs:
         make -j
         sudo make install
         popd
+    - name: cache-netcdf-fortran
+      id: cache-netcdf-fortran
+      uses: actions/cache@v2
+      with:
+        path: ~/netcdf-fortran
+        key: netcdf-fortran-${{ runner.os }}-4.5.3
+
+    - name: build-netcdf-fortran
+      if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/openmpi/bin:$PATH"
+        export CC=/home/runner/openmpi/bin/mpicc
+        wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
+        tar -xzf v4.5.3.tar.gz
+        pushd netcdf-fortran-4.5.3
+        ./configure --prefix=/home/runner/netcdf-fortran
+        make -j
+        sudo make install
+        popd
+    - name: cache-pnetcdf
+      id: cache-pnetcdf
+      uses: actions/cache@v2
+      with:
+        path: ~/pnetcdf
+        key: pnetcdf-${{ runner.os }}-1.12.1
+
+    - name: build-pnetcdf
+      if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/openmpi/bin:$PATH"
+        export CC=/home/runner/openmpi/bin/mpicc
+        wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz  &> /dev/null
+        tar -xzf pnetcdf-1.12.1.tar.gz
+        pushd pnetcdf-1.12.1
+        ./configure --prefix=/home/runner/pnetcdf --enable-shared --disable-cxx
+        make
+        sudo make install
+        popd
     - name: autoreconf
       run: autoreconf -i
