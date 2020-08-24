@@ -266,6 +266,7 @@ class Case(object):
         if not os.path.isdir(self._caseroot):
             # do not flush if caseroot wasnt created
             return
+
         for env_file in self._files:
             env_file.write(force_write=flushall)
 
