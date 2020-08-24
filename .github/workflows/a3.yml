@@ -122,7 +122,6 @@ jobs:
     - name: pio build
       run: |
         set -x
-        ls -l .bashrc
         echo "alias mpiexec=\'mpiexec --oversubscribe\'" > .bashrc
         ls -l .bashrc
         source .bashrc
