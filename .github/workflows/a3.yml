@@ -119,3 +119,10 @@ jobs:
         popd
     - name: autoreconf
       run: autoreconf -i
+    - name: pio build
+      run: |
+        set -x
+        export PATH="/home/runner/openmpi/bin:$PATH"
+        export CC=/home/runner/openmpi/bin/mpicc
+        ./configure
+        make
