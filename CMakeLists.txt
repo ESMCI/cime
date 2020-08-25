@@ -444,7 +444,9 @@ configure_file (
   )
 
 # Configure test scripts.
-set(MPIEXEC mpiexec)
+if (NOT MPIEXEC)
+  set(MPIEXEC mpiexec)
+endif()
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/tests/cunit/run_tests.sh.in
   ${CMAKE_CURRENT_BINARY_DIR}/tests/cunit/run_tests.sh @ONLY)
