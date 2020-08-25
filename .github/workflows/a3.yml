@@ -1,4 +1,4 @@
-name: netcdf-4.7.4_pnetcdf-12.1_ncint
+name: netcdf-4.7.4_pnetcdf-12.1_ncint_openmpi_4.0.4
 
 on:
   push:
@@ -117,9 +117,7 @@ jobs:
         make
         sudo make install
         popd
-    - name: autoreconf
-      run: autoreconf -i
-    - name: pio build
+    - name: autotools build
       run: |
         set -x
         echo 'export PATH=/home/runner/openmpi/bin:$PATH' > .bashrc
@@ -128,8 +126,17 @@ jobs:
         source .bashrc
         export PATH="/home/runner/openmpi/bin:$PATH"
         export CC=/home/runner/openmpi/bin/mpicc
+        autoreconf -i
         ./configure --with-mpiexec='mpiexec --oversubscribe'
         which mpiexec
         make check
+    - name: cmake build
+      run: |
+        set -x
+        echo 'export PATH=/home/runner/openmpi/bin:$PATH' > .bashrc
+        source .bashrc
+        export CC=/home/runner/openmpi/bin/mpicc
+        mkdir build
+        cd build
         
         
