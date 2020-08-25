@@ -337,7 +337,6 @@ class EnvMachSpecific(EnvBase):
     def _load_modules_generic(self, modules_to_load, verbose=False):
         sh_init_cmd = self.get_module_system_init_path("sh")
         sh_mod_cmd = self.get_module_system_cmd_path("sh")
-        logger_func = logger.warning if verbose else logger.debug
 
         # Purpose is for environment management system that does not have
         # a python interface and therefore can only determine what they
