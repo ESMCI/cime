@@ -191,9 +191,16 @@ class EnvMachSpecific(EnvBase):
         if envs_to_set is not None:
             for env_name, env_value in envs_to_set:
                 if shell == "sh":
-                    lines.append("export {}={}".format(env_name, env_value))
+                    if env_name:
+                        lines.append("export {}={}".format(env_name, env_value))
+                    else:
+                        lines.append("source {}".format(env_name, env_value))
+
                 elif shell == "csh":
-                    lines.append("setenv {} {}".format(env_name, env_value))
+                    if env_name:
+                        lines.append("setenv {} {}".format(env_name, env_value))
+                    else:
+                        lines.append("echo \"This case includes a shell source file {} which cannot be used from csh type shells\"".format(env_value)
                 else:
                     expect(False, "Unknown shell type: '{}'".format(shell))
 
