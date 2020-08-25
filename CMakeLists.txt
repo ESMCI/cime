@@ -442,3 +442,12 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
   )
+
+# Configure test scripts.
+set(MPIEXEC mpiexec)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/tests/cunit/run_tests.sh.in
+  ${CMAKE_CURRENT_BINARY_DIR}/tests/cunit/run_tests.sh @ONLY)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/examples/c/run_tests.sh.in
+  ${CMAKE_CURRENT_BINARY_DIR}/examples/c/run_tests.sh @ONLY)
