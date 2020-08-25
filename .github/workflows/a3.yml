@@ -128,7 +128,7 @@ jobs:
         source .bashrc
         export PATH="/home/runner/openmpi/bin:$PATH"
         export CC=/home/runner/openmpi/bin/mpicc
-        ./configure
+        ./configure --with-mpiexec='mpiexec --oversubscribe'
         which mpiexec
         make check
         
