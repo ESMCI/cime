@@ -122,8 +122,8 @@ jobs:
     - name: pio build
       run: |
         set -x
-        echo 'alias mpiexec='\''mpiexec --oversubscribe'\' > .bashrc
-        ls -l .bashrc
+        echo 'export PATH=/home/runner/openmpi/bin:$PATH' > .bashrc
+        echo "alias mpiexec='mpiexec --oversubscribe'" >> .bashrc
         source .bashrc
         export PATH="/home/runner/openmpi/bin:$PATH"
         export CC=/home/runner/openmpi/bin/mpicc
