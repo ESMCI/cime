@@ -200,7 +200,7 @@ class EnvMachSpecific(EnvBase):
                     if env_name:
                         lines.append("setenv {} {}".format(env_name, env_value))
                     else:
-                        lines.append("echo \"This case includes a shell source file {} which cannot be used from csh type shells\"".format(env_value)
+                        lines.append("echo \"This case includes a shell source file {} which cannot be used from csh type shells\"".format(env_value))
                 else:
                     expect(False, "Unknown shell type: '{}'".format(shell))
 
