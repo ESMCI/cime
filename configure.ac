@@ -400,7 +400,7 @@ AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 # The user may have changed the MPIEXEC for these test scripts.
-AC_CONFIG_FILES([tests/cunit/run_tests.sh], [chmod ugo+x h5_tests/cunit/run_tests.sh])
+AC_CONFIG_FILES([tests/cunit/run_tests.sh], [chmod ugo+x tests/cunit/run_tests.sh])
 
 # Args:
 # 1. netcdf_meta.h variable
