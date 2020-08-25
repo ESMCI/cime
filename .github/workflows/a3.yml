@@ -123,7 +123,7 @@ jobs:
       run: |
         set -x
         echo 'export PATH=/home/runner/openmpi/bin:$PATH' > .bashrc
-        echo 'alias mpiexec="mpiexec --oversubscribe"' >> .bashrc
+        echo 'alias mpiexec=\'mpiexec --oversubscrib\'' >> .bashrc
         cat .bashrc
         source .bashrc
         export PATH="/home/runner/openmpi/bin:$PATH"
