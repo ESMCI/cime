@@ -202,6 +202,15 @@ if test "x$enable_developer_docs" = xyes; then
 fi
 AM_CONDITIONAL(BUILD_DOCS, [test "x$enable_docs" = xyes])
 
+# Did the user specify an MPI launcher other than mpiexec?
+AC_MSG_CHECKING([whether a user specified program to run mpi programs])
+AC_ARG_WITH([mpiexec],
+              [AS_HELP_STRING([--with-mpiexec=<command>],
+                              [Specify command to launch MPI parallel tests.])],
+            [MPIEXEC=$with_mpiexec], [MPIEXEC=mpiexec])
+AC_MSG_RESULT([$MPIEXEC])
+AC_SUBST([MPIEXEC], [$MPIEXEC])
+
 # Is doxygen installed?
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 if test -z "$DOXYGEN" -a "x$enable_docs" = xyes; then
@@ -389,6 +398,10 @@ AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
 AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
+
+# The user may have changed the MPIEXEC for these test scripts.
+AC_CONFIG_FILES([tests/cunit/run_tests.sh], [chmod ugo+x tests/cunit/run_tests.sh])
+AC_CONFIG_FILES([examples/c/run_tests.sh], [chmod ugo+x examples/c/run_tests.sh])
 
 # Args:
 # 1. netcdf_meta.h variable

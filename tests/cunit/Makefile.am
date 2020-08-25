@@ -69,7 +69,9 @@ test_async_1d_SOURCES = test_async_1d.c pio_tests.h
 test_simple_SOURCES = test_simple.c test_common.c pio_tests.h
 
 # Distribute the test script.
-EXTRA_DIST = run_tests.sh CMakeLists.txt test_darray_frame.c
+EXTRA_DIST = run_tests.sh.in CMakeLists.txt test_darray_frame.c
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log decomp*.txt *.clog2 *.slog2
+
+DISTCLEANFILES = run_tests.sh

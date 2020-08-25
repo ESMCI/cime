@@ -19,7 +19,7 @@ for EXAMPLE in $PIO_EXAMPLES
 do
     success1=false
     echo "running ${EXAMPLE}"
-    mpiexec -n 4 ./${EXAMPLE} && success1=true
+    @MPIEXEC@ -n 4 ./${EXAMPLE} && success1=true
     if test $success1 = false; then
         break
     fi
@@ -29,7 +29,7 @@ for EXAMPLE in $PIO_EXAMPLES_16
 do
     success2=false
     echo "running ${EXAMPLE}"
-    mpiexec -n 16 ./${EXAMPLE} && success2=true
+    @MPIEXEC@ -n 16 ./${EXAMPLE} && success2=true
     if test $success2 = false; then
         break
     fi
