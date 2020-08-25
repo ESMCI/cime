@@ -194,7 +194,7 @@ class EnvMachSpecific(EnvBase):
                     if env_name:
                         lines.append("export {}={}".format(env_name, env_value))
                     else:
-                        lines.append("source {}".format(env_name, env_value))
+                        lines.append("source {}".format(env_value))
 
                 elif shell == "csh":
                     if env_name:
