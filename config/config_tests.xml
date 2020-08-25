@@ -68,18 +68,18 @@ ERP    pes counts hybrid (open-MP/MPI) restart bfb test from startup, default 6 
 
 ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
        (1) ref1case
-	   do an initial for ${STOP_N}/6 writing restarts at ${STOP_N}/6
-	   ref1 case is a clone of the main case (by default this will be 4 days)
-	   short term archiving is on
+           do an initial for ${STOP_N}/6 writing restarts at ${STOP_N}/6
+           ref1 case is a clone of the main case (by default this will be 4 days)
+           short term archiving is on
        (2) ref2case
-	   do a hybrid for ${STOP_N}-${STOP_N}/6 running with ref1 restarts from ${STOP_N}/6
-	   and writing restarts at ( ${STOP_N} - ${STOP_N}/6 )/2 +1
-	   (by default will run for 18 days and write a restart after 10 days)
-	   ref2 case is a clone of the main case
-	   short term archiving is on
+           do a hybrid for ${STOP_N}-${STOP_N}/6 running with ref1 restarts from ${STOP_N}/6
+           and writing restarts at ( ${STOP_N} - ${STOP_N}/6 )/2 +1
+           (by default will run for 18 days and write a restart after 10 days)
+           ref2 case is a clone of the main case
+           short term archiving is on
        (3) case
-	   do a branch run starting from restart written in ref2 case
-	   and run for ???  days
+           do a branch run starting from restart written in ref2 case
+           and run for ???  days
        (4) case do a restart run from the branch case
 
 ======================================================================
@@ -127,7 +127,7 @@ NCK    multi-instance validation vs single instance - sequential PE for instance
 NCR    multi-instance validation vs single instance - concurrent PE for instances  (default length)
        do an initial run test with NINST 1 (suffix: base)
        do an initial run test with NINST 2 (suffix: multiinst for both _0001 and _0002)
-	compare base and _0001 and _0002
+        compare base and _0001 and _0002
 
 NOC    multi-instance validation for single instance ocean (default length)
        do an initial run test with NINST 2 (other than ocn), with mod to instance 1 (suffix: inst1_base, inst2_mod)
@@ -175,47 +175,47 @@ PRE    pause-resume test: by default a BFB test of pause-resume cycling
 
 
 TESTBUILDFAIL     Insta-fail build step. Used to confirm that failed
-		  builds are caught and reported correctly.
+                  builds are caught and reported correctly.
 
 TESTBUILDFAILEXC  Insta-fail build step by failing to init. Used to test
-		  correct behavior when exceptions are generated.
+                  correct behavior when exceptions are generated.
 
 TESTRUNFAIL       Insta-fail run step. Used to confirm that model run
-		  failures are caught and reported correctly.
+                  failures are caught and reported correctly.
 
 TESTRUNFAILEXC    Insta-fail run step via exception. Used to test correct
-		  correct behavior when exceptions are generated.
+                  correct behavior when exceptions are generated.
 
 TESTRUNSTARCFAIL  Insta-fail st_archive step via exception. Used to test correct
-		  behavior when exceptions are generated within in run_phase
-		  for phases other than RUN.
+                  behavior when exceptions are generated within in run_phase
+                  for phases other than RUN.
 
 TESTRUNPASS       Insta-pass run step. Used to test that run that work
-		  are reported correctly.
+                  are reported correctly.
 
 TESTMEMLEAKFAIL   Insta-fail memleak step. Used to test that memleaks are
-		  detected and reported correctly.
+                  detected and reported correctly.
 
 TESTMEMLEAKPASS   Insta-pass memleak step. Used to test that non-memleaks are
-		  reported correctly.
+                  reported correctly.
 
 TESTRUNDIFF       Produces a canned hist file. Env var TESTRUNDIFF_ALTERNATE can
-		  be used to cause a DIFF. Used to check that baseline diffs are
-		  detected and reported correctly.
+                  be used to cause a DIFF. Used to check that baseline diffs are
+                  detected and reported correctly.
 
 TESTRUNDIFF       Produces a canned hist file. Env var TESTRUNDIFF_ALTERNATE can
 \RESUBMIT         be used to cause a DIFF. Used to check that baseline diffs are
-		  detected and reported correctly. Sets Resubmit equal to one.
+                  detected and reported correctly. Sets Resubmit equal to one.
 
 
 TESTTESTDIFF      Simulates internal test diff (non baseline). Used to check that
-		  internal comparison failures are detected and reported correctly.
+                  internal comparison failures are detected and reported correctly.
 
 TESTRUNSLOWPASS   After 5 minutes of sleep, pass run step. Used to test timeouts
-		  and kills.
+                  and kills.
 
 NODEFAIL          Tests restart upon detected node failure. Generates fake failures,
-		  the number of which is controlled by NODEFAIL_NUM_FAILS.
+                  the number of which is controlled by NODEFAIL_NUM_FAILS.
 
 -->
 
