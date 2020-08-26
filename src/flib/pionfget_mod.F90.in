@@ -202,7 +202,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Writes data to a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param vardesc @ref var_desc_t
@@ -228,7 +228,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
@@ -276,7 +276,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param vardesc @ref var_desc_t
@@ -316,7 +316,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
@@ -449,7 +449,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param vardesc @ref var_desc_t
