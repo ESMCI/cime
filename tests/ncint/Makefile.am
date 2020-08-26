@@ -23,7 +23,9 @@ TESTS = run_tests.sh run_perf.sh
 endif # RUN_TESTS
 
 # Distribute the test script.
-EXTRA_DIST = run_tests.sh run_perf.sh
+EXTRA_DIST = run_tests.sh.in run_perf.sh.in
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log
+
+DISTCLEANFILES = run_tests.sh run_perf.sh

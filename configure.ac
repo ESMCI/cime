@@ -401,6 +401,8 @@ AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 
 # The user may have changed the MPIEXEC for these test scripts.
 AC_CONFIG_FILES([tests/cunit/run_tests.sh], [chmod ugo+x tests/cunit/run_tests.sh])
+AC_CONFIG_FILES([tests/ncint/run_tests.sh], [chmod ugo+x tests/ncint/run_tests.sh])
+AC_CONFIG_FILES([tests/ncint/run_perf.sh], [chmod ugo+x tests/ncint/run_perf.sh])
 AC_CONFIG_FILES([examples/c/run_tests.sh], [chmod ugo+x examples/c/run_tests.sh])
 
 # Args:
