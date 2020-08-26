@@ -1,3 +1,6 @@
+# This provides cmake_print_variables() function for debugging.
+include(CMakePrintHelpers)
+
 include (CMakeParseArguments)
 
 # Find Valgrind to perform memory leak check
@@ -89,6 +92,8 @@ function (add_mpi_test TESTNAME)
 
     # Get the platform name
     platform_name (PLATFORM)
+
+    cmake_print_variables(MPIEXEC exec_file num_procs)
 
     # Default ("unknown" platform) execution
     if (PLATFORM STREQUAL "unknown")
