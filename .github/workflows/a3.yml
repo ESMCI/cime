@@ -1,4 +1,4 @@
-name: netcdf-4.7.4_pnetcdf-12.1_ncint
+name: netcdf-4.7.4_pnetcdf-12.1_ncint_openmpi_4.0.4
 
 on:
   push:
@@ -117,9 +117,20 @@ jobs:
         make
         sudo make install
         popd
-    - name: autoreconf
-      run: autoreconf -i
-    - name: pio build
+    - name: cmake build
+      run: |
+        set -x
+        echo 'export PATH=/home/runner/openmpi/bin:$PATH' > .bashrc
+        source .bashrc
+        export CC=mpicc
+        mkdir build
+        cd build
+        export LD_LIBRARY_PATH="/home/runner/netcdf-c/lib:/home/runner/pnetcdf/lib:/home/runner/hdf5/lib:/home/runner/openmpi/lib:$LD_LIBRARY_PATH"
+        cmake -Wno-dev -DWITH_MPIEXEC='/home/runner/openmpi/bin/mpiexec;--oversubscribe' -DNetCDF_C_LIBRARY=/home/runner/netcdf-c/lib/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/home/runner/netcdf-c/include -DPnetCDF_PATH='/home/runner/pnetcdf' -DPIO_ENABLE_FORTRAN=Off -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off .. || (cat CMakeFiles/CMakeOutput.log && cat CMakeFiles/CMakeError.log)
+        make VERBOSE=1
+        make tests VERBOSE=1
+        ctest -VV
+    - name: autotools build
       run: |
         set -x
         echo 'export PATH=/home/runner/openmpi/bin:$PATH' > .bashrc
@@ -128,8 +139,10 @@ jobs:
         source .bashrc
         export PATH="/home/runner/openmpi/bin:$PATH"
         export CC=/home/runner/openmpi/bin/mpicc
+        autoreconf -i
         ./configure --with-mpiexec='mpiexec --oversubscribe'
         which mpiexec
         make check
+
         
         

@@ -1,3 +1,9 @@
+# This is part of the PIO library.
+
+# This is the CMake build file for the main directory.
+
+# Jim Edwards
+
 cmake_minimum_required (VERSION 2.8.12)
 project (PIO C Fortran)
 #cmake_policy(VERSION 3.5.2)
@@ -15,6 +21,9 @@ set(PIO_VERSION_PATCH ${VERSION_PATCH})
 
 # This is needed for the libpio.settings file.
 SET(PACKAGE_VERSION ${PIO_VERSION_MAJOR}.${PIO_VERSION_MINOR}.${PIO_VERSION_PATCH})
+
+# This provides cmake_print_variables() function for debugging.
+include(CMakePrintHelpers)
 
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
@@ -444,10 +453,8 @@ configure_file (
   )
 
 # Configure test scripts.
-set(MPIEXEC mpiexec)
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/tests/cunit/run_tests.sh.in
-  ${CMAKE_CURRENT_BINARY_DIR}/tests/cunit/run_tests.sh @ONLY)
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/examples/c/run_tests.sh.in
-  ${CMAKE_CURRENT_BINARY_DIR}/examples/c/run_tests.sh @ONLY)
+if (NOT WITH_MPIEXEC)
+  set(WITH_MPIEXEC mpiexec)
+endif()
+set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL "")
+set_property(GLOBAL PROPERTY WITH_MPIEXEC "${WITH_MPIEXEC}")

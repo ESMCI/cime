@@ -207,9 +207,9 @@ AC_MSG_CHECKING([whether a user specified program to run mpi programs])
 AC_ARG_WITH([mpiexec],
               [AS_HELP_STRING([--with-mpiexec=<command>],
                               [Specify command to launch MPI parallel tests.])],
-            [MPIEXEC=$with_mpiexec], [MPIEXEC=mpiexec])
-AC_MSG_RESULT([$MPIEXEC])
-AC_SUBST([MPIEXEC], [$MPIEXEC])
+            [WITH_MPIEXEC=$with_mpiexec], [WITH_MPIEXEC=mpiexec])
+AC_MSG_RESULT([$WITH_MPIEXEC])
+AC_SUBST([WITH_MPIEXEC], [$WITH_MPIEXEC])
 
 # Is doxygen installed?
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
