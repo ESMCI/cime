@@ -125,7 +125,7 @@ jobs:
         export PATH="/home/runner/openmpi/bin:$PATH"
         export CC=/home/runner/openmpi/bin/mpicc
         autoreconf -i
-        ./configure --with-mpiexec='mpiexec --oversubscribe' --enable-netcdf-integration
+        ./configure --with-mpiexec='mpiexec --oversubscribe'
         which mpiexec
         make check
     - name: cmake build
