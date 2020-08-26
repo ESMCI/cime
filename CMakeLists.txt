@@ -16,6 +16,9 @@ set(PIO_VERSION_PATCH ${VERSION_PATCH})
 # This is needed for the libpio.settings file.
 SET(PACKAGE_VERSION ${PIO_VERSION_MAJOR}.${PIO_VERSION_MINOR}.${PIO_VERSION_PATCH})
 
+# This provides cmake_print_variables() function for debugging.
+include(CMakePrintHelpers)
+
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
         EXECUTE_PROCESS(
@@ -444,8 +447,9 @@ configure_file (
   )
 
 # Configure test scripts.
-if (NOT MPIEXEC)
-  set(MPIEXEC mpiexec)
+cmake_print_variables(WITH_MPIEXEC)
+if (NOT WITH_MPIEXEC)
+  set(WITH_MPIEXEC mpiexec)
 endif()
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/tests/cunit/run_tests.sh.in

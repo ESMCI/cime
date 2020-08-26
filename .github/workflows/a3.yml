@@ -125,7 +125,7 @@ jobs:
         export CC=mpicc
         mkdir build
         cd build
-        cmake -Wno-dev  -DMPIEXEC='mpiexec --oversubscribe' -DNetCDF_C_LIBRARY=/home/runner/netcdf-c/lib/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/home/runner/netcdf-c/include -DPnetCDF_PATH='/home/runner/pnetcdf' -DPIO_ENABLE_FORTRAN=Off -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off .. || (cat CMakeFiles/CMakeOutput.log && cat CMakeFiles/CMakeError.log)
+        cmake -Wno-dev  -DWITH_MPIEXEC='mpiexec --oversubscribe' -DNetCDF_C_LIBRARY=/home/runner/netcdf-c/lib/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/home/runner/netcdf-c/include -DPnetCDF_PATH='/home/runner/pnetcdf' -DPIO_ENABLE_FORTRAN=Off -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off .. || (cat CMakeFiles/CMakeOutput.log && cat CMakeFiles/CMakeError.log)
         ls -l tests/cunit
         cat tests/cunit/run_tests.sh
         make VERBOSE=1
