@@ -214,6 +214,8 @@ TESTTESTDIFF      Simulates internal test diff (non baseline). Used to check tha
 TESTRUNSLOWPASS   After 5 minutes of sleep, pass run step. Used to test timeouts
                   and kills.
 
+TESTRUNUSERXMLCHANGE Test concurrent user modifications via xmlchange while case is running
+
 NODEFAIL          Tests restart upon detected node failure. Generates fake failures,
                   the number of which is controlled by NODEFAIL_NUM_FAILS.
 
@@ -506,6 +508,18 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
     <DOUT_S>FALSE</DOUT_S>
+  </test>
+
+  <test NAME="TESTRUNUSERXMLCHANGE" INFRASTRUCTURE_TEST="TRUE">
+    <DESC>For testing infra only. Test simultaneous xmlchanges while first run is running.</DESC>
+    <INFO_DBUG>1</INFO_DBUG>
+    <STOP_OPTION>ndays</STOP_OPTION>
+    <STOP_N>11</STOP_N>
+    <CHECK_TIMING>FALSE</CHECK_TIMING>
+    <DOUT_S>FALSE</DOUT_S>
+    <REST_OPTION>none</REST_OPTION>
+    <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
+    <HIST_N>$STOP_N</HIST_N>
   </test>
 
   <test NAME="NODEFAIL" INFRASTRUCTURE_TEST="TRUE">

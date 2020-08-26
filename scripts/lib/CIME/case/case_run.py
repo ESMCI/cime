@@ -111,11 +111,16 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
 
         model_log("e3sm", logger, "{} MODEL EXECUTION BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         run_func = lambda: run_cmd_no_fail(cmd, from_dir=rundir)
+        case.flush()
         try:
             run_and_log_case_status(run_func, "model execution", caseroot=case.get_value("CASEROOT"))
             cmd_success = True
         except CIMEError:
             cmd_success = False
+
+        # The run will potentially take a very long time. We need to allow the user to xmlchange things
+        # in their case
+        case.read_xml()
 
         model_log("e3sm", logger, "{} MODEL EXECUTION HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
@@ -234,10 +239,10 @@ def _save_logs(case, lid):
 ######################################################################################
 def _resubmit_check(case):
 ###############################################################################
-
-    # check to see if we need to do resubmission from this particular job,
-    # Note that Mira requires special logic
-
+    """
+    check to see if we need to do resubmission from this particular job,
+    Note that Mira requires special logic
+    """
     dout_s = case.get_value("DOUT_S")
     logger.warning("dout_s {} ".format(dout_s))
     mach = case.get_value("MACH")
@@ -285,19 +290,11 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
 ###############################################################################
     model_log("e3sm", logger, "{} CASE.RUN BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
     # Set up the run, run the model, do the postrun steps
-    prerun_script = self.get_value("PRERUN_SCRIPT")
-    postrun_script = self.get_value("POSTRUN_SCRIPT")
-
-    data_assimilation_cycles = self.get_value("DATA_ASSIMILATION_CYCLES")
-    data_assimilation_script = self.get_value("DATA_ASSIMILATION_SCRIPT")
-    data_assimilation = (data_assimilation_cycles > 0 and
-                         len(data_assimilation_script) > 0 and
-                         os.path.isfile(data_assimilation_script))
-
 
     # set up the LID
     lid = new_lid()
 
+    prerun_script = self.get_value("PRERUN_SCRIPT")
     if prerun_script:
         model_log("e3sm", logger, "{} PRERUN_SCRIPT BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         self.flush()
@@ -305,6 +302,13 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
                     lid, prefix="prerun")
         self.read_xml()
         model_log("e3sm", logger, "{} PRERUN_SCRIPT HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+
+    # We might need to tweak these if we want to allow the user to change them
+    data_assimilation_cycles = self.get_value("DATA_ASSIMILATION_CYCLES")
+    data_assimilation_script = self.get_value("DATA_ASSIMILATION_SCRIPT")
+    data_assimilation = (data_assimilation_cycles > 0 and
+                         len(data_assimilation_script) > 0 and
+                         os.path.isfile(data_assimilation_script))
 
     for cycle in range(data_assimilation_cycles):
         # After the first DA cycle, runs are restart runs
@@ -336,6 +340,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
         save_postrun_provenance(self)
         model_log("e3sm", logger, "{} SAVE_POSTRUN_PROVENANCE HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
+    postrun_script = self.get_value("POSTRUN_SCRIPT")
     if postrun_script:
         model_log("e3sm", logger, "{} POSTRUN_SCRIPT BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         self.flush()

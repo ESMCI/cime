@@ -343,8 +343,7 @@ class GenericXML(object):
     def validate_timestamp(self):
         timestamp_ok = self.check_timestamp()
         expect(timestamp_ok,
-               """File {} appears to have changed without a corresponding invalidation.
-It's possible an entry needs to be moved to env_volatile""".format(self.filename))
+               "File {} appears to have changed without a corresponding invalidation.".format(self.filename))
 
     def write(self, outfile=None, force_write=False):
         """

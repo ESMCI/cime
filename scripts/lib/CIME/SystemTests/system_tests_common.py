@@ -11,7 +11,7 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
-import glob, gzip, time, traceback, six
+import glob, gzip, time, traceback, six, shutil
 
 logger = logging.getLogger(__name__)
 
@@ -577,14 +577,22 @@ class FakeTest(SystemTestsCommon):
     have names beginnig with "TEST" this is so that the find_system_test
     in utils.py will work with these classes.
     """
-    def _set_script(self, script):
+    def _set_script(self, script, requires_exe=False):
         self._script = script # pylint: disable=attribute-defined-outside-init
+        self._requires_exe = requires_exe # pylint: disable=attribute-defined-outside-init
 
     def build_phase(self, sharedlib_only=False, model_only=False):
-        if (not sharedlib_only):
+        if self._requires_exe:
+            super(FakeTest, self).build_phase(sharedlib_only=sharedlib_only, model_only=model_only)
+
+        if not sharedlib_only:
             exeroot = self._case.get_value("EXEROOT")
             cime_model = self._case.get_value("MODEL")
             modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
+            real_modelexe = modelexe + ".real"
+
+            if self._requires_exe:
+                shutil.move(modelexe, real_modelexe)
 
             with open(modelexe, 'w') as f:
                 f.write("#!/bin/bash\n")
@@ -592,7 +600,8 @@ class FakeTest(SystemTestsCommon):
 
             os.chmod(modelexe, 0o755)
 
-            build.post_build(self._case, [], build_complete=True)
+            if not self._requires_exe:
+                build.post_build(self._case, [], build_complete=True)
 
     def run_indv(self, suffix="base", st_archive=False):
         mpilib = self._case.get_value("MPILIB")
@@ -718,6 +727,52 @@ class TESTBUILDFAILEXC(FakeTest):
     def __init__(self, case):
         FakeTest.__init__(self, case)
         raise RuntimeError("Exception from init")
+
+class TESTRUNUSERXMLCHANGE(FakeTest):
+
+    def build_phase(self, sharedlib_only=False, model_only=False):
+        exeroot = self._case.get_value("EXEROOT")
+        caseroot = self._case.get_value("CASEROOT")
+        cime_model = self._case.get_value("MODEL")
+        modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
+        new_stop_n = self._case.get_value("STOP_N") * 2
+
+        script = \
+"""
+cd {caseroot}
+echo JGF1
+./xmlchange DOUT_S=TRUE
+echo JGF2
+./xmlchange DOUT_S=TRUE --file env_test.xml
+echo JGF3
+./xmlchange RESUBMIT=1
+echo JGF4
+./xmlchange STOP_N={stopn}
+echo JGF5
+./xmlchange CONTINUE_RUN=FALSE
+echo JGF6
+cd -
+sleep 5
+echo JGF7
+{modelexe}.real "$@"
+echo JGF8
+sleep 5
+
+# Need to remove self in order to avoid infinite loop
+echo JGF9
+ls $(dirname {modelexe})
+mv {modelexe} {modelexe}.old
+mv {modelexe}.real {modelexe}
+echo JGF10
+ls $(dirname {modelexe})
+sleep 5
+""".format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
+        self._set_script(script, requires_exe=True)
+        FakeTest.build_phase(self,
+                             sharedlib_only=sharedlib_only, model_only=model_only)
+
+    def run_phase(self):
+        self.run_indv(st_archive=True)
 
 class TESTRUNSLOWPASS(FakeTest):
 

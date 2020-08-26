@@ -1896,6 +1896,22 @@ class X_TestQueryConfig(unittest.TestCase):
         run_cmd_no_fail("{}/query_config --machines".format(SCRIPT_DIR))
 
 ###############################################################################
+class Y_TestUserConcurrentMods(TestCreateTestCommon):
+###############################################################################
+
+    ###########################################################################
+    def test_user_concurrent_mods(self):
+    ###########################################################################
+        # Put this inside any test that's slow
+        if (FAST_ONLY):
+            self.skipTest("Skipping slow test")
+
+        #case = \
+        self._create_test(["--walltime=0:15:00", "TESTRUNUSERXMLCHANGE_P1.f09_g16.X"], test_id=self._baseline_name)
+
+        # TODO: ensure resubmission happened and behaved according to user mods
+
+###############################################################################
 class Z_FullSystemTest(TestCreateTestCommon):
 ###############################################################################
 
