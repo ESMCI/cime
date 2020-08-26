@@ -1,3 +1,9 @@
+# This is part of the PIO library.
+
+# This is the CMake build file for the main directory.
+
+# Jim Edwards
+
 cmake_minimum_required (VERSION 2.8.12)
 project (PIO C Fortran)
 #cmake_policy(VERSION 3.5.2)
@@ -198,7 +204,7 @@ endif ()
 # System Name
 string (TOUPPER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_CAPS)
 set (CMAKE_SYSTEM_DIRECTIVE "${CMAKE_SYSTEM_NAME_CAPS}"
-  CACHE STRING "System name preprocessor directive" FORCE)
+  CACHE STRING "System name preprocessor directive")
 
 # C Compiler Name
 string (TOUPPER "${CMAKE_C_COMPILER_ID}" CMAKE_C_COMPILER_NAME)
@@ -447,16 +453,8 @@ configure_file (
   )
 
 # Configure test scripts.
-cmake_print_variables(WITH_MPIEXEC)
 if (NOT WITH_MPIEXEC)
   set(WITH_MPIEXEC mpiexec)
 endif()
 set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL "")
 set_property(GLOBAL PROPERTY WITH_MPIEXEC "${WITH_MPIEXEC}")
-cmake_print_variables(MPIEXEC)
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/tests/cunit/run_tests.sh.in
-  ${CMAKE_CURRENT_BINARY_DIR}/tests/cunit/run_tests.sh @ONLY)
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/examples/c/run_tests.sh.in
-  ${CMAKE_CURRENT_BINARY_DIR}/examples/c/run_tests.sh @ONLY)

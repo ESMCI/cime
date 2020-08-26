@@ -1,6 +1,8 @@
-# This provides cmake_print_variables() function for debugging.
-include(CMakePrintHelpers)
+# This is part of the PIO library.
 
+# THis file contains CMake code related to MPI.
+
+# Jim Edwards
 include (CMakeParseArguments)
 
 # Find Valgrind to perform memory leak check
@@ -94,11 +96,9 @@ function (add_mpi_test TESTNAME)
     platform_name (PLATFORM)
 
     get_property(WITH_MPIEXEC GLOBAL PROPERTY WITH_MPIEXEC)
-    cmake_print_variables(WITH_MPIEXEC MPIEXEC exec_file num_procs)
     if (WITH_MPIEXEC)
       set(MPIEXEC "${WITH_MPIEXEC}")
     endif ()
-    cmake_print_variables(WITH_MPIEXEC MPIEXEC exec_file num_procs)
 
     # Default ("unknown" platform) execution
     if (PLATFORM STREQUAL "unknown")
@@ -116,8 +116,6 @@ function (add_mpi_test TESTNAME)
 
     endif ()
 
-    cmake_print_variables(EXE_CMD)
-    
     # Add the test to CTest
     add_test(NAME ${TESTNAME} COMMAND ${EXE_CMD})
 
