@@ -116,6 +116,8 @@ function (add_mpi_test TESTNAME)
 
     endif ()
 
+    cmake_print_variables(EXE_CMD)
+    
     # Add the test to CTest
     add_test(NAME ${TESTNAME} COMMAND ${EXE_CMD})
 
