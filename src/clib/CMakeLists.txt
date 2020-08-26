@@ -98,10 +98,10 @@ if (NetCDF_C_FOUND)
     PUBLIC _NETCDF)
   target_link_libraries (pioc
     PUBLIC ${NetCDF_C_LIBRARIES})
-  if (${NetCDF_C_HAS_PARALLEL})
-    target_compile_definitions (pioc
-      PUBLIC _NETCDF4)
-  endif ()
+  # if (${NetCDF_C_HAS_PARALLEL})
+  #   target_compile_definitions (pioc
+  #     PUBLIC _NETCDF4)
+  # endif ()
   if (${NetCDF_C_LOGGING_ENABLED})
     target_compile_definitions (pioc
       PUBLIC NETCDF_C_LOGGING_ENABLED)
