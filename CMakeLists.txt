@@ -198,7 +198,7 @@ endif ()
 # System Name
 string (TOUPPER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_CAPS)
 set (CMAKE_SYSTEM_DIRECTIVE "${CMAKE_SYSTEM_NAME_CAPS}"
-  CACHE STRING "System name preprocessor directive")
+  CACHE STRING "System name preprocessor directive" FORCE)
 
 # C Compiler Name
 string (TOUPPER "${CMAKE_C_COMPILER_ID}" CMAKE_C_COMPILER_NAME)
