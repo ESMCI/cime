@@ -451,7 +451,7 @@ cmake_print_variables(WITH_MPIEXEC)
 if (NOT WITH_MPIEXEC)
   set(WITH_MPIEXEC mpiexec)
 endif()
-set(MPIEXEC "${WITH_MPIEXEC}" CACHE STRING "mpiexec")
+set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL)
 cmake_print_variables(MPIEXEC)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/tests/cunit/run_tests.sh.in
