@@ -93,7 +93,12 @@ function (add_mpi_test TESTNAME)
     # Get the platform name
     platform_name (PLATFORM)
 
-    cmake_print_variables(MPIEXEC exec_file num_procs)
+    get_property(WITH_MPIEXEC GLOBAL PROPERTY WITH_MPIEXEC)
+    cmake_print_variables(WITH_MPIEXEC MPIEXEC exec_file num_procs)
+    if (WITH_MPIEXEC)
+      set(MPIEXEC "${WITH_MPIEXEC}")
+    endif ()
+    cmake_print_variables(WITH_MPIEXEC MPIEXEC exec_file num_procs)
 
     # Default ("unknown" platform) execution
     if (PLATFORM STREQUAL "unknown")
