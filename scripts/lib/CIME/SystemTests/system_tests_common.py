@@ -740,30 +740,21 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
         script = \
 """
 cd {caseroot}
-echo JGF1
 ./xmlchange DOUT_S=TRUE
-echo JGF2
 ./xmlchange DOUT_S=TRUE --file env_test.xml
-echo JGF3
 ./xmlchange RESUBMIT=1
-echo JGF4
 ./xmlchange STOP_N={stopn}
-echo JGF5
 ./xmlchange CONTINUE_RUN=FALSE
-echo JGF6
+./xmlchange RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
 sleep 5
-echo JGF7
 {modelexe}.real "$@"
-echo JGF8
 sleep 5
 
 # Need to remove self in order to avoid infinite loop
-echo JGF9
 ls $(dirname {modelexe})
 mv {modelexe} {modelexe}.old
 mv {modelexe}.real {modelexe}
-echo JGF10
 ls $(dirname {modelexe})
 sleep 5
 """.format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
