@@ -1,0 +1,50 @@
+name: netcdf-4.7.4_pnetcdf-12.1_ncint_mpich-3.3
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      CPPFLAGS: "-I/home/runner/mpich/include -I/home/runner/hdf5/include -I/home/runner/netcdf-c/include -I/home/runner/netcdf-fortran/include -I/home/runner/pnetcdf/include"
+      LDFLAGS: "-L/home/runner/mpich/lib -L/home/runner/hdf5/lib -L/home/runner/netcdf-c/lib -L/home/runner/netcdf-fortran/lib -L/home/runner/pnetcdf/lib"
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Installs
+      run: |
+        sudo apt-get install doxygen graphviz wget gfortran libjpeg-dev libz-dev
+    - name: cache-mpich
+      id: cache-mpich
+      uses: actions/cache@v2
+      with:
+        path: ~/mpich
+        key: mpich-${{ runner.os }}-3.3.2
+
+    - name: build-mpich
+      if: steps.cache-mpich.outputs.cache-hit != 'true'
+      run: |
+        wget http://www.mpich.org/static/downloads/3.3.2/mpich-3.3.2.tar.gz &> /dev/null
+        tar -xzf mpich-3.3.2.tar.gz
+        pushd mpich-3.3.2
+        ./configure --prefix=/home/runner/mpich
+        make
+        sudo make install
+        popd
+    - name: autotools build
+      run: |
+        set -x
+        echo 'export PATH=/home/runner/mpich/bin:$PATH' > .bashrc
+        source .bashrc
+        export PATH="/home/runner/mpich/bin:$PATH"
+        export CC=/home/runner/mpich/bin/mpicc
+        autoreconf -i
+
+        
+        
