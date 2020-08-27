@@ -216,14 +216,14 @@ endif ()
 if (NetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${NetCDF_Fortran_INCLUDE_DIRS})
-  # target_compile_definitions (piof
-  #   PUBLIC _NETCDF)
+  target_compile_definitions (piof
+    PUBLIC _NETCDF)
   target_link_libraries (piof
     PUBLIC ${NetCDF_Fortran_LIBRARIES})
-  # if (EXISTS ${NetCDF_Fortran_INCLUDE_DIR}/netcdf_par.h)
-  #   target_compile_definitions (piof
-  #     PUBLIC _NETCDF4)
-  # endif ()
+  if (EXISTS ${NetCDF_Fortran_INCLUDE_DIR}/netcdf_par.h)
+    target_compile_definitions (piof
+      PUBLIC _NETCDF4)
+  endif ()
 else ()
   target_compile_definitions (piof
     PUBLIC _NONETCDF)
@@ -233,8 +233,8 @@ endif ()
 if (PnetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${PnetCDF_Fortran_INCLUDE_DIRS})
-  # target_compile_definitions (piof
-  #   PUBLIC _PNETCDF)
+  target_compile_definitions (piof
+    PUBLIC _PNETCDF)
   target_link_libraries (piof
     PUBLIC ${PnetCDF_Fortran_LIBRARIES})
 
@@ -246,9 +246,9 @@ if (PnetCDF_Fortran_FOUND)
       PUBLIC USE_PNETCDF_VARN
       PUBLIC USE_PNETCDF_VARN_ON_READ)
   endif()
-# else ()
-#   target_compile_definitions (piof
-#     PUBLIC _NOPNETCDF)
+else ()
+  target_compile_definitions (piof
+    PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====
