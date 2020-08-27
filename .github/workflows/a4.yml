@@ -37,6 +37,26 @@ jobs:
         make
         sudo make install
         popd
+    - name: cache-hdf5
+      id: cache-hdf5
+      uses: actions/cache@v2
+      with:
+        path: ~/hdf5
+        key: hdf5-${{ runner.os }}-1.10.6-mpich-3.3.2
+
+    - name: build-hdf5
+      if: steps.cache-hdf5.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/mpich/bin:$PATH"
+        export CC=/home/runner/mpich/bin/mpicc
+        wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz &> /dev/null
+        tar -xzf hdf5-1.10.6.tar.gz
+        pushd hdf5-1.10.6
+        ./configure --prefix=/home/runner/hdf5 --enable-parallel --disable-tools --disable-fortran --disable-cxx --enable-parallel-tests
+        make
+        sudo make install
+        popd
     - name: autotools build
       run: |
         set -x
