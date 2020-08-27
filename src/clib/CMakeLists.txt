@@ -94,8 +94,8 @@ endif ()
 if (NetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${NetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _NETCDF)
+  # target_compile_definitions (pioc
+  #   PUBLIC _NETCDF)
   target_link_libraries (pioc
     PUBLIC ${NetCDF_C_LIBRARIES})
   # if (${NetCDF_C_HAS_PARALLEL})
@@ -109,17 +109,17 @@ if (NetCDF_C_FOUND)
     target_compile_definitions (pioc
       PUBLIC LOGGING)
   endif()
-else ()
-  target_compile_definitions (pioc
-    PUBLIC _NONETCDF)
+# else ()
+#   target_compile_definitions (pioc
+#     PUBLIC _NONETCDF)
 endif ()
 
 #===== PnetCDF-C =====
 if (PnetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _PNETCDF)
+  # target_compile_definitions (pioc
+  #   PUBLIC _PNETCDF)
   target_link_libraries (pioc
     PUBLIC ${PnetCDF_C_LIBRARIES})
 
@@ -131,9 +131,9 @@ if (PnetCDF_C_FOUND)
       PUBLIC USE_PNETCDF_VARN
       PUBLIC USE_PNETCDF_VARN_ON_READ)
   endif()
-else ()
-  target_compile_definitions (pioc
-    PUBLIC _NOPNETCDF)
+# else ()
+#   target_compile_definitions (pioc
+#     PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====
