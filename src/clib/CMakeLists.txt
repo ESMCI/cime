@@ -94,8 +94,8 @@ endif ()
 if (NetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${NetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _NETCDF)
+  # target_compile_definitions (pioc
+  #   PUBLIC _NETCDF)
   target_link_libraries (pioc
     PUBLIC ${NetCDF_C_LIBRARIES})
   # if (${NetCDF_C_HAS_PARALLEL})
