@@ -30,6 +30,9 @@
 
 #define USE_VARD @USE_VARD@
 
+#cmakedefine HAVE_NETCDF4
+#cmakedefine HAVE_NETCDF_PAR
+
 /* Does netCDF and HDF5 support parallel I/O filters? */
 #cmakedefine HAVE_PAR_FILTERS
 

@@ -311,6 +311,9 @@ CHECK_C_SOURCE_COMPILES("
       choke me
 #endif
 int main() {return 0;}" HAVE_NETCDF_PAR)
+if (HAVE_NETCDF_PAR)
+  set(_NETCDF4 1)
+endif ()
 
 ###
 # Check to see if szip write capability is present in netcdf-c.
