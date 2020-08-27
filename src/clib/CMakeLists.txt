@@ -97,8 +97,6 @@ if (NetCDF_C_FOUND)
   target_link_libraries (pioc
     PUBLIC ${NetCDF_C_LIBRARIES})
   if (${NetCDF_C_LOGGING_ENABLED})
-    target_compile_definitions (pioc
-      PUBLIC NETCDF_C_LOGGING_ENABLED)
     # netcdf.h needs this to be defined to use netCDF logging.
     target_compile_definitions (pioc
       PUBLIC LOGGING)
