@@ -1906,10 +1906,22 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
         if (FAST_ONLY):
             self.skipTest("Skipping slow test")
 
-        #case = \
-        self._create_test(["--walltime=0:15:00", "TESTRUNUSERXMLCHANGE_P1.f09_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_P1.f09_g16.X"], test_id=self._baseline_name)
 
-        # TODO: ensure resubmission happened and behaved according to user mods
+        # We need to be careful since we are running a resubmit. The first run should
+        # report a RUN PASS, which will cause our waiting code to stop waiting. But we
+        # want to wait for the second run too.
+        time.sleep(60) # give second run a chance to begin
+        self._wait_for_tests(self._baseline_name) # wait for second run
+
+        with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
+            contents = fd.read()
+            self.assertEqual(contents.count("model execution success"), 2)
+
+        rundir = run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
+        with open(os.path.join(rundir, "drv_in"), "r") as fd:
+            contents = fd.read()
+            self.assertTrue("stop_n = 6" in contents)
 
 ###############################################################################
 class Z_FullSystemTest(TestCreateTestCommon):
