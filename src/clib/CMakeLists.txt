@@ -118,8 +118,8 @@ endif ()
 if (PnetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _PNETCDF)
+  # target_compile_definitions (pioc
+  #   PUBLIC _PNETCDF)
   target_link_libraries (pioc
     PUBLIC ${PnetCDF_C_LIBRARIES})
 

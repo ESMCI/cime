@@ -36,7 +36,8 @@
 /* Does netCDF support parallel I/O for netCDF/HDF5 files? */
 #cmakedefine HAVE_NETCDF_PAR
 
-/* Does PIO support netCDF/HDF5 files? */
+/* Does PIO support netCDF/HDF5 files? (Will be same as
+ * HAVE_NETCDF_PAR). */
 #cmakedefine _NETCDF4
 
 /* Does netCDF and HDF5 support parallel I/O filters? */

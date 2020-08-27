@@ -233,8 +233,8 @@ endif ()
 if (PnetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${PnetCDF_Fortran_INCLUDE_DIRS})
-  target_compile_definitions (piof
-    PUBLIC _PNETCDF)
+  # target_compile_definitions (piof
+  #   PUBLIC _PNETCDF)
   target_link_libraries (piof
     PUBLIC ${PnetCDF_Fortran_LIBRARIES})
 
