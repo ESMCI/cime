@@ -216,14 +216,14 @@ endif ()
 if (NetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${NetCDF_Fortran_INCLUDE_DIRS})
-  target_compile_definitions (piof
-    PUBLIC _NETCDF)
+  # target_compile_definitions (piof
+  #   PUBLIC _NETCDF)
   target_link_libraries (piof
     PUBLIC ${NetCDF_Fortran_LIBRARIES})
-  if (EXISTS ${NetCDF_Fortran_INCLUDE_DIR}/netcdf_par.h)
-    target_compile_definitions (piof
-      PUBLIC _NETCDF4)
-  endif ()
+  # if (EXISTS ${NetCDF_Fortran_INCLUDE_DIR}/netcdf_par.h)
+  #   target_compile_definitions (piof
+  #     PUBLIC _NETCDF4)
+  # endif ()
 else ()
   target_compile_definitions (piof
     PUBLIC _NONETCDF)
