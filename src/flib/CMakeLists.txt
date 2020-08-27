@@ -224,9 +224,9 @@ if (NetCDF_Fortran_FOUND)
   #   target_compile_definitions (piof
   #     PUBLIC _NETCDF4)
   # endif ()
-else ()
-  target_compile_definitions (piof
-    PUBLIC _NONETCDF)
+# else ()
+#   target_compile_definitions (piof
+#     PUBLIC _NONETCDF)
 endif ()
 
 #===== PnetCDF =====
@@ -246,9 +246,9 @@ if (PnetCDF_Fortran_FOUND)
       PUBLIC USE_PNETCDF_VARN
       PUBLIC USE_PNETCDF_VARN_ON_READ)
   endif()
-else ()
-  target_compile_definitions (piof
-    PUBLIC _NOPNETCDF)
+# else ()
+#   target_compile_definitions (piof
+#     PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====
