@@ -61,6 +61,7 @@ module pio_nf
        pio_inq_vardimid                                     , &
        pio_inq_varnatts                                     , &
        pio_inq_var_deflate                                  , &
+       pio_inq_var_chunking                                 , &
        pio_inquire_variable                                 , &
        pio_inquire_dimension                                , &
        pio_inq_dimname                                      , &
@@ -92,7 +93,7 @@ module pio_nf
   end interface pio_def_var_deflate
   interface pio_def_var_chunking
      module procedure &
-          def_var_chunking
+          def_var_chunking_desc
   end interface pio_def_var_chunking
   interface pio_inq_attname
      module procedure &
@@ -156,6 +157,12 @@ module pio_nf
           inq_var_deflate_vid                                  , &
           inq_var_deflate_id
   end interface pio_inq_var_deflate
+  interface pio_inq_var_chunking
+     module procedure &
+          inq_var_chunking_desc                                 , &
+          inq_var_chunking_vid                                  , &
+          inq_var_chunking_id
+  end interface pio_inq_var_chunking
   interface pio_inquire_dimension
      module procedure &
           inquire_dimension_desc                            , &
@@ -1245,6 +1252,77 @@ contains
   !>
   !! @public
   !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !!
+  !! @param File @copydoc file_desc_t
+  !! @param vardesc @copydoc var_desc_t
+  !! @param storage 0 for chunked, 1 for contiguous
+  !! @param chunksizes Array of chunk sizes.
+  !! @retval ierr @copydoc error_return
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_desc(File, vardesc, storage, chunksizes) result(ierr)
+
+    type (File_desc_t), intent(in) :: File
+    type (Var_desc_t), intent(in) :: vardesc
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    ierr = pio_inq_var_chunking(File%fh, vardesc%varid, storage, chunksizes)
+  end function inq_var_chunking_desc
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_vid(File, varid, storage, chunksizes) result(ierr)
+
+    type (File_desc_t), intent(in) :: File
+    integer, intent(in) :: varid
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    ierr = pio_inq_var_chunking(File%fh, varid, storage, chunksizes)
+  end function inq_var_chunking_vid
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_id(ncid, varid, storage, chunksizes) result(ierr)
+    integer, intent(in) :: ncid
+    integer, intent(in) :: varid
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+    integer(kind=PIO_OFFSET_KIND) :: cchunksizes(PIO_MAX_VAR_DIMS)
+    integer :: ndims, i
+
+    interface
+       integer(C_INT) function PIOc_inq_var_chunking(ncid, varid, storage, cchunksizes) &
+            bind(C, name="PIOc_inq_var_chunking")
+         use iso_c_binding
+         integer(C_INT), value :: ncid
+         integer(C_INT), value :: varid
+         integer(C_INT) :: storage
+         integer(C_SIZE_T) :: cchunksizes(*)
+       end function PIOc_inq_var_chunking
+    end interface
+
+    ierr = PIOc_inq_var_chunking(ncid, varid-1, storage, cchunksizes)
+    ierr = pio_inq_varndims(ncid, varid, ndims)
+    do i = 1, ndims
+       chunksizes(i) = cchunksizes(ndims - i + 1)
+    enddo
+    
+  end function inq_var_chunking_id
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Get the name associated with a variable.
   !!
   !! @param File @copydoc file_desc_t
@@ -1705,12 +1783,12 @@ contains
   !! Changes chunking settings for a netCDF-4/HDF5 variable.
   !! @author Ed Hartnett
   !<
-  integer function def_var_chunking(file, vardesc, storage, chunksizes) result(ierr)
+  integer function def_var_chunking_desc(file, vardesc, storage, chunksizes) result(ierr)
     type (File_desc_t), intent(in)  :: file
     type (var_desc_t), intent(in) :: vardesc
     integer, intent(in) :: storage
     integer, intent(in) :: chunksizes(:)
-    integer(C_INT) :: cchunksizes(PIO_MAX_VAR_DIMS)
+    integer(kind=PIO_OFFSET_KIND) :: cchunksizes(PIO_MAX_VAR_DIMS)
     integer :: ndims, i
 
     interface
@@ -1720,16 +1798,16 @@ contains
          integer(c_int), value :: ncid
          integer(c_int), value :: varid
          integer(c_int), value :: storage
-         integer(c_int) :: chunksizes(*)
+         integer(c_size_t) :: chunksizes(*)
        end function PIOc_def_var_chunking
     end interface
     ndims = size(chunksizes)
     do i=1,ndims
-       cchunksizes(i) = chunksizes(ndims-i+1)-1
+       cchunksizes(i) = chunksizes(ndims-i+1)
     enddo
 
     ierr = PIOc_def_var_chunking(file%fh, vardesc%varid-1, storage, cchunksizes)
-  end function def_var_chunking
+  end function def_var_chunking_desc
 
   !>
   !! @ingroup PIO_set_chunk_cache

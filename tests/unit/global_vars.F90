@@ -2,6 +2,7 @@
 !! @file
 !! @brief Module containing variables used across all unit test files
 !<
+#include "config.h"
 
 module global_vars
 

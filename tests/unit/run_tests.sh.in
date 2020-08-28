@@ -10,14 +10,14 @@ trap exit INT TERM
 
 printf 'running PIO tests...\n'
 
-PIO_TESTS='pio_unit_test_driver'
+PIO_TESTS='pio_unit_test_driver ftst_vars_chunking'
 
 success1=true
 for TEST in $PIO_TESTS
 do
     success1=false
     echo "running ${TEST}"
-    mpiexec -n 4 ./${TEST} && success1=true
+    @WITH_MPIEXEC@ -n 4 ./${TEST} && success1=true
     if test $success1 = false; then
         break
     fi
