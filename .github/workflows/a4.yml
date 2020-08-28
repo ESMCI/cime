@@ -97,6 +97,26 @@ jobs:
         make -j
         sudo make install
         popd
+    - name: cache-pnetcdf
+      id: cache-pnetcdf
+      uses: actions/cache@v2
+      with:
+        path: ~/pnetcdf
+        key: pnetcdf-${{ runner.os }}-1.12.1-mpich-3.3.2
+
+    - name: build-pnetcdf
+      if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/mpich/bin:$PATH"
+        export CC=/home/runner/mpich/bin/mpicc
+        wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.1.tar.gz  &> /dev/null
+        tar -xzf pnetcdf-1.12.1.tar.gz
+        pushd pnetcdf-1.12.1
+        ./configure --prefix=/home/runner/pnetcdf --enable-shared --disable-cxx
+        make
+        sudo make install
+        popd
     - name: autotools build
       run: |
         set -x
