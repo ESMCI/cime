@@ -17,6 +17,8 @@ program ftst_vars
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks , ierr)
   
   if (my_rank .eq. 0) print *,'Testing variables...'
+
+  call PIO_
      
   if (my_rank .eq. 0) print *,'SUCCESS!'
   call MPI_Finalize(ierr)        
