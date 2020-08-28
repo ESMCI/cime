@@ -10,11 +10,15 @@ program ftst_vars
   use pio
   
   type(iosystem_desc_t) :: pio_iosystem
-  type(file_desc_t)     :: pio_file  
+  type(file_desc_t)     :: pio_file
+  type(var_desc_t)      :: pio_var  
   integer :: my_rank, ntasks
   integer :: niotasks = 1, stride = 1
   character(len=64) :: filename = 'ftst_vars.nc'
+  character(len=64) :: dim_name = 'influence_on_Roman_history'
+  character(len=64) :: var_name = 'Caesar'
   integer :: iotype = PIO_iotype_netcdf4c
+  integer :: dimid, dim_len = 4
   integer :: ierr
   
   ! Set up MPI
@@ -36,12 +40,23 @@ program ftst_vars
   ierr = PIO_createfile(pio_iosystem, pio_file, iotype, filename)
   if (ierr .ne. PIO_NOERR) stop 3
 
+  ! Define a dim.
+  ret_val = PIO_def_dim(pio_file, dim_name, dim_len, dimid)
+  if (ierr .ne. PIO_NOERR) stop 5
+  
+  ! Define a var.
+  ret_val = PIO_def_var(pio_file, var_name, PIO_int, (/dimid/), pio_var)
+  if (ierr .ne. PIO_NOERR) stop 7
+
   ! Close the file.
   call PIO_closefile(pio_file)
 
   ! Open the file.
+  ret_val = PIO_openfile(pio_iosystem, pio_file, iotype, filename, PIO_nowrite)  
+  if (ierr .ne. PIO_NOERR) stop 3
 
-  
+  ! Close the file.
+  call PIO_closefile(pio_file)
 
   ! Finalize PIO.
   call PIO_finalize(pio_iosystem, ierr)
