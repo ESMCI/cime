@@ -3,6 +3,7 @@
 !! @brief Module containing basic unit tests that are run for both
 !!        binary and netcdf file types.
 !<
+#include "config.h"
 
 module basic_tests
 

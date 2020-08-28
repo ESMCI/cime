@@ -10,10 +10,12 @@
 AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
 # Build the test for make check.
-check_PROGRAMS = pio_unit_test_driver
+check_PROGRAMS = pio_unit_test_driver ftst_vars
 pio_unit_test_driver_SOURCES = driver.F90
 pio_unit_test_driver_LDADD = libglobal_vars.la libncdf_tests.la	\
-libbasic_tests.la ${top_builddir}/src/flib/libpiof.la ${top_builddir}/src/clib/libpioc.la
+libbasic_tests.la ${top_builddir}/src/flib/libpiof.la		\
+${top_builddir}/src/clib/libpioc.la
+ftst_vars_SOURCES = ftst_vars.F90
 
 # Build these uninstalled convenience libraries.
 noinst_LTLIBRARIES = libglobal_vars.la libncdf_tests.la	\

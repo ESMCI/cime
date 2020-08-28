@@ -2,6 +2,7 @@
 !! @file
 !! @brief Module containing netcdf-specific PIO unit tests
 !<
+#include "config.h"
 
 module ncdf_tests
 

@@ -2,6 +2,7 @@
 !! @file
 !! @brief The driver for PIO unit tests
 !<
+#include "config.h"
 
 Program pio_unit_test_driver
   use pio
