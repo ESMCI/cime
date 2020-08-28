@@ -39,9 +39,9 @@ endif ()
 add_dependencies (tests pio_unit_test)
 
 # Add ftst_vars.F90.
-add_executable (ftst_vars EXCLUDE_FROM_ALL ftst_vars.F90)
-target_link_libraries (ftst_vars piof)
-add_dependencies (tests ftst_vars)
+add_executable (ftst_vars_chunking EXCLUDE_FROM_ALL ftst_vars_chunking.F90)
+target_link_libraries (ftst_vars_chunking piof)
+add_dependencies (tests ftst_vars_chunking)
 
 # Test Timeout in seconds.
 set (DEFAULT_TEST_TIMEOUT 60)
@@ -63,8 +63,8 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_unit_test
     NUMPROCS 4
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(ftst_vars
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/ftst_vars
+  add_mpi_test(ftst_vars_chunking
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/ftst_vars_chunking
     NUMPROCS 4
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()

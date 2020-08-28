@@ -14,12 +14,12 @@ LDADD = ${top_builddir}/src/flib/libpiof.la	\
 ${top_builddir}/src/clib/libpioc.la
 
 # Build the test for make check.
-check_PROGRAMS = pio_unit_test_driver ftst_vars
+check_PROGRAMS = pio_unit_test_driver ftst_vars_chunking
 pio_unit_test_driver_SOURCES = driver.F90
 pio_unit_test_driver_LDADD = libglobal_vars.la libncdf_tests.la	\
 libbasic_tests.la ${top_builddir}/src/flib/libpiof.la		\
 ${top_builddir}/src/clib/libpioc.la
-ftst_vars_SOURCES = ftst_vars.F90
+ftst_vars_chunking_SOURCES = ftst_vars_chunking.F90
 
 # Build these uninstalled convenience libraries.
 noinst_LTLIBRARIES = libglobal_vars.la libncdf_tests.la	\
