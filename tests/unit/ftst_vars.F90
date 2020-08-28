@@ -8,6 +8,7 @@
 program ftst_vars
   use mpi
   use pio
+  use pio_nf
   
   type(iosystem_desc_t) :: pio_iosystem
   type(file_desc_t)     :: pio_file
@@ -18,7 +19,8 @@ program ftst_vars
   character(len=64) :: dim_name = 'influence_on_Roman_history'
   character(len=64) :: var_name = 'Caesar'
   integer :: iotype = PIO_iotype_netcdf4c
-  integer :: dimid, dim_len = 4
+  integer :: dimid, dim_len = 40
+  integer :: chunksize = 10
   integer :: ierr
   
   ! Set up MPI
@@ -26,6 +28,8 @@ program ftst_vars
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks , ierr)
 
+  ! This whole test only works for netCDF/HDF5 files, because it is
+  ! about chunking.
 #ifdef _NETCDF4
   if (my_rank .eq. 0) print *,'Testing variables...'
 
@@ -48,6 +52,10 @@ program ftst_vars
   ! Define a var.
   ret_val = PIO_def_var(pio_file, var_name, PIO_int, (/dimid/), pio_var)
   if (ierr .ne. PIO_NOERR) stop 7
+
+  ! Define chunking for var.
+  ret_val = PIO_def_var_chunking(pio_file, pio_var, 0, (/chunksize/))
+  if (ierr .ne. PIO_NOERR) stop 9
 
   ! Close the file.
   call PIO_closefile(pio_file)

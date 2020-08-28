@@ -1725,7 +1725,7 @@ contains
     end interface
     ndims = size(chunksizes)
     do i=1,ndims
-       cchunksizes(i) = chunksizes(ndims-i+1)-1
+       cchunksizes(i) = chunksizes(ndims-i+1)
     enddo
 
     ierr = PIOc_def_var_chunking(file%fh, vardesc%varid-1, storage, cchunksizes)
