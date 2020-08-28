@@ -57,6 +57,46 @@ jobs:
         make
         sudo make install
         popd
+    - name: cache-netcdf-c
+      id: cache-netcdf-c
+      uses: actions/cache@v2
+      with:
+        path: ~/netcdf-c
+        key: netcdf-c-${{ runner.os }}-4.7.4-mpich-3.3.2
+
+    - name: build-netcdf-c
+      if: steps.cache-netcdf-c.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/mpich/bin:$PATH"
+        export CC=/home/runner/mpich/bin/mpicc
+        wget https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-c-4.7.4.tar.gz &> /dev/null
+        tar -xzf netcdf-c-4.7.4.tar.gz
+        pushd netcdf-c-4.7.4
+        ./configure --prefix=/home/runner/netcdf-c --disable-dap --disable-utilities
+        make -j
+        sudo make install
+        popd
+    - name: cache-netcdf-fortran
+      id: cache-netcdf-fortran
+      uses: actions/cache@v2
+      with:
+        path: ~/netcdf-fortran
+        key: netcdf-fortran-${{ runner.os }}-4.5.3-mpich-3.3.2
+
+    - name: build-netcdf-fortran
+      if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+      run: |
+        set -x
+        export PATH="/home/runner/mpich/bin:$PATH"
+        export CC=/home/runner/mpich/bin/mpicc
+        wget https://github.com/Unidata/netcdf-fortran/archive/v4.5.3.tar.gz &> /dev/null
+        tar -xzf v4.5.3.tar.gz
+        pushd netcdf-fortran-4.5.3
+        ./configure --prefix=/home/runner/netcdf-fortran
+        make -j
+        sudo make install
+        popd
     - name: autotools build
       run: |
         set -x
