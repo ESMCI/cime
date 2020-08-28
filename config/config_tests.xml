@@ -74,7 +74,7 @@ ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
        (2) ref2case
            do a hybrid for ${STOP_N}-${STOP_N}/6 running with ref1 restarts from ${STOP_N}/6
            and writing restarts at ( ${STOP_N} - ${STOP_N}/6 )/2 +1
-	   (by default will run for 18 days and write a restart after 10 days)
+           (by default will run for 18 days and write a restart after 10 days)
            ref2 case is a clone of the main case
            short term archiving is on
        (3) case
@@ -590,6 +590,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>none</REST_OPTION>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
+    <OCN_DIAG_MODE>none</OCN_DIAG_MODE>
   </test>
 
   <test NAME="MCC">

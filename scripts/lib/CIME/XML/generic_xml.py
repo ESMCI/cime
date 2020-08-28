@@ -90,8 +90,8 @@ class GenericXML(object):
             timestamp_file  = os.path.getmtime(infile)
             if timestamp_file == timestamp_cache:
                 logger.debug("read (cached): {}".format(infile))
-                expect(self.read_only or not self.filename or not self.needsrewrite, "Reading into object marked for rewrite, file {}"
-                       .format(self.filename))
+                expect(self.read_only or not self.filename or not self.needsrewrite,
+                       "Reading into object marked for rewrite, file {}".format(self.filename))
                 self.tree, self.root, _ = self._FILEMAP[infile]
                 cached_read = True
 

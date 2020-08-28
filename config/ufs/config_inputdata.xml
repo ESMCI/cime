@@ -8,6 +8,7 @@
   <!-- it will be searched for filename and chksum of each downloaded file.  -->
   <!-- see the file ftp://ftp.cgd.ucar.edu/cesm/inputdata_chksum.dat for proper format. -->
 
+  <!-- server for sample data -->
   <server>
     <comment>ftp site for ufs release</comment>
     <protocol>ftp</protocol>
@@ -16,17 +17,30 @@
     <password>user@example.edu</password>
     <ic_filepath>/inputdata/</ic_filepath>
   </server>
-  <server>
-    <comment>NOMADS site for grib initial conditions (depricated)</comment>
-    <protocol>wget</protocol>
-    <address>https://nomads.ncdc.noaa.gov:</address>
-    <ic_filepath>data/gfs4/</ic_filepath>
-  </server>
-  <server>
-    <comment>NOMADS ftp site for grib initial conditions</comment>
-    <protocol>ftp</protocol>
-    <address>ftp://nomads.ncdc.noaa.gov</address>
-    <ic_filepath>GFS/Grid4</ic_filepath>
-  </server>
 
+  <!-- servers for GRIB2 data -->
+  <server>
+    <comment>NCEI Thredds server for historical 0.5 deg. GRIB2 initial conditions</comment>
+    <protocol>wget</protocol>
+    <address>https://www.ncei.noaa.gov</address>
+    <ic_filepath>thredds/fileServer/model-gfs-004-files-old/</ic_filepath>
+  </server>
+  <server>
+    <comment>NCEI Thredds server for 0.5 deg. GRIB2 initial conditions</comment>
+    <protocol>wget</protocol>
+    <address>https://www.ncei.noaa.gov</address>
+    <ic_filepath>thredds/fileServer/model-gfs-004-files/</ic_filepath>
+  </server>
+  <server>
+    <comment>NCEI Thredds server for historical 1.0 deg. GRIB2 initial conditions</comment>
+    <protocol>wget</protocol>
+    <address>https://www.ncei.noaa.gov</address>
+    <ic_filepath>thredds/fileServer/model-gfs-003-files-old/</ic_filepath>
+  </server>
+  <server>
+    <comment>NCEI Thredds server for 1.0 deg. GRIB2 initial conditions</comment>
+    <protocol>wget</protocol>
+    <address>https://www.ncei.noaa.gov</address>
+    <ic_filepath>thredds/fileServer/model-gfs-003-files/</ic_filepath>
+  </server>
 </inputdata>

@@ -136,11 +136,11 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules mpilib="mpt" compiler="gnu">
 	<command name="use">/glade/p/ral/jntp/GMTB/tools/modulefiles/gnu-8.3.0/mpt-2.19</command>
-	<command name="load">NCEPlibs/1.0.0</command>
+	<command name="load">NCEPlibs/1.1.0</command>
       </modules>
       <modules mpilib="mpt" compiler="intel">
 	<command name="use">/glade/p/ral/jntp/GMTB/tools/modulefiles/intel-19.0.5/mpt-2.19</command>
-	<command name="load">NCEPlibs/1.0.0</command>
+	<command name="load">NCEPlibs/1.1.0</command>
       </modules>
       <modules compiler="intel" mpilib="impi" DEBUG="FALSE" comp_interface="nuopc">
       <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5</command>

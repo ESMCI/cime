@@ -1,6 +1,71 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 8-20-2020
+Tag: cime5.8.31
+Answer Changes: None
+Tests: scripts_regressio_tests
+Dependencies:
+
+Brief Summary:
+    - Fix FV3 grid problem and by default end the GSWP3 forcing in 2013.
+    - CMEPS driver env var.
+    - Add flexibility in dlnd domain_fracname.
+    - Fix K_TestCimeCase scripts regression tests on Mappy.
+    - Add cuda entries.
+    - Remove fox build from makefile.
+    - Revert PR #3658.
+    - shell_commands useds before env_test.xml is written.
+    - Revert dlnd source code to how it was prior to PR 3619.
+    - Add a warning if the user attempts to change a value set by env_test.xml.
+    - Skip over namelist vars ending with "input_data" in check_input_data.
+    - CIME changes to support upcoming addition of MALI gis1to10km configuration.
+    - Changes needed to have cdeps 3d stream input working.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+d575f612e Merge pull request #3679 from ekluzek/fv3gridfix2013endGSWP3
+cb20f8725 Merge pull request #3666 from jedwards4b/cmeps_driver_env_var
+bea8a7fcd Merge pull request #3678 from billsacks/dlnd_frac_more_flexible
+5408413b9 Merge pull request #3675 from ESMCI/wpcoomb/fix_K_TestCimeCase_scripts_regression_tests_on_Mappy
+4ebf75a1d Merge pull request #3677 from ESMCI/mrnorman/add-cuda-entries-xml
+e673f457b Merge pull request #3674 from jedwards4b/remove_fox
+43036f386 Merge pull request #3676 from ESMCI/jgfouca/revert_input_chg
+a27d3abef shell_commands useds before env_test.xml is written
+ce6fc2ba1 Merge pull request #3671 from billsacks/fix_dlnd_for_sno
+eeb1e3d2c Merge pull request #3670 from jedwards4b/add_env_test_warning
+de05b6aa8 Merge pull request #3665 from fvitt/data_path
+896bdf552 Merge pull request #3660 from ESMCI/jonbob/add-gis1to10km
+3a86badd6 Merge pull request #3659 from ESMCI/mvertens/cdeps3d
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+M       config/cesm/config_grids_mct.xml
+M       config/ufs/config_inputdata.xml
+M       config/ufs/machines/config_machines.xml
+M       config/xml_schemas/config_compilers_v2.xsd
+M       scripts/Tools/Makefile
+M       scripts/Tools/xmlchange
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/lib/CIME/test_scheduler.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/components/data_comps_mct/datm/cime_config/config_component.xml
+M       src/components/data_comps_mct/dlnd/cime_config/namelist_definition_dlnd.xml
+M       src/components/data_comps_mct/dlnd/src/dlnd_comp_mod.F90
+M       src/components/data_comps_mct/dlnd/src/dlnd_shr_mod.F90
+M       src/drivers/mct/cime_config/config_component.xml
+M       src/externals/mct/mpeu/m_inpak90.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-12-2020
 Tag: cime5.8.30
 Answer Changes: [None, Round Off, Climate Changing]
