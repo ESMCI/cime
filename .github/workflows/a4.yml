@@ -122,10 +122,8 @@ jobs:
         set -x
         echo 'export PATH=/home/runner/mpich/bin:$PATH' > .bashrc
         source .bashrc
-        export PATH="/home/runner/mpich/bin:$PATH"
         export CC=/home/runner/mpich/bin/mpicc
         autoreconf -i
         ./configure
-        which mpiexec
-        make check
+
         
