@@ -405,6 +405,7 @@ AC_CONFIG_FILES([tests/ncint/run_tests.sh], [chmod ugo+x tests/ncint/run_tests.s
 AC_CONFIG_FILES([tests/ncint/run_perf.sh], [chmod ugo+x tests/ncint/run_perf.sh])
 AC_CONFIG_FILES([tests/fncint/run_tests.sh], [chmod ugo+x tests/fncint/run_tests.sh])
 AC_CONFIG_FILES([tests/general/run_tests.sh], [chmod ugo+x tests/general/run_tests.sh])
+AC_CONFIG_FILES([tests/performance/run_tests.sh], [chmod ugo+x tests/performance/run_tests.sh])
 AC_CONFIG_FILES([tests/unit/run_tests.sh], [chmod ugo+x tests/unit/run_tests.sh])
 AC_CONFIG_FILES([examples/c/run_tests.sh], [chmod ugo+x examples/c/run_tests.sh])
 
