@@ -1298,19 +1298,26 @@ contains
     integer, intent(in) :: varid
     integer, intent(out) :: storage
     integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+    integer(kind=PIO_OFFSET_KIND) :: cchunksizes(PIO_MAX_VAR_DIMS)
+    integer :: ndims, i
 
     interface
-       integer(C_INT) function PIOc_inq_var_chunking(ncid, varid, storage, chunksizes) &
+       integer(C_INT) function PIOc_inq_var_chunking(ncid, varid, storage, cchunksizes) &
             bind(C, name="PIOc_inq_var_chunking")
          use iso_c_binding
          integer(C_INT), value :: ncid
          integer(C_INT), value :: varid
          integer(C_INT) :: storage
-         integer(C_SIZE_T) :: chunksizes(*)
+         integer(C_SIZE_T) :: cchunksizes(*)
        end function PIOc_inq_var_chunking
     end interface
 
-    ierr = PIOc_inq_var_chunking(ncid, varid-1, storage, chunksizes)
+    ierr = PIOc_inq_var_chunking(ncid, varid-1, storage, cchunksizes)
+    ierr = pio_inq_varndims(ncid, varid, ndims)
+    do i = 1, ndims
+       chunksizes(i) = cchunksizes(ndims - i + 1)
+    enddo
+    
   end function inq_var_chunking_id
 
   !>

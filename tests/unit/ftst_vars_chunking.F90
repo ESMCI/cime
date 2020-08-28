@@ -22,8 +22,8 @@ program ftst_vars_chunking
   character(len=64) :: dim_name_1 = 'influence_on_Roman_history'
   character(len=64) :: dim_name_2 = 'age_at_death'
   character(len=64) :: var_name = 'Caesar'
-  integer :: dimid1, dimid2, dim_len = 40
-  integer :: chunksize = 10
+  integer :: dimid1, dimid2, dim_len1 = 40, dim_len2 = 80
+  integer :: chunksize1 = 10, chunksize2 = 20
   integer :: storage_in
   integer (kind=PIO_OFFSET_KIND) :: chunksizes_in(NDIM2)
   integer :: iotype(NUM_IOTYPES) = (/ PIO_iotype_netcdf4c, PIO_iotype_netcdf4p /)
@@ -58,9 +58,9 @@ program ftst_vars_chunking
      if (ierr .ne. PIO_NOERR) stop 3
      
      ! Define dims.
-     ret_val = PIO_def_dim(pio_file, dim_name_1, dim_len, dimid1)
+     ret_val = PIO_def_dim(pio_file, dim_name_1, dim_len1, dimid1)
      if (ierr .ne. PIO_NOERR) stop 5
-     ret_val = PIO_def_dim(pio_file, dim_name_2, dim_len, dimid2)
+     ret_val = PIO_def_dim(pio_file, dim_name_2, dim_len2, dimid2)
      if (ierr .ne. PIO_NOERR) stop 6
      
      ! Define a var.
@@ -68,7 +68,7 @@ program ftst_vars_chunking
      if (ierr .ne. PIO_NOERR) stop 7
      
      ! Define chunking for var.
-     ret_val = PIO_def_var_chunking(pio_file, pio_var, 0, (/chunksize, chunksize/))
+     ret_val = PIO_def_var_chunking(pio_file, pio_var, 0, (/chunksize1, chunksize2/))
      if (ierr .ne. PIO_NOERR) stop 9
      
      ! Close the file.
@@ -79,9 +79,10 @@ program ftst_vars_chunking
      if (ierr .ne. PIO_NOERR) stop 23
      
      ! ! Find var chunksizes.
-     ! ret_val = PIO_inq_var_chunking(pio_file, 1, storage_in, chunksizes_in)
-     ! if (ierr .ne. PIO_NOERR) stop 25
-     ! if (chunksizes_in(1) .ne. chunksize) stop 26
+     ret_val = PIO_inq_var_chunking(pio_file, 1, storage_in, chunksizes_in)
+     if (ierr .ne. PIO_NOERR) stop 25
+     if (chunksizes_in(1) .ne. chunksize1) stop 26
+     if (chunksizes_in(2) .ne. chunksize2) stop 26
      
      ! Close the file.
      call PIO_closefile(pio_file)
