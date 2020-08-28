@@ -112,8 +112,10 @@ endif()
 # Set a variable that appears in the config.h.in file.
 if(PIO_ENABLE_LOGGING)
   set(ENABLE_LOGGING 1)
+  set(HAS_LOGGING "yes")
 else()
   set(ENABLE_LOGGING 0)
+  set(HAS_LOGGING "no")
 endif()
 
 # Set a variable that appears in the config.h.in file.
@@ -381,6 +383,14 @@ else ()
   set(HAVE_NETCDF_INTEGRATION 0)
 endif ()
 
+# Configure testing with MPIEXEC.
+if (NOT WITH_MPIEXEC)
+  set(WITH_MPIEXEC mpiexec)
+endif()
+#set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL "")
+set(MPIEXEC "${WITH_MPIEXEC}")
+set_property(GLOBAL PROPERTY WITH_MPIEXEC "${WITH_MPIEXEC}")
+
 #####
 # Configure and print the libpio.settings file.
 #####
@@ -461,10 +471,3 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
   "${PROJECT_BINARY_DIR}/config.h"
   )
-
-# Configure test scripts.
-if (NOT WITH_MPIEXEC)
-  set(WITH_MPIEXEC mpiexec)
-endif()
-set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL "")
-set_property(GLOBAL PROPERTY WITH_MPIEXEC "${WITH_MPIEXEC}")
