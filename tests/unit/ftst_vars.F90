@@ -25,7 +25,8 @@ program ftst_vars
   call MPI_Init(ierr)
   call MPI_Comm_rank(MPI_COMM_WORLD, my_rank, ierr)
   call MPI_Comm_size(MPI_COMM_WORLD, ntasks , ierr)
-  
+
+#ifdef _NETCDF4
   if (my_rank .eq. 0) print *,'Testing variables...'
 
   ! Initialize PIO.
@@ -53,7 +54,9 @@ program ftst_vars
 
   ! Open the file.
   ret_val = PIO_openfile(pio_iosystem, pio_file, iotype, filename, PIO_nowrite)  
-  if (ierr .ne. PIO_NOERR) stop 3
+  if (ierr .ne. PIO_NOERR) stop 23
+
+  ! Find var chunksizes.
 
   ! Close the file.
   call PIO_closefile(pio_file)
@@ -62,5 +65,6 @@ program ftst_vars
   call PIO_finalize(pio_iosystem, ierr)
   
   if (my_rank .eq. 0) print *,'SUCCESS!'
+#endif 
   call MPI_Finalize(ierr)        
 end program ftst_vars
