@@ -120,10 +120,12 @@ jobs:
     - name: autotools build
       run: |
         set -x
+        gcc --version
         echo 'export PATH=/home/runner/mpich/bin:$PATH' > .bashrc
         source .bashrc
         export CC=/home/runner/mpich/bin/mpicc
+        export FC=/home/runner/mpich/bin/mpifort
         autoreconf -i
-        ./configure
+        ./configure --enable-fortran
         make -j check
         

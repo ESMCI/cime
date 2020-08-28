@@ -33,7 +33,9 @@ TESTS = run_tests.sh
 endif # RUN_TESTS
 
 EXTRA_DIST = CMakeLists.txt gensimple.pl Pioperformance.md pioperf.nl	\
-run_tests.sh
+run_tests.sh.in
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
+
+DISTCLEANFILES = run_tests.sh

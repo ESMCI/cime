@@ -403,8 +403,12 @@ AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 AC_CONFIG_FILES([tests/cunit/run_tests.sh], [chmod ugo+x tests/cunit/run_tests.sh])
 AC_CONFIG_FILES([tests/ncint/run_tests.sh], [chmod ugo+x tests/ncint/run_tests.sh])
 AC_CONFIG_FILES([tests/ncint/run_perf.sh], [chmod ugo+x tests/ncint/run_perf.sh])
+AC_CONFIG_FILES([tests/fncint/run_tests.sh], [chmod ugo+x tests/fncint/run_tests.sh])
+AC_CONFIG_FILES([tests/general/run_tests.sh], [chmod ugo+x tests/general/run_tests.sh])
+AC_CONFIG_FILES([tests/performance/run_tests.sh], [chmod ugo+x tests/performance/run_tests.sh])
 AC_CONFIG_FILES([tests/unit/run_tests.sh], [chmod ugo+x tests/unit/run_tests.sh])
 AC_CONFIG_FILES([examples/c/run_tests.sh], [chmod ugo+x examples/c/run_tests.sh])
+AC_CONFIG_FILES([examples/f03/run_tests.sh], [chmod ugo+x examples/f03/run_tests.sh])
 
 # Args:
 # 1. netcdf_meta.h variable
@@ -448,6 +452,7 @@ AC_SUBST([HAS_PAR_FILTERS], [$have_par_filters])
 AC_SUBST([HAS_NETCDF4], [$have_netcdf4])
 AC_SUBST([HAS_NETCDF4_PAR], [$have_netcdf_par])
 AC_SUBST([HAS_NETCDF_INTEGRATION], [$enable_netcdf_integration])
+AC_SUBST([HAS_PIO_FORTRAN], [$enable_fortran])
 
 # Create the build summary file. 
 AC_CONFIG_FILES([libpio.settings
