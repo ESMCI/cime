@@ -107,7 +107,7 @@
   <entry id="COMP_ROOT_DIR_ATM">
     <type>char</type>
     <values>
-      <value component="datm"      >$CIMEROOT/src/components/cdeps/datm</value>
+      <value component="datm"      >$SRCROOT/components/cdeps/datm</value>
       <value component="satm"      >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm</value>
       <value component="xatm"      >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
       <value component="cam"       >$SRCROOT/components/cam/</value>
