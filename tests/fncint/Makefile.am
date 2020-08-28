@@ -33,3 +33,5 @@ EXTRA_DIST = run_tests.sh
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log
+
+DISTCLEANFILES = run_tests.sh
