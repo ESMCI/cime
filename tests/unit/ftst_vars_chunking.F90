@@ -78,12 +78,12 @@ program ftst_vars_chunking
      ret_val = PIO_openfile(pio_iosystem, pio_file, iotype(iotype_idx), filename, PIO_nowrite)  
      if (ierr .ne. PIO_NOERR) stop 23
      
-     ! ! Find var chunksizes.
+     ! Find var chunksizes using varid.
      ret_val = PIO_inq_var_chunking(pio_file, 1, storage_in, chunksizes_in)
      if (ierr .ne. PIO_NOERR) stop 25
      if (chunksizes_in(1) .ne. chunksize1) stop 26
      if (chunksizes_in(2) .ne. chunksize2) stop 26
-     
+
      ! Close the file.
      call PIO_closefile(pio_file)
 
