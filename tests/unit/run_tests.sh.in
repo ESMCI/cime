@@ -10,7 +10,7 @@ trap exit INT TERM
 
 printf 'running PIO tests...\n'
 
-PIO_TESTS='pio_unit_test_driver ftst_vars'
+PIO_TESTS='pio_unit_test_driver ftst_vars_chunking'
 
 success1=true
 for TEST in $PIO_TESTS
