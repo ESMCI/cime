@@ -93,7 +93,7 @@ module pio_nf
   end interface pio_def_var_deflate
   interface pio_def_var_chunking
      module procedure &
-          def_var_chunking
+          def_var_chunking_desc
   end interface pio_def_var_chunking
   interface pio_inq_attname
      module procedure &
@@ -1776,12 +1776,12 @@ contains
   !! Changes chunking settings for a netCDF-4/HDF5 variable.
   !! @author Ed Hartnett
   !<
-  integer function def_var_chunking(file, vardesc, storage, chunksizes) result(ierr)
+  integer function def_var_chunking_desc(file, vardesc, storage, chunksizes) result(ierr)
     type (File_desc_t), intent(in)  :: file
     type (var_desc_t), intent(in) :: vardesc
     integer, intent(in) :: storage
     integer, intent(in) :: chunksizes(:)
-    integer(C_INT) :: cchunksizes(PIO_MAX_VAR_DIMS)
+    integer(kind=PIO_OFFSET_KIND) :: cchunksizes(PIO_MAX_VAR_DIMS)
     integer :: ndims, i
 
     interface
@@ -1791,7 +1791,7 @@ contains
          integer(c_int), value :: ncid
          integer(c_int), value :: varid
          integer(c_int), value :: storage
-         integer(c_int) :: chunksizes(*)
+         integer(c_size_t) :: chunksizes(*)
        end function PIOc_def_var_chunking
     end interface
     ndims = size(chunksizes)
@@ -1800,7 +1800,7 @@ contains
     enddo
 
     ierr = PIOc_def_var_chunking(file%fh, vardesc%varid-1, storage, cchunksizes)
-  end function def_var_chunking
+  end function def_var_chunking_desc
 
   !>
   !! @ingroup PIO_set_chunk_cache
