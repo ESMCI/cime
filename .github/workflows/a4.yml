@@ -125,7 +125,7 @@ jobs:
         export PATH="/home/runner/mpich/bin:$PATH"
         export CC=/home/runner/mpich/bin/mpicc
         autoreconf -i
-        ./configure --with-mpiexec='mpiexec --oversubscribe'
+        ./configure
         which mpiexec
         make check
         
