@@ -65,6 +65,7 @@ program ftst_vars
   if (ierr .ne. PIO_NOERR) stop 23
 
   ! Find var chunksizes.
+  
 
   ! Close the file.
   call PIO_closefile(pio_file)

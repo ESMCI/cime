@@ -61,6 +61,7 @@ module pio_nf
        pio_inq_vardimid                                     , &
        pio_inq_varnatts                                     , &
        pio_inq_var_deflate                                  , &
+       pio_inq_var_chunking                                 , &
        pio_inquire_variable                                 , &
        pio_inquire_dimension                                , &
        pio_inq_dimname                                      , &
@@ -156,6 +157,12 @@ module pio_nf
           inq_var_deflate_vid                                  , &
           inq_var_deflate_id
   end interface pio_inq_var_deflate
+  interface pio_inq_var_chunking
+     module procedure &
+          inq_var_chunking_desc                                 , &
+          inq_var_chunking_vid                                  , &
+          inq_var_chunking_id
+  end interface pio_inq_var_chunking
   interface pio_inquire_dimension
      module procedure &
           inquire_dimension_desc                            , &
@@ -1241,6 +1248,71 @@ contains
 
     ierr = PIOc_inq_var_deflate(ncid, varid-1, shuffle, deflate, deflate_level)
   end function inq_var_deflate_id
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !!
+  !! @param File @copydoc file_desc_t
+  !! @param vardesc @copydoc var_desc_t
+  !! @param shuffle Value of shuffle
+  !! @param deflate Status of deflate
+  !! @param deflate_level Level of deflate
+  !! @retval ierr @copydoc error_return
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_desc(File, vardesc, storage, chunksizes) result(ierr)
+
+    type (File_desc_t), intent(in) :: File
+    type (Var_desc_t), intent(in) :: vardesc
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    ierr = pio_inq_var_chunking(File%fh, vardesc%varid, storage, chunksizes)
+  end function inq_var_chunking_desc
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_vid(File, varid, storage, chunksizes) result(ierr)
+
+    type (File_desc_t), intent(in) :: File
+    integer, intent(in) :: varid
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    ierr = pio_inq_var_chunking(File%fh, varid, storage, chunksizes)
+  end function inq_var_chunking_vid
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_id(ncid, varid, storage, chunksizes) result(ierr)
+    integer, intent(in) :: ncid
+    integer, intent(in) :: varid
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    interface
+       integer(C_INT) function PIOc_inq_var_chunking(ncid, varid, storage, chunksizes) &
+            bind(C, name="PIOc_inq_var_chunking")
+         use iso_c_binding
+         integer(C_INT), value :: ncid
+         integer(C_INT), value :: varid
+         integer(C_INT) :: storage
+         integer(C_SIZE_T) :: chunksizes(*)
+       end function PIOc_inq_var_chunking
+    end interface
+
+    ierr = PIOc_inq_var_chunking(ncid, varid-1, storage, chunksizes)
+  end function inq_var_chunking_id
 
   !>
   !! @public
