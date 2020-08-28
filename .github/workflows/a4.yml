@@ -125,5 +125,5 @@ jobs:
         export CC=/home/runner/mpich/bin/mpicc
         autoreconf -i
         ./configure
-
+        make -j check
         
