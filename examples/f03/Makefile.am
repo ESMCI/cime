@@ -22,7 +22,9 @@ TESTS = run_tests.sh
 endif # RUN_TESTS
 
 # Distribute the test script.
-EXTRA_DIST = CMakeLists.txt run_tests.sh
+EXTRA_DIST = CMakeLists.txt run_tests.sh.in
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
+
+DISTCLEANFILES = run_tests.sh

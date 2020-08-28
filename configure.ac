@@ -408,6 +408,7 @@ AC_CONFIG_FILES([tests/general/run_tests.sh], [chmod ugo+x tests/general/run_tes
 AC_CONFIG_FILES([tests/performance/run_tests.sh], [chmod ugo+x tests/performance/run_tests.sh])
 AC_CONFIG_FILES([tests/unit/run_tests.sh], [chmod ugo+x tests/unit/run_tests.sh])
 AC_CONFIG_FILES([examples/c/run_tests.sh], [chmod ugo+x examples/c/run_tests.sh])
+AC_CONFIG_FILES([examples/f03/run_tests.sh], [chmod ugo+x examples/f03/run_tests.sh])
 
 # Args:
 # 1. netcdf_meta.h variable
