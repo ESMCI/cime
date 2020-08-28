@@ -324,9 +324,16 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
             self.set_value("CONTINUE_RUN",
                            self.get_value("RESUBMIT_SETS_CONTINUE_RUN"))
 
+        # WARNING: All case variables are reloaded during run_model to get
+        # new values of any variables that may have been changed by
+        # the user during model execution. Thus, any local variables
+        # set from case variables before this point may be
+        # inconsistent with their latest values in the xml files, so
+        # should generally be reloaded (via case.get_value(XXX)) if they are still needed.
         model_log("e3sm", logger, "{} RUN_MODEL BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         lid = _run_model(self, lid, skip_pnl, da_cycle=cycle)
         model_log("e3sm", logger, "{} RUN_MODEL HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+
         if self.get_value("CHECK_TIMING") or self.get_value("SAVE_TIMING"):
             model_log("e3sm", logger, "{} GET_TIMING BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
             get_timing(self, lid)     # Run the getTiming script
