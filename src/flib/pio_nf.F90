@@ -1256,9 +1256,8 @@ contains
   !!
   !! @param File @copydoc file_desc_t
   !! @param vardesc @copydoc var_desc_t
-  !! @param shuffle Value of shuffle
-  !! @param deflate Status of deflate
-  !! @param deflate_level Level of deflate
+  !! @param storage 0 for chunked, 1 for contiguous
+  !! @param chunksizes Array of chunk sizes.
   !! @retval ierr @copydoc error_return
   !! @author Ed Hartnett
   !<
