@@ -229,12 +229,6 @@ if (PnetCDF_Fortran_FOUND)
 
   # Check library for varn functions
   set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_Fortran_LIBRARY})
-  check_function_exists (ncmpi_get_varn PnetCDF_Fortran_HAS_VARN)
-  if (PnetCDF_Fortran_HAS_VARN)
-    target_compile_definitions(piof
-      PUBLIC USE_PNETCDF_VARN
-      PUBLIC USE_PNETCDF_VARN_ON_READ)
-  endif()
 endif ()
 
 #===== Add EXTRAs =====
