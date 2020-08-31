@@ -128,4 +128,18 @@ jobs:
         autoreconf -i
         ./configure --enable-fortran
         make -j check
+    - name: cmake build
+      run: |
+        set -x
+        echo 'export PATH=/home/runner/mpich/bin:$PATH' > .bashrc
+        source .bashrc
+        export CC=mpicc
+        mkdir build
+        cd build
+        export LD_LIBRARY_PATH="/home/runner/netcdf-c/lib:/home/runner/pnetcdf/lib:/home/runner/hdf5/lib:/home/runner/mpich/lib:$LD_LIBRARY_PATH"
+        cmake -Wno-dev -DNetCDF_C_LIBRARY=/home/runner/netcdf-c/lib/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/home/runner/netcdf-c/include -DPnetCDF_PATH='/home/runner/pnetcdf' -DPIO_ENABLE_FORTRAN=Off -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off .. || (cat CMakeFiles/CMakeOutput.log && cat CMakeFiles/CMakeError.log)
+        cat config.h
+        make VERBOSE=1
+        make tests VERBOSE=1
+        ctest -VV
         

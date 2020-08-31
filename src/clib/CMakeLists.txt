@@ -112,12 +112,6 @@ if (PnetCDF_C_FOUND)
 
   # Check library for varn functions
   set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_C_LIBRARY})
-  # check_function_exists (ncmpi_get_varn PnetCDF_C_HAS_VARN)
-  # if (PnetCDF_C_HAS_VARN)
-  #   target_compile_definitions(pioc
-  #     PUBLIC USE_PNETCDF_VARN
-  #     PUBLIC USE_PNETCDF_VARN_ON_READ)
-  # endif()
 endif ()
 
 #===== Add EXTRAs =====
