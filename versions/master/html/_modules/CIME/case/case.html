@@ -447,6 +447,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">):</span>
             <span class="c1"># do not flush if caseroot wasnt created</span>
             <span class="k">return</span>
+
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">:</span>
             <span class="n">env_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">force_write</span><span class="o">=</span><span class="n">flushall</span><span class="p">)</span></div>
 
@@ -639,8 +640,16 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; Possible components for COMPSETS_SPEC_FILE are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">components</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s1">&#39;ufs&#39;</span><span class="p">:</span>
+            <span class="n">cmeps_driver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UFS_DRIVER&quot;</span><span class="p">)</span>
+            <span class="n">attribute</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">cmeps_driver</span><span class="p">:</span>
+                <span class="n">attribute</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">cmeps_driver</span><span class="p">}</span>
+            <span class="n">comp_root_dir_cpl</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s1">&#39;cesm&#39;</span><span class="p">:</span>
             <span class="n">comp_root_dir_cpl</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;cesm&#39;</span><span class="p">,</span><span class="s1">&#39;ufs&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">,</span><span class="n">comp_root_dir_cpl</span><span class="p">)</span>
 
         <span class="c1"># Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file</span>
@@ -666,6 +675,7 @@
 
         <span class="c1"># Fill in compset name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_compset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+
         <span class="c1"># if this is a valiid compset longname there will be at least 7 components.</span>
         <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
         <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;No compset alias </span><span class="si">{}</span><span class="s2"> found and this does not appear to be a compset longname.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
@@ -795,6 +805,7 @@
     <span class="c1"># is handled consistenly, this should not affect functionality.</span>
     <span class="c1"># Note: interstitial digits are included (e.g., in FV3GFS).</span>
     <span class="n">__mod_match_re__</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^%]*[^0-9%]+)&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Case.valid_compset"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.valid_compset">[docs]</a>    <span class="k">def</span> <span class="nf">valid_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add stub models missing in &lt;compset_name&gt;, return full compset name.</span>
 <span class="sd">        &lt;files&gt; is used to collect set of all supported components.</span>
@@ -945,16 +956,18 @@
             <span class="n">comp_name</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">root_dir_node_name</span> <span class="o">=</span> <span class="s1">&#39;COMP_ROOT_DIR_&#39;</span> <span class="o">+</span> <span class="n">comp_class</span>
             <span class="n">node_name</span> <span class="o">=</span> <span class="s1">&#39;CONFIG_&#39;</span> <span class="o">+</span> <span class="n">comp_class</span> <span class="o">+</span> <span class="s1">&#39;_FILE&#39;</span>
-            <span class="n">comp_root_dir</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">root_dir_node_name</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">comp_name</span><span class="p">},</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">compatt</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">comp_name</span><span class="p">}</span>
+            <span class="n">comp_root_dir</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">root_dir_node_name</span><span class="p">,</span> <span class="n">compatt</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">comp_root_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">root_dir_node_name</span><span class="p">,</span> <span class="n">comp_root_dir</span><span class="p">)</span>
 
-            <span class="n">compatt</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">comp_name</span><span class="p">}</span>
             <span class="c1"># Add the group and elements for the config_files.xml</span>
+
             <span class="n">comp_config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">compatt</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">comp_config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot;No component </span><span class="si">{}</span><span class="s2"> found for class </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_name</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">comp_config_file</span><span class="p">)</span>
             <span class="n">comp_config_file</span> <span class="o">=</span>  <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">compatt</span><span class="p">)</span>
+
             <span class="n">expect</span><span class="p">(</span><span class="n">comp_config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">comp_config_file</span><span class="p">),</span>
                    <span class="s2">&quot;Config file </span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2"> not found.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_config_file</span><span class="p">,</span> <span class="n">comp_name</span><span class="p">))</span>
             <span class="n">compobj</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">comp_config_file</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">)</span>
@@ -1076,7 +1089,7 @@
                   <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
-                  <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                  <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">expect</span><span class="p">(</span><span class="n">check_name</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="s2">&quot;Invalid compset name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
 
@@ -1107,6 +1120,7 @@
         <span class="c1">#--------------------------------------------</span>
         <span class="c1"># component config data</span>
         <span class="c1">#--------------------------------------------</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_component_config_data</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="n">driver</span><span class="p">)</span>
 
         <span class="c1"># This needs to be called after self.set_comp_classes, which is called</span>
@@ -1125,7 +1139,9 @@
         <span class="c1"># machine</span>
         <span class="c1">#--------------------------------------------</span>
         <span class="c1"># set machine values in env_xxx files</span>
-        <span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_machines_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;EXTRA_MACHDIR&quot;</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="p">)</span>
+        <span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">)</span>
         <span class="n">probed_machine</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">probe_machine_name</span><span class="p">()</span>
         <span class="n">machine_name</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">)</span>
@@ -1137,7 +1153,8 @@
         <span class="n">nodenames</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_node_names</span><span class="p">()</span>
         <span class="n">nodenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nodenames</span> <span class="k">if</span>
                      <span class="s1">&#39;_system&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;_variables&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;mpirun&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span>\
-                     <span class="s1">&#39;COMPILER&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;MPILIB&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+                     <span class="s1">&#39;COMPILER&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;MPILIB&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span> <span class="s1">&#39;MAX_MPITASKS_PER_NODE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">and</span>\
+                     <span class="s1">&#39;MAX_TASKS_PER_NODE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">nodename</span> <span class="ow">in</span> <span class="n">nodenames</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1160,6 +1177,11 @@
             <span class="n">expect</span><span class="p">(</span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_MPIlib</span><span class="p">(</span><span class="n">mpilib</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;compiler&quot;</span><span class="p">:</span><span class="n">compiler</span><span class="p">}),</span>
                    <span class="s2">&quot;MPIlib </span><span class="si">{}</span><span class="s2"> is not supported on machine </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">,</span><span class="n">mpilib</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;MAX_TASKS_PER_NODE&quot;</span><span class="p">,</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">):</span>
+            <span class="n">dmax</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">name</span><span class="p">,{</span><span class="s1">&#39;compiler&#39;</span><span class="p">:</span><span class="n">compiler</span><span class="p">})</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dmax</span><span class="p">:</span>
+                <span class="n">dmax</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dmax</span><span class="p">)</span>
 
         <span class="n">machdir</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_machines_dir</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MACHDIR&quot;</span><span class="p">,</span> <span class="n">machdir</span><span class="p">)</span>
@@ -1261,13 +1283,17 @@
         <span class="n">env_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
 
         <span class="n">batch_system_type</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Batch_system_type is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">batch_system_type</span><span class="p">))</span>
-        <span class="n">batch</span> <span class="o">=</span> <span class="n">Batch</span><span class="p">(</span><span class="n">batch_system</span><span class="o">=</span><span class="n">batch_system_type</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">Batch</span><span class="p">(</span><span class="n">batch_system</span><span class="o">=</span><span class="n">batch_system_type</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span>
+                      <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">)</span>
+
         <span class="n">workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
-        <span class="n">bjobs</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">get_workflow_jobs</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="n">workflowid</span><span class="p">)</span>
-        <span class="n">env_workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;workflow&quot;</span><span class="p">)</span>
 
         <span class="n">env_batch</span><span class="o">.</span><span class="n">set_batch_system</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_system_type</span><span class="o">=</span><span class="n">batch_system_type</span><span class="p">)</span>
+
+        <span class="n">bjobs</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">get_workflow_jobs</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="n">workflowid</span><span class="p">)</span>
+        <span class="n">env_workflow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;workflow&quot;</span><span class="p">)</span>
         <span class="n">env_workflow</span><span class="o">.</span><span class="n">create_job_groups</span><span class="p">(</span><span class="n">bjobs</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">walltime</span><span class="p">:</span>
@@ -1307,13 +1333,14 @@
         <span class="k">return</span> <span class="n">batchobj</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_set_pio_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">pioobj</span> <span class="o">=</span> <span class="n">PIO</span><span class="p">()</span>
+        <span class="n">pioobj</span> <span class="o">=</span> <span class="n">PIO</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">)</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GRID&quot;</span><span class="p">)</span>
         <span class="n">compiler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">)</span>
         <span class="n">mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
         <span class="n">compset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPSET&quot;</span><span class="p">)</span>
         <span class="n">mpilib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="n">pioobj</span><span class="o">.</span><span class="n">get_defaults</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span><span class="n">compset</span><span class="o">=</span><span class="n">compset</span><span class="p">,</span><span class="n">mach</span><span class="o">=</span><span class="n">mach</span><span class="p">,</span><span class="n">compiler</span><span class="o">=</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="n">mpilib</span><span class="p">)</span>
+
+        <span class="n">defaults</span> <span class="o">=</span> <span class="n">pioobj</span><span class="o">.</span><span class="n">get_defaults</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="n">compset</span><span class="p">,</span> <span class="n">mach</span><span class="o">=</span><span class="n">mach</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="n">mpilib</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
@@ -1661,9 +1688,9 @@
             <span class="c1">#   called if run_unsupported is False.</span>
             <span class="n">tests</span> <span class="o">=</span> <span class="n">Testlist</span><span class="p">(</span><span class="n">tests_spec_file</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
             <span class="n">testlist</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">get_tests</span><span class="p">(</span><span class="n">compset</span><span class="o">=</span><span class="n">compset_alias</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid_name</span><span class="p">,</span> <span class="n">supported_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">test_categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;prealpha&quot;</span><span class="p">,</span> <span class="s2">&quot;prebeta&quot;</span><span class="p">,</span> <span class="s2">&quot;test_release&quot;</span><span class="p">,</span> <span class="s2">&quot;aux_&quot;</span><span class="p">]</span>
+            <span class="n">test_categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;prealpha&quot;</span><span class="p">,</span> <span class="s2">&quot;prebeta&quot;</span><span class="p">,</span> <span class="s2">&quot;test_release&quot;</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">testlist</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">test</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">test_categories</span> \
+                <span class="k">if</span> <span class="n">test</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">test_categories</span> <span class="ow">or</span> <span class="s2">&quot;aux_&quot;</span> <span class="ow">in</span> <span class="n">test</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> \
                    <span class="ow">or</span> <span class="n">get_cime_default_driver</span><span class="p">()</span> <span class="ow">in</span> <span class="n">test</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]:</span>
                     <span class="n">testcnt</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">testcnt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1766,12 +1793,23 @@
                <span class="n">multi_driver</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+               <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">workflowid</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Set values for env_case.xml</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">casename</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">)</span>
+            <span class="c1"># if the top level user_mods_dir contains a config_grids.xml file and</span>
+            <span class="c1"># gridfile was not set on the command line, use it.</span>
+            <span class="k">if</span> <span class="n">user_mods_dir</span><span class="p">:</span>
+                <span class="n">um_config_grids</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_mods_dir</span><span class="p">,</span><span class="s2">&quot;config_grids.xml&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">um_config_grids</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">gridfile</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;A config_grids file was found in </span><span class="si">{}</span><span class="s2"> but also provided on the command line </span><span class="si">{}</span><span class="s2">, command line takes precident&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">um_config_grids</span><span class="p">,</span> <span class="n">gridfile</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">gridfile</span> <span class="o">=</span> <span class="n">um_config_grids</span>
+
 
             <span class="c1"># Configure the Case</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span>
@@ -1783,7 +1821,8 @@
                            <span class="n">output_root</span><span class="o">=</span><span class="n">output_root</span><span class="p">,</span>
                            <span class="n">run_unsupported</span><span class="o">=</span><span class="n">run_unsupported</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">,</span>
                            <span class="n">input_dir</span><span class="o">=</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="n">driver</span><span class="p">,</span>
-                           <span class="n">workflowid</span><span class="o">=</span><span class="n">workflowid</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="n">non_local</span><span class="p">)</span>
+                           <span class="n">workflowid</span><span class="o">=</span><span class="n">workflowid</span><span class="p">,</span> <span class="n">non_local</span><span class="o">=</span><span class="n">non_local</span><span class="p">,</span>
+                           <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">create_caseroot</span><span class="p">()</span>
 
@@ -1866,10 +1905,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

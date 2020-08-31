@@ -527,6 +527,10 @@
     <span class="k">if</span> <span class="n">outfile_suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cpr_stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> -m </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cprnc_exe</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Remove existing output file if it exists</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_filename</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span>
+
         <span class="n">cpr_stat</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> -m </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cprnc_exe</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">),</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">output_filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -541,9 +545,7 @@
             <span class="c1"># have no differences.</span>
             <span class="n">files_match</span> <span class="o">=</span> <span class="s2">&quot; 0 had non-zero differences&quot;</span> <span class="ow">in</span> <span class="n">out</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;files seem to be IDENTICAL&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
-                <span class="n">files_match</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="s2">&quot;the two files seem to be DIFFERENT&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;the two files seem to be DIFFERENT&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
                 <span class="n">files_match</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">elif</span> <span class="s2">&quot;the two files DIFFER only in their field lists&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">ignore_fieldlist_diffs</span><span class="p">:</span>
@@ -551,11 +553,14 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">files_match</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">CPRNC_FIELDLISTS_DIFFER</span>
+            <span class="k">elif</span> <span class="s2">&quot;files seem to be IDENTICAL&quot;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                <span class="n">files_match</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Did not find an expected summary string in cprnc output&quot;</span><span class="p">)</span>
+                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Did not find an expected summary string in cprnc output:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># If there is an error in cprnc, we do the safe thing of saying the comparison failed</span>
         <span class="n">files_match</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="k">return</span> <span class="p">(</span><span class="n">files_match</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">,</span> <span class="n">comment</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="compare_baseline"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.compare_baseline">[docs]</a><span class="k">def</span> <span class="nf">compare_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
@@ -676,7 +681,7 @@
     <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
         <span class="n">bless_log</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="n">BLESS_LOG_NAME</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bless_log</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;sha:</span><span class="si">{}</span><span class="s2"> date:</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)),</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;sha:</span><span class="si">{}</span><span class="s2"> date:</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)),</span>
                                                <span class="n">get_timestamp</span><span class="p">(</span><span class="n">timestamp_format</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H:%M:%S&quot;</span><span class="p">)))</span>
 
     <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">comments</span>
@@ -789,10 +794,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/pop_ver.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
     
 
   

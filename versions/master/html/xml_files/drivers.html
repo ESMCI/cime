@@ -1299,7 +1299,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;GLC_GRID&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;gland20,gland10,gland5,gland5UM,gland4,mpas.aisgis20km,mpas.gis20km,mpas.ais20km,null&lt;/valid_values&gt;
+    &lt;valid_values&gt;gland20,gland10,gland5,gland5UM,gland4,mpas.aisgis20km,mpas.gis20km,mpas.ais20km,mpas.gis1to10km,null&lt;/valid_values&gt;
     &lt;default_value&gt;gland5UM&lt;/default_value&gt;
     &lt;group&gt;build_grid&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
@@ -1377,6 +1377,15 @@ to define behavior.</p>
     &lt;group&gt;build_grid&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
     &lt;desc&gt;grid mask - DO NOT EDIT (for experts only)&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;IOP_MODE&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
+    &lt;default_value&gt;FALSE&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Propogate a single point to the global grid  - DO NOT EDIT (for experts only)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;PTS_MODE&quot;&gt;
@@ -1622,6 +1631,40 @@ to define behavior.</p>
     &lt;group&gt;run_domain&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;atm2lnd state mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;ATM2ROF_FMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;atm2rof flux mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;ATM2ROF_FMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;X&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;atm2rof flux mapping file decomp type&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;ATM2ROF_SMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;idmap_ignore&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;atm2rof state mapping file&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;ATM2ROF_SMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;X,Y&lt;/valid_values&gt;
+    &lt;default_value&gt;X&lt;/default_value&gt;
+    &lt;group&gt;run_domain&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;atm2rof state mapping file decomp type&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;ATM2WAV_SMAPNAME&quot;&gt;
@@ -2229,6 +2272,14 @@ to define behavior.</p>
     &lt;desc&gt;Machines directory location&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;EXTRA_MACHDIR&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;default_value&gt;&lt;/default_value&gt;
+    &lt;group&gt;case_def&lt;/group&gt;
+    &lt;file&gt;env_case.xml&lt;/file&gt;
+    &lt;desc&gt;Path to an extra directory containing supplementary machines files&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;RUNDIR&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;$CIME_OUTPUT_ROOT/$CASE/run&lt;/default_value&gt;
@@ -2625,7 +2676,7 @@ to define behavior.</p>
     &lt;default_value&gt;64&lt;/default_value&gt;
     &lt;group&gt;run_pio&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;pio rearranger communication max pending requests (io2comp) : -1 implies no bound on max pending requests &lt;/desc&gt;
+    &lt;desc&gt;pio rearranger communication max pending requests (io2comp) : 0 implies that CIME internally calculates the value (= 64), -1 implies no bound on max pending requests &lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;!-- Handshaking is a very bad idea for large process counts and for --&gt;
@@ -2724,16 +2775,16 @@ to define behavior.</p>
      be computed based on PIO_NUMTASKS and number of compute tasks
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value compclass=&quot;ATM&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;CPL&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;OCN&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;WAV&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;GLC&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;ICE&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;ROF&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;LND&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;ESP&quot;&gt;&lt;/value&gt;
-      &lt;value compclass=&quot;IAC&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
+      &lt;value compclass=&quot;IAC&quot;&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -3513,15 +3564,22 @@ to define behavior.</p>
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%0.23x0.31&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne4np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne4np4.pg2&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne45np4&quot;&gt;72&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4&quot;&gt;144&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne256np4&quot;&gt;288&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne512np4&quot;&gt;576&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne1024np4&quot;&gt;1152&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_arm_x8v3&quot; &gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_conus_x4v1&quot; &gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_northamericax4v1&quot; &gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_antarcticax4v1&quot; &gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_svalbard_x8v1&quot; &gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_sooberingoa_x4x8v1&quot; &gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4_enax4v1&quot; &gt;96&lt;/value&gt;
@@ -3536,6 +3594,12 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2.*_WW3&quot;&gt;4&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2.*_DWAV&quot;&gt;4&lt;/value&gt;
+      &lt;!-- a shorter timestep is needed for stability in MMF compsets --&gt;
+      &lt;!-- (i.e. super-parameterization, MMF, CRM) --&gt;
+      &lt;value compset=&quot;_CAM5%SP&quot;       grid=&quot;a%ne4np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_CAM5%SP.*ECPP&quot; grid=&quot;a%ne4np4&quot;&gt;72&lt;/value&gt;
+      &lt;value compset=&quot;_CAM5%MMF&quot;      grid=&quot;a%ne4np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_CAM5%MMF&quot;      grid=&quot;a%ne4np4.pg2&quot;&gt;72&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3556,6 +3620,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;$ATM_NCPL&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3793,6 +3858,7 @@ to define behavior.</p>
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;DATM.*_POP\d&quot;    &gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;CAM.*_POP\d&quot;     &gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;CAM.*_MPASO&quot;     &gt;TRUE&lt;/value&gt;
       &lt;value compset=&quot;CAM.*_DOCN%SOM&quot;&gt;TRUE&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_budgets&lt;/group&gt;
@@ -3850,6 +3916,11 @@ to define behavior.</p>
       &lt;value compset=&quot;^1950.+CMIP6&quot;                             &gt;312.821&lt;/value&gt;
       &lt;value compset=&quot;^2010.+CMIP6&quot;                             &gt;388.717&lt;/value&gt;
       &lt;value compset=&quot;^SSP585.+CMIP6&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^20TR.*BGC%BCRC&quot;                          &gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;^20TR.*BGC%BCRD&quot;                          &gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;^20TR.*BGC%BDRC&quot;                          &gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;^20TR.*BGC%BDRD&quot;                          &gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;^SSP585.*BGC%B&quot;                           &gt;284.317&lt;/value&gt;  
       &lt;!-- Override values based on CAM (WACCM) chemistry --&gt;
       &lt;value compset=&quot;CAM[45]%W&quot;				&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;CAM[45]%SSOA&quot;				&gt;0.000001&lt;/value&gt;
@@ -3862,6 +3933,7 @@ to define behavior.</p>
       &lt;value compset=&quot;^2000.+CAM[45]%SMA3&quot;			&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;^2000.+CAM[45]%SMA7&quot;			&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;^2000.+CAM[45]%SSOA&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+%RCE&quot;              &gt;348.0&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_co2&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3884,7 +3956,7 @@ to define behavior.</p>
     &lt;default_value&gt;500&lt;/default_value&gt;
     &lt;group&gt;case_def&lt;/group&gt;
     &lt;file&gt;env_case.xml&lt;/file&gt;
-    &lt;desc&gt;How much old test to allow&lt;/desc&gt;
+    &lt;desc&gt;How much old test data to allow in archive. Setting this to 0 will disable archiving and old test data will be deleted instead&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC_NEC&quot;&gt;
@@ -4157,6 +4229,8 @@ to define behavior.</p>
       &lt;value compset=&quot;_CAM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_DATM&quot;&gt;none&lt;/value&gt;
       &lt;value compset=&quot;_DATM%CPLHIST.+POP\d&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%IAF.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;^OMIP_DATM%JRA.*_POP2%[^_]*ECO&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;SSP.*_DATM.*_CLM&quot;&gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
@@ -4224,6 +4298,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2&quot;&gt;4&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_MOM6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*_CICE.*_POP2&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*_CICE.*_POP2&quot; grid=&quot;oi%tx0.1v3&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*_CICE.*_MOM6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_CICE.*_DOCN&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DOCN%US20&quot;&gt;24&lt;/value&gt;
@@ -4304,6 +4379,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%tx0.1v2&quot;&gt;4&lt;/value&gt;
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v6&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%gx1v7&quot;&gt;24&lt;/value&gt;
+      &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%tx0.1v3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM%NYF.*_SLND.*_DICE.*_DOCN.*_SWAV&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM%NYF.*_DLND.*_DICE.*_DOCN.*_DWAV&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
@@ -4523,7 +4599,8 @@ to define behavior.</p>
     &lt;default_value&gt;284.7&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;^2000&quot;&gt;367.0&lt;/value&gt;
-      &lt;value compset=&quot;DATM.*POP2%ECO&quot;&gt;284.7&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_POP2%[^_]*ECO&quot;&gt;284.317&lt;/value&gt;
+      &lt;value compset=&quot;DATM.*_POP2%[^_]*ECOCESM20&quot;&gt;284.7&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_co2&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -4582,6 +4659,9 @@ to define behavior.</p>
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;minus1p8,linear_salt,mushy&lt;/valid_values&gt;
     &lt;default_value&gt;mushy&lt;/default_value&gt;
+    &lt;values match=&quot;last&quot;&gt;
+      &lt;value compset=&quot;_MOM6&quot;&gt;linear_salt&lt;/value&gt;
+    &lt;/values&gt;
     &lt;group&gt;run_physics&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Freezing point calculation for salt water.&lt;/desc&gt;
@@ -5124,6 +5204,19 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;rof_heat&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;seq_flds&lt;/category&gt;
+    &lt;group&gt;seq_cplflds_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      If set to .true., adds fields needed to calculate heat in the river model
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;.false.&lt;/value&gt;
+      &lt;value cime_model=&#39;e3sm&#39;&gt;.true.&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
   &lt;!-- =========================== --&gt;
   &lt;!-- -group seq_cplflds_custom   --&gt;
   &lt;!-- =========================== --&gt;
@@ -5435,6 +5528,21 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;1.e36&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;constant_zenith_deg&quot;&gt;
+    &lt;type&gt;real&lt;/type&gt;
+    &lt;category&gt;orbital&lt;/category&gt;
+    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      Constant solar zenith angle value in degrees for idealized configurations
+      such as radiative-convective equilibrium experiments. This is disabled when 
+      the value is less than 0
+      Default: -1
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;-1&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -6325,6 +6433,7 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$EPS_AGRID&lt;/value&gt;
+      &lt;value atm_grid=&quot;ne0np4_northamericax4v1&quot;&gt;3.e-10&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -6377,6 +6486,20 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$EPS_OAREA&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;iop_mode&quot; modify_via_xml=&quot;IOP_MODE&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;seq_infodata_inparm&lt;/category&gt;
+    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      turns on Intensive Observation Period (IOP) mode, a planet covered
+      with homogenous surface and forced identically with a forcing file,
+      set by IOP_MODE in env_case.xml, default: false
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$IOP_MODE&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -8805,6 +8928,66 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;atm2rof_fmapname&quot;    modify_via_xml=&quot;ATM2ROF_FMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;mapping&lt;/category&gt;
+    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
+    &lt;group&gt;seq_maps&lt;/group&gt;
+    &lt;desc&gt;
+      atm to runoff flux mapping file
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$ATM2ROF_FMAPNAME&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;atm2rof_fmaptype&quot;    modify_via_xml=&quot;ATM2ROF_FMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;mapping&lt;/category&gt;
+    &lt;group&gt;seq_maps&lt;/group&gt;
+    &lt;desc&gt;
+      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$ATM2ROF_FMAPTYPE&lt;/value&gt;
+      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;atm2rof_smapname&quot;    modify_via_xml=&quot;ATM2ROF_SMAPNAME&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;mapping&lt;/category&gt;
+    &lt;input_pathname&gt;abs&lt;/input_pathname&gt;
+    &lt;group&gt;seq_maps&lt;/group&gt;
+    &lt;desc&gt;
+      atm to runoff state mapping file
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$ATM2ROF_SMAPNAME&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;atm2rof_smaptype&quot;    modify_via_xml=&quot;ATM2ROF_SMAPTYPE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;category&gt;mapping&lt;/category&gt;
+    &lt;group&gt;seq_maps&lt;/group&gt;
+    &lt;desc&gt;
+      The type of mapping desired, either &quot;source&quot; or &quot;destination&quot; mapping.
+      X is associated with rearrangement of the source grid to the
+      destination grid and then local mapping.  Y is associated with mapping
+      on the source grid and then rearrangement and sum to the destination
+      grid.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$ATM2ROF_SMAPTYPE&lt;/value&gt;
+      &lt;value bfbflag=&quot;on&quot;&gt;X&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;rof2ocn_fmapname&quot;    modify_via_xml=&quot;ROF2OCN_FMAPNAME&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;mapping&lt;/category&gt;
@@ -9658,7 +9841,7 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;0.06D0&lt;/value&gt;
-      &lt;value aqua_planet_sst_type=&quot;sst_aquap11&quot;&gt;0.07D0&lt;/value&gt;
+      &lt;value aqua_planet_sst_type=&quot;sst_aquap_constant&quot;&gt;0.07D0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -9683,7 +9866,7 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;0.5D0&lt;/value&gt;
-      &lt;value aqua_planet_sst_type=&quot;sst_aquap11&quot;&gt;1.0D0&lt;/value&gt;
+      &lt;value aqua_planet_sst_type=&quot;sst_aquap_constant&quot;&gt;1.0D0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -10106,10 +10289,11 @@ to define behavior.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

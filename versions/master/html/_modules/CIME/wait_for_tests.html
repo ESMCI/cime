@@ -195,7 +195,7 @@
 <span class="kn">from</span> <span class="nn">CIME.case.case</span> <span class="k">import</span> <span class="n">Case</span>
 
 <span class="n">SIGNAL_RECEIVED</span>           <span class="o">=</span> <span class="kc">False</span>
-<span class="n">E3SM_MAIN_CDASH</span>           <span class="o">=</span> <span class="s2">&quot;ACME_Climate&quot;</span>
+<span class="n">E3SM_MAIN_CDASH</span>           <span class="o">=</span> <span class="s2">&quot;E3SM&quot;</span>
 <span class="n">CDASH_DEFAULT_BUILD_GROUP</span> <span class="o">=</span> <span class="s2">&quot;ACME_Latest&quot;</span>
 <span class="n">SLEEP_INTERVAL_SEC</span>        <span class="o">=</span> <span class="o">.</span><span class="mi">1</span>
 
@@ -371,10 +371,10 @@
     <span class="c1"># We assume all cases were created from the same code repo</span>
     <span class="n">first_result_case</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;./xmlquery --value CIMEROOT&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">first_result_case</span><span class="p">)</span>
+        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;./xmlquery --value SRCROOT&quot;</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">first_result_case</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">CIMEError</span><span class="p">:</span>
         <span class="c1"># Use repo containing this script as last resort</span>
-        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">()</span>
+        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">)</span>
 
     <span class="n">git_commit</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_current_commit</span><span class="p">(</span><span class="n">repo</span><span class="o">=</span><span class="n">srcroot</span><span class="p">)</span>
 
@@ -604,7 +604,6 @@
 
     <span class="n">expect</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">test_paths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">completed_test_paths</span><span class="p">),</span>
            <span class="s2">&quot;Missing results for test paths: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">test_paths</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">completed_test_paths</span><span class="p">)))</span>
-
     <span class="k">return</span> <span class="n">test_results</span></div>
 
 <span class="c1">###############################################################################</span>
@@ -639,7 +638,7 @@
         <span class="k">if</span> <span class="n">update_success</span><span class="p">:</span>
             <span class="n">caseroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
-                <span class="n">srcroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
+                <span class="n">srcroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
                 <span class="n">baseline_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
                 <span class="n">save_test_success</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_status</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span> <span class="n">NAMELIST_FAIL_STATUS</span><span class="p">])</span>
 
@@ -686,10 +685,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/pop_ver.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
     
 
   

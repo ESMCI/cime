@@ -182,9 +182,9 @@
         
           <li><a href="index.html">Driver/Coupler</a> &raquo;</li>
         
-          <li><a href="implementation.html">3. Implementation</a> &raquo;</li>
+          <li><a href="implementation.html"><span class="section-number">3. </span>Implementation</a> &raquo;</li>
         
-      <li>3.5. Bit-for-bit flag</li>
+      <li><span class="section-number">3.5. </span>Bit-for-bit flag</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -204,15 +204,15 @@
            <div itemprop="articleBody">
             
   <div class="section" id="bit-for-bit-flag">
-<h1>3.5. Bit-for-bit flag<a class="headerlink" href="#bit-for-bit-flag" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3.5. </span>Bit-for-bit flag<a class="headerlink" href="#bit-for-bit-flag" title="Permalink to this headline">¶</a></h1>
 <p>The driver namelist variable <code class="docutils literal notranslate"><span class="pre">bfbflag</span></code> provides the option of preserving bit-for-bit results on different coupler processor counts.
 This flag has no impact on other components and their ability to generate bit-for-bit results on different pe counts.
 When this flag is set, all mappings become “X” types where the source data is rearranged to the destination processor and then local mapping is carried out.
 The order of operations of this mapping is independent of the pe count or decomposition of the grids.</p>
 <p>The other feature that is changed by the <code class="docutils literal notranslate"><span class="pre">bfbflag</span></code> is the global sum diagnostics.</p>
 <ul class="simple">
-<li>When  <code class="docutils literal notranslate"><span class="pre">bfbflag</span></code> is set to <em>.false.</em>, a partial sum is done on each processors and those partial sums are added together to form a global sum.  This is generally not order of operations independent for different pe counts or decompositions.</li>
-<li>When <code class="docutils literal notranslate"><span class="pre">bfbflag</span></code> is set to <em>.true.</em>, the global sums are computed by gathering the global field on the root processor and doing an ordered sum there.</li>
+<li><p>When  <code class="docutils literal notranslate"><span class="pre">bfbflag</span></code> is set to <em>.false.</em>, a partial sum is done on each processors and those partial sums are added together to form a global sum.  This is generally not order of operations independent for different pe counts or decompositions.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">bfbflag</span></code> is set to <em>.true.</em>, the global sums are computed by gathering the global field on the root processor and doing an ordered sum there.</p></li>
 </ul>
 </div>
 
@@ -263,10 +263,11 @@ The order of operations of this mapping is independent of the pe count or decomp
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

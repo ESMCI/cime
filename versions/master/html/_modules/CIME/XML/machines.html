@@ -185,7 +185,7 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="k">import</span> <span class="n">GenericXML</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="k">import</span> <span class="n">Files</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">convert_to_unknown_type</span><span class="p">,</span> <span class="n">get_cime_config</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">convert_to_unknown_type</span><span class="p">,</span> <span class="n">get_cime_config</span><span class="p">,</span> <span class="n">get_all_cime_models</span>
 
 <span class="kn">import</span> <span class="nn">socket</span>
 
@@ -193,18 +193,25 @@
 
 <div class="viewcode-block" id="Machines"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines">[docs]</a><span class="k">class</span> <span class="nc">Machines</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object</span>
 <span class="sd">        if a filename is provided it will be used,</span>
 <span class="sd">        otherwise if a files object is provided it will be used</span>
 <span class="sd">        otherwise create a files object from default values</span>
+
+<span class="sd">        If extra_machines_dir is provided, it should be a string giving a path to an</span>
+<span class="sd">        additional directory that will be searched for a config_machines.xml file; if</span>
+<span class="sd">        found, the contents of this file will be appended to the standard</span>
+<span class="sd">        config_machines.xml. An empty string is treated the same as None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">machines_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_settings</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">supported_models</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -216,12 +223,21 @@
 
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
-        <span class="c1"># Append the contents of $HOME/.cime/config_machines.xml if it exists</span>
-        <span class="c1"># This could cause problems if node matchs are repeated when only one is expected</span>
+        <span class="c1"># Append the contents of $HOME/.cime/config_machines.xml if it exists.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Also append the contents of a config_machines.xml file in the directory given by</span>
+        <span class="c1"># extra_machines_dir, if present.</span>
+        <span class="c1">#</span>
+        <span class="c1"># This could cause problems if node matches are repeated when only one is expected.</span>
         <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">),</span><span class="s2">&quot;.cime&quot;</span><span class="p">,</span><span class="s2">&quot;config_machines.xml&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Infile: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">local_infile</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_infile</span><span class="p">):</span>
             <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_machines_dir</span><span class="p">:</span>
+            <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extra_machines_dir</span><span class="p">,</span> <span class="s2">&quot;config_machines.xml&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Infile: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">local_infile</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_infile</span><span class="p">):</span>
+                <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;CIME_MACHINE&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
@@ -232,8 +248,16 @@
                     <span class="n">machine</span> <span class="o">=</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="s2">&quot;machine&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">machine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe_machine_name</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">machine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">potential_model</span> <span class="ow">in</span> <span class="n">get_all_cime_models</span><span class="p">():</span>
+                            <span class="n">local_infile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span><span class="n">potential_model</span><span class="p">,</span><span class="s2">&quot;machines&quot;</span><span class="p">,</span><span class="s2">&quot;config_machines.xml&quot;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">local_infile</span> <span class="o">!=</span> <span class="n">infile</span><span class="p">:</span>
+                                <span class="n">GenericXML</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probe_machine_name</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                    <span class="n">supported_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">potential_model</span><span class="p">)</span>
+                                <span class="n">GenericXML</span><span class="o">.</span><span class="n">change_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
-        <span class="n">expect</span><span class="p">(</span><span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Could not initialize machine object from </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">machine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Could not initialize machine object from </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">. This machine is not available for the target CIME_MODEL. The supported CIME_MODELS that can be used are: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">infile</span><span class="p">,</span> <span class="n">local_infile</span><span class="p">,</span> <span class="n">supported_models</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_machine</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Machines.get_child"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_child">[docs]</a>    <span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err_msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -352,6 +376,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">machine</span> <span class="o">=</span> <span class="n">machine</span>
 
         <span class="k">return</span> <span class="n">machine</span></div>
+
     <span class="c1">#pylint: disable=arguments-differ</span>
 <div class="viewcode-block" id="Machines.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -360,6 +385,9 @@
         <span class="n">expect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Machine object has no machine defined&quot;</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">subgroup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;This class does not support subgroups&quot;</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_settings</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_settings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
         <span class="c1"># COMPILER and MPILIB are special, if called without arguments they get the default value from the</span>
         <span class="c1"># COMPILERS and MPILIBS lists in the file.</span>
@@ -371,6 +399,7 @@
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">resolved</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -479,14 +508,8 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Machines.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">tmproot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_node</span>
-        <span class="c1">#pylint: disable=assignment-from-no-return</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Machines</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">subgroup</span><span class="p">,</span>
-                                               <span class="n">ignore_type</span><span class="o">=</span><span class="n">ignore_type</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">tmproot</span>
-        <span class="k">return</span> <span class="n">result</span></div>
-
+        <span class="c1"># A temporary cache only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_settings</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
 
 <div class="viewcode-block" id="Machines.print_values"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.machines.Machines.print_values">[docs]</a>    <span class="k">def</span> <span class="nf">print_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># write out machines</span>
@@ -568,10 +591,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

@@ -207,9 +207,9 @@
 <div class="viewcode-block" id="EnvWorkflow.create_job_groups"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_workflow.EnvWorkflow.create_job_groups">[docs]</a>    <span class="k">def</span> <span class="nf">create_job_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_jobs</span><span class="p">,</span> <span class="n">is_test</span><span class="p">):</span>
         <span class="c1"># Subtle: in order to support dynamic batch jobs, we need to remove the</span>
         <span class="c1"># job_submission group and replace with job-based groups</span>
-
-        <span class="n">orig_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;job_submission&quot;</span><span class="p">},</span>
+        <span class="n">orig_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="s2">&quot;job_submission&quot;</span><span class="p">},</span>
                                     <span class="n">err_msg</span><span class="o">=</span><span class="s2">&quot;Looks like job groups have already been created&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">orig_group</span><span class="p">,</span> <span class="s2">&quot;No workflow groups found&quot;</span><span class="p">)</span>
         <span class="n">orig_group_children</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">orig_group</span><span class="p">)</span>
 
         <span class="n">childnodes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -359,10 +359,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

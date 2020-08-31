@@ -195,122 +195,122 @@
 </div>
 <div class="section" id="general">
 <h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary docutils">
-<dt id="term-active-or-prognostic-component">active or prognostic component</dt>
-<dd>Solves a complex set of equations to describe a sub-model’s behavior.</dd>
-<dt id="term-case-case">case (CASE)</dt>
-<dd>An instance of a global climate model simulation. A case is defined by a component set, a model grid,
-a machine, a compiler, and any other additional customizations.</dd>
-<dt id="term-component">component</dt>
-<dd>A sub-model coupled with other components to constitute a global climate modeling system.
-Example components: atmosphere, ocean, land, etc.</dd>
-<dt id="term-component-set-compset">component set (COMPSET)</dt>
-<dd>A complete set of components to be linked together into a climate model to
-run a specific case.</dd>
-<dt id="term-data-component">data component</dt>
-<dd>Replacement for an active component. Sends and receives the same variables to and from other
-models (but ignores the variables received).</dd>
-<dt id="term-grid-grid">grid (GRID)</dt>
-<dd>A set of numerical grids of a case. Each active component operates on its own numerical grid.</dd>
-<dt id="term-resolution">resolution</dt>
-<dd>Used to refer to a set of grids. Each grid within a set may have different resolution.</dd>
-<dt id="term-stub-component">stub component</dt>
-<dd>Simply occupies the required place in the climate execution sequence and does send or receive
-any data.</dd>
+<dl class="glossary simple">
+<dt id="term-active-or-prognostic-component">active or prognostic component</dt><dd><p>Solves a complex set of equations to describe a sub-model’s behavior.</p>
+</dd>
+<dt id="term-case-CASE">case (CASE)</dt><dd><p>An instance of a global climate model simulation. A case is defined by a component set, a model grid,
+a machine, a compiler, and any other additional customizations.</p>
+</dd>
+<dt id="term-component">component</dt><dd><p>A sub-model coupled with other components to constitute a global climate modeling system.
+Example components: atmosphere, ocean, land, etc.</p>
+</dd>
+<dt id="term-component-set-COMPSET">component set (COMPSET)</dt><dd><p>A complete set of components to be linked together into a climate model to
+run a specific case.</p>
+</dd>
+<dt id="term-data-component">data component</dt><dd><p>Replacement for an active component. Sends and receives the same variables to and from other
+models (but ignores the variables received).</p>
+</dd>
+<dt id="term-grid-GRID">grid (GRID)</dt><dd><p>A set of numerical grids of a case. Each active component operates on its own numerical grid.</p>
+</dd>
+<dt id="term-resolution">resolution</dt><dd><p>Used to refer to a set of grids. Each grid within a set may have different resolution.</p>
+</dd>
+<dt id="term-stub-component">stub component</dt><dd><p>Simply occupies the required place in the climate execution sequence and does send or receive
+any data.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="coupling">
 <h2>Coupling<a class="headerlink" href="#coupling" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary docutils">
-<dt id="term-coupler">coupler</dt>
-<dd>A component of the CIME infrastructure that is run from within the driver. It can be run on a
+<dl class="glossary simple">
+<dt id="term-coupler">coupler</dt><dd><p>A component of the CIME infrastructure that is run from within the driver. It can be run on a
 subset of the total processors, and carries out mapping (interpolation), merging, diagnostics, and other
-calculations.</dd>
-<dt id="term-driver">driver</dt>
-<dd>The hub that connects all components. CIME driver runs on all hardware processors, runs the top
-level instructions, and, executes the driver time loop.</dd>
-<dt id="term-forcing">forcing</dt>
-<dd>An imposed perturbation of Earth’s energy balance</dd>
-<dt id="term-model-coupling-toolkit-or-mct">Model Coupling Toolkit or MCT</dt>
-<dd>A library used by CIME for all data rearranging and mapping (interpolation)</dd>
-<dt id="term-mask">mask</dt>
-<dd>Determines land/ocean boundaries in the model</dd>
-<dt id="term-mapping">mapping</dt>
-<dd>Interpolation of fields between components.</dd>
+calculations.</p>
+</dd>
+<dt id="term-driver">driver</dt><dd><p>The hub that connects all components. CIME driver runs on all hardware processors, runs the top
+level instructions, and, executes the driver time loop.</p>
+</dd>
+<dt id="term-forcing">forcing</dt><dd><p>An imposed perturbation of Earth’s energy balance</p>
+</dd>
+<dt id="term-Model-Coupling-Toolkit-or-MCT">Model Coupling Toolkit or MCT</dt><dd><p>A library used by CIME for all data rearranging and mapping (interpolation)</p>
+</dd>
+<dt id="term-mask">mask</dt><dd><p>Determines land/ocean boundaries in the model</p>
+</dd>
+<dt id="term-mapping">mapping</dt><dd><p>Interpolation of fields between components.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="files-and-directories">
 <h2>Files and Directories<a class="headerlink" href="#files-and-directories" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary docutils">
-<dt id="term-archive-directory-dout-s-root">archive directory (DOUT_S_ROOT)</dt>
-<dd>If short term archiving is activated (DOUT_S = TRUE), the restart files and run output files
-are copied to archive directory location (DOUT_S_ROOT).</dd>
-<dt id="term-build-directory-exeroot">build directory (EXEROOT)</dt>
-<dd>Location where the case is built.</dd>
-<dt id="term-case-root-caseroot">case root (CASEROOT)</dt>
-<dd>The directory where the case is created. Includes namelist files, xml files, and scripts to setup,
-build, and run the case. Also, includes logs and timing output files.</dd>
-<dt id="term-cime-root-cimeroot">CIME root (CIMEROOT)</dt>
-<dd>The directory where the CIME source code resides</dd>
-<dt id="term-history-files">history files</dt>
-<dd>NetCDF files that contain fields associated with the state of the model at a given time slice.</dd>
-<dt id="term-initial-files">initial files</dt>
-<dd>Files required to start a file</dd>
-<dt id="term-input-data-stream-din-loc-root">input data stream (DIN_LOC_ROOT)</dt>
-<dd>A time-series of input data files where all the fields in the stream are located in the
-same data file and all share the same spatial and temporal coordinates.</dd>
-<dt id="term-namelist-files">namelist files</dt>
-<dd>Each namelist file includes input parameters for a specific component.</dd>
-<dt id="term-run-directory-rundir">run directory (RUNDIR)</dt>
-<dd>Where the case is run.</dd>
-<dt id="term-restart-files">restart files</dt>
-<dd>Written and read by each component in the RUNDIR to stop and subsequently restart in a bit-for-bit fashion.</dd>
-<dt id="term-rpointer-files">rpointer files</dt>
-<dd>Text file written by the coupler in the RUNDIR with a list of necessary files required for model restart.</dd>
-<dt id="term-xml-files">XML files</dt>
-<dd>Elements and attributes in these files configure a case. (building, running, batch, etc.) These files
+<dl class="glossary simple">
+<dt id="term-archive-directory-DOUT_S_ROOT">archive directory (DOUT_S_ROOT)</dt><dd><p>If short term archiving is activated (DOUT_S = TRUE), the restart files and run output files
+are copied to archive directory location (DOUT_S_ROOT).</p>
+</dd>
+<dt id="term-build-directory-EXEROOT">build directory (EXEROOT)</dt><dd><p>Location where the case is built.</p>
+</dd>
+<dt id="term-case-root-CASEROOT">case root (CASEROOT)</dt><dd><p>The directory where the case is created. Includes namelist files, xml files, and scripts to setup,
+build, and run the case. Also, includes logs and timing output files.</p>
+</dd>
+<dt id="term-CIME-root-CIMEROOT">CIME root (CIMEROOT)</dt><dd><p>The directory where the CIME source code resides</p>
+</dd>
+<dt id="term-history-files">history files</dt><dd><p>NetCDF files that contain fields associated with the state of the model at a given time slice.</p>
+</dd>
+<dt id="term-initial-files">initial files</dt><dd><p>Files required to start a file</p>
+</dd>
+<dt id="term-input-data-stream-DIN_LOC_ROOT">input data stream (DIN_LOC_ROOT)</dt><dd><p>A time-series of input data files where all the fields in the stream are located in the
+same data file and all share the same spatial and temporal coordinates.</p>
+</dd>
+<dt id="term-namelist-files">namelist files</dt><dd><p>Each namelist file includes input parameters for a specific component.</p>
+</dd>
+<dt id="term-run-directory-RUNDIR">run directory (RUNDIR)</dt><dd><p>Where the case is run.</p>
+</dd>
+<dt id="term-restart-files">restart files</dt><dd><p>Written and read by each component in the RUNDIR to stop and subsequently restart in a bit-for-bit fashion.</p>
+</dd>
+<dt id="term-rpointer-files">rpointer files</dt><dd><p>Text file written by the coupler in the RUNDIR with a list of necessary files required for model restart.</p>
+</dd>
+<dt id="term-XML-files">XML files</dt><dd><p>Elements and attributes in these files configure a case. (building, running, batch, etc.) These files
 include env_archive.xml, env_batch.xml, env_build.xml, env_case.xml, env_mach_pes.xml, env_mach_specific.xml, env_run.xml
-in CASEROOT and can be queried and modifed using the xmlquery and xmlchange tools.</dd>
+in CASEROOT and can be queried and modifed using the xmlquery and xmlchange tools.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="development">
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary docutils">
-<dt id="term-sandbox-srcroot">sandbox (SRCROOT)</dt>
-<dd>A checked out tag on a local or a remote machine. may be edited to create a new tag. or, may
-just be used for running cases.</dd>
-<dt id="term-source-modifications-caseroot-sourcemods">source modifications (CASEROOT/SourceMods)</dt>
-<dd>one or more source files that are modified by the user. Before building a case, CIME replaces
-the original source files with these files.</dd>
-<dt id="term-tag">tag</dt>
-<dd>A snapshot of the source code. With each consecutive tag (one or more) answer-changing modifications
-to the source code of a component are introduced.</dd>
-<dt id="term-user-namelist-files-caseroot-user-nl">user namelist files (CASEROOT/user_nl_*)</dt>
-<dd>User modifications for a given case can be specified in these files.</dd>
+<dl class="glossary simple">
+<dt id="term-sandbox-SRCROOT">sandbox (SRCROOT)</dt><dd><p>A checked out tag on a local or a remote machine. may be edited to create a new tag. or, may
+just be used for running cases.</p>
+</dd>
+<dt id="term-source-modifications-CASEROOT-SourceMods">source modifications (CASEROOT/SourceMods)</dt><dd><p>one or more source files that are modified by the user. Before building a case, CIME replaces
+the original source files with these files.</p>
+</dd>
+<dt id="term-tag">tag</dt><dd><p>A snapshot of the source code. With each consecutive tag (one or more) answer-changing modifications
+to the source code of a component are introduced.</p>
+</dd>
+<dt id="term-user-namelist-files-CASEROOT-user_nl_">user namelist files (CASEROOT/user_nl_*)</dt><dd><p>User modifications for a given case can be specified in these files.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary docutils">
-<dt id="term-baseline">baseline</dt>
-<dd>A set of test cases that is run using a tag which is complete, tested, and has no modifications
-in the source code. Used to assess the performance/accuracy of a case that is run using a sandbox.</dd>
-<dt id="term-baseline-failure">baseline failure</dt>
-<dd>A test that fails in its comparison with a baseline.</dd>
-<dt id="term-blessing">blessing</dt>
-<dd>Part of the unit testing framework used by CIME scripts regression tests.</dd>
-<dt id="term-regression-test">regression test</dt>
-<dd>A test that compares with baseline results to determine if any new errors have been introduced
-into the code base.</dd>
-<dt id="term-unit-testing">unit testing</dt>
-<dd>A fast, self-verifying test of a small piece of code.</dd>
+<dl class="glossary simple">
+<dt id="term-baseline">baseline</dt><dd><p>A set of test cases that is run using a tag which is complete, tested, and has no modifications
+in the source code. Used to assess the performance/accuracy of a case that is run using a sandbox.</p>
+</dd>
+<dt id="term-baseline-failure">baseline failure</dt><dd><p>A test that fails in its comparison with a baseline.</p>
+</dd>
+<dt id="term-blessing">blessing</dt><dd><p>Part of the unit testing framework used by CIME scripts regression tests.</p>
+</dd>
+<dt id="term-regression-test">regression test</dt><dd><p>A test that compares with baseline results to determine if any new errors have been introduced
+into the code base.</p>
+</dd>
+<dt id="term-unit-testing">unit testing</dt><dd><p>A fast, self-verifying test of a small piece of code.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="miscellaneous">
 <h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
-<dl class="glossary docutils">
-<dt id="term-esp">ESP</dt>
-<dd>External System Processing: handles data assimilation</dd>
+<dl class="glossary simple">
+<dt id="term-ESP">ESP</dt><dd><p>External System Processing: handles data assimilation</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -362,10 +362,11 @@ into the code base.</dd>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

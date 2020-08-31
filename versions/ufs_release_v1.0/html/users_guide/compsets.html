@@ -185,7 +185,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>2. Component sets</li>
+      <li><span class="section-number">2. </span>Component sets</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -205,7 +205,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="component-sets">
-<span id="compsets"></span><h1>2. Component sets<a class="headerlink" href="#component-sets" title="Permalink to this headline">¶</a></h1>
+<span id="compsets"></span><h1><span class="section-number">2. </span>Component sets<a class="headerlink" href="#component-sets" title="Permalink to this headline">¶</a></h1>
 <p>In CIME, multiple components can define compsets that are targeted to their model development needs.</p>
 <p>Each component supports a set of compset longnames that are used in testing and supported in out of the box configurations.</p>
 <p>To determine if the compset name to <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> is a supported component, CIME looks in the <strong>config_files.xml</strong> file and parses the
@@ -237,7 +237,7 @@ land and cice (in prescribed mode) and a data ocean is the atmosphere component 
 is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
 In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 <div class="section" id="compset-longname">
-<span id="defining-compsets"></span><h2>2.1. Compset longname<a class="headerlink" href="#compset-longname" title="Permalink to this headline">¶</a></h2>
+<span id="defining-compsets"></span><h2><span class="section-number">2.1. </span>Compset longname<a class="headerlink" href="#compset-longname" title="Permalink to this headline">¶</a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>
 <p>A compset longname has this form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
@@ -264,11 +264,11 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <strong>All</strong> data models have a %phys option that corresponds to the data model mode.</p>
 </div>
 <div class="section" id="component-specific-settings-in-a-compset">
-<span id="defining-component-specific-compset-settings"></span><h2>2.2. Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Permalink to this headline">¶</a></h2>
+<span id="defining-component-specific-compset-settings"></span><h2><span class="section-number">2.2. </span>Component specific settings in a compset<a class="headerlink" href="#component-specific-settings-in-a-compset" title="Permalink to this headline">¶</a></h2>
 <p>Every model component also contains a <strong>config_component.xml</strong> file that has two functions:</p>
 <ol class="arabic simple">
-<li>Specifying the component-specific definitions of what can appear after the <code class="docutils literal notranslate"><span class="pre">%</span></code> in the compset longname, (for example, <code class="docutils literal notranslate"><span class="pre">DOM</span></code> in <code class="docutils literal notranslate"><span class="pre">DOCN%DOM</span></code>).</li>
-<li>Specifying the compset-specific <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml variables.</li>
+<li><p>Specifying the component-specific definitions of what can appear after the <code class="docutils literal notranslate"><span class="pre">%</span></code> in the compset longname, (for example, <code class="docutils literal notranslate"><span class="pre">DOM</span></code> in <code class="docutils literal notranslate"><span class="pre">DOCN%DOM</span></code>).</p></li>
+<li><p>Specifying the compset-specific <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml variables.</p></li>
 </ol>
 <p>CIME first parses the following nodes to identify appropriate <strong>config_component.xml</strong> files for the driver. There are two such files; one is model-independent and the other is model-specific.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CONFIG_CPL_FILE&quot;&gt;
@@ -315,13 +315,13 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <p>To list the possible values, use the <a class="reference external" href="../Tools_user/query_config.html">query_config –component datm</a> command.</p>
 </div>
 <div class="section" id="creating-new-compsets">
-<span id="id1"></span><h2>2.3. Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2><span class="section-number">2.3. </span>Creating New Compsets<a class="headerlink" href="#creating-new-compsets" title="Permalink to this headline">¶</a></h2>
 <p>A description of how CIME interprets a compset name is given in the section <a class="reference internal" href="#defining-compsets"><span class="std std-ref">Compset longname</span></a> .</p>
 <p>To create a new compset, you will at a minimum have to:</p>
 <ol class="arabic simple">
-<li>edit the approprite <code class="docutils literal notranslate"><span class="pre">config_components.xml</span></code> file(s) to add your new requirements</li>
-<li>edit associate <code class="docutils literal notranslate"><span class="pre">namelist_definitions_xxx.xml</span></code> in the associated <code class="docutils literal notranslate"><span class="pre">cime_config</span></code> directories.
-(e.g. if a change is made to the the <code class="docutils literal notranslate"><span class="pre">config_components.xml</span></code> for <code class="docutils literal notranslate"><span class="pre">DOCN</span></code> then <code class="docutils literal notranslate"><span class="pre">namelist_definitions_docn.xml</span></code> file will also need to be modified).</li>
+<li><p>edit the approprite <code class="docutils literal notranslate"><span class="pre">config_components.xml</span></code> file(s) to add your new requirements</p></li>
+<li><p>edit associate <code class="docutils literal notranslate"><span class="pre">namelist_definitions_xxx.xml</span></code> in the associated <code class="docutils literal notranslate"><span class="pre">cime_config</span></code> directories.
+(e.g. if a change is made to the the <code class="docutils literal notranslate"><span class="pre">config_components.xml</span></code> for <code class="docutils literal notranslate"><span class="pre">DOCN</span></code> then <code class="docutils literal notranslate"><span class="pre">namelist_definitions_docn.xml</span></code> file will also need to be modified).</p></li>
 </ol>
 <p>It is important to point out, that you will need expertise in the target component(s) you are trying to modify in order to add new compset functionality for that particular component.
 We provide a few examples below that outline this process for a few simple cases.</p>
@@ -329,9 +329,9 @@ We provide a few examples below that outline this process for a few simple cases
 This would imply when parsing the compset longname, CIME would need to be able to recognize the string <code class="docutils literal notranslate"><span class="pre">_DOCN%FOO_</span></code>.
 To enable this, you will need to do the following:</p>
 <ol class="arabic">
-<li><p class="first">edit <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
+<li><p>edit <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
 <ul>
-<li><p class="first">add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;description</span> <span class="pre">modifier</span> <span class="pre">block=&quot;1&quot;&gt;</span></code> block as shown below</p>
+<li><p>add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;description</span> <span class="pre">modifier</span> <span class="pre">block=&quot;1&quot;&gt;</span></code> block as shown below</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">description</span> <span class="n">modifier_mode</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">&gt;</span>
    <span class="o">&lt;</span><span class="n">desc</span> <span class="n">ocn</span><span class="o">=</span><span class="s2">&quot;DOCN...[</span><span class="si">%F</span><span class="s2">OO]&quot;</span><span class="o">&gt;</span><span class="n">DOCN</span> <span class="o">&lt;/</span><span class="n">desc</span><span class="o">&gt;</span>
    <span class="o">...</span>
@@ -341,7 +341,7 @@ To enable this, you will need to do the following:</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;entry</span> <span class="pre">id=&quot;DOCN_MODE&quot;&gt;</span></code> block as shown below:</p>
+<li><p>add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;entry</span> <span class="pre">id=&quot;DOCN_MODE&quot;&gt;</span></code> block as shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;DOCN_MODE&quot;</span><span class="o">&gt;</span>
    <span class="o">....</span>
    <span class="o">&lt;</span><span class="n">values</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="o">&gt;</span>
@@ -352,13 +352,12 @@ To enable this, you will need to do the following:</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">modify any of the other xml entries that need a new dependence on <code class="docutils literal notranslate"><span class="pre">FOO</span></code></p>
-</li>
+<li><p>modify any of the other xml entries that need a new dependence on <code class="docutils literal notranslate"><span class="pre">FOO</span></code></p></li>
 </ul>
 </li>
-<li><p class="first">edit <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/namelist_definition_docn.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
+<li><p>edit <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/namelist_definition_docn.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
 <ul>
-<li><p class="first">add an entry to the <code class="docutils literal notranslate"><span class="pre">datamode</span></code> block as shown below.</p>
+<li><p>add an entry to the <code class="docutils literal notranslate"><span class="pre">datamode</span></code> block as shown below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;datamode&quot;</span><span class="o">&gt;</span>
    <span class="o">....</span>
    <span class="o">&lt;</span><span class="n">valid_values</span><span class="o">&gt;...</span><span class="n">FOO</span><span class="o">&lt;/</span><span class="n">valid_values</span><span class="o">&gt;</span>
@@ -367,14 +366,13 @@ To enable this, you will need to do the following:</p>
 </pre></div>
 </div>
 </li>
-<li><p class="first">add additional changes to <code class="docutils literal notranslate"><span class="pre">namelist_definition_docn.xml</span></code> for the new mode</p>
-</li>
+<li><p>add additional changes to <code class="docutils literal notranslate"><span class="pre">namelist_definition_docn.xml</span></code> for the new mode</p></li>
 </ul>
 </li>
 </ol>
-<div class="admonition-todo admonition" id="index-0">
-<p class="first admonition-title">Todo</p>
-<p class="last">Add additional examples for creating a case</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Add additional examples for creating a case</p>
 </div>
 </div>
 </div>
@@ -426,10 +424,11 @@ To enable this, you will need to do the following:</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

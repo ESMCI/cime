@@ -186,7 +186,7 @@
         
           <li><a href="index.html">Data Models</a> &raquo;</li>
         
-      <li>4. Design Details</li>
+      <li><span class="section-number">4. </span>Design Details</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -206,9 +206,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="design-details">
-<span id="id1"></span><h1>4. Design Details<a class="headerlink" href="#design-details" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">4. </span>Design Details<a class="headerlink" href="#design-details" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="data-model-performance">
-<h2>4.1. Data Model Performance<a class="headerlink" href="#data-model-performance" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.1. </span>Data Model Performance<a class="headerlink" href="#data-model-performance" title="Permalink to this headline">¶</a></h2>
 <p>There are two primary costs associated with strdata: reading data and spatially mapping data.
 Time interpolation is relatively cheap in the current implementation.
 As much as possible, redundant operations are minimized.
@@ -221,13 +221,13 @@ Because the present computations are always linear, changing the order of operat
 The present order of operations generally minimizes the mapping cost for typical data model use cases.</p>
 </div>
 <div class="section" id="data-model-limitations">
-<h2>4.2. Data Model Limitations<a class="headerlink" href="#data-model-limitations" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.2. </span>Data Model Limitations<a class="headerlink" href="#data-model-limitations" title="Permalink to this headline">¶</a></h2>
 <p>There are several limitations in both options and usage within the data models at the present time.
 Spatial interpolation can only be performed from a two-dimensional latitude-longitude input grid.
 The target grid can be arbitrary but the source grid must be able to be described by simple one-dimensional lists of longitudes and latitudes, although they don’t have to be equally spaced.</p>
 </div>
 <div class="section" id="io-through-data-models">
-<h2>4.3. IO Through Data Models<a class="headerlink" href="#io-through-data-models" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.3. </span>IO Through Data Models<a class="headerlink" href="#io-through-data-models" title="Permalink to this headline">¶</a></h2>
 <p>At the present time, data models can only read netcdf data, and IO is handled through either standard netcdf interfaces or through the PIO library using either netcdf or pnetcdf.
 If standard netcdf is used, global fields are read and then scattered one field at a time.
 If PIO is used, then data will be read either serially or in parallel in chunks that are approximately the global field size divided by the number of IO tasks.
@@ -242,7 +242,7 @@ In general, [io_root + (num_iotasks-1)*io_stride + 1] has to be less than the to
 In practice, PIO seems to perform optimally somewhere between the extremes of 1 task and all tasks, and is highly machine and problem dependent.</p>
 </div>
 <div class="section" id="restart-files">
-<h2>4.4. Restart Files<a class="headerlink" href="#restart-files" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">4.4. </span>Restart Files<a class="headerlink" href="#restart-files" title="Permalink to this headline">¶</a></h2>
 <p>Restart files are generated automatically by the data models based on a flag sent from the driver.
 The restart files must meet the CIME naming convention and an <code class="docutils literal notranslate"><span class="pre">rpointer</span></code> file is generated at the same time.
 An <code class="docutils literal notranslate"><span class="pre">rpointer</span></code> file is a <em>restart pointer</em> file which contains the name of the most recently created restart file.
@@ -258,12 +258,12 @@ If a stream restart file is missing, the code will restart without it but may ne
 This will take extra time but will not impact the results.</p>
 </div>
 <div class="section" id="data-structures">
-<span id="id2"></span><h2>4.5. Data Structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2><span class="section-number">4.5. </span>Data Structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h2>
 <p>The data models all use three fundamental routines.</p>
 <ul class="simple">
-<li>$CIMEROOT/src/utils/shr_dmodel_mod.F90</li>
-<li>$CIMEROOT/src/utils/shr_stream_mod.F90</li>
-<li>$CIMEROOT/src/utils/shr_strdata.F90</li>
+<li><p>$CIMEROOT/src/utils/shr_dmodel_mod.F90</p></li>
+<li><p>$CIMEROOT/src/utils/shr_stream_mod.F90</p></li>
+<li><p>$CIMEROOT/src/utils/shr_strdata.F90</p></li>
 </ul>
 <p>These routines contain three data structures that are leveraged by all the data model code.</p>
 <p>The most basic type, <code class="docutils literal notranslate"><span class="pre">shr_stream_fileType</span></code> is contained in <code class="docutils literal notranslate"><span class="pre">shr_stream_mod.F90</span></code> and specifies basic information related to a given stream file.</p>
@@ -453,10 +453,11 @@ namelist group (see the <a class="reference internal" href="input-streams.html#s
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

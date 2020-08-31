@@ -192,7 +192,7 @@
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="k">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">is_locked</span>
 <span class="kn">import</span> <span class="nn">CIME.build</span> <span class="k">as</span> <span class="nn">build</span>
 
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">gzip</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">six</span><span class="o">,</span> <span class="nn">shutil</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -215,6 +215,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_locked_files</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cpllog</span> <span class="o">=</span> <span class="s2">&quot;med&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;nuopc&quot;</span> <span class="k">else</span> <span class="s2">&quot;cpl&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_old_build</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ninja</span>     <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span>   <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_init_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -248,13 +251,16 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">case_setup</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SystemTestsCommon.build"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCommon.build"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">old_build</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ninja</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Do NOT override this method, this method is the framework that</span>
 <span class="sd">        controls the build phase. build_phase is the extension point</span>
 <span class="sd">        that subclasses should use.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_old_build</span> <span class="o">=</span> <span class="n">old_build</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ninja</span>     <span class="o">=</span> <span class="n">ninja</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span>   <span class="o">=</span> <span class="n">dry_run</span>
         <span class="k">for</span> <span class="n">phase_name</span><span class="p">,</span> <span class="n">phase_bool</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">SHAREDLIB_BUILD_PHASE</span><span class="p">,</span> <span class="ow">not</span> <span class="n">model_only</span><span class="p">),</span>
                                        <span class="p">(</span><span class="n">MODEL_BUILD_PHASE</span><span class="p">,</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">)]:</span>
             <span class="k">if</span> <span class="n">phase_bool</span><span class="p">:</span>
@@ -302,7 +308,8 @@
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;MODEL&#39;</span><span class="p">)</span>
         <span class="n">build</span><span class="o">.</span><span class="n">case_build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span>
                          <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">,</span>
-                         <span class="n">save_build_provenance</span><span class="o">=</span><span class="ow">not</span> <span class="n">model</span><span class="o">==</span><span class="s1">&#39;cesm&#39;</span><span class="p">)</span></div>
+                         <span class="n">save_build_provenance</span><span class="o">=</span><span class="ow">not</span> <span class="n">model</span><span class="o">==</span><span class="s1">&#39;cesm&#39;</span><span class="p">,</span>
+                         <span class="n">use_old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_old_build</span><span class="p">,</span> <span class="n">ninja</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ninja</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dry_run</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SystemTestsCommon.clean_build"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.SystemTestsCommon.clean_build">[docs]</a>    <span class="k">def</span> <span class="nf">clean_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">comps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -319,21 +326,37 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_skip_pnl</span> <span class="o">=</span> <span class="n">skip_pnl</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_resetup_case</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">)</span>
+            <span class="n">do_baseline_ops</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">RUN_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_phase</span><span class="p">()</span>
+            <span class="c1"># We do not want to do multiple repetitions of baseline operations for</span>
+            <span class="c1"># multi-submit tests. We just want to do them upon the final submission.</span>
+            <span class="c1"># Other submissions will need to mark those phases as PEND to ensure wait_for_tests</span>
+            <span class="c1"># waits for them.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BATCH_SYSTEM&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+                <span class="n">do_baseline_ops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_phase</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GENERATE_BASELINE&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">GENERATE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">do_baseline_ops</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">GENERATE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_baseline</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">GENERATE_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPARE_BASELINE&quot;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>   <span class="bp">self</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_compare_memory</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare_throughput</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">do_baseline_ops</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>   <span class="bp">self</span><span class="o">.</span><span class="n">_compare_baseline</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_compare_memory</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compare_throughput</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">BASELINE_PHASE</span><span class="p">,</span>   <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span>    <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">THROUGHPUT_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">MEMLEAK_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">)</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">MEMLEAK_PHASE</span><span class="p">,</span>   <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_memleak</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_phase_modifying_call</span><span class="p">(</span><span class="n">STARCHIVE_PHASE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_st_archive_case_test</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># We want KeyboardInterrupts to generate FAIL status</span>
@@ -364,7 +387,7 @@
                 <span class="c1"># If overall things did not pass, offer the user some insight into what might have broken things</span>
                 <span class="n">overall_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">(</span><span class="n">ignore_namelists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">overall_status</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span><span class="p">:</span>
-                    <span class="n">srcroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
+                    <span class="n">srcroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">)</span>
                     <span class="n">worked_before</span><span class="p">,</span> <span class="n">last_pass</span><span class="p">,</span> <span class="n">last_fail_transition</span> <span class="o">=</span> \
                         <span class="n">get_test_success</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_casebaseid</span><span class="p">)</span>
 
@@ -652,7 +675,7 @@
                     <span class="n">blmem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mem_usage</span><span class="p">(</span><span class="n">baselog</span><span class="p">)</span>
                     <span class="n">blmem</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">blmem</span> <span class="o">==</span> <span class="p">[]</span> <span class="k">else</span> <span class="n">blmem</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                     <span class="n">curmem</span> <span class="o">=</span> <span class="n">memlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">curmem</span><span class="o">-</span><span class="n">blmem</span><span class="p">)</span><span class="o">/</span><span class="n">blmem</span>
+                    <span class="n">diff</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">blmem</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">(</span><span class="n">curmem</span><span class="o">-</span><span class="n">blmem</span><span class="p">)</span><span class="o">/</span><span class="n">blmem</span>
                     <span class="k">if</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mf">0.1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_status</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">MEMCOMP_PHASE</span><span class="p">)</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">:</span>
@@ -735,14 +758,22 @@
 <span class="sd">    have names beginnig with &quot;TEST&quot; this is so that the find_system_test</span>
 <span class="sd">    in utils.py will work with these classes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">_set_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">requires_exe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_script</span> <span class="o">=</span> <span class="n">script</span> <span class="c1"># pylint: disable=attribute-defined-outside-init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span> <span class="o">=</span> <span class="n">requires_exe</span> <span class="c1"># pylint: disable=attribute-defined-outside-init</span>
 
 <div class="viewcode-block" id="FakeTest.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.FakeTest.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sharedlib_only</span><span class="p">:</span>
             <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
             <span class="n">cime_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
             <span class="n">modelexe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">))</span>
+            <span class="n">real_modelexe</span> <span class="o">=</span> <span class="n">modelexe</span> <span class="o">+</span> <span class="s2">&quot;.real&quot;</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">modelexe</span><span class="p">,</span> <span class="n">real_modelexe</span><span class="p">)</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">modelexe</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/bash</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -750,7 +781,8 @@
 
             <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">modelexe</span><span class="p">,</span> <span class="mo">0o755</span><span class="p">)</span>
 
-            <span class="n">build</span><span class="o">.</span><span class="n">post_build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="p">[],</span> <span class="n">build_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requires_exe</span><span class="p">:</span>
+                <span class="n">build</span><span class="o">.</span><span class="n">post_build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="p">[],</span> <span class="n">build_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FakeTest.run_indv"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.FakeTest.run_indv">[docs]</a>    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">mpilib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
@@ -800,6 +832,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="TESTRUNDIFFRESUBMIT"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNDIFFRESUBMIT">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNDIFFRESUBMIT</span><span class="p">(</span><span class="n">TESTRUNDIFF</span><span class="p">):</span>
+    <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="TESTTESTDIFF"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTTESTDIFF">[docs]</a><span class="k">class</span> <span class="nc">TESTTESTDIFF</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">):</span>
 
@@ -873,6 +908,43 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="n">FakeTest</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Exception from init&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TESTRUNUSERXMLCHANGE"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNUSERXMLCHANGE">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNUSERXMLCHANGE</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TESTRUNUSERXMLCHANGE.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNUSERXMLCHANGE.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+        <span class="n">caseroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
+        <span class="n">cime_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
+        <span class="n">modelexe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">new_stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+
+        <span class="n">script</span> <span class="o">=</span> \
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">cd {caseroot}</span>
+<span class="sd">./xmlchange DOUT_S=TRUE</span>
+<span class="sd">./xmlchange DOUT_S=TRUE --file env_test.xml</span>
+<span class="sd">./xmlchange RESUBMIT=1</span>
+<span class="sd">./xmlchange STOP_N={stopn}</span>
+<span class="sd">./xmlchange CONTINUE_RUN=FALSE</span>
+<span class="sd">./xmlchange RESUBMIT_SETS_CONTINUE_RUN=FALSE</span>
+<span class="sd">cd -</span>
+<span class="sd">sleep 5</span>
+<span class="sd">{modelexe}.real &quot;$@&quot;</span>
+<span class="sd">sleep 5</span>
+
+<span class="sd"># Need to remove self in order to avoid infinite loop</span>
+<span class="sd">ls $(dirname {modelexe})</span>
+<span class="sd">mv {modelexe} {modelexe}.old</span>
+<span class="sd">mv {modelexe}.real {modelexe}</span>
+<span class="sd">ls $(dirname {modelexe})</span>
+<span class="sd">sleep 5</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">modelexe</span><span class="o">=</span><span class="n">modelexe</span><span class="p">,</span> <span class="n">stopn</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">new_stop_n</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">requires_exe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">FakeTest</span><span class="o">.</span><span class="n">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TESTRUNUSERXMLCHANGE.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNUSERXMLCHANGE.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">st_archive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="TESTRUNSLOWPASS"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_common.TESTRUNSLOWPASS">[docs]</a><span class="k">class</span> <span class="nc">TESTRUNSLOWPASS</span><span class="p">(</span><span class="n">FakeTest</span><span class="p">):</span>
 
@@ -961,10 +1033,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

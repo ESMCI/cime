@@ -179,7 +179,7 @@
         
           <li><a href="index.html">Data Models</a> &raquo;</li>
         
-      <li>2. Input Namelists</li>
+      <li><span class="section-number">2. </span>Input Namelists</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -199,7 +199,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="input-namelists">
-<span id="id1"></span><h1>2. Input Namelists<a class="headerlink" href="#input-namelists" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">2. </span>Input Namelists<a class="headerlink" href="#input-namelists" title="Permalink to this headline">¶</a></h1>
 <p>Each data model has two namelist groups in its input namelist file: a <strong>stream-dependent</strong> and a <strong>stream-independent</strong> namelist group.</p>
 <p>The stream-dependent namelist group (<code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code>) specifies the data model mode, stream description text files, and interpolation options.
 The stream description files will be provided as separate input files and contain the files and fields that need to be read.
@@ -225,8 +225,8 @@ The detailed namelist options for each data model will be described later, but e
 <p>As mentioned above, the <code class="docutils literal notranslate"><span class="pre">dataMode</span></code> namelist variable that is associated with each data model specifies if there are any additional operations that need to be performed on that data model’s input streams before return to the driver.
 At a minimum, all data models support <code class="docutils literal notranslate"><span class="pre">datamode</span></code> values of <code class="docutils literal notranslate"><span class="pre">NULL</span></code> and <code class="docutils literal notranslate"><span class="pre">COPYALL</span></code>.</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">NULL</span></code> - turns off the data model as a provider of data to the coupler.</li>
-<li><code class="docutils literal notranslate"><span class="pre">COPYALL</span></code> - copies all fields directly from the input data streams. Any required fields not found on an input stream will be set to zero.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NULL</span></code> - turns off the data model as a provider of data to the coupler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COPYALL</span></code> - copies all fields directly from the input data streams. Any required fields not found on an input stream will be set to zero.</p></li>
 </ul>
 <p>Three stream description files (see <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">input streams</span></a>) are then expected to be available, <code class="docutils literal notranslate"><span class="pre">streama</span></code>, <code class="docutils literal notranslate"><span class="pre">streamb</span></code> and <code class="docutils literal notranslate"><span class="pre">streamc</span></code>.
 Those files specify the input data filenames, input data grids, and input fields that are expected, among other things.
@@ -324,10 +324,11 @@ As an example, one of the stream description files might look like</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

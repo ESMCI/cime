@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>e3sm_cime_split &mdash; CIME master documentation</title>
+  <title>mvsource &mdash; CIME master documentation</title>
   
 
   
@@ -37,8 +37,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="CIME master documentation" href="../index.html"/>
         <link rel="up" title="User Tools" href="index.html"/>
-        <link rel="next" title="generate_cylc_workflow.py" href="generate_cylc_workflow.py.html"/>
-        <link rel="prev" title="e3sm_cime_merge" href="e3sm_cime_merge.html"/> 
+        <link rel="next" title="normalize_cases" href="normalize_cases.html"/>
+        <link rel="prev" title="mkSrcfiles" href="mkSrcfiles.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -146,18 +146,18 @@
 <li class="toctree-l2"><a class="reference internal" href="create_test.html">create_test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cs.status.html">cs.status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e3sm_check_env.html">e3sm_check_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm_cime_merge.html">e3sm_cime_merge</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">e3sm_cime_split</a><ul class="simple">
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_case_env.html">get_case_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_generic_job.html">jenkins_generic_job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_script.html">jenkins_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mkDepends.html">mkDepends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mkSrcfiles.html">mkSrcfiles</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mvsource</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="normalize_cases.html">normalize_cases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pelayout.html">pelayout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preview_namelists.html">preview_namelists</a></li>
@@ -224,13 +224,13 @@
         
           <li><a href="index.html">User Tools</a> &raquo;</li>
         
-      <li>e3sm_cime_split</li>
+      <li>mvsource</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/Tools_user/e3sm_cime_split.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/Tools_user/mvsource.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -243,35 +243,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="e3sm-cime-split">
-<span id="id1"></span><h1>e3sm_cime_split<a class="headerlink" href="#e3sm-cime-split" title="Permalink to this headline">¶</a></h1>
-<p><strong>e3sm_cime_split</strong> is a script in CIMEROOT/scripts/Tools.</p>
+  <div class="section" id="mvsource">
+<span id="id1"></span><h1>mvsource<a class="headerlink" href="#mvsource" title="Permalink to this headline">¶</a></h1>
+<p><strong>mvsource</strong> is a script in CIMEROOT/scripts/Tools.</p>
 <div class="toctree-wrapper compound">
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./e3sm_cime_split --help
-usage: 
-e3sm_cime_split [--verbose]
-OR
-e3sm_cime_split --help
-
-A script to split-off E3SM&#39;s cime development and make it into a PR for ESMCI
-
-positional arguments:
-  repo           Location of repo to use, default is based on current location
-                 (default: None)
-
-optional arguments:
-  -h, --help     show this help message and exit
-  -d, --debug    Print debug information (very verbose) to file
-                 /Users/sacks/cime/scripts/Tools/e3sm_cime_split.log (default:
-                 False)
-  -v, --verbose  Add additional context (time and file) to log messages
-                 (default: False)
-  -s, --silent   Print only warnings and error messages (default: False)
-  -r, --resume   Resume split after fixing conflicts (default: False)
-  -a, --abort    Abort split (default: False)
-  --squash       Do the split as squashy as possible (default: False)
-  --auto-conf    Try to automatically resolve conflicts (default: False)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./mvsource --help
+Traceback (most recent call last):
+  File &quot;./mvsource&quot;, line 7, in &lt;module&gt;
+    cimeroot = sys.argv[2]
+IndexError: list index out of range
 </pre></div>
 </div>
 </div>
@@ -286,10 +267,10 @@ optional arguments:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generate_cylc_workflow.py.html" class="btn btn-neutral float-right" title="generate_cylc_workflow.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="normalize_cases.html" class="btn btn-neutral float-right" title="normalize_cases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="e3sm_cime_merge.html" class="btn btn-neutral" title="e3sm_cime_merge" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mkSrcfiles.html" class="btn btn-neutral" title="mkSrcfiles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -323,10 +304,11 @@ optional arguments:
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

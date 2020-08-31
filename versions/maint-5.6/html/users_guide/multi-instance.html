@@ -180,7 +180,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>10. Multi-instance component functionality</li>
+      <li><span class="section-number">10. </span>Multi-instance component functionality</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -200,7 +200,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="multi-instance-component-functionality">
-<span id="multi-instance"></span><h1>10. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
+<span id="multi-instance"></span><h1><span class="section-number">10. </span>Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
 <p>The CIME coupling infrastructure is capable of running multiple
 component instances (ensembles) under one model executable.  There are
 two modes of ensemble capability, single driver in which all component
@@ -278,14 +278,14 @@ Modifying <strong>user_nl_cam_0002</strong> will result in your namelist changes
 To change the DOCN stream txt file instance 0002, copy <strong>docn.streams.txt.prescribed_0002</strong> to your <strong>$CASEROOT</strong> directory with the name <strong>user_docn.streams.txt.prescribed_0002</strong> and modify it accordlingly.</p>
 <p>Also keep these important points in mind:</p>
 <ol class="arabic simple">
-<li>Note that these changes can be made at create_newcase time with option –ninst # where # is a positive integer, use the additional logical option –multi-driver to invoke the multi-driver mode.</li>
-<li><strong>Multiple component instances can differ ONLY in namelist settings; they ALL use the same model executable.</strong></li>
-<li>Calling <strong>case.setup</strong> with <code class="docutils literal notranslate"><span class="pre">--clean</span></code> <em>DOES NOT</em> remove the <strong>user_nl_xxx_NN</strong> (where xxx is the component name) files created by <strong>case.setup</strong>.</li>
-<li>A special variable NINST_LAYOUT is provided for some experimental compsets, its value should be
-‘concurrent’ for all but a few special cases and it cannot be used if MULTI_DRIVER=TRUE.</li>
-<li>In <strong>create_test</strong> these options can be invoked with testname modifiers _N# for the single driver mode and _C# for the multi-driver mode.  These are mutually exclusive options, they cannot be combined.</li>
-<li>In create_newcase you may use –ninst # to set the number of instances and –multi-driver for multi-driver mode.</li>
-<li>In multi-driver mode you will always get 1 instance of each component for each driver/coupler, if you change a case using xmlchange MULTI_COUPLER=TRUE you will get a number of driver/couplers equal to the maximum NINST value over all components.</li>
+<li><p>Note that these changes can be made at create_newcase time with option –ninst # where # is a positive integer, use the additional logical option –multi-driver to invoke the multi-driver mode.</p></li>
+<li><p><strong>Multiple component instances can differ ONLY in namelist settings; they ALL use the same model executable.</strong></p></li>
+<li><p>Calling <strong>case.setup</strong> with <code class="docutils literal notranslate"><span class="pre">--clean</span></code> <em>DOES NOT</em> remove the <strong>user_nl_xxx_NN</strong> (where xxx is the component name) files created by <strong>case.setup</strong>.</p></li>
+<li><p>A special variable NINST_LAYOUT is provided for some experimental compsets, its value should be
+‘concurrent’ for all but a few special cases and it cannot be used if MULTI_DRIVER=TRUE.</p></li>
+<li><p>In <strong>create_test</strong> these options can be invoked with testname modifiers _N# for the single driver mode and _C# for the multi-driver mode.  These are mutually exclusive options, they cannot be combined.</p></li>
+<li><p>In create_newcase you may use –ninst # to set the number of instances and –multi-driver for multi-driver mode.</p></li>
+<li><p>In multi-driver mode you will always get 1 instance of each component for each driver/coupler, if you change a case using xmlchange MULTI_COUPLER=TRUE you will get a number of driver/couplers equal to the maximum NINST value over all components.</p></li>
 </ol>
 </div>
 
@@ -336,10 +336,11 @@ To change the DOCN stream txt file instance 0002, copy <strong>docn.streams.txt.
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

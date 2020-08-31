@@ -179,7 +179,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>3. Setting up a Case</li>
+      <li><span class="section-number">3. </span>Setting up a Case</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -199,38 +199,38 @@
            <div itemprop="articleBody">
             
   <div class="section" id="setting-up-a-case">
-<span id="id1"></span><h1>3. Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">3. </span>Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Permalink to this headline">¶</a></h1>
 <p>After creating a case, some aspects of the case are fixed (any variables in env_case.xml). Changing the pe-layout
 (see <a class="reference internal" href="pes-threads.html#defining-pes"><span class="std std-ref">Changing Pes</span></a>) or some aspects of the batch system you may be using must be modified before running
 <strong>case.setup</strong>.</p>
 <div class="section" id="calling-case-setup">
-<h2>3.1. Calling <strong>case.setup</strong><a class="headerlink" href="#calling-case-setup" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.1. </span>Calling <strong>case.setup</strong><a class="headerlink" href="#calling-case-setup" title="Permalink to this headline">¶</a></h2>
 <p>After creating a case or changing aspects of a case, such as the pe-layout, call the <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> command from <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.
 This creates the following additional files and directories in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
 <blockquote>
-<div><table border="1" class="docutils">
+<div><table class="docutils align-default">
 <colgroup>
-<col width="19%" />
-<col width="81%" />
+<col style="width: 19%" />
+<col style="width: 81%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>.case.run</td>
-<td>A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed.
+<tbody>
+<tr class="row-odd"><td><p>.case.run</p></td>
+<td><p>A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed.
 The directive values are generated using the contents
 of <strong>env_mach_pes.xml</strong>. Running <a class="reference external" href="../Tools_user/case.setup.html">case.setup –clean</a>  will remove this file.
 This file should not be edited directly and instead controlled through XML variables in <strong>env_batch.xml</strong>. It should also
-<em>never</em> be run directly.</td>
+<em>never</em> be run directly.</p></td>
 </tr>
-<tr class="row-even"><td>Macros.make</td>
-<td><p class="first">File containing machine-specific makefile directives for your target platform/compiler.
+<tr class="row-even"><td><p>Macros.make</p></td>
+<td><p>File containing machine-specific makefile directives for your target platform/compiler.
 This file is created if it does not already exist.</p>
-<p class="last">The user can modify the file to change certain aspects of the build, such as compiler flags.
+<p>The user can modify the file to change certain aspects of the build, such as compiler flags.
 Running <a class="reference external" href="../Tools_user/case.setup.html">case.setup –clean</a>  will not remove the file once it has been created.
 However. if you remove or rename the Macros.make file, running <a class="reference external" href="../Tools_user/case.setup.html">case.setup</a> recreates it.</p>
 </td>
 </tr>
-<tr class="row-odd"><td>user_nl_xxx[_NNNN]</td>
-<td><p class="first">Files where all user modifications to component namelists are made.</p>
+<tr class="row-odd"><td><p>user_nl_xxx[_NNNN]</p></td>
+<td><p>Files where all user modifications to component namelists are made.</p>
 <p><strong>xxx</strong> is any one of the set of components targeted for the case.
 For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm or rtm, and so on.</p>
 <p>NNNN goes from 0001 to the number of instances of that component.
@@ -239,24 +239,24 @@ For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm or
 in the user_nl file names.</p>
 <p>A user_nl file of a given name is created only once.</p>
 <p>Calling <a class="reference external" href="../Tools_user/case.setup.html">case.setup –clean</a> will <em>not remove</em> any user_nl files.</p>
-<p class="last">Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only
+<p>Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only
 new user_nl files to be added to <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p>
 </td>
 </tr>
-<tr class="row-even"><td>CaseDocs/</td>
-<td><p class="first">Directory that contains all the component namelists for the run.</p>
-<p class="last">This is for reference only and files in this directory SHOULD NOT BE EDITED since they will
+<tr class="row-even"><td><p>CaseDocs/</p></td>
+<td><p>Directory that contains all the component namelists for the run.</p>
+<p>This is for reference only and files in this directory SHOULD NOT BE EDITED since they will
 be overwritten at build time and runtime.</p>
 </td>
 </tr>
-<tr class="row-odd"><td>.env_mach_specific.*</td>
-<td>Files summarizing the <strong>module load</strong> commands and environment variables that are set when
+<tr class="row-odd"><td><p>.env_mach_specific.*</p></td>
+<td><p>Files summarizing the <strong>module load</strong> commands and environment variables that are set when
 the scripts in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> are called. These files are not used by the case but can be
-useful for debugging <strong>module load</strong> and environment settings.</td>
+useful for debugging <strong>module load</strong> and environment settings.</p></td>
 </tr>
-<tr class="row-even"><td>software_environment.txt</td>
-<td>This file records some aspects of the computing system on which the case is built,
-such as the shell environment.</td>
+<tr class="row-even"><td><p>software_environment.txt</p></td>
+<td><p>This file records some aspects of the computing system on which the case is built,
+such as the shell environment.</p></td>
 </tr>
 </tbody>
 </table>
@@ -311,10 +311,11 @@ such as the shell environment.</td>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

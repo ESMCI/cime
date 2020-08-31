@@ -185,7 +185,8 @@
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="k">import</span> <span class="n">EnvBase</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">transform_vars</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">convert_to_seconds</span><span class="p">,</span> <span class="n">get_cime_config</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span><span class="p">,</span> <span class="n">get_logging_options</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">transform_vars</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">convert_to_seconds</span><span class="p">,</span> <span class="n">convert_to_babylonian_time</span><span class="p">,</span> \
+    <span class="n">get_cime_config</span><span class="p">,</span> <span class="n">get_batch_script_for_job</span><span class="p">,</span> <span class="n">get_logging_options</span><span class="p">,</span> <span class="n">format_time</span>
 <span class="kn">from</span> <span class="nn">CIME.locked_files</span> <span class="k">import</span> <span class="n">lock_file</span><span class="p">,</span> <span class="n">unlock_file</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 <span class="kn">import</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">math</span>
@@ -447,17 +448,11 @@
 
                 <span class="n">walltime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_walltime</span> <span class="k">if</span> <span class="n">walltime</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">walltime</span> <span class="c1"># last-chance fallback</span>
 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Set the walltime to the correct walltime_format, if set.</span>
-                <span class="c1"># Assuming correct format is #H:#M or %H:%M:%S.</span>
-                <span class="k">if</span> <span class="n">walltime_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">components</span><span class="o">=</span><span class="n">walltime</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">walltime_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)):</span>
-                        <span class="n">walltime</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">walltime_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))])</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Changing USER_REQUESTED_WALLTIME to </span><span class="si">{}</span><span class="s2"> to match walltime_format </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">walltime</span><span class="p">,</span><span class="n">walltime_format</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">walltime_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)):</span>
-                        <span class="n">walltime</span> <span class="o">=</span> <span class="n">walltime</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;00&quot;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">walltime_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)))</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Changing USER_REQUESTED_WALLTIME to </span><span class="si">{}</span><span class="s2"> to match walltime_format </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">walltime</span><span class="p">,</span><span class="n">walltime_format</span><span class="p">))</span>
+            <span class="n">walltime_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;walltime_format&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">walltime_format</span><span class="p">:</span>
+                <span class="n">seconds</span> <span class="o">=</span> <span class="n">convert_to_seconds</span><span class="p">(</span><span class="n">walltime</span><span class="p">)</span>
+                <span class="n">full_bab_time</span> <span class="o">=</span> <span class="n">convert_to_babylonian_time</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+                <span class="n">walltime</span> <span class="o">=</span> <span class="n">format_time</span><span class="p">(</span><span class="n">walltime_format</span><span class="p">,</span> <span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">,</span> <span class="n">full_bab_time</span><span class="p">)</span>
 
             <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">queue</span><span class="p">),</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="n">specs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">env_workflow</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;JOB_WALLCLOCK_TIME&quot;</span><span class="p">,</span> <span class="n">walltime</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">)</span>
@@ -597,8 +592,15 @@
                             <span class="n">rval</span> <span class="o">=</span> <span class="n">val</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">rval</span> <span class="o">=</span> <span class="n">val</span>
+
+                    <span class="c1"># We don&#39;t want floating-point data</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">rval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">rval</span><span class="p">)))</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+
                     <span class="c1"># need a correction for tasks per node</span>
-                    <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;-n&quot;</span> <span class="ow">and</span> <span class="n">rval</span><span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;-n&quot;</span> <span class="ow">and</span> <span class="n">rval</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">rval</span> <span class="o">=</span> <span class="mi">1</span>
 
                     <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;-q&quot;</span> <span class="ow">and</span> <span class="n">rval</span> <span class="o">==</span> <span class="s2">&quot;batch&quot;</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;blues&quot;</span><span class="p">:</span>
@@ -888,6 +890,7 @@
         <span class="k">if</span> <span class="n">submitcmd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">):</span>
             <span class="c1"># add ` before cd $CASEROOT and at end of command</span>
             <span class="n">submitcmd</span> <span class="o">=</span> <span class="n">submitcmd</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;cd $CASEROOT&quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\&#39;</span><span class="s2">cd $CASEROOT&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\&#39;</span><span class="s2">&quot;</span>
+
         <span class="k">if</span> <span class="n">dry_run</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">submitcmd</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1157,10 +1160,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

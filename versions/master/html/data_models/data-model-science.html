@@ -179,7 +179,7 @@
         
           <li><a href="index.html">Data Models</a> &raquo;</li>
         
-      <li>5. Data Model Science</li>
+      <li><span class="section-number">5. </span>Data Model Science</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -199,28 +199,28 @@
            <div itemprop="articleBody">
             
   <div class="section" id="data-model-science">
-<span id="id1"></span><h1>5. Data Model Science<a class="headerlink" href="#data-model-science" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">5. </span>Data Model Science<a class="headerlink" href="#data-model-science" title="Permalink to this headline">¶</a></h1>
 <p>When a given data model is run, the user must specify which <em>science mode</em> it will run in.
 Each data model has a fixed set of fields that it must send to the coupler, but it is the choice of mode that specifies how that set of fields is to be computed.
 Each mode activates various assumptions about what input fields are available from the input data streams, what input fields are available from the the coupler, and how to use this input data to compute the output fields sent to the coupler.</p>
 <p>In general, a mode might specify…</p>
 <ul class="simple">
-<li>that fields be set to a time invariant constant (so that no input data is needed)</li>
-<li>that fields be taken directly from input data files (the input streams)</li>
-<li>that fields be computed using data read in from input files</li>
-<li>that fields be computed using data received from the coupler</li>
-<li>some combination of the above.</li>
+<li><p>that fields be set to a time invariant constant (so that no input data is needed)</p></li>
+<li><p>that fields be taken directly from input data files (the input streams)</p></li>
+<li><p>that fields be computed using data read in from input files</p></li>
+<li><p>that fields be computed using data received from the coupler</p></li>
+<li><p>some combination of the above.</p></li>
 </ul>
 <p>If a science mode is chosen that is not consistent with the input data provided, the model may abort (perhaps with a “missing data” error message), or the model may send erroneous data to the coupler (for example, if a mode assumes an input stream has temperature in Kelvin, but it really has temperature in Celsius).
 Such an error is unlikely unless a user has edited the run scripts to specify either non-standard input data or a non-standard science mode.
 When editing the run scripts to use non-standard stream data or modes, users must be careful that the input data is consistent with the science mode and should verify that the data model is providing data to the coupler as expected.</p>
 <p>The data model mode is a character string that is set in the namelist variable <code class="docutils literal notranslate"><span class="pre">datamode</span></code> in the namelist group <code class="docutils literal notranslate"><span class="pre">shr_strdata_nml</span></code>. Although each data model,
 <code class="docutils literal notranslate"><span class="pre">datm</span></code>, <code class="docutils literal notranslate"><span class="pre">dlnd</span></code>, <code class="docutils literal notranslate"><span class="pre">drof</span></code>, <code class="docutils literal notranslate"><span class="pre">docn</span></code>, <code class="docutils literal notranslate"><span class="pre">dice</span></code> and <code class="docutils literal notranslate"><span class="pre">dwav</span></code> has its own set of valid datamode values, two modes are common to all data models: <code class="docutils literal notranslate"><span class="pre">COPYALL</span></code> and <code class="docutils literal notranslate"><span class="pre">NULL</span></code>.</p>
-<dl class="docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;COPYALL&quot;</span></code></dt>
-<dd>The default mode is <code class="docutils literal notranslate"><span class="pre">COPYALL</span></code> – the model will assume <em>all</em> the data that must be sent to the coupler will be found in the input data streams, and that this data can be sent to the coupler, unaltered, except for spatial and temporal interpolation.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;NULL&quot;</span></code></dt>
-<dd><code class="docutils literal notranslate"><span class="pre">NULL</span></code> mode turns off the data model as a provider of data to the coupler. The <code class="docutils literal notranslate"><span class="pre">model_present</span></code> flag (eg. <code class="docutils literal notranslate"><span class="pre">atm_present</span></code>) will be set to false and the coupler will assume no exchange of data to or from the data model.</dd>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;COPYALL&quot;</span></code></dt><dd><p>The default mode is <code class="docutils literal notranslate"><span class="pre">COPYALL</span></code> – the model will assume <em>all</em> the data that must be sent to the coupler will be found in the input data streams, and that this data can be sent to the coupler, unaltered, except for spatial and temporal interpolation.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;NULL&quot;</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">NULL</span></code> mode turns off the data model as a provider of data to the coupler. The <code class="docutils literal notranslate"><span class="pre">model_present</span></code> flag (eg. <code class="docutils literal notranslate"><span class="pre">atm_present</span></code>) will be set to false and the coupler will assume no exchange of data to or from the data model.</p>
+</dd>
 </dl>
 </div>
 
@@ -271,10 +271,11 @@ When editing the run scripts to use non-standard stream data or modes, users mus
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

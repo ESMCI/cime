@@ -265,39 +265,38 @@
 <span id="cime-tests-case-fake-module"></span><h2>CIME.tests.case_fake module<a class="headerlink" href="#module-CIME.tests.case_fake" title="Permalink to this headline">¶</a></h2>
 <p>This module contains a fake implementation of the Case class that can be used
 for testing the tests.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.case_fake.CaseFake">
-<em class="property">class </em><code class="descclassname">CIME.tests.case_fake.</code><code class="descname">CaseFake</code><span class="sig-paren">(</span><em>case_root</em>, <em>create_case_root=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.case_fake.</code><code class="sig-name descname">CaseFake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case_root</span></em>, <em class="sig-param"><span class="n">create_case_root</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.case_setup">
-<code class="descname">case_setup</code><span class="sig-paren">(</span><em>clean=False</em>, <em>test_mode=False</em>, <em>reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.case_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.case_setup" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">case_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">clean</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">test_mode</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.case_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.case_setup" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><em>newcasename</em>, <em>newcaseroot</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newcasename</span></em>, <em class="sig-param"><span class="n">newcaseroot</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and return a copy of self, but with CASE and CASEBASEID set to newcasename,
 CASEROOT set to newcaseroot, and RUNDIR set appropriately.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>newcasename (str): new value for CASE
-newcaseroot (str): new value for CASEROOT</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><p>newcasename (str): new value for CASE
+newcaseroot (str): new value for CASEROOT</p>
+</dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.create_clone">
-<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.create_clone" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_clone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newcase</span></em>, <em class="sig-param"><span class="n">keepexe</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mach_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">project</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cime_output_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exeroot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rundir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.create_clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a clone of the current case. Also creates the CASEROOT directory
 for the clone case (given by newcase).</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first docutils">
-<dt>newcase (str): full path to the new case. This directory should not</dt>
-<dd>already exist; it will be created</dd>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>newcase (str): full path to the new case. This directory should not</dt><dd><p>already exist; it will be created</p>
+</dd>
 </dl>
-<p class="last">keepexe (bool, optional): Ignored
+<p>keepexe (bool, optional): Ignored
 mach_dir (str, optional): Ignored
 project (str, optional): Ignored
 cime_output_root (str, optional): New CIME_OUTPUT_ROOT for the clone
@@ -308,55 +307,55 @@ rundir (str, optional): New RUNDIR for the clone</p>
 <p>Returns the clone case object</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.flush">
-<code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.flush" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.flush" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.get_value">
-<code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.get_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.get_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of the given item</p>
 <p>Returns None if item isn’t set for this case</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>item (str): variable of interest</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><p>item (str): variable of interest</p>
+</dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.load_env">
-<code class="descname">load_env</code><span class="sig-paren">(</span><em>reset=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.load_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.load_env" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_env</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.load_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.load_env" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.make_rundir">
-<code class="descname">make_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.make_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.make_rundir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.make_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.make_rundir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make directory given by RUNDIR</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.set_exeroot">
-<code class="descname">set_exeroot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_exeroot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_exeroot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_exeroot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_exeroot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_exeroot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assumes CASEROOT is already set; sets an appropriate EXEROOT
 (nested inside CASEROOT)</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.set_rundir">
-<code class="descname">set_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_rundir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_rundir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_rundir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_rundir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assumes CASEROOT is already set; sets an appropriate RUNDIR (nested
 inside CASEROOT)</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.case_fake.CaseFake.set_value">
-<code class="descname">set_value</code><span class="sig-paren">(</span><em>item</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.set_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.set_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the value of the given item to the given value</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>item (str): variable of interest
-value (any type): new value for item</dd>
+<dl class="simple">
+<dt>Args:</dt><dd><p>item (str): variable of interest
+value (any type): new value for item</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -367,45 +366,46 @@ value (any type): new value for item</dd>
 <span id="cime-tests-custom-assertions-test-status-module"></span><h2>CIME.tests.custom_assertions_test_status module<a class="headerlink" href="#module-CIME.tests.custom_assertions_test_status" title="Permalink to this headline">¶</a></h2>
 <p>This module contains a class that extends unittest.TestCase, adding custom assertions that
 can be used when testing TestStatus.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus">
-<em class="property">class </em><code class="descclassname">CIME.tests.custom_assertions_test_status.</code><code class="descname">CustomAssertionsTestStatus</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.custom_assertions_test_status.</code><code class="sig-name descname">CustomAssertionsTestStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_core_phases">
-<code class="descname">assert_core_phases</code><span class="sig-paren">(</span><em>output</em>, <em>test_name</em>, <em>fails</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_core_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_core_phases" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assert_core_phases</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">test_name</span></em>, <em class="sig-param"><span class="n">fails</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_core_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_core_phases" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asserts that ‘output’ contains a line for each of the core test
 phases for the given test_name. All results should be PASS
 except those given by the fails list, which should be FAILS.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_num_expected_unexpected_fails">
-<code class="descname">assert_num_expected_unexpected_fails</code><span class="sig-paren">(</span><em>output</em>, <em>num_expected</em>, <em>num_unexpected</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_num_expected_unexpected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_num_expected_unexpected_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assert_num_expected_unexpected_fails</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">num_expected</span></em>, <em class="sig-param"><span class="n">num_unexpected</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_num_expected_unexpected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_num_expected_unexpected_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asserts that the number of occurrences of expected and unexpected fails in
 ‘output’ matches the given numbers</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_phase_absent">
-<code class="descname">assert_phase_absent</code><span class="sig-paren">(</span><em>output</em>, <em>phase</em>, <em>test_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_phase_absent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_phase_absent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assert_phase_absent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">test_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_phase_absent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_phase_absent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asserts that ‘output’ does not contain a status line for the
 given phase and test_name</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_status_of_phase">
-<code class="descname">assert_status_of_phase</code><span class="sig-paren">(</span><em>output</em>, <em>status</em>, <em>phase</em>, <em>test_name</em>, <em>xfail=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_status_of_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_status_of_phase" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assert_status_of_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em>, <em class="sig-param"><span class="n">status</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">test_name</span></em>, <em class="sig-param"><span class="n">xfail</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/custom_assertions_test_status.html#CustomAssertionsTestStatus.assert_status_of_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus.assert_status_of_phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asserts that ‘output’ contains a line showing the given
 status for the given phase for the given test_name.</p>
 <p>‘xfail’ should have one of the following values:
 - None (the default): assertion passes regardless of whether there is an</p>
 <blockquote>
-<div>EXPECTED/UNEXPECTED string</div></blockquote>
+<div><p>EXPECTED/UNEXPECTED string</p>
+</div></blockquote>
 <ul class="simple">
-<li>‘no’: The line should end with the phase, with no additional text after that</li>
-<li>‘expected’: After the phase, the line should contain ‘(EXPECTED FAILURE)’</li>
-<li>‘unexpected’: After the phase, the line should contain ‘(UNEXPECTED’</li>
+<li><p>‘no’: The line should end with the phase, with no additional text after that</p></li>
+<li><p>‘expected’: After the phase, the line should contain ‘(EXPECTED FAILURE)’</p></li>
+<li><p>‘unexpected’: After the phase, the line should contain ‘(UNEXPECTED’</p></li>
 </ul>
 </dd></dl>
 
@@ -415,25 +415,25 @@ status for the given phase for the given test_name.</p>
 <div class="section" id="module-CIME.tests.test_case_fake">
 <span id="cime-tests-test-case-fake-module"></span><h2>CIME.tests.test_case_fake module<a class="headerlink" href="#module-CIME.tests.test_case_fake" title="Permalink to this headline">¶</a></h2>
 <p>This module contains unit tests of CaseFake</p>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.test_case_fake.TestCaseFake">
-<em class="property">class </em><code class="descclassname">CIME.tests.test_case_fake.</code><code class="descname">TestCaseFake</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_case_fake.</code><code class="sig-name descname">TestCaseFake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_case_fake.TestCaseFake.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.setUp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for setting up the test fixture before exercising it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_case_fake.TestCaseFake.tearDown">
-<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.tearDown" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.tearDown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for deconstructing the test fixture after testing it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_case_fake.TestCaseFake.test_create_clone">
-<code class="descname">test_create_clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.test_create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.test_create_clone" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_create_clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_case_fake.html#TestCaseFake.test_create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_case_fake.TestCaseFake.test_create_clone" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -441,52 +441,52 @@ status for the given phase for the given test_name.</p>
 </div>
 <div class="section" id="module-CIME.tests.test_cs_status">
 <span id="cime-tests-test-cs-status-module"></span><h2>CIME.tests.test_cs_status module<a class="headerlink" href="#module-CIME.tests.test_cs_status" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.test_cs_status.TestCsStatus">
-<em class="property">class </em><code class="descclassname">CIME.tests.test_cs_status.</code><code class="descname">TestCsStatus</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_cs_status.</code><code class="sig-name descname">TestCsStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus" title="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.create_test_dir">
-<code class="descname">create_test_dir</code><span class="sig-paren">(</span><em>test_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.create_test_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.create_test_dir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_test_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.create_test_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.create_test_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the given test directory under testroot.</p>
 <p>Returns the full path to the created test directory.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.create_test_status_core_passes">
-<em class="property">static </em><code class="descname">create_test_status_core_passes</code><span class="sig-paren">(</span><em>test_dir_path</em>, <em>test_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.create_test_status_core_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.create_test_status_core_passes" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">create_test_status_core_passes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_dir_path</span></em>, <em class="sig-param"><span class="n">test_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.create_test_status_core_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.create_test_status_core_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a TestStatus file in the given path, with PASS status
 for all core phases</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.setUp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for setting up the test fixture before exercising it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.set_last_core_phase_to_fail">
-<code class="descname">set_last_core_phase_to_fail</code><span class="sig-paren">(</span><em>test_dir_path</em>, <em>test_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.set_last_core_phase_to_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.set_last_core_phase_to_fail" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_last_core_phase_to_fail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_dir_path</span></em>, <em class="sig-param"><span class="n">test_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.set_last_core_phase_to_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.set_last_core_phase_to_fail" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the last core phase to FAIL</p>
 <p>Returns the name of this phase</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.set_phase_to_status">
-<em class="property">static </em><code class="descname">set_phase_to_status</code><span class="sig-paren">(</span><em>test_dir_path</em>, <em>test_name</em>, <em>phase</em>, <em>status</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.set_phase_to_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.set_phase_to_status" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">set_phase_to_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_dir_path</span></em>, <em class="sig-param"><span class="n">test_name</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">status</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.set_phase_to_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.set_phase_to_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the given phase to the given status for this test</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.tearDown">
-<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.tearDown" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.tearDown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for deconstructing the test fixture after testing it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.test_count_fails">
-<code class="descname">test_count_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_count_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_count_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_count_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_count_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_count_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test the count of fails with three tests</p>
 <p>For first phase of interest: First test FAILs, second PASSes,
 third FAILs; count should be 2, and this phase should not appear
@@ -496,27 +496,27 @@ third FAILs; count should be 1, and this phase should not appear
 individually for each test.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.test_expected_fails">
-<code class="descname">test_expected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_expected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_expected_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_expected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_expected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_expected_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>With the expected_fails_file flag, expected failures should be flagged as such</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.test_fails_only">
-<code class="descname">test_fails_only</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_fails_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_fails_only" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_fails_only</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_fails_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_fails_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>With fails_only flag, only fails and pends should appear in the output</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.test_single_test">
-<code class="descname">test_single_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_single_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_single_test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_single_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_single_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_single_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>cs_status for a single test should include some minimal expected output</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_cs_status.TestCsStatus.test_two_tests">
-<code class="descname">test_two_tests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_two_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_two_tests" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_two_tests</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_cs_status.html#TestCsStatus.test_two_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_cs_status.TestCsStatus.test_two_tests" title="Permalink to this definition">¶</a></dt>
 <dd><p>cs_status for two tests (one with a FAIL) should include some minimal expected output</p>
 </dd></dl>
 
@@ -526,98 +526,98 @@ individually for each test.</p>
 <div class="section" id="module-CIME.tests.test_custom_assertions_test_status">
 <span id="cime-tests-test-custom-assertions-test-status-module"></span><h2>CIME.tests.test_custom_assertions_test_status module<a class="headerlink" href="#module-CIME.tests.test_custom_assertions_test_status" title="Permalink to this headline">¶</a></h2>
 <p>This module contains unit tests of CustomAssertionsTestStatus</p>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions">
-<em class="property">class </em><code class="descclassname">CIME.tests.test_custom_assertions_test_status.</code><code class="descname">TestCustomAssertions</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_custom_assertions_test_status.</code><code class="sig-name descname">TestCustomAssertions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus" title="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus</span></code></a></p>
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.output_line">
-<em class="property">static </em><code class="descname">output_line</code><span class="sig-paren">(</span><em>status</em>, <em>test_name</em>, <em>phase</em>, <em>extra=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.output_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.output_line" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">output_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">status</span></em>, <em class="sig-param"><span class="n">test_name</span></em>, <em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">extra</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.output_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.output_line" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_missingPhase_fails">
-<code class="descname">test_assertCorePhases_missingPhase_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_missingPhase_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_missingPhase_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertCorePhases_missingPhase_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_missingPhase_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_missingPhase_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_core_phases fails if there is a missing phase</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_passes">
-<code class="descname">test_assertCorePhases_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_passes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertCorePhases_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_core_phases passes when it should</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongName_fails">
-<code class="descname">test_assertCorePhases_wrongName_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_wrongName_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongName_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertCorePhases_wrongName_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_wrongName_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongName_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_core_phases fails if the test name is wrong</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongStatus_fails">
-<code class="descname">test_assertCorePhases_wrongStatus_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_wrongStatus_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongStatus_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertCorePhases_wrongStatus_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertCorePhases_wrongStatus_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertCorePhases_wrongStatus_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_core_phases fails if a phase has the wrong status</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_fails">
-<code class="descname">test_assertPhaseAbsent_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertPhaseAbsent_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertPhaseAbsent_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertPhaseAbsent_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_phase_absent should fail when the phase is present for
 the given test_name</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_passes">
-<code class="descname">test_assertPhaseAbsent_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertPhaseAbsent_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_passes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertPhaseAbsent_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertPhaseAbsent_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertPhaseAbsent_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_phase_absent should pass when the phase is absent for
 the given test_name</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes">
-<code class="descname">test_assertStatusOfPhase_withExtra_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_withExtra_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_withExtra_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure assert_status_of_phase passes when there is some extra text at the
 end of the line</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails">
-<code class="descname">test_assertStatusOfPhase_xfailExpected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_xfailExpected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_status_of_phase should fail when xfail=’expected’ but the line does NOT contain
 the EXPECTED comment</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes">
-<code class="descname">test_assertStatusOfPhase_xfailExpected_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_xfailExpected_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailExpected_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_status_of_phase should pass when xfail=’expected’ and the line contains
 the EXPECTED comment</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails">
-<code class="descname">test_assertStatusOfPhase_xfailNo_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_xfailNo_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_status_of_phase should fail when xfail=’no’ but the line contains the
 EXPECTED comment</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes">
-<code class="descname">test_assertStatusOfPhase_xfailNo_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_xfailNo_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailNo_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_status_of_phase should pass when xfail=’no’ and there is no
 EXPECTED/UNEXPECTED on the line</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails">
-<code class="descname">test_assertStatusOfPhase_xfailUnexpected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_xfailUnexpected_fails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_fails" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_status_of_phase should fail when xfail=’unexpected’ but the line does NOT
 contain the UNEXPECTED comment</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes">
-<code class="descname">test_assertStatusOfPhase_xfailUnexpected_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_assertStatusOfPhase_xfailUnexpected_passes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_custom_assertions_test_status.html#TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_custom_assertions_test_status.TestCustomAssertions.test_assertStatusOfPhase_xfailUnexpected_passes" title="Permalink to this definition">¶</a></dt>
 <dd><p>assert_status_of_phase should pass when xfail=’unexpected’ and the line contains
 the UNEXPECTED comment</p>
 </dd></dl>
@@ -627,53 +627,53 @@ the UNEXPECTED comment</p>
 </div>
 <div class="section" id="module-CIME.tests.test_test_status">
 <span id="cime-tests-test-test-status-module"></span><h2>CIME.tests.test_test_status module<a class="headerlink" href="#module-CIME.tests.test_test_status" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.test_test_status.TestTestStatus">
-<em class="property">class </em><code class="descclassname">CIME.tests.test_test_status.</code><code class="descname">TestTestStatus</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_test_status.</code><code class="sig-name descname">TestTestStatus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus" title="CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">CIME.tests.custom_assertions_test_status.CustomAssertionsTestStatus</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.setUp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for setting up the test fixture before exercising it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_corePhasesPass">
-<code class="descname">test_psdump_corePhasesPass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_corePhasesPass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_corePhasesPass" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_corePhasesPass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_corePhasesPass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_corePhasesPass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFails">
-<code class="descname">test_psdump_oneCorePhaseFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhaseFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_oneCorePhaseFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhaseFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFails" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails">
-<code class="descname">test_psdump_oneCorePhaseFailsAbsentFromXFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_oneCorePhaseFailsAbsentFromXFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsAbsentFromXFails" title="Permalink to this definition">¶</a></dt>
 <dd><p>One phase fails. There is an expected fails list, but that phase is not in it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsInXFails">
-<code class="descname">test_psdump_oneCorePhaseFailsInXFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhaseFailsInXFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsInXFails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_oneCorePhaseFailsInXFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhaseFailsInXFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhaseFailsInXFails" title="Permalink to this definition">¶</a></dt>
 <dd><p>One phase fails. That phase is in the expected fails list.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhasePassesInXFails">
-<code class="descname">test_psdump_oneCorePhasePassesInXFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhasePassesInXFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhasePassesInXFails" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_oneCorePhasePassesInXFails</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_oneCorePhasePassesInXFails"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_oneCorePhasePassesInXFails" title="Permalink to this definition">¶</a></dt>
 <dd><p>One phase passes despite being in the expected fails list.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_skipPasses">
-<code class="descname">test_psdump_skipPasses</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_skipPasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_skipPasses" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_skipPasses</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_skipPasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_skipPasses" title="Permalink to this definition">¶</a></dt>
 <dd><p>With the skip_passes argument, only non-passes should appear</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_test_status.TestTestStatus.test_psdump_unexpectedPass_shouldBePresent">
-<code class="descname">test_psdump_unexpectedPass_shouldBePresent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_unexpectedPass_shouldBePresent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_unexpectedPass_shouldBePresent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_psdump_unexpectedPass_shouldBePresent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_test_status.html#TestTestStatus.test_psdump_unexpectedPass_shouldBePresent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_test_status.TestTestStatus.test_psdump_unexpectedPass_shouldBePresent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Even with the skip_passes argument, an unexpected PASS should be present</p>
 </dd></dl>
 
@@ -682,30 +682,30 @@ the UNEXPECTED comment</p>
 </div>
 <div class="section" id="module-CIME.tests.test_user_mod_support">
 <span id="cime-tests-test-user-mod-support-module"></span><h2>CIME.tests.test_user_mod_support module<a class="headerlink" href="#module-CIME.tests.test_user_mod_support" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport">
-<em class="property">class </em><code class="descclassname">CIME.tests.test_user_mod_support.</code><code class="descname">TestUserModSupport</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_user_mod_support.</code><code class="sig-name descname">TestUserModSupport</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.assertResults">
-<code class="descname">assertResults</code><span class="sig-paren">(</span><em>expected_user_nl_cpl</em>, <em>expected_shell_commands_result</em>, <em>expected_sourcemod</em>, <em>msg=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.assertResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.assertResults" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assertResults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expected_user_nl_cpl</span></em>, <em class="sig-param"><span class="n">expected_shell_commands_result</span></em>, <em class="sig-param"><span class="n">expected_sourcemod</span></em>, <em class="sig-param"><span class="n">msg</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.assertResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.assertResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Asserts that the contents of the files in self._caseroot match expectations</p>
 <p>If msg is provided, it is printed for some failing assertions</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.createUserMod">
-<code class="descname">createUserMod</code><span class="sig-paren">(</span><em>name</em>, <em>include_dirs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.createUserMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.createUserMod" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">createUserMod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">include_dirs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.createUserMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.createUserMod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a user_mods directory with the given name.</p>
 <p>This directory is created within self._user_mods_parent_dir</p>
 <p>For name=’foo’, it will contain:</p>
 <ul class="simple">
-<li>A user_nl_cpl file with contents:
-foo</li>
-<li>A shell_commands file with contents:
-echo foo &gt;&gt; /PATH/TO/CASEROOT/shell_commands_result</li>
-<li>A file in _SOURCEMODS named myfile.F90 with contents:
-foo</li>
+<li><p>A user_nl_cpl file with contents:
+foo</p></li>
+<li><p>A shell_commands file with contents:
+echo foo &gt;&gt; /PATH/TO/CASEROOT/shell_commands_result</p></li>
+<li><p>A file in _SOURCEMODS named myfile.F90 with contents:
+foo</p></li>
 </ul>
 <p>If include_dirs is given, it should be a list of strings, giving names
 of other user_mods directories to include. e.g., if include_dirs is
@@ -714,44 +714,44 @@ contains paths to the ‘foo1’ and ‘foo2’ user_mods directories, one per
 line.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.setUp">
-<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.setUp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for setting up the test fixture before exercising it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.tearDown">
-<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.tearDown" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.tearDown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for deconstructing the test fixture after testing it.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_basic">
-<code class="descname">test_basic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_basic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_basic</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_basic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_basic" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_duplicate_includes">
-<code class="descname">test_duplicate_includes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_duplicate_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_duplicate_includes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_duplicate_includes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_duplicate_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_duplicate_includes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test multiple includes, where both include the same base mod.</p>
 <p>The base mod should only be included once.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_include">
-<code class="descname">test_include</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_include" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_include</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_include" title="Permalink to this definition">¶</a></dt>
 <dd><p>If there is an included mod, the main one should appear after the included one so that it takes precedence.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe">
-<code class="descname">test_keepexe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_keepexe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_keepexe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_keepexe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_user_mod_support.TestUserModSupport.test_two_applications">
-<code class="descname">test_two_applications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_two_applications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_two_applications" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_two_applications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.test_two_applications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.test_two_applications" title="Permalink to this definition">¶</a></dt>
 <dd><p>If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.</p>
 </dd></dl>
 
@@ -760,20 +760,20 @@ line.</p>
 </div>
 <div class="section" id="module-CIME.tests.test_utils">
 <span id="cime-tests-test-utils-module"></span><h2>CIME.tests.test_utils module<a class="headerlink" href="#module-CIME.tests.test_utils" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="CIME.tests.test_utils.TestIndentStr">
-<em class="property">class </em><code class="descclassname">CIME.tests.test_utils.</code><code class="descname">TestIndentStr</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">CIME.tests.test_utils.</code><code class="sig-name descname">TestIndentStr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methodName</span><span class="o">=</span><span class="default_value">'runTest'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <p>Test the indent_string function.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_utils.TestIndentStr.test_indent_string_multiline">
-<code class="descname">test_indent_string_multiline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr.test_indent_string_multiline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr.test_indent_string_multiline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_indent_string_multiline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr.test_indent_string_multiline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr.test_indent_string_multiline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test the indent_string function with a multi-line string</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="CIME.tests.test_utils.TestIndentStr.test_indent_string_singleline">
-<code class="descname">test_indent_string_singleline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr.test_indent_string_singleline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr.test_indent_string_singleline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_indent_string_singleline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_utils.html#TestIndentStr.test_indent_string_singleline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_utils.TestIndentStr.test_indent_string_singleline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test the indent_string function with a single-line string</p>
 </dd></dl>
 
@@ -832,10 +832,11 @@ line.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

@@ -298,7 +298,7 @@
                     <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">elif</span> <span class="p">(</span><span class="n">run_result</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span><span class="p">):</span>
                     <span class="n">broken_blesses</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">test_name</span><span class="p">,</span> <span class="s2">&quot;test did not pass&quot;</span><span class="p">))</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; did not pass, not safe to bless&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Test &#39;</span><span class="si">{}</span><span class="s2">&#39; did not pass, not safe to bless, test status = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">phase_statuses_dump</span><span class="p">()))</span>
                     <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">elif</span> <span class="n">no_skip_pass</span><span class="p">:</span>
                     <span class="n">hist_bless</span> <span class="o">=</span> <span class="kc">True</span>
@@ -404,10 +404,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/pop_ver.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
     
 
   

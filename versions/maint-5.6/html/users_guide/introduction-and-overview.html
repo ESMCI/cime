@@ -183,7 +183,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>1. Introduction</li>
+      <li><span class="section-number">1. </span>Introduction</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -203,18 +203,18 @@
            <div itemprop="articleBody">
             
   <div class="section" id="introduction">
-<span id="introduction-and-overview"></span><h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<span id="introduction-and-overview"></span><h1><span class="section-number">1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Part 1 of this guide explains the basic commands in the CIME Case Control System
 that are needed to get a model running.</p>
 <div class="section" id="prerequisites">
-<h2>1.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.1. </span>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Part 1 of this guide assumes that CIME or a CIME-driven model and the necessary input files
 have been installed on the computer you are using. If that is not the case, see <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">Porting CIME</span></a>.</p>
 <p>Other prerequisites:</p>
 <ul class="simple">
-<li>Familiarity with basic climate modeling concepts.</li>
-<li>Familiarity with UNIX command line terminals and the UNIX development environment.</li>
-<li>A correct version of the Python interpreter.</li>
+<li><p>Familiarity with basic climate modeling concepts.</p></li>
+<li><p>Familiarity with UNIX command line terminals and the UNIX development environment.</p></li>
+<li><p>A correct version of the Python interpreter.</p></li>
 </ul>
 <p>CIME’s commands are Python scripts and require a correct version of
 the Python interpreter to be installed. The Python version must be
@@ -226,7 +226,7 @@ like this:</p>
 <p>Consult your local documentation if you need to update your python version.</p>
 </div>
 <div class="section" id="key-terms-and-concepts">
-<h2>1.2. Key Terms and concepts<a class="headerlink" href="#key-terms-and-concepts" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.2. </span>Key Terms and concepts<a class="headerlink" href="#key-terms-and-concepts" title="Permalink to this headline">¶</a></h2>
 <p>The following key terms and concepts are ingrained in CIME and used frequently in this documentation.
 See the <a class="reference internal" href="../glossary/index.html#glossary"><span class="std std-ref">Glossary</span></a> for a more complete list of terms.</p>
 <p><strong>components</strong></p>
@@ -234,7 +234,8 @@ See the <a class="reference internal" href="../glossary/index.html#glossary"><sp
 <div><p>In CIME, a coupled earth system model is made up of <em>components</em> that interact through a coupler and are all controlled by a driver.</p>
 <p>In the current version of CIME, there are 7 physical components allowed.  They are:</p>
 <blockquote>
-<div>atmosphere, ocean, sea-ice, land surface, river, ice sheet, ocean waves</div></blockquote>
+<div><p>atmosphere, ocean, sea-ice, land surface, river, ice sheet, ocean waves</p>
+</div></blockquote>
 <p>Components are also referred to as “models”.  The choice of 7 is partly historical and partly determined by the physics of the
 Earth system: these 7 components
 occupy physically distinct domains in the Earth system and/or require different numerical grids for solving.</p>
@@ -252,32 +253,32 @@ but as for active models only one at a time can be used.</p>
 <p><em>stub</em>: For some configurations, no data model is needed, so CIME provides <em>stub</em> versions that simply occupy the
 required place in the driver and do not send or receive any data.</p>
 </div></blockquote>
-<dl class="docutils">
-<dt><strong>component set</strong> or <strong>compset</strong>:   The particular combination of active, data and stub versions of the 7 components is referred to</dt>
-<dd>as a <em>component set</em> or  <em>compset</em>.  The Case Control System allows one to define
-several possible compsets and configure and run them on supported platforms. See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Component Sets</span></a> for more information.</dd>
-<dt><strong>grid</strong> or <strong>model grid</strong>:</dt>
-<dd>Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
+<dl class="simple">
+<dt><strong>component set</strong> or <strong>compset</strong>:   The particular combination of active, data and stub versions of the 7 components is referred to</dt><dd><p>as a <em>component set</em> or  <em>compset</em>.  The Case Control System allows one to define
+several possible compsets and configure and run them on supported platforms. See <a class="reference internal" href="compsets.html#compsets"><span class="std std-ref">Component Sets</span></a> for more information.</p>
+</dd>
+<dt><strong>grid</strong> or <strong>model grid</strong>:</dt><dd><p>Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
 different grids. The resulting set of all numerical grids is called the <em>model grid</em> or sometimes just the <em>grid</em>, where
 <em>grid</em> is a unique name that denotes a set of numerical grids. Sometimes the <em>resolution</em> also refers to a specific set
-of grids.</dd>
-<dt><strong>machine and compilers</strong>:</dt>
-<dd>The <em>machine</em> is the computer you are using to run CIME and build and run the climate model. It could be a workstation
+of grids.</p>
+</dd>
+<dt><strong>machine and compilers</strong>:</dt><dd><p>The <em>machine</em> is the computer you are using to run CIME and build and run the climate model. It could be a workstation
 or a national supercomputer. The exact name of  <em>machine</em> is typically the UNIX hostname but it could be any string.  A machine
-may have one more more versions of Fortran, C and C++ <em>compilers</em> that are needed to compile the model’s source code and CIME</dd>
-<dt><strong>case</strong>:</dt>
-<dd>To build and execute a CIME-enabled climate model, you have to make choices of compset, model grid,
+may have one more more versions of Fortran, C and C++ <em>compilers</em> that are needed to compile the model’s source code and CIME</p>
+</dd>
+<dt><strong>case</strong>:</dt><dd><p>To build and execute a CIME-enabled climate model, you have to make choices of compset, model grid,
 machine and compiler. The collection of these choices, and any additional
-customizations you may make, is called the <em>case</em>.</dd>
-<dt><strong>out-of-the-box</strong>:</dt>
-<dd>Any case that can be defined by the coupled model’s CIME configuration files and built with only basic commands in the
+customizations you may make, is called the <em>case</em>.</p>
+</dd>
+<dt><strong>out-of-the-box</strong>:</dt><dd><p>Any case that can be defined by the coupled model’s CIME configuration files and built with only basic commands in the
 CIME Case Control System is an “out-of-the-box” case.  Since CIME and its configuration files are kept with
 the model source code and version-controlled together, its possible to match supported out-of-the-box cases with specific
-versions of the model source code, promoting reproducibility and provenance.  An out-of-the-box case is also called a <em>base case</em></dd>
+versions of the model source code, promoting reproducibility and provenance.  An out-of-the-box case is also called a <em>base case</em></p>
+</dd>
 </dl>
 </div>
 <div class="section" id="cime-and-your-environment">
-<h2>1.3. CIME and your environment<a class="headerlink" href="#cime-and-your-environment" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.3. </span>CIME and your environment<a class="headerlink" href="#cime-and-your-environment" title="Permalink to this headline">¶</a></h2>
 <p>Before using any CIME commands, set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
 <strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm” or “cesm.”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span><span class="o">&gt;</span>
@@ -286,14 +287,14 @@ versions of the model source code, promoting reproducibility and provenance.  An
 <p>There are a number of possible ways to set CIME variables.
 For variables that can be set in more than one way, the order of precedence is:</p>
 <ul class="simple">
-<li>variable appears in a command line argument to a CIME command</li>
-<li>variable is set as an environment variable</li>
-<li>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="cime-config.html#customizing-cime"><span class="std std-ref">here</span></a>.</li>
-<li>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</li>
+<li><p>variable appears in a command line argument to a CIME command</p></li>
+<li><p>variable is set as an environment variable</p></li>
+<li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="cime-config.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</p></li>
 </ul>
 </div>
 <div class="section" id="quick-start">
-<h2>1.4. Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.4. </span>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
 <p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands. (This assumes that CIME has been ported to your current machine).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
@@ -311,7 +312,7 @@ For variables that can be set in more than one way, the order of precedence is:<
 <p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
 </div>
 <div class="section" id="discovering-available-cases-with-query-config">
-<h2>1.5. Discovering available cases with <strong>query_config</strong><a class="headerlink" href="#discovering-available-cases-with-query-config" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">1.5. </span>Discovering available cases with <strong>query_config</strong><a class="headerlink" href="#discovering-available-cases-with-query-config" title="Permalink to this headline">¶</a></h2>
 <p>Your CIME-driven model has many more possible cases besides the simple one in the above Quick Start.</p>
 <p>Use the utility <a class="reference external" href="../Tools_user/query_config.html">query_config</a>  to see which out-of-the-box compsets, components, grids and machines are available for your model.</p>
 <p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried.</p>
@@ -422,10 +423,11 @@ For variables that can be set in more than one way, the order of precedence is:<
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

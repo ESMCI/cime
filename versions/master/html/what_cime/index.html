@@ -201,48 +201,47 @@ capability (such as atmosphere physics-dynamics coupling).</p>
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>CIME is comprised of:</p>
 <ol class="arabic">
-<li><p class="first">A Case Control System to support configuration, compilation, execution, system testing and unit testing of a earth system model:</p>
+<li><p>A Case Control System to support configuration, compilation, execution, system testing and unit testing of a earth system model:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
-<li>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</li>
-<li>Testing utilities to run defined system tests and report results for different configurations of the coupled system.</li>
+<li><p>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</p></li>
+<li><p>Testing utilities to run defined system tests and report results for different configurations of the coupled system.</p></li>
 </ol>
 </div></blockquote>
 </li>
-<li><p class="first">A default coupled model architecture:</p>
+<li><p>A default coupled model architecture:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
-<li>A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.</li>
-<li>An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.</li>
-<li>The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.</li>
+<li><p>A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.</p></li>
+<li><p>An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.</p></li>
+<li><p>The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.</p></li>
 </ol>
 </div></blockquote>
 </li>
-<li><p class="first">Non-active Data and Stub components:</p>
+<li><p>Non-active Data and Stub components:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
-<li>“Data-only” versions of 6 of the 7 components that can replace active components at build-time.</li>
-<li>“Stub” versions of all 7 components for building a complete system.</li>
+<li><p>“Data-only” versions of 6 of the 7 components that can replace active components at build-time.</p></li>
+<li><p>“Stub” versions of all 7 components for building a complete system.</p></li>
 </ol>
 </div></blockquote>
 </li>
-<li><dl class="first docutils">
-<dt>Source code for externall libraries useful in scientific applications in general and climate models in particular.</dt>
-<dd><ol class="first last lowerroman simple">
-<li>Parallel I/O library.</li>
-<li>The Model Coupling Toolkit.</li>
-<li>Timing library.</li>
+<li><dl class="simple">
+<dt>Source code for external libraries useful in scientific applications in general and climate models in particular.</dt><dd><ol class="lowerroman simple">
+<li><p>Parallel I/O library.</p></li>
+<li><p>The Model Coupling Toolkit.</p></li>
+<li><p>Timing library.</p></li>
 </ol>
 </dd>
 </dl>
 </li>
-<li><p class="first">Additional stand-alone tools:</p>
+<li><p>Additional stand-alone tools:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
-<li>Parallel regridding weight generation program</li>
-<li>Scripts to automate off-line load-balancing.</li>
-<li>Scripts to conduct ensemble-based statistical consistency tests.</li>
-<li>Netcdf file comparison program (for bit-for-bit).</li>
+<li><p>Parallel regridding weight generation program</p></li>
+<li><p>Scripts to automate off-line load-balancing.</p></li>
+<li><p>Scripts to conduct ensemble-based statistical consistency tests.</p></li>
+<li><p>Netcdf file comparison program (for bit-for-bit).</p></li>
 </ol>
 </div></blockquote>
 </li>
@@ -303,10 +302,11 @@ Github at <a class="reference external" href="http://github.com/ESMCI/cime">http
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

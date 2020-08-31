@@ -209,7 +209,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>5. Running a Case</li>
+      <li><span class="section-number">5. </span>Running a Case</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -229,9 +229,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="running-a-case">
-<span id="id1"></span><h1>5. Running a Case<a class="headerlink" href="#running-a-case" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">5. </span>Running a Case<a class="headerlink" href="#running-a-case" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="calling-case-submit">
-<span id="case-submit"></span><h2>5.1. Calling <strong>case.submit</strong><a class="headerlink" href="#calling-case-submit" title="Permalink to this headline">¶</a></h2>
+<span id="case-submit"></span><h2><span class="section-number">5.1. </span>Calling <strong>case.submit</strong><a class="headerlink" href="#calling-case-submit" title="Permalink to this headline">¶</a></h2>
 <p>The script <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a>  will submit your run to the batch queueing system on your machine.
 If you do not have a batch queueing system, <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> will start the job interactively, given that you have a proper MPI environment defined.
 Running <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> is the <strong>ONLY</strong> way you should start a job.</p>
@@ -281,7 +281,7 @@ MPIRUN:
 <p>Each of the above sections is defined in the various <strong>$CASEROOT</strong> xml files and the associated variables can be modified using the
 <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a> command (or in the case of tasks and threads, this can also be done with the <a class="reference external" href="../Tools_user/pelayout.html">pelayout</a> command).</p>
 <ul>
-<li><p class="first">The PE layout is set by the xml variables <strong>NTASKS</strong>, <strong>NTHRDS</strong> and <strong>ROOTPE</strong>. To see the exact settings for each component, issue the command</p>
+<li><p>The PE layout is set by the xml variables <strong>NTASKS</strong>, <strong>NTHRDS</strong> and <strong>ROOTPE</strong>. To see the exact settings for each component, issue the command</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlquery</span> <span class="n">NTASKS</span><span class="p">,</span><span class="n">NTHRDS</span><span class="p">,</span><span class="n">ROOTPE</span>
 </pre></div>
 </div>
@@ -294,17 +294,17 @@ MPIRUN:
 </pre></div>
 </div>
 </li>
-<li><p class="first">Submit parameters are set by the xml variables in the file <strong>env_batch.xml</strong>. This file is special in certain xml variables can appear in more than one group.
+<li><p>Submit parameters are set by the xml variables in the file <strong>env_batch.xml</strong>. This file is special in certain xml variables can appear in more than one group.
 NOTE: The groups are the list of jobs that are submittable for a case.
 Normally, the minimum set of groups are  <strong>case.run</strong> and <strong>case.st_archive</strong>.
 We will illustrate how to change an xml variable in <strong>env_batch.xml</strong> using the xml variable <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code>.</p>
 <ul>
-<li><p class="first">To change <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code> for all groups to 2 hours for cheyenne, use</p>
+<li><p>To change <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code> for all groups to 2 hours for cheyenne, use</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="mi">02</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
 </pre></div>
 </div>
 </li>
-<li><p class="first">To change <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code> to 20 minutes for cheyenne for just <strong>case.run</strong>, use</p>
+<li><p>To change <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code> to 20 minutes for cheyenne for just <strong>case.run</strong>, use</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="mi">00</span><span class="p">:</span><span class="mi">20</span><span class="p">:</span><span class="mi">00</span> <span class="o">--</span><span class="n">subgroup</span> <span class="n">case</span><span class="o">.</span><span class="n">run</span>
 </pre></div>
 </div>
@@ -322,26 +322,26 @@ to submit the run to your machine’s batch queue system.</p>
 </pre></div>
 </div>
 <div class="section" id="result-of-running-case-submit">
-<h3>5.1.1. Result of running case.submit<a class="headerlink" href="#result-of-running-case-submit" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.1.1. </span>Result of running case.submit<a class="headerlink" href="#result-of-running-case-submit" title="Permalink to this headline">¶</a></h3>
 <p>When called, the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script will:</p>
 <ul class="simple">
-<li>Load the necessary environment.</li>
-<li>Confirm that locked files are consistent with the current xml files.</li>
-<li>Run <a class="reference external" href="../Tools_user/preview_namelist.html">preview_namelist</a>, which in turn will run each component’s <strong>cime_config/buildnml</strong> script.</li>
-<li>Run <a class="reference internal" href="#input-data"><span class="std std-ref">check_input_data</span></a> to verify that the required data are present.</li>
-<li>Submit the job to the batch queue. which in turn will run the <a class="reference external" href="../Tools_user/case.run.html">case.run</a> script.</li>
+<li><p>Load the necessary environment.</p></li>
+<li><p>Confirm that locked files are consistent with the current xml files.</p></li>
+<li><p>Run <a class="reference external" href="../Tools_user/preview_namelist.html">preview_namelist</a>, which in turn will run each component’s <strong>cime_config/buildnml</strong> script.</p></li>
+<li><p>Run <a class="reference internal" href="#input-data"><span class="std std-ref">check_input_data</span></a> to verify that the required data are present.</p></li>
+<li><p>Submit the job to the batch queue. which in turn will run the <a class="reference external" href="../Tools_user/case.run.html">case.run</a> script.</p></li>
 </ul>
 <p>Upon successful completion of the run, <a class="reference external" href="../Tools_user/case.run.html">case.run</a>  will:</p>
 <ul class="simple">
-<li>Put timing information in <strong>$CASEROOT/timing</strong>.
-See <a class="reference internal" href="timers.html#model-timing-data"><span class="std std-ref">model timing data</span></a> for details.</li>
-<li>Submit the short-term archiver script <a class="reference external" href="../Tools_user/case.st_archive.html">case.st_archive</a>  to the batch queue if <code class="docutils literal notranslate"><span class="pre">$DOUT_S</span></code> is TRUE.
-Short-term archiving will copy and move component history, log, diagnostic, and restart files from <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> to the short-term archive directory <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</li>
-<li>Resubmit <a class="reference external" href="../Tools_user/case.run.html">case.run</a> if <code class="docutils literal notranslate"><span class="pre">$RESUBMIT</span></code> &gt; 0.</li>
+<li><p>Put timing information in <strong>$CASEROOT/timing</strong>.
+See <a class="reference internal" href="timers.html#model-timing-data"><span class="std std-ref">model timing data</span></a> for details.</p></li>
+<li><p>Submit the short-term archiver script <a class="reference external" href="../Tools_user/case.st_archive.html">case.st_archive</a>  to the batch queue if <code class="docutils literal notranslate"><span class="pre">$DOUT_S</span></code> is TRUE.
+Short-term archiving will copy and move component history, log, diagnostic, and restart files from <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> to the short-term archive directory <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</p></li>
+<li><p>Resubmit <a class="reference external" href="../Tools_user/case.run.html">case.run</a> if <code class="docutils literal notranslate"><span class="pre">$RESUBMIT</span></code> &gt; 0.</p></li>
 </ul>
 </div>
 <div class="section" id="monitoring-case-job-statuses">
-<h3>5.1.2. Monitoring case job statuses<a class="headerlink" href="#monitoring-case-job-statuses" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.1.2. </span>Monitoring case job statuses<a class="headerlink" href="#monitoring-case-job-statuses" title="Permalink to this headline">¶</a></h3>
 <p>The <strong>$CASEROOT/CaseStatus</strong> file contains a log of all the job states and <a class="reference external" href="../Tools_user/xmlchange.html">xmlchange</a> commands in chronological order.
 Below is an example of status messages:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2017</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">14</span> <span class="mi">15</span><span class="p">:</span><span class="mi">29</span><span class="p">:</span><span class="mi">50</span><span class="p">:</span> <span class="n">case</span><span class="o">.</span><span class="n">setup</span> <span class="n">starting</span>
@@ -367,10 +367,10 @@ Below is an example of status messages:</p>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>After a successful first run, set the <strong>env_run.xml</strong> variable <code class="docutils literal notranslate"><span class="pre">$CONTINUE_RUN</span></code> to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> before resubmitting or the job will not
 progress.</p>
-<p class="last">You may also need to modify the <strong>env_run.xml</strong> variables
+<p>You may also need to modify the <strong>env_run.xml</strong> variables
 <code class="docutils literal notranslate"><span class="pre">$STOP_OPTION</span></code>, <code class="docutils literal notranslate"><span class="pre">$STOP_N</span></code> and/or <code class="docutils literal notranslate"><span class="pre">$STOP_DATE</span></code> as well as
 <code class="docutils literal notranslate"><span class="pre">$REST_OPTION</span></code>, <code class="docutils literal notranslate"><span class="pre">$REST_N</span></code> and/or <code class="docutils literal notranslate"><span class="pre">$REST_DATE</span></code>, and <code class="docutils literal notranslate"><span class="pre">$RESUBMIT</span></code>
 before resubmitting.</p>
@@ -378,7 +378,7 @@ before resubmitting.</p>
 <p>See the <a class="reference internal" href="cime-change-namelist.html#basic-example"><span class="std std-ref">basic example</span></a> for a complete example of how to run a case.</p>
 </div>
 <div class="section" id="troubleshooting-a-job-that-fails">
-<h3>5.1.3. Troubleshooting a job that fails<a class="headerlink" href="#troubleshooting-a-job-that-fails" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.1.3. </span>Troubleshooting a job that fails<a class="headerlink" href="#troubleshooting-a-job-that-fails" title="Permalink to this headline">¶</a></h3>
 <p>There are several places to look for information if a job fails.
 Start with the <strong>STDOUT</strong> and <strong>STDERR</strong> file(s) in <strong>$CASEROOT</strong>.
 If you don’t find an obvious error message there, the
@@ -390,13 +390,13 @@ files. See <a class="reference internal" href="troubleshooting.html#troubleshoot
 </div>
 </div>
 <div class="section" id="input-data">
-<span id="id14"></span><h2>5.2. Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
+<span id="id14"></span><h2><span class="section-number">5.2. </span>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
 <p>The <strong>check_input_data</strong> script determines if the required data files
 for your case exist on local disk in the appropriate subdirectory of
 <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code>. It automatically downloads missing data required for your simulation.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">It is recommended that users on a given system share a common <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> directory to avoid duplication on
+<p class="admonition-title">Note</p>
+<p>It is recommended that users on a given system share a common <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> directory to avoid duplication on
 disk of large amounts of input data. You may need to talk to your system administrator in order to set this up.</p>
 </div>
 <p>The required input data sets needed for each component are found in the
@@ -427,7 +427,7 @@ using the following commands:</p>
 system, when the case is built and submitted.  So manual usage of this
 script is optional.</p>
 <div class="section" id="distributed-input-data-repositories">
-<h3>5.2.1. Distributed Input Data Repositories<a class="headerlink" href="#distributed-input-data-repositories" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.2.1. </span>Distributed Input Data Repositories<a class="headerlink" href="#distributed-input-data-repositories" title="Permalink to this headline">¶</a></h3>
 <p>CIME has the ability to utilize multiple input data repositories, with
 potentially different protocols.  The repositories are defined in the
 file <strong>$CIMEROOT/config/$model/config_inputdata.xml</strong>.  The currently
@@ -435,8 +435,8 @@ supported server protocols are: <code class="docutils literal notranslate"><span
 <code class="docutils literal notranslate"><span class="pre">wget</span></code>. These protocols may not all be supported on your machine,
 depending on software configuration.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You now have the ability to create your own input data
+<p class="admonition-title">Note</p>
+<p>You now have the ability to create your own input data
 repository and add it to the <strong>config_inputdata.xml</strong>. This
 will permit you to easily collaborate by sharing your
 required inputdata with others.</p>
@@ -444,7 +444,7 @@ required inputdata with others.</p>
 </div>
 </div>
 <div class="section" id="starting-stopping-and-restarting-a-run">
-<span id="controlling-start-stop-restart"></span><h2>5.3. Starting, Stopping and Restarting a Run<a class="headerlink" href="#starting-stopping-and-restarting-a-run" title="Permalink to this headline">¶</a></h2>
+<span id="controlling-start-stop-restart"></span><h2><span class="section-number">5.3. </span>Starting, Stopping and Restarting a Run<a class="headerlink" href="#starting-stopping-and-restarting-a-run" title="Permalink to this headline">¶</a></h2>
 <p>The file <strong>env_run.xml</strong> contains variables that may be modified at
 initialization or any time during the course of a model run. Among
 other features, the variables comprise coupler namelist settings for
@@ -467,22 +467,23 @@ model years/day, set <code class="docutils literal notranslate"><span class="pre
 <span class="pre">5</span></code>. The model will then run in five-year increments and stop after
 30 submissions.</p>
 <div class="section" id="run-type-initialization">
-<span id="run-type-init"></span><h3>5.3.1. Run-type initialization<a class="headerlink" href="#run-type-initialization" title="Permalink to this headline">¶</a></h3>
+<span id="run-type-init"></span><h3><span class="section-number">5.3.1. </span>Run-type initialization<a class="headerlink" href="#run-type-initialization" title="Permalink to this headline">¶</a></h3>
 <p>The case initialization type is set using the <code class="docutils literal notranslate"><span class="pre">$RUN_TYPE</span></code> variable in
 <strong>env_run.xml</strong>. A CIME run can be initialized in one of three ways:</p>
 <p><code class="docutils literal notranslate"><span class="pre">startup</span></code></p>
 <blockquote>
-<div>In a startup run (the default), all components are initialized using
+<div><p>In a startup run (the default), all components are initialized using
 baseline states. These states are set independently by each component
 and can include the use of restart files, initial  files, external
 observed data files, or internal initialization (that is, a “cold start”).
 In a startup run, the coupler sends the start date to the components
 at initialization. In addition, the coupler does not need an input data file.
 In a startup initialization, the ocean model does not start until the second
-ocean coupling step.</div></blockquote>
+ocean coupling step.</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">branch</span></code></p>
 <blockquote>
-<div>In a branch run, all components are initialized using a consistent
+<div><p>In a branch run, all components are initialized using a consistent
 set of restart files from a previous run (determined by the
 <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> variables in <strong>env_run.xml</strong>).
 The case name generally is changed for a branch run, but it
@@ -502,10 +503,11 @@ type of run. <code class="docutils literal notranslate"><span class="pre">$RUN_R
 branch runs. To set up a branch run, locate the restart tar file or
 restart directory for <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> from a
 previous run, then place those files in the <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>  directory.
-See <span class="xref std std-ref">setting up a branch run</span>.</div></blockquote>
+See <span class="xref std std-ref">setting up a branch run</span>.</p>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">hybrid</span></code></p>
 <blockquote>
-<div>A hybrid run is initialized like a startup but it uses
+<div><p>A hybrid run is initialized like a startup but it uses
 initialization data sets from a previous case. It is similar
 to a branch run with relaxed restart constraints.
 A hybrid run allows users to bring together
@@ -519,7 +521,8 @@ reference case.  The resulting climate, however, should be
 continuous provided that no model source code or namelists are
 changed in the hybrid run. In a hybrid initialization, the ocean
 model does not start until the second ocean coupling step, and the
-coupler does a “cold start” without a restart file.</div></blockquote>
+coupler does a “cold start” without a restart file.</p>
+</div></blockquote>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">$RUN_TYPE</span></code> determines the initialization type. This
 setting is only important for the initial production run when
 the <code class="docutils literal notranslate"><span class="pre">$CONTINUE_RUN</span></code> variable is set to FALSE. After the initial
@@ -532,27 +535,26 @@ a hybrid or branch run, you must specify values for <code class="docutils litera
 <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code>.</p>
 </div>
 <div class="section" id="starting-from-a-reference-case-refcase">
-<span id="starting-from-a-refcase"></span><h3>5.3.2. Starting from a reference case (REFCASE)<a class="headerlink" href="#starting-from-a-reference-case-refcase" title="Permalink to this headline">¶</a></h3>
+<span id="starting-from-a-refcase"></span><h3><span class="section-number">5.3.2. </span>Starting from a reference case (REFCASE)<a class="headerlink" href="#starting-from-a-reference-case-refcase" title="Permalink to this headline">¶</a></h3>
 <p>There are several xml variables that control how either a branch or a hybrid case can start up from another case.
 The initial/restart files needed to start up a run from another case are required to be in $EXEROOT.
 The xml variable <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is a flag that if set will automatically prestaging the refcase restart data.</p>
 <ul>
-<li><p class="first">If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, then the the values set by <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code>, <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> and  <code class="docutils literal notranslate"><span class="pre">$RUN_TOD</span></code> are
+<li><p>If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, then the the values set by <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code>, <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> and  <code class="docutils literal notranslate"><span class="pre">$RUN_TOD</span></code> are
 used to prestage the data by symbolic links to the appropriate path.</p>
 <p>The location of the necessary data to start up from another case is controlled by the xml variable <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code>.</p>
 <ul class="simple">
-<li>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is an absolute pathname, then it is expected that initial/restart files needed to start up a model run are in <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code>.</li>
-<li>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is a relative pathname, then it is expected that initial/restart files needed to start up a model run are in a path relative to <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> with the absolute pathname  <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT/$RUN_REFDIR/$RUN_REFCASE/$RUN_REFDATE</span></code>.</li>
-<li>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is a relative pathname AND is not available in <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> then CIME will attempt to download the data from the input data repositories.</li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is an absolute pathname, then it is expected that initial/restart files needed to start up a model run are in <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is a relative pathname, then it is expected that initial/restart files needed to start up a model run are in a path relative to <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> with the absolute pathname  <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT/$RUN_REFDIR/$RUN_REFCASE/$RUN_REFDATE</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is a relative pathname AND is not available in <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> then CIME will attempt to download the data from the input data repositories.</p></li>
 </ul>
 </li>
-<li><p class="first">If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> then the data is assumed to already exist in <code class="docutils literal notranslate"><span class="pre">$EXEROOT</span></code>.</p>
-</li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> then the data is assumed to already exist in <code class="docutils literal notranslate"><span class="pre">$EXEROOT</span></code>.</p></li>
 </ul>
 </div>
 </div>
 <div class="section" id="controlling-output-data">
-<span id="id15"></span><h2>5.4. Controlling output data<a class="headerlink" href="#controlling-output-data" title="Permalink to this headline">¶</a></h2>
+<span id="id15"></span><h2><span class="section-number">5.4. </span>Controlling output data<a class="headerlink" href="#controlling-output-data" title="Permalink to this headline">¶</a></h2>
 <p>During a model run, each model component produces its own output
 data sets in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> consisting of history, initial, restart, diagnostics, output
 log and rpointer files. Component history files and restart files are
@@ -574,10 +576,10 @@ DOUT_S_ROOT = /$SCRATCH/$user/$CASE/archive
 <p>The first setting above is the default, so short-term archiving is enabled. The second sets where to move files at the end of a successful run.</p>
 <p>Also:</p>
 <ul class="simple">
-<li>All output data is initially written to <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>.</li>
-<li>Unless you explicitly turn off short-term archiving, files are
-moved to <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code> at the end of a successful model run.</li>
-<li>Users generally should turn off short-term archiving when developing new code.</li>
+<li><p>All output data is initially written to <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>.</p></li>
+<li><p>Unless you explicitly turn off short-term archiving, files are
+moved to <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code> at the end of a successful model run.</p></li>
+<li><p>Users generally should turn off short-term archiving when developing new code.</p></li>
 </ul>
 <p>Standard output generated from each component is saved in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>
 in a  <em>log file</em>. Each time the model is run, a single coordinated datestamp
@@ -603,7 +605,7 @@ made available to the community.</p>
 for a description of output data filenames.</p>
 </div>
 <div class="section" id="restarting-a-run">
-<span id="id16"></span><h2>5.5. Restarting a run<a class="headerlink" href="#restarting-a-run" title="Permalink to this headline">¶</a></h2>
+<span id="id16"></span><h2><span class="section-number">5.5. </span>Restarting a run<a class="headerlink" href="#restarting-a-run" title="Permalink to this headline">¶</a></h2>
 <p>Active components (and some data components) write restart files
 at intervals that are dictated by the driver via the setting of the
 <code class="docutils literal notranslate"><span class="pre">$REST_OPTION</span></code> and <code class="docutils literal notranslate"><span class="pre">$REST_N</span></code> variables in <strong>env_run.xml</strong>. Restart
@@ -637,7 +639,7 @@ component restart data sets and pointer files into
 <strong>$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss</strong>, where yyyy-mm-dd-sssss is the
 model date at the time of the restart. (See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">below for more details</a>.)</p>
 <div class="section" id="backing-up-to-a-previous-restart">
-<h3>5.5.1. Backing up to a previous restart<a class="headerlink" href="#backing-up-to-a-previous-restart" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.5.1. </span>Backing up to a previous restart<a class="headerlink" href="#backing-up-to-a-previous-restart" title="Permalink to this headline">¶</a></h3>
 <p>If a run encounters problems and crashes, you will normally have to
 back up to a previous restart. If short-term archiving is enabled,
 find the latest <strong>$DOUT_S_ROOT/rest/yyyy-mm-dd-ssss/</strong> directory
@@ -653,16 +655,16 @@ have the same date.</p>
 </div>
 </div>
 <div class="section" id="archiving-model-output-data">
-<h2>5.6. Archiving model output data<a class="headerlink" href="#archiving-model-output-data" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.6. </span>Archiving model output data<a class="headerlink" href="#archiving-model-output-data" title="Permalink to this headline">¶</a></h2>
 <p>The output data flow from a successful run depends on whether or not
 short-term archiving is enabled, as it is by default.</p>
 <div class="section" id="no-archiving">
-<h3>5.6.1. No archiving<a class="headerlink" href="#no-archiving" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.6.1. </span>No archiving<a class="headerlink" href="#no-archiving" title="Permalink to this headline">¶</a></h3>
 <p>If no short-term archiving is performed, model output data remains
 remain in the run directory as specified by <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>.</p>
 </div>
 <div class="section" id="short-term-archiving">
-<h3>5.6.2. Short-term archiving<a class="headerlink" href="#short-term-archiving" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.6.2. </span>Short-term archiving<a class="headerlink" href="#short-term-archiving" title="Permalink to this headline">¶</a></h3>
 <p>If short-term archiving is enabled, component output files are moved
 to the short-term archiving area on local disk, as specified by
 <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>. The directory normally is <strong>$EXEROOT/../archive/$CASE.</strong>
@@ -691,7 +693,7 @@ The contents of any restart directory can be used to create a branch run
 or a hybrid run or to back up to a previous restart date.</p>
 </div>
 <div class="section" id="long-term-archiving">
-<h3>5.6.3. Long-term archiving<a class="headerlink" href="#long-term-archiving" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.6.3. </span>Long-term archiving<a class="headerlink" href="#long-term-archiving" title="Permalink to this headline">¶</a></h3>
 <p>Users may choose to follow their institution’s preferred method for long-term
 archiving of model output. Previous releases of CESM provided an external
 long-term archiver tool that supported mass tape storage and HPSS systems.
@@ -700,13 +702,13 @@ feasible for CIME to support all the possible archival schemes available.</p>
 </div>
 </div>
 <div class="section" id="data-assimilation-and-other-external-processing">
-<h2>5.7. Data Assimilation and other External Processing<a class="headerlink" href="#data-assimilation-and-other-external-processing" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">5.7. </span>Data Assimilation and other External Processing<a class="headerlink" href="#data-assimilation-and-other-external-processing" title="Permalink to this headline">¶</a></h2>
 <p>CIME provides a capability to run a task on the compute nodes either
 before or after the model run.  CIME also provides a data assimilation
 capability which will cycle the model and then a user defined task for
 a user determined number of cycles.</p>
 <div class="section" id="pre-and-post-run-scripts">
-<h3>5.7.1. Pre and Post run scripts<a class="headerlink" href="#pre-and-post-run-scripts" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.7.1. </span>Pre and Post run scripts<a class="headerlink" href="#pre-and-post-run-scripts" title="Permalink to this headline">¶</a></h3>
 <p>Variables <code class="docutils literal notranslate"><span class="pre">PRERUN_SCRIPT</span></code> and <code class="docutils literal notranslate"><span class="pre">POSTRUN_SCRIPT</span></code> can each be used to name
 a script which should be exectuted immediately prior starting or
 following completion of the CESM executable within the batch
@@ -717,7 +719,7 @@ subroutine with the same name as the script, it will be called as a
 subroutine rather than as an external shell script.</p>
 </div>
 <div class="section" id="data-assimilation-scripts">
-<h3>5.7.2. Data Assimilation scripts<a class="headerlink" href="#data-assimilation-scripts" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">5.7.2. </span>Data Assimilation scripts<a class="headerlink" href="#data-assimilation-scripts" title="Permalink to this headline">¶</a></h3>
 <p>Variables <code class="docutils literal notranslate"><span class="pre">DATA_ASSIMILATION</span></code>, <code class="docutils literal notranslate"><span class="pre">DATA_ASSIMILATION_SCRIPT</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">DATA_ASSIMILATION_CYCLES</span></code> may also be used to externally control
 model evolution.  If <code class="docutils literal notranslate"><span class="pre">DATA_ASSIMILATION</span></code> is true after the model
@@ -793,10 +795,11 @@ as an external shell script.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

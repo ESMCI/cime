@@ -38,7 +38,7 @@
     <link rel="top" title="CIME master documentation" href="../index.html"/>
         <link rel="up" title="User Tools" href="index.html"/>
         <link rel="next" title="jenkins_generic_job" href="jenkins_generic_job.html"/>
-        <link rel="prev" title="getTiming" href="getTiming.html"/> 
+        <link rel="prev" title="get_case_env" href="get_case_env.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -146,10 +146,9 @@
 <li class="toctree-l2"><a class="reference internal" href="create_test.html">create_test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cs.status.html">cs.status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e3sm_check_env.html">e3sm_check_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm_cime_merge.html">e3sm_cime_merge</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_case_env.html">get_case_env</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">get_standard_makefile_args</a><ul class="simple">
 </ul>
 </li>
@@ -158,6 +157,7 @@
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mkDepends.html">mkDepends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mkSrcfiles.html">mkSrcfiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mvsource.html">mvsource</a></li>
 <li class="toctree-l2"><a class="reference internal" href="normalize_cases.html">normalize_cases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pelayout.html">pelayout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preview_namelists.html">preview_namelists</a></li>
@@ -249,7 +249,7 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./get_standard_makefile_args --help
-usage: get_standard_makefile_args [-h] [-d] [-v] [-s] [--cmake] [caseroot]
+usage: get_standard_makefile_args [-h] [-d] [-v] [-s] [caseroot]
 
 Output the list of standard makefile args to the command line.  This script
 should only be used when the components buildlib is not written in python
@@ -263,7 +263,6 @@ optional arguments:
   -d, --debug    Print debug information (very verbose) to file /Users/sacks/cime/scripts/Tools/get_standard_makefile_args.log
   -v, --verbose  Add additional context (time and file) to log messages
   -s, --silent   Print only warnings and error messages
-  --cmake        Get cmake-style args instead of Make
 </pre></div>
 </div>
 </div>
@@ -281,7 +280,7 @@ optional arguments:
         <a href="jenkins_generic_job.html" class="btn btn-neutral float-right" title="jenkins_generic_job" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="getTiming.html" class="btn btn-neutral" title="getTiming" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="get_case_env.html" class="btn btn-neutral" title="get_case_env" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -315,10 +314,11 @@ optional arguments:
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

@@ -237,26 +237,25 @@
 <div class="section" id="module-CIME.SystemTests.test_utils.user_nl_utils">
 <span id="cime-systemtests-test-utils-user-nl-utils-module"></span><h2>CIME.SystemTests.test_utils.user_nl_utils module<a class="headerlink" href="#module-CIME.SystemTests.test_utils.user_nl_utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains functions for working with user_nl files in system tests.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files">
-<code class="descclassname">CIME.SystemTests.test_utils.user_nl_utils.</code><code class="descname">append_to_user_nl_files</code><span class="sig-paren">(</span><em>caseroot</em>, <em>component</em>, <em>contents</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/test_utils/user_nl_utils.html#append_to_user_nl_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.SystemTests.test_utils.user_nl_utils.</code><code class="sig-name descname">append_to_user_nl_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caseroot</span></em>, <em class="sig-param"><span class="n">component</span></em>, <em class="sig-param"><span class="n">contents</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/test_utils/user_nl_utils.html#append_to_user_nl_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.test_utils.user_nl_utils.append_to_user_nl_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append the string given by ‘contents’ to the end of each user_nl file for
 the given component (there may be multiple such user_nl files in the case of
 a multi-instance test).</p>
 <p>Also puts new lines before and after the appended text - so ‘contents’
 does not need to contain a trailing new line (but it’s also okay if it
 does).</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">caseroot (str): Full path to the case directory</p>
-<dl class="docutils">
-<dt>component (str): Name of component (e.g., ‘clm’). This is used to</dt>
-<dd>determine which user_nl files are appended to. For example, for
+<dl>
+<dt>Args:</dt><dd><p>caseroot (str): Full path to the case directory</p>
+<dl class="simple">
+<dt>component (str): Name of component (e.g., ‘clm’). This is used to</dt><dd><p>determine which user_nl files are appended to. For example, for
 component=’clm’, this function will operate on all user_nl files
 matching the pattern ‘user_nl_clm*’. (We do a wildcard match to
-handle multi-instance tests.)</dd>
+handle multi-instance tests.)</p>
+</dd>
 </dl>
-<p class="last">contents (str): Contents to append to the end of each user_nl file</p>
+<p>contents (str): Contents to append to the end of each user_nl file</p>
 </dd>
 </dl>
 </dd></dl>
@@ -314,10 +313,11 @@ handle multi-instance tests.)</dd>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

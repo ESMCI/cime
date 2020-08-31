@@ -188,7 +188,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>6. Porting and validating CIME on a new platform</li>
+      <li><span class="section-number">6. </span>Porting and validating CIME on a new platform</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -208,22 +208,22 @@
            <div itemprop="articleBody">
             
   <div class="section" id="porting-and-validating-cime-on-a-new-platform">
-<span id="porting"></span><h1>6. Porting and validating CIME on a new platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
+<span id="porting"></span><h1><span class="section-number">6. </span>Porting and validating CIME on a new platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
 <p>One of the first steps for many users is getting CIME-based models running on their local machine.
 This section describes that process.</p>
 <div class="section" id="required-libraries-packages">
-<h2>6.1. Required libraries/packages<a class="headerlink" href="#required-libraries-packages" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.1. </span>Required libraries/packages<a class="headerlink" href="#required-libraries-packages" title="Permalink to this headline">¶</a></h2>
 <p>The machine needs to have:</p>
 <ul class="simple">
-<li>a functioning MPI environment (unless you plan to run on a single core with the CIME mpi-serial library).</li>
-<li>build tools gmake and cmake,</li>
-<li>a netcdf library version 4.3 or newer built with the same compiler you will use for CIME.</li>
+<li><p>a functioning MPI environment (unless you plan to run on a single core with the CIME mpi-serial library).</p></li>
+<li><p>build tools gmake and cmake,</p></li>
+<li><p>a netcdf library version 4.3 or newer built with the same compiler you will use for CIME.</p></li>
 </ul>
 <p>A pnetcdf library is optional.</p>
 <p>If you are using MPI, make sure you can run a basic MPI parallel program on your machine before you attempt a CIME port. You can use this <a class="reference internal" href="#mpi-example"><span class="std std-ref">MPI example</span></a> to check.</p>
 </div>
 <div class="section" id="an-mpi-example">
-<span id="mpi-example"></span><h2>6.2. An MPI example<a class="headerlink" href="#an-mpi-example" title="Permalink to this headline">¶</a></h2>
+<span id="mpi-example"></span><h2><span class="section-number">6.2. </span>An MPI example<a class="headerlink" href="#an-mpi-example" title="Permalink to this headline">¶</a></h2>
 <p>It is usually very helpful to assure that you can run a basic mpi parallel program on your machine prior to attempting a CIME port.
 Understanding how to compile and run the program fhello_world_mpi.F90 shown here could potentially save many hours of frustration.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">program</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span>
@@ -267,34 +267,33 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 </div>
 </div>
 <div class="section" id="cesm-linux-and-mac-support">
-<h2>6.3. CESM Linux and Mac Support<a class="headerlink" href="#cesm-linux-and-mac-support" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.3. </span>CESM Linux and Mac Support<a class="headerlink" href="#cesm-linux-and-mac-support" title="Permalink to this headline">¶</a></h2>
 <p>The distribution of CESM includes machines called <strong>homebrew</strong> and <strong>centos7-linux</strong> in the file <strong>$CIMEROOT/config/cesm/machines/config_machines.xml</strong>.
 Please see the instructions in the file to create the directory structure and use these generic machine definitions.</p>
 </div>
 <div class="section" id="steps-for-porting">
-<h2>6.4. Steps for porting<a class="headerlink" href="#steps-for-porting" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.4. </span>Steps for porting<a class="headerlink" href="#steps-for-porting" title="Permalink to this headline">¶</a></h2>
 <p>Porting CIME involves several steps. The first step is to define your machine. You can do this in one of two ways:</p>
 <ol class="arabic">
-<li><p class="first">You can edit <strong>$CIMEROOT/config/$model/machines/config_machines.xml</strong> and add an appropriate section for your machine.</p>
-</li>
-<li><p class="first">You can use your <strong>$HOME/.cime</strong> directory (see <a class="reference internal" href="cime-config.html#customizing-cime"><span class="std std-ref">CIME user config directory</span></a>).
+<li><p>You can edit <strong>$CIMEROOT/config/$model/machines/config_machines.xml</strong> and add an appropriate section for your machine.</p></li>
+<li><p>You can use your <strong>$HOME/.cime</strong> directory (see <a class="reference internal" href="cime-config.html#customizing-cime"><span class="std std-ref">CIME user config directory</span></a>).
 In particular, you can create a <strong>$HOME/.cime/config_machines.xml</strong> file with the definition for your machine.
 A template to create this definition is provided in <strong>$CIMEROOT/config/xml_schemas/config_machines_template.xml</strong>. More details are provided in the template file.
 In addition, if you have a batch system, you will also need to add a <strong>config_batch.xml</strong> file to your <strong>$HOME/.cime</strong> directory.
 All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the <strong>$CIME/config/$model</strong>, where <strong>$model</strong> is either <code class="docutils literal notranslate"><span class="pre">e3sm</span></code> or <code class="docutils literal notranslate"><span class="pre">cesm</span></code>.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you use method (2), you can download CIME updates without affecting your machine definitions in <strong>$HOME/.cime</strong>.</p>
+<p class="admonition-title">Note</p>
+<p>If you use method (2), you can download CIME updates without affecting your machine definitions in <strong>$HOME/.cime</strong>.</p>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you will be supporting many users on your new machine, then we recommend using method (1) and issuing a GitHub pull request with your machine updates.</p>
+<p class="admonition-title">Note</p>
+<p>If you will be supporting many users on your new machine, then we recommend using method (1) and issuing a GitHub pull request with your machine updates.</p>
 </div>
 </li>
 </ol>
 <p>In what follows we outline the process for method (2) above:</p>
 <ul>
-<li><p class="first">Create a <strong>$HOME/.cime</strong> directory and create a <strong>config_machines.xml</strong> file in that directory.</p>
+<li><p>Create a <strong>$HOME/.cime</strong> directory and create a <strong>config_machines.xml</strong> file in that directory.</p>
 <p>This file contains all the information you must set in order to configure a new machine to be CIME-compliant.</p>
 <p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <a class="reference internal" href="machine.html#machinefile"><span class="std std-ref">the config_machines.xml file</span></a>.</p>
 <p>Check to ensure that your <strong>config_machines.xml</strong> file conforms to the CIME schema definition by doing the following:</p>
@@ -302,20 +301,17 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 </pre></div>
 </div>
 </li>
-<li><p class="first">If you find that you need to introduce compiler settings specific to your machine, create a <strong>$HOME/.cime/config_compilers.xml</strong> file.
-The default compiler settings are defined in <strong>$CIME/config/$model/machines/config_compilers.xml</strong>. There is no template for <strong>config_compilers.xml</strong>.</p>
-</li>
-<li><p class="first">If you have a batch system, you may also need to create a <strong>$HOME/.cime/config_batch.xml</strong> file.
-Out-of-the-box batch settings are set in <strong>$CIME/config/$model/machines/config_batch.xml</strong>.</p>
-</li>
-<li><p class="first">Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run <strong>scripts_regression_test.py</strong> interactively. This test is found and must be run in the directory <strong>$CIMEROOT/scripts/tests/</strong>.
-This performs a number of basic unit tests starting from the simplest and working toward more complicated ones. If you have problems running <strong>scripts_regression_tests.py</strong>, see <span class="xref std std-ref">scripts_regression_tests</span>.</p>
-</li>
+<li><p>If you find that you need to introduce compiler settings specific to your machine, create a <strong>$HOME/.cime/config_compilers.xml</strong> file.
+The default compiler settings are defined in <strong>$CIME/config/$model/machines/config_compilers.xml</strong>. There is no template for <strong>config_compilers.xml</strong>.</p></li>
+<li><p>If you have a batch system, you may also need to create a <strong>$HOME/.cime/config_batch.xml</strong> file.
+Out-of-the-box batch settings are set in <strong>$CIME/config/$model/machines/config_batch.xml</strong>.</p></li>
+<li><p>Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run <strong>scripts_regression_test.py</strong> interactively. This test is found and must be run in the directory <strong>$CIMEROOT/scripts/tests/</strong>.
+This performs a number of basic unit tests starting from the simplest and working toward more complicated ones. If you have problems running <strong>scripts_regression_tests.py</strong>, see <span class="xref std std-ref">scripts_regression_tests</span>.</p></li>
 </ul>
 <p>After running those steps correctly, you are ready to try a case at your target compset and resolution.</p>
 </div>
 <div class="section" id="validating-a-cesm-port-with-prognostic-components">
-<h2>6.5. Validating a CESM port with prognostic components<a class="headerlink" href="#validating-a-cesm-port-with-prognostic-components" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.5. </span>Validating a CESM port with prognostic components<a class="headerlink" href="#validating-a-cesm-port-with-prognostic-components" title="Permalink to this headline">¶</a></h2>
 <p>The following port validation is recommended for any new machine.
 Carrying out these steps does not guarantee the model is running
 properly in all cases nor that the model is scientifically valid on
@@ -331,7 +327,7 @@ possible.</p>
 especially with respect to science validation.</p>
 <p>These are the recommended steps for validating a port for the CESM model:</p>
 <ol class="arabic">
-<li><p class="first">Verify basic functionality of your port by performing the cheyenne “prealpha” tests on your machine. This can be done by issuing the following command:</p>
+<li><p>Verify basic functionality of your port by performing the cheyenne “prealpha” tests on your machine. This can be done by issuing the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">prealpha</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span> <span class="n">cheyenne</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">intel</span> <span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">your_machine_name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">your_compiler_name</span><span class="o">&gt;</span>
 </pre></div>
 </div>
@@ -342,7 +338,7 @@ These tests will be run in the <strong>$CIME_OUTPUT_ROOT</strong>. To see the re
 </div>
 <p>where testid was indicated in the output when calling <a class="reference external" href="../Tools_user/create_test.html">create_test</a></p>
 </li>
-<li><p class="first">Carry out ensemble consistency tests:</p>
+<li><p>Carry out ensemble consistency tests:</p>
 <p>This is described in <strong>$CIMEROOT/tools/statistical_ensemble_test/README</strong>.
 The CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
 The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine (currently cheyenne).
@@ -357,7 +353,7 @@ Then please go to the <a class="reference external" href="http://www.cesm.ucar.e
 </ol>
 </div>
 <div class="section" id="performance-tuning-of-a-cesm-port">
-<h2>6.6. Performance tuning of a CESM port<a class="headerlink" href="#performance-tuning-of-a-cesm-port" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">6.6. </span>Performance tuning of a CESM port<a class="headerlink" href="#performance-tuning-of-a-cesm-port" title="Permalink to this headline">¶</a></h2>
 <p>Once you have performed the verification that your port is successful,
 you will want to determine the optimal pe-layout for your target
 configurations (i.e. compset/resolution combinations).  See the file
@@ -429,10 +425,11 @@ intermittently, such as at the end of the month.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

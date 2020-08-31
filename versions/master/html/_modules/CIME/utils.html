@@ -454,14 +454,24 @@
     <span class="n">expect</span><span class="p">(</span><span class="n">driver</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mct&quot;</span><span class="p">,</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">,</span> <span class="s2">&quot;moab&quot;</span><span class="p">),</span><span class="s2">&quot;Attempt to set invalid driver </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">driver</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">driver</span></div>
 
+<div class="viewcode-block" id="get_all_cime_models"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_all_cime_models">[docs]</a><span class="k">def</span> <span class="nf">get_all_cime_models</span><span class="p">():</span>
+    <span class="n">modelsroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">modelsroot</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">modelsroot</span><span class="p">,</span><span class="n">entry</span><span class="p">)):</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+    <span class="n">models</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;xml_schemas&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">models</span></div>
+
 <div class="viewcode-block" id="set_model"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.set_model">[docs]</a><span class="k">def</span> <span class="nf">set_model</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the model to be used in this session</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cime_config</span> <span class="o">=</span> <span class="n">get_cime_config</span><span class="p">()</span>
+    <span class="n">cime_models</span> <span class="o">=</span> <span class="n">get_all_cime_models</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">):</span>
         <span class="n">cime_config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">)</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">model</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cesm&#39;</span><span class="p">,</span><span class="s1">&#39;e3sm&#39;</span><span class="p">,</span><span class="s1">&#39;ufs&#39;</span><span class="p">],</span><span class="s2">&quot;model </span><span class="si">{}</span><span class="s2"> not recognized&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">model</span> <span class="ow">in</span> <span class="n">cime_models</span><span class="p">,</span><span class="s2">&quot;model </span><span class="si">{}</span><span class="s2"> not recognized. The acceptable values of CIME_MODEL currently are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cime_models</span><span class="p">))</span>
     <span class="n">cime_config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span><span class="s1">&#39;CIME_MODEL&#39;</span><span class="p">,</span><span class="n">model</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="get_model"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_model">[docs]</a><span class="k">def</span> <span class="nf">get_model</span><span class="p">():</span>
@@ -485,10 +495,11 @@
 <span class="sd">    &gt;&gt;&gt; reset_cime_config()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CIME_MODEL&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">model</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cesm&#39;</span><span class="p">,</span> <span class="s1">&#39;e3sm&#39;</span><span class="p">,</span> <span class="s1">&#39;ufs&#39;</span><span class="p">]:</span>
+    <span class="n">cime_models</span> <span class="o">=</span> <span class="n">get_all_cime_models</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">cime_models</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting CIME_MODEL=</span><span class="si">{}</span><span class="s2"> from environment&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot;model </span><span class="si">{}</span><span class="s2"> not recognized&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot;model </span><span class="si">{}</span><span class="s2"> not recognized. The acceptable values of CIME_MODEL currently are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cime_models</span><span class="p">))</span>
         <span class="n">cime_config</span> <span class="o">=</span> <span class="n">get_cime_config</span><span class="p">()</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">cime_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span><span class="s1">&#39;CIME_MODEL&#39;</span><span class="p">)):</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">cime_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span><span class="s1">&#39;CIME_MODEL&#39;</span><span class="p">)</span>
@@ -537,6 +548,19 @@
     <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">filearg</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
 <span class="n">_hack</span><span class="o">=</span><span class="nb">object</span><span class="p">()</span>
+
+<div class="viewcode-block" id="check_for_python"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.check_for_python">[docs]</a><span class="k">def</span> <span class="nf">check_for_python</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">funcname</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">is_python</span> <span class="o">=</span> <span class="n">is_python_executable</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">has_function</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">funcname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">has_function</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^def\s+</span><span class="si">{}</span><span class="s2">\(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">funcname</span><span class="p">),</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^from.+import.+\s</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">funcname</span><span class="p">),</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="n">has_function</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">is_python</span> <span class="ow">and</span> <span class="n">has_function</span></div>
 
 <div class="viewcode-block" id="run_sub_or_cmd"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_sub_or_cmd">[docs]</a><span class="k">def</span> <span class="nf">run_sub_or_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">cmdargs</span><span class="p">,</span> <span class="n">subname</span><span class="p">,</span> <span class="n">subargs</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">from_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1422,18 +1446,23 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert time value in [[HH:]MM:]SS to seconds</span>
 
+<span class="sd">    We assume that XX:YY is likely to be HH:MM, not MM:SS</span>
+
 <span class="sd">    &gt;&gt;&gt; convert_to_seconds(&quot;42&quot;)</span>
 <span class="sd">    42</span>
 <span class="sd">    &gt;&gt;&gt; convert_to_seconds(&quot;01:01:01&quot;)</span>
 <span class="sd">    3661</span>
+<span class="sd">    &gt;&gt;&gt; convert_to_seconds(&quot;01:01&quot;)</span>
+<span class="sd">    3660</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">components</span> <span class="o">=</span> <span class="n">time_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;Unusual time string: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time_str</span><span class="p">))</span>
 
     <span class="n">components</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
     <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">starting_exp</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="o">*</span> <span class="nb">pow</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">starting_exp</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
 
@@ -1532,7 +1561,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">input_fields</span> <span class="o">=</span> <span class="n">input_format</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">input_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">input_time</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">input_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-           <span class="s2">&quot;Failed to parse the input time; does not match the header string&quot;</span><span class="p">)</span>
+           <span class="s2">&quot;Failed to parse the input time &#39;</span><span class="si">{}</span><span class="s2">&#39;; does not match the header string &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_time</span><span class="p">,</span> <span class="n">input_format</span><span class="p">))</span>
     <span class="n">input_time</span> <span class="o">=</span> <span class="n">input_time</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">input_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]):]</span>
     <span class="n">timespec</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
     <span class="n">maxvals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">}</span>
@@ -2130,10 +2159,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/pop_ver.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
     
 
   

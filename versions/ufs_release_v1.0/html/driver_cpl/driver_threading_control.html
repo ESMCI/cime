@@ -182,9 +182,9 @@
         
           <li><a href="index.html">Driver/Coupler</a> &raquo;</li>
         
-          <li><a href="implementation.html">3. Implementation</a> &raquo;</li>
+          <li><a href="implementation.html"><span class="section-number">3. </span>Implementation</a> &raquo;</li>
         
-      <li>3.4. Driver Threading Control</li>
+      <li><span class="section-number">3.4. </span>Driver Threading Control</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -204,12 +204,12 @@
            <div itemprop="articleBody">
             
   <div class="section" id="driver-threading-control">
-<h1>3.4. Driver Threading Control<a class="headerlink" href="#driver-threading-control" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3.4. </span>Driver Threading Control<a class="headerlink" href="#driver-threading-control" title="Permalink to this headline">¶</a></h1>
 <p>OpenMP thread counts are controlled at three levels.</p>
 <ul class="simple">
-<li>The coarsest level is prior to launching the model. The environment variable OMP_NUM_THREADS is usually set to the largest value any mpi task will use. At a minimum, this will ensure threading is turned on to the maximum desired value in the run.</li>
-<li>The next level is during the driver initialization phase. When the mpi communicators are initialized, the maximum number of threads per mpi task can be computed based on the ccsm_pes namelist input.  At that point, there is an initial fortran call to the intrinsic, omp_set_num_threads. When that happens and if that call is successful, the number of threads will be set to the maximum needed in the system on an mpi task by task basis.</li>
-<li>Finally, there is the ability of CESM to change the thread count per task as each component is individually called and as the model integrates through the driver run loop. In other words, for components that share the same hardware processor but have different threads per task, this feature allows those components to run with the exact value set by the user in the ccsm_pes namelist.  This final level of thread control is turned off by default, but it can be turned on using the driver namelist variable <code class="docutils literal notranslate"><span class="pre">drv_threading</span></code>.</li>
+<li><p>The coarsest level is prior to launching the model. The environment variable OMP_NUM_THREADS is usually set to the largest value any mpi task will use. At a minimum, this will ensure threading is turned on to the maximum desired value in the run.</p></li>
+<li><p>The next level is during the driver initialization phase. When the mpi communicators are initialized, the maximum number of threads per mpi task can be computed based on the ccsm_pes namelist input.  At that point, there is an initial fortran call to the intrinsic, omp_set_num_threads. When that happens and if that call is successful, the number of threads will be set to the maximum needed in the system on an mpi task by task basis.</p></li>
+<li><p>Finally, there is the ability of CESM to change the thread count per task as each component is individually called and as the model integrates through the driver run loop. In other words, for components that share the same hardware processor but have different threads per task, this feature allows those components to run with the exact value set by the user in the ccsm_pes namelist.  This final level of thread control is turned off by default, but it can be turned on using the driver namelist variable <code class="docutils literal notranslate"><span class="pre">drv_threading</span></code>.</p></li>
 </ul>
 <p>This fine control of threading is likely of limited use at this point given the current driver implementation.</p>
 </div>
@@ -261,10 +261,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

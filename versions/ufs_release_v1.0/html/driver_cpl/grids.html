@@ -190,9 +190,9 @@
         
           <li><a href="index.html">Driver/Coupler</a> &raquo;</li>
         
-          <li><a href="implementation.html">3. Implementation</a> &raquo;</li>
+          <li><a href="implementation.html"><span class="section-number">3. </span>Implementation</a> &raquo;</li>
         
-      <li>3.2. Grids</li>
+      <li><span class="section-number">3.2. </span>Grids</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -212,9 +212,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="grids">
-<h1>3.2. Grids<a class="headerlink" href="#grids" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">3.2. </span>Grids<a class="headerlink" href="#grids" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="standard-grid-configurations">
-<h2>3.2.1. Standard Grid Configurations<a class="headerlink" href="#standard-grid-configurations" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2.1. </span>Standard Grid Configurations<a class="headerlink" href="#standard-grid-configurations" title="Permalink to this headline">¶</a></h2>
 <p>The standard implementation for grids in CIME has been that the atmosphere and land models are run on identical grids and the ocean and sea ice model are run on identical grids.
 The ocean model mask is used to derive a complementary mask for the land grid such that for any given combination of atmosphere/land and ocean/ice grids, there is a unique land mask.
 This approach for dealing with grids is still used a majority of the time.
@@ -234,7 +234,7 @@ There are a couple of namelist variables, <code class="docutils literal notransl
 These are set automaticaly in the driver namelist depending on the grid chosen and impact mapping as well as domain checking.</p>
 </div>
 <div class="section" id="trigrid-configurations">
-<h2>3.2.2. Trigrid Configurations<a class="headerlink" href="#trigrid-configurations" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2.2. </span>Trigrid Configurations<a class="headerlink" href="#trigrid-configurations" title="Permalink to this headline">¶</a></h2>
 <p>Grid configurations are allowed where the atmosphere and land grids are unique.</p>
 <p>The trigrid implementation introduces an ambiguity in the definition of the mask.
 This ambiguity is associated with an inability to define an absolutely consistent ocean/land mask across all grids in the system.
@@ -249,7 +249,7 @@ A summary of trigrid support follows:
 - In that case, the land fraction on the land grid is applied to the land to runoff mapping.</p>
 </div>
 <div class="section" id="fractions">
-<h2>3.2.3. Fractions<a class="headerlink" href="#fractions" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2.3. </span>Fractions<a class="headerlink" href="#fractions" title="Permalink to this headline">¶</a></h2>
 <p>The component grid fractions in the coupler are defined and computed in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/driver_cpl/driver/seq_frac_mct</span></code>.
 A slightly modified version of the notes from this file is pasted below.
 Just to clarify some of the terms.
@@ -387,7 +387,7 @@ When the variable “dom” is mentioned below, that refers to a field sent from
 </div>
 </div>
 <div class="section" id="domain-checking">
-<h2>3.2.4. Domain Checking<a class="headerlink" href="#domain-checking" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2.4. </span>Domain Checking<a class="headerlink" href="#domain-checking" title="Permalink to this headline">¶</a></h2>
 <p>Domain checking is a very important initialization step in the system.
 Domain checking verifies that the longitudes, latitudes, areas, masks, and fractions of different grids are consistent with each other.
 The subroutine that carries out domain checking is in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/driver_cpl/driver/seq_domain_mct</span></code>.
@@ -422,7 +422,7 @@ If an error is detected in the domain checking, the model will write an error me
 It is easy to make the errors go away by changing the tolerances, but by doing so, critical grid errors that can impact conservation and consistency in a simulation might be overlooked.</p>
 </div>
 <div class="section" id="mapping-interpolation">
-<h2>3.2.5. Mapping (Interpolation)<a class="headerlink" href="#mapping-interpolation" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2.5. </span>Mapping (Interpolation)<a class="headerlink" href="#mapping-interpolation" title="Permalink to this headline">¶</a></h2>
 <p>Mapping files to support interpolation of fields between grids are computed offline.
 This is done using the ESMF offline regridding utility.
 First, note that historically, the ocean grid has been the higher resolution grid.
@@ -434,8 +434,8 @@ The individual state and flux mapping files are specified at runtime using the <
 <p>The <code class="docutils literal notranslate"><span class="pre">seq_maps.c</span></code> file contains information about the mapping files as well as the mapping type.
 There are currently two types of mapping implementations, “X” and “Y”.</p>
 <ul class="simple">
-<li>“X” mapping rearranges the source data to the destination grid decomposition and then a local mapping is done from the source to the destination grid on the destination decomposition. In the “X” type, the source grid is rearranged.</li>
-<li>“Y” mapping does a local mapping from the source grid to the destination grid on the source grid decomposition. That generates a partial sum of the destination values which are then rearranged to the destination decomposition and summed. Both options produce reasonable results, although they may differ in value by “roundoff” due to differences in order or operations. The type chosen impacts performance. In both implementations, the number of flops is basically identical. The difference is the communication. In the “Y” type, the destination grid is rearranged.</li>
+<li><p>“X” mapping rearranges the source data to the destination grid decomposition and then a local mapping is done from the source to the destination grid on the destination decomposition. In the “X” type, the source grid is rearranged.</p></li>
+<li><p>“Y” mapping does a local mapping from the source grid to the destination grid on the source grid decomposition. That generates a partial sum of the destination values which are then rearranged to the destination decomposition and summed. Both options produce reasonable results, although they may differ in value by “roundoff” due to differences in order or operations. The type chosen impacts performance. In both implementations, the number of flops is basically identical. The difference is the communication. In the “Y” type, the destination grid is rearranged.</p></li>
 </ul>
 <p>Since historically, the ocean grid is higher resolution than the atmosphere grid, “X” mapping is used for atmosphere to ocean/ice mapping and “Y” mapping is used from ocean/ice to atmosphere mapping to optimize mapping performance.</p>
 <p>Mapping corrections are made in some cases in the polar region.
@@ -466,7 +466,7 @@ This is the fraction correction that is carried out whenever ocean and ice field
 Time varying fraction corrections are not required in other mappings to improve accuracy because their relative fractions remain static.</p>
 </div>
 <div class="section" id="area-correction-of-fluxes">
-<h2>3.2.6. Area Correction of Fluxes<a class="headerlink" href="#area-correction-of-fluxes" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">3.2.6. </span>Area Correction of Fluxes<a class="headerlink" href="#area-correction-of-fluxes" title="Permalink to this headline">¶</a></h2>
 <p>To improve conservation in the system, all fluxes sent to and received from components are corrected for the area differences between the components.
 There are many reasonable ways to compute an area of a grid cell, but they are not generally consistent.
 One assumption with respect to conservation of fluxes is that the area acting upon the flux is well defined.
@@ -527,10 +527,11 @@ One critical point is that if mapping files are generated by different tools off
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

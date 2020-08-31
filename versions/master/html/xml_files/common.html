@@ -393,7 +393,7 @@ ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
        (2) ref2case
            do a hybrid for ${STOP_N}-${STOP_N}/6 running with ref1 restarts from ${STOP_N}/6
            and writing restarts at ( ${STOP_N} - ${STOP_N}/6 )/2 +1
-	   (by default will run for 18 days and write a restart after 10 days)
+           (by default will run for 18 days and write a restart after 10 days)
            ref2 case is a clone of the main case
            short term archiving is on
        (3) case
@@ -522,11 +522,18 @@ TESTRUNDIFF       Produces a canned hist file. Env var TESTRUNDIFF_ALTERNATE can
                   be used to cause a DIFF. Used to check that baseline diffs are
                   detected and reported correctly.
 
+TESTRUNDIFF       Produces a canned hist file. Env var TESTRUNDIFF_ALTERNATE can
+\RESUBMIT         be used to cause a DIFF. Used to check that baseline diffs are
+                  detected and reported correctly. Sets Resubmit equal to one.
+
+
 TESTTESTDIFF      Simulates internal test diff (non baseline). Used to check that
                   internal comparison failures are detected and reported correctly.
 
 TESTRUNSLOWPASS   After 5 minutes of sleep, pass run step. Used to test timeouts
                   and kills.
+
+TESTRUNUSERXMLCHANGE Test concurrent user modifications via xmlchange while case is running
 
 NODEFAIL          Tests restart upon detected node failure. Generates fake failures,
                   the number of which is controlled by NODEFAIL_NUM_FAILS.
@@ -671,6 +678,15 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
+  &lt;test NAME=&quot;HOMMEBFB&quot;&gt;
+    &lt;DESC&gt;Run homme tests. Only works with the ACME version of the atmosphere component.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
   &lt;test NAME=&quot;FUNIT&quot;&gt;
     &lt;DESC&gt;Run fortran unit tests. Grid and compset (and most case settings) are ignored.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
@@ -784,6 +800,17 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
+  &lt;test NAME=&quot;TESTRUNDIFFRESUBMIT&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Produces a canned hist file with a resubmit.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;FORCE_BUILD_SMP&gt;TRUE&lt;/FORCE_BUILD_SMP&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;RESUBMIT&gt;1&lt;/RESUBMIT&gt;
+  &lt;/test&gt;
+
   &lt;test NAME=&quot;TESTTESTDIFF&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Simulates internal test diff (non baseline)&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
@@ -800,6 +827,18 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;STOP_N&gt;11&lt;/STOP_N&gt;
     &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;TESTRUNUSERXMLCHANGE&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
+    &lt;DESC&gt;For testing infra only. Test simultaneous xmlchanges while first run is running.&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;3&lt;/STOP_N&gt;
+    &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;NODEFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
@@ -870,6 +909,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;OCN_DIAG_MODE&gt;none&lt;/OCN_DIAG_MODE&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;MCC&quot;&gt;
@@ -1039,10 +1079,11 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

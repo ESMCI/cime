@@ -327,7 +327,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">machine_name</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model_build_cost</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;e3sm&quot;</span><span class="p">:</span>
+            <span class="c1"># Current build system is unlikely to be able to productively use more than 16 cores</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model_build_cost</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;GMAKE_J&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model_build_cost</span> <span class="o">=</span> <span class="mi">4</span>
 
         <span class="c1"># If user is forcing procs or threads, re-write test names to reflect this.</span>
         <span class="k">if</span> <span class="n">force_procs</span> <span class="ow">or</span> <span class="n">force_threads</span><span class="p">:</span>
@@ -380,17 +384,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_jobs</span> <span class="o">=</span> <span class="n">parallel_jobs</span>
 
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;create_test will do up to </span><span class="si">{}</span><span class="s2"> tasks simultaneously&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parallel_jobs</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_cmp_name</span> <span class="o">=</span> <span class="n">baseline_cmp_name</span> <span class="c1"># Implies comparison should be done if not None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_gen_name</span> <span class="o">=</span> <span class="n">baseline_gen_name</span> <span class="c1"># Implies generation should be done if not None</span>
 
-        <span class="c1"># Compute baseline_root</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span> <span class="o">=</span> <span class="n">baseline_root</span> <span class="k">if</span> <span class="n">baseline_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+        <span class="c1"># Compute baseline_root. Need to set some properties on machobj in order for</span>
+        <span class="c1"># the baseline_root to resolve correctly.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compiler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;PROJECT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">baseline_root</span><span class="p">)</span> <span class="k">if</span> <span class="n">baseline_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
                               <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BASELINE_ROOT&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$PROJECT&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline_root</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">baseline_cmp_name</span> <span class="ow">or</span> <span class="n">baseline_gen_name</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline_cmp_name</span><span class="p">:</span>
@@ -428,6 +432,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_proc_pool</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pes</span> <span class="o">*</span> <span class="mf">1.25</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_proc_pool</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">proc_pool</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;create_test will use up to </span><span class="si">{}</span><span class="s2"> cores simultaneously&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_proc_pool</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_procs_avail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc_pool</span>
 
@@ -624,6 +630,7 @@
         <span class="n">_</span><span class="p">,</span> <span class="n">case_opts</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">,</span>\
             <span class="n">machine</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">test_mods</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
 
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;FROM_CREATE_TEST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
         <span class="n">create_newcase_cmd</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> --case </span><span class="si">{}</span><span class="s2"> --res </span><span class="si">{}</span><span class="s2"> --compset </span><span class="si">{}</span><span class="s2">&quot;</span>\
                              <span class="s2">&quot; --test&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cime_root</span><span class="p">,</span> <span class="s2">&quot;scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;create_newcase&quot;</span><span class="p">),</span>
                                               <span class="n">test_dir</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="p">)</span>
@@ -730,7 +737,7 @@
     <span class="c1">###########################################################################</span>
     <span class="k">def</span> <span class="nf">_xml_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
     <span class="c1">###########################################################################</span>
-        <span class="n">test_case</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">test</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">test_case</span><span class="p">,</span><span class="n">case_opts</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">compiler</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
 
         <span class="c1"># Create, fill and write an envtest object</span>
         <span class="n">test_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
@@ -739,8 +746,19 @@
         <span class="c1"># Determine list of component classes that this coupler/driver knows how</span>
         <span class="c1"># to deal with. This list follows the same order as compset longnames follow.</span>
         <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cime_driver</span><span class="p">)</span>
-        <span class="n">drv_config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_CPL_FILE&quot;</span><span class="p">)</span>
+        <span class="n">cmeps_driver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UFS_DRIVER&quot;</span><span class="p">)</span>
+        <span class="n">attribute</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">cmeps_driver</span><span class="p">:</span>
+            <span class="n">attribute</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">cmeps_driver</span><span class="p">}</span>
+
+        <span class="n">drv_config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_CPL_FILE&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_driver</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">drv_config_file</span><span class="p">):</span>
+            <span class="n">drv_config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_CPL_FILE&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="s2">&quot;cpl&quot;</span><span class="p">})</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">drv_config_file</span><span class="p">),</span><span class="s2">&quot;File </span><span class="si">{}</span><span class="s2"> not found, cime driver </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">drv_config_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_driver</span><span class="p">))</span>
+
         <span class="n">drv_comp</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">drv_config_file</span><span class="p">,</span> <span class="s2">&quot;CPL&quot;</span><span class="p">)</span>
+
         <span class="n">envtest</span><span class="o">.</span><span class="n">add_elements_by_group</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="p">{},</span> <span class="s2">&quot;env_test.xml&quot;</span><span class="p">)</span>
         <span class="n">envtest</span><span class="o">.</span><span class="n">add_elements_by_group</span><span class="p">(</span><span class="n">drv_comp</span><span class="p">,</span> <span class="p">{},</span> <span class="s2">&quot;env_test.xml&quot;</span><span class="p">)</span>
         <span class="n">envtest</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">,</span> <span class="n">test_case</span><span class="p">)</span>
@@ -780,8 +798,9 @@
         <span class="n">config_test</span> <span class="o">=</span> <span class="n">Tests</span><span class="p">()</span>
         <span class="n">testnode</span> <span class="o">=</span> <span class="n">config_test</span><span class="o">.</span><span class="n">get_test_node</span><span class="p">(</span><span class="n">test_case</span><span class="p">)</span>
         <span class="n">envtest</span><span class="o">.</span><span class="n">add_test</span><span class="p">(</span><span class="n">testnode</span><span class="p">)</span>
-        <span class="c1"># Determine the test_case from the test name</span>
-        <span class="n">test_case</span><span class="p">,</span> <span class="n">case_opts</span> <span class="o">=</span> <span class="n">parse_test_name</span><span class="p">(</span><span class="n">test</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">compiler</span> <span class="o">==</span> <span class="s1">&#39;nag&#39;</span><span class="p">:</span>
+            <span class="n">envtest</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;FORCE_BUILD_SMP&quot;</span><span class="p">,</span><span class="s2">&quot;FALSE&quot;</span><span class="p">)</span>
 
         <span class="c1"># Determine case_opts from the test_case</span>
         <span class="k">if</span> <span class="n">case_opts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -825,6 +844,7 @@
                         <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;NTASKS_&quot;</span><span class="o">+</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
                         <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;NTHRDS_&quot;</span><span class="o">+</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
                         <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;ROOTPE_&quot;</span><span class="o">+</span><span class="n">comp</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+                        <span class="n">envtest</span><span class="o">.</span><span class="n">set_test_parameter</span><span class="p">(</span><span class="s2">&quot;PIO_TYPENAME&quot;</span><span class="p">,</span> <span class="s2">&quot;netcdf&quot;</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="p">(</span><span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># Marker to distinguish tests with same name - ignored</span>
                       <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="c1"># handled in create_newcase</span>
@@ -1306,10 +1326,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/pop_ver.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
     
 
   

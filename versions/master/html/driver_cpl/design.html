@@ -178,7 +178,7 @@
         
           <li><a href="index.html">Driver/Coupler</a> &raquo;</li>
         
-      <li>2. Design</li>
+      <li><span class="section-number">2. </span>Design</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -198,9 +198,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="design">
-<h1>2. Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2. </span>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
-<h2>2.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>cpl7 is built as a single executable with a single high-level driver.
 The driver runs on all processors and handles coupler sequencing, model concurrency, and communication of data between components.
 The driver calls all model components via common and standard interfaces.
@@ -216,7 +216,7 @@ The looser ocean coupling frequency means the ocean forcing and response is lagg
 There is an option in cpl7 to run the ocean tightly coupled without any lags, but this is more often used only when running with data ocean components.</p>
 </div>
 <div class="section" id="sequencing-and-concurrency">
-<h2>2.2. Sequencing and Concurrency<a class="headerlink" href="#sequencing-and-concurrency" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>Sequencing and Concurrency<a class="headerlink" href="#sequencing-and-concurrency" title="Permalink to this headline">¶</a></h2>
 <p>The component processor layouts and MPI communicators are derived from namelist input.
 At the present time, there are eight (10) basic processor groups in cpl7.
 These are associated with the atmosphere, land, river, ocean, sea ice, land ice, wave, external-system-process, coupler, and global groups, although others could be easily added later.
@@ -243,7 +243,7 @@ Results are bit-for-bit identical regardless of the component sequencing because
 <p>Figure 1: Maximum potential processor concurrency designed to support scientific requirements and stability.</p>
 </div>
 <div class="section" id="component-interfaces">
-<h2>2.3. Component Interfaces<a class="headerlink" href="#component-interfaces" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Component Interfaces<a class="headerlink" href="#component-interfaces" title="Permalink to this headline">¶</a></h2>
 <p>The standard cpl7 component model interfaces are based upon the ESMF design.
 Each component provides an init, run, and finalize method with consistent arguments.
 The component interface arguments currently consist of Fortran and MCT datatypes.
@@ -264,7 +264,7 @@ The run interface also contains a clock that specifies the current time and the 
 These interfaces generally follow the ESMF design principles.</p>
 </div>
 <div class="section" id="mct-the-model-coupling-toolkit">
-<h2>2.4. MCT, The Model Coupling Toolkit<a class="headerlink" href="#mct-the-model-coupling-toolkit" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.4. </span>MCT, The Model Coupling Toolkit<a class="headerlink" href="#mct-the-model-coupling-toolkit" title="Permalink to this headline">¶</a></h2>
 <p>In cpl7, the MCT attribute_vector, global_segmap, and general_grid datatypes have been adopted at the highest levels of the driver, and they are used directly in the component init, run, and finalize interfaces.
 In addition, MCT is used for all data rearranging and mapping (interpolation).
 The clock used by cpl7 at the driver level is based on the ESMF specification.
@@ -274,7 +274,7 @@ Development of the cpl7 coupler not only relies on MCT, but MCT developers contr
 Development of cpl7 coupler resulted from a particularly strong and close collaboration between NCAR and the Department of Energy Argonne National Lab.</p>
 </div>
 <div class="section" id="memory-parallel-io-and-performance">
-<h2>2.5. Memory, Parallel IO, and Performance<a class="headerlink" href="#memory-parallel-io-and-performance" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.5. </span>Memory, Parallel IO, and Performance<a class="headerlink" href="#memory-parallel-io-and-performance" title="Permalink to this headline">¶</a></h2>
 <p>Scaling to tens-of-thousands of processors requires reasonable performance scaling of the models, and all components have worked at improving scaling via changes to algorithms, infrastructure, or decompositions.
 In particular, decompositions using shared memory blocking, space filling curves, and all three spatial dimensions have been implemented to varying degrees in all components to increase parallelization and improve scalability.
 The Craig et al IJHPCA 2012 reference mentioned in the first section of this document provides a summary of scaling performance of cpl7 for several coupler kernals.</p>
@@ -344,10 +344,11 @@ Typically, a series of short test runs is done with the desired production confi
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

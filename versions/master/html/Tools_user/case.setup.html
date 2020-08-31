@@ -148,16 +148,16 @@
 <li class="toctree-l2"><a class="reference internal" href="create_test.html">create_test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cs.status.html">cs.status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e3sm_check_env.html">e3sm_check_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm_cime_merge.html">e3sm_cime_merge</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e3sm_cime_split.html">e3sm_cime_split</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="get_case_env.html">get_case_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_standard_makefile_args.html">get_standard_makefile_args</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_generic_job.html">jenkins_generic_job</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jenkins_script.html">jenkins_script</a></li>
 <li class="toctree-l2"><a class="reference internal" href="list_e3sm_tests.html">list_e3sm_tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mkDepends.html">mkDepends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mkSrcfiles.html">mkSrcfiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mvsource.html">mvsource</a></li>
 <li class="toctree-l2"><a class="reference internal" href="normalize_cases.html">normalize_cases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pelayout.html">pelayout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="preview_namelists.html">preview_namelists</a></li>
@@ -249,7 +249,7 @@
 <div class="toctree-wrapper compound">
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./case.setup --help
-usage: case.setup [-h] [-d] [-v] [-s] [-c] [-t] [-r] [caseroot]
+usage: case.setup [-h] [-d] [-v] [-s] [-c] [-t] [-r] [-k KEEP] [caseroot]
 
 Creates various files and directories needed in order to build the case,
 create namelists and run the case.
@@ -266,23 +266,24 @@ To rerun after making changes to env_mach_pes.xml or env_mach_specific.xml, run:
    ./case.setup --reset
 
 positional arguments:
-  caseroot         Case directory to setup.
-                   Default is current directory.
+  caseroot              Case directory to setup.
+                        Default is current directory.
 
 optional arguments:
-  -h, --help       show this help message and exit
-  -d, --debug      Print debug information (very verbose) to file /Users/sacks/cime/scripts/Tools/case.setup.log
-  -v, --verbose    Add additional context (time and file) to log messages
-  -s, --silent     Print only warnings and error messages
-  -c, --clean      Removes the batch run script for target machine.
-                   If the testmode argument is present then keep the test
-                   script if it is present - otherwise remove it.
-                   The user_nl_xxx and Macros files are never removed by case.setup -
-                   you must remove them manually.
-  -t, --test-mode  Keeps the test script when the --clean argument is used.
-  -r, --reset      Does a clean followed by setup.
-                   This flag should be used when rerunning case.setup after it
-                   has already been run for this case.
+  -h, --help            show this help message and exit
+  -d, --debug           Print debug information (very verbose) to file /Users/sacks/cime/scripts/Tools/case.setup.log
+  -v, --verbose         Add additional context (time and file) to log messages
+  -s, --silent          Print only warnings and error messages
+  -c, --clean           Removes the batch run script for target machine.
+                        If the testmode argument is present then keep the test
+                        script if it is present - otherwise remove it.
+                        The user_nl_xxx and Macros files are never removed by case.setup -
+                        you must remove them manually.
+  -t, --test-mode       Keeps the test script when the --clean argument is used.
+  -r, --reset           Does a clean followed by setup.
+                        This flag should be used when rerunning case.setup after it
+                        has already been run for this case.
+  -k KEEP, --keep KEEP  When cleaning/resetting a case, do not remove/refresh files in this list. Choices are batch script, env_mach_specific.xml, Macros.make, Macros.cmake. Use should use this if you have local modifications to these files that you want to keep.
 </pre></div>
 </div>
 </div>
@@ -334,10 +335,11 @@ optional arguments:
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

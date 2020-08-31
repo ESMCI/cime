@@ -181,7 +181,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>9. Troubleshooting</li>
+      <li><span class="section-number">9. </span>Troubleshooting</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -201,9 +201,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="troubleshooting">
-<span id="id1"></span><h1>9. Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">9. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="troubleshooting-case-creation">
-<h2>9.1. Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.1. </span>Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Permalink to this headline">¶</a></h2>
 <p>Generally, <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> errors are reported to the terminal and should provide some guidance about what caused them.</p>
 <p>If <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a> fails on a relatively generic error, first check to make sure the command-line arguments match the interface’s specification. See the help text to review usage.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
@@ -211,39 +211,39 @@
 </div>
 </div>
 <div class="section" id="troubleshooting-job-submission">
-<h2>9.2. Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.2. </span>Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this headline">¶</a></h2>
 <p>Most problems associated with submission or launch are site-specific.
 The batch and run aspects of the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script are created by parsing the variables in <strong>$CASEROOT/env_batch.xml</strong> file.</p>
 <p>Take these steps to check for problems:</p>
 <ol class="arabic simple">
-<li>Review the batch submission options in <strong>$CASEROOT/env_batch.xml</strong>. Confirm that they are consistent with the site-specific batch environment, and that the queue names, time limits, and hardware processor request make sense and are consistent with the case.</li>
-<li>Make sure that <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> uses the correct batch job tool for submitting the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script. Depending on the batch environment, it might be <strong>bsub</strong>, <strong>qsub</strong> or another command. Also confirm if a redirection “&lt;” character is required. The information for how <strong>case.submit</strong> submits jobs appears at the end of the standard output stream.</li>
+<li><p>Review the batch submission options in <strong>$CASEROOT/env_batch.xml</strong>. Confirm that they are consistent with the site-specific batch environment, and that the queue names, time limits, and hardware processor request make sense and are consistent with the case.</p></li>
+<li><p>Make sure that <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> uses the correct batch job tool for submitting the <a class="reference external" href="../Tools_user/case.submit.html">case.submit</a> script. Depending on the batch environment, it might be <strong>bsub</strong>, <strong>qsub</strong> or another command. Also confirm if a redirection “&lt;” character is required. The information for how <strong>case.submit</strong> submits jobs appears at the end of the standard output stream.</p></li>
 </ol>
 </div>
 <div class="section" id="troubleshooting-runtime-problems">
-<h2>9.3. Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.3. </span>Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Permalink to this headline">¶</a></h2>
 <p>To see if a run completed successfully, check the last several lines of the <strong>cpl.log</strong> file for a string like <code class="docutils literal notranslate"><span class="pre">SUCCESSFUL</span> <span class="pre">TERMINATION</span></code>. A successful job also usually copies the log files to the <strong>$CASEROOT/logs</strong> directory.</p>
 <p>Check these things first when a job fails:</p>
 <ul class="simple">
-<li>Did the model time out?</li>
-<li>Was a disk quota limit hit?</li>
-<li>Did a machine go down?</li>
-<li>Did a file system become full?</li>
+<li><p>Did the model time out?</p></li>
+<li><p>Was a disk quota limit hit?</p></li>
+<li><p>Did a machine go down?</p></li>
+<li><p>Did a file system become full?</p></li>
 </ul>
 <p>If any of those things happened, take appropriate corrective action (see suggestions below) and resubmit the job.</p>
 <p>If it is not clear that any of the above caused a case to fail, there are several places to look for error messages.</p>
 <ul class="simple">
-<li>Check component log files in your run directory (<code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>).
+<li><p>Check component log files in your run directory (<code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>).
 This directory is set in the <strong>env_run.xml</strong> file.
 Each component writes its own log file, and there should be log files for every component in this format: <strong>cpl.log.yymmdd-hhmmss</strong>.
-Check each log file for an error message, especially at or near the end.</li>
-<li>Check for a standard out and/or standard error file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.
+Check each log file for an error message, especially at or near the end.</p></li>
+<li><p>Check for a standard out and/or standard error file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.
 The standard out/err file often captures a significant amount of extra model output and also often contains significant system output when a job terminates.
-Useful error messages sometimes are found well above the bottom of a large standard out/err file. Backtrack from the bottom in search of an error message.</li>
-<li>Check for core files in your run directory and review them using an appropriate tool.</li>
-<li>Check any automated email from the job about why a job failed. Some sites’ batch schedulers send these.</li>
-<li>Check the archive directory: <strong>$DOUT_S_ROOT/$CASE</strong>.   If a case failed, the log files
-or data may still have been archived.</li>
+Useful error messages sometimes are found well above the bottom of a large standard out/err file. Backtrack from the bottom in search of an error message.</p></li>
+<li><p>Check for core files in your run directory and review them using an appropriate tool.</p></li>
+<li><p>Check any automated email from the job about why a job failed. Some sites’ batch schedulers send these.</p></li>
+<li><p>Check the archive directory: <strong>$DOUT_S_ROOT/$CASE</strong>.   If a case failed, the log files
+or data may still have been archived.</p></li>
 </ul>
 <p><strong>Common errors</strong></p>
 <p>One common error is for a job to time out, which often produces minimal error messages.
@@ -324,10 +324,11 @@ See <a class="reference external" href="http://esmci.github.io/cime/users_guide/
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

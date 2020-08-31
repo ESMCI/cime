@@ -176,7 +176,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>8. CIME user config directory</li>
+      <li><span class="section-number">8. </span>CIME user config directory</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -196,31 +196,30 @@
            <div itemprop="articleBody">
             
   <div class="section" id="cime-user-config-directory">
-<span id="customizing-cime"></span><h1>8. CIME user config directory<a class="headerlink" href="#cime-user-config-directory" title="Permalink to this headline">¶</a></h1>
+<span id="customizing-cime"></span><h1><span class="section-number">8. </span>CIME user config directory<a class="headerlink" href="#cime-user-config-directory" title="Permalink to this headline">¶</a></h1>
 <p>CIME recognizes a user-created custom configuration directory, <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code>. The contents of this directory may include any of the following files:</p>
 <ul>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">config</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">config</span></code></p>
 <p>This file must have a format which follows the python config format. See <a class="reference external" href="https://wiki.python.org/moin/ConfigParserExamples">Python Config Parser Examples</a></p>
 <p>In the [main] block you can set the following variables:</p>
 <ul>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">CIME_MODEL=[e3sm,</span> <span class="pre">cesm]</span></code></p>
-</li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">PROJECT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">CIME_MODEL=[e3sm,</span> <span class="pre">cesm]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PROJECT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
 <p>Used to specify a project id for compute accounting and directory permissions when on a batch system.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">CHARGE_ACCOUNT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">CHARGE_ACCOUNT=&lt;account</span> <span class="pre">number&gt;</span></code></p>
 <p>Used to override the accounting (only) aspect of PROJECT</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">MAIL_USER=&lt;email</span> <span class="pre">address&gt;</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAIL_USER=&lt;email</span> <span class="pre">address&gt;</span></code></p>
 <p>Used to request a non-default email for batch summary output</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">MAIL_TYPE=[never,all,begin,fail,end]</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAIL_TYPE=[never,all,begin,fail,end]</span></code></p>
 <p>Any <strong>or</strong> all the above valid values can be set to list the batch events that emails will be sent for.</p>
 </li>
-<li><p class="first"><strong>create_test</strong> input arguments</p>
+<li><p><strong>create_test</strong> input arguments</p>
 <p>Any argument to the <strong>create_test</strong> script can have its default changed by listing it here with the new default.</p>
 </li>
-<li><p class="first">The following is an example <code class="docutils literal notranslate"><span class="pre">config</span></code> file:</p>
+<li><p>The following is an example <code class="docutils literal notranslate"><span class="pre">config</span></code> file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[main]
 CIME_MODEL=cesm
 SRCROOT=$CIMEROOT/..
@@ -232,12 +231,12 @@ MAIL_TYPE=fail
 </li>
 </ul>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code></p>
 <p>This file must the same format as <strong>$CIMEROOT/config/$model/machines/config_machines.xml</strong> with the appropriate definitions for your machine.</p>
 <p>If you have a customized version of this file in the directory <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code>, it will <strong>append</strong> to the file in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/config/$model/machines/config_machines.xml</span></code>.</p>
 <p>For an example of a <strong>config_machines.xml</strong> file for a linux cluster, look at <strong>$CIMEROOT/config/xml_schemas/config_machines_template.xml</strong>.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">config_compilers.xml</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_compilers.xml</span></code></p>
 <p>This file permits you to customize compiler settings for your machine and is appended to the file <strong>$CIMEROOT/config/$model/machines/config_compilers.xml</strong>.</p>
 <p>The following is an example of what would be needed for customized a ibm compiler flags on a BlueGeneQ machine.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -255,7 +254,7 @@ MAIL_TYPE=fail
 </pre></div>
 </div>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code></p>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code></p>
 <p>This file permits you to customize batch settings for you machine and is appended to the file <strong>$CIMEROOT/config/$model/machines/config_batch.xml</strong>.</p>
 <p>The following is an example of what would be needed to add batch settings for pbs on the machine brutus.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
@@ -322,10 +321,11 @@ MAIL_TYPE=fail
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

@@ -204,7 +204,8 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="configure"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.configure">[docs]</a><span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">macros_format</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span>
-              <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+              <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">extra_machines_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Add Macros, Depends, and env_mach_specific files to a directory.</span>
 
 <span class="sd">    Arguments:</span>
@@ -217,30 +218,42 @@
 <span class="sd">    debug - Boolean specifying whether debugging options are enabled.</span>
 <span class="sd">    unit_testing - Boolean specifying whether we&#39;re running unit tests (as</span>
 <span class="sd">                   opposed to a system run)</span>
+<span class="sd">    extra_machines_dir - String giving path to an additional directory that will be</span>
+<span class="sd">                         searched for a config_compilers.xml file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Macros generation.</span>
     <span class="n">suffixes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Makefile&#39;</span><span class="p">:</span> <span class="s1">&#39;make&#39;</span><span class="p">,</span> <span class="s1">&#39;CMake&#39;</span><span class="p">:</span> <span class="s1">&#39;cmake&#39;</span><span class="p">}</span>
-    <span class="n">macro_maker</span> <span class="o">=</span> <span class="n">Compilers</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="n">mpilib</span><span class="p">)</span>
+    <span class="n">macro_maker</span> <span class="o">=</span> <span class="n">Compilers</span><span class="p">(</span><span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="n">mpilib</span><span class="p">,</span>
+                            <span class="n">extra_machines_dir</span><span class="o">=</span><span class="n">extra_machines_dir</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="n">macros_format</span><span class="p">:</span>
         <span class="n">out_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span><span class="s2">&quot;Macros.&quot;</span><span class="o">+</span><span class="n">suffixes</span><span class="p">[</span><span class="n">form</span><span class="p">])</span>
         <span class="n">macro_maker</span><span class="o">.</span><span class="n">write_macros_file</span><span class="p">(</span><span class="n">macros_file</span><span class="o">=</span><span class="n">out_file_name</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">suffixes</span><span class="p">[</span><span class="n">form</span><span class="p">])</span>
 
     <span class="n">_copy_depends_files</span><span class="p">(</span><span class="n">machobj</span><span class="o">.</span><span class="n">get_machine_name</span><span class="p">(),</span> <span class="n">machobj</span><span class="o">.</span><span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
     <span class="n">_generate_env_mach_specific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span>
-                                <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">)</span></div>
+                                <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="n">noenv</span><span class="p">)</span></div>
 
 <span class="k">def</span> <span class="nf">_copy_depends_files</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">machines_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">compiler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy any system or compiler Depends files if they do not exist in the output directory</span>
 <span class="sd">    If there is a match for Depends.machine_name.compiler copy that and ignore the others</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)]:</span>
+    <span class="c1"># Note, the cmake build system does not stop if Depends.mach.compiler.cmake is found</span>
+    <span class="n">makefiles_done</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">both</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">compiler</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="n">both</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">compiler</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">extra_suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;.cmake&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">extra_suffix</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">makefiles_done</span><span class="p">:</span>
+                <span class="k">continue</span>
+
             <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;Depends.</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">extra_suffix</span><span class="p">)</span>
             <span class="n">dfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
             <span class="n">outputdfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outputdfile</span><span class="p">):</span>
-                <span class="n">safe_copy</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dfile</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="n">both</span> <span class="ow">and</span> <span class="n">extra_suffix</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">makefiles_done</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">outputdfile</span><span class="p">):</span>
+                    <span class="n">safe_copy</span><span class="p">(</span><span class="n">dfile</span><span class="p">,</span> <span class="n">outputdfile</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FakeCase"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase">[docs]</a><span class="k">class</span> <span class="nc">FakeCase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -248,14 +261,15 @@
         <span class="c1"># PIO_VERSION is needed to parse config_machines.xml but isn&#39;t otherwise used</span>
         <span class="c1"># by FakeCase</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span><span class="n">compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span><span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span><span class="n">debug</span><span class="p">,</span>
-                      <span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">:</span><span class="n">comp_interface</span><span class="p">,</span> <span class="s2">&quot;PIO_VERSION&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+                      <span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">:</span><span class="n">comp_interface</span><span class="p">,</span> <span class="s2">&quot;PIO_VERSION&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span>
+                      <span class="s2">&quot;SMP_PRESENT&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>
 
 <div class="viewcode-block" id="FakeCase.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attrib</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">attrib</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">,</span> <span class="s2">&quot;FakeCase does not support getting value of &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span><span class="p">[</span><span class="n">attrib</span><span class="p">]</span></div></div>
 
 <span class="k">def</span> <span class="nf">_generate_env_mach_specific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">machobj</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span>
-                                <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">):</span>
+                                <span class="n">comp_interface</span><span class="p">,</span> <span class="n">sysos</span><span class="p">,</span> <span class="n">unit_testing</span><span class="p">,</span> <span class="n">noenv</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    env_mach_specific generation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -263,13 +277,18 @@
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ems_path</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> already exists, delete to replace&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ems_path</span><span class="p">))</span>
         <span class="k">return</span>
-    <span class="n">ems_file</span> <span class="o">=</span> <span class="n">EnvMachSpecific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="n">unit_testing</span><span class="p">)</span>
+
+    <span class="n">ems_file</span> <span class="o">=</span> <span class="n">EnvMachSpecific</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="n">unit_testing</span><span class="p">,</span> <span class="n">standalone_configure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">ems_file</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
     <span class="n">ems_file</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">noenv</span><span class="p">:</span>
+        <span class="k">return</span>
+
     <span class="n">fake_case</span> <span class="o">=</span> <span class="n">FakeCase</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">)</span>
     <span class="n">ems_file</span><span class="o">.</span><span class="n">load_env</span><span class="p">(</span><span class="n">fake_case</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">shell</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;sh&#39;</span><span class="p">,</span> <span class="s1">&#39;csh&#39;</span><span class="p">):</span>
-        <span class="n">ems_file</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">fake_case</span><span class="p">)</span>
+        <span class="n">ems_file</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">fake_case</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="n">shell_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s2">&quot;.env_mach_specific.&quot;</span> <span class="o">+</span> <span class="n">shell</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">shell_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">shell_file</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s1">&#39;sh&#39;</span><span class="p">:</span>
@@ -321,10 +340,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

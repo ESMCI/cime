@@ -1312,7 +1312,8 @@
             <span class="n">group_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">group_variables</span></div>
 
-<div class="viewcode-block" id="Namelist.write"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Namelist.write"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_</span><span class="o">=</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
         <span class="sd">&quot;&quot;&quot;Write a the output data (normally fortran namelist) to the  out_file</span>
 
 <span class="sd">        As with `parse`, the `out_file` argument can be either a file name, or a</span>
@@ -1327,22 +1328,16 @@
 <span class="sd">        specifies the file format. Formats other than &#39;nml&#39; may not support all</span>
 <span class="sd">        possible output values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">format_</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="s1">&#39;rc&#39;</span><span class="p">,</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">,</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">),</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">format_</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="s1">&#39;rc&#39;</span><span class="p">,</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">),</span>
                <span class="s2">&quot;Namelist.write: unexpected output format </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">format_</span><span class="p">)))</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing namelist to: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_file</span><span class="p">))</span>
             <span class="n">flag</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span> <span class="k">if</span> <span class="n">append</span> <span class="k">else</span> <span class="s1">&#39;w&#39;</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="n">skip_comps</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing namelist to file object&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nuopc&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">,</span> <span class="n">skip_comps</span><span class="o">=</span><span class="n">skip_comps</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">format_</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unwrapped version of `write` assuming that a file object is input.&quot;&quot;&quot;</span>
@@ -1392,7 +1387,24 @@
             <span class="k">if</span> <span class="n">format_</span> <span class="o">==</span> <span class="s1">&#39;nmlcontents&#39;</span><span class="p">:</span>
                 <span class="n">out_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">,</span> <span class="n">skip_comps</span><span class="p">):</span>
+<div class="viewcode-block" id="Namelist.write_nuopc"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.namelist.Namelist.write_nuopc">[docs]</a>    <span class="k">def</span> <span class="nf">write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write a nuopc config file out_file</span>
+
+<span class="sd">        As with `parse`, the `out_file` argument can be either a file name, or a</span>
+<span class="sd">        file object with a `write` method that accepts unicode. If specified,</span>
+<span class="sd">        the `groups` argument specifies a subset of all groups to write out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing nuopc config file to: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_file</span><span class="p">))</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_obj</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing nuopc config data to file object&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_nuopc</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="o">=</span><span class="n">sorted_groups</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_write_nuopc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>  <span class="n">groups</span><span class="p">,</span> <span class="n">sorted_groups</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unwrapped version of `write` assuming that a file object is input.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">groups</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -1411,11 +1423,6 @@
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
                 <span class="n">values</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-
-                <span class="k">if</span> <span class="s2">&quot;component_list&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">skip_comp</span> <span class="ow">in</span> <span class="n">skip_comps</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">skip_comp</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                            <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">skip_comp</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
                 <span class="c1"># @ is used in a namelist to put the same namelist variable in multiple groups</span>
                 <span class="c1"># in the write phase, all characters in the namelist variable name after</span>
@@ -2450,10 +2457,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/pop_ver.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/pop_ver.js"></script>
     
 
   

@@ -292,11 +292,23 @@
 
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> MODEL EXECUTION BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
         <span class="n">run_func</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">rundir</span><span class="p">)</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">run_func</span><span class="p">,</span> <span class="s2">&quot;model execution&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
             <span class="n">cmd_success</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="n">CIMEError</span><span class="p">:</span>
             <span class="n">cmd_success</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># The run will potentially take a very long time. We need to</span>
+        <span class="c1"># allow the user to xmlchange things in their case.</span>
+        <span class="c1">#</span>
+        <span class="c1"># WARNING: All case variables are reloaded after this call to get the</span>
+        <span class="c1"># new values of any variables that may have been changed by</span>
+        <span class="c1"># the user during model execution. Thus, any local variables</span>
+        <span class="c1"># set from case variables before this point may be</span>
+        <span class="c1"># inconsistent with their latest values in the xml files, so</span>
+        <span class="c1"># should generally be reloaded (via case.get_value(XXX)) if they are still needed.</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> MODEL EXECUTION HAS FINISHED&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
 
@@ -415,10 +427,10 @@
 <span class="c1">######################################################################################</span>
 <span class="k">def</span> <span class="nf">_resubmit_check</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
-
-    <span class="c1"># check to see if we need to do resubmission from this particular job,</span>
-    <span class="c1"># Note that Mira requires special logic</span>
-
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    check to see if we need to do resubmission from this particular job,</span>
+<span class="sd">    Note that Mira requires special logic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dout_s</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;dout_s </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dout_s</span><span class="p">))</span>
     <span class="n">mach</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
@@ -466,19 +478,11 @@
 <span class="c1">###############################################################################</span>
     <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> CASE.RUN BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
     <span class="c1"># Set up the run, run the model, do the postrun steps</span>
-    <span class="n">prerun_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PRERUN_SCRIPT&quot;</span><span class="p">)</span>
-    <span class="n">postrun_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;POSTRUN_SCRIPT&quot;</span><span class="p">)</span>
-
-    <span class="n">data_assimilation_cycles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_CYCLES&quot;</span><span class="p">)</span>
-    <span class="n">data_assimilation_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_SCRIPT&quot;</span><span class="p">)</span>
-    <span class="n">data_assimilation</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_assimilation_cycles</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
-                         <span class="nb">len</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
-                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">))</span>
-
 
     <span class="c1"># set up the LID</span>
     <span class="n">lid</span> <span class="o">=</span> <span class="n">new_lid</span><span class="p">()</span>
 
+    <span class="n">prerun_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PRERUN_SCRIPT&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">prerun_script</span><span class="p">:</span>
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> PRERUN_SCRIPT BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -487,6 +491,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> PRERUN_SCRIPT HAS FINISHED&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
 
+    <span class="c1"># We might need to tweak these if we want to allow the user to change them</span>
+    <span class="n">data_assimilation_cycles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_CYCLES&quot;</span><span class="p">)</span>
+    <span class="n">data_assimilation_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DATA_ASSIMILATION_SCRIPT&quot;</span><span class="p">)</span>
+    <span class="n">data_assimilation</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_assimilation_cycles</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+                         <span class="nb">len</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">data_assimilation_script</span><span class="p">))</span>
+
     <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data_assimilation_cycles</span><span class="p">):</span>
         <span class="c1"># After the first DA cycle, runs are restart runs</span>
         <span class="k">if</span> <span class="n">cycle</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -494,9 +505,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span>
                            <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT_SETS_CONTINUE_RUN&quot;</span><span class="p">))</span>
 
+        <span class="c1"># WARNING: All case variables are reloaded during run_model to get</span>
+        <span class="c1"># new values of any variables that may have been changed by</span>
+        <span class="c1"># the user during model execution. Thus, any local variables</span>
+        <span class="c1"># set from case variables before this point may be</span>
+        <span class="c1"># inconsistent with their latest values in the xml files, so</span>
+        <span class="c1"># should generally be reloaded (via case.get_value(XXX)) if they are still needed.</span>
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> RUN_MODEL BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
         <span class="n">lid</span> <span class="o">=</span> <span class="n">_run_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="p">,</span> <span class="n">da_cycle</span><span class="o">=</span><span class="n">cycle</span><span class="p">)</span>
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> RUN_MODEL HAS FINISHED&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CHECK_TIMING&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">):</span>
             <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> GET_TIMING BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
             <span class="n">get_timing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>     <span class="c1"># Run the getTiming script</span>
@@ -517,6 +535,7 @@
         <span class="n">save_postrun_provenance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> SAVE_POSTRUN_PROVENANCE HAS FINISHED&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
 
+    <span class="n">postrun_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;POSTRUN_SCRIPT&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">postrun_script</span><span class="p">:</span>
         <span class="n">model_log</span><span class="p">(</span><span class="s2">&quot;e3sm&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> POSTRUN_SCRIPT BEGINS HERE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -580,10 +599,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

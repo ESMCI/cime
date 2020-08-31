@@ -255,7 +255,13 @@
 <span class="sd">        &gt;&gt;&gt; str(s.getvalue())</span>
 <span class="sd">        &#39;ifeq (foo,bar)\\n&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_line</span><span class="p">(</span><span class="s2">&quot;ifeq (&quot;</span> <span class="o">+</span> <span class="n">left</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="n">right</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">right</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">):</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">)</span>
+            <span class="n">not_str</span> <span class="o">=</span> <span class="s2">&quot;n&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">not_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_line</span><span class="p">(</span><span class="s2">&quot;if</span><span class="si">{}</span><span class="s2">eq (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">not_str</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indent_right</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MakeMacroWriter.end_ifeq"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.makemacroswriter.MakeMacroWriter.end_ifeq">[docs]</a>    <span class="k">def</span> <span class="nf">end_ifeq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -311,10 +317,11 @@
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/pop_ver.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/pop_ver.js"></script>
     
 
   

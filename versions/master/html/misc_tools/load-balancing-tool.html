@@ -177,7 +177,7 @@
         
           <li><a href="index.html">Miscellaneous Tools</a> &raquo;</li>
         
-      <li>2. CIME Load Balancing Tool</li>
+      <li><span class="section-number">2. </span>CIME Load Balancing Tool</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -197,7 +197,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="cime-load-balancing-tool">
-<span id="load-balancing-tool"></span><h1>2. CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
+<span id="load-balancing-tool"></span><h1><span class="section-number">2. </span>CIME Load Balancing Tool<a class="headerlink" href="#cime-load-balancing-tool" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><p>Originally Developed by Sheri Mickelson <a class="reference external" href="mailto:mickelso&#37;&#52;&#48;ucar&#46;edu">mickelso<span>&#64;</span>ucar<span>&#46;</span>edu</a>
 and Yuri Alekseev (ALCF/Argonne National Laboratory</p>
@@ -225,14 +225,14 @@ steps:</p>
 </div>
 <p><em>For the impatient</em></p>
 <ol class="arabic simple">
-<li>set PYTHONPATH to include $CIME_DIR/scripts:$CIME_DIR/tools/load_balancing_tool</li>
-<li>create PE XML &lt;PESFILE&gt; file to describe the PE layouts for the timing runs</li>
-<li>$ ./load_balancing_submit.py –res &lt;RESOLUTION&gt; –compset &lt;COMPSET&gt; –pesfile &lt;PESFILE&gt;</li>
-<li>…  wait for jobs to run …</li>
-<li>$ ./load_balancing_solve.py –total-tasks &lt;N&gt; –blocksize 8</li>
+<li><p>set PYTHONPATH to include $CIME_DIR/scripts:$CIME_DIR/tools/load_balancing_tool</p></li>
+<li><p>create PE XML &lt;PESFILE&gt; file to describe the PE layouts for the timing runs</p></li>
+<li><p>$ ./load_balancing_submit.py –res &lt;RESOLUTION&gt; –compset &lt;COMPSET&gt; –pesfile &lt;PESFILE&gt;</p></li>
+<li><p>…  wait for jobs to run …</p></li>
+<li><p>$ ./load_balancing_solve.py –total-tasks &lt;N&gt; –blocksize 8</p></li>
 </ol>
 <div class="section" id="running-simulations-using-load-balancing-submit-py">
-<h2>2.1. Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Running simulations using load_balancing_submit.py<a class="headerlink" href="#running-simulations-using-load-balancing-submit-py" title="Permalink to this headline">¶</a></h2>
 <p>Simulations can be run on a given system by executing the load_balancing_tool.py
 script, located in cime/tools/load_balancing_tool/load_balancing_tool_submit.py.
 This creates timing files in the case directory which will be used to solve
@@ -290,7 +290,7 @@ directly forwarded to the passed:</p>
 </div>
 </div>
 <div class="section" id="optimizing-the-layout-using-load-balacing-solve-py">
-<h2>2.2. Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>Optimizing the layout using load_balacing_solve.py<a class="headerlink" href="#optimizing-the-layout-using-load-balacing-solve-py" title="Permalink to this headline">¶</a></h2>
 <p>Reads timing data created with load_balancing_submit.py (or otherwise,
 see –timing-files option) and solves an mixed integer optimization problem
 using these timings. The default layout (IceLndAtmOcn) minimizes the cost per
@@ -353,7 +353,7 @@ all timing data have the same threading structure (i.e. all ATM runs use two thr
 </div>
 </div>
 <div class="section" id="more-about-the-algorithm">
-<h2>2.3. More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>More about the algorithm<a class="headerlink" href="#more-about-the-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Before solving the mixed-integer linear program, a model of the cost vs ntasks
 function is constructed for each component.</p>
 <p>Given a component data set of costs (C1,C2,..,Cn) and nblocks (N1,N2,..,Nn),
@@ -438,7 +438,7 @@ follows from the layout:</p>
 <a class="reference external" href="https://www.coin-or.org/Cbc/">https://www.coin-or.org/Cbc/</a></p>
 </div>
 <div class="section" id="extending-the-load-balancing-tool">
-<h2>2.4. Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.4. </span>Extending the Load Balancing Tool<a class="headerlink" href="#extending-the-load-balancing-tool" title="Permalink to this headline">¶</a></h2>
 <p>The file $CIME_DIR/tools/load_balancing_tool/optimize_model.py
 contains a base class OptimizeModel as well as an implementation class
 IceLndAtmOcn. Any layout solver will look similar to IceLndAtmOcn
@@ -484,14 +484,11 @@ except for the components involved and the layout-specific constraints.</p>
 <span class="sd">       &quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>To use this new layout:</dt>
-<dd><ol class="first last arabic">
-<li><p class="first">save the class MyNewLayout in file my_new_layout.py</p>
-</li>
-<li><p class="first">make sure that my_new_layout.py is in PYTHONPATH</p>
-</li>
-<li><p class="first">Use those names in your execution command line argument to –layout</p>
+<dl>
+<dt>To use this new layout:</dt><dd><ol class="arabic">
+<li><p>save the class MyNewLayout in file my_new_layout.py</p></li>
+<li><p>make sure that my_new_layout.py is in PYTHONPATH</p></li>
+<li><p>Use those names in your execution command line argument to –layout</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./load_balancing_solve.py ... --layout my_new_layout.MyNewLayout
 </pre></div>
 </div>
@@ -502,26 +499,26 @@ except for the components involved and the layout-specific constraints.</p>
 <p>To permanently add to CIME:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>add MyNewLayout class to layouts.py</li>
-<li>run using ‘–layout MyNewLayout’</li>
-<li>add test in tests/load_balance_test.py that uses that name in command
-line argument (see test for atm_lnd)</li>
-<li>make pull request</li>
+<li><p>add MyNewLayout class to layouts.py</p></li>
+<li><p>run using ‘–layout MyNewLayout’</p></li>
+<li><p>add test in tests/load_balance_test.py that uses that name in command
+line argument (see test for atm_lnd)</p></li>
+<li><p>make pull request</p></li>
 </ol>
 </div></blockquote>
 </div>
 <div class="section" id="testing">
-<h2>2.5. Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.5. </span>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>To run the provided test suite:</p>
 <blockquote>
 <div><ol class="arabic">
-<li><p class="first">set PYTHONPATH to include CIME libraries:</p>
+<li><p>set PYTHONPATH to include CIME libraries:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export CIME_DIR=/path/to/cime
 $ export PYTHONPATH=$CIME_DIR/scripts:$CIME_DIR/tools/load_balancing_tool
 </pre></div>
 </div>
 </li>
-<li><p class="first">To run an example:</p>
+<li><p>To run an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd $CIME_DIR/tools/load_balancing_tool
 $ ./load_balancing_solve.py --json-input tests/example.json --blocksize 8
 Solving Mixed Integer Linear Program using PuLP interface to COIN-CBC
@@ -543,7 +540,7 @@ NTASKS_TOTAL = 1024
 </pre></div>
 </div>
 </li>
-<li><p class="first">To run the test suite:</p>
+<li><p>To run the test suite:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd $CIME_DIR/tools/load_balancing_tool
 $ ./tests/load_balancing_test.py
 </pre></div>
@@ -601,10 +598,11 @@ $ ./tests/load_balancing_test.py
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   

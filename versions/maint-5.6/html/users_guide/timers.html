@@ -185,7 +185,7 @@
         
           <li><a href="index.html">Case Control System Part 1: Basic Usage</a> &raquo;</li>
         
-      <li>7. Timers and timing</li>
+      <li><span class="section-number">7. </span>Timers and timing</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -205,14 +205,14 @@
            <div itemprop="articleBody">
             
   <div class="section" id="timers-and-timing">
-<span id="timers"></span><h1>7. Timers and timing<a class="headerlink" href="#timers-and-timing" title="Permalink to this headline">¶</a></h1>
+<span id="timers"></span><h1><span class="section-number">7. </span>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Permalink to this headline">¶</a></h1>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
 <div class="section" id="model-timing-data">
-<span id="id1"></span><h2>7.1. Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2><span class="section-number">7.1. </span>Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <ol class="arabic">
-<li><p class="first"><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
+<li><p><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
 <p>This is the most useful way to quickly determine timing summaries across components
 The following describes the most important parts of this timing file:</p>
 <p>An example timing file of this type is:</p>
@@ -293,10 +293,10 @@ sequential order and indicates which processors are involved in
 the cost. Finally, the timings for the coupler are broken out at
 the bottom of the timing output file.</p>
 </li>
-<li><p class="first"><strong>$CASEROOT/timing/$model_timing_stats.$date</strong></p>
+<li><p><strong>$CASEROOT/timing/$model_timing_stats.$date</strong></p>
 <p>Provides an overall detailed timing summary for each component, including the minimum and maximum of all the model timers.</p>
 </li>
-<li><p class="first"><strong>cpl.log.$datestamp</strong></p>
+<li><p><strong>cpl.log.$datestamp</strong></p>
 <p>Contains the run time for each model day during the run and is
 output during the run. You can search for <code class="docutils literal notranslate"><span class="pre">tStamp</span></code> in the cpl.log
 file to see the information, which is useful for tracking down
@@ -310,13 +310,13 @@ month. This file will appear either in <strong>$RUNDIR</strong> or in
 <p>The xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code>, if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> (the default) will produce the timing files in the <strong>$CASEROOT/timing</strong> directory.</p>
 </div>
 <div class="section" id="controlling-timers">
-<h2>7.2. Controlling timers<a class="headerlink" href="#controlling-timers" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">7.2. </span>Controlling timers<a class="headerlink" href="#controlling-timers" title="Permalink to this headline">¶</a></h2>
 <p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
 <ul>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>:</p>
 <p>This is the maximum code stack depth of enabled timers.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>:</p>
 <p>This is an integer indicating maximum detail level to profile.  This
 xml variable is used to set the namelist variable timing_detail_limit.
 This namelist variable is used by perf_mod (in
@@ -336,10 +336,9 @@ add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
 </div>
 </div>
 <div class="section" id="advice-on-setting-your-wallclock-time">
-<h2>7.3. Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt>
-<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
+<h2><span class="section-number">7.3. </span>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Permalink to this headline">¶</a></h2>
+<dl>
+<dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>
 <span class="n">Model</span> <span class="n">Throughput</span><span class="p">:</span> <span class="mf">4.70</span> <span class="n">simulated_years</span><span class="o">/</span><span class="n">day</span>
 </pre></div>
@@ -414,10 +413,11 @@ year/job. In this example, set your wallclock at 12 hours and invoke
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
     
 
   
