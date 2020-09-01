@@ -339,10 +339,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    cmeps_driver = os.environ.get("UFS_DRIVER")
-    if cmeps_driver:
-        logger.info("UFS_DRIVER is set to {}".format(cmeps_driver))
-    if cmeps_driver and 'nems' in cmeps_driver:
+    ufs_driver = os.environ.get("UFS_DRIVER")
+    if ufs_driver:
+        logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
+    if ufs_driver and ufs_driver == 'nems':
         libs = []
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
@@ -355,7 +355,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     cdeps_build_script = None
-    if comp_interface == "nuopc" and cmeps_driver and not 'nems' in cmeps_driver:
+    if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems'):
         libs.append("CDEPS")
         cdeps_build_script = os.path.join(srcroot, "components", "cdeps", "cime_config", "buildlib")
 
