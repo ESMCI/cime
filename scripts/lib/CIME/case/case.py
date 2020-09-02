@@ -460,10 +460,10 @@ class Case(object):
 
         self.set_lookup_value("COMP_INTERFACE", driver)
         if self._cime_model == 'ufs':
-            cmeps_driver = os.environ.get("UFS_DRIVER")
+            ufs_driver = os.environ.get("UFS_DRIVER")
             attribute = None
-            if cmeps_driver:
-                attribute = {"component":cmeps_driver}
+            if ufs_driver:
+                attribute = {"component":ufs_driver}
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=attribute)
 
         if self._cime_model == 'cesm':
