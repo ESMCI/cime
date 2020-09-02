@@ -332,12 +332,12 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="python">/apps/lmod/lmod/libexec/lmod python</cmd_path>
       <modules compiler="intel">
         <command name="purge"/>
-        <command name="load">intel/2018</command>
+        <command name="load">intel/2020</command>
         <command name="load">netcdf/4.7.2</command>
         <command name="load">cmake/3.15.4</command>
       </modules>
       <modules mpilib="impi">
-        <command name="load">impi/2018</command>
+        <command name="load">impi/2020</command>
       </modules>
     </module_system>
     <environment_variables>
