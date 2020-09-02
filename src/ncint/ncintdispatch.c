@@ -109,7 +109,7 @@ NC_Dispatch NCINT_dispatcher = {
     NC_NOTNC4_inq_enum_member,
     NC_NOTNC4_inq_enum_ident,
     NC_NOTNC4_def_opaque,
-    NC_NOTNC4_def_var_deflate,
+    PIO_NCINT_def_var_deflate,
     NC_NOTNC4_def_var_fletcher32,
     NC_NOTNC4_def_var_chunking,
     NC_NOTNC4_def_var_endian,
@@ -951,3 +951,26 @@ PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
         *equalp = typeid1 == typeid2 ? 1 : 0;
     return NC_NOERR;
 }
+
+/**
+ * @internal This functions sets deflate settings for a
+ * netCDF-4 variable. It is called by nc_def_var_deflate().
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the ID of the variable.
+ * @param shuffle non-zero to turn on shuffle filter.
+ * @param deflate non-zero to turn on zlib compression for this
+ * variable.
+ * @param deflate_level 1 to 9, with 1 being faster and 9 being more
+ * compressed.
+ *
+ * @returns ::NC_NOERR for success
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
+			  int deflate_level)
+{
+    return PIOc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level);
+}
+
