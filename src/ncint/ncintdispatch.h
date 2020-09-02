@@ -148,7 +148,10 @@ extern "C" {
     extern int
     PIO_NCINT_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 			      int deflate_level);
-    
+
+    extern int
+    PIO_NCINT_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp);
+
 
 #if defined(__cplusplus)
 }

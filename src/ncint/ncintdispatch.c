@@ -111,8 +111,8 @@ NC_Dispatch NCINT_dispatcher = {
     NC_NOTNC4_def_opaque,
     PIO_NCINT_def_var_deflate,
     NC_NOTNC4_def_var_fletcher32,
-    NC_NOTNC4_def_var_chunking,
-    NC_NOTNC4_def_var_endian,
+    PIO_NCINT_def_var_chunking,
+    PIOc_def_var_endian,
     NC_NOTNC4_def_var_filter,
     NC_NOTNC4_set_var_chunk_cache,
     NC_NOTNC4_get_var_chunk_cache,
@@ -974,3 +974,32 @@ PIO_NCINT_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     return PIOc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level);
 }
 
+/**
+ * @internal Set chunksizes for a variable.
+ *
+ * This function only applies to netCDF-4 files. When used with netCDF
+ * classic files, the error PIO_ENOTNC4 will be returned.
+ *
+ * Chunksizes have important performance repercussions. NetCDF
+ * attempts to choose sensible chunk sizes by default, but for best
+ * performance check chunking against access patterns.
+ *
+ * See the <a
+ * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
+ * variable documentation</a> for details about the operation of this
+ * function.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the ID of the variable to set chunksizes for.
+ * @param storage NC_CONTIGUOUS or NC_CHUNKED.
+ * @param chunksizesp an array of chunksizes. Must have a chunksize for
+ * every variable dimension.
+ * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_def_var_c
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp)
+{
+    return PIOc_def_var_chunking(ncid, varid, storage, (const PIO_Offset *)chunksizesp);
+}
