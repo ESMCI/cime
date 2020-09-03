@@ -72,6 +72,7 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
 	int shuffle_in, deflate_in, deflate_level_in, storage_in;
 	int *data_in;
 	size_t chunksizes_in[NDIM3];
+	int endian_in;
 	int d;
 	
 	/* Open the file. */
@@ -87,6 +88,10 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
 	for (d = 0; d < NDIM3; d++)
 	    if (chunksizes_in[d] != chunksizes[d]) PERR;
 	if (storage_in != NC_CHUNKED) PERR;
+
+	/* Check the endianness. */
+	if (nc_inq_var_endian(ncid, 0, &endian_in)) PERR;
+	if (endian_in != NC_ENDIAN_BIG) PERR;
 	
 	/* Read distributed arrays. */
 	if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;

@@ -880,6 +880,9 @@ PIO_NCINT_inq_var_all(int ncid, int varid, char *name, nc_type *xtypep,
 
     if (!ret)
 	ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp);
+
+    if (!ret)
+	ret = PIOc_inq_var_endian(ncid, varid, endiannessp);
     
     return ret;
 }
