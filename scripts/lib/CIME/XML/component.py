@@ -35,7 +35,7 @@ class Component(EntryID):
 
     def get_valid_model_components(self):
         """
-        return a list of all possible valid generic (e.g. atm, clm, ...) model components
+        return a list of all possible valid generic (e.g. atm, lnd, ...) model components
         from the entries in the model CONFIG_CPL_FILE
         """
         components = []
