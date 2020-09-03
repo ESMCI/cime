@@ -20,6 +20,7 @@
 #define NDIM2 2
 #define NDIM3 3
 #define TEST_VAL_42 42
+#define DEFLATE_LEVEL 4
 
 int
 run_var_compress_test(int my_rank, int ntasks, int iosysid)
@@ -29,6 +30,7 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     int dimlen[NDIM3] = {NC_UNLIMITED, DIM_LEN_X, DIM_LEN_Y};
     size_t elements_per_pe;
     size_t *compdof; /* The decomposition mapping. */
+    int shuffle_in, deflate_in, deflate_level_in;
     int *my_data;
     int *data_in;
     int i;
@@ -42,7 +44,7 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
     if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
     if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR;
-    if (nc_def_var_deflate(ncid, varid, NC_CHUNKED, 1, 4)) PERR;
+    if (nc_def_var_deflate(ncid, varid, NC_CHUNKED, 1, DEFLATE_LEVEL)) PERR;
 
     /* Calculate a decomposition for distributed arrays. */
     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
@@ -67,6 +69,11 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
 
     /* Open the file. */
     if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
+
+    /* Check the compression level. */
+    if (nc_inq_var_deflate(ncid, 0, &shuffle_in, &deflate_in, &deflate_level_in)) PERR;
+    printf("%d %d %d\n", shuffle_in, deflate_in, deflate_level_in);
+    /* if (shuffle_in || !deflate_in || deflate_level_in != DEFLATE_LEVEL) PERR; */
 
     /* Read distributed arrays. */
     if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
