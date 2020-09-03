@@ -10,7 +10,7 @@ include_directories("${CMAKE_SOURCE_DIR}/tests/ncint")
 include_directories("${CMAKE_BINARY_DIR}")
 
 set (my_tests tst_async_multi tst_ncint_async_perf
-  tst_ncint_perf tst_pio_async tst_pio_udf)
+  tst_ncint_perf tst_pio_async tst_pio_udf tst_var_compress)
 
 # Test Timeout in seconds.
 if (PIO_VALGRIND_CHECK)
