@@ -45,6 +45,7 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR;
     if (nc_def_var_deflate(ncid, varid, 1, 1, DEFLATE_LEVEL)) PERR;
     if (nc_def_var_chunking(ncid, varid, NC_CHUNKED, chunksizes)) PERR;
+    if (nc_def_var_endian(ncid, varid, NC_ENDIAN_BIG)) PERR;
 
     /* Calculate a decomposition for distributed arrays. */
     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
@@ -84,10 +85,8 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
 	/* Check the chunking. */
 	if (nc_inq_var_chunking(ncid, 0, &storage_in, chunksizes_in)) PERR;
 	for (d = 0; d < NDIM3; d++)
-	{
-	    printf("chunksizes_in[%d] = %ld\n", d, chunksizes_in[d]);	
-	    /* if (chunksizes_in[0] != chunksizes[0]) PERR; */
-	}
+	    if (chunksizes_in[d] != chunksizes[d]) PERR;
+	if (storage_in != NC_CHUNKED) PERR;
 	
 	/* Read distributed arrays. */
 	if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
