@@ -871,7 +871,17 @@ PIO_NCINT_inq_var_all(int ncid, int varid, char *name, nc_type *xtypep,
                       int *no_fill, void *fill_valuep, int *endiannessp,
                       unsigned int *idp, size_t *nparamsp, unsigned int *params)
 {
-    return PIOc_inq_var(ncid, varid, name, xtypep, ndimsp, dimidsp, nattsp);
+    int ret;
+
+    ret = PIOc_inq_var(ncid, varid, name, xtypep, ndimsp, dimidsp, nattsp);
+
+    if (!ret)
+	ret = PIOc_inq_var_chunking(ncid, varid, contiguousp, (MPI_Offset *)chunksizesp);
+
+    if (!ret)
+	ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp);
+    
+    return ret;
 }
 
 /**

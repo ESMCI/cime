@@ -28,11 +28,10 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     int ncid, ioid;
     int dimid[NDIM3], varid;
     int dimlen[NDIM3] = {NC_UNLIMITED, DIM_LEN_X, DIM_LEN_Y};
+    size_t chunksizes[NDIM3] = {1, 1, 1};
     size_t elements_per_pe;
     size_t *compdof; /* The decomposition mapping. */
-    int shuffle_in, deflate_in, deflate_level_in;
     int *my_data;
-    int *data_in;
     int i;
 
     /* Turn on logging for PIO library. */
@@ -44,7 +43,8 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
     if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
     if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR;
-    if (nc_def_var_deflate(ncid, varid, NC_CHUNKED, 1, DEFLATE_LEVEL)) PERR;
+    if (nc_def_var_deflate(ncid, varid, 1, 1, DEFLATE_LEVEL)) PERR;
+    if (nc_def_var_chunking(ncid, varid, NC_CHUNKED, chunksizes)) PERR;
 
     /* Calculate a decomposition for distributed arrays. */
     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
@@ -67,27 +67,42 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     if (nc_put_vard_int(ncid, varid, ioid, 0, my_data)) PERR;
     if (nc_close(ncid)) PERR;
 
-    /* Open the file. */
-    if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
+    {
+	int shuffle_in, deflate_in, deflate_level_in, storage_in;
+	int *data_in;
+	size_t chunksizes_in[NDIM3];
+	int d;
+	
+	/* Open the file. */
+	if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
+	
+	/* Check the variable deflate. */
+	if (nc_inq_var_deflate(ncid, 0, &shuffle_in, &deflate_in, &deflate_level_in)) PERR;
+	printf("%d %d %d\n", shuffle_in, deflate_in, deflate_level_in);
+	/* if (shuffle_in || !deflate_in || deflate_level_in != DEFLATE_LEVEL) PERR; */
 
-    /* Check the compression level. */
-    if (nc_inq_var_deflate(ncid, 0, &shuffle_in, &deflate_in, &deflate_level_in)) PERR;
-    printf("%d %d %d\n", shuffle_in, deflate_in, deflate_level_in);
-    /* if (shuffle_in || !deflate_in || deflate_level_in != DEFLATE_LEVEL) PERR; */
+	/* Check the chunking. */
+	if (nc_inq_var_chunking(ncid, 0, &storage_in, chunksizes_in)) PERR;
+	for (d = 0; d < NDIM3; d++)
+	{
+	    printf("chunksizes_in[%d] = %ld\n", d, chunksizes_in[d]);	
+	    /* if (chunksizes_in[0] != chunksizes[0]) PERR; */
+	}
+	
+	/* Read distributed arrays. */
+	if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
+	if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR;
+	
+	/* Check results. */
+	for (i = 0; i < elements_per_pe; i++)
+	    if (data_in[i] != my_data[i]) PERR;
+	
+	/* Close file. */
+	if (nc_close(ncid)) PERR;
 
-    /* Read distributed arrays. */
-    if (!(data_in = malloc(elements_per_pe * sizeof(int)))) PERR;
-    if (nc_get_vard_int(ncid, varid, ioid, 0, data_in)) PERR;
-
-    /* Check results. */
-    for (i = 0; i < elements_per_pe; i++)
-	if (data_in[i] != my_data[i]) PERR;
-
-    /* Close file. */
-    if (nc_close(ncid)) PERR;
-
-    /* Free resources. */
-    free(data_in);
+	/* Free resources. */
+	free(data_in);
+    }
     free(my_data);
     if (nc_free_decomp(ioid)) PERR;
 
