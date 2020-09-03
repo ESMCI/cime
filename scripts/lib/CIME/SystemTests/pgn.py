@@ -94,6 +94,7 @@ class PGN(SystemTestsCommon):
             fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format('cam', 'i', icond))
             flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format('clm2', 'r', icond))
             for iprt in PERTURBATIONS.values():
+                # NOTE: This needs to handle user_nl_ctsm_* files as well
                 with open('user_nl_cam_{:04d}'.format(iinst), 'w') as atmnlfile, \
                         open('user_nl_clm_{:04d}'.format(iinst), 'w') as lndnlfile:
 

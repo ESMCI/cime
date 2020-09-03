@@ -83,6 +83,7 @@ class TSC(SystemTestsCommon):
 
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST+1):
+            # NOTE: Needs to handle user_nl_ctsm_* files as well
             with open('user_nl_cam_'+str(iinst).zfill(4), 'w') as atmnlfile, \
                  open('user_nl_clm_'+str(iinst).zfill(4), 'w') as lndnlfile:
 
