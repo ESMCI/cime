@@ -236,6 +236,12 @@ fi
 
 AC_MSG_NOTICE([finding libraries])
 
+# Ensure we have MPI.
+AC_CHECK_FUNCS([MPI_Init])
+if test "x$ac_cv_func_MPI_Init" != "xyes"; then
+   AC_MSG_ERROR([Can't link to MPI library. MPI is required.])
+fi
+
 # Check for netCDF library.
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
 AC_CHECK_HEADERS([netcdf.h netcdf_meta.h])
@@ -332,9 +338,6 @@ if test "x${ac_cv_type_MPI_Offset}" = xyes; then
 else
    AC_MSG_ERROR([Unable to find type MPI_Offset in mpi.h])
 fi
-
-#AC_CHECK_SIZEOF([MPI_Offset], [], [[#include <mpi.h>]])
-#AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
 
 # If we want the timing library, we must find it.
 if test "x$enable_timing" = xyes; then
