@@ -145,6 +145,14 @@ extern "C" {
     PIO_NCINT_inq_type_equal(int ncid1, nc_type typeid1, int ncid2,
                              nc_type typeid2, int *equalp);
 
+    extern int
+    PIO_NCINT_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
+			      int deflate_level);
+
+    extern int
+    PIO_NCINT_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp);
+
+
 #if defined(__cplusplus)
 }
 #endif

@@ -21,8 +21,7 @@
  *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable.
- * @param shuffle non-zero to turn on shuffle filter (can be good for
- * integer data).
+ * @param shuffle non-zero to turn on shuffle filter.
  * @param deflate non-zero to turn on zlib compression for this
  * variable.
  * @param deflate_level 1 to 9, with 1 being faster and 9 being more
