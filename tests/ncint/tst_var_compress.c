@@ -37,11 +37,12 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     /* PIOc_set_log_level(3); */
 
     /* Create a file with a 3D record var. */
-    if (nc_create(FILE_NAME, NC_PIO, &ncid)) PERR;
+    if (nc_create(FILE_NAME, NC_PIO|NC_NETCDF4, &ncid)) PERR;
     if (nc_def_dim(ncid, DIM_NAME_UNLIMITED, dimlen[0], &dimid[0])) PERR;
     if (nc_def_dim(ncid, DIM_NAME_X, dimlen[1], &dimid[1])) PERR;
     if (nc_def_dim(ncid, DIM_NAME_Y, dimlen[2], &dimid[2])) PERR;
     if (nc_def_var(ncid, VAR_NAME, NC_INT, NDIM3, dimid, &varid)) PERR;
+    if (nc_def_var_deflate(ncid, varid, NC_CHUNKED, 1, 4)) PERR;
 
     /* Calculate a decomposition for distributed arrays. */
     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / ntasks;
@@ -101,7 +102,10 @@ main(int argc, char **argv)
     if (MPI_Comm_size(MPI_COMM_WORLD, &ntasks)) PERR;
 
     if (!my_rank)
-        printf("\n*** Testing netCDF integration layer.\n");
+        printf("\n*** Testing netCDF integration layer with var compression.\n");
+
+    /* Only run tests if netCDF-4 is present in the build. */
+#ifdef _NETCDF4
 
     if (!my_rank)
         printf("*** testing var compression with netCDF integration layer...");
@@ -109,10 +113,14 @@ main(int argc, char **argv)
     /* Initialize the intracomm. */
     if (nc_def_iosystem(MPI_COMM_WORLD, 1, 1, 0, 0, &iosysid)) PERR;
 
+    /* Run the tests. */
     if (run_var_compress_test(my_rank, ntasks, iosysid)) PERR;
 
+    /* Free the iosystem. */
     if (nc_free_iosystem(iosysid)) PERR;
+    
     PSUMMARIZE_ERR;
+#endif /* _NETCDF4 */
 
     /* Finalize MPI. */
     MPI_Finalize();
