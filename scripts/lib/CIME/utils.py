@@ -862,6 +862,18 @@ def match_any(item, re_list):
 
     return False
 
+def get_current_submodule_status(recursive=False, repo=None):
+    """
+    Return the sha1s of the current currently checked out commit for each submodule,
+    along with the submodule path and the output of git describe for the SHA-1.
+
+    >>> get_current_submodule_status() is not None
+    True
+    """
+    rc, output, _ = run_cmd("git submodule status {}".format("--recursive" if recursive else ""), from_dir=repo)
+
+    return output if rc == 0 else "unknown"
+
 def safe_copy(src_path, tgt_path, preserve_meta=True):
     """
     A flexbile and safe copy routine. Will try to copy file and metadata, but this

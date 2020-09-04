@@ -5,7 +5,7 @@ Library for saving build/run provenance.
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import touch, gzip_existing_file, SharedArea, convert_to_babylonian_time, get_current_commit, indent_string, run_cmd, run_cmd_no_fail, safe_copy
+from CIME.utils import touch, gzip_existing_file, SharedArea, convert_to_babylonian_time, get_current_commit, get_current_submodule_status, indent_string, run_cmd, run_cmd_no_fail, safe_copy
 
 import tarfile, getpass, signal, glob, shutil, sys
 
@@ -49,6 +49,12 @@ def _save_build_provenance_e3sm(case, lid):
     if os.path.exists(headfile):
         safe_copy(headfile, headfile_prov, preserve_meta=False)
 
+    # Save git submodule status
+    submodule_prov = os.path.join(exeroot, "GIT_SUBMODULE_STATUS.{}".format(lid))
+    subm_status = get_current_submodule_status(recursive=True, repo=srcroot)
+    with open(submodule_prov, "w") as fd:
+        fd.write(subm_status)
+
     # Save SourceMods
     sourcemods = os.path.join(caseroot, "SourceMods")
     sourcemods_prov = os.path.join(exeroot, "SourceMods.{}.tar.gz".format(lid))
@@ -67,7 +73,7 @@ def _save_build_provenance_e3sm(case, lid):
 
     # For all the just-created post-build provenance files, symlink a generic name
     # to them to indicate that these are the most recent or active.
-    for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "SourceMods", "build_environment"]:
+    for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "GIT_SUBMODULE_STATUS", "SourceMods", "build_environment"]:
         globstr = "{}/{}.{}*".format(exeroot, item, lid)
         matches = glob.glob(globstr)
         expect(len(matches) < 2, "Multiple matches for glob {} should not have happened".format(globstr))
