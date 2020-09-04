@@ -877,10 +877,14 @@ test_esmf: test_esmf.o
 # create list of component libraries - hard-wired for current ccsm components
 #-------------------------------------------------------------------------------
 ifneq ($(CIME_MODEL),e3sm)
-  ifeq ($(COMP_LND),clm)
+  ifeq ($(COMP_LND),ctsm)
     USE_SHARED_CLM=TRUE
   else
-    USE_SHARED_CLM=FALSE
+    ifeq ($(COMP_LND),clm)
+      USE_SHARED_CLM=TRUE
+    else
+      USE_SHARED_CLM=FALSE
+    endif
   endif
 else
   USE_SHARED_CLM=FALSE
@@ -895,11 +899,12 @@ ifeq ($(USE_SHARED_CLM),FALSE)
   endif
   INCLDIR += -I$(LNDOBJDIR)
 else
-  LNDLIB := libclm.a
-  LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/clm/obj
+  # For shared CLM library (which must be CESM) use land component name for library name and subdirectory
+  LNDLIB := lib$(COMP_LND).a
+  LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(COMP_LND)/obj
   LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/lib
   INCLDIR += -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
-  ifeq ($(MODEL),clm)
+  ifeq ($(MODEL),$(COMP_LND))
     INCLUDE_DIR = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
   endif
 endif
