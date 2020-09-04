@@ -1896,6 +1896,34 @@ class X_TestQueryConfig(unittest.TestCase):
         run_cmd_no_fail("{}/query_config --machines".format(SCRIPT_DIR))
 
 ###############################################################################
+class Y_TestUserConcurrentMods(TestCreateTestCommon):
+###############################################################################
+
+    ###########################################################################
+    def test_user_concurrent_mods(self):
+    ###########################################################################
+        # Put this inside any test that's slow
+        if (FAST_ONLY):
+            self.skipTest("Skipping slow test")
+
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_P1.f09_g16.X"], test_id=self._baseline_name)
+
+        # We need to be careful since we are running a resubmit. The first run should
+        # report a RUN PASS, which will cause our waiting code to stop waiting. But we
+        # want to wait for the second run too.
+        time.sleep(60) # give second run a chance to begin
+        self._wait_for_tests(self._baseline_name) # wait for second run
+
+        with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
+            contents = fd.read()
+            self.assertEqual(contents.count("model execution success"), 2)
+
+        rundir = run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
+        with open(os.path.join(rundir, "drv_in"), "r") as fd:
+            contents = fd.read()
+            self.assertTrue("stop_n = 6" in contents)
+
+###############################################################################
 class Z_FullSystemTest(TestCreateTestCommon):
 ###############################################################################
 
@@ -2171,7 +2199,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         self.assertEqual(result, "00:10:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch")
+        self.assertEqual(result, "biggpu")
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_2(self):
@@ -2184,10 +2212,10 @@ class K_TestCimeCase(TestCreateTestCommon):
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "03:00:00")
+        self.assertEqual(result, "01:00:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch")
+        self.assertEqual(result, "biggpu")
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_3(self):
@@ -2203,7 +2231,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         self.assertEqual(result, "00:10:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch") # Not smart enough to select faster queue
+        self.assertEqual(result, "biggpu") # Not smart enough to select faster queue
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_4(self):
@@ -2216,10 +2244,10 @@ class K_TestCimeCase(TestCreateTestCommon):
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "02:00:00")
+        self.assertEqual(result, "01:00:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "batch")
+        self.assertEqual(result, "biggpu")
 
     ###########################################################################
     def test_cime_case_test_walltime_mgmt_5(self):
@@ -2236,7 +2264,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         run_cmd_assert_result(self, "./xmlchange JOB_QUEUE=slartibartfast --force --subgroup=case.test", from_dir=casedir)
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value", from_dir=casedir)
-        self.assertEqual(result, "03:00:00")
+        self.assertEqual(result, "01:00:00")
 
         result = run_cmd_assert_result(self, "./xmlquery JOB_QUEUE --subgroup=case.test --value", from_dir=casedir)
         self.assertEqual(result, "slartibartfast")
@@ -2421,19 +2449,21 @@ class K_TestCimeCase(TestCreateTestCommon):
             self.assertEqual(case.get_value("RUN_TYPE"), "startup")
             case.set_value("RUN_TYPE", "branch")
 
-        # behind the back detection. disable for now
-        # with self.assertRaises(CIMEError):
-        #     with Case(casedir, read_only=False) as case:
-        #         time.sleep(0.2)
-        #         safe_copy(backup, active)
+        # behind the back detection.
+        with self.assertRaises(CIMEError):
+            with Case(casedir, read_only=False) as case:
+                case.set_value("RUN_TYPE", "startup")
+                time.sleep(0.2)
+                safe_copy(backup, active)
 
-        # with Case(casedir, read_only=False) as case:
-        #     case.set_value("RUN_TYPE", "branch")
+        with Case(casedir, read_only=False) as case:
+            case.set_value("RUN_TYPE", "branch")
 
-        # with self.assertRaises(CIMEError):
-        #     with Case(casedir) as case:
-        #         time.sleep(0.2)
-        #         safe_copy(backup, active)
+        # If there's no modications within CIME, the files should not be written
+        # and therefore no timestamp check
+        with Case(casedir) as case:
+            time.sleep(0.2)
+            safe_copy(backup, active)
 
     ###########################################################################
     def test_configure(self):

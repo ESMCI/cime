@@ -266,6 +266,7 @@ class Case(object):
         if not os.path.isdir(self._caseroot):
             # do not flush if caseroot wasnt created
             return
+
         for env_file in self._files:
             env_file.write(force_write=flushall)
 
@@ -459,12 +460,11 @@ class Case(object):
 
         self.set_lookup_value("COMP_INTERFACE", driver)
         if self._cime_model == 'ufs':
-            config = {}
-            if 'ufsatm' in compset_name:
-                config['component']='nems'
-            else:
-                config['component']='cpl'
-            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=config)
+            ufs_driver = os.environ.get("UFS_DRIVER")
+            attribute = None
+            if ufs_driver:
+                attribute = {"component":ufs_driver}
+            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=attribute)
 
         if self._cime_model == 'cesm':
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")

@@ -90,8 +90,8 @@ class GenericXML(object):
             timestamp_file  = os.path.getmtime(infile)
             if timestamp_file == timestamp_cache:
                 logger.debug("read (cached): {}".format(infile))
-                expect(self.read_only or not self.filename or not self.needsrewrite, "Reading into object marked for rewrite, file {}"
-                       .format(self.filename))
+                expect(self.read_only or not self.filename or not self.needsrewrite,
+                       "Reading into object marked for rewrite, file {}".format(self.filename))
                 self.tree, self.root, _ = self._FILEMAP[infile]
                 cached_read = True
 
@@ -109,7 +109,8 @@ class GenericXML(object):
             self._FILEMAP[infile] = self.CacheEntry(self.tree, self.root, os.path.getmtime(infile))
 
     def read_fd(self, fd):
-        expect(self.read_only or not self.filename or not self.needsrewrite, "Reading into object marked for rewrite, file {}"               .format(self.filename))
+        expect(self.read_only or not self.filename or not self.needsrewrite,
+               "Reading into object marked for rewrite, file {}".format(self.filename))
         read_only = self.read_only
         if self.tree:
             addroot = _Element(ET.parse(fd).getroot())
@@ -329,20 +330,29 @@ class GenericXML(object):
         return version
 
     def check_timestamp(self):
+        """
+        Returns True if timestamp matches what is expected
+        """
         timestamp_cache = self._FILEMAP[self.filename].modtime
         if timestamp_cache != 0.0:
             timestamp_file  = os.path.getmtime(self.filename)
-            expect(timestamp_file == timestamp_cache,
-                   "File {} appears to have changed without a corresponding invalidation, modtimes {:0.2f} != {:0.2f}".format(self.filename, timestamp_cache, timestamp_file))
+            return timestamp_file == timestamp_cache
+        else:
+            return True
+
+    def validate_timestamp(self):
+        timestamp_ok = self.check_timestamp()
+        expect(timestamp_ok,
+               "File {} appears to have changed without a corresponding invalidation.".format(self.filename))
 
     def write(self, outfile=None, force_write=False):
         """
         Write an xml file from data in self
         """
-        #self.check_timestamp()
-
         if not (self.needsrewrite or force_write):
             return
+
+        self.validate_timestamp()
 
         if outfile is None:
             outfile = self.filename

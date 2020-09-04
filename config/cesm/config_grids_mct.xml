@@ -568,7 +568,7 @@
     </gridmap>
 
     <gridmap lnd_grid="C24" rof_grid="r05">
-      <map name="LND2ROF_FMAPNAME">lnd/clm2/mappingdata/maps/C24/map_C24_TO_0.5x0.5_aave.181018.nc</map>
+      <map name="LND2ROF_FMAPNAME">lnd/clm2/mappingdata/maps/C24/map_C24_nomask_to_0.5x0.5_nomask_aave_da_c181018.nc</map>
       <map name="ROF2LND_FMAPNAME">lnd/clm2/mappingdata/maps/C24/map_0.5x0.5_TO_C24_aave.181018.nc</map>
     </gridmap>
 
@@ -583,7 +583,7 @@
     </gridmap>
 
     <gridmap lnd_grid="C192" rof_grid="r05">
-      <map name="LND2ROF_FMAPNAME">lnd/clm2/mappingdata/maps/C192/map_C192_TO_0.5x0.5_aave.181018.nc</map>
+      <map name="LND2ROF_FMAPNAME">lnd/clm2/mappingdata/maps/C192/map_C192_nomask_to_0.5x0.5_nomask_aave_da_c181018.nc</map>
       <map name="ROF2LND_FMAPNAME">lnd/clm2/mappingdata/maps/C192/map_0.5x0.5_TO_C192_aave.181018.nc</map>
     </gridmap>
 

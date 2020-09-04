@@ -120,7 +120,8 @@
   </xs:element>
   <xs:element name="env">
     <xs:complexType mixed="true">
-      <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute name="name" type="xs:NCName"/>
+      <xs:attribute name="source" type="xs:NCName"/>
     </xs:complexType>
   </xs:element>
 
@@ -166,7 +167,7 @@
   <xs:element name="arguments">
     <xs:complexType>
       <xs:sequence>
-	<xs:element name="arg" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="arg" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

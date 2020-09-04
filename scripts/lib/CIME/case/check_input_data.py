@@ -315,7 +315,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
             if (line and not line.startswith("#")):
                 tokens = line.split('=')
                 description, full_path = tokens[0].strip(), tokens[1].strip()
-                if description.endswith('datapath'):
+                if description.endswith('datapath') or description.endswith('data_path'):
                     continue
                 if(full_path):
                     # expand xml variables

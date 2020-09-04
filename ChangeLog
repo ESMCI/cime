@@ -1,3 +1,242 @@
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-28-2020
+Tag: cime5.8.32
+Answer Changes: None
+Tests: scripts_regression_tests, create_test_cime_developer,
+       SMS_D_Ld5_Vnuopc.f10_f10_musgs.I2000Clm50BgcCropGs.cheyenne_intel.clm-default, 
+       SMS.f19_g17.X.cheyenne_intel, cdeps_aux tests and testlist_drv.xml test
+Dependencies:
+
+Brief Summary:
+    - Support concurrent env XML changes during case.run.
+    - Allow for a sh format file to be sourced and incorporated into the cime environment.
+    - Avoid artificial limit on string lengths in shr_string_listMerge.
+    - Don't try to set a variable from env_test.xml if it does not otherwise exist in the case.
+    - Fix logic in cdeps build.
+    - New cdeps stream schema and stream definition file. 
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+5ab9bf4bd Merge pull request #3693 from ESMCI/jgfouca/volatile_env
+bf51eb598 Merge pull request #3689 from jedwards4b/add_source_file_feature
+6e6bf6b23 Merge pull request #3686 from billsacks/listmerge_relax_limit
+e996ec4f5 Merge pull request #3688 from jedwards4b/pfs_test_fix
+503d6c568 Merge pull request #3685 from jedwards4b/cdeps_bld_logic_fix
+ae676698c Merge pull request #3680 from ESMCI/mvertens/new_stream_schema
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_files.xml
+M       config/cesm/machines/config_machines.xml
+M       config/config_tests.xml
+M       config/xml_schemas/config_machines.xsd
+M       config/xml_schemas/env_mach_specific.xsd
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/XML/env_mach_specific.py
+M       scripts/lib/CIME/XML/env_test.py
+M       scripts/lib/CIME/XML/generic_xml.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_run.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/share/util/shr_string_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-20-2020
+Tag: cime5.8.31
+Answer Changes: None
+Tests: scripts_regressio_tests
+Dependencies:
+
+Brief Summary:
+    - Fix FV3 grid problem and by default end the GSWP3 forcing in 2013.
+    - CMEPS driver env var.
+    - Add flexibility in dlnd domain_fracname.
+    - Fix K_TestCimeCase scripts regression tests on Mappy.
+    - Add cuda entries.
+    - Remove fox build from makefile.
+    - Revert PR #3658.
+    - shell_commands useds before env_test.xml is written.
+    - Revert dlnd source code to how it was prior to PR 3619.
+    - Add a warning if the user attempts to change a value set by env_test.xml.
+    - Skip over namelist vars ending with "input_data" in check_input_data.
+    - CIME changes to support upcoming addition of MALI gis1to10km configuration.
+    - Changes needed to have cdeps 3d stream input working.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+d575f612e Merge pull request #3679 from ekluzek/fv3gridfix2013endGSWP3
+cb20f8725 Merge pull request #3666 from jedwards4b/cmeps_driver_env_var
+bea8a7fcd Merge pull request #3678 from billsacks/dlnd_frac_more_flexible
+5408413b9 Merge pull request #3675 from ESMCI/wpcoomb/fix_K_TestCimeCase_scripts_regression_tests_on_Mappy
+4ebf75a1d Merge pull request #3677 from ESMCI/mrnorman/add-cuda-entries-xml
+e673f457b Merge pull request #3674 from jedwards4b/remove_fox
+43036f386 Merge pull request #3676 from ESMCI/jgfouca/revert_input_chg
+a27d3abef shell_commands useds before env_test.xml is written
+ce6fc2ba1 Merge pull request #3671 from billsacks/fix_dlnd_for_sno
+eeb1e3d2c Merge pull request #3670 from jedwards4b/add_env_test_warning
+de05b6aa8 Merge pull request #3665 from fvitt/data_path
+896bdf552 Merge pull request #3660 from ESMCI/jonbob/add-gis1to10km
+3a86badd6 Merge pull request #3659 from ESMCI/mvertens/cdeps3d
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+M       config/cesm/config_grids_mct.xml
+M       config/ufs/config_inputdata.xml
+M       config/ufs/machines/config_machines.xml
+M       config/xml_schemas/config_compilers_v2.xsd
+M       scripts/Tools/Makefile
+M       scripts/Tools/xmlchange
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/lib/CIME/test_scheduler.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/components/data_comps_mct/datm/cime_config/config_component.xml
+M       src/components/data_comps_mct/dlnd/cime_config/namelist_definition_dlnd.xml
+M       src/components/data_comps_mct/dlnd/src/dlnd_comp_mod.F90
+M       src/components/data_comps_mct/dlnd/src/dlnd_shr_mod.F90
+M       src/drivers/mct/cime_config/config_component.xml
+M       src/externals/mct/mpeu/m_inpak90.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-12-2020
+Tag: cime5.8.30
+Answer Changes: [None, Round Off, Climate Changing]
+Tests: cprnc run_tests, scripts_regression_tests.py, ctsm aux_clm with nag
+Dependencies:
+
+Brief Summary:
+    - Fix single-variable integer output in cprnc.
+    - Changes required for noaa hafs app.
+    - Improve check_input_data.py to use os.path.isfile().
+    - Remove hard-wired nuopc mapping files except for required custom ones.
+    - Fix python 3 issue.
+    - Nag build fix.
+    - Remove the FoX library. It's now handled by CDEPS.
+    - Fix issue that the es3m config_files.xml points to several non-existent xml files.
+    - Reorder drof options.
+    - Update the pio2 external library.
+    - Add support to the data runoff model for E3SM Cryosphere.
+    - Fix G_TestBuildSystem test.
+    - Better logic when compset is tested in aux_ test.
+    - Another hotfix for e3sm.
+    - PET Test Baseline Generation and Comparison Improvement.
+    - Archive atm_chunk_costs with other performance data.
+    - Use SRCROOT instead of CIMEROOT in key places.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+899fcd90e Merge pull request #3663 from billsacks/cprnc_fix_int_singlevar
+7e2655994 Merge pull request #3648 from jedwards4b/hafs_port
+5176e710d Merge pull request #3658 from ESMCI/wpcoomb_check_input_data_improvements
+1db9682bc Merge pull request #3652 from ESMCI/mvertens/remove_mapping_files
+ef97cbed3 fix py3 issue
+30c6b6af1 Merge pull request #3646 from jedwards4b/nag_build_fix
+3298bb2a2 Merge pull request #3651 from jedwards4b/remove_fox
+99867f17d Merge pull request #3650 from ESMCI/wpcoomb_query_config_components_improvements
+923954285 Merge pull request #3644 from ESMCI/darincomeau/reorder_drof_options
+5b34da18a Merge pull request #3643 from jedwards4b/pio2_update_0731
+22e2a2f00 Merge pull request #3641 from ESMCI/darincomeau/add_JRA_e3sm_cryo_compsets
+0d9ae78ca Merge pull request #3642 from ESMCI/jgfouca/fix_g_build_test
+092e50f51 Merge pull request #3639 from mnlevy1981/update_supported_test
+3eca1452a Another hotfix for e3sm
+3a765464b Merge pull request #3635 from ESMCI/PET_test_baseline_generation_and_comparison_improvement
+562a9a489 Merge pull request #3636 from ESMCI/singhbalwinder/pat-worley-provenance-changes
+dd45995ff Merge pull request #3638 from ESMCI/jgfouca/fix_jenkins_commit
+
+Modified files: git diff --name-status [previous_tag]
+M	config/cesm/config_grids.xml
+M	config/cesm/config_grids_common.xml
+M	config/cesm/config_grids_mct.xml
+M	config/cesm/config_grids_nuopc.xml
+M	config/cesm/machines/config_compilers.xml
+M	config/cesm/machines/config_machines.xml
+M	config/e3sm/config_files.xml
+M	config/ufs/config_grids.xml
+M	config/ufs/machines/config_machines.xml
+M	scripts/Tools/Makefile
+M	scripts/lib/CIME/SystemTests/system_tests_common.py
+M	scripts/lib/CIME/XML/grids.py
+M	scripts/lib/CIME/bless_test_results.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/buildlib.py
+M	scripts/lib/CIME/buildnml.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/case/check_input_data.py
+M	scripts/lib/CIME/hist_utils.py
+M	scripts/lib/CIME/provenance.py
+M	scripts/lib/CIME/test_scheduler.py
+M	scripts/lib/CIME/wait_for_tests.py
+M	scripts/tests/scripts_regression_tests.py
+D	src/build_scripts/buildlib.fox
+M	src/components/data_comps_mct/drof/cime_config/config_component.xml
+M	src/components/data_comps_mct/drof/cime_config/namelist_definition_drof.xml
+M	src/components/xcpl_comps_nuopc/xatm/src/atm_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xglc/src/glc_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xice/src/ice_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xlnd/src/lnd_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xocn/src/ocn_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xrof/src/rof_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xshare/dead_nuopc_mod.F90
+M	src/components/xcpl_comps_nuopc/xwav/src/wav_comp_nuopc.F90
+M	src/externals/mct/mpeu/m_ioutil.F90
+A	src/externals/pio2/.github/workflows/autotools.yml
+A	src/externals/pio2/.github/workflows/cmake.yml
+A	src/externals/pio2/.github/workflows/strict_autotools.yml
+M	src/externals/pio2/.gitignore
+M	src/externals/pio2/.travis.yml
+M	src/externals/pio2/CMakeLists.txt
+M	src/externals/pio2/Makefile.am
+M	src/externals/pio2/configure.ac
+M	src/externals/pio2/examples/c/example2.c
+A	src/externals/pio2/libpio.settings.in
+M	src/externals/pio2/src/CMakeLists.txt
+M	src/externals/pio2/src/clib/CMakeLists.txt
+M	src/externals/pio2/src/clib/Makefile.am
+A	src/externals/pio2/src/clib/pio_error.c
+M	src/externals/pio2/src/clib/pio_error.h
+A	src/externals/pio2/src/clib/pio_meta.h.in
+M	src/externals/pio2/src/clib/pio_msg.c
+M	src/externals/pio2/src/clib/pio_nc.c
+M	src/externals/pio2/src/clib/pioc_support.c
+M	src/externals/pio2/src/flib/CMakeLists.txt
+M	src/externals/pio2/src/flib/Makefile.am
+M	src/externals/pio2/src/flib/pio_types.F90
+M	src/externals/pio2/src/flib/piolib_mod.F90
+M	src/externals/pio2/src/flib/pionfput_mod.F90.in
+M	src/externals/pio2/tests/cunit/CMakeLists.txt
+M	src/externals/pio2/tests/cunit/Makefile.am
+M	src/externals/pio2/tests/cunit/run_tests.sh
+M	src/externals/pio2/tests/cunit/test_common.c
+A	src/externals/pio2/tests/cunit/test_darray_append.c
+M	src/externals/pio2/tests/cunit/test_darray_multivar3.c
+M	src/externals/pio2/tests/general/CMakeLists.txt
+M	tools/cprnc/compare_vars_mod.F90.in
+M	tools/cprnc/run_tests
+M	tools/cprnc/test_inputs/README
+A	tools/cprnc/test_inputs/control_int.nc
+A	tools/cprnc/test_inputs/int_missing.nc
+M	tools/statistical_ensemble_test/single_run.py
+
+======================================================================
 
 ======================================================================
 

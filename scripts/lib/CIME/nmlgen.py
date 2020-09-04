@@ -57,29 +57,6 @@ _stream_mct_file_template = """<?xml version="1.0"?>
 </file>
 """
 
-_stream_nuopc_file_template = """
-  <stream_info name="{streamname}">
-   <taxmode>{taxmode}</taxmode>
-   <tInterpAlgo>{tintalgo}</tInterpAlgo>
-   <readMode>{readmode}</readMode>
-   <mapalgo>{mapalgo}</mapalgo>
-   <dtlimit>{dtlimit}</dtlimit>
-   <yearFirst>{yearFirst}</yearFirst>
-   <yearLast>{yearLast}</yearLast>
-   <yearAlign>{yearAlign}</yearAlign>
-   <stream_vectors>{vectors}</stream_vectors>
-   <stream_mesh_file>{data_meshfile}</stream_mesh_file>
-   <stream_data_files>
-      {data_filenames}
-   </stream_data_files>
-   <stream_data_variables>
-      {data_varnames}
-   </stream_data_variables>
-   <stream_offset>{offset}</stream_offset>
- </stream_info>
-
-"""
-
 class NamelistGenerator(object):
 
     """Utility class for generating namelists for a given component."""
@@ -543,104 +520,6 @@ class NamelistGenerator(object):
                     input_data_list.write(string)
         self.update_shr_strdata_nml(config, stream, stream_path)
 
-    def create_nuopc_stream_files(self, config, caseroot, #pylint:disable=too-many-locals
-                                  streams, stream_path, data_list_path):
-        """Write the XML files for all component streams.
-
-        Arguments:
-        `config` - Used to look up namelist defaults. This is used *in addition*
-                   to the `config` used to construct the namelist generator. The
-                   main reason to supply additional configuration options here
-                   is to specify stream-specific settings.
-        `stream` - Name of the stream.
-        `stream_path` - Path to write the stream file to.
-        `data_list_path` - Path of file to append input data information to.
-        """
-
-        if os.path.exists(stream_path):
-            os.unlink(stream_path)
-        user_stream_path = os.path.join(caseroot, "user_"+os.path.basename(stream_path))
-
-        # Use the user's stream file, or create one if necessary.
-        config = config.copy()
-        # Stream-specific configuration.
-        if os.path.exists(user_stream_path):
-            # user stream file is specified - use an already created stream txt file
-            safe_copy(user_stream_path, stream_path)
-            strmobj = Stream(infile=stream_path)
-            stream_meshfile = strmobj.get_value("stream_info/stream_mesh_file")
-            stream_datafiles = strmobj.get_value("stream_info/stream_data_files")
-        else:
-            with open(stream_path, 'w') as stream_file:
-                stream_file.write('<?xml version="1.0"?>\n')
-                stream_file.write('<file id="stream" version="2.0">\n')
-
-            for stream in streams:
-                if stream is None:
-                    continue
-                config["stream"] = stream
-                stream_meshfile = self.get_default("strm_mesh", config)
-                stream_datafiles = self.get_default("strm_datfil", config)
-                stream_variables = self._sub_fields(self.get_default("strm_datvar", config))
-
-                # determine data_filenames - first set year_start, year_end and offset as input
-                # to creating data_filenames
-                year_start = int(self.get_default("strm_year_start", config))
-                year_end = int(self.get_default("strm_year_end", config))
-
-                # needed for input data list
-                stream_datafiles = self._sub_paths(stream_datafiles, year_start, year_end)
-
-                # determine stream time offset
-                taxmode = self.get_default("taxmode", config)[0]
-                tintalgo = self.get_default("tintalgo", config)[0]
-                dtlimit = self.get_default("dtlimit", config)[0]
-                mapalgo = self.get_default("mapalgo", config)[0]
-                readmode = self.get_default("readmode", config)[0]
-                vectors = self.get_default("vectors", config)
-                yearFirst = self.get_default("strm_year_start", config)
-                yearLast =  self.get_default("strm_year_end", config)
-                yearAlign = self.get_default("strm_year_align", config)
-                stream_offset = self.get_default("strm_offset", config)
-                stream_datafiles_delimited = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
-                stream_variables = self._add_xml_delimiter(stream_variables.split("\n"), "var")
-
-                # create stream txt file
-                stream_file_text = _stream_nuopc_file_template.format(
-                    streamname=stream,
-                    data_meshfile=stream_meshfile,
-                    data_filenames=stream_datafiles_delimited,
-                    data_varnames=stream_variables,
-                    offset=stream_offset,
-                    vectors=vectors,
-                    yearFirst=yearFirst,
-                    yearLast=yearLast,
-                    yearAlign=yearAlign,
-                    readmode=readmode,
-                    dtlimit=dtlimit,
-                    taxmode=taxmode,
-                    mapalgo=mapalgo,
-                    tintalgo=tintalgo)
-                with open(stream_path, 'a') as stream_file:
-                    stream_file.write(stream_file_text)
-
-            # add entries to input data list
-            lines_hash = self._get_input_file_hash(data_list_path)
-            with open(data_list_path, 'a') as input_data_list:
-                string = "mesh = {}\n".format(stream_meshfile)
-                hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
-                if hashValue not in lines_hash:
-                    input_data_list.write(string)
-                for i, filename in enumerate(stream_datafiles.split("\n")):
-                    if filename.strip() == '':
-                        continue
-                    string = "file{:d} = {}\n".format(i+1, filename)
-                    hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
-                    if hashValue not in lines_hash:
-                        input_data_list.write(string)
-        with open(stream_path, 'a') as stream_file:
-            stream_file.write("</file>\n")
-
     def update_shr_strdata_nml(self, config, stream, stream_path):
         """Updates values for the `shr_strdata_nml` namelist group.
 
@@ -851,7 +730,6 @@ class NamelistGenerator(object):
         groups = self._namelist.get_group_names()
         # write the config file
         self._namelist.write_nuopc(filename, groups=groups, sorted_groups=False)
-
         # append to input_data_list file
         if data_list_path is not None:
             self._write_input_files(data_list_path)

@@ -565,8 +565,19 @@ class TestScheduler(object):
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
         files = Files(comp_interface=self._cime_driver)
-        drv_config_file = files.get_value("CONFIG_CPL_FILE")
+        ufs_driver = os.environ.get("UFS_DRIVER")
+        attribute = None
+        if ufs_driver:
+            attribute = {"component":ufs_driver}
+
+        drv_config_file = files.get_value("CONFIG_CPL_FILE", attribute=attribute)
+
+        if self._cime_driver == "nuopc" and not os.path.exists(drv_config_file):
+            drv_config_file = files.get_value("CONFIG_CPL_FILE", {"component":"cpl"})
+        expect(os.path.exists(drv_config_file),"File {} not found, cime driver {}".format(drv_config_file, self._cime_driver))
+
         drv_comp = Component(drv_config_file, "CPL")
+
         envtest.add_elements_by_group(files, {}, "env_test.xml")
         envtest.add_elements_by_group(drv_comp, {}, "env_test.xml")
         envtest.set_value("TESTCASE", test_case)
