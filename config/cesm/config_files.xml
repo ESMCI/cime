@@ -92,7 +92,7 @@
       <value>$CIMEROOT/config/config_tests.xml</value>
       <!-- component specific config_tests files -->
       <value component="clm" >$COMP_ROOT_DIR_LND/cime_config/config_tests.xml</value>
-      <value component="ctsm">$COMP_ROOT_DIR_LND/cime_config/config_tests.xml</value>
+      <!-- CTSM test list doesn't need to be read in if it's the same as clm since all config_tests files are always read in -->
       <value component="cam" >$COMP_ROOT_DIR_ATM/cime_config/config_tests.xml</value>
     </values>
     <group>test</group>
