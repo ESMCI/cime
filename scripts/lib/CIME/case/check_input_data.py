@@ -274,6 +274,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
     in the file.
     Return True if no files missing
     """
+
     case.load_env(reset=True)
     rundir = case.get_value("RUNDIR")
     # Fill in defaults as needed
@@ -315,7 +316,8 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
             if (line and not line.startswith("#")):
                 tokens = line.split('=')
                 description, full_path = tokens[0].strip(), tokens[1].strip()
-                if description.endswith('datapath') or description.endswith('data_path'):
+                if description.endswith('datapath') or description.endswith('data_path') or full_path.endswith('/dev/null'):
+                    print("wpc0. continue. in check_input_data(). line is {}. description is {}. full_path is '{}'".format(line, description, full_path))
                     continue
                 if(full_path):
                     # expand xml variables
@@ -340,8 +342,10 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # rel_path, and so cannot download the file. If it already exists, we can
                         # proceed
                         if not os.path.exists(full_path):
-                            print("Model {} missing file {} = '{}'".format(model, description, full_path))
+                            print("wpc1a. Model {}. description {}. full_path '{}'".format(model, description, full_path))
+                            print("wpc1b. rel_path is {}. not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'".format(rel_path, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                             if download:
+                                print("wpc1c. Model {}. description {}. full_path '{}'".format(model, description, full_path))
                                 logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
                             no_files_missing = False
                         else:
@@ -356,7 +360,8 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         isdirectory=rel_path.endswith(os.sep)
 
                         if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
-                            print("Model {} missing file {} = '{}'".format(model, description, full_path))
+                            print("wpc2a. Model {}. description {}. full_path '{}'".format(model, description, full_path))
+                            print("wpc2b. rel_path is {}. not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'".format(rel_path, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                             no_files_missing = False
                             if (download):
                                 if use_ic_path:
@@ -369,10 +374,12 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                                                                             isdirectory=isdirectory, ic_filepath=ic_filepath)
                                 if no_files_missing and chksum:
                                     verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
+                                print("wpc2c. no_files_missing is {}. not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'".format(no_files_missing, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                         else:
                             if chksum:
                                 verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
                                 logger.info("Chksum passed for file {}".format(os.path.join(input_data_root,rel_path)))
+                            expect((not isdirectory), "Unsupported directory in input_data_list '{}'".format(full_path))
                             logger.debug("  Already had input file: '{}'".format(full_path))
                 else:
                     model = os.path.basename(data_list_file).split('.')[0]
