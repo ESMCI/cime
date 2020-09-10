@@ -274,7 +274,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
     in the file.
     Return True if no files missing
     """
-
     case.load_env(reset=True)
     rundir = case.get_value("RUNDIR")
     # Fill in defaults as needed
