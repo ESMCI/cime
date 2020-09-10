@@ -139,7 +139,8 @@ def _build_model(build_threaded, exeroot, incroot, complist,
             if "cpl" in l:
                 cpl_in_complist = True
 
-        if cime_model == 'ufs' and not cpl_in_complist:
+#        if cime_model == 'ufs' and not cpl_in_complist:
+        if True:
             config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
         else:
             config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
