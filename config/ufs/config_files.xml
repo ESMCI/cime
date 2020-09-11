@@ -122,7 +122,7 @@
   <entry id="COMP_ROOT_DIR_CPL">
     <type>char</type>
     <values>
-      <value component="cpl" >$CIMEROOT/src/drivers/nuopc</value>
+      <value component="cpl" >$SRCROOT/src/model/CMEPS</value>
       <value component="nems">$SRCROOT/src/model/NEMS/cime</value>
     </values>
     <group>case_comps</group>
