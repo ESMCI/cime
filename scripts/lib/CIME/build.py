@@ -355,10 +355,16 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         libs.append("kokkos")
 
     # Build shared code of CDEPS nuopc data models
-    cdeps_build_script = None
+    build_script = {}
     if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems'):
         libs.append("CDEPS")
-        cdeps_build_script = os.path.join(srcroot, "components", "cdeps", "cime_config", "buildlib")
+        build_script["CDEPS"] = os.path.join(srcroot, "components", "cdeps", "cime_config", "buildlib")
+
+    ocn_model = case.get_value("COMP_OCN")
+    atm_model = case.get_value("COMP_ATM")
+    if ocn_model == 'mom' or atm_model == "fv3gfs":
+        libs.append("FMS")
+        build_script["FMS"] = os.path.join(srcroot, "src", "model", "FMS", "cime", "cime_config", "buildlib")
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
@@ -392,8 +398,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(full_lib_path)
 
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
-        if lib == "CDEPS":
-            my_file = cdeps_build_script
+        if lib in build_script.keys():
+            my_file = build_script[lib]
         else:
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
