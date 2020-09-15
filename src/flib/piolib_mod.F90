@@ -30,8 +30,36 @@
 !! Create a new IO System, designating numbers of I/O and computation
 !! tasks in Fortran.
 !!
+!! Use the Fortran generic function PIO_init() to initialize the IO
+!! System. The PIO_init() function will call init_intracom().
+!!
+!! This code from examples/f03/examplePio.F90 demonstrates how to
+!! initialize the IO system for intracom mode.
+!!
+!! @code
+!!        call PIO_init(this%myRank,      & ! MPI rank
+!!            MPI_COMM_WORLD,             & ! MPI communicator
+!!            this%niotasks,              & ! Number of iotasks (ntasks/stride)
+!!            this%numAggregator,         & ! number of aggregators to use
+!!            this%stride,                & ! stride
+!!            PIO_rearr_subset,           & ! do not use any form of rearrangement
+!!            this%pioIoSystem,           & ! iosystem
+!!            base=this%optBase)            ! base (optional argument)
+!! @endcode
+!!
 !! @defgroup PIO_finalize Free an IOSystem
 !! Free an IO System, releasing all resources in Fortran.
+!!
+!! Use the Fortran generic function PIO_finalize() to finalize the IO
+!! System, freeing all associated resources. The PIO_finalize()
+!! function will call finalize().
+!!
+!! This code from examples/f03/examplePio.F90 demonstrates how to
+!! finalize the IO system.
+!!
+!! @code
+!!        call PIO_finalize(this%pioIoSystem, ierr)
+!! @endcode
 !!
 !! @defgroup PIO_initdecomp Define a Decomposition
 !! Define a new decomposition of variables to distributed arrays in
