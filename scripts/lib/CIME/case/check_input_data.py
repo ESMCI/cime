@@ -316,7 +316,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                 tokens = line.split('=')
                 description, full_path = tokens[0].strip(), tokens[1].strip()
                 if description.endswith('datapath') or description.endswith('data_path') or full_path.endswith('/dev/null'):
-                    print("wpc0. continue. in check_input_data(). line is {}. description is {}. full_path is '{}'".format(line, description, full_path))
                     continue
                 if(full_path):
                     # expand xml variables
@@ -341,10 +340,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # rel_path, and so cannot download the file. If it already exists, we can
                         # proceed
                         if not os.path.exists(full_path):
-                            print("wpc1a. Model {}. description {}. full_path '{}'".format(model, description, full_path))
-                            print("wpc1b. rel_path is {}. not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'".format(rel_path, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                             if download:
-                                print("wpc1c. Model {}. description {}. full_path '{}'".format(model, description, full_path))
                                 logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
                             no_files_missing = False
                         else:
@@ -359,8 +355,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         isdirectory=rel_path.endswith(os.sep)
 
                         if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
-                            print("wpc2a. Model {}. description {}. full_path '{}'".format(model, description, full_path))
-                            print("wpc2b. rel_path is {}. not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'".format(rel_path, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                             no_files_missing = False
                             if (download):
                                 if use_ic_path:
@@ -373,7 +367,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                                                                             isdirectory=isdirectory, ic_filepath=ic_filepath)
                                 if no_files_missing and chksum:
                                     verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
-                                print("wpc2c. no_files_missing is {}. not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'".format(no_files_missing, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                         else:
                             if chksum:
                                 verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
