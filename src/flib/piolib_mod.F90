@@ -65,6 +65,17 @@
 !! Define a new decomposition of variables to distributed arrays in
 !! Fortran.
 !!
+!! Use the generic function PIO_initdecomp() to call the underlying Fortran functions.
+!!
+!! - PIO_initdecomp_dof_i4()
+!! - PIO_initdecomp_dof_i8()
+!! - initdecomp_1dof_nf_i4()
+!! - initdecomp_1dof_nf_i8()
+!! - initdecomp_1dof_bin_i4()
+!! - initdecomp_1dof_bin_i8()
+!! - initdecomp_2dof_nf_i4()
+!! - initdecomp_2dof_nf_i8()
+!!
 !! @defgroup PIO_getnumiotasks Get Number IO Tasks
 !! Get the number of IO tasks in Fortran.
 !!
@@ -73,6 +84,12 @@
 !!
 !! @defgroup PIO_seterrorhandling Error Handling for Fortran
 !! Set the behavior if an error is encountered in Fortran.
+!!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! PIO_seterrorhandling() | seterrorhandlingfile(), seterrorhandlingiosystem(), seterrorhandlingiosysid()
 !!
 !! @defgroup PIO_get_local_array_size Get Local Array Size
 !! Get the local size of the distributed array in a decomposition in
