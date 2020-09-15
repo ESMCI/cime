@@ -23,7 +23,7 @@
 extern PIO_Offset pio_buffer_size_limit;
 
 /** Initial size of compute buffer. */
-bufsize pio_cnbuffer_limit = 33554432;
+long pio_cnbuffer_limit = 33554432;
 
 /** Global buffer pool pointer. */
 extern void *CN_bpool;

@@ -718,7 +718,7 @@ PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *arra
     if (!wmb)
     {
         /* Allocate a buffer. */
-        if (!(wmb = malloc((bufsize)sizeof(wmulti_buffer))))
+        if (!(wmb = malloc(sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Set pointer to newly allocated buffer and initialize.*/

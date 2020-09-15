@@ -13,7 +13,6 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_error.h>
-#include <bget.h>
 #include <limits.h>
 #include <math.h>
 #include <netcdf.h>
