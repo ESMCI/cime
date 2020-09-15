@@ -8,12 +8,34 @@
 !> @defgroup PIO_inquire_dimension Learn About Dimension
 !! Learn dimension name, ID, or length in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function  | Function(s)
+!! ----------------  | -----------
+!! pio_inq_dimlen()  | inq_dimlen_desc(), inq_dimlen_id(), inq_dimlen_desc_long(), inq_dimlen_id_long()
+!! pio_inq_ndims()   | inq_ndims_id()
+!! pio_inq_dimid()   | inq_dimid_desc(), inq_dimid_id()
+!! pio_inq_dimname() | inq_dimname_desc(), inq_dimname_id()
+!!
 !! @defgroup PIO_inquire Learn About a File
 !! Learn the number of variables, dimensions, global attributes, and
 !! the unlimited dimension ID in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function  | Function(s)
+!! ----------------  | -----------
+!! pio_inquire()     | inquire_desc(), inquire_id()
+!!
 !! @defgroup PIO_enddef Define Mode
 !! End or re-enter define mode in Fortran.
+!!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function  | Function(s)
+!! ----------------  | -----------
+!! pio_enddef()      | enddef_desc(), enddef_id()
+!! pio_redef()       | redef_desc(), redef_id()
 !!
 !! @defgroup PIO_set_log_level Debug Logging
 !! Set debugging log level in Fortran.
@@ -24,15 +46,50 @@
 !! @defgroup PIO_def_dim Define a Dimension
 !! Define a new dimension, with name and length in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! pio_def_dim() | def_dim_desc(), def_dim_id(), def_dim_int_desc(), def_dim_int_id()
+!!
 !! @defgroup PIO_inquire_variable Learn About a Variable
 !! Learn variable name, ID, type, dimensions, compression, chunking in
 !! Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! pio_inquire_variable() | inquire_variable_desc(), inquire_variable_vid(), inquire_variable_id()
+!! pio_inq_varid()        | inq_varid_desc(), inq_varid_vid(), inq_varid_id()
+!! pio_inq_vartype()      | inq_varname_desc(), inq_varname_vid(), inq_varname_id()
+!! pio_inq_varndims()     | inq_varndims_desc(), inq_varndims_vid(), inq_varndims_id()
+!! pio_inq_vardimid()     | inq_vardimid_desc(), inq_vardimid_vid(), inq_vardimid_id()
+!! pio_inq_varnatts()     | inq_varnatts_desc(), inq_varnatts_vid(), inq_varnatts_id()
+!! pio_inq_var_deflate()  | inq_var_deflate_desc(), inq_var_deflate_vid(), inq_var_deflate_id()
+!! pio_inq_var_chunking() | inq_var_chunking_desc(), inq_var_chunking_vid(), inq_var_chunking_id()
+!!
 !! @defgroup PIO_inq_att Learn About an Attribute
 !! Learn attribute name, number, type, size in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function   | Function(s)
+!! ----------------   | -----------
+!! pio_inq_attname()  | inq_attname_desc(), inq_attname_vid(), inq_attname_id()
+!! pio_inq_att()      | inq_att_desc(), inq_att_vid(), inq_att_id()
+!! pio_inq_attlen()   | inq_attlen_desc(), inq_attlen_vid(), inq_attlen_id()
+!!
 !! @defgroup PIO_def_var Define a Variable
 !! Define a new variable in Fortran.
+!!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! pio_def_var()          | def_var_0d_desc(), def_var_md_desc(), def_var_0d_id(), def_var_md_id()
+!! pio_def_var_deflate()  | def_var_deflate_desc(), def_var_deflate_id()
+!! pio_def_var_chunking() | def_var_chunking_desc()
 !<
 
 module pio_nf
