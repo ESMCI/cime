@@ -1243,13 +1243,6 @@ PIOc_free_iosystem(int iosysid)
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     PLOG((2, "%d iosystems are still open.", niosysid));
 
-    /* Only free the buffer pool if this is the last open iosysid. */
-    if (niosysid == 1)
-    {
-        free_cn_buffer_pool(ios);
-        PLOG((2, "Freed buffer pool."));
-    }
-
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()
      * call. comp_comm and io_comm are MPI duplicates of the comms

@@ -117,6 +117,21 @@ jobs:
         make
         sudo make install
         popd
+    - name: cmake build
+      run: |
+        set -x
+        gcc --version
+        echo 'export PATH=/home/runner/mpich/bin:$PATH' > .bashrc
+        source .bashrc
+        export CC=/home/runner/mpich/bin/mpicc
+        export FC=/home/runner/mpich/bin/mpifort
+        export LD_LIBRARY_PATH="/home/runner/netcdf-c/lib:/home/runner/mpich/lib:/home/runner/hdf5/lib:/home/runner/netcdf-fortran/lib:/home/runner/pnetcdf/lib:$LD_LIBRARY_PATH"
+        mkdir build
+        cd build
+        cmake -Wno-dev -DNetCDF_C_LIBRARY=/home/runner/netcdf-c/lib/libnetcdf.so -DNetCDF_C_INCLUDE_DIR=/home/runner/netcdf-c/include -DPnetCDF_PATH='/home/runner/pnetcdf' -DPIO_ENABLE_FORTRAN=Off -DPIO_ENABLE_LOGGING=On -DPIO_ENABLE_TIMING=Off .. || (cat CMakeFiles/CMakeOutput.log && cat CMakeFiles/CMakeError.log)
+        make VERBOSE=1
+        make tests VERBOSE=1
+#        ctest -VV
     - name: autotools build
       run: |
         set -x
@@ -128,4 +143,5 @@ jobs:
         autoreconf -i
         ./configure --enable-fortran
         make -j check
+        
         
