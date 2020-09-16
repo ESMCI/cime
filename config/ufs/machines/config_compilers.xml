@@ -70,7 +70,7 @@ using a fortran linker.
 <compiler>
   <CPPDEFS>
     <!-- This should be removed AFTER MOM6 cap is fully unified -->
-    <append> -DCESMCOUPLED </append>
+    <!-- <append> -DCESMCOUPLED </append> -->
     <append MODEL="pop"> -D_USE_FLOW_CONTROL </append>
     <append MODEL="ufsatm"> -DSPMD </append>
   </CPPDEFS>

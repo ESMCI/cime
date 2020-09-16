@@ -589,6 +589,13 @@ This allows using a different mpirun command to launch unit tests
       <env name="ESMF_RUNTIME_PROFILE">ON</env>
       <env name="ESMF_RUNTIME_PROFILE_OUTPUT">SUMMARY</env>
     </environment_variables>
+    <environment_variables>
+      <env name="NEMSIO_LIB">$ENV{nemsio_DIR}/lib/libnemsio.a</env>
+      <env name="BACIO_LIB4">$ENV{bacio_DIR}/lib/libbacio_4.a</env>
+      <env name="W3EMC_LIBd">$ENV{w3emc_DIR}/lib/libw3emc_d.a</env>
+      <env name="W3NCO_LIBd">$ENV{w3nco_DIR}/lib/libw3nco_d.a</env>
+      <env name="SP_LIBd">$ENV{sp_DIR}/lib/libsp_d.a</env>
+    </environment_variables>
   </machine>
 
   <default_run_suffix>
