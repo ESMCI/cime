@@ -599,7 +599,7 @@
     <type>char</type>
     <values>
       <value lib="FMS">$SRCROOT/src/model/FMS/cime/cime_config/buildlib</value>
-      <value lib="CDEPS">$SRCROOT/src/model/CDEPS/cime_config/buildlib</value>
+      <value lib="CDEPS">$SRCROOT/components/CDEPS/cime_config/buildlib</value>
       <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
       <value lib="pio">$CIMEROOT/src/build_scripts/buildlib.pio</value>
       <value lib="mct">$CIMEROOT/src/build_scripts/buildlib.mct</value>
