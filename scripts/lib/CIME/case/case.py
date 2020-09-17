@@ -463,11 +463,11 @@ class Case(object):
             ufs_driver = os.environ.get("UFS_DRIVER")
             attribute = None
             if ufs_driver:
-                attribute = {"component":ufs_driver}
+                attribute = {"component":"nems"}
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL", attribute=attribute)
-
-        if self._cime_model == 'cesm':
+        elif self._cime_model == 'cesm':
             comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
+
         if self._cime_model in ('cesm','ufs'):
             self.set_lookup_value("COMP_ROOT_DIR_CPL",comp_root_dir_cpl)
 
