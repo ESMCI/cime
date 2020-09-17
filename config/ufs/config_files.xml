@@ -572,4 +572,19 @@
     <schema version="3.0">$CIMEROOT/config/xml_schemas/entry_id_version3.xsd</schema>
   </entry>
 
+  <entry id="BUILD_LIB_FILE">
+    <type>char</type>
+    <values>
+      <value lib="FMS">$SRCROOT/src/model/FMS/cime/cime_config/buildlib</value>
+      <value lib="CDEPS">$SRCROOT/src/model/CDEPS/cime_config/buildlib</value>
+      <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
+      <value lib="pio">$CIMEROOT/src/build_scripts/buildlib.pio</value>
+      <value lib="mct">$CIMEROOT/src/build_scripts/buildlib.mct</value>
+      <value lib="csm_share">$CIMEROOT/src/build_scripts/buildlib.csm_share</value>
+      <value lib="mpi-serial">$CIMEROOT/src/build_scripts/buildlib.mpi-serial</value>
+      <value lib="cprnc">$CIMEROOT/src/build_scripts/buildlib.cprnc</value>
+    </values>
+    <desc> path to buildlib script for the given library </desc>
+  </entry>
+
 </entry_id>
