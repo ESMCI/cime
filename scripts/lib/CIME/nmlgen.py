@@ -728,12 +728,12 @@ class NamelistGenerator(object):
         """ Write nuopc component modelio files"""
         self._namelist.write(filename, groups=["pio_inparm"], format_="nml")
 
-    def write_nuopc_config_file(self, filename, data_list_path=None ):
+    def write_nuopc_config_file(self, filename, data_list_path=None, sorted_groups=False):
         """ Write the nuopc config file"""
         self._definition.validate(self._namelist)
         groups = self._namelist.get_group_names()
         # write the config file
-        self._namelist.write_nuopc(filename, groups=groups, sorted_groups=False)
+        self._namelist.write_nuopc(filename, groups=groups, sorted_groups=sorted_groups)
         # append to input_data_list file
         if data_list_path is not None:
             self._write_input_files(data_list_path)
