@@ -6,6 +6,7 @@ from CIME.XML.standard_module_setup  import *
 from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
+from CIME.XML.files             import Files
 
 logger = logging.getLogger(__name__)
 
@@ -134,12 +135,8 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         cime_model = get_model()
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
 
-        cpl_in_complist = False
-        for l in complist:
-            if "cpl" in l:
-                cpl_in_complist = True
-
-        if cime_model == 'ufs' and not cpl_in_complist:
+        ufs_driver = os.environ.get("UFS_DRIVER")
+        if cime_model == 'ufs' and ufs_driver == 'nems':
             config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
         else:
             config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
@@ -328,10 +325,9 @@ ERROR env_build HAS CHANGED
     return sharedpath
 
 ###############################################################################
-def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid, compiler, buildlist, comp_interface):
+def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid, compiler, buildlist, comp_interface, complist):
 ###############################################################################
 
-    srcroot    = case.get_value("SRCROOT")
     shared_lib = os.path.join(exeroot, sharedpath, "lib")
     shared_inc = os.path.join(exeroot, sharedpath, "include")
     for shared_item in [shared_lib, shared_inc]:
@@ -340,9 +336,13 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     mpilib = case.get_value("MPILIB")
     ufs_driver = os.environ.get("UFS_DRIVER")
+    cpl_in_complist = False
+    for l in complist:
+        if "cpl" in l:
+            cpl_in_complist = True
     if ufs_driver:
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
-    if ufs_driver and ufs_driver == 'nems':
+    if ufs_driver and ufs_driver == 'nems' and not cpl_in_complist:
         libs = []
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
@@ -354,10 +354,19 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         libs.append("kokkos")
 
     # Build shared code of CDEPS nuopc data models
-    cdeps_build_script = None
+    build_script = {}
     if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems'):
         libs.append("CDEPS")
-        cdeps_build_script = os.path.join(srcroot, "components", "cdeps", "cime_config", "buildlib")
+
+    ocn_model = case.get_value("COMP_OCN")
+    atm_model = case.get_value("COMP_ATM")
+    if ocn_model == 'mom' or atm_model == "fv3gfs":
+        libs.append("FMS")
+
+    files = Files(comp_interface=comp_interface)
+    for lib in libs:
+        build_script[lib] = files.get_value("BUILD_LIB_FILE",{"lib":lib})
+
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
@@ -391,10 +400,11 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(full_lib_path)
 
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
-        if lib == "CDEPS":
-            my_file = cdeps_build_script
+        if lib in build_script.keys():
+            my_file = build_script[lib]
         else:
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
+        expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
 
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
@@ -666,7 +676,7 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
 
     if not model_only:
         logs = _build_libraries(case, exeroot, sharedpath, caseroot,
-                                cimeroot, libroot, lid, compiler, buildlist, comp_interface)
+                                cimeroot, libroot, lid, compiler, buildlist, comp_interface, complist)
 
     if not sharedlib_only:
         if get_model() == "e3sm" and not use_old:

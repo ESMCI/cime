@@ -50,7 +50,7 @@
     <model_grid alias="T62_Atlantic8">
       <grid name="atm">T62</grid>
       <grid name="lnd">T62</grid>
-      <grid name="ocnice">Atlantic8</grid>      
+      <grid name="ocnice">Atlantic8</grid>
     </model_grid>
 
     <model_grid alias="TL319_Atlantic8">
@@ -63,6 +63,68 @@
       <grid name="atm">TL639</grid>
       <grid name="lnd">TL639</grid>
       <grid name="ocnice">Atlantic8</grid>
+    </model_grid>
+
+    <model_grid alias="C768r_Atlantic8">
+      <grid name="atm">C768r</grid>
+      <grid name="lnd">C768r</grid>
+      <grid name="ocnice">Atlantic8</grid>
+    </model_grid>
+
+    <model_grid alias="C96_t061"  >
+      <grid name="atm">C96</grid>
+      <grid name="lnd">C96</grid>
+      <grid name="ocnice">tx0.66v1</grid>
+      <mask>tx0.66v1</mask>
+    </model_grid>
+
+    <model_grid alias="C96_t025"  >
+      <grid name="atm">C96</grid>
+      <grid name="lnd">C96</grid>
+      <grid name="ocnice">tx0.25v1</grid>
+      <mask>tx0.25v1</mask>
+    </model_grid>
+
+    <model_grid alias="C192_t061"  >
+      <grid name="atm">C192</grid>
+      <grid name="lnd">C192</grid>
+      <grid name="ocnice">tx0.66v1</grid>
+      <mask>tx0.66v1</mask>
+    </model_grid>
+
+    <model_grid alias="C192_t025"  >
+      <grid name="atm">C192</grid>
+      <grid name="lnd">C192</grid>
+      <grid name="ocnice">tx0.25v1</grid>
+      <mask>tx0.25v1</mask>
+    </model_grid>
+
+    <model_grid alias="C384_t061"  >
+      <grid name="atm">C384</grid>
+      <grid name="lnd">C384</grid>
+      <grid name="ocnice">tx0.66v1</grid>
+      <mask>tx0.66v1</mask>
+    </model_grid>
+
+    <model_grid alias="C384_t025"  >
+      <grid name="atm">C384</grid>
+      <grid name="lnd">C384</grid>
+      <grid name="ocnice">tx0.25v1</grid>
+      <mask>tx0.25v1</mask>
+    </model_grid>
+
+    <model_grid alias="C768_t061"  >
+      <grid name="atm">C768</grid>
+      <grid name="lnd">C768</grid>
+      <grid name="ocnice">tx0.66v1</grid>
+      <mask>tx0.66v1</mask>
+    </model_grid>
+
+    <model_grid alias="C768_t025"  >
+      <grid name="atm">C768</grid>
+      <grid name="lnd">C768</grid>
+      <grid name="ocnice">tx0.25v1</grid>
+      <mask>tx0.25v1</mask>
     </model_grid>
 
     <model_grid alias="C768r_Atlantic8">
@@ -107,11 +169,37 @@
       <desc>C384 is a fvcubed 25 km resolution grid:</desc>
       <support>Experimental for fv3 dycore</support>
     </domain>
+
     <domain name="C768">
       <nx>3538944</nx> <ny>1</ny>
       <desc>C768 is a fvcubed 13 km resolution grid:</desc>
       <support>Experimental for fv3 dycore</support>
     </domain>
+
+    <domain name="tn0.25v3">
+      <nx>1440</nx> <ny>1050</ny>
+      <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tn0.25v3.160721.nc</file>
+      <desc>tn0.25v3 is NEMO ORCA1 tripole grid at 1/4 deg (reduced eORCA):</desc>
+      <support>NEMO ORCA1 tripole ocean grid</support>
+    </domain>
+
+
+    <domain name="tx0.25v1">
+      <nx>1440</nx> <ny>1080</ny>
+      <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.25v1.190207.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/tx0.25v1_190204_ESMFmesh.nc</mesh>
+      <desc>tx0.25v1 is tripole v1 0.25-deg MOM6 grid:</desc>
+      <support>Experimental for MOM6 experiments</support>
+    </domain>
+
+    <domain name="tx0.66v1">
+      <nx>540</nx> <ny>458</ny>
+      <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.66v1.190425.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/tx0.66v1_190314_ESMFmesh.nc</mesh>
+      <desc>tx0.66v1 is tripole v1 0.66-deg MOM6 grid:</desc>
+      <support>Experimental for MOM6 experiments</support>
+    </domain>
+
 
     <!-- domains for data atmosphere -->
     <domain name="T62">
