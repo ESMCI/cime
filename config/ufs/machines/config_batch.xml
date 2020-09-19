@@ -191,7 +191,7 @@
     </directives>
 
     <!-- Unknown queues use the batch directives for the regular queue -->
-    <unknown_queue_directives>regular</unknown_queue_directives>
+    <unknown_queue_directives>premium</unknown_queue_directives>
 
     <queues>
       <queue walltimemax="12:00:00" nodemin="1" nodemax="4032">regular</queue>
