@@ -26,6 +26,7 @@ from CIME.case       import Case
 from CIME.utils      import is_last_process_complete
 # six is for py2/py3 compatibility
 from six.moves      import configparser, urllib
+from six            import raise_from
 
 # define global constants
 logger = logging.getLogger(__name__)
@@ -717,7 +718,7 @@ def check_svn():
                                              error=error.returncode, strerror=error.output)
         svn_exists = False
         logger.info(msg)
-        raise SVNException(msg)
+        raise_from(SVNException(msg), error)
 
     if 'version' not in result:
         msg = 'SVN is not available. Ignoring SVN update'
@@ -788,7 +789,7 @@ def get_trunk_tag(case_dict, username, password):
         msg = _call_template.substitute(function='get_trunk_tag', cmd=cmd_nopasswd,
                                         error=error.returncode, strerror=error.output)
         logger.warning(msg)
-        raise SVNException(msg)
+        raise_from(SVNException(msg), error)
 
     if result:
         last_tag = [i for i in result.split('\n') if i][-1]
@@ -816,7 +817,7 @@ def checkout_repo(case_dict, username, password):
         msg = _call_template.substitute(function='checkout_repo', cmd=cmd_nopasswd,
                                         error=error.returncode, strerror=error.output)
         logger.warning(msg)
-        raise SVNException(msg)
+        raise_from(SVNException(msg), error)
 
     os.chdir(case_dict['CASEROOT'])
 
@@ -854,7 +855,7 @@ def update_repo_add_file(filename, dir1, dir2):
             msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
                                             error=error.returncode, strerror=error.output)
             logger.warning(msg)
-            raise SVNException(msg)
+            raise_from(SVNException(msg), error)
 
 # ---------------------------------------------------------------------
 def update_repo_rm_file(filename, dir1, dir2):
@@ -874,7 +875,7 @@ def update_repo_rm_file(filename, dir1, dir2):
             msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
                                             error=error.returncode, strerror=error.output)
             logger.warning(msg)
-            raise SVNException(msg)
+            raise_from(SVNException(msg), error)
 
 # ---------------------------------------------------------------------
 def update_repo_copy_file(filename, dir1, dir2):
@@ -922,7 +923,7 @@ def compare_dir_trees(dir1, dir2, archive_list):
                     msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
                                                     error=error.returncode, strerror=error.output)
                     logger.warning(msg)
-                    raise SVNException(msg)
+                    raise_from(SVNException(msg), error)
 
                 # recurse through this new subdir
                 new_archive_list = [filename]
@@ -994,7 +995,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
                                                 error=error.returncode, strerror=error.output)
                 logger.warning(msg)
-                raise SVNException(msg)
+                raise_from(SVNException(msg), error)
 
         if os.path.isdir('./postprocess/logs'):
             os.chdir('./postprocess')
@@ -1011,7 +1012,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
                                                 error=error.returncode, strerror=error.output)
                 logger.warning(msg)
-                raise SVNException(msg)
+                raise_from(SVNException(msg), error)
     else:
         # add log files
         if os.path.exists('{0}/logs'.format(from_dir)):
@@ -1019,7 +1020,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 os.makedirs('{0}/logs'.format(to_dir))
             os.chdir(os.path.join(from_dir, 'logs'))
             for filename in glob.glob('*.*'):
-                update_repo_add_file(filename, os.path.join(from_dir, 'logs'), 
+                update_repo_add_file(filename, os.path.join(from_dir, 'logs'),
                                      os.path.join(to_dir, 'logs'))
 
         if os.path.exists('{0}/postprocess/logs'.format(from_dir)):
@@ -1027,9 +1028,9 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 os.makedirs('{0}/postprocess/logs'.format(to_dir))
             os.chdir(os.path.join(from_dir, 'postprocess/logs'))
             for filename in glob.glob('*.*'):
-                update_repo_add_file(filename, os.path.join(from_dir, 'postprocess', 'logs'), 
+                update_repo_add_file(filename, os.path.join(from_dir, 'postprocess', 'logs'),
                                      os.path.join(to_dir, 'postprocess', 'logs'))
-            
+
 
     # check if ignore_timing is specified
     if ignore_timing:
@@ -1047,7 +1048,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 msg = _call_template.substitute(function='update_lcoal_repo', cmd=cmd,
                                                 error=error.returncode, strerror=error.output)
                 logger.warning(msg)
-                raise SVNException(msg)
+                raise_from(SVNException(msg), error)
     else:
         # add timing files
         if os.path.exists('{0}/timing'.format(from_dir)):
@@ -1055,7 +1056,7 @@ def update_local_repo(case_dict, ignore_logs, ignore_timing):
                 os.makedirs('{0}/timing'.format(to_dir))
             os.chdir(os.path.join(from_dir, 'timing'))
             for filename in glob.glob('*.*'):
-                update_repo_add_file(filename, os.path.join(from_dir, 'timing'), 
+                update_repo_add_file(filename, os.path.join(from_dir, 'timing'),
                                      os.path.join(to_dir, 'timing'))
 
 
@@ -1212,7 +1213,7 @@ def checkin_trunk(case_dict, svn_cmd, message, username, password):
             msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
                                             error=error.returncode, strerror=error.output)
             logger.warning(msg)
-            raise SVNException(msg)
+            raise_from(SVNException(msg), error)
 
         # create the trunk_tags dir
         tags = '{0}/trunk_tags'.format(case_dict['svn_repo_url'])
@@ -1227,7 +1228,7 @@ def checkin_trunk(case_dict, svn_cmd, message, username, password):
             msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
                                             error=error.returncode, strerror=error.output)
             logger.warning(msg)
-            raise SVNException(msg)
+            raise_from(SVNException(msg), error)
 
         msg = '"{0}"'.format(message)
         cmd = ['svn', svn_cmd, '--username', username, '--password', password, '.',
@@ -1242,7 +1243,7 @@ def checkin_trunk(case_dict, svn_cmd, message, username, password):
         msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
                                         error=error.returncode, strerror=error.output)
         logger.warning(msg)
-        raise SVNException(msg)
+        raise_from(SVNException(msg), error)
 
 # ---------------------------------------------------------------------
 def create_tag(case_dict, new_tag, username, password):
@@ -1268,7 +1269,7 @@ def create_tag(case_dict, new_tag, username, password):
         msg = _call_template.substitute(function='checkin_trunk', cmd=cmd_nopasswd,
                                         error=error.returncode, strerror=error.output)
         logger.warning(msg)
-        raise SVNException(msg)
+        raise_from(SVNException(msg), error)
 
 # -------------------------------------------------------------------------
 def update_repo(ignore_logs, ignore_timing, case_dict, username, password):
