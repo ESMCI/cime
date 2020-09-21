@@ -139,7 +139,8 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         if cime_model == 'ufs' and ufs_driver == 'nems':
             config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
         else:
-            config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
+            files = Files(comp_interface=comp_interface)
+            config_dir = os.path.join(os.path.dirname(files.get_value("BUILD_LIB_FILE",{"lib":"CMEPS"})))
 
         expect(os.path.exists(config_dir), "Config directory not found {}".format(config_dir))
         if "cpl" in complist:
