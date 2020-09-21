@@ -283,7 +283,8 @@ class ArgumentParser(argparse.ArgumentParser):
                 self.exit(2, '{}: error: {}\nValid input arguments are {}\n'
                           .format(self.prog, message, components))
             elif "component" in message:
-                files, components = get_components()
+                files = Files()
+                components = get_components(files)
                 # Loop through the elements for each component class (in config_files.xml)
                 valid_components = []
                 for comp in components:
