@@ -107,7 +107,7 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/allactive/config_compsets.xml</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/config_compsets.xml</value>
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/config_compsets.xml</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/config_compsets.xml</value>
       <value component="scream"   >$SRCROOT/components/scream/cime_config/config_compsets.xml</value>
       <value component="elm"      >$SRCROOT/components/elm/cime_config/config_compsets.xml</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/config_compsets.xml</value>
@@ -128,7 +128,7 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/config_pes.xml</value>
-      <value component="cam"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
+      <value component="eam"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="elm"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="cice"     >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="mpaso"    >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
@@ -153,7 +153,7 @@
       <value component="docn">$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/docn/cime_config/config_archive.xml</value>
       <value component="dwav">$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dwav/cime_config/config_archive.xml</value>
       <!-- external model components -->
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/config_archive.xml</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/config_archive.xml</value>
       <value component="elm"      >$SRCROOT/components/elm/cime_config/config_archive.xml</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/config_archive.xml</value>
     </values>
@@ -168,7 +168,7 @@
     <values>
       <value component="any">$CIMEROOT/scripts/lib/CIME/SystemTests</value>
       <value component="elm">$SRCROOT/components/elm/cime_config/SystemTests</value>
-      <value component="cam">$SRCROOT/components/cam/cime_config/SystemTests</value>
+      <value component="eam">$SRCROOT/components/eam/cime_config/SystemTests</value>
       <value component="cice">$SRCROOT/components/cice/cime_config/SystemTests</value>
     </values>
     <group>test</group>
@@ -190,7 +190,7 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/testmods_dirs</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/testdefs/testmods_dirs</value>
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/testdefs/testmods_dirs</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/testdefs/testmods_dirs</value>
       <value component="elm"      >$SRCROOT/components/elm/cime_config/testdefs/testmods_dirs</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/testdefs/testmods_dirs</value>
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/testdefs/testmods_dirs</value>
@@ -206,7 +206,7 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/usermods_dirs</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/usermods_dirs</value>
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/usermods_dirs</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/usermods_dirs</value>
       <value component="elm"      >$SRCROOT/components/elm/cime_config/usermods_dirs</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/usermods_dirs</value>
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/usermods_dirs</value>
@@ -274,7 +274,7 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="cam"   >$SRCROOT/components/cam/cime_config/config_component.xml</value>
+      <value component="eam"   >$SRCROOT/components/eam/cime_config/config_component.xml</value>
       <value component="scream">$SRCROOT/components/scream/cime_config/config_component.xml</value>
       <value component="datm"  >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/datm/cime_config/config_component.xml</value>
       <value component="satm"  >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm/cime_config/config_component.xml</value>
