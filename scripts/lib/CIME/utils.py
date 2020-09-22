@@ -336,7 +336,7 @@ def get_model():
             model = 'cesm'
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                 for line in fd:
-                    if re.search('fv3gfs', line):
+                    if re.search('ufs', line):
                         model = 'ufs'
         else:
             model = 'e3sm'
@@ -861,6 +861,18 @@ def match_any(item, re_list):
             return True
 
     return False
+
+def get_current_submodule_status(recursive=False, repo=None):
+    """
+    Return the sha1s of the current currently checked out commit for each submodule,
+    along with the submodule path and the output of git describe for the SHA-1.
+
+    >>> get_current_submodule_status() is not None
+    True
+    """
+    rc, output, _ = run_cmd("git submodule status {}".format("--recursive" if recursive else ""), from_dir=repo)
+
+    return output if rc == 0 else "unknown"
 
 def safe_copy(src_path, tgt_path, preserve_meta=True):
     """
