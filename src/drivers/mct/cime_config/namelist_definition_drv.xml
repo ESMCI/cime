@@ -4595,7 +4595,7 @@
       components that need to look at the same data.
     </desc>
     <values>
-      <value>Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in</value>
+      <value>Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in,Buildconf/ctsmconf/drv_flds_in</value>
     </values>
   </entry>
 
