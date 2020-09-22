@@ -140,7 +140,10 @@ def _build_model(build_threaded, exeroot, incroot, complist,
             config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
         else:
             files = Files(comp_interface=comp_interface)
-            config_dir = os.path.join(os.path.dirname(files.get_value("BUILD_LIB_FILE",{"lib":"CMEPS"})))
+            if comp_interface == "nuopc":
+                config_dir = os.path.join(os.path.dirname(files.get_value("BUILD_LIB_FILE",{"lib":"CMEPS"})))
+            else:
+                config_dir = os.path.join(cimeroot,"src","drivers","mct","cime_config")
 
         expect(os.path.exists(config_dir), "Config directory not found {}".format(config_dir))
         if "cpl" in complist:
