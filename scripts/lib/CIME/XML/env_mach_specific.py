@@ -219,7 +219,7 @@ class EnvMachSpecific(EnvBase):
                 logger_func("Unsetting Environment {}".format(env_name))
             elif env_value is not None:
                 if env_name == "source":
-                    shell, cmd = env_value.split()
+                    shell, cmd = env_value.split(" ",1)
                     self._source_shell_file("source "+cmd, shell, verbose=verbose)
                 else:
                     print("Setting Environment {}={}".format(env_name, env_value))
