@@ -1841,7 +1841,7 @@ This allows using a different mpirun command to launch unit tests
   </machine>
 
 
-  <machine MACH="melvin">
+  <machine MACH="mappy">
     <DESC>Linux workstation for Jenkins testing</DESC>
     <NODENAME_REGEX>(melvin|watson)</NODENAME_REGEX>
     <OS>LINUX</OS>
