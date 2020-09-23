@@ -61,10 +61,6 @@ def create_namelists(self, component=None):
     self.load_env()
 
     self.stage_refcase()
-    if component:
-        logger.info("Creating namelists for component {}".format(component))
-    else:
-        logger.info("Creating component namelists")
 
     # Create namelists - must have cpl last in the list below
     # Note - cpl must be last in the loop below so that in generating its namelist,
@@ -89,10 +85,11 @@ def create_namelists(self, component=None):
                 # otherwise look in the component config_dir
                 cmd = os.path.join(config_dir, "buildnml")
             expect(os.path.isfile(cmd), "Could not find buildnml file for component {}".format(compname))
+            logger.info("Create namelist for component {}".format(compname))
             run_sub_or_cmd(cmd, (caseroot), "buildnml",
                            (self, caseroot, compname), case=self)
 
-        logger.info("Finished creating component namelists, component {} models = {}".format(component, models))
+        logger.debug("Finished creating component namelists, component {} models = {}".format(component, models))
 
     # Save namelists to docdir
     if (not os.path.isdir(docdir)):
