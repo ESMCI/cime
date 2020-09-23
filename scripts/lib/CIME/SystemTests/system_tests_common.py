@@ -3,7 +3,7 @@ Base class for CIME system tests
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
-from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError
+from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect
 from CIME.test_status import *
 from CIME.hist_utils import copy_histfiles, compare_test, generate_teststatus, \
     compare_baseline, get_ts_synopsis, generate_baseline
@@ -11,7 +11,7 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
-import glob, gzip, time, traceback, six, shutil
+import glob, gzip, time, traceback, six, os
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +129,7 @@ class SystemTestsCommon(object):
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
                          use_old=self._old_build, ninja=self._ninja, dry_run=self._dry_run)
+        logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
         if comps is None:
@@ -591,8 +592,10 @@ class FakeTest(SystemTestsCommon):
             modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
             real_modelexe = modelexe + ".real"
 
-            if self._requires_exe:
-                shutil.move(modelexe, real_modelexe)
+            if self._requires_exe and os.path.exists(modelexe):
+                logger.info("moving {} to {}".format(modelexe, real_modelexe))
+                os.rename(modelexe, real_modelexe)
+                expect(os.path.exists(real_modelexe),"Could not find expected file {}".format(real_modelexe))
 
             with open(modelexe, 'w') as f:
                 f.write("#!/bin/bash\n")
@@ -602,6 +605,9 @@ class FakeTest(SystemTestsCommon):
 
             if not self._requires_exe:
                 build.post_build(self._case, [], build_complete=True)
+            else:
+                expect(os.path.exists(modelexe),"Could not find expected file {}".format(modelexe))
+                logger.info("FakeTest build_phase complete {} {}".format(modelexe, self._requires_exe))
 
     def run_indv(self, suffix="base", st_archive=False):
         mpilib = self._case.get_value("MPILIB")
