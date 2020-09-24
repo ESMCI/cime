@@ -9,8 +9,8 @@ simulation set up (new machine, compiler, etc.) is statistically
 distinguishable from an accepted ensemble.  The verification tools in
 the CESM-ECT suite are:
 
-CAM-ECT - detects issues in CAM and CLM (12 month runs)
-UF-CAM-ECT - detects issues in CAM and CLM (9 time step runs)
+CAM-ECT - detects issues in CAM and CTSM (12 month runs)
+UF-CAM-ECT - detects issues in CAM and CTSM (9 time step runs)
 POP-ECT - detects issues in POP and CICE (12 month runs)
 
 The ECT process involves comparing runs generated with

@@ -90,10 +90,10 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         if model == "cpl":
             continue
 
-        # special case for clm
-        # clm 4_5 and newer is a shared (as in sharedlibs, shared by all tests) library
+        # special case for CTSM
+        # CTSM and clm 4_5 and newer is a shared (as in sharedlibs, shared by all tests) library
         # (but not in E3SM) and should be built in build_libraries
-        if get_model() != "e3sm" and comp == "clm":
+        if get_model() != "e3sm" and (comp == "clm" or comp == "ctsm"):
             continue
         else:
             logger.info("         - Building {} Library ".format(model))
@@ -425,10 +425,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     # clm not a shared lib for E3SM
     if get_model() != "e3sm" and (buildlist is None or "lnd" in buildlist):
         comp_lnd = case.get_value("COMP_LND")
-        if comp_lnd == "clm":
-            logging.info("         - Building clm library ")
+        if comp_lnd == "clm" or comp_lnd == "ctsm":
+            logging.info("         - Building CTSM library ")
             esmfdir = "esmf" if case.get_value("USE_ESMF_LIB") else "noesmf"
-            bldroot = os.path.join(sharedlibroot, sharedpath, comp_interface, esmfdir, "clm","obj" )
+            bldroot = os.path.join(sharedlibroot, sharedpath, comp_interface, esmfdir, "ctsm","obj" )
             libroot = os.path.join(exeroot, sharedpath, comp_interface, esmfdir, "lib")
             incroot = os.path.join(exeroot, sharedpath, comp_interface, esmfdir, "include")
             file_build = os.path.join(exeroot, "lnd.bldlog.{}".format( lid))

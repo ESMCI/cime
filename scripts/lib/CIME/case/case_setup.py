@@ -220,6 +220,9 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
         for model in models:
             comp = case.get_value("COMP_{}".format(model))
             logger.debug("Building {} usernl files".format(model))
+            # Use: user_nl_clm user_nl files for CTSM
+            if ( comp == "ctsm" ):
+               comp = "clm"
             _build_usernl_files(case, model, comp)
             if comp == "cism":
                 glcroot = case.get_value("COMP_ROOT_DIR_GLC")

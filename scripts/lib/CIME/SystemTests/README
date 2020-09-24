@@ -136,18 +136,3 @@ NOC    multi-instance validation for single instance ocean (default length)
 PFS    system performance test.  Do 20 day run, no restarts
 ICP    cice performance test
 
-======================================================================
-    SPINUP tests
-======================================================================
-
-SSP    smoke CLM spinup test (only valid for CLM compsets with CN or BGC)  (TODO - change to SPL)
-       do an initial spin test (setting CLM_BLDNML_OTPS to -bgc_spinup_on)
-         write restarts at the end of the run
-         short term archiving is on
-       do a hybrid non-spinup run run from the restart files generated in the first phase
-
-======================================================================
-    Other component-specific tests
-======================================================================
-
-LII    CLM initial condition interpolation test
