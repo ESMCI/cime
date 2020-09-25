@@ -191,16 +191,18 @@ class EnvMachSpecific(EnvBase):
         if envs_to_set is not None:
             for env_name, env_value in envs_to_set:
                 if shell == "sh":
-                    if env_name:
-                        lines.append("export {}={}".format(env_name, env_value))
+                    if env_name == "source":
+                        if env_value.startswith("sh"):
+                            lines.append("{}".format(env_name))
                     else:
-                        lines.append("source {}".format(env_value))
+                        lines.append("export {}={}".format(env_name, env_value))
 
                 elif shell == "csh":
-                    if env_name:
-                        lines.append("setenv {} {}".format(env_name, env_value))
+                    if env_name == "source":
+                        if env_value.startswith("csh"):
+                            lines.append("{}".format(env_name))
                     else:
-                        lines.append("echo \"This case includes a shell source file {} which cannot be used from csh type shells\"".format(env_value))
+                        lines.append("setenv {} {}".format(env_name, env_value))
                 else:
                     expect(False, "Unknown shell type: '{}'".format(shell))
 
@@ -216,9 +218,9 @@ class EnvMachSpecific(EnvBase):
                 del os.environ[env_name]
                 logger_func("Unsetting Environment {}".format(env_name))
             elif env_value is not None:
-                if env_name is None:
-                    cmd = "source "+ env_value
-                    self._source_sh_file(cmd, verbose=True)
+                if env_name == "source":
+                    shell, cmd = env_value.split(" ",1)
+                    self._source_shell_file("source "+cmd, shell, verbose=verbose)
                 else:
                     print("Setting Environment {}={}".format(env_name, env_value))
                     logger_func("Setting Environment {}={}".format(env_name, env_value))
@@ -252,7 +254,11 @@ class EnvMachSpecific(EnvBase):
                             expect("$" not in val, "Not safe to leave unresolved items in env var value: '{}'".format(val))
 
                         # intentional unindent, result is appended even if val is None
-                        result.append( (self.get(child, "name"), val) )
+                        name = self.get(child, "name")
+                        if name:
+                            result.append( (name, val) )
+                        else:
+                            result.append( ("source", self.get(child, "source") + " " + val) )
 
         return result
 
@@ -268,7 +274,9 @@ class EnvMachSpecific(EnvBase):
                     expect(val is not None, "Cannot match attrib '%s', case has no value for it" % attrib.upper())
                     if not self._match(val, attribs[attrib]):
                         return False
-            elif attrib in ("name", "source"):
+            elif attrib == "name":
+                pass
+            elif attrib == "source":
                 pass
             else:
                 val = case.get_value(attrib.upper())
@@ -360,15 +368,15 @@ class EnvMachSpecific(EnvBase):
         for action,argument in modules_to_load:
             cmd += " && {} {} {}".format(sh_mod_cmd, action, "" if argument is None else argument)
 
-        self._source_sh_file(cmd, verbose=verbose)
+        self._source_shell_file(cmd, verbose=verbose)
 
-    def _source_sh_file(self, cmd, verbose=False):
+    def _source_shell_file(self, cmd, shell="sh", verbose=False):
         # Use null terminated lines to give us something more definitive to split on.
         # Env vars can contain newlines, so splitting on newlines can be ambiguous
         logger_func = logger.warning if verbose else logger.debug
         cmd += " && env -0"
         logger_func("cmd: {}".format(cmd))
-        output = run_cmd_no_fail(cmd)
+        output = run_cmd_no_fail(cmd, executable=shell, verbose=verbose)
 
         ###################################################
         # Parse the output to set the os.environ dictionary
