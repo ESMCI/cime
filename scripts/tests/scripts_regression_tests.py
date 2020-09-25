@@ -1906,12 +1906,12 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
         if (FAST_ONLY):
             self.skipTest("Skipping slow test")
 
-        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_P1.f09_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE.f19_g16.X"], test_id=self._baseline_name)
 
         # We need to be careful since we are running a resubmit. The first run should
         # report a RUN PASS, which will cause our waiting code to stop waiting. But we
         # want to wait for the second run too.
-        time.sleep(60) # give second run a chance to begin
+        time.sleep(10) # give second run a chance to begin
         self._wait_for_tests(self._baseline_name) # wait for second run
 
         with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
@@ -2334,7 +2334,12 @@ class K_TestCimeCase(TestCreateTestCommon):
     def test_cime_case_test_custom_project(self):
     ###########################################################################
         test_name = "ERS_P1.f19_g16_rx1.A"
-        machine, compiler = "mappy", "gnu" # have to use a machine both models know and one that doesn't put PROJECT in any key paths
+        # have to use a machine both models know and one that doesn't put PROJECT in any key paths
+        if CIME.utils.get_model() == "e3sm":
+            machine = "mappy"
+        else:
+            machine = "melvin"
+        compiler = "gnu"
         casedir = self._create_test(["--no-setup", "--machine={}".format(machine), "--compiler={}".format(compiler), "--project=testproj", test_name, "--mpilib=mpi-serial"],
                                     test_id=self._baseline_name,
                                     env_changes="unset CIME_GLOBAL_WALLTIME &&")

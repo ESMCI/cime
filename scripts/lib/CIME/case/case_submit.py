@@ -130,7 +130,7 @@ manual edits to these file will be lost!
         unlock_file(os.path.basename(env_batch.filename))
         lock_file(os.path.basename(env_batch.filename))
 
-        case.check_case()
+        case.check_case(skip_pnl=skip_pnl)
         if job == case.get_primary_job():
             case.check_DA_settings()
             if case.get_value("MACH") == "mira":
@@ -212,9 +212,10 @@ def submit(self, job=None, no_batch=False, prereq=None, allow_fail=False, resubm
 
         raise
 
-def check_case(self):
+def check_case(self, skip_pnl=False):
     self.check_lockedfiles()
-    self.create_namelists() # Must be called before check_all_input_data
+    if not skip_pnl:
+        self.create_namelists() # Must be called before check_all_input_data
     logger.info("Checking that inputdata is available as part of case submission")
     self.check_all_input_data()
 

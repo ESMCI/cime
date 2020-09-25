@@ -513,10 +513,11 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
   <test NAME="TESTRUNUSERXMLCHANGE" INFRASTRUCTURE_TEST="TRUE">
     <DESC>For testing infra only. Test simultaneous xmlchanges while first run is running.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <STOP_OPTION>ndays</STOP_OPTION>
+    <STOP_OPTION>nsteps</STOP_OPTION>
     <STOP_N>3</STOP_N>
+    <NTASKS>1</NTASKS>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
-    <DOUT_S>FALSE</DOUT_S>
+    <DOUT_S>TRUE</DOUT_S>
     <REST_OPTION>none</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
