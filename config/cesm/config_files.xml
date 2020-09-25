@@ -598,7 +598,7 @@
   <entry id="BUILD_LIB_FILE">
     <type>char</type>
     <values>
-      <value lib="FMS">$SRCROOT/src/model/FMS/cime/cime_config/buildlib</value>
+      <value lib="FMS">$SRCROOT/libraries/FMS/buildlib</value>
       <value lib="CDEPS">$SRCROOT/components/cdeps/cime_config/buildlib</value>
       <value lib="CMEPS">$CIMEROOT/src/drivers/nuopc/cime_config/buildlib</value>
       <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
