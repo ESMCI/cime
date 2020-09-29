@@ -1,0 +1,431 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CIME &mdash; CIME master documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="CIME master documentation" href="../index.html"/>
+        <link rel="next" title="CIME package" href="CIME.html"/>
+        <link rel="prev" title="Driver XML Files" href="../xml_files/drivers.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> CIME
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                
+                  <div class="version-dropdown">
+                    <select class="version-list" id="version-list">
+                      <option value=''>master</option>
+                      
+                        
+                      
+                        
+                          <option value="">[placeholder]</option>
+                        
+                      
+                    </select>
+                  </div>
+                
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../what_cime/index.html">What is CIME?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html">Case Control System Part 1: Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users_guide/index.html#case-control-system-part-2-configuration-porting-testing-and-use-cases">Case Control System Part 2: Configuration, Porting, Testing and Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_models/index.html">Data Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_cpl/index.html">Driver/Coupler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../build_cpl/index.html">Building a Coupled Model with CIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../misc_tools/index.html">Miscellaneous Tools</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../glossary/index.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_user/index.html">User Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../xml_files/index.html">XML Files</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CIME</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html">CIME package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools_api/modules.html">Tools</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>CIME</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/CIME_api/modules.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cime">
+<h1>CIME<a class="headerlink" href="#cime" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="CIME.html">CIME package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.cmakemacroswriter">CIME.BuildTools.cmakemacroswriter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.configure">CIME.BuildTools.configure module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.macroconditiontree">CIME.BuildTools.macroconditiontree module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.macrowriterbase">CIME.BuildTools.macrowriterbase module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.makemacroswriter">CIME.BuildTools.makemacroswriter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.possiblevalues">CIME.BuildTools.possiblevalues module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools.valuesetting">CIME.BuildTools.valuesetting module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.BuildTools.html#module-CIME.BuildTools">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Servers.html">CIME.Servers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.ftp">CIME.Servers.ftp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.generic_server">CIME.Servers.generic_server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.gftp">CIME.Servers.gftp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.svn">CIME.Servers.svn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers.wget">CIME.Servers.wget module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.Servers.html#module-CIME.Servers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.dae">CIME.SystemTests.dae module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.eri">CIME.SystemTests.eri module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.erio">CIME.SystemTests.erio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.erp">CIME.SystemTests.erp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.err">CIME.SystemTests.err module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.erri">CIME.SystemTests.erri module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ers">CIME.SystemTests.ers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ers2">CIME.SystemTests.ers2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ert">CIME.SystemTests.ert module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.funit">CIME.SystemTests.funit module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.hommebaseclass">CIME.SystemTests.hommebaseclass module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.hommebfb">CIME.SystemTests.hommebfb module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ldsta">CIME.SystemTests.ldsta module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.mcc">CIME.SystemTests.mcc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#cime-systemtests-mvk-module">CIME.SystemTests.mvk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pea">CIME.SystemTests.pea module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pem">CIME.SystemTests.pem module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pet">CIME.SystemTests.pet module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pfs">CIME.SystemTests.pfs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#cime-systemtests-pgn-module">CIME.SystemTests.pgn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pre">CIME.SystemTests.pre module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.rep">CIME.SystemTests.rep module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.restart_tests">CIME.SystemTests.restart_tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.seq">CIME.SystemTests.seq module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.sms">CIME.SystemTests.sms module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.system_tests_common">CIME.SystemTests.system_tests_common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.system_tests_compare_two">CIME.SystemTests.system_tests_compare_two module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#cime-systemtests-tsc-module">CIME.SystemTests.tsc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.XML.html">CIME.XML package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.archive">CIME.XML.archive module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.archive_base">CIME.XML.archive_base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.batch">CIME.XML.batch module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.compilerblock">CIME.XML.compilerblock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.compilers">CIME.XML.compilers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.component">CIME.XML.component module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.compsets">CIME.XML.compsets module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.entry_id">CIME.XML.entry_id module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_archive">CIME.XML.env_archive module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_base">CIME.XML.env_base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_batch">CIME.XML.env_batch module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_build">CIME.XML.env_build module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_case">CIME.XML.env_case module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_mach_pes">CIME.XML.env_mach_pes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_mach_specific">CIME.XML.env_mach_specific module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_run">CIME.XML.env_run module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_test">CIME.XML.env_test module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.env_workflow">CIME.XML.env_workflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.expected_fails_file">CIME.XML.expected_fails_file module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.files">CIME.XML.files module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.generic_xml">CIME.XML.generic_xml module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.grids">CIME.XML.grids module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.headers">CIME.XML.headers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.inputdata">CIME.XML.inputdata module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.machines">CIME.XML.machines module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.namelist_definition">CIME.XML.namelist_definition module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.pes">CIME.XML.pes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.pio">CIME.XML.pio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.standard_module_setup">CIME.XML.standard_module_setup module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.stream">CIME.XML.stream module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.test_reporter">CIME.XML.test_reporter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.testlist">CIME.XML.testlist module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.tests">CIME.XML.tests module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.testspec">CIME.XML.testspec module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML.workflow">CIME.XML.workflow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.html#module-CIME.XML">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.case.html">CIME.case package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case">CIME.case.case module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_clone">CIME.case.case_clone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_cmpgen_namelists">CIME.case.case_cmpgen_namelists module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_run">CIME.case.case_run module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_setup">CIME.case.case_setup module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_st_archive">CIME.case.case_st_archive module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_submit">CIME.case.case_submit module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.case_test">CIME.case.case_test module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.check_input_data">CIME.case.check_input_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.check_lockedfiles">CIME.case.check_lockedfiles module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case.preview_namelists">CIME.case.preview_namelists module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.case.html#module-CIME.case">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html">CIME.tests package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.case_fake">CIME.tests.case_fake module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.custom_assertions_test_status">CIME.tests.custom_assertions_test_status module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_case_fake">CIME.tests.test_case_fake module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_cs_status">CIME.tests.test_cs_status module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_custom_assertions_test_status">CIME.tests.test_custom_assertions_test_status module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_test_status">CIME.tests.test_test_status module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_user_mod_support">CIME.tests.test_user_mod_support module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests.test_utils">CIME.tests.test_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.tests.html#module-CIME.tests">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.aprun">CIME.aprun module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.bless_test_results">CIME.bless_test_results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.build">CIME.build module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.buildlib">CIME.buildlib module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.buildnml">CIME.buildnml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.code_checker">CIME.code_checker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.compare_namelists">CIME.compare_namelists module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.compare_test_results">CIME.compare_test_results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.cs_status">CIME.cs_status module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.cs_status_creator">CIME.cs_status_creator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.date">CIME.date module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.expected_fails">CIME.expected_fails module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.get_timing">CIME.get_timing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.hist_utils">CIME.hist_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.locked_files">CIME.locked_files module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.namelist">CIME.namelist module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.nmlgen">CIME.nmlgen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.provenance">CIME.provenance module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.simple_compare">CIME.simple_compare module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.test_scheduler">CIME.test_scheduler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.test_status">CIME.test_status module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.test_utils">CIME.test_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.user_mod_support">CIME.user_mod_support module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.utils">CIME.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME.wait_for_tests">CIME.wait_for_tests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.html#module-CIME">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="CIME.html" class="btn btn-neutral float-right" title="CIME package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../xml_files/drivers.html" class="btn btn-neutral" title="Driver XML Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/pop_ver.js"></script>
+    
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
