@@ -107,6 +107,7 @@ def create_namelists(self, component=None):
             safe_copy(file_to_copy, docdir)
 
     # Copy over chemistry mechanism docs if they exist
-    if (os.path.isdir(os.path.join(casebuild, "camconf"))):
-        for file_to_copy in glob.glob(os.path.join(casebuild, "camconf", "*chem_mech*")):
+    atmconf = self.get_value("COMP_ATM") + "conf"
+    if (os.path.isdir(os.path.join(casebuild, atmconf))):
+        for file_to_copy in glob.glob(os.path.join(casebuild, atmconf, "*chem_mech*")):
             safe_copy(file_to_copy, docdir)
