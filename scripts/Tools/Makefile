@@ -568,14 +568,17 @@ ifeq ($(findstring -cosp,$(CAM_CONFIG_OPTS)),-cosp)
 endif
 
 COMP_ATM ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) COMP_ATM --value)
+CAM_DYCORE ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_DYCORE --value)
 ifeq ($(strip $(COMP_ATM)),cam)
-  CAM_DYCORE ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_DYCORE --value)
   ifeq ($(CAM_DYCORE),fv3)
     FV3CORE_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/atmos_cubed_sphere)
     INCLDIR+=-I$(FV3CORE_LIBDIR) -I$(FV3CORE_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE) -I$(abspath $(EXEROOT)/FMS) -I$(CIMEROOT)/../libraries/FMS/src/include
   endif
 endif
 
+ifeq ($(CAM_DYCORE),mpas)
+MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+endif
 
 ifeq ($(MODEL),cam)
   # These RRTMG files take an extraordinarily long time to compile with optimization.
@@ -604,6 +607,29 @@ $(FV3CORE_LIBDIR)/libfv3core.a: $(EXEROOT)/FMS/libfms.a
 
 dyn_grid.o: $(FV3CORE_LIBDIR)/libfv3core.a
 endif
+
+ifdef MPAS_LIBDIR
+  ABS_INSTALL_SHAREDPATH = $(abspath $(INSTALL_SHAREDPATH))
+  ABS_ESMF_PATH = $(abspath $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE))
+  ifeq ($(PIO_VERSION),2)
+    PIODEF := -DUSE_PIO2
+  endif
+  INCLDIR+=-I$(MPAS_LIBDIR)
+  INCLDIR+=-I$(abspath $(EXEROOT)/atm/obj)
+
+# To ensure that the MPAS-A dycore library is always updated whenever dycore source
+# files are changed, the libmpas target here is declared as PHONY; under ideal circumstances
+# this isn't necessary, since libmpas should never be an actual file (the library that is created
+# is named libmpas.a), but adding the PHONY declaration provides an extra bit of safety
+.PHONY: libmpas
+libmpas: cam_abortutils.o physconst.o
+	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" FFLAGS='$(FREEFLAGS) $(FFLAGS)' \
+	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
+
+dyn_comp.o: libmpas
+dyn_grid.o: libmpas
+endif
+
 endif
 
 
@@ -917,6 +943,10 @@ endif
 ifdef FV3CORE_LIBDIR
   ULIBDEP += $(FV3CORE_LIBDIR)/libfv3core.a
   ULIBDEP += $(EXEROOT)/FMS/libfms.a
+endif
+
+ifdef MPAS_LIBDIR
+  ULIBDEP += $(MPAS_LIBDIR)/libmpas.a
 endif
 
 ifndef CLIBS
