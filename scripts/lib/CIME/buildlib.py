@@ -71,7 +71,6 @@ def build_cime_component_lib(case, compname, libroot, bldroot, use_old=True):
     with open(os.path.join(confdir, "CIME_cppdefs"), "w") as out:
         out.write("")
 
-    print("wpc1. in buildlib.py confdir is {} . bldroot is {} .".format(confdir, bldroot))
     # Build the component
     if get_model() != "e3sm" or use_old:
         safe_copy(os.path.join(confdir, "Filepath"), bldroot)
