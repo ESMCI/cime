@@ -493,13 +493,14 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
 def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 ###############################################################################
     """
-    Ensure that crucial Filepath and CCSM_CPPDEFS files exist for this component.
+    Ensure that crucial Filepath, CIME_cppdefs, and CCSM_CPPDEFS files exist for this component.
     In many cases, the bld/configure script will have already created these.
     """
     bc_path = os.path.join(config_dir, "buildlib_cmake")
     expect(os.path.exists(bc_path), "Missing: {}".format(bc_path))
     buildlib = imp.load_source("buildlib_cmake", os.path.join(config_dir, "buildlib_cmake"))
     cmake_args = buildlib.buildlib(bldroot, libroot, case)
+    print("wpc2. in build.py bc_path is {} . cmake_args is {} .".format(bc_path, cmake_args))
     return "" if cmake_args is None else cmake_args
 
 ###############################################################################
