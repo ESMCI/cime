@@ -1122,6 +1122,57 @@
       <mask>tx0.1v2</mask>
     </model_grid>
 
+    <!-- MPAS-A grids -->
+
+    <model_grid alias="mpasa480_mpasa480" not_compset="_POP">
+      <grid name="atm">mpasa480</grid>
+      <grid name="lnd">mpasa480</grid>
+      <grid name="ocnice">mpasa480</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa120_mpasa120" not_compset="_POP">
+      <grid name="atm">mpasa120</grid>
+      <grid name="lnd">mpasa120</grid>
+      <grid name="ocnice">mpasa120</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa60_mpasa60" not_compset="_POP">
+      <grid name="atm">mpasa60</grid>
+      <grid name="lnd">mpasa60</grid>
+      <grid name="ocnice">mpasa60</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa30_mpasa30" not_compset="_POP">
+      <grid name="atm">mpasa30</grid>
+      <grid name="lnd">mpasa30</grid>
+      <grid name="ocnice">mpasa30</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa15_mpasa15" not_compset="_POP">
+      <grid name="atm">mpasa15</grid>
+      <grid name="lnd">mpasa15</grid>
+      <grid name="ocnice">mpasa15</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa12_mpasa12" not_compset="_POP">
+      <grid name="atm">mpasa12</grid>
+      <grid name="lnd">mpasa12</grid>
+      <grid name="ocnice">mpasa12</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa15-3_mpasa15-3" not_compset="_POP">
+      <grid name="atm">mpasa15-3</grid>
+      <grid name="lnd">mpasa15-3</grid>
+      <grid name="ocnice">mpasa15-3</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
     <!-- new runoff grids for data runoff model DROF -->
 
     <model_grid alias="T31_g37_rx1" compset="_DROF">
@@ -1677,6 +1728,41 @@
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne0ARCTICGRISne30x8_ESMFmesh_c20200730.nc</mesh>
       <desc>ne0np4.ARCTICGRIS.ne30x8 is a Spectral Elem 1-deg grid with a 1/8 deg refined region over Greenland:</desc>
       <support>Test support only</support>
+    </domain>
+
+    <domain name="mpasa480">
+      <nx>2562</nx> <ny>1</ny>
+      <desc>MPAS-A 480-km quasi-uniform mesh:</desc>
+    </domain>
+
+    <domain name="mpasa120">
+      <nx>40962</nx> <ny>1</ny>
+      <desc>MPAS-A 120-km quasi-uniform mesh:</desc>
+    </domain>
+
+    <domain name="mpasa60">
+      <nx>163842</nx> <ny>1</ny>
+      <desc>MPAS-A 60-km quasi-uniform mesh:</desc>
+    </domain>
+
+    <domain name="mpasa30">
+      <nx>655362</nx> <ny>1</ny>
+      <desc>MPAS-A 30-km quasi-uniform mesh:</desc>
+    </domain>
+
+    <domain name="mpasa15">
+      <nx>2621442</nx> <ny>1</ny>
+      <desc>MPAS-A 15-km quasi-uniform mesh:</desc>
+    </domain>
+
+    <domain name="mpasa12">
+      <nx>4096002</nx> <ny>1</ny>
+      <desc>MPAS-A 12-km quasi-uniform mesh:</desc>
+    </domain>
+
+    <domain name="mpasa15-3">
+      <nx>6488066</nx> <ny>1</ny>
+      <desc>MPAS-A 15-3-km variable-uniform mesh:</desc>
     </domain>
 
     <domain name="TL319">
