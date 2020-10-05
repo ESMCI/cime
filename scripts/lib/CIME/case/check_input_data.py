@@ -246,6 +246,7 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
         for rpointerfile in glob.iglob(os.path.join("{}","*rpointer*").format(refdir)):
             logger.info("Copy rpointer {}".format(rpointerfile))
             safe_copy(rpointerfile, rundir)
+            os.chmod(os.path.join(rundir, os.path.basename(rpointerfile)), 0o644)
         expect(rpointerfile,"Reference case directory {} does not contain any rpointer files".format(refdir))
         # link everything else
 
