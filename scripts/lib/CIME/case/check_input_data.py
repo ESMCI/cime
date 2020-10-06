@@ -358,18 +358,21 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
 
                         if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
-                            no_files_missing = False
                             if (download):
                                 if use_ic_path:
-                                    no_files_missing = _download_if_in_repo(server,
+                                    success = _download_if_in_repo(server,
                                                                             input_ic_root, rel_path.strip(os.sep),
                                                                             isdirectory=isdirectory, ic_filepath=ic_filepath)
                                 else:
-                                    no_files_missing = _download_if_in_repo(server,
+                                    success = _download_if_in_repo(server,
                                                                             input_data_root, rel_path.strip(os.sep),
                                                                             isdirectory=isdirectory, ic_filepath=ic_filepath)
-                                if no_files_missing and chksum:
+                                if not success:
+                                    no_files_missing = False
+                                if success and chksum:
                                     verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
+                            else:
+                                no_files_missing = False
                         else:
                             if chksum:
                                 verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
