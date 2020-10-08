@@ -131,10 +131,7 @@ else
 endif
 
 ifeq ($(PIO_VERSION),2)
-  ifneq ($(COMPILER),nag)
-    # Needed by SCORPIO not default PIO, does not work with NAG compiler
-    USE_CXX := TRUE
-  endif
+  CPPDEFS += -DPIO2
 else
   CPPDEFS += -DPIO1
 endif
