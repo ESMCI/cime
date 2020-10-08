@@ -76,7 +76,6 @@ def build_cime_component_lib(case, compname, libroot, bldroot, use_old=True):
             safe_copy(os.path.join(confdir, "CIME_cppdefs"), bldroot)
         elif os.path.exists(os.path.join(confdir, "CCSM_cppdefs")):
             safe_copy(os.path.join(confdir, "CCSM_cppdefs"), bldroot)
-
         run_gmake(case, compclass, compname, libroot, bldroot)
 
 ###############################################################################
