@@ -493,7 +493,7 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
 def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 ###############################################################################
     """
-    Ensure that crucial Filepath, CIME_CPPDEFS, and CCSM_CPPDEFS files exist for this component.
+    Ensure that crucial Filepath and CIME_CPPDEFS files exist for this component.
     In many cases, the bld/configure script will have already created these.
     """
     bc_path = os.path.join(config_dir, "buildlib_cmake")
