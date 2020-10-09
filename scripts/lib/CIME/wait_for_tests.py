@@ -219,36 +219,40 @@ def create_cdash_upload_xml(results, cdash_build_name, cdash_build_group, utc_ti
         for test_name, test_data in results.items():
             test_path, test_status = test_data
 
-            if test_status not in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS] or force_log_upload:
+            if test_status != TEST_PASS_STATUS or force_log_upload:
                 test_case_dir = os.path.dirname(test_path)
-                ts = TestStatus(test_case_dir)
 
-                build_status    = ts.get_status(SHAREDLIB_BUILD_PHASE)
-                build_status    = TEST_FAIL_STATUS if build_status == TEST_FAIL_STATUS else ts.get_status(MODEL_BUILD_PHASE)
-                run_status      = ts.get_status(RUN_PHASE)
-                baseline_status = ts.get_status(BASELINE_PHASE)
+                case_dirs = [test_case_dir]
+                case_base = os.path.basename(test_case_dir)
+                test_case2_dir = os.path.join(test_case_dir, "case2", case_base)
+                if os.path.exists(test_case2_dir):
+                    case_dirs.append(test_case2_dir)
 
-                if build_status == TEST_FAIL_STATUS or run_status == TEST_FAIL_STATUS or baseline_status == TEST_FAIL_STATUS or force_log_upload:
-                    case_dirs = [test_case_dir]
-                    case_base = os.path.basename(test_case_dir)
-                    test_case2_dir = os.path.join(test_case_dir, "case2", case_base)
-                    if os.path.exists(test_case2_dir):
-                        case_dirs.append(test_case2_dir)
-
-                    for case_dir in case_dirs:
-                        param = "EXEROOT" if build_status == TEST_FAIL_STATUS else "RUNDIR"
-                        log_src_dir = run_cmd_no_fail("./xmlquery {} --value".format(param), from_dir=case_dir)
+                for case_dir in case_dirs:
+                    for param in ["EXEROOT", "RUNDIR", "CASEDIR"]:
+                        if param == "CASEDIR":
+                            log_src_dir = case_dir
+                        else:
+                            # it's possible that tests that failed very badly/early, and fake cases for testing
+                            # will not be able to support xmlquery
+                            try:
+                                log_src_dir = run_cmd_no_fail("./xmlquery {} --value".format(param), from_dir=case_dir)
+                            except:
+                                continue
 
                         log_dst_dir = os.path.join(log_dir, "{}{}_{}_logs".format(test_name, "" if case_dir == test_case_dir else ".case2", param))
                         os.makedirs(log_dst_dir)
                         for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
-                            safe_copy(log_file, log_dst_dir)
+                            if os.path.isdir(log_file):
+                                shutil.copytree(log_file, os.path.join(log_dst_dir, os.path.basename(log_file)))
+                            else:
+                                safe_copy(log_file, log_dst_dir)
                         for log_file in glob.glob(os.path.join(log_src_dir, "*.cprnc.out*")):
                             safe_copy(log_file, log_dst_dir)
 
-                        need_to_upload = True
+                need_to_upload = True
 
-        if (need_to_upload):
+        if need_to_upload:
 
             tarball = "{}.tar.gz".format(log_dir)
             if (os.path.exists(tarball)):
