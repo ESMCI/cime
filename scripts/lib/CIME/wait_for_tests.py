@@ -233,12 +233,20 @@ def create_cdash_upload_xml(results, cdash_build_name, cdash_build_group, utc_ti
                         if param == "CASEDIR":
                             log_src_dir = case_dir
                         else:
-                            log_src_dir = run_cmd_no_fail("./xmlquery {} --value".format(param), from_dir=case_dir)
+                            # it's possible that tests that failed very badly/early, and fake cases for testing
+                            # will not be able to support xmlquery
+                            try:
+                                log_src_dir = run_cmd_no_fail("./xmlquery {} --value".format(param), from_dir=case_dir)
+                            except:
+                                continue
 
                         log_dst_dir = os.path.join(log_dir, "{}{}_{}_logs".format(test_name, "" if case_dir == test_case_dir else ".case2", param))
                         os.makedirs(log_dst_dir)
                         for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
-                            safe_copy(log_file, log_dst_dir)
+                            if os.path.isdir(log_file):
+                                shutil.copytree(log_file, os.path.join(log_dst_dir, os.path.basename(log_file)))
+                            else:
+                                safe_copy(log_file, log_dst_dir)
                         for log_file in glob.glob(os.path.join(log_src_dir, "*.cprnc.out*")):
                             safe_copy(log_file, log_dst_dir)
 
