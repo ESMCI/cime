@@ -432,7 +432,7 @@ def get_recommended_test_time_based_on_past(baseline_root, test, raw=False):
         try:
             the_path = os.path.join(baseline_root, _WALLTIME_BASELINE_NAME, test, _WALLTIME_FILE_NAME)
             if os.path.exists(the_path):
-                last_line = int(open(the_path, "r").readlines()[-1])
+                last_line = int(open(the_path, "r").readlines()[-1].split()[0])
                 if raw:
                     best_walltime = last_line
                 else:
@@ -454,7 +454,7 @@ def get_recommended_test_time_based_on_past(baseline_root, test, raw=False):
 
     return None
 
-def save_test_time(baseline_root, test, time_seconds):
+def save_test_time(baseline_root, test, time_seconds, commit):
     if baseline_root is not None:
         try:
             with SharedArea():
@@ -464,7 +464,7 @@ def save_test_time(baseline_root, test, time_seconds):
 
                 the_path = os.path.join(the_dir, _WALLTIME_FILE_NAME)
                 with open(the_path, "a") as fd:
-                    fd.write("{}\n".format(int(time_seconds)))
+                    fd.write("{} {}\n".format(int(time_seconds), commit))
 
         except Exception:
             # We NEVER want a failure here to kill the run

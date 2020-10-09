@@ -3,7 +3,7 @@ Base class for CIME system tests
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
-from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect
+from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect, get_current_commit
 from CIME.test_status import *
 from CIME.hist_utils import copy_histfiles, compare_test, generate_teststatus, \
     compare_baseline, get_ts_synopsis, generate_baseline
@@ -202,7 +202,8 @@ class SystemTestsCommon(object):
                 # If run phase worked, remember the time it took in order to improve later walltime ests
                 baseline_root = self._case.get_value("BASELINE_ROOT")
                 if success:
-                    save_test_time(baseline_root, self._casebaseid, time_taken)
+                    srcroot = self._case.get_value("SRCROOT")
+                    save_test_time(baseline_root, self._casebaseid, time_taken, get_current_commit(repo=srcroot))
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
                 overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
