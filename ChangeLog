@@ -1,6 +1,41 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 10-12-2020
+Tag: cime5.6.34
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Add CLA --query-expType option to query the CESM2 experiment database.
+    - Adds a raw xml output feature to query_config.
+    - Izumi updates.
+    - Initialize XML variable values to be empty.
+    - Add ftp timeout, fix failover to svn.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+8edc73213 Merge pull request #3629 from bertinia/maint-5.6_archive_metadata
+c651c93d8 Merge pull request #3715 from jedwards4b/add_xml_option_to_query_config
+913ad5f82 Merge pull request #3561 from ESMCI/fischer/izumi_update_56
+449a39594 Merge pull request #3482 from bertinia/maint-5.6_archive_metadata
+949d3d66a Merge pull request #3480 from jedwards4b/ftp_timeout_56
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/archive_metadata
+M       scripts/lib/CIME/Servers/ftp.py
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/query_config
+M       src/drivers/mct/cime_config/config_component.xml
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 1-30-2020
 Tag: cime5.6.32
 Answer Changes: None
