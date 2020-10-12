@@ -1362,7 +1362,9 @@ contains
     ierr = PIOc_inq_varid(ncid, trim(name)//C_NULL_CHAR, varid)
 
     ! the fortran value is one based while the c value is 0 based
-    varid = varid+1
+    if(ierr == 0) then
+       varid = varid+1
+    endif
   end function inq_varid_id
 
   !>
