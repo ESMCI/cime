@@ -747,7 +747,7 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
         script = \
 """
 cd {caseroot}
-./xmlchange RESUBMIT=1 STOP_N={stopn} CONTINUE_RUN=FALSE RESUBMIT_SETS_CONTINUE_RUN=FALSE
+./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
 {modelexe}.real "$@"
 
