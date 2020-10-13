@@ -260,7 +260,7 @@ class SystemTestsCommon(object):
         self._case.load_env(reset=True)
         self._caseroot = case.get_value("CASEROOT")
 
-    def run_indv(self, suffix="base", st_archive=False, st_archive_copy=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
         """
         Perform an individual run. Raises an EXCEPTION on fail.
         """
@@ -268,7 +268,10 @@ class SystemTestsCommon(object):
         stop_option = self._case.get_value("STOP_OPTION")
         run_type    = self._case.get_value("RUN_TYPE")
         rundir      = self._case.get_value("RUNDIR")
-        is_batch    = self._case.get_value("BATCH_SYSTEM") != "none"
+        if submit_resubmits is None:
+            do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
+        else:
+            do_resub = submit_resubmits
 
         # remove any cprnc output leftover from previous runs
         for compout in glob.iglob(os.path.join(rundir,"*.cprnc.out")):
@@ -285,7 +288,7 @@ class SystemTestsCommon(object):
 
         logger.info(infostr)
 
-        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=is_batch)
+        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=do_resub)
 
         if not self._coupler_log_indicates_run_complete():
             expect(False, "Coupler did not indicate run passed")
@@ -294,7 +297,7 @@ class SystemTestsCommon(object):
             self._component_compare_copy(suffix)
 
         if st_archive:
-            self._case.case_st_archive(resubmit=True, copy_only=st_archive_copy)
+            self._case.case_st_archive(resubmit=True)
 
     def _coupler_log_indicates_run_complete(self):
         newestcpllogfiles = self._get_latest_cpl_logs()
@@ -610,12 +613,12 @@ class FakeTest(SystemTestsCommon):
                 expect(os.path.exists(modelexe),"Could not find expected file {}".format(modelexe))
                 logger.info("FakeTest build_phase complete {} {}".format(modelexe, self._requires_exe))
 
-    def run_indv(self, suffix="base", st_archive=False, st_archive_copy=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=False):
         mpilib = self._case.get_value("MPILIB")
         # This flag is needed by mpt to run a script under mpiexec
         if mpilib == "mpt":
             os.environ["MPI_SHEPHERD"] = "true"
-        super(FakeTest, self).run_indv(suffix, st_archive=st_archive, st_archive_copy=st_archive_copy)
+        super(FakeTest, self).run_indv(suffix, st_archive=st_archive, submit_resubmits=submit_resubmits)
 
 class TESTRUNPASS(FakeTest):
 
@@ -761,7 +764,7 @@ sleep 5
                              sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run_phase(self):
-        self.run_indv(st_archive=True, st_archive_copy=True)
+        self.run_indv(submit_resubmits=True)
 
 class TESTRUNSLOWPASS(FakeTest):
 

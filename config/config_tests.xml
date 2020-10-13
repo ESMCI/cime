@@ -517,10 +517,10 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>3</STOP_N>
     <NTASKS>1</NTASKS>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
-    <DOUT_S>TRUE</DOUT_S>
     <REST_OPTION>none</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
+    <DOUT_S>FALSE</DOUT_S>
   </test>
 
   <test NAME="NODEFAIL" INFRASTRUCTURE_TEST="TRUE">
