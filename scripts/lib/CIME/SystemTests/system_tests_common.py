@@ -421,9 +421,9 @@ class SystemTestsCommon(object):
                     self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS, comments="insuffiencient data for memleak test")
                 else:
                     finaldate = int(memlist[-1][0])
-                    originaldate = int(memlist[0][0])
+                    originaldate = int(memlist[1][0]) # skip first day mem record, it can be too low while initializing
                     finalmem = float(memlist[-1][1])
-                    originalmem = float(memlist[0][1])
+                    originalmem = float(memlist[1][1])
                     memdiff = -1
                     if originalmem > 0:
                         memdiff = (finalmem - originalmem)/originalmem
