@@ -610,12 +610,12 @@ class FakeTest(SystemTestsCommon):
                 expect(os.path.exists(modelexe),"Could not find expected file {}".format(modelexe))
                 logger.info("FakeTest build_phase complete {} {}".format(modelexe, self._requires_exe))
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, st_archive_copy=False):
         mpilib = self._case.get_value("MPILIB")
         # This flag is needed by mpt to run a script under mpiexec
         if mpilib == "mpt":
             os.environ["MPI_SHEPHERD"] = "true"
-        super(FakeTest, self).run_indv(suffix, st_archive)
+        super(FakeTest, self).run_indv(suffix, st_archive=st_archive, st_archive_copy=st_archive_copy)
 
 class TESTRUNPASS(FakeTest):
 
