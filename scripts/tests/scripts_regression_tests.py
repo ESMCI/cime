@@ -1906,7 +1906,7 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
         if (FAST_ONLY):
             self.skipTest("Skipping slow test")
 
-        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE.f19_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_P1.f19_g16.X"], test_id=self._baseline_name)
 
         # We need to be careful since we are running a resubmit. The first run should
         # report a RUN PASS, which will cause our waiting code to stop waiting. But we

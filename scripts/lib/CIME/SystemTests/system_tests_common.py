@@ -747,22 +747,13 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
         script = \
 """
 cd {caseroot}
-./xmlchange DOUT_S=TRUE
-./xmlchange DOUT_S=TRUE --file env_test.xml
-./xmlchange RESUBMIT=1
-./xmlchange STOP_N={stopn}
-./xmlchange CONTINUE_RUN=FALSE
-./xmlchange RESUBMIT_SETS_CONTINUE_RUN=FALSE
+./xmlchange RESUBMIT=1 STOP_N={stopn} CONTINUE_RUN=FALSE RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
-sleep 5
 {modelexe}.real "$@"
-sleep 5
 
 # Need to remove self in order to avoid infinite loop
-ls $(dirname {modelexe})
 mv {modelexe} {modelexe}.old
 mv {modelexe}.real {modelexe}
-ls $(dirname {modelexe})
 sleep 5
 """.format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
