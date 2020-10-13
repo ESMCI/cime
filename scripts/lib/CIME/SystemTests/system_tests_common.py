@@ -260,7 +260,7 @@ class SystemTestsCommon(object):
         self._case.load_env(reset=True)
         self._caseroot = case.get_value("CASEROOT")
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, st_archive_copy=False):
         """
         Perform an individual run. Raises an EXCEPTION on fail.
         """
@@ -294,7 +294,7 @@ class SystemTestsCommon(object):
             self._component_compare_copy(suffix)
 
         if st_archive:
-            self._case.case_st_archive(resubmit=True)
+            self._case.case_st_archive(resubmit=True, copy_only=st_archive_copy)
 
     def _coupler_log_indicates_run_complete(self):
         newestcpllogfiles = self._get_latest_cpl_logs()
@@ -761,7 +761,7 @@ sleep 5
                              sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run_phase(self):
-        self.run_indv(st_archive=True)
+        self.run_indv(st_archive=True, st_archive_copy=True)
 
 class TESTRUNSLOWPASS(FakeTest):
 
