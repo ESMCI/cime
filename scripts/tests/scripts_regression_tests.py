@@ -22,7 +22,7 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, Timeout
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -1906,17 +1906,17 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
         if (FAST_ONLY):
             self.skipTest("Skipping slow test")
 
-        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE.f19_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Mmpi-serial.f19_g16.X"], test_id=self._baseline_name)
 
-        # We need to be careful since we are running a resubmit. The first run should
-        # report a RUN PASS, which will cause our waiting code to stop waiting. But we
-        # want to wait for the second run too.
-        time.sleep(10) # give second run a chance to begin
-        self._wait_for_tests(self._baseline_name) # wait for second run
+        with Timeout(3000):
+            while True:
+                with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
+                    self._wait_for_tests(self._baseline_name)
+                    contents = fd.read()
+                    if contents.count("model execution success") == 2:
+                        break
 
-        with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
-            contents = fd.read()
-            self.assertEqual(contents.count("model execution success"), 2)
+                time.sleep(5)
 
         rundir = run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
         with open(os.path.join(rundir, "drv_in"), "r") as fd:
@@ -3484,6 +3484,10 @@ def write_provenance_info():
 
 def cleanup():
     # if the TEST_ROOT directory exists and is empty, remove it
+    testreporter = os.path.join(TEST_ROOT,"testreporter")
+    files = os.listdir(TEST_ROOT)
+    if len(files)==1 and os.path.isfile(testreporter):
+        os.unlink(testreporter)
     if os.path.exists(TEST_ROOT) and not os.listdir(TEST_ROOT):
         print("All pass, removing directory:", TEST_ROOT)
         os.rmdir(TEST_ROOT)
