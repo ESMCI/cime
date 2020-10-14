@@ -1906,7 +1906,7 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
         if (FAST_ONLY):
             self.skipTest("Skipping slow test")
 
-        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_P1.f19_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Mmpi-serial.f19_g16.X"], test_id=self._baseline_name)
 
         with Timeout(3000):
             while True:
@@ -3484,6 +3484,10 @@ def write_provenance_info():
 
 def cleanup():
     # if the TEST_ROOT directory exists and is empty, remove it
+    testreporter = os.path.join(TEST_ROOT,"testreporter")
+    files = os.listdir(TEST_ROOT)
+    if len(files)==1 and os.path.isfile(testreporter):
+        os.unlink(testreporter)
     if os.path.exists(TEST_ROOT) and not os.listdir(TEST_ROOT):
         print("All pass, removing directory:", TEST_ROOT)
         os.rmdir(TEST_ROOT)
