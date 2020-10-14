@@ -55,10 +55,13 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
                         help="Send results to CDash")
 
     parser.add_argument("-n", "--no-submit", action="store_true",
-                        help="For us to not send results to CDash, overrides --submit-to-cdash")
+                        help="Force us to not send results to CDash, overrides --submit-to-cdash. Useful for CI")
 
     parser.add_argument("--update-success", action="store_true",
                         help="Record test success in baselines. Only the nightly process should use this in general.")
+
+    parser.add_argument("--no-update-success", action="store_true",
+                        help="For us to not record test success in baselines, overrides --update-success. Useful for CI.")
 
     parser.add_argument("--no-batch", action="store_true",
                         help="Do not use batch system even if on batch machine")
@@ -109,6 +112,9 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
 
     if args.no_submit:
         args.submit_to_cdash = False
+
+    if args.no_update_success:
+        args.update_success = False
 
     expect(not (args.submit_to_cdash and args.generate_baselines),
            "Does not make sense to use --generate-baselines and --submit-to-cdash together")
