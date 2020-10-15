@@ -462,6 +462,7 @@ class J_TestCreateNewcase(unittest.TestCase):
                               % (SCRIPT_DIR, args),from_dir=SCRIPT_DIR)
 
         self.assertTrue(os.path.isfile(os.path.join(testdir,"SourceMods","src.drv","somefile.F90")), msg="User_mods SourceMod missing")
+
         with open(os.path.join(testdir,"user_nl_cpl"),"r") as fd:
             contents = fd.read()
             self.assertTrue("a different cpl test option" in contents, msg="User_mods contents of user_nl_cpl missing")
@@ -1919,7 +1920,11 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
                 time.sleep(5)
 
         rundir = run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
-        with open(os.path.join(rundir, "drv_in"), "r") as fd:
+        if CIME.utils.get_cime_default_driver() == 'nuopc':
+            chk_file = "nuopc.runconfig"
+        else:
+            chk_file = "drv_in"
+        with open(os.path.join(rundir, chk_file), "r") as fd:
             contents = fd.read()
             self.assertTrue("stop_n = 6" in contents)
 
