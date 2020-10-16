@@ -136,7 +136,7 @@ def buildlib(bldroot, installpath, case):
     #
     case_inc_dir = os.path.join(libroot, "include")
     if not os.path.isdir(case_inc_dir):
-        os.path.mkdir(case_inc_dir)
+        os.mkdir(case_inc_dir)
     for _file in glob.iglob(os.path.join(installdir,"include","*")):
         symlink_force(_file, os.path.join(case_inc_dir,os.path.basename(_file)))
 
