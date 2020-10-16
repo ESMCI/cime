@@ -28,4 +28,10 @@ else()
    set(mpilib "default")
 endif()
 
-set(BUILDNAME "scripts_regression_${shell}_${compiler}_${mpilib}")
+if (DEFINED ENV{CIME_DRIVER})
+  set(driver $ENV{CIME_DRIVER})
+else()
+  set(driver "mct")
+endif()
+
+set(BUILDNAME "scripts_regression_${shell}_${compiler}_${mpilib}_${driver}")
