@@ -235,6 +235,9 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
             # Add logging before running
             make_cmd = "{} >> {} 2>&1".format(make_cmd, bldlog)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
+    if stat != 0:
+        with open(bldlog, "r") as fd:
+            print(fd.read())
 
     expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(cime_model, bldlog))
 
