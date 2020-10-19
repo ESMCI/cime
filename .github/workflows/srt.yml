@@ -26,8 +26,8 @@ jobs:
       PNETCDF_VERSION: pnetcdf-1.12.1
       NETCDF_FORTRAN_VERSION: v4.5.2
       NETCDF_C_PATH: /usr
-      NETCDF_FORTRAN_PATH: $HOME/netcdf-fortran
-      PNETCDF_PATH: $HOME/pnetcdf
+      NETCDF_FORTRAN_PATH: ~/netcdf-fortran
+      PNETCDF_PATH: ~/pnetcdf
       CIME_MODEL: cesm
 
     # Steps represent a sequence of tasks that will be executed as part of the job
