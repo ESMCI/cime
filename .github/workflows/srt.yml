@@ -25,6 +25,9 @@ jobs:
       # Versions of all dependencies can be updated here
       PNETCDF_VERSION: pnetcdf-1.12.1
       NETCDF_FORTRAN_VERSION: v4.5.2
+      NETCDF_C_PATH: /usr
+      NETCDF_FORTRAN_PATH: $HOME/netcdf-fortran
+      PNETCDF_PATH: $HOME/pnetcdf
       CIME_MODEL: cesm
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -72,7 +75,7 @@ jobs:
 
       - name: scripts regression tests
         run: |
-          mkdir -p /home/runner/cesm/scratch
-          mkdir -p /home/runner/cesm/inputdata
-          cd /home/runner/work/cime/cime/scripts/tests
+          mkdir -p $HOME/cesm/scratch
+          mkdir -p $HOME/cesm/inputdata
+          cd $HOME/work/cime/cime/scripts/tests
           ./scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest
