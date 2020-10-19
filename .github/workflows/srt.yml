@@ -71,5 +71,5 @@ jobs:
 
       - name: scripts regression tests
         run: |
-          cd cime/scripts/tests
-          scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest
+          cd cime/cime/scripts/tests
+          ./scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest
