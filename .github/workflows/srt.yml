@@ -71,5 +71,6 @@ jobs:
 
       - name: scripts regression tests
         run: |
-          cd cime/cime/scripts/tests
+          sudo apt-get install pylint
+          cd /home/runner/work/cime/cime/scripts/tests
           ./scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest
