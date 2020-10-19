@@ -73,6 +73,13 @@ jobs:
           make
           make install
 
+      - name: Cache inputdata
+        id: cache-inputdata
+        uses: actions/cache@v2
+        with:
+          path: $HOME/cesm/inputdata
+          key: inputdata
+
       - name: scripts regression tests
         run: |
           mkdir -p $HOME/cesm/scratch
