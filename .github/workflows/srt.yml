@@ -1,6 +1,6 @@
-# This is a basic workflow to help you get started with Actions
+# CIME scripts regression tests
 
-name: CI
+name: scripts regression tests
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -26,8 +26,8 @@ jobs:
       PNETCDF_VERSION: pnetcdf-1.12.1
       NETCDF_FORTRAN_VERSION: v4.5.2
       NETCDF_C_PATH: /usr
-      NETCDF_FORTRAN_PATH: ~/netcdf-fortran
-      PNETCDF_PATH: ~/pnetcdf
+      NETCDF_FORTRAN_PATH: ${{ env.HOME }}/netcdf-fortran
+      PNETCDF_PATH: ${{ env.HOME }}/pnetcdf
       CIME_MODEL: cesm
 
     # Steps represent a sequence of tasks that will be executed as part of the job
