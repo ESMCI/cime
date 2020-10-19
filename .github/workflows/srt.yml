@@ -17,17 +17,59 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    env:
+      CC: mpicc
+      FC: mpifort
+      CXX: mpicxx
+      CPPFLAGS: "-I/usr/include -I/usr/local/include"
+      # Versions of all dependencies can be updated here
+      PNETCDF_VERSION: pnetcdf-1.12.1
+      NETCDF_FORTRAN_VERSION: v4.5.2
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - id: load-env
+        run: sudo apt-get install wget gfortran openmpi-bin netcdf-bin libopenmpi-dev
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - id: cache-pnetcdf
+        uses: actions/cache@v2
+        with:
+          path: ~/pnetcdf
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+      - name: pnetcdf build
+        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
+          tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
+          ls -l
+          pushd ${{ env.PNETCDF_VERSION }}
+          ./configure --prefix=$HOME/pnetcdf --enable-shared --disable-cxx
+          make
+          make install
+          popd
+
+      - name: Cache netcdf-fortran
+        id: cache-netcdf-fortran
+        uses: actions/cache@v2
+        with:
+          path: ~/netcdf-fortran
+          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
+      - name: netcdf fortran build
+        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get install libnetcdf-dev
+          wget https://github.com/Unidata/netcdf-fortran/archive/${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
+          tar -xzvf ${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
+          ls -l
+          pushd netcdf-fortran-*
+          ./configure --prefix=$HOME/netcdf-fortran
+          make
+          make install
+
+      - name: scripts regression tests
+        run: |
+          cd cime/scripts/tests
+          scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest
