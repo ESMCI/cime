@@ -980,10 +980,11 @@ class Case(object):
 
         for nodename in nodenames:
             value = machobj.get_value(nodename, resolved=False)
-            type_str = self.get_type_info(nodename)
-            if type_str is not None:
-                logger.debug("machine nodname {} value {}".format(nodename, value))
-                self.set_value(nodename, convert_to_type(value, type_str, nodename))
+            if value:
+                type_str = self.get_type_info(nodename)
+                if type_str is not None:
+                    logger.debug("machine nodename {} value {}".format(nodename, value))
+                    self.set_value(nodename, convert_to_type(value, type_str, nodename))
 
         if compiler is None:
             compiler = machobj.get_default_compiler()
