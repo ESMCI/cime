@@ -48,13 +48,13 @@
     </values>
   </entry>
 -->
-<!--
-  <entry id="PIO_REARRANGER">
+
+  <entry id="PIO_REARRANGER_ATM">
     <values>
       <value compset="DATM">1</value>
     </values>
   </entry>
--->
+
   <!--- uncomment and fill in relevant sections
   <entry id="PIO_DEBUG_LEVEL">
     <values>
