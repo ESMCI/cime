@@ -3485,7 +3485,8 @@ def write_provenance_info():
     if TEST_MPILIB is not None:
         logging.info("Testing mpilib = %s"% TEST_MPILIB)
     logging.info("Test root: %s" % TEST_ROOT)
-    logging.info("Test driver: %s\n" % CIME.utils.get_cime_default_driver())
+    logging.info("Test driver: %s" % CIME.utils.get_cime_default_driver())
+    logging.info("Python version {}\n".format(sys.version))
 
 def cleanup():
     # if the TEST_ROOT directory exists and is empty, remove it

@@ -158,8 +158,9 @@ def _build_model(build_threaded, exeroot, incroot, complist,
                        from_dir=bldroot,  arg_stdout=fd,
                        arg_stderr=subprocess.STDOUT)[0]
 
-        with open(file_build, "r") as fd:
-            print(fd.read())
+        if stat:
+            with open(file_build, "r") as fd:
+                print(fd.read())
 
         analyze_build_log("{} exe".format(cime_model), file_build, compiler)
         expect(stat == 0, "BUILD FAIL: buildexe failed, cat {}".format(file_build))
@@ -417,7 +418,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
                        [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
 
-        if case.get_value("MACH") == "ubuntu-latest" and lib == "cprnc":
+        if case.get_value("MACH") == "ubuntu-latest":
             with open(file_build, "r") as fd:
                 print(fd.read())
 
