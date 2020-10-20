@@ -158,10 +158,6 @@ def _build_model(build_threaded, exeroot, incroot, complist,
                        from_dir=bldroot,  arg_stdout=fd,
                        arg_stderr=subprocess.STDOUT)[0]
 
-        if stat:
-            with open(file_build, "r") as fd:
-                print(fd.read())
-
         analyze_build_log("{} exe".format(cime_model), file_build, compiler)
         expect(stat == 0, "BUILD FAIL: buildexe failed, cat {}".format(file_build))
 
@@ -239,9 +235,6 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
             # Add logging before running
             make_cmd = "{} >> {} 2>&1".format(make_cmd, bldlog)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
-    if stat:
-        with open(bldlog, "r") as fd:
-            print(fd.read())
 
     expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(cime_model, bldlog))
 
@@ -417,20 +410,12 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
         expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
-        if lib == "mct":
-            run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
-                           [full_lib_path, os.path.join(exeroot, sharedpath), case])
-        else:
-            run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
-                           [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
-            analyze_build_log(lib, file_build, compiler)
-            logs.append(file_build)
 
+        run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
+                       [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
 
-
-#        with open(file_build, "r") as fd:
-#            print(fd.read())
-
+        analyze_build_log(lib, file_build, compiler)
+        logs.append(file_build)
         if lib == "pio":
             bldlog = open(file_build, "r")
             for line in bldlog:
@@ -494,8 +479,6 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
                        arg_stderr=subprocess.STDOUT)[0]
 
     if stat != 0:
-        with open(file_build, "r") as fd:
-            print(fd.read())
         thread_bad_results.append("BUILD FAIL: {}.buildlib failed, cat {}".format(compname, file_build))
 
     analyze_build_log(compclass, file_build, compiler)

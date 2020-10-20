@@ -1870,8 +1870,6 @@ def filter_unicode(unistr):
 def run_bld_cmd_ensure_logging(cmd, arg_logger, from_dir=None, timeout=None):
     arg_logger.info(cmd)
     stat, output, errput = run_cmd(cmd, from_dir=from_dir, timeout=timeout)
-    if stat:
-        print(errput)
     arg_logger.info(output)
     arg_logger.info(errput)
     expect(stat == 0, filter_unicode(errput))
