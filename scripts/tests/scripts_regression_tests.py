@@ -1289,6 +1289,8 @@ class TestCreateTestCommon(unittest.TestCase):
         if self._hasbatch or always_wait:
             timeout_arg = "--timeout={}".format(GLOBAL_TIMEOUT) if GLOBAL_TIMEOUT is not None else ""
             expected_stat = 0 if expect_works else CIME.utils.TESTS_FAILED_ERR_CODE
+            with open(os.path.join(test_id,"TestStatus.log")) as fd:
+                print(fd.read())
             run_cmd_assert_result(self, "{}/wait_for_tests {} *{}/TestStatus".format(TOOLS_DIR, timeout_arg, test_id),
                                   from_dir=self._testroot, expected_stat=expected_stat)
 
