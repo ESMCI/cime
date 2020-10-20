@@ -40,11 +40,13 @@ jobs:
       - id: load-env
         run: sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake
 
-      - id: cache-pnetcdf
+      - name: cache pnetcdf
+        id: cache-pnetcdf
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
           key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+
       - name: pnetcdf build
         if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
         run: |
@@ -63,6 +65,7 @@ jobs:
         with:
           path: ${{ env.NETCDF_FORTRAN_PATH }}
           key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
+
       - name: netcdf fortran build
         if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
         run: |
@@ -87,6 +90,9 @@ jobs:
         with:
           path: $HOME/cesm/inputdata
           key: inputdata
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: scripts regression tests
         run: |
