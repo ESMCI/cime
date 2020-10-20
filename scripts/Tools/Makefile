@@ -320,7 +320,7 @@ ifeq ($(USE_ESMF_LIB), TRUE)
   -include $(CIME_ESMFMKFILE)
   CPPDEFS += -DESMF_VERSION_MAJOR=$(ESMF_VERSION_MAJOR) -DESMF_VERSION_MINOR=$(ESMF_VERSION_MINOR)
   FFLAGS += $(ESMF_F90COMPILEPATHS)
-  SLIBS  += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS)
+  SLIBS	 += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS)
 endif
 
 # Stub libraries do not need to be built for nuopc driver
@@ -414,11 +414,11 @@ endif
 #===============================================================================
 
 ifeq ($(strip $(MPILIB)), mpi-serial)
-  CC      := $(SCC)
-  FC      := $(SFC)
-  CXX     := $(SCXX)
-  MPIFC   := $(SFC)
-  MPICC   := $(SCC)
+  CC	  := $(SCC)
+  FC	  := $(SFC)
+  CXX	  := $(SCXX)
+  MPIFC	  := $(SFC)
+  MPICC	  := $(SCC)
   MPICXX  := $(SCXX)
   CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
 else
@@ -500,8 +500,8 @@ else
        # GCC needs to be able to link to
        # nagfor runtime to get autoconf
        # tests to work.
-         CFLAGS += -Wl,--as-needed,--allow-shlib-undefined
-         SLIBS += -L$(COMPILER_PATH)/lib/NAG_Fortran -lf62rts
+	 CFLAGS += -Wl,--as-needed,--allow-shlib-undefined
+	 SLIBS += -L$(COMPILER_PATH)/lib/NAG_Fortran -lf62rts
        endif
     endif
   endif
@@ -544,10 +544,10 @@ INCLDIR +=	-I$(INSTALL_SHAREDPATH)/include
 #
 CFLAGS+=$(CPPDEFS)
 CXXFLAGS+=$(CPPDEFS)
-CONFIG_ARGS +=  CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
-                MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
-                CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
-                LDFLAGS="$(LDFLAGS)"
+CONFIG_ARGS +=	CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
+		MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
+		CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
+		LDFLAGS="$(LDFLAGS)"
 
 ifeq ($(NETCDF_SEPARATE), FALSE)
   CONFIG_ARGS += NETCDF_PATH=$(NETCDF_PATH)
@@ -585,25 +585,25 @@ ifeq ($(MODEL),cam)
   # Until mods are made to read the data from files, just remove optimization from
   # their compilation.
 rrtmg_lw_k_g.o: rrtmg_lw_k_g.f90
-        $(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
+	$(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
 
 rrtmg_sw_k_g.o: rrtmg_sw_k_g.f90
-        $(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
+	$(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
 
 
 ifdef COSP_LIBDIR
 INCLDIR+=-I$(COSP_LIBDIR) -I$(COSP_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE)
 $(COSP_LIBDIR)/libcosp.a: cam_abortutils.o
-        $(MAKE) -C $(COSP_LIBDIR) F90='$(FC)' F90FLAGS='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FC_AUTO_R8)' \
-        F90FLAGS_noauto='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS)' \
-        F90FLAGS_fixed='$(INCLDIR) $(INCS) $(FIXEDFLAGS) $(FFLAGS) $(FC_AUTO_R8)'
+	$(MAKE) -C $(COSP_LIBDIR) F90='$(FC)' F90FLAGS='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FC_AUTO_R8)' \
+	F90FLAGS_noauto='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS)' \
+	F90FLAGS_fixed='$(INCLDIR) $(INCS) $(FIXEDFLAGS) $(FFLAGS) $(FC_AUTO_R8)'
 
 cospsimulator_intr.o: $(COSP_LIBDIR)/libcosp.a
 endif
 
 ifdef FV3CORE_LIBDIR
 $(FV3CORE_LIBDIR)/libfv3core.a: $(EXEROOT)/FMS/libfms.a
-        $(MAKE) -C $(FV3CORE_LIBDIR) complib COMPLIB='$(FV3CORE_LIBDIR)/libfv3core.a' F90='$(FC)' CC='$(CC)' FFLAGS='$(FFLAGS) $(FC_AUTO_R8)'  CFLAGS='$(CFLAGS)' INCLDIR='$(INCLDIR)' FC_TYPE='$(COMPILER)'
+	$(MAKE) -C $(FV3CORE_LIBDIR) complib COMPLIB='$(FV3CORE_LIBDIR)/libfv3core.a' F90='$(FC)' CC='$(CC)' FFLAGS='$(FFLAGS) $(FC_AUTO_R8)'  CFLAGS='$(CFLAGS)' INCLDIR='$(INCLDIR)' FC_TYPE='$(COMPILER)'
 
 dyn_grid.o: $(FV3CORE_LIBDIR)/libfv3core.a
 endif
@@ -623,8 +623,8 @@ ifdef MPAS_LIBDIR
 # is named libmpas.a), but adding the PHONY declaration provides an extra bit of safety
 .PHONY: libmpas
 libmpas: cam_abortutils.o physconst.o
-        $(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" FFLAGS='$(FREEFLAGS) $(FFLAGS)' \
-        FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
+	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" FFLAGS='$(FREEFLAGS) $(FFLAGS)' \
+	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
 
 dyn_comp.o: libmpas
 dyn_grid.o: libmpas
@@ -664,7 +664,7 @@ ifeq ($(strip $(USE_TRILINOS)), TRUE)
   SLIBS += -L$(LIB_TRILINOS) $(Trilinos_LIBRARIES) $(Trilinos_TPL_LIBRARY_DIRS) $(Trilinos_TPL_LIBRARIES)
 endif
 
-# Add Albany libraries.  These are defined in the ALBANY_LINK_LIBS env var that was included above
+# Add Albany libraries.	 These are defined in the ALBANY_LINK_LIBS env var that was included above
 ifeq ($(strip $(USE_ALBANY)), TRUE)
   SLIBS += $(ALBANY_LINK_LIBS)
 endif
@@ -700,12 +700,12 @@ endif
 #------------------------------------------------------------------------------
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
-        @echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-        $(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct
+	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
+	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
-        @echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-        $(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct/mpi-serial
+	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
+	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct/mpi-serial
 
 ifndef IO_LIB_SRCROOT
   ifndef PIO_SRCROOT
@@ -755,13 +755,13 @@ endif
 # doesn't seem to be able to differentiate between free & fixed
 # fortran flags)
 CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(INCLDIR)" \
-              -D CMAKE_C_FLAGS:STRING="$(CFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
-              -D CMAKE_CXX_FLAGS:STRING="$(CXXFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
-              -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-              -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
-              -D PIO_ENABLE_TESTS:BOOL=OFF \
-              -D PIO_USE_MALLOC:BOOL=ON \
-              -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" \
+	      -D CMAKE_C_FLAGS:STRING="$(CFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
+	      -D CMAKE_CXX_FLAGS:STRING="$(CXXFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
+	      -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
+	      -D PIO_ENABLE_TESTS:BOOL=OFF \
+	      -D PIO_USE_MALLOC:BOOL=ON \
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" \
 
 # Allow for separate installations of the NetCDF C and Fortran libraries
 ifeq ($(NETCDF_SEPARATE), FALSE)
@@ -770,31 +770,31 @@ else ifeq ($(NETCDF_SEPARATE), TRUE)
   # NETCDF_Fortran_DIR points to the separate
   # installation of Fortran NetCDF for PIO
   CMAKE_OPTS += -D NetCDF_C_PATH:PATH=$(NETCDF_C_PATH) \
-                -D NetCDF_Fortran_PATH:PATH=$(NETCDF_FORTRAN_PATH)
+		-D NetCDF_Fortran_PATH:PATH=$(NETCDF_FORTRAN_PATH)
 endif
 
 ifdef ZLIB_PATH
-        CMAKE_OPTS += -D LIBZ_PATH:STRING="$(ZLIB_PATH)"
+	CMAKE_OPTS += -D LIBZ_PATH:STRING="$(ZLIB_PATH)"
 endif
 
 ifdef SZIP_PATH
-        CMAKE_OPTS += -D SZIP_PATH:STRING="$(SZIP_PATH)"
+	CMAKE_OPTS += -D SZIP_PATH:STRING="$(SZIP_PATH)"
 endif
 
 ifdef HDF5_PATH
-        CMAKE_OPTS += -D HDF5_PATH:STRING="$(HDF5_PATH)"
+	CMAKE_OPTS += -D HDF5_PATH:STRING="$(HDF5_PATH)"
 endif
 
 ifdef PNETCDF_PATH
-        CMAKE_OPTS += -D PnetCDF_PATH:STRING="$(PNETCDF_PATH)"
+	CMAKE_OPTS += -D PnetCDF_PATH:STRING="$(PNETCDF_PATH)"
 else
-        CMAKE_OPTS += -D WITH_PNETCDF:LOGICAL=FALSE -D PIO_USE_MPIIO:LOGICAL=FALSE
+	CMAKE_OPTS += -D WITH_PNETCDF:LOGICAL=FALSE -D PIO_USE_MPIIO:LOGICAL=FALSE
 endif
 ifdef PIO_FILESYSTEM_HINTS
-        CMAKE_OPTS += -D PIO_FILESYSTEM_HINTS:STRING="$(PIO_FILESYSTEM_HINTS)"
+	CMAKE_OPTS += -D PIO_FILESYSTEM_HINTS:STRING="$(PIO_FILESYSTEM_HINTS)"
 endif
 ifeq ($(MPILIB),mpi-serial)
-        CMAKE_OPTS += -D PIO_USE_MPISERIAL=TRUE -D MPISERIAL_PATH=$(INSTALL_SHAREDPATH)
+	CMAKE_OPTS += -D PIO_USE_MPISERIAL=TRUE -D MPISERIAL_PATH=$(INSTALL_SHAREDPATH)
 endif
 
 # This captures the many cism-specific options to cmake
@@ -807,9 +807,9 @@ ifndef CMAKE_ENV_VARS
   CMAKE_ENV_VARS :=
 endif
 CMAKE_ENV_VARS += CC=$(CC) \
-                  CXX=$(CXX) \
-                  FC=$(FC) \
-                  LDFLAGS="$(LDFLAGS)"
+		  CXX=$(CXX) \
+		  FC=$(FC) \
+		  LDFLAGS="$(LDFLAGS)"
 
 
 # We declare $(GLC_DIR)/Makefile to be a phony target so that cmake is
@@ -817,19 +817,19 @@ CMAKE_ENV_VARS += CC=$(CC) \
 # desirable to pick up any new source files that may have been added
 .PHONY: $(GLC_DIR)/Makefile
 $(GLC_DIR)/Makefile:
-        cd $(GLC_DIR); \
-        $(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(GLCROOT)/source_cism
+	cd $(GLC_DIR); \
+	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(GLCROOT)/source_cism
 
 $(PIO_LIBDIR)/Makefile:
-        cd $(PIO_LIBDIR); \
-        $(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(PIO_SRC_DIR)
+	cd $(PIO_LIBDIR); \
+	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(PIO_SRC_DIR)
 
 #-------------------------------------------------------------------------------
 # Build & include dependency files
 #-------------------------------------------------------------------------------
 
 touch_filepath:
-        touch Filepath
+	touch Filepath
 
 # Get list of files and build dependency file for all .o files
 #   using perl scripts mkSrcfiles and mkDepends
@@ -842,17 +842,17 @@ INCS    := $(foreach dir,$(cpp_dirs),-I$(dir))
 CURDIR := $(shell pwd)
 
 Depends: Srcfiles Deppath
-        $(CASETOOLS)/mkDepends $(USER_MKDEPENDS_OPTS) Deppath Srcfiles > $@
+	$(CASETOOLS)/mkDepends $(USER_MKDEPENDS_OPTS) Deppath Srcfiles > $@
 
 Deppath: Filepath
-        $(CP) -f Filepath $@
-        @echo "$(MINCROOT)" >> $@
+	$(CP) -f Filepath $@
+	@echo "$(MINCROOT)" >> $@
 
 Srcfiles: Filepath
-        $(CASETOOLS)/mkSrcfiles
+	$(CASETOOLS)/mkSrcfiles
 
 Filepath:
-        @echo "$(VPATH)" > $@
+	@echo "$(VPATH)" > $@
 
 
 #-------------------------------------------------------------------------------
@@ -860,36 +860,36 @@ Filepath:
 #-------------------------------------------------------------------------------
 
 db_files:
-        @echo " "
-        @echo "* VPATH   := $(VPATH)"
-        @echo "* INCS    := $(INCS)"
-        @echo "* OBJS    := $(OBJS)"
+	@echo " "
+	@echo "* VPATH   := $(VPATH)"
+	@echo "* INCS    := $(INCS)"
+	@echo "* OBJS    := $(OBJS)"
 db_flags:
-        @echo " "
-        @echo "* cc      := $(CC)  $(CFLAGS) $(INCS) $(INCLDIR)"
-        @echo "* .F.o    := $(FC)  $(FFLAGS) $(FIXEDFLAGS) $(INCS) $(INCLDIR)"
-        @echo "* .F90.o  := $(FC)  $(FFLAGS) $(FREEFLAGS) $(INCS) $(INCLDIR)"
-        ifeq ($(USE_CXX), TRUE)
-          @echo "* .cpp.o  := $(CXX) $(CXXFLAGS) $(INCS) $(INCLDIR)"
-        endif
+	@echo " "
+	@echo "* cc      := $(CC)  $(CFLAGS) $(INCS) $(INCLDIR)"
+	@echo "* .F.o    := $(FC)  $(FFLAGS) $(FIXEDFLAGS) $(INCS) $(INCLDIR)"
+	@echo "* .F90.o  := $(FC)  $(FFLAGS) $(FREEFLAGS) $(INCS) $(INCLDIR)"
+	ifeq ($(USE_CXX), TRUE)
+	  @echo "* .cpp.o  := $(CXX) $(CXXFLAGS) $(INCS) $(INCLDIR)"
+	endif
 
 #-------------------------------------------------------------------------------
 # Rules used for the tests run by "configure -test"
 #-------------------------------------------------------------------------------
 
 test_fc: test_fc.o
-        $(LD) -o $@ test_fc.o $(F90_LDFLAGS)
+	$(LD) -o $@ test_fc.o $(F90_LDFLAGS)
 ifeq ($(NETCDF_SEPARATE), FALSE)
 test_nc: test_nc.o
-        $(LD) -o $@ test_nc.o -L$(LIB_NETCDF) -lnetcdff -lnetcdf $(F90_LDFLAGS)
+	$(LD) -o $@ test_nc.o -L$(LIB_NETCDF) -lnetcdff -lnetcdf $(F90_LDFLAGS)
 else ifeq ($(NETCDF_SEPARATE), TRUE)
 test_nc: test_nc.o
-        $(LD) -o $@ test_nc.o -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf $(F90_LDFLAGS)
+	$(LD) -o $@ test_nc.o -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf $(F90_LDFLAGS)
 endif
 test_mpi: test_mpi.o
-        $(LD) -o $@ test_mpi.o $(F90_LDFLAGS)
+	$(LD) -o $@ test_mpi.o $(F90_LDFLAGS)
 test_esmf: test_esmf.o
-        $(LD) -o $@ test_esmf.o $(F90_LDFLAGS)
+	$(LD) -o $@ test_esmf.o $(F90_LDFLAGS)
 
 #-------------------------------------------------------------------------------
 # create list of component libraries - hard-wired for current ccsm components
@@ -991,138 +991,138 @@ else
 endif
 
 install_lib: $(COMPLIB)
-        $(CP) -p $(COMPLIB) $(CSMSHARELIB)
-        $(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
+	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
+	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
 # Set MODEL=driver to get the same flags as are used when building the driver
 .PHONY: write_include_and_link_flags
 write_include_and_link_flags:
-        @$(RM) -f $(OUTPUT_FILE)
-        @echo CIME_CSM_SHR_INCLUDE = $(CSM_SHR_INCLUDE) >> $(OUTPUT_FILE)
-        @echo CIME_ESMF_F90COMPILEPATHS = $(ESMF_F90COMPILEPATHS) >> $(OUTPUT_FILE)
-        @echo CIME_INCLDIR = $(INCLDIR) >> $(OUTPUT_FILE)
-        @echo CIME_INCS = $(INCS) >> $(OUTPUT_FILE)
-        @echo CIME_CLIBS = $(CLIBS) >> $(OUTPUT_FILE)
-        @echo CIME_ULIBS = $(ULIBS) >> $(OUTPUT_FILE)
-        @echo CIME_SLIBS = $(SLIBS) >> $(OUTPUT_FILE)
-        @echo CIME_MLIBS = $(MLIBS) >> $(OUTPUT_FILE)
-        @echo CIME_F90_LDFLAGS = $(F90_LDFLAGS) >> $(OUTPUT_FILE)
+	@$(RM) -f $(OUTPUT_FILE)
+	@echo CIME_CSM_SHR_INCLUDE = $(CSM_SHR_INCLUDE) >> $(OUTPUT_FILE)
+	@echo CIME_ESMF_F90COMPILEPATHS = $(ESMF_F90COMPILEPATHS) >> $(OUTPUT_FILE)
+	@echo CIME_INCLDIR = $(INCLDIR) >> $(OUTPUT_FILE)
+	@echo CIME_INCS = $(INCS) >> $(OUTPUT_FILE)
+	@echo CIME_CLIBS = $(CLIBS) >> $(OUTPUT_FILE)
+	@echo CIME_ULIBS = $(ULIBS) >> $(OUTPUT_FILE)
+	@echo CIME_SLIBS = $(SLIBS) >> $(OUTPUT_FILE)
+	@echo CIME_MLIBS = $(MLIBS) >> $(OUTPUT_FILE)
+	@echo CIME_F90_LDFLAGS = $(F90_LDFLAGS) >> $(OUTPUT_FILE)
 
 # If variables are added to this rule, similar changes should be made in the write_link_flags rule above
 $(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
-        $(LD) -o $(EXEC_SE) $(OBJS) $(CLIBS) $(ULIBS) $(SLIBS) $(MLIBS) $(F90_LDFLAGS)
+	$(LD) -o $(EXEC_SE) $(OBJS) $(CLIBS) $(ULIBS) $(SLIBS) $(MLIBS) $(F90_LDFLAGS)
 
 $(COMPLIB): $(OBJS)
-        $(AR) $(ARFLAGS) $(COMPLIB) $(OBJS)
+	$(AR) $(ARFLAGS) $(COMPLIB) $(OBJS)
 
 .c.o:
-        $(CC) -c $(INCLDIR) $(INCS) $(CFLAGS)  $<
+	$(CC) -c $(INCLDIR) $(INCS) $(CFLAGS)  $<
 .F.o:
-        $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FIXEDFLAGS) $<
+	$(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FIXEDFLAGS) $<
 .f.o:
-        $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FIXEDFLAGS) $<
+	$(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FIXEDFLAGS) $<
 .f90.o:
-        $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS)  $<
+	$(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS)  $<
 .F90.o:
-        $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) $(CONTIGUOUS_FLAG) $<
+	$(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) $(CONTIGUOUS_FLAG) $<
 .cpp.o:
-        $(CXX) -c $(INCLDIR) $(INCS) $(CXXFLAGS)  $<
+	$(CXX) -c $(INCLDIR) $(INCS) $(CXXFLAGS)  $<
 
 %.F90: %.F90.in
-        $(CIMEROOT)/src/externals/genf90/genf90.pl $< > $@
+	$(CIMEROOT)/src/externals/genf90/genf90.pl $< > $@
 
 clean_dependsatm:
-        $(RM) -f $(EXEROOT)/atm/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/atm/obj/Srcfiles
 
 clean_dependscpl:
-        $(RM) -f $(EXEROOT)/cpl/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/cpl/obj/Srcfiles
 
 clean_dependsocn:
-        $(RM) -f $(EXEROOT)/ocn/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/ocn/obj/Srcfiles
 
 clean_dependswav:
-        $(RM) -f $(EXEROOT)/wav/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/wav/obj/Srcfiles
 
 clean_dependsiac:
-        $(RM) -f $(EXEROOT)/iac/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/iac/obj/Srcfiles
 
 clean_dependsglc:
-        $(RM) -f $(EXEROOT)/glc/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/glc/obj/Srcfiles
 
 clean_dependsice:
-        $(RM) -f $(EXEROOT)/ice/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/ice/obj/Srcfiles
 
 clean_dependsrof:
-        $(RM) -f $(EXEROOT)/rof/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/rof/obj/Srcfiles
 
 clean_dependsesp:
-        $(RM) -f $(EXEROOT)/esp/obj/Srcfiles
+	$(RM) -f $(EXEROOT)/esp/obj/Srcfiles
 
 clean_dependslnd:
-        $(RM) -f $(LNDOBJDIR)/Srcfiles
+	$(RM) -f $(LNDOBJDIR)/Srcfiles
 
 clean_dependscsmshare:
-        $(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
+	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
 
 clean_depends: clean_dependsatm clean_dependscpl clean_dependswav clean_dependsglc clean_dependsice clean_dependsrof clean_dependslnd clean_dependscsmshare clean_dependsesp clean_dependsiac
 
 
 cleanatm:
-        $(RM) -f $(LIBROOT)/libatm.a
-        $(RM) -fr $(EXEROOT)/atm/obj
+	$(RM) -f $(LIBROOT)/libatm.a
+	$(RM) -fr $(EXEROOT)/atm/obj
 
 cleancpl:
-        $(RM) -fr $(EXEROOT)/cpl/obj
+	$(RM) -fr $(EXEROOT)/cpl/obj
 
 cleanocn:
-        $(RM) -f $(LIBROOT)/libocn.a
-        $(RM) -fr $(EXEROOT)/ocn/obj
+	$(RM) -f $(LIBROOT)/libocn.a
+	$(RM) -fr $(EXEROOT)/ocn/obj
 
 cleanwav:
-        $(RM) -f $(LIBROOT)/libwav.a
-        $(RM) -fr $(EXEROOT)/wav/obj
+	$(RM) -f $(LIBROOT)/libwav.a
+	$(RM) -fr $(EXEROOT)/wav/obj
 
 cleaniac:
-        $(RM) -f $(LIBROOT)/libiac.a
-        $(RM) -fr $(EXEROOT)/iac/obj
+	$(RM) -f $(LIBROOT)/libiac.a
+	$(RM) -fr $(EXEROOT)/iac/obj
 
 cleanesp:
-        $(RM) -f $(LIBROOT)/libesp.a
-        $(RM) -fr $(EXEROOT)/esp/obj
+	$(RM) -f $(LIBROOT)/libesp.a
+	$(RM) -fr $(EXEROOT)/esp/obj
 
 cleanglc:
-        $(RM) -f $(LIBROOT)/libglc.a
-        $(RM) -fr $(EXEROOT)/glc
+	$(RM) -f $(LIBROOT)/libglc.a
+	$(RM) -fr $(EXEROOT)/glc
 
 cleanice:
-        $(RM) -f $(LIBROOT)/libice.a
-        $(RM) -fr $(EXEROOT)/ice/obj
+	$(RM) -f $(LIBROOT)/libice.a
+	$(RM) -fr $(EXEROOT)/ice/obj
 
 cleanrof:
-        $(RM) -f $(LIBROOT)/librof.a
-        $(RM) -fr $(EXEROOT)/rof/obj
+	$(RM) -f $(LIBROOT)/librof.a
+	$(RM) -fr $(EXEROOT)/rof/obj
 
 cleanlnd:
-        $(RM) -f $(LIBROOT)/$(LNDLIB)
-        $(RM) -fr $(LNDOBJDIR)
+	$(RM) -f $(LIBROOT)/$(LNDLIB)
+	$(RM) -fr $(LNDOBJDIR)
 
 cleancsmshare:
-        $(RM) -f $(CSMSHARELIB)
-        $(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
+	$(RM) -f $(CSMSHARELIB)
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
 
 cleanpio:
-        $(RM) -f $(PIO_LIBDIR)/libpio*
-        $(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/pio
+	$(RM) -f $(PIO_LIBDIR)/libpio*
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/pio
 
 cleanmct:
-        $(RM) -f $(MCTLIBS)
-        $(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/mct
+	$(RM) -f $(MCTLIBS)
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/mct
 
 cleangptl:
-        $(RM) -f $(GPTLLIB)
-        $(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/gptl
+	$(RM) -f $(GPTLLIB)
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/gptl
 
 clean: cleanatm cleanocn cleanwav cleanglc cleanice cleanrof cleanlnd cleanesp cleaniac
 
