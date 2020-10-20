@@ -353,6 +353,11 @@ class J_TestCreateNewcase(unittest.TestCase):
         cls = self.__class__
         os.chdir(cls._root_dir)
 
+    def run(self, result=None):
+        """ Stop after first error """
+        if not result.errors:
+            super(J_TestCreateNewcase, self).run(result)
+
     def test_a_createnewcase(self):
         cls = self.__class__
 
