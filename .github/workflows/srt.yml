@@ -61,7 +61,7 @@ jobs:
         id: cache-netcdf-fortran
         uses: actions/cache@v2
         with:
-          path: ~/netcdf-fortran
+          path: ${{ env.NETCDF_FORTRAN_PATH }}
           key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
       - name: netcdf fortran build
         if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
@@ -71,9 +71,15 @@ jobs:
           tar -xzvf ${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
           ls -l
           pushd netcdf-fortran-*
-          ./configure --prefix=$HOME/netcdf-fortran
+          ./configure --prefix=${{ env.NETCDF_FORTRAN_PATH }}
           make
           make install
+          # link netcdf c library here to simplify build
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
+          ln -fs /usr/include/*netcdf* .
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
+          ln -fs /usr/lib/*netcdf* .
+          ls
 
       - name: Cache inputdata
         id: cache-inputdata
@@ -87,4 +93,6 @@ jobs:
           mkdir -p $HOME/cesm/scratch
           mkdir -p $HOME/cesm/inputdata
           cd $HOME/work/cime/cime/scripts/tests
+          export NETCDF=$HOME/netcdf-fortran
+          export PATH=$NETCDF/bin:$PATH
           ./scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest
