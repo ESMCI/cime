@@ -84,7 +84,8 @@ jobs:
           make install
 
       - name: link netcdf-c to netcdf-fortran path
-          # link netcdf c library here to simplify build
+        # link netcdf c library here to simplify build
+        run: |
           pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
           ln -fs /usr/include/*netcdf* .
           pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
