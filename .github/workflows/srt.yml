@@ -95,7 +95,9 @@ jobs:
         with:
           path: $HOME/cesm/inputdata
           key: inputdata
-
+#
+#      The following can be used to ssh to the testnode for debugging
+#      see https://github.com/mxschmitt/action-tmate for details
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v3
 
