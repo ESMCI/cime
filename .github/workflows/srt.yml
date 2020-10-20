@@ -82,12 +82,13 @@ jobs:
           ./configure --prefix=${{ env.NETCDF_FORTRAN_PATH }}
           make
           make install
+
+      - name: link netcdf-c to netcdf-fortran path
           # link netcdf c library here to simplify build
           pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
           ln -fs /usr/include/*netcdf* .
           pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
           ln -fs /usr/lib/*netcdf* .
-          ls
 
       - name: Cache inputdata
         id: cache-inputdata
