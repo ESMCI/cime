@@ -187,13 +187,14 @@ def _set_pio_valid_values(case, valid_values):
     logger.warning("Updating valid_values for PIO_TYPENAME: {}".format(valid_values))
     env_run = case.get_env("run")
     env_run.set_valid_values("PIO_TYPENAME",valid_values)
-
+    
     for comp in case.get_values("COMP_CLASSES"):
         comp_pio_typename = "{}_PIO_TYPENAME".format(comp)
         current_value = case.get_value(comp_pio_typename)
         if current_value not in valid_values:
-            logger.warning("Resetting PIO_TYPENAME to netcdf for component {}".format(comp))
+            logger.warning("Resetting PIO_TYPENAME=netcdf and PIO_REARRANGER=1 for component {}".format(comp))
             env_run.set_value(comp_pio_typename,"netcdf")
+            env_run.set_value("PIO_REARRANGER", 1)
 
 def _main(argv, documentation):
     bldroot, installpath, caseroot = parse_command_line(argv, documentation)
