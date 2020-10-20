@@ -1701,6 +1701,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart(self):
     ###########################################################################
+        if (NO_RUN):
+            self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
             walltime="00:15:00"
@@ -1717,6 +1719,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart_too_many_fails(self):
     ###########################################################################
+        if (NO_RUN):
+            self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
             walltime="00:15:00"
