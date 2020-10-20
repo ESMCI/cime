@@ -109,7 +109,7 @@ jobs:
           mkdir -p $HOME/cesm/inputdata
           cd $HOME/work/cime/cime/scripts/tests
           export NETCDF=$HOME/netcdf-fortran
-          ls $NETCDF
+          find $HOME -name netcdf-fortran -type d
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
           ./scripts_regression_tests.py --no-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
