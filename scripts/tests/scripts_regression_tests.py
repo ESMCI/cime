@@ -46,6 +46,7 @@ NO_BATCH    = False
 NO_CMAKE    = False
 TEST_ROOT   = None
 NO_TEARDOWN = False
+NO_RUN      = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -2502,6 +2503,9 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
+        if (NO_RUN):
+            self.skipTest("Skipping fortran test")
+
         testname = "ERS_Ln7.f19_g16_rx1.A"
         casedir = self._create_test([testname, "--no-build"], test_id=self._baseline_name)
 
@@ -3543,6 +3547,10 @@ OR
                         help="Do not submit jobs to batch system, run locally."
                         " If false, will default to machine setting.")
 
+    parser.add_argument("--no-run", action="store_true",
+                        help="Do not run any fortran jobs."
+                        " used for github actions")
+
     parser.add_argument("--no-cmake", action="store_true",
                         help="Do not run cmake tests")
 
@@ -3574,6 +3582,9 @@ OR
     NO_CMAKE       = ns.no_cmake
     GLOBAL_TIMEOUT = ns.timeout
     NO_TEARDOWN    = ns.no_teardown
+    NO_RUN         = ns.no_run
+    if NO_RUN:
+        FAST_ONLY = True
 
     os.chdir(os.path.dirname(__file__))
 
