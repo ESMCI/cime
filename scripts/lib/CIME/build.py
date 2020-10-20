@@ -239,6 +239,9 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
             # Add logging before running
             make_cmd = "{} >> {} 2>&1".format(make_cmd, bldlog)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
+    if stat:
+        with open(bldlog, "r") as fd:
+            print(fd.read())
 
     expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(cime_model, bldlog))
 
@@ -414,13 +417,17 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
         expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
+        if lib == "mct":
+            run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
+                           [full_lib_path, os.path.join(exeroot, sharedpath), case])
+        else:
+            run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
+                           [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
 
-        run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
-                       [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
 
-        if case.get_value("MACH") == "ubuntu-latest":
-            with open(file_build, "r") as fd:
-                print(fd.read())
+
+        with open(file_build, "r") as fd:
+            print(fd.read())
 
         analyze_build_log(lib, file_build, compiler)
         logs.append(file_build)
