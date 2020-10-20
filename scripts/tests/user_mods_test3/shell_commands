@@ -1,3 +1,4 @@
+#!/usr/bin/sh
 pioversion=`./xmlquery --value PIO_VERSION`
 if [[ "$pioversion" -eq "1" ]]
 then
