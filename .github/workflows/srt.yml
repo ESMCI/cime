@@ -91,6 +91,9 @@ jobs:
           path: $HOME/cesm/inputdata
           key: inputdata
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: scripts regression tests
         run: |
           mkdir -p $HOME/cesm/scratch
@@ -99,6 +102,3 @@ jobs:
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           ./scripts_regression_tests.py --fast --compiler gnu --no-batch --mpilib openmpi --machine ubuntu-latest K_TestCimeCase.test_self_build_cprnc
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
