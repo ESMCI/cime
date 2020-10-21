@@ -83,13 +83,13 @@ jobs:
           make
           make install
 
-#      - name: link netcdf-c to netcdf-fortran path
-#        # link netcdf c library here to simplify build
-#        run: |
-#          pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
-#          ln -fs /usr/include/*netcdf* .
-#          pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
-#          ln -fs /usr/lib/*netcdf* .
+      - name: link netcdf-c to netcdf-fortran path
+        # link netcdf c library here to simplify build
+        run: |
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
+          ln -fs /usr/include/*netcdf* .
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
+          ln -fs /usr/lib/*netcdf* .
 
       - name: Cache inputdata
         id: cache-inputdata
@@ -109,7 +109,8 @@ jobs:
           mkdir -p $HOME/cesm/inputdata
           cd $HOME/work/cime/cime/scripts/tests
           export NETCDF=$HOME/netcdf-fortran
-          find $HOME -name \*netcdf\*
+          nc-config --all
+          find /usr/ -name libnetcdf\*
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
           ./scripts_regression_tests.py --no-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
