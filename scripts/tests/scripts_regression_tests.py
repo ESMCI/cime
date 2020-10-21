@@ -43,6 +43,7 @@ FAST_ONLY   = False
 NO_BATCH    = False
 NO_CMAKE    = False
 TEST_ROOT   = None
+NO_FORTRAN_RUN = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -2010,6 +2011,8 @@ class L_TestSaveTimings(TestCreateTestCommon):
     ###########################################################################
     def simple_test(self, manual_timing=False):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         timing_flag = "" if manual_timing else "--save-timing"
         self._create_test(["SMS_Ln9_P1.f19_g16_rx1.A", timing_flag, "--walltime=0:15:00"], test_id=self._baseline_name)
 
@@ -2762,6 +2765,7 @@ def _main_func(description):
     global TEST_MPILIB
     global TEST_ROOT
     global GLOBAL_TIMEOUT
+    global NO_FORTRAN_RUN
     config = CIME.utils.get_cime_config()
 
     help_str = \
@@ -2792,6 +2796,10 @@ OR
                         help="Do not submit jobs to batch system, run locally."
                         " If false, will default to machine setting.")
 
+    parser.add_argument("--no-fortran-run", action="store_true",
+                        help="Do not run any fortran jobs. Implies --fast"
+                        " Used for github actions")
+
     parser.add_argument("--no-cmake", action="store_true",
                         help="Do not run cmake tests")
 
@@ -2819,6 +2827,9 @@ OR
     NO_BATCH       = ns.no_batch
     NO_CMAKE       = ns.no_cmake
     GLOBAL_TIMEOUT = ns.timeout
+    NO_FORTRAN_RUN = ns.no_fortran_run
+    if NO_FORTRAN_RUN:
+        FAST_ONLY = True
 
     if ns.machine is not None:
         MACHINE = Machines(machine=ns.machine)

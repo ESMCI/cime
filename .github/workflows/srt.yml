@@ -1,0 +1,115 @@
+# CIME scripts regression tests
+
+name: scripts regression tests
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master, maint-5.6 ]
+  pull_request:
+    branches: [ master, maint-5.6 ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.8]
+    env:
+      CC: mpicc
+      FC: mpifort
+      CXX: mpicxx
+      CPPFLAGS: "-I/usr/include -I/usr/local/include"
+      # Versions of all dependencies can be updated here
+      PNETCDF_VERSION: pnetcdf-1.12.1
+      NETCDF_FORTRAN_VERSION: v4.5.2
+      NETCDF_C_PATH: /usr
+      NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
+      PNETCDF_PATH: ${HOME}/pnetcdf
+      CIME_MODEL: cesm
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - id: load-env
+        run: sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: cache pnetcdf
+        id: cache-pnetcdf
+        uses: actions/cache@v2
+        with:
+          path: ~/pnetcdf
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+
+      - name: pnetcdf build
+        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+        run: |
+          wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
+          tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
+          ls -l
+          pushd ${{ env.PNETCDF_VERSION }}
+          ./configure --prefix=$HOME/pnetcdf --enable-shared --disable-cxx
+          make
+          make install
+          popd
+
+      - name: Cache netcdf-fortran
+        id: cache-netcdf-fortran
+        uses: actions/cache@v2
+        with:
+          path: ~/netcdf-fortran
+          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
+
+      - name: netcdf fortran build
+        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get install libnetcdf-dev
+          wget https://github.com/Unidata/netcdf-fortran/archive/${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
+          tar -xzvf ${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
+          ls -l
+          pushd netcdf-fortran-*
+          ./configure --prefix=$HOME/netcdf-fortran
+          make
+          make install
+
+      - name: link netcdf-c to netcdf-fortran path
+        # link netcdf c library here to simplify build
+        run: |
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
+          ln -fs /usr/include/*netcdf* .
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
+          clibdir=`nc-config --libdir`
+          ln -fs $clibdir/lib* .
+
+      - name: Cache inputdata
+        id: cache-inputdata
+        uses: actions/cache@v2
+        with:
+          path: $HOME/cesm/inputdata
+          key: inputdata
+#
+#      The following can be used to ssh to the testnode for debugging
+#      see https://github.com/mxschmitt/action-tmate for details
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
+
+      - name: scripts regression tests
+        run: |
+          mkdir -p $HOME/cesm/scratch
+          mkdir -p $HOME/cesm/inputdata
+          cd $HOME/work/cime/cime/scripts/tests
+          export NETCDF=$HOME/netcdf-fortran
+          export PATH=$NETCDF/bin:$PATH
+          export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
+          ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
