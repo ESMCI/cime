@@ -46,7 +46,7 @@ NO_BATCH    = False
 NO_CMAKE    = False
 TEST_ROOT   = None
 NO_TEARDOWN = False
-NO_RUN      = False
+NO_FORTRAN_RUN      = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -1696,7 +1696,7 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart(self):
     ###########################################################################
-        if (NO_RUN):
+        if (NO_FORTRAN_RUN):
             self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
@@ -1714,7 +1714,7 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart_too_many_fails(self):
     ###########################################################################
-        if (NO_RUN):
+        if (NO_FORTRAN_RUN):
             self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
@@ -1756,7 +1756,7 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     ###############################################################################
     def test_bless_test_results(self):
     ###############################################################################
-        if (NO_RUN):
+        if (NO_FORTRAN_RUN):
             self.skipTest("Skipping fortran test")
         # Test resubmit scenario if Machine has a batch system
         if MACHINE.has_batch_system():
@@ -1808,7 +1808,7 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     def test_rebless_namelist(self):
     ###############################################################################
         # Generate some namelist baselines
-        if (NO_RUN):
+        if (NO_FORTRAN_RUN):
             self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
         if CIME.utils.get_model() == "e3sm":
@@ -2506,7 +2506,7 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
-        if (NO_RUN):
+        if (NO_FORTRAN_RUN):
             self.skipTest("Skipping fortran test")
 
         testname = "ERS_Ln7.f19_g16_rx1.A"
@@ -2574,7 +2574,7 @@ class L_TestSaveTimings(TestCreateTestCommon):
     ###########################################################################
     def simple_test(self, manual_timing=False):
     ###########################################################################
-        if (NO_RUN):
+        if (NO_FORTRAN_RUN):
             self.skipTest("Skipping fortran test")
         timing_flag = "" if manual_timing else "--save-timing"
         driver = CIME.utils.get_cime_default_driver()
@@ -3522,7 +3522,7 @@ def _main_func(description):
     global TEST_ROOT
     global GLOBAL_TIMEOUT
     global NO_TEARDOWN
-    global NO_RUN
+    global NO_FORTRAN_RUN
     config = CIME.utils.get_cime_config()
 
     help_str = \
@@ -3553,7 +3553,7 @@ OR
                         help="Do not submit jobs to batch system, run locally."
                         " If false, will default to machine setting.")
 
-    parser.add_argument("--no-run", action="store_true",
+    parser.add_argument("--no-fortran-run", action="store_true",
                         help="Do not run any fortran jobs."
                         " used for github actions")
 
@@ -3588,8 +3588,8 @@ OR
     NO_CMAKE       = ns.no_cmake
     GLOBAL_TIMEOUT = ns.timeout
     NO_TEARDOWN    = ns.no_teardown
-    NO_RUN         = ns.no_run
-    if NO_RUN:
+    NO_FORTRAN_RUN = ns.no_run
+    if NO_FORTRAN_RUN:
         FAST_ONLY = True
 
     os.chdir(os.path.dirname(__file__))
