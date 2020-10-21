@@ -3588,7 +3588,7 @@ OR
     NO_CMAKE       = ns.no_cmake
     GLOBAL_TIMEOUT = ns.timeout
     NO_TEARDOWN    = ns.no_teardown
-    NO_FORTRAN_RUN = ns.no_run
+    NO_FORTRAN_RUN = ns.no_fortran_run
     if NO_FORTRAN_RUN:
         FAST_ONLY = True
 
