@@ -1305,6 +1305,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         self._create_test(["NODEFAIL_P1.f09_g16.X"], test_id=self._baseline_name)
 
         casedir = os.path.join(self._testroot,
@@ -1318,6 +1320,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart_too_many_fails(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         self._create_test(["NODEFAIL_P1.f09_g16.X"], test_id=self._baseline_name, env_changes="NODEFAIL_NUM_FAILS=5", run_errors=True)
 
         casedir = os.path.join(self._testroot,
@@ -1344,6 +1348,8 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     def test_bless_test_results(self):
     ###############################################################################
         # Generate some baselines
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         test_name = "TESTRUNDIFF_P1.f19_g16_rx1.A"
 
         if CIME.utils.get_model() == "e3sm":
