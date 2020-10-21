@@ -3554,8 +3554,8 @@ OR
                         " If false, will default to machine setting.")
 
     parser.add_argument("--no-fortran-run", action="store_true",
-                        help="Do not run any fortran jobs."
-                        " used for github actions")
+                        help="Do not run any fortran jobs. Implies --fast"
+                        " Used for github actions")
 
     parser.add_argument("--no-cmake", action="store_true",
                         help="Do not run cmake tests")
