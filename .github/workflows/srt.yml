@@ -68,7 +68,7 @@ jobs:
         id: cache-netcdf-fortran
         uses: actions/cache@v2
         with:
-          path: ${{ env.NETCDF_FORTRAN_PATH }}
+          path: ~/netcdf-fortran
           key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
 
       - name: netcdf fortran build
@@ -79,17 +79,17 @@ jobs:
           tar -xzvf ${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
           ls -l
           pushd netcdf-fortran-*
-          ./configure --prefix=${{ env.NETCDF_FORTRAN_PATH }}
+          ./configure --prefix=~/netcdf-fortran
           make
           make install
 
-#      - name: link netcdf-c to netcdf-fortran path
-#        # link netcdf c library here to simplify build
-#        run: |
-#          pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
-#          ln -fs /usr/include/*netcdf* .
-#          pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
-#          ln -fs /usr/lib/*netcdf* .
+      - name: link netcdf-c to netcdf-fortran path
+        # link netcdf c library here to simplify build
+        run: |
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/include
+          ln -fs /usr/include/*netcdf* .
+          pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
+          ln -fs /usr/lib/*netcdf* .
 
       - name: Cache inputdata
         id: cache-inputdata
