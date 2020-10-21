@@ -90,7 +90,7 @@ jobs:
           ln -fs /usr/include/*netcdf* .
           pushd ${{ env.NETCDF_FORTRAN_PATH }}/lib
           clibdir=`nc-config --libdir`
-          ln -fs $clibdir/* .
+          ln -fs $clibdir/lib* .
 
       - name: Cache inputdata
         id: cache-inputdata
