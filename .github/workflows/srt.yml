@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - id: load-env
-        run: sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake
+        run: sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
