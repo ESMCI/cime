@@ -179,9 +179,9 @@ ifdef NETCDF_C_PATH
   ifndef LIB_NETCDF_FORTRAN
     LIB_NETCDF_FORTRAN:=$(NETCDF_FORTRAN_PATH)/lib
   endif
- else ifdef NETCDF_FORTRAN_PATH
+else ifdef NETCDF_FORTRAN_PATH
   $(error "NETCDF_FORTRAN_PATH specified without NETCDF_C_PATH")
- else ifdef NETCDF_PATH
+else ifdef NETCDF_PATH
   NETCDF_SEPARATE:=FALSE
   ifndef INC_NETCDF
     INC_NETCDF:=$(NETCDF_PATH)/include
@@ -320,7 +320,7 @@ ifeq ($(USE_ESMF_LIB), TRUE)
   -include $(CIME_ESMFMKFILE)
   CPPDEFS += -DESMF_VERSION_MAJOR=$(ESMF_VERSION_MAJOR) -DESMF_VERSION_MINOR=$(ESMF_VERSION_MINOR)
   FFLAGS += $(ESMF_F90COMPILEPATHS)
-  SLIBS  += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS)
+  SLIBS	 += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS)
 endif
 
 # Stub libraries do not need to be built for nuopc driver
@@ -414,11 +414,11 @@ endif
 #===============================================================================
 
 ifeq ($(strip $(MPILIB)), mpi-serial)
-  CC      := $(SCC)
-  FC      := $(SFC)
-  CXX     := $(SCXX)
-  MPIFC   := $(SFC)
-  MPICC   := $(SCC)
+  CC	  := $(SCC)
+  FC	  := $(SFC)
+  CXX	  := $(SCXX)
+  MPIFC	  := $(SFC)
+  MPICC	  := $(SCC)
   MPICXX  := $(SCXX)
   CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
 else
@@ -544,7 +544,7 @@ INCLDIR +=	-I$(INSTALL_SHAREDPATH)/include
 #
 CFLAGS+=$(CPPDEFS)
 CXXFLAGS+=$(CPPDEFS)
-CONFIG_ARGS +=  CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
+CONFIG_ARGS +=	CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
 		MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
 		CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
 		LDFLAGS="$(LDFLAGS)"
@@ -634,7 +634,7 @@ endif
 
 
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
-ifeq (,$(findstring netcdf,$(SLIBS)))
+ifeq (,$(findstring lnetcdf,$(SLIBS)))
   ifeq ($(NETCDF_SEPARATE), FALSE)
     SLIBS += -L$(LIB_NETCDF) -lnetcdff -lnetcdf
   else ifeq ($(NETCDF_SEPARATE), TRUE)
@@ -664,7 +664,7 @@ ifeq ($(strip $(USE_TRILINOS)), TRUE)
   SLIBS += -L$(LIB_TRILINOS) $(Trilinos_LIBRARIES) $(Trilinos_TPL_LIBRARY_DIRS) $(Trilinos_TPL_LIBRARIES)
 endif
 
-# Add Albany libraries.  These are defined in the ALBANY_LINK_LIBS env var that was included above
+# Add Albany libraries.	 These are defined in the ALBANY_LINK_LIBS env var that was included above
 ifeq ($(strip $(USE_ALBANY)), TRUE)
   SLIBS += $(ALBANY_LINK_LIBS)
 endif

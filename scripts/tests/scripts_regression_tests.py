@@ -46,6 +46,7 @@ NO_BATCH    = False
 NO_CMAKE    = False
 TEST_ROOT   = None
 NO_TEARDOWN = False
+NO_FORTRAN_RUN      = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -1695,6 +1696,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
             walltime="00:15:00"
@@ -1711,6 +1714,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart_too_many_fails(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
             walltime="00:15:00"
@@ -1751,6 +1756,8 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     ###############################################################################
     def test_bless_test_results(self):
     ###############################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         # Test resubmit scenario if Machine has a batch system
         if MACHINE.has_batch_system():
             test_names = ["TESTRUNDIFFRESUBMIT_P1.f19_g16_rx1.A", "TESTRUNDIFF_P1.f19_g16_rx1.A"]
@@ -1801,6 +1808,8 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     def test_rebless_namelist(self):
     ###############################################################################
         # Generate some namelist baselines
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
         if CIME.utils.get_model() == "e3sm":
             genargs = ["-n", "-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
@@ -2497,6 +2506,9 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
+
         testname = "ERS_Ln7.f19_g16_rx1.A"
         casedir = self._create_test([testname, "--no-build"], test_id=self._baseline_name)
 
@@ -2562,6 +2574,8 @@ class L_TestSaveTimings(TestCreateTestCommon):
     ###########################################################################
     def simple_test(self, manual_timing=False):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         timing_flag = "" if manual_timing else "--save-timing"
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
@@ -3485,7 +3499,8 @@ def write_provenance_info():
     if TEST_MPILIB is not None:
         logging.info("Testing mpilib = %s"% TEST_MPILIB)
     logging.info("Test root: %s" % TEST_ROOT)
-    logging.info("Test driver: %s\n" % CIME.utils.get_cime_default_driver())
+    logging.info("Test driver: %s" % CIME.utils.get_cime_default_driver())
+    logging.info("Python version {}\n".format(sys.version))
 
 def cleanup():
     # if the TEST_ROOT directory exists and is empty, remove it
@@ -3507,6 +3522,7 @@ def _main_func(description):
     global TEST_ROOT
     global GLOBAL_TIMEOUT
     global NO_TEARDOWN
+    global NO_FORTRAN_RUN
     config = CIME.utils.get_cime_config()
 
     help_str = \
@@ -3536,6 +3552,10 @@ OR
     parser.add_argument("--no-batch", action="store_true",
                         help="Do not submit jobs to batch system, run locally."
                         " If false, will default to machine setting.")
+
+    parser.add_argument("--no-fortran-run", action="store_true",
+                        help="Do not run any fortran jobs. Implies --fast"
+                        " Used for github actions")
 
     parser.add_argument("--no-cmake", action="store_true",
                         help="Do not run cmake tests")
@@ -3568,6 +3588,9 @@ OR
     NO_CMAKE       = ns.no_cmake
     GLOBAL_TIMEOUT = ns.timeout
     NO_TEARDOWN    = ns.no_teardown
+    NO_FORTRAN_RUN = ns.no_fortran_run
+    if NO_FORTRAN_RUN:
+        FAST_ONLY = True
 
     os.chdir(os.path.dirname(__file__))
 
