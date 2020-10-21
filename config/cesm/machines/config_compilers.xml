@@ -1258,7 +1258,7 @@ using a fortran linker.
 
 <compiler MACH="ubuntu-latest">
   <SLIBS>
-    <append>-L$(NETCDF_DIR)/lib -lnetcdff -L$(NETCDF_DIR)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF_DIR)/lib </append>
+    <append>-L$(NETCDF)/lib -lnetcdff -L$(NETCDF)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF)/lib -Wl,$(PNETCDF)/lib</append>
   </SLIBS>
 </compiler>
 
