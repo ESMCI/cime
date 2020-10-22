@@ -69,12 +69,12 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="default">
       <executable>aprun</executable>
       <arguments>
-        <arg name="hyperthreading" default="1"> -j {{ hyperthreading }}</arg>
-        <arg name="num_tasks"> -n {{ total_tasks }}</arg>
-        <arg name="tasks_per_node"> -N $MAX_MPITASKS_PER_NODE</arg>
-        <arg name="tasks_per_numa" > -S {{ tasks_per_numa }}</arg>
-        <arg name="thread_count"> -d $ENV{OMP_NUM_THREADS}</arg>
-        <arg name="env_thread_count">--mpmd-env OMP_NUM_THREADS=$OMP_NUM_THREADS</arg>
+	<arg name="hyperthreading" default="1"> -j {{ hyperthreading }}</arg>
+	<arg name="num_tasks"> -n {{ total_tasks }}</arg>
+	<arg name="tasks_per_node"> -N $MAX_MPITASKS_PER_NODE</arg>
+	<arg name="tasks_per_numa" > -S {{ tasks_per_numa }}</arg>
+	<arg name="thread_count"> -d $ENV{OMP_NUM_THREADS}</arg>
+	<arg name="env_thread_count">--mpmd-env OMP_NUM_THREADS=$OMP_NUM_THREADS</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -87,27 +87,27 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="rm">craype-x86-skylake</command>
-        <command name="rm">PrgEnv-pgi</command>
-        <command name="rm">PrgEnv-intel</command>
-        <command name="rm">PrgEnv-cray</command>
-        <command name="rm">PrgEnv-gnu</command>
-        <command name="rm">cray-netcdf</command>
-        <command name="rm">cray-hdf5</command>
-        <command name="rm">cray-parallel-netcdf</command>
-        <command name="rm">papi</command>
+	<command name="rm">craype-x86-skylake</command>
+	<command name="rm">PrgEnv-pgi</command>
+	<command name="rm">PrgEnv-intel</command>
+	<command name="rm">PrgEnv-cray</command>
+	<command name="rm">PrgEnv-gnu</command>
+	<command name="rm">cray-netcdf</command>
+	<command name="rm">cray-hdf5</command>
+	<command name="rm">cray-parallel-netcdf</command>
+	<command name="rm">papi</command>
       </modules>
       <modules compiler="intel">
-        <command name="load">PrgEnv-intel</command>
-        <command name="load">craype-x86-skylake</command>
-        <command name="load">craype-hugepages2M</command>
-        <command name="rm">perftools-base/7.0.4</command>
-        <command name="load">cray-netcdf/4.6.1.3</command>
-        <command name="load">cray-hdf5/1.10.2.0</command>
-        <command name="load">cray-parallel-netcdf/1.11.1.1</command>
-        <command name="load">papi/5.6.0.4</command>
-        <command name="load">gridftp/6.0</command>
-        <command name="load">cray-python/3.6.5.1</command>
+	<command name="load">PrgEnv-intel</command>
+	<command name="load">craype-x86-skylake</command>
+	<command name="load">craype-hugepages2M</command>
+	<command name="rm">perftools-base/7.0.4</command>
+	<command name="load">cray-netcdf/4.6.1.3</command>
+	<command name="load">cray-hdf5/1.10.2.0</command>
+	<command name="load">cray-parallel-netcdf/1.11.1.1</command>
+	<command name="load">papi/5.6.0.4</command>
+	<command name="load">gridftp/6.0</command>
+	<command name="load">cray-python/3.6.5.1</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -148,42 +148,42 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"/>
+	<command name="purge"/>
       </modules>
       <modules compiler="intel">
-        <command name="load">ANACONDA2/python2.7</command>
-        <command name="load">INTEL/intel_xe_2015.3.187</command>
-        <command name="load">SZIP/szip-2.1_int15</command>
+	<command name="load">ANACONDA2/python2.7</command>
+	<command name="load">INTEL/intel_xe_2015.3.187</command>
+	<command name="load">SZIP/szip-2.1_int15</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
-        <command name="load">ESMF/esmf-6.3.0rp1-intelmpi-64-g_int15</command>
+	<command name="load">ESMF/esmf-6.3.0rp1-intelmpi-64-g_int15</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
-        <command name="load">ESMF/esmf-6.3.0rp1-intelmpi-64-O_int15</command>
+	<command name="load">ESMF/esmf-6.3.0rp1-intelmpi-64-O_int15</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
-        <command name="load">ESMF/esmf-6.3.0rp1-mpiuni-64-g_int15</command>
+	<command name="load">ESMF/esmf-6.3.0rp1-mpiuni-64-g_int15</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
-        <command name="load">ESMF/esmf-6.3.0rp1-mpiuni-64-O_int15</command>
+	<command name="load">ESMF/esmf-6.3.0rp1-mpiuni-64-O_int15</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">HDF5/hdf5-1.8.15-patch1</command>
-        <command name="load">NETCDF/netcdf-C_4.3.3.1-F_4.4.2_C++_4.2.1</command>
+	<command name="load">HDF5/hdf5-1.8.15-patch1</command>
+	<command name="load">NETCDF/netcdf-C_4.3.3.1-F_4.4.2_C++_4.2.1</command>
       </modules>
       <modules mpilib="!mpi-serial">
-        <command name="load">HDF5/hdf5-1.8.15-patch1_parallel</command>
-        <command name="load">NETCDF/netcdf-C_4.3.3.1-F_4.4.2_C++_4.2.1_parallel</command>
-        <command name="load">PARALLEL_NETCDF/parallel-netcdf-1.6.1</command>
+	<command name="load">HDF5/hdf5-1.8.15-patch1_parallel</command>
+	<command name="load">NETCDF/netcdf-C_4.3.3.1-F_4.4.2_C++_4.2.1_parallel</command>
+	<command name="load">PARALLEL_NETCDF/parallel-netcdf-1.6.1</command>
       </modules>
       <modules>
-        <command name="load">CMAKE/cmake-3.3.0-rc1</command>
+	<command name="load">CMAKE/cmake-3.3.0-rc1</command>
       </modules>
       <modules compiler="intel">
-        <command name="unload">INTEL/intel_xe_2013.5.192</command>
-        <command name="unload">INTEL/intel_xe_2013</command>
-        <command name="unload">HDF5/hdf5-1.8.10-patch1</command>
-        <command name="load">INTEL/intel_xe_2015.3.187</command>
+	<command name="unload">INTEL/intel_xe_2013.5.192</command>
+	<command name="unload">INTEL/intel_xe_2013</command>
+	<command name="unload">HDF5/hdf5-1.8.10-patch1</command>
+	<command name="load">INTEL/intel_xe_2015.3.187</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -442,8 +442,8 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">esmf-7.1.0r-ncdfio-uni-O</command>
       </modules>
       <modules compiler="gnu">
-        <command name="load">gnu/7.3.0</command>
-        <command name="load">openblas/0.2.20</command>
+	<command name="load">gnu/7.3.0</command>
+	<command name="load">openblas/0.2.20</command>
       </modules>
       <modules mpilib="mpt" compiler="gnu">
 	<command name="load">mpt/2.16</command>
@@ -464,8 +464,8 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">netcdf/4.6.3</command>
       </modules>
       <modules mpilib="openmpi" compiler="gnu">
-        <command name="load">openmpi/3.0.1</command>
-        <command name="load">netcdf/4.6.1</command>
+	<command name="load">openmpi/3.0.1</command>
+	<command name="load">netcdf/4.6.1</command>
       </modules>
       <modules>
 	<command name="load">ncarcompilers/0.5.0</command>
@@ -1490,8 +1490,8 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">mkl</command>
       </modules>
       <modules compiler="gnu">
-        <command name="load">gnu/6.3.0</command>
-        <command name="load">openblas/0.2.14</command>
+	<command name="load">gnu/6.3.0</command>
+	<command name="load">openblas/0.2.14</command>
       </modules>
       <modules mpilib="mpt">
 	<command name="load">mpt/2.17</command>
@@ -1551,20 +1551,20 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="perl">/usr/Modules/bin/modulecmd perl</cmd_path>
       <cmd_path lang="python">/usr/Modules/bin/modulecmd python</cmd_path>
       <modules>
-        <command name="purge"/>
-        <command name="load">cmake</command>
-        <command name="load">perl xml-libxml switch python/2.7</command>
+	<command name="purge"/>
+	<command name="load">cmake</command>
+	<command name="load">perl xml-libxml switch python/2.7</command>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel/2016.4.072</command>
-        <command name="load">mkl</command>
+	<command name="load">intel/2016.4.072</command>
+	<command name="load">mkl</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial">
-        <command name="load">netcdf/4.4.1.1-intel-s</command>
+	<command name="load">netcdf/4.4.1.1-intel-s</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial">
-        <command name="load">openmpi</command>
-        <command name="load">netcdf/4.4.1.1-intel-p</command>
+	<command name="load">openmpi</command>
+	<command name="load">netcdf/4.4.1.1-intel-p</command>
       </modules>
     </module_system>
   </machine>
@@ -1589,8 +1589,8 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="default">
       <executable>mpirun</executable>
       <arguments>
-        <arg name="num_tasks"> -np {{ total_tasks }}</arg>
-        <arg name="tasks_per_node"> -npernode $MAX_MPITASKS_PER_NODE</arg>
+	<arg name="num_tasks"> -np {{ total_tasks }}</arg>
+	<arg name="tasks_per_node"> -npernode $MAX_MPITASKS_PER_NODE</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1603,20 +1603,20 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="perl">/usr/Modules/bin/modulecmd perl</cmd_path>
       <cmd_path lang="python">/usr/Modules/bin/modulecmd python</cmd_path>
       <modules>
-        <command name="purge"/>
-        <command name="load">cmake</command>
-        <command name="load">perl xml-libxml switch python/2.7</command>
+	<command name="purge"/>
+	<command name="load">cmake</command>
+	<command name="load">perl xml-libxml switch python/2.7</command>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel/2016.4.072</command>
-        <command name="load">mkl</command>
+	<command name="load">intel/2016.4.072</command>
+	<command name="load">mkl</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial">
-        <command name="load">netcdf/4.4.1.1-intel-s</command>
+	<command name="load">netcdf/4.4.1.1-intel-s</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial">
-        <command name="load">openmpi</command>
-        <command name="load">netcdf/4.4.1.1-intel-p</command>
+	<command name="load">openmpi</command>
+	<command name="load">netcdf/4.4.1.1-intel-p</command>
       </modules>
     </module_system>
   </machine>
@@ -1657,20 +1657,20 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
 
       <modules>
-        <command name="reset"/>
-        <command name="load">cmake</command>
+	<command name="reset"/>
+	<command name="load">cmake</command>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel/18.0.2</command>
+	<command name="load">intel/18.0.2</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">netcdf/4.6.2</command>
+	<command name="load">netcdf/4.6.2</command>
       </modules>
       <modules mpilib="mpich">
 	<command name="load">cray_mpich</command>
       </modules>
       <modules mpilib="!mpi-serial">
-        <command name="load">pnetcdf/1.8.0</command>
+	<command name="load">pnetcdf/1.8.0</command>
 	<command name="load">parallel-netcdf/4.6.2</command>
       </modules>
     </module_system>
@@ -1701,8 +1701,8 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="default">
       <executable>mpirun</executable>
       <arguments>
-        <arg name="num_tasks"> -np {{ total_tasks }}</arg>
-        <arg name="tasks_per_node"> --map-by ppr:{{ tasks_per_numa }}:socket:PE=$ENV{OMP_NUM_THREADS} --bind-to hwthread</arg>
+	<arg name="num_tasks"> -np {{ total_tasks }}</arg>
+	<arg name="tasks_per_node"> --map-by ppr:{{ tasks_per_numa }}:socket:PE=$ENV{OMP_NUM_THREADS} --bind-to hwthread</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1715,26 +1715,26 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <cmd_path lang="sh">module</cmd_path>
       <modules>
-        <command name="purge"/>
-        <command name="load">sems-env</command>
-        <command name="load">acme-env</command>
-        <command name="load">sems-git</command>
-        <command name="load">sems-python/2.7.9</command>
-        <command name="load">sems-cmake/2.8.12</command>
+	<command name="purge"/>
+	<command name="load">sems-env</command>
+	<command name="load">acme-env</command>
+	<command name="load">sems-git</command>
+	<command name="load">sems-python/2.7.9</command>
+	<command name="load">sems-cmake/2.8.12</command>
       </modules>
       <modules compiler="gnu">
-        <command name="load">sems-gcc/5.3.0</command>
+	<command name="load">sems-gcc/5.3.0</command>
       </modules>
       <modules compiler="intel">
-        <command name="load">sems-intel/16.0.3</command>
+	<command name="load">sems-intel/16.0.3</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">sems-netcdf/4.4.1/exo</command>
-        <command name="load">acme-pfunit/3.2.8/base</command>
+	<command name="load">sems-netcdf/4.4.1/exo</command>
+	<command name="load">acme-pfunit/3.2.8/base</command>
       </modules>
       <modules mpilib="!mpi-serial">
-        <command name="load">sems-openmpi/1.8.7</command>
-        <command name="load">sems-netcdf/4.4.1/exo_parallel</command>
+	<command name="load">sems-openmpi/1.8.7</command>
+	<command name="load">sems-netcdf/4.4.1/exo_parallel</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -1819,42 +1819,42 @@ This allows using a different mpirun command to launch unit tests
       <COSTPES_PER_NODE>12</COSTPES_PER_NODE>
       <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
       <mpirun mpilib="default">
-          <executable>mpirun</executable>
-          <arguments>
-              <arg name="num_tasks">-np {{ total_tasks }}</arg>
-              <arg name="tasks_per_node">-npernode $MAX_TASKS_PER_NODE</arg>
-          </arguments>
+	  <executable>mpirun</executable>
+	  <arguments>
+	      <arg name="num_tasks">-np {{ total_tasks }}</arg>
+	      <arg name="tasks_per_node">-npernode $MAX_TASKS_PER_NODE</arg>
+	  </arguments>
       </mpirun>
       <module_system type="module">
-          <init_path lang="sh">/etc/profile.d/modules.sh</init_path>
-          <init_path lang="csh">/etc/profile.d/modules.csh</init_path>
-          <init_path lang="perl">/usr/share/Modules/init/perl.pm</init_path>
-          <init_path lang="python">/usr/share/Modules/init/python.py</init_path>
-          <cmd_path lang="sh">module</cmd_path>
-          <cmd_path lang="csh">module</cmd_path>
-          <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
-          <cmd_path lang="python">/usr/bin/modulecmd python</cmd_path>
-          <modules>
-              <command name="purge"/>
-              <command name="load">perl/5.22.1</command>
-              <command name="load">libxml2/2.9.2</command>
-              <command name="load">maui/3.3.1</command>
-              <command name="load">python/2.7.13</command>
-          </modules>
-          <modules compiler="gnu">
-              <command name="load">gcc/5.4.0</command>
-              <command name="load">gfortran/5.4.0</command>
-              <command name="load">hdf5/1.8.19fates</command>
-              <command name="load">netcdf/4.4.1.1-gnu540-fates</command>
-              <command name="load">openmpi/2.1.1-gnu540</command>
-          </modules>
-          <modules compiler="gnu" mpilib="!mpi-serial">
-              <command name="load">openmpi/2.1.1-gnu540</command>
-          </modules>
+	  <init_path lang="sh">/etc/profile.d/modules.sh</init_path>
+	  <init_path lang="csh">/etc/profile.d/modules.csh</init_path>
+	  <init_path lang="perl">/usr/share/Modules/init/perl.pm</init_path>
+	  <init_path lang="python">/usr/share/Modules/init/python.py</init_path>
+	  <cmd_path lang="sh">module</cmd_path>
+	  <cmd_path lang="csh">module</cmd_path>
+	  <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
+	  <cmd_path lang="python">/usr/bin/modulecmd python</cmd_path>
+	  <modules>
+	      <command name="purge"/>
+	      <command name="load">perl/5.22.1</command>
+	      <command name="load">libxml2/2.9.2</command>
+	      <command name="load">maui/3.3.1</command>
+	      <command name="load">python/2.7.13</command>
+	  </modules>
+	  <modules compiler="gnu">
+	      <command name="load">gcc/5.4.0</command>
+	      <command name="load">gfortran/5.4.0</command>
+	      <command name="load">hdf5/1.8.19fates</command>
+	      <command name="load">netcdf/4.4.1.1-gnu540-fates</command>
+	      <command name="load">openmpi/2.1.1-gnu540</command>
+	  </modules>
+	  <modules compiler="gnu" mpilib="!mpi-serial">
+	      <command name="load">openmpi/2.1.1-gnu540</command>
+	  </modules>
       </module_system>
        <environment_variables>
-         <env name="HDF5_HOME">/data/software/hdf5/1.8.19fates</env>
-         <env name="NETCDF_PATH">/data/software/netcdf/4.4.1.1-gnu540-fates</env>
+	 <env name="HDF5_HOME">/data/software/hdf5/1.8.19fates</env>
+	 <env name="NETCDF_PATH">/data/software/netcdf/4.4.1.1-gnu540-fates</env>
        </environment_variables>
   </machine>
 
@@ -2270,25 +2270,25 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"></command>
-        <command name="load">TACC</command>
-        <command name="load">python/2.7.13</command>
-        <command name="load">intel/18.0.2</command>
-        <command name="load">cmake/3.16.1</command>
+	<command name="purge"></command>
+	<command name="load">TACC</command>
+	<command name="load">python/2.7.13</command>
+	<command name="load">intel/18.0.2</command>
+	<command name="load">cmake/3.16.1</command>
       </modules>
       <modules mpilib="mvapich2">
-        <command name="load">mvapich2/2.3.1</command>
-        <command name="load">pnetcdf/1.11</command>
-        <command name="load">parallel-netcdf/4.6.2</command>
+	<command name="load">mvapich2/2.3.1</command>
+	<command name="load">pnetcdf/1.11</command>
+	<command name="load">parallel-netcdf/4.6.2</command>
       </modules>
       <modules mpilib="impi">
-        <command name="rm">mvapich2</command>
-        <command name="load">impi/18.0.2</command>
-        <command name="load">pnetcdf/1.11</command>
-        <command name="load">parallel-netcdf/4.6.2</command>
+	<command name="rm">mvapich2</command>
+	<command name="load">impi/18.0.2</command>
+	<command name="load">pnetcdf/1.11</command>
+	<command name="load">parallel-netcdf/4.6.2</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">netcdf/4.3.3.1</command>
+	<command name="load">netcdf/4.3.3.1</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -2328,25 +2328,25 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"></command>
-        <command name="load">TACC</command>
-        <command name="load">python/2.7.13</command>
-        <command name="load">intel/17.0.4</command>
-        <command name="load">cmake/3.10.2</command>
+	<command name="purge"></command>
+	<command name="load">TACC</command>
+	<command name="load">python/2.7.13</command>
+	<command name="load">intel/17.0.4</command>
+	<command name="load">cmake/3.10.2</command>
       </modules>
       <modules mpilib="mvapich2">
-        <command name="load">mvapich2/2.3b</command>
-        <command name="load">pnetcdf/1.8.1</command>
-        <command name="load">parallel-netcdf/4.3.3.1</command>
+	<command name="load">mvapich2/2.3b</command>
+	<command name="load">pnetcdf/1.8.1</command>
+	<command name="load">parallel-netcdf/4.3.3.1</command>
       </modules>
       <modules mpilib="impi">
-        <command name="rm">mvapich2</command>
-        <command name="load">impi/17.0.3</command>
-        <command name="load">pnetcdf/1.8.1</command>
-        <command name="load">parallel-netcdf/4.3.3.1</command>
+	<command name="rm">mvapich2</command>
+	<command name="load">impi/17.0.3</command>
+	<command name="load">pnetcdf/1.8.1</command>
+	<command name="load">parallel-netcdf/4.3.3.1</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">netcdf/4.3.3.1</command>
+	<command name="load">netcdf/4.3.3.1</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -2460,33 +2460,33 @@ This allows using a different mpirun command to launch unit tests
       </modules>
 
       <modules compiler="intel">
-        <command name="load">PrgEnv-intel/6.0.4</command>
-        <command name="switch">intel intel/18.0.0.128</command>
-        <command name="rm">cray-libsci</command>
+	<command name="load">PrgEnv-intel/6.0.4</command>
+	<command name="switch">intel intel/18.0.0.128</command>
+	<command name="rm">cray-libsci</command>
       </modules>
 
       <modules compiler="cray">
-        <command name="load">PrgEnv-cray/6.0.4</command>
-        <command name="switch">cce cce/8.7.0</command>
+	<command name="load">PrgEnv-cray/6.0.4</command>
+	<command name="switch">cce cce/8.7.0</command>
       </modules>
       <modules compiler="gnu">
-        <command name="load">PrgEnv-gnu/6.0.4</command>
-        <command name="switch">gcc gcc/7.3.0</command>
+	<command name="load">PrgEnv-gnu/6.0.4</command>
+	<command name="switch">gcc gcc/7.3.0</command>
       </modules>
       <modules>
-        <command name="load">papi/5.6.0.1</command>
-        <command name="swap">craype craype/2.5.14</command>
+	<command name="load">papi/5.6.0.1</command>
+	<command name="swap">craype craype/2.5.14</command>
       </modules>
       <modules compiler="!intel">
-        <command name="switch">cray-libsci/18.04.1</command>
+	<command name="switch">cray-libsci/18.04.1</command>
       </modules>
       <modules>
-        <command name="load">cray-mpich/7.7.0</command>
+	<command name="load">cray-mpich/7.7.0</command>
       </modules>
       <modules mpilib="mpt">
-        <command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
-        <command name="load">cray-hdf5-parallel/1.10.1.1</command>
-        <command name="load">cray-parallel-netcdf/1.8.1.3</command>
+	<command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
+	<command name="load">cray-hdf5-parallel/1.10.1.1</command>
+	<command name="load">cray-parallel-netcdf/1.8.1.3</command>
       </modules>
     </module_system>
   </machine>
@@ -2523,35 +2523,35 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"/>
+	<command name="purge"/>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel19.5/19.5.281</command>
-        <command name="load">intel19.5/szip/2.1.1</command>
-        <command name="load">cmake/3.15.0</command>
-        <command name="load">curl/7.66.0</command>
+	<command name="load">intel19.5/19.5.281</command>
+	<command name="load">intel19.5/szip/2.1.1</command>
+	<command name="load">cmake/3.15.0</command>
+	<command name="load">curl/7.66.0</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">intel19.5/hdf5/1.10.5</command>
-        <command name="load">intel19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
+	<command name="load">intel19.5/hdf5/1.10.5</command>
+	<command name="load">intel19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
       </modules>
       <modules mpilib="!mpi-serial">
-        <command name="load">impi19.5/19.5.281</command>
-        <command name="load">impi19.5/hdf5/1.10.5</command>
-        <command name="load">impi19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
-        <command name="load">impi19.5/parallel-netcdf/1.12.0</command>
+	<command name="load">impi19.5/19.5.281</command>
+	<command name="load">impi19.5/hdf5/1.10.5</command>
+	<command name="load">impi19.5/netcdf/C_4.7.2-F_4.5.2_CXX_4.3.1</command>
+	<command name="load">impi19.5/parallel-netcdf/1.12.0</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
-        <command name="load">impi19.5/esmf/8.0.0-intelmpi-64-g</command>
+	<command name="load">impi19.5/esmf/8.0.0-intelmpi-64-g</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
-        <command name="load">impi19.5/esmf/8.0.0-intelmpi-64-O</command>
+	<command name="load">impi19.5/esmf/8.0.0-intelmpi-64-O</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
-        <command name="load">intel19.5/esmf/8.0.0-mpiuni-64-g</command>
+	<command name="load">intel19.5/esmf/8.0.0-mpiuni-64-g</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
-        <command name="load">intel19.5/esmf/8.0.0-mpiuni-64-O</command>
+	<command name="load">intel19.5/esmf/8.0.0-mpiuni-64-O</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -2567,6 +2567,44 @@ This allows using a different mpirun command to launch unit tests
       <env name="I_MPI_HYDRA_BOOTSTRAP">lsf</env>
       <env name="I_MPI_LSF_USE_COLLECTIVE_LAUNCH">1</env>
     </environment_variables>
+  </machine>
+  <machine MACH="ubuntu-latest">
+    <DESC>
+      used for github testing
+    </DESC>
+    <NODENAME_REGEX/>
+    <OS>LINUX</OS>
+    <PROXY/>
+    <COMPILERS>gnu</COMPILERS>
+    <MPILIBS>openmpi</MPILIBS>
+    <PROJECT>none</PROJECT>
+    <SAVE_TIMING_DIR> </SAVE_TIMING_DIR>
+    <CIME_OUTPUT_ROOT>$ENV{HOME}/cesm/scratch</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{HOME}/cesm/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$ENV{HOME}/cesm/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$ENV{HOME}/cesm/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>$ENV{HOME}/cesm/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC/>
+    <GMAKE>make</GMAKE>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>none</BATCH_SYSTEM>
+    <SUPPORTED_BY>jedwards</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>4</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>4</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="openmpi">
+      <executable>mpiexec</executable>
+      <arguments>
+	<arg name="ntasks"> -n {{ total_tasks }} </arg>
+      </arguments>
+    </mpirun>
+    <module_system type="none" />
+    <environment_variables>
+      <env name="OMP_STACKSIZE">256M</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
   </machine>
 
   <default_run_suffix>
