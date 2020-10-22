@@ -89,9 +89,6 @@ def _build_model(build_threaded, exeroot, clm_config_opts, incroot, complist,
                        .format(config_dir, caseroot, libroot, bldroot),
                        from_dir=bldroot,  arg_stdout=fd,
                        arg_stderr=subprocess.STDOUT)[0]
-        if stat:
-            with open(file_build) as fd:
-                print(fd.read())
 
         analyze_build_log("{} exe".format(cime_model), file_build, compiler)
         expect(stat == 0, "BUILD FAIL: buildexe failed, cat {}".format(file_build))
