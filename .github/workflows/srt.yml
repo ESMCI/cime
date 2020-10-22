@@ -101,8 +101,8 @@ jobs:
 #
 #      The following can be used to ssh to the testnode for debugging
 #      see https://github.com/mxschmitt/action-tmate for details
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+#      - name: Setup tmate session
+#        uses: mxschmitt/action-tmate@v3
 
       - name: scripts regression tests
         run: |
@@ -112,4 +112,4 @@ jobs:
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
-          ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest O_TestTestScheduler
+          ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest

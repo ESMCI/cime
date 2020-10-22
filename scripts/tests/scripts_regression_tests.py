@@ -1048,6 +1048,8 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_b_full(self):
     ###########################################################################
+        if self._machine == "ubuntu-latest":
+            self.skipTest("Skipping test on maint-5.6")
         tests = get_tests.get_full_test_names(["cime_test_only"], self._machine, self._compiler)
         test_id="%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
         ct = TestScheduler(tests, test_id=test_id, no_batch=NO_BATCH, test_root=TEST_ROOT,
@@ -1114,6 +1116,8 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_c_use_existing(self):
     ###########################################################################
+        if self._machine == "ubuntu-latest":
+            self.skipTest("Skipping test on maint-5.6")
         tests = get_tests.get_full_test_names(["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAIL_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A"],
                                                       self._machine, self._compiler)
         test_id="%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
@@ -1204,6 +1208,8 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_d_retry(self):
     ###########################################################################
+        if self._machine == "ubuntu-latest":
+            self.skipTest("Skipping test on maint-5.6")
         args = ["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAIL_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A", "--retry=1"]
 
         self._create_test(args)
