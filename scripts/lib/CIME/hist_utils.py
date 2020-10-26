@@ -108,7 +108,7 @@ def rename_all_hist_files(case, suffix):
             mname = 'drv'
         else:
             mname = model
-        test_hists = archive.get_all_hist_files(mname, rundir, ref_case=ref_case)
+        test_hists = archive.get_all_hist_files(case.get_value("CASE"), mname, rundir, ref_case=ref_case)
         num_renamed += len(test_hists)
         for test_hist in test_hists:
             test_hist = os.path.join(rundir, test_hist)
