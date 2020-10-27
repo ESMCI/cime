@@ -128,7 +128,7 @@ class SystemTestsCommon(object):
         build.case_build(self._caseroot, case=self._case,
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
-                         use_old=self._old_build, ninja=self._ninja, dry_run=self._dry_run)
+                         ninja=self._ninja, dry_run=self._dry_run)
         logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
