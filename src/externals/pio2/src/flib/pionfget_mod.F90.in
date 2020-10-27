@@ -355,21 +355,26 @@ CONTAINS
     type (File_desc_t), intent(in) :: File
     integer, intent(in) :: varid
     character(len=*), intent(out) :: ival{DIMSTR}
-    ival = ' '
-    ierr = get_var_text_internal(File%fh, varid, size(ival), ival)
+
+    ierr = get_var_text_internal(File%fh, varid, size(ival), ival, len(ival))
 
   end function get_var_{DIMS}d_text
 
-  integer function get_var_text_internal (ncid,varid, nstrs, ival) result(ierr)
+  integer function get_var_text_internal (ncid,varid, nstrs, ival, strlen) result(ierr)
+    use pio_kinds, only: pio_offset_kind
     integer, intent(in) :: ncid
     integer, intent(in) :: varid
     integer, intent(in) :: nstrs
-    character(len=*), intent(out) :: ival(*)
+    character(len=strlen), intent(out) :: ival(*)
+    integer, intent(in) :: strlen
     integer :: j
 
+    do j=1,nstrs
+       ival(j) = C_NULL_CHAR
+    enddo
     ierr = PIOc_get_var_text(ncid, varid-1, ival)
     do j=1,nstrs
-       call replace_c_null(ival(j))
+       call replace_c_null(ival(j), int(strlen, kind=pio_offset_kind))
     end do
 
   end function get_var_text_internal
