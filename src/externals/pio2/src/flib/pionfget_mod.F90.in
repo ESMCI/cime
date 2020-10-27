@@ -365,8 +365,8 @@ CONTAINS
     integer, intent(in) :: ncid
     integer, intent(in) :: varid
     integer, intent(in) :: nstrs
-    character(len=strlen), intent(out) :: ival(*)
     integer, intent(in) :: strlen
+    character(len=strlen), intent(out) :: ival(*)
     integer :: j
 
     do j=1,nstrs
