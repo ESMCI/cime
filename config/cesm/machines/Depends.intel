@@ -26,13 +26,6 @@ dSFMT.o \
 dSFMT_utils.o \
 kissvec.o
 
-PUMAS_MG_OBJS=\
-micro_mg1_0.o \
-micro_mg3_0.o \
-micro_pumas_data.o \
-micro_pumas_utils.o \
-wv_sat_methods.o
-
 ifeq ($(DEBUG),FALSE)
   $(PERFOBJS): %.o: %.F90
 	  $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS)  -O3  -no-prec-div $<
@@ -46,4 +39,5 @@ ifeq ($(DEBUG),FALSE)
 	  $(CC) -c $(INCLDIR) $(INCS) $(CFLAGS) -O3 -fp-model fast $<
   $(PUMAS_MG_OBJS): %.o: %.F90
 	  $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) -O3 -xCORE-AVX2 -no-fma -ftz -no-prec-sqrt -qoverride-limits -no-inline-max-total-size -inline-factor=200 -qopt-report=5 $<
+    
 endif
