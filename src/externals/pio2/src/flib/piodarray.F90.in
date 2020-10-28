@@ -325,6 +325,7 @@ contains
     integer(C_SIZE_T) :: tlen
 
     tlen = size(array)
+    array = 0
     call read_darray_internal_{TYPE} (File%fh, vardesc%varid, iodesc%ioid, tlen, array, iostat)
 
   end subroutine read_darray_{DIMS}d_{TYPE}
