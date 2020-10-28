@@ -45,5 +45,5 @@ ifeq ($(DEBUG),FALSE)
   $(SHR_RANDNUM_C_OBJS): %.o: %.c
 	  $(CC) -c $(INCLDIR) $(INCS) $(CFLAGS) -O3 -fp-model fast $<
   $(PUMAS_MG_OBJS): %.o: %.F90
-	  $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) -O3 -xCORE-AVX2 -no-fma -ftz -fast-transcendentals -no-prec-sqrt -no-prec-div -qoverride-limits -no-inline-max-total-size -inline-factor=200 -fp-model fast -qopt-report=5 $<
+	  $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) -O3 -xCORE-AVX2 -no-fma -ftz -no-prec-sqrt -qoverride-limits -no-inline-max-total-size -inline-factor=200 -qopt-report=5 $<
 endif
