@@ -34,7 +34,6 @@ class SystemTestsCommon(object):
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
         self._cpllog = "med" if self._case.get_value("COMP_INTERFACE")=="nuopc" else "cpl"
-        self._old_build = False
         self._ninja     = False
         self._dry_run   = False
 
@@ -70,14 +69,13 @@ class SystemTestsCommon(object):
 
             self._case.case_setup(reset=True, test_mode=True)
 
-    def build(self, sharedlib_only=False, model_only=False, old_build=False, ninja=False, dry_run=False):
+    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False):
         """
         Do NOT override this method, this method is the framework that
         controls the build phase. build_phase is the extension point
         that subclasses should use.
         """
         success = True
-        self._old_build = old_build
         self._ninja     = ninja
         self._dry_run   = dry_run
         for phase_name, phase_bool in [(SHAREDLIB_BUILD_PHASE, not model_only),
@@ -128,7 +126,7 @@ class SystemTestsCommon(object):
         build.case_build(self._caseroot, case=self._case,
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
-                         use_old=self._old_build, ninja=self._ninja, dry_run=self._dry_run)
+                         ninja=self._ninja, dry_run=self._dry_run)
         logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
