@@ -151,7 +151,10 @@ def _main_func(description):
                     ts.set_status(phase_to_fail, TEST_FAIL_STATUS, comments="failed to initialize")
                 raise
 
-            expect(buildlist is None, "Build lists don't work with tests")
+            expect(buildlist is None,
+                   "Build lists don't work with tests, use create_newcase (not create_test) to use this feature")
+            expect(not separate_builds,
+                   "Separate builds don't work for tests, use create_newcase (not create_test) to use this feature")
             success = test.build(sharedlib_only=sharedlib_only, model_only=model_only, ninja=ninja, dry_run=dry_run)
         else:
             success = build.case_build(caseroot, case=case, sharedlib_only=sharedlib_only,
