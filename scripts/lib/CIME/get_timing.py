@@ -90,7 +90,7 @@ class _TimingParser:
     def _gettime2_nuopc(self):
         self.nprocs = 0
         self.ncount = 0
-        expression = re.compile(r'\s*\MED:\(med_fraction_set\)\s+(\d+)\s+(\d+)')
+        expression = re.compile(r'\s*\MED:\s*\(med_fraction_set\)\s+(\d+)\s+(\d+)')
 
         for line in self.finlines:
             match = expression.match(line)
@@ -351,6 +351,7 @@ class _TimingParser:
             nsteps = ncount / nprocs
         elif self._driver == 'nuopc':
             nprocs, nsteps = self.gettime2('')
+
         adays = nsteps*tlen/ncpl
         odays = nsteps*tlen/ncpl
         if ocn_ncpl and inittype == "TRUE":
