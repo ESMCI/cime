@@ -409,6 +409,19 @@
     </queues>
   </batch_system>
 
+  <!-- GreenPlanet is SLURM -->
+  <batch_system type="slurm" MACH="greenplanet">
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--mem=0"/>
+    </submit_args>
+    <queues>
+      <queue nodemin="1" nodemax="96" default="true">sib2.9</queue>
+    </queues>
+  </batch_system>
+
   <!-- hobart is PBS -->
   <batch_system type="pbs" MACH="hobart" >
     <directives>

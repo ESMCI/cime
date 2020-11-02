@@ -653,6 +653,14 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="greenplanet" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="casper" COMPILER="pgi">
   <FFLAGS>
     <append> -Mnofma -acc -ta=tesla:cc70 -Minfo=accel </append>
