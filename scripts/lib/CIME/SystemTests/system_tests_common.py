@@ -37,6 +37,7 @@ class SystemTestsCommon(object):
         self._ninja     = False
         self._dry_run   = False
         self._user_separate_builds = False
+        self._timing = False
 
     def _init_environment(self, caseroot):
         """
@@ -70,7 +71,7 @@ class SystemTestsCommon(object):
 
             self._case.case_setup(reset=True, test_mode=True)
 
-    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False):
+    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False, timing=False):
         """
         Do NOT override this method, this method is the framework that
         controls the build phase. build_phase is the extension point
@@ -80,6 +81,7 @@ class SystemTestsCommon(object):
         self._ninja           = ninja
         self._dry_run         = dry_run
         self._user_separate_builds = separate_builds
+        self._timing = timing
         for phase_name, phase_bool in [(SHAREDLIB_BUILD_PHASE, not model_only),
                                        (MODEL_BUILD_PHASE, not sharedlib_only)]:
             if phase_bool:
@@ -128,7 +130,7 @@ class SystemTestsCommon(object):
         build.case_build(self._caseroot, case=self._case,
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
-                         ninja=self._ninja, dry_run=self._dry_run, separate_builds=self._user_separate_builds)
+                         ninja=self._ninja, dry_run=self._dry_run, separate_builds=self._user_separate_builds, timing=self._timing)
         logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
