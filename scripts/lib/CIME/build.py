@@ -224,7 +224,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
             fd.write("Configuring with cmake cmd:\n{}\n\n".format(cmake_cmd))
 
         # Add logging before running
-        cmake_cmd = "{} >> {} 2>&1".format(cmake_cmd, bldlog)
+        cmake_cmd = "({}) >> {} 2>&1".format(cmake_cmd, bldlog)
         stat = run_cmd(cmake_cmd, from_dir=bldroot)[0]
         expect(stat == 0, "BUILD FAIL: cmake config {} failed, cat {}".format(cime_model, bldlog))
 
@@ -260,7 +260,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
                 fd.write("\n\nBuilding with cmd:\n{}\n\n".format(make_cmd))
 
             # Add logging before running
-            make_cmd = "{} >> {} 2>&1".format(make_cmd, curr_log)
+            make_cmd = "({}) >> {} 2>&1".format(make_cmd, curr_log)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
             expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(model_name, curr_log))
 
