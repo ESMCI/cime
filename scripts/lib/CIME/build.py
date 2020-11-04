@@ -177,7 +177,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     libroot    = os.path.join(exeroot, "lib")
     bldlog     = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
     srcroot    = case.get_value("SRCROOT")
-    gmake_j    = 1 if timing else case.get_value("GMAKE_J")
+    gmake_j    = case.get_value("GMAKE_J")
     gmake      = case.get_value("GMAKE")
 
     # make sure bldroot and libroot exist
