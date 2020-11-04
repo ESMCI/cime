@@ -6,8 +6,8 @@
 # Parallel builds don't currently work in this directory.
 .NOTPARALLEL:
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+# Find the pio.mod file.
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
 # Link to test util library and PIO Fortran and C libs.
 LDADD = $(top_builddir)/src/gptl/libperf_mod.la	\
@@ -33,7 +33,9 @@ TESTS = run_tests.sh
 endif # RUN_TESTS
 
 EXTRA_DIST = CMakeLists.txt gensimple.pl Pioperformance.md pioperf.nl	\
-run_tests.sh
+run_tests.sh.in
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
+
+DISTCLEANFILES = run_tests.sh

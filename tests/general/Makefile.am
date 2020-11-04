@@ -6,11 +6,11 @@
 # Parallel builds don't currently work in this directory.
 .NOTPARALLEL:
 
-# Put together AM_CPPFLAGS and AM_LDFLAGS.
-include $(top_srcdir)/set_flags.am
+# Find the pio.mod file.
+AM_CPPFLAGS = -I$(top_srcdir)/src/flib
 
-LDADD = libpio_tutil.la	\
-${top_builddir}/src/flib/libpiof.la		\
+# Link to our test, fortran, and C libraries.
+LDADD = libpio_tutil.la ${top_builddir}/src/flib/libpiof.la	\
 ${top_builddir}/src/clib/libpioc.la
 
 # There is a test utility mod file in this subdir which must be built.
@@ -89,7 +89,7 @@ pio_rearr_opts2.F90:pio_rearr_opts2.F90.in
 pio_rearr_opts.F90:pio_rearr_opts.F90.in
 
 # Distribute the test script.
-EXTRA_DIST = CMakeLists.txt run_tests.sh ncdf_fail.F90.in		\
+EXTRA_DIST = CMakeLists.txt run_tests.sh.in ncdf_fail.F90.in		\
 ncdf_get_put.F90.in ncdf_inq.F90.in ncdf_simple_tests.F90.in		\
 pio_decomp_fillval.F90.in pio_decomp_frame_tests.F90.in			\
 pio_decomp_tests_1d.F90.in pio_decomp_tests_2d.F90.in			\
@@ -101,3 +101,5 @@ pio_rearr_opts2.F90.in pio_rearr_opts.F90.in
 
 # Clean up files produced during testing.
 CLEANFILES = *.nc *.log *.mod
+
+DISTCLEANFILES = run_tests.sh

@@ -30,12 +30,51 @@
 !! Create a new IO System, designating numbers of I/O and computation
 !! tasks in Fortran.
 !!
+!! Use the Fortran generic function PIO_init() to initialize the IO
+!! System. The PIO_init() function will call init_intracom().
+!!
+!! This code from examples/f03/examplePio.F90 demonstrates how to
+!! initialize the IO system for intracom mode.
+!!
+!! @code
+!!        call PIO_init(this%myRank,      & ! MPI rank
+!!            MPI_COMM_WORLD,             & ! MPI communicator
+!!            this%niotasks,              & ! Number of iotasks (ntasks/stride)
+!!            this%numAggregator,         & ! number of aggregators to use
+!!            this%stride,                & ! stride
+!!            PIO_rearr_subset,           & ! do not use any form of rearrangement
+!!            this%pioIoSystem,           & ! iosystem
+!!            base=this%optBase)            ! base (optional argument)
+!! @endcode
+!!
 !! @defgroup PIO_finalize Free an IOSystem
 !! Free an IO System, releasing all resources in Fortran.
+!!
+!! Use the Fortran generic function PIO_finalize() to finalize the IO
+!! System, freeing all associated resources. The PIO_finalize()
+!! function will call finalize().
+!!
+!! This code from examples/f03/examplePio.F90 demonstrates how to
+!! finalize the IO system.
+!!
+!! @code
+!!        call PIO_finalize(this%pioIoSystem, ierr)
+!! @endcode
 !!
 !! @defgroup PIO_initdecomp Define a Decomposition
 !! Define a new decomposition of variables to distributed arrays in
 !! Fortran.
+!!
+!! Use the generic function PIO_initdecomp() to call the underlying Fortran functions.
+!!
+!! - PIO_initdecomp_dof_i4()
+!! - PIO_initdecomp_dof_i8()
+!! - initdecomp_1dof_nf_i4()
+!! - initdecomp_1dof_nf_i8()
+!! - initdecomp_1dof_bin_i4()
+!! - initdecomp_1dof_bin_i8()
+!! - initdecomp_2dof_nf_i4()
+!! - initdecomp_2dof_nf_i8()
 !!
 !! @defgroup PIO_getnumiotasks Get Number IO Tasks
 !! Get the number of IO tasks in Fortran.
@@ -45,6 +84,12 @@
 !!
 !! @defgroup PIO_seterrorhandling Error Handling for Fortran
 !! Set the behavior if an error is encountered in Fortran.
+!!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! PIO_seterrorhandling() | seterrorhandlingfile(), seterrorhandlingiosystem(), seterrorhandlingiosysid()
 !!
 !! @defgroup PIO_get_local_array_size Get Local Array Size
 !! Get the local size of the distributed array in a decomposition in
@@ -938,7 +983,7 @@ contains
     integer(i4), intent(in) :: rearr
     type (iosystem_desc_t), intent(out)  :: iosystem  ! io descriptor to initalize
     integer(i4), intent(in),optional :: base
-    type (pio_rearr_opt_t), intent(in), optional :: rearr_opts
+    type (pio_rearr_opt_t), intent(in), optional, target :: rearr_opts
 
     integer :: lbase
     integer :: ierr
@@ -952,7 +997,7 @@ contains
          integer(C_INT), value :: stride
          integer(C_INT), value :: base
          integer(C_INT), value :: rearr
-         type(pio_rearr_opt_t) :: rearr_opts
+         type(C_PTR), value    :: rearr_opts
          integer(C_INT) :: iosysidp
        end function PIOc_Init_Intracomm_from_F90
     end interface
@@ -965,8 +1010,11 @@ contains
 #endif
     lbase=0
     if(present(base)) lbase=base
-    ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,rearr_opts,iosystem%iosysid)
-
+    if(present(rearr_opts)) then
+       ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,C_LOC(rearr_opts),iosystem%iosysid)
+    else
+       ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,C_NULL_PTR,iosystem%iosysid)
+    endif
     call CheckMPIReturn("Bad Initialization in PIO_Init_Intracomm:  ", ierr,__FILE__,__LINE__)
 #ifdef TIMING
     call t_stopf("PIO:init")

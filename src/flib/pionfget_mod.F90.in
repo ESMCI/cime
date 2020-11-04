@@ -1,4 +1,5 @@
 #define __PIO_FILE__ "pionfget_mod.F90"
+#include "config.h"
 !>
 !! @file
 !! @brief Read Routines for non-decomposed NetCDF data.
@@ -15,7 +16,7 @@ module pionfget_mod
 #ifdef TIMING
   use perf_mod, only : t_startf, t_stopf      ! _EXTERNAL
 #endif
-  use pio_kinds, only: i2,i4,r4,r8
+  use pio_kinds, only: i2,i4,r4,r8, pio_offset_kind
   use pio_types, only : file_desc_t, var_desc_t
   use pio_support, only : replace_c_null
   implicit none
@@ -201,7 +202,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Writes data to a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param vardesc @ref var_desc_t
@@ -227,7 +228,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
@@ -275,7 +276,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param vardesc @ref var_desc_t
@@ -315,7 +316,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param varid : The netcdf variable identifier
@@ -356,20 +357,24 @@ CONTAINS
     integer, intent(in) :: varid
     character(len=*), intent(out) :: ival{DIMSTR}
     ival = ' '
-    ierr = get_var_text_internal(File%fh, varid, size(ival), ival)
+    ierr = get_var_text_internal(File%fh, varid, size(ival), ival, len(ival))
 
   end function get_var_{DIMS}d_text
 
-  integer function get_var_text_internal (ncid,varid, nstrs, ival) result(ierr)
+  integer function get_var_text_internal (ncid,varid, nstrs, ival, strlen) result(ierr)
     integer, intent(in) :: ncid
     integer, intent(in) :: varid
     integer, intent(in) :: nstrs
-    character(len=*), intent(out) :: ival(*)
+    integer, intent(in) :: strlen
+    character(len=strlen), intent(out) :: ival(*)
     integer :: j
 
+    do j=1,nstrs
+       ival(j) = C_NULL_CHAR
+    enddo
     ierr = PIOc_get_var_text(ncid, varid-1, ival)
     do j=1,nstrs
-       call replace_c_null(ival(j))
+       call replace_c_null(ival(j), int(strlen,kind=PIO_OFFSET_KIND))
     end do
 
   end function get_var_text_internal
@@ -393,11 +398,14 @@ CONTAINS
     integer, intent(in) :: count(:)
     {VTYPE}, target, intent(out) :: ival(*)
     integer(C_SIZE_T), allocatable :: cstart(:), ccount(:)
-    integer :: i, ndims
+    integer :: i, ndims, indims
 
     ierr = pio_inq_varndims(ncid,varid, ndims)
     allocate(cstart(ndims),ccount(ndims))
-    do i=1,ndims
+    indims = size(start)
+    cstart = 0
+    ccount = 1
+    do i=ndims-indims+1,ndims
        cstart(i) = start(ndims-i+1)-1
        ccount(i) = count(ndims-i+1)
     enddo
@@ -448,7 +456,7 @@ CONTAINS
 !>
 !! @public
 !! @ingroup PIO_get_var
-!! @brief Writes an netcdf attribute to a file
+!! @brief Gets data from a file
 !! @details
 !! @param File @ref file_desc_t
 !! @param vardesc @ref var_desc_t
