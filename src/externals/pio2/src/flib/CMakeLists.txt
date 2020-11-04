@@ -31,6 +31,11 @@ set (PIO_Fortran_MODS ${CMAKE_CURRENT_BINARY_DIR}/pio.mod
   ${CMAKE_CURRENT_BINARY_DIR}/pionfatt_mod.mod
   ${CMAKE_CURRENT_BINARY_DIR}/pionfput_mod.mod)
 
+if (NETCDF_INTEGRATION)
+  set (PIO_Fortran_SRCS ${PIO_Fortran_SRCS} ncint_mod.F90)
+  set (PIO_Fortran_MODS ${PIO_Fortran_MODS} ${CMAKE_CURRENT_BINARY_DIR}/ncint_mod.mod)
+endif ()
+
 add_library (piof ${PIO_Fortran_SRCS} ${PIO_GenF90_SRCS})
 if (NOT PIO_ENABLE_FORTRAN)
   set_target_properties(piof PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -137,7 +142,6 @@ endforeach ()
 
 #===== MPI =====
 if (PIO_USE_MPISERIAL)
-  find_package (MPISERIAL COMPONENTS Fortran REQUIRED)
   if (MPISERIAL_Fortran_FOUND)
     target_compile_definitions (piof
       PRIVATE _MPISERIAL)
@@ -149,8 +153,6 @@ if (PIO_USE_MPISERIAL)
     set (WITH_PNETCDF FALSE)
     set (MPI_Fortran_INCLUDE_PATH ${MPISERIAL_Fortran_INCLUDE_DIRS})
   endif ()
-else ()
-  find_package (MPI REQUIRED)
 endif ()
 
 # Check MPI I/O capabilities
@@ -179,9 +181,6 @@ endif ()
 find_path(MPIMOD_PATH
   NAMES mpi.mod MPI.mod
   HINTS ${MPI_Fortran_INCLUDE_PATH})
-if (PIO_ENABLE_TIMING)
-  find_package (GPTL COMPONENTS Fortran_Perf QUIET)
-endif ()
 
 check_macro (MPI_HAS_Fortran_MOD
   NAME TryMPIMod.f90
@@ -214,46 +213,22 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-Fortran =====
-find_package (NetCDF "4.3.3" COMPONENTS Fortran)
 if (NetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${NetCDF_Fortran_INCLUDE_DIRS})
-  target_compile_definitions (piof
-    PUBLIC _NETCDF)
   target_link_libraries (piof
     PUBLIC ${NetCDF_Fortran_LIBRARIES})
-  if (EXISTS ${NetCDF_Fortran_INCLUDE_DIR}/netcdf_par.h)
-    target_compile_definitions (piof
-      PUBLIC _NETCDF4)
-  endif ()
-else ()
-  target_compile_definitions (piof
-    PUBLIC _NONETCDF)
 endif ()
 
 #===== PnetCDF =====
-if (WITH_PNETCDF)
-  find_package (PnetCDF "1.6" COMPONENTS Fortran REQUIRED)
-endif ()
 if (PnetCDF_Fortran_FOUND)
   target_include_directories (piof
     PUBLIC ${PnetCDF_Fortran_INCLUDE_DIRS})
-  target_compile_definitions (piof
-    PUBLIC _PNETCDF)
   target_link_libraries (piof
     PUBLIC ${PnetCDF_Fortran_LIBRARIES})
 
   # Check library for varn functions
   set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_Fortran_LIBRARY})
-  check_function_exists (ncmpi_get_varn PnetCDF_Fortran_HAS_VARN)
-  if (PnetCDF_Fortran_HAS_VARN)
-    target_compile_definitions(piof
-      PUBLIC USE_PNETCDF_VARN
-      PUBLIC USE_PNETCDF_VARN_ON_READ)
-  endif()
-else ()
-  target_compile_definitions (piof
-    PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====

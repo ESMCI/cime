@@ -1,3 +1,4 @@
+#include "config.h"
 ! Split comm world into two comms (even procs and odd procs) and
 ! rank == overlapped_rank included in both comms
 SUBROUTINE split_world_two_with_overlap(new_comms, new_ranks, new_sizes, overlapped_rank)

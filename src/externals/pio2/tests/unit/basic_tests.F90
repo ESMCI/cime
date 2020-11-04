@@ -3,6 +3,7 @@
 !! @brief Module containing basic unit tests that are run for both
 !!        binary and netcdf file types.
 !<
+#include "config.h"
 
 module basic_tests
 
@@ -285,7 +286,7 @@ module basic_tests
           call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
         end if
 
-        ret_val = PIO_set_log_level(3)
+        !ret_val = PIO_set_log_level(3)
         ret_val = PIO_inq_unlimdim(pio_file, unlimdimid)
         if(unlimdimid /= -1) then
            err_msg = "Error in inq_unlimdim"
@@ -293,7 +294,7 @@ module basic_tests
            print *,__FILE__,__LINE__,iotype, trim(err_msg)
            call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
         end if
-        ret_val = PIO_set_log_level(0)
+        !ret_val = PIO_set_log_level(0)
 
         ! Close file
         call PIO_closefile(pio_file)

@@ -21,8 +21,7 @@
  *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable.
- * @param shuffle non-zero to turn on shuffle filter (can be good for
- * integer data).
+ * @param shuffle non-zero to turn on shuffle filter.
  * @param deflate non-zero to turn on zlib compression for this
  * variable.
  * @param deflate_level 1 to 9, with 1 being faster and 9 being more
@@ -84,11 +83,8 @@ PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-        if (file->iotype == PIO_IOTYPE_NETCDF4P)
-            ierr = NC_EINVAL;
-        else
-            if (file->do_io)
-                ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
+	if (file->do_io)
+	    ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
 #endif
     }
 

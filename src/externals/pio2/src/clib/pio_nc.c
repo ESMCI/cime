@@ -2277,12 +2277,6 @@ PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         PLOG((3, "defined var ierr %d file->iotype %d", ierr, file->iotype));
 
 #ifdef _NETCDF4
-        /* For netCDF-4 serial files, turn on compression for this
-         * variable, unless this file was opened through the netCDF
-         * integration feature (or is a scalar). */
-        if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4C && !file->ncint_file && ndims)
-            ierr = nc_def_var_deflate(file->fh, varid, 0, 1, 1);
-
         /* For netCDF-4 parallel files, set parallel access to collective. */
         if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4P)
             ierr = nc_var_par_access(file->fh, varid, NC_COLLECTIVE);

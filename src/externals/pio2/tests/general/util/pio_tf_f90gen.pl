@@ -54,7 +54,7 @@ sub init_predef_types
   $template_predef_typename_types{"PIO_TF_DATA_TYPE"} = [];
   $template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"} = [];
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_int");
-  push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer");
+  push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer(kind=fc_int)");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_short");
   push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer(kind=fc_short)");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_real");
@@ -566,9 +566,9 @@ sub parse_and_store_gen_templ_funcs
   }
   if($annotate_source){
       if($out_line =~ /[^#]/){
-	  $out_line .= "\n";
+          $out_line .= "\n";
       }else{
-	  $out_line = $out_line . "   ! $base_file_name:$ifline_num" . "\n";
+          $out_line = $out_line . "   ! $base_file_name:$ifline_num" . "\n";
       }
   }
   if($verbose) { print "Adding \"$out_line\" to ${$ref_templ_funcname}\n"; }

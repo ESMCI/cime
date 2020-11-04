@@ -1,4 +1,5 @@
 #define __PIO_FILE__ 'piodarray'
+#include "config.h"
 !>
 !! @file
 !! Read and write routines for decomposed data.
@@ -325,6 +326,7 @@ contains
     integer(C_SIZE_T) :: tlen
 
     tlen = size(array)
+    ! array is intent out but may not be fully filled by read_darray
     array = 0
     call read_darray_internal_{TYPE} (File%fh, vardesc%varid, iodesc%ioid, tlen, array, iostat)
 
