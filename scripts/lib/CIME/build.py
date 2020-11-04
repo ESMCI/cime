@@ -370,6 +370,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
+    lilac_mode = case.get_value("LILAC_MODE")
     ufs_driver = os.environ.get("UFS_DRIVER")
     cpl_in_complist = False
     for l in complist:
@@ -390,7 +391,13 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     build_script = {}
-    if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems'):
+    if (comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems')
+        and lilac_mode != 'on'):
+        # For now, we avoid building CDEPS with CTSM's LILAC because it's not needed in
+        # this configuration and CDEPS relies on unreleased ESMF code. Eventually we will
+        # require CDEPS (for its streams functionality), at which point CDEPS should only
+        # require released ESMF code; then we should remove the 'lilac_mode' part of this
+        # conditional.
         libs.append("CDEPS")
 
     ocn_model = case.get_value("COMP_OCN")
