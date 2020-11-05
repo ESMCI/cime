@@ -268,7 +268,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
 
             t2 = time.time()
             if separate_builds:
-                logger.info("  {} built in {:f} seconds".format(model_name, (t2 - t1)))
+                logger.info("   {} built in {:f} seconds".format(model_name, (t2 - t1)))
 
         logs.append(curr_log)
 
