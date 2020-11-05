@@ -242,6 +242,8 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     # Call Make
     logs = []
     for model in buildlist:
+        t1 = time.time()
+
         make_cmd = "time {} -j {}".format(gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), gmake_j)
         if model != "cpl":
             make_cmd += " {}".format(model)
@@ -263,6 +265,10 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
             make_cmd = "({}) >> {} 2>&1".format(make_cmd, curr_log)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
             expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(model_name, curr_log))
+
+            t2 = time.time()
+            if separate_builds:
+                logger.info("   {} built in {:f} seconds".format(model_name, (t2 - t1)))
 
         logs.append(curr_log)
 
@@ -713,7 +719,6 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
                                debug, compiler, mpilib, complist, ninst_build, smp_value,
                                model_only, buildlist)
 
-    t2 = time.time()
     logs = []
 
     if not model_only:
@@ -737,11 +742,10 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
     post_build(case, logs, build_complete=not (buildlist or sharedlib_only),
                save_build_provenance=save_build_provenance)
 
-    t3 = time.time()
+    t2 = time.time()
 
     if not sharedlib_only:
-        logger.info("Time spent not building: {:f} sec".format(t2 - t1))
-        logger.info("Time spent building: {:f} sec".format(t3 - t2))
+        logger.info("Total build time: {:f} seconds".format(t2 - t1))
         logger.info("MODEL BUILD HAS FINISHED SUCCESSFULLY")
 
     return True
