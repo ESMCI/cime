@@ -72,8 +72,7 @@ def parse_command_line(args, description):
                             help="Build each component one at a time, separately, with output going to separate logs")
 
         parser.add_argument("--timing", action="store_true",
-                            help="Enable timing of all compilations and links, will force GMAKE_J to be 1 to avoid "
-                            " interleaved output")
+                            help="Enable timing of all compilations and links")
 
     parser.add_argument("--dry-run", action="store_true",
                         help="Just print the cmake and ninja commands.")
