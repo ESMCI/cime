@@ -7,7 +7,7 @@ are members of class Case from file case.py
 import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils                     import run_and_log_case_status, ls_sorted_by_mtime, symlink_force, safe_copy, find_files
+from CIME.utils                     import run_and_log_case_status, ls_sorted_by_mtime, symlink_force, safe_copy, find_files, LONG_OP_TIMEOUT
 from CIME.date                      import get_file_date
 from CIME.XML.archive       import Archive
 from CIME.XML.files            import Files
@@ -751,7 +751,7 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
                 with open(".original_host", "r") as fd:
                     sshhost = fd.read()
                 run_cmd("ssh cooleylogin1 ssh {} '{case}/case.submit {case} --resubmit' "\
-                        .format(sshhost, case=caseroot), verbose=True, timeout=CIME.utils.LONG_OP_TIMEOUT)
+                        .format(sshhost, case=caseroot), verbose=True, timeout=LONG_OP_TIMEOUT)
             else:
                 self.submit(resubmit=True)
 

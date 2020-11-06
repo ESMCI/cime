@@ -22,7 +22,7 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, Timeout
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, Timeout, SHORT_OP_TIMEOUT
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -249,7 +249,7 @@ def assert_dashboard_has_build(tester, build_name, expected_count=1):
 
         wget_file = tempfile.mktemp()
 
-        run_cmd_no_fail("wget https://my.cdash.org/api/v1/index.php?project=ACME_test --no-check-certificate -O %s" % wget_file, timeout=CIME.utils.SHORT_OP_TIMEOUT)
+        run_cmd_no_fail("wget https://my.cdash.org/api/v1/index.php?project=ACME_test --no-check-certificate -O %s" % wget_file, timeout=SHORT_OP_TIMEOUT)
 
         raw_text = open(wget_file, "r").read()
         os.remove(wget_file)
