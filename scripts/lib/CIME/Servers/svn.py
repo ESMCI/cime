@@ -4,6 +4,7 @@ SVN Server class.  Interact with a server using SVN protocol
 # pylint: disable=super-init-not-called
 from CIME.XML.standard_module_setup import *
 from CIME.Servers.generic_server import GenericServer
+from CIME.utils import SHORT_OP_TIMEOUT, LONG_OP_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
