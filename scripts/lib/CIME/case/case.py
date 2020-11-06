@@ -1220,6 +1220,8 @@ class Case(object):
             else:
                 safe_copy(os.path.join(machines_dir, "syslog.noop"), os.path.join(casetools, "mach_syslog"))
 
+            safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
+
         # add archive_metadata to the CASEROOT but only for CESM
         if get_model() == "cesm":
             try:
