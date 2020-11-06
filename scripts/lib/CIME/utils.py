@@ -15,6 +15,16 @@ from distutils import file_util
 TESTS_FAILED_ERR_CODE = 100
 logger = logging.getLogger(__name__)
 
+# This timeout value in seconds is the max temporal period to wait
+# until erroring out for long network or big file operations.
+# A generous timeout value of 1 Hour and 15 minutes.
+LONG_OP_TIMEOUT = 4500
+
+# This timeout value in seconds is the maximum wait duration
+# for expeditious network operations, such as querying if a file exists.
+# A quicker timeout value of 1 minute.
+SHORT_OP_TIMEOUT = 60
+
 @contextmanager
 def redirect_stdout(new_target):
     old_target, sys.stdout = sys.stdout, new_target # replace sys.stdout

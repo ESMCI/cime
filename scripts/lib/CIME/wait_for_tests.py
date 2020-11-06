@@ -258,7 +258,7 @@ def create_cdash_upload_xml(results, cdash_build_name, cdash_build_group, utc_ti
             if (os.path.exists(tarball)):
                 os.remove(tarball)
 
-            run_cmd_no_fail("tar -cf - {} | gzip -c".format(log_dir), arg_stdout=tarball, timeout=900)
+            run_cmd_no_fail("tar -cf - {} | gzip -c".format(log_dir), arg_stdout=tarball, timeout=CIME.utils.LONG_OP_TIMEOUT)
             base64 = run_cmd_no_fail("base64 {}".format(tarball))
 
             xml_text = \

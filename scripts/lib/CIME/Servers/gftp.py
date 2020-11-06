@@ -13,14 +13,14 @@ class GridFTP(GenericServer):
         self._root_address = address
 
     def fileexists(self, rel_path):
-        stat,out,err = run_cmd("globus-url-copy -list {}".format(os.path.join(self._root_address, os.path.dirname(rel_path))+os.sep), timeout=60)
+        stat,out,err = run_cmd("globus-url-copy -list {}".format(os.path.join(self._root_address, os.path.dirname(rel_path))+os.sep), timeout=CIME.utils.SHORT_OP_TIMEOUT)
         if stat or os.path.basename(rel_path) not in out:
             logging.warning("FAIL: File {} not found.\nstat={} error={}".format(rel_path, stat, err))
             return False
         return True
 
     def getfile(self, rel_path, full_path):
-        stat, _,err = run_cmd("globus-url-copy -v {} file://{}".format(os.path.join(self._root_address, rel_path), full_path), timeout=900)
+        stat, _,err = run_cmd("globus-url-copy -v {} file://{}".format(os.path.join(self._root_address, rel_path), full_path), timeout=CIME.utils.LONG_OP_TIMEOUT)
 
         if (stat != 0):
             logging.warning("FAIL: GridFTP repo '{}' does not have file '{}' error={}\n".
@@ -29,7 +29,7 @@ class GridFTP(GenericServer):
         return True
 
     def getdirectory(self, rel_path, full_path):
-        stat, _,err = run_cmd("globus-url-copy -v -r {}{} file://{}{}".format(os.path.join(self._root_address, rel_path), os.sep, full_path, os.sep), timeout=900)
+        stat, _,err = run_cmd("globus-url-copy -v -r {}{} file://{}{}".format(os.path.join(self._root_address, rel_path), os.sep, full_path, os.sep), timeout=CIME.utils.LONG_OP_TIMEOUT)
 
         if (stat != 0):
             logging.warning("FAIL: GridFTP repo '{}' does not have directory '{}' error={}\n".

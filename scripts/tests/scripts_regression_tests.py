@@ -249,7 +249,7 @@ def assert_dashboard_has_build(tester, build_name, expected_count=1):
 
         wget_file = tempfile.mktemp()
 
-        run_cmd_no_fail("wget https://my.cdash.org/api/v1/index.php?project=ACME_test --no-check-certificate -O %s" % wget_file, timeout=900)
+        run_cmd_no_fail("wget https://my.cdash.org/api/v1/index.php?project=ACME_test --no-check-certificate -O %s" % wget_file, timeout=CIME.utils.SHORT_OP_TIMEOUT)
 
         raw_text = open(wget_file, "r").read()
         os.remove(wget_file)
