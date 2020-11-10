@@ -657,7 +657,9 @@ sub get_default_test_driver
   $out_line = "\n\n";
   $out_line = $out_line . "  SUBROUTINE PIO_TF_Test_driver_\n";
   $out_line = $out_line . "    USE pio_tutil\n";
+  $out_line = $out_line . "    USE mpi, only : mpi_abort, mpi_comm_world\n";
   $out_line = $out_line . "    IMPLICIT NONE\n";
+  $out_line = $out_line . "    integer :: mpierr\n";
   if($template_auto_funcs_inserted == 1){
     print "Error parsing template file, auto tests can only be inserted (PIO_TF_AUTO_TESTS_RUN) in a test driver\n";
     exit;
@@ -678,6 +680,9 @@ sub get_default_test_driver
     $out_line = $out_line . "      ELSE\n";
     $out_line = $out_line . "        WRITE(*,PIO_TF_TEST_RES_FMT) \"PIO_TF:Test $cur_test_case_num:\",&\n";
     $out_line = $out_line . "          \"$_\",\"-----------\", \"FAILED\"\n";
+# The following line if uncommented will cause the framework to stop at the first failure
+
+#    $out_line = $out_line . "        call mpi_abort(MPI_COMM_WORLD, 0, mpierr)\n";
     $out_line = $out_line . "      END IF\n";
     $out_line = $out_line . "    END IF\n";
     $cur_test_case_num += 1;

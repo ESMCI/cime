@@ -82,8 +82,6 @@ contains
     type (File_desc_t), intent(inout) :: File
     integer, intent(in) :: varid, index(:)
     character(len=*), intent(in) :: ival
-    character, allocatable :: cval(:)
-    integer :: i
     integer, allocatable :: count(:)
     integer :: ndims
 
@@ -91,14 +89,9 @@ contains
     allocate(count(ndims))
     count = 1
     count(1) = len(ival)
-    allocate(cval(count(1)+1))
-    cval = C_NULL_CHAR
-    do i=1,len_trim(ival)
-       cval(i) = ival(i:i)
-    end do
 
-!print *,__FILE__,__LINE__,index,count,ival
-     ierr = put_vara_1d_text(File,varid, index, count, cval)
+    ierr = put_vara_internal_text(File%fh, varid, index, count, ival//C_NULL_CHAR)
+
     deallocate(count)
   end function put_var1_text
 ! TYPE int,real,double,short
@@ -318,7 +311,7 @@ contains
   end function put_var_0d_{TYPE}
 
 
-! TYPE int,real,double,short
+!! TYPE int,real,double,short
   integer function put_vara_internal_{TYPE} (ncid,varid,start,count, ival) result(ierr)
     integer, intent(in) :: ncid
     integer, intent(in) :: varid

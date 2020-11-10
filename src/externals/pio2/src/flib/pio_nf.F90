@@ -379,9 +379,9 @@ contains
        integer(C_INT) function PIOc_set_fill(ncid           ,fillmode, old_mode) &
             bind(C                                          ,name="PIOc_set_fill")
          use iso_c_binding
-         integer(c_int)                                     ,value :: ncid
-         integer(c_int)                                            :: fillmode
-         integer(c_int)                                            :: old_mode
+         integer(c_int), value     :: ncid
+         integer(c_int), value     :: fillmode
+         integer(c_int)            :: old_mode
        end function PIOc_set_fill
     end interface
 
