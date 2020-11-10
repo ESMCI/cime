@@ -1146,8 +1146,8 @@ PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset 
                 PLOG((2, "PIOc_put_vars_tc request = %d", vdesc->request));
 
                 /* Only the IO master actually does the call. */
-                if (ios->iomaster == MPI_ROOT)
-                {
+//                if (ios->iomaster == MPI_ROOT)
+//                {
                     switch(xtype)
                     {
                     case NC_BYTE:
@@ -1175,14 +1175,17 @@ PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset 
                         return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
                     }
                     PLOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call, ierr=%d", ierr));
-                }
-                else
-                    *request = PIO_REQ_NULL;
+
+//                }
+//                else
+//                    *request = PIO_REQ_NULL;
 
                 vdesc->nreqs++;
                 flush_output_buffer(file, false, 0);
                 PLOG((2, "PIOc_put_vars_tc flushed output buffer"));
-
+                if(ierr == -40)
+                    for(int i=0; i<ndims; i++)
+                        PLOG((2,"start[%d] %ld count[%d] %ld\n",i,start[i],i,count[i]));
             } /* endif ndims == 0 */
         }
 #endif /* _PNETCDF */

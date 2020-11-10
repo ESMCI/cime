@@ -13,7 +13,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_1datt
   character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
   integer :: num_iotypes
   integer :: i, ret
-  
+
   val = pio_tf_world_sz_
   cval = "DUMMY_STRING"
   num_iotypes = 0
@@ -68,7 +68,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1datt
   character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
   integer :: num_iotypes
   integer :: i, ret
-  
+
   init_val = pio_tf_world_sz_
 
   pval = init_val
@@ -131,7 +131,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_0dvar
   character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
   integer :: num_iotypes
   integer :: i, ret
-  
+
   pval = pio_tf_world_sz_
   pcval = "D"
   num_iotypes = 0
@@ -194,7 +194,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar
   character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
   integer :: num_iotypes
   integer :: i, ret
-  
+
   pval = pio_tf_world_sz_
   pcval = "DUMMY_STRING"
   num_iotypes = 0
@@ -252,20 +252,22 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar_slice
   Implicit none
   type(file_desc_t) :: pio_file
   character(len=PIO_TF_MAX_STR_LEN) :: filename
-  type(var_desc_t)  :: pio_var
-  integer :: pio_dim
+  type(var_desc_t)  :: pio_var, pio_var_char
+  integer :: pio_dim, pio_dim_char
   integer, parameter :: MAX_ROW_DIM_LEN = 100
   PIO_TF_FC_DATA_TYPE, dimension(MAX_ROW_DIM_LEN) :: gval, exp_val
   integer, parameter :: MAX_COL_DIM_LEN = 4
   ! Only COL_WRITE_DIM of MAX_COL_DIM_LEN columns in pval is written out
   integer, parameter :: COL_WRITE_DIM = 2
   PIO_TF_FC_DATA_TYPE, dimension(MAX_ROW_DIM_LEN, MAX_COL_DIM_LEN) :: pval
+  integer, parameter :: STR_LEN=8
+  CHARACTER(len=STR_LEN), dimension(MAX_ROW_DIM_LEN) :: pcval, gcval
   integer, dimension(:) :: start(4), count(4)
   integer, dimension(:), allocatable :: iotypes
   character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
   integer :: num_iotypes
-  integer :: i, ret
-  
+  integer :: i, j, ret
+
   pval = -1
   pval(:,COL_WRITE_DIM) = pio_tf_world_sz_
   exp_val = pio_tf_world_sz_
@@ -276,8 +278,19 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar_slice
   num_iotypes = 0
   call PIO_TF_Get_nc_iotypes(iotypes, iotype_descs, num_iotypes)
   filename = "test_pio_ncdf_get_put_slice.testfile"
+  pcval = ""
+  pcval(1) = "The"
+  pcval(2) = "quick"
+  pcval(3) = "brown"
+  pcval(4) = "fox"
+  pcval(5) = "jumps"
+  pcval(6) = "over"
+  pcval(7) = "the"
+  pcval(8) = "lazy"
+  pcval(9) = "dog."
+
   do i=1,num_iotypes
-    PIO_TF_LOG(0,*) "Testing type :", iotype_descs(i)
+    PIO_TF_LOG(0,*) "Testing type :", iotype_descs(i), num_iotypes
     ret = PIO_createfile(pio_tf_iosystem_, pio_file, iotypes(i), filename, PIO_CLOBBER)
     PIO_TF_CHECK_ERR(ret, "Failed to open:" // trim(filename))
 
@@ -285,7 +298,13 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar_slice
     ret = PIO_def_dim(pio_file, 'dummy_dim_put_val', MAX_ROW_DIM_LEN, pio_dim)
     PIO_TF_CHECK_ERR(ret, "Failed to define dim:" // trim(filename))
 
+    ret = PIO_def_dim(pio_file, 'dummy_char_dim_put_val', STR_LEN, pio_dim_char)
+    PIO_TF_CHECK_ERR(ret, "Failed to define dim:" // trim(filename))
+
     ret = PIO_def_var(pio_file, 'dummy_var_put_val', PIO_TF_DATA_TYPE, (/pio_dim/), pio_var)
+    PIO_TF_CHECK_ERR(ret, "Failed to define var:" // trim(filename))
+
+    ret = PIO_def_var(pio_file, 'dummy_char_put_val', PIO_CHAR, (/pio_dim_char, pio_dim/), pio_var_char)
     PIO_TF_CHECK_ERR(ret, "Failed to define var:" // trim(filename))
 
     ret = PIO_enddef(pio_file)
@@ -294,12 +313,32 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar_slice
     ret = PIO_put_var(pio_file, pio_var, start, count, pval(:,COL_WRITE_DIM));
     PIO_TF_CHECK_ERR(ret, "Failed to put var:" // trim(filename))
 
+    do j=1,MAX_ROW_DIM_LEN
+       ret = PIO_put_var(pio_file, pio_var_char, (/1,j/), pcval(j));
+       PIO_TF_CHECK_ERR(ret, "Failed to put var:" // trim(filename))
+    enddo
+
     call PIO_syncfile(pio_file)
 
     ret = PIO_get_var(pio_file, pio_var, gval);
     PIO_TF_CHECK_ERR(ret, "Failed to get var:" // trim(filename))
 
     PIO_TF_CHECK_VAL((gval, exp_val), "Got wrong value")
+    gcval = ""
+    ! Read all at once
+    ret = PIO_get_var(pio_file, pio_var_char, gcval(:))
+    PIO_TF_CHECK_ERR(ret, "Failed to get var:" // trim(filename))
+    do j=1,MAX_ROW_DIM_LEN
+       PIO_TF_CHECK_VAL((gcval(j), pcval(j)), "Got wrong value")
+    enddo
+    gcval = ""
+    ! Read one at a time
+    do j=1,MAX_ROW_dim_len
+       ret = PIO_get_var(pio_file, pio_var_char, (/1,j/), gcval(j))
+       PIO_TF_CHECK_ERR(ret, "Failed to get var:" // trim(filename))
+       print *,j,trim(gcval(j)),trim(pcval(j))
+       PIO_TF_CHECK_VAL((gcval(j), pcval(j)), "Got wrong value")
+    enddo
 
     call PIO_closefile(pio_file)
     call PIO_deletefile(pio_tf_iosystem_, filename);
@@ -326,7 +365,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar_4parts
   integer :: num_iotypes
   integer :: i, ret
   integer, dimension(1) :: start, count = PART_LEN
-  
+
   do i=1,DIM_LEN
     pval(i) = i
   end do
@@ -422,7 +461,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_md2mdplus1_var
   character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
   integer :: num_iotypes
   integer :: i, k, l, m, tstep, ret
-  
+
   num_iotypes = 0
   call PIO_TF_Get_nc_iotypes(iotypes, iotype_descs, num_iotypes)
   filename = "test_pio_ncdf_get_put_md_slice.testfile"
@@ -567,4 +606,3 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_md2mdplus1_var
   end if
 
 PIO_TF_AUTO_TEST_SUB_END test_put_get_md2mdplus1_var
-

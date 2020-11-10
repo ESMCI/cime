@@ -94,7 +94,6 @@ CONTAINS
     integer, intent(in) :: varid, index(:)
     {VTYPE}, intent(out) :: ival
 
-
     ierr = get_var1_id_{TYPE} (file%fh, varid, index, ival)
 
   end function get_var1_{TYPE}
@@ -132,69 +131,29 @@ CONTAINS
 #endif
   end function get_var1_id_{TYPE}
 
-
-
-  integer function get_var1_id_text_internal(ncid,varid, index, vlen, ival) result(ierr)
-    integer, intent(in) :: ncid
-    integer, intent(in) :: varid, index(:)
-    integer,intent(in) :: vlen
-    character, intent(out) :: ival(vlen)
-
-    integer(C_SIZE_T), allocatable :: cindex(:)
-    integer(C_SIZE_T), allocatable :: count(:)
-    integer :: i, clen
-!!$    interface
-!!$       integer(C_INT) function PIOc_get_var1_text (ncid, varid, index, ival) &
-!!$            bind(C,name="PIOc_get_var1_text")
-!!$         use iso_c_binding
-!!$         integer(C_INT), value :: ncid
-!!$         integer(C_INT), value :: varid
-!!$         integer(C_SIZE_T) :: index(*)
-!!$         character :: ival(*)
-!!$       end function PIOc_get_var1_text
-!!$    end interface
-
-#ifdef TIMING
-    call t_startf("PIO:get_var1_text")
-#endif
-    clen = size(index)
-    allocate(cindex(clen))
-    do i=1,clen
-       cindex(i)=index(clen-i+1)-1
-    end do
-    allocate(count(clen))
-    count=1
-    count(clen) = vlen
-    ierr = PIOc_get_vara_text (ncid, varid-1, cindex, count, ival)
-    deallocate(cindex)
-    deallocate(count)
-#ifdef TIMING
-    call t_stopf("PIO:get_var1_text")
-#endif
-  end function get_var1_id_text_internal
-
   integer function get_var1_id_text (ncid,varid, index, ival) result(ierr)
     integer, intent(in) :: ncid
     integer, intent(in) :: varid, index(:)
     character(len=*), intent(out) :: ival
     character, allocatable :: cval(:)
-    integer :: clen, i
+    integer :: i, ndims
+    integer(kind=C_SIZE_T), allocatable :: lindex(:), count(:)
 
-    clen = len(ival)
-    allocate(cval(clen))
-    cval=C_NULL_CHAR
-    ival=''
-    ierr = get_var1_id_text_internal(ncid,varid,index,clen,cval)
-    i=1
-    do while(i<=clen )
-       if(cval(i) == C_NULL_CHAR ) exit
-       ival(i:i) = cval(i)
-       i=i+1
+#ifdef TIMING
+    call t_startf("PIO:get_var1_text")
+#endif
+    ndims = size(index)
+    allocate(lindex(ndims), count(ndims))
+    do i=1,ndims
+       lindex(ndims-i+1) = index(i) - 1
     enddo
-   deallocate(cval)
-!   print *,__FILE__,__LINE__,trim(ival)
+    count = 1
+    count(ndims) = len(ival)
 
-
+    ierr = PIOc_get_vara_text(ncid, varid-1, lindex, count, ival)
+#ifdef TIMING
+    call t_stopf("PIO:get_var1_text")
+#endif
   end function get_var1_id_text
 
 
