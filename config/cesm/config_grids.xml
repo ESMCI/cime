@@ -1837,7 +1837,7 @@
       <desc>HDMAmz_amazon is a medium resolution river routing grid just over the 5x5_amazon area for mizuRoute:</desc>
     </domain>
 
-    <domain name="HDMAmz_CONUS">
+    <domain name="HDMA_CONUSmz">
       <nx>20924</nx> <ny>1</ny>
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes//HDMAmz_global_ctrcrd_cdf5_ESMFmesh_c20201005.nc</mesh>
       <desc>HDMAmz_CONUS is a medium resolution river routing grid just over the Continental US (CONUS) area for mizuRoute:</desc>
