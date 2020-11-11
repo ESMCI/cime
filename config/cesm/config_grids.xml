@@ -152,6 +152,14 @@
       <mask>nldas2</mask>
     </model_grid>
 
+    <model_grid alias="nldas2_rHDMA_mnldas2" compset="DATM.+CLM.+MIZUROUTE">
+      <grid name="atm">0.125nldas2</grid>
+      <grid name="lnd">0.125nldas2</grid>
+      <grid name="ocnice">0.125nldas2</grid>
+      <grid name="rof">HDMA_CONUSmz</grid>
+      <mask>nldas2</mask>
+    </model_grid>
+
     <model_grid alias="hcru_hcru" compset="DATM.+CLM">
       <grid name="atm">360x720cru</grid>
       <grid name="lnd">360x720cru</grid>
@@ -1827,6 +1835,12 @@
       <nx>4347</nx> <ny>1</ny>
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMAmz_5x5_amazon_ctrcrd_cdf5_ESMFmesh_c20200731.nc</mesh>
       <desc>HDMAmz_amazon is a medium resolution river routing grid just over the 5x5_amazon area for mizuRoute:</desc>
+    </domain>
+
+    <domain name="HDMAmz_CONUS">
+      <nx>20924</nx> <ny>1</ny>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes//HDMAmz_global_ctrcrd_cdf5_ESMFmesh_c20201005.nc</mesh>
+      <desc>HDMAmz_CONUS is a medium resolution river routing grid just over the Continental US (CONUS) area for mizuRoute:</desc>
     </domain>
 
     <domain name="USGS_GFmz">

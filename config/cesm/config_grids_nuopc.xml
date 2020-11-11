@@ -129,4 +129,22 @@
       <map name="ATM2WAV_SMAPNAME">cpl/gridmaps/TL319/map_TL319_TO_ww3a_bilin.170707.nc</map>
     </gridmap>
 
+    <!-- MizuRoute mapping files -->
+    <gridmap lnd_grid="1.9x2.5" rof_grid="HDMAmz">
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_f19_TO_HDMAmz_aave.200901.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_TO_f19_aave.200901.nc</map>
+    </gridmap>
+    <gridmap lnd_grid="0.125nldas2" rof_grid="HDMAmz_CONUS">
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_HDMAmz_CONUS_aave.201104.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_CONUS_TO_0.125nldas2_aave.201104.nc</map>
+    </gridmap>
+    <gridmap lnd_grid="0.125nldas2" rof_grid="USGS_GFmz">
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_USGS_GFmz_aave.201028.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_USGS_GFmz_TO_0.125nldas2_aave.201028.nc</map>
+    </gridmap>
+    <gridmap lnd_grid="5x5_amazon" rof_grid="HDMAmz_5x5_amazon">
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_5x5_amazon_TO_HDMAmz_5x5_amazon_aave.201028.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_5x5_amazon_TO_5x5_amazon_aave.201028.nc</map>
+    </gridmap>
+
   </gridmaps>
