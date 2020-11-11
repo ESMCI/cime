@@ -1827,7 +1827,11 @@
 
     <domain name="HDMAmz">
       <nx>295335</nx> <ny>1</ny>
+      <!-- This is the actual full mesh, but it's complex and takes hours to read
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMA_global_ctrcrd_cdf5_ESMFmesh_c20200831.nc</mesh>
+      -->
+      <!-- This is a simplified mesh that only includes the polygon centers, so requires a mapping file with it -->
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/polygon_centroid/HDMAmz_global_ctrcrd_sqr_cdf5_ESMFmesh_c20201005.nc</mesh>
       <desc>HDMAmz is a medium resolution global river routing grid for mizuRoute:</desc>
     </domain>
 
@@ -1839,13 +1843,21 @@
 
     <domain name="HDMA_CONUSmz">
       <nx>20924</nx> <ny>1</ny>
+      <!-- This is the actual full mesh, but it's complex and takes hours to read
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes//HDMAmz_global_ctrcrd_cdf5_ESMFmesh_c20201005.nc</mesh>
+      -->
+      <!-- This is a simplified mesh that only includes the polygon centers, so requires a mapping file with it -->
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/polygon_centroid/HDMAmz_0.125nldas2_ctrcrd_sqr_cdf5_ESMFmesh_c20201005.nc</mesh>
       <desc>HDMAmz_CONUS is a medium resolution river routing grid just over the Continental US (CONUS) area for mizuRoute:</desc>
     </domain>
 
     <domain name="USGS_GFmz">
       <nx>110572</nx> <ny>1</ny>
+      <!-- This is the actual full mesh, but it's complex and takes hours to read
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/USGS-GFmz_global_ctrcrd_cdf5_ESMFmesh_c20200831.nc</mesh>
+      -->
+      <!-- This is a simplified mesh that only includes the polygon centers, so requires a mapping file with it -->
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/polygon_centroid/USGS-GFmz_conus_ctrcrd_sqr_cdf5_ESMFmesh_c20201006.nc</mesh>
       <desc>USGS_GFmz (USGS Geospatial Fabric) is a low resolution river routing CONUS grid just over continental US for mizuRoute:</desc>
     </domain>
 
