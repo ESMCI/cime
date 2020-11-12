@@ -577,7 +577,12 @@ ifeq ($(strip $(COMP_ATM)),cam)
 endif
 
 ifeq ($(CAM_DYCORE),mpas)
-MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+  # For building CAM with the MPAS dycore
+  MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+  ifeq ($(MODEL),driver)
+    # This is needed by some compilers when building the driver.
+    INCLDIR+=-I$(MPAS_LIBDIR)
+  endif
 endif
 
 ifeq ($(MODEL),cam)
