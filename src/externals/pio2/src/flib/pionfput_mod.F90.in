@@ -317,12 +317,12 @@ contains
     integer, intent(in) :: varid
     integer, intent(in) :: start(:)
     integer, intent(in) :: count(:)
-    {VTYPE}, target, intent(in) :: ival(*)
+    {VTYPE}, intent(in) :: ival(*)
     integer(C_SIZE_T), allocatable :: cstart(:), ccount(:)
     integer :: i, ndims
 
     do i=1,size(count)
-       if(count(i)<=0) then
+       if(count(i)<0) then
           ndims=i-1
           exit
        else
