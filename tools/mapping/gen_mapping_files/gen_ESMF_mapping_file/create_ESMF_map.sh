@@ -217,10 +217,7 @@ if [ $MACH == "UNSET" ]; then
     r+([0-9])i+([0-9])n+([0-9]) )
       MACH="cheyenne"
     ;;
-    geyser* )
-      MACH="dav"
-    ;;
-    caldera* )
+    casper* )
       MACH="dav"
     ;;
     pronghorn* )
@@ -298,14 +295,20 @@ fi
 case $MACH in
   ## cheyenne
   "cheyenne" )
+    esmfvers=8.0.0
+    intelvers=19.0.5
     module purge
-    module load intel/17.0.1 esmf_libs/7.0.0
+    #module load intel/$intelvers esmf_libs/${esmfvers}
+    module load intel/$intelvers esmf_libs
+    esmfvers=8.1.0b23
+    module use /glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/$intelvers
     if [ "$serial" == "TRUE" ]; then
       # No MPIEXEC
       if [ -z "$MPIEXEC" ]; then
         MPIEXEC=""
       fi
-      module load esmf-7.1.0r-ncdfio-uni-O
+      #module load esmf-${esmfvers}-ncdfio-uni-O
+      module load esmf-${esmfvers}-ncdfio-mpiuni-O
     else
       # MPIEXEC should be mpirun -np
       if [ -z "$MPIEXEC" ]; then
@@ -314,22 +317,24 @@ case $MACH in
         fi
         MPIEXEC="mpirun -np $NCPUS"
       fi
-      module load esmf-7.1.0r-ncdfio-mpi-O
-      module load mpt/2.15f
+      #module load esmf-${esmfvers}-ncdfio-mpi-O
+      module load esmf-${esmfvers}-ncdfio-mpt-O
+      module load mpt/2.22
     fi
     # need to load module to access ncatted
     module load nco
   ;;
-## geyser, caldera, or pronghorn
+## casper
   "dav" )
+    esmfvers=8.0.0
     module purge
-    module load intel/17.0.1 esmflibs/7.1.0r
+    module load intel/19.1.1 esmflibs/${esmfvers}
     if [ "$serial" == "TRUE" ]; then
       # No MPIEXEC
       if [ -z "$MPIEXEC" ]; then
         MPIEXEC=""
       fi
-      module load esmf-7.1.0r-ncdfio-uni-O
+      module load esmf-${esmfvers}-ncdfio-uni-O
     else
       echo "ERROR: Parallel ESMF tools are not available on $MACH, use --serial"
       exit 1
@@ -352,6 +357,7 @@ if [ ! -z $ESMFBIN_PATH ]; then
 else
   ESMF_REGRID="ESMF_RegridWeightGen"
 fi
+ESMF_REGRID="$ESMF_REGRID --ignore_degenerate "
 
 # Make sure $ESMF_REGRID is a valid command
 command -v $ESMF_REGRID >/dev/null 2>&1 || { echo "Can not find ESMF_RegridWeightGen, make sure it is in your \$PATH or that you specify \$ESMFBIN_PATH." && exit 1; }

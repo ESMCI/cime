@@ -134,7 +134,7 @@
       <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_f19_TO_HDMAmz_aave.200901.nc</map>
       <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_TO_f19_aave.200901.nc</map>
     </gridmap>
-    <gridmap lnd_grid="0.125nldas2" rof_grid="HDMAmz_CONUS">
+    <gridmap lnd_grid="0.125nldas2" rof_grid="HDMA_CONUSmz">
       <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_HDMAmz_CONUS_aave.201104.nc</map>
       <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_CONUS_TO_0.125nldas2_aave.201104.nc</map>
     </gridmap>
