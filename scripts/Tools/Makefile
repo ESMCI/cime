@@ -120,12 +120,10 @@ endif
 
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
-   ifneq ($(realpath $(INSTALL_SHAREDPATH)/lib/libstreams.a),)
-     # FoX libraries are provided and built by CDEPS
-     FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
-     ULIBS += -ldshr -lstreams
-     SLIBS += $(FoX_LIBS)
-   endif
+   # FoX libraries are provided and built by CDEPS
+   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
+   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+   SLIBS += $(FoX_LIBS)
 else
    CPPDEFS += -DMCT_INTERFACE
 endif
@@ -568,20 +566,20 @@ ifeq ($(findstring -cosp,$(CAM_CONFIG_OPTS)),-cosp)
 endif
 
 COMP_ATM ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) COMP_ATM --value)
-CAM_DYCORE ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_DYCORE --value)
 ifeq ($(strip $(COMP_ATM)),cam)
+  CAM_DYCORE ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_DYCORE --value)
   ifeq ($(CAM_DYCORE),fv3)
     FV3CORE_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/atmos_cubed_sphere)
     INCLDIR+=-I$(FV3CORE_LIBDIR) -I$(FV3CORE_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE) -I$(abspath $(EXEROOT)/FMS) -I$(CIMEROOT)/../libraries/FMS/src/include
   endif
-endif
 
-ifeq ($(CAM_DYCORE),mpas)
-  # For building CAM with the MPAS dycore
-  MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
-  ifeq ($(MODEL),driver)
-    # This is needed by some compilers when building the driver.
-    INCLDIR+=-I$(MPAS_LIBDIR)
+  ifeq ($(CAM_DYCORE),mpas)
+    # For building CAM with the MPAS dycore
+    MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+    ifeq ($(MODEL),driver)
+      # This is needed by some compilers when building the driver.
+      INCLDIR+=-I$(MPAS_LIBDIR)
+    endif
   endif
 endif
 
