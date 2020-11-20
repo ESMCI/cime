@@ -34,13 +34,14 @@ def _extract_times(zipfiles, target_file):
 
     contents ="Target Build_time\n"
     for zipfile in zipfiles:
-        output = run_cmd_no_fail("zgrep 'built in' {}".format(zipfile))
-        for line in output.splitlines():
-            line = line.strip()
-            if line:
-                items = line.split()
-                target, the_time = items[1], items[-2]
-                contents += "{} {}\n".format(target, the_time)
+        stat, output, _ = run_cmd("zgrep 'built in' {}".format(zipfile))
+        if stat == 0:
+            for line in output.splitlines():
+                line = line.strip()
+                if line:
+                    items = line.split()
+                    target, the_time = items[1], items[-2]
+                    contents += "{} {}\n".format(target, the_time)
 
     with open(target_file, "w") as fd:
         fd.write(contents)
