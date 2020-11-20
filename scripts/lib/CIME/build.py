@@ -210,7 +210,8 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     #  - common (i.e. project-wide) cmake args
     #  - component-specific cmake args
     #  - path to src folder
-    cmake_cmd = "{} /usr/bin/time cmake {} {} {}/components".format(cmake_env, cmake_args, cmp_cmake_args, srcroot)
+    do_timing = "/usr/bin/time " if os.path.exists("/usr/bin/time") else ""
+    cmake_cmd = "{} {}cmake {} {} {}/components".format(cmake_env, do_timing, cmake_args, cmp_cmake_args, srcroot)
     stat = 0
     if dry_run:
         logger.info("CMake cmd:\ncd {} && {}\n\n".format(bldroot, cmake_cmd))
@@ -241,7 +242,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     for model in buildlist:
         t1 = time.time()
 
-        make_cmd = "/usr/bin/time {} -j {}".format(gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), gmake_j)
+        make_cmd = "{}{} -j {}".format(gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), do_timing, gmake_j)
         if model != "cpl":
             make_cmd += " {}".format(model)
             curr_log = os.path.join(exeroot, "{}.bldlog.{}".format(model, lid))
