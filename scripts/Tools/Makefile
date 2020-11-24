@@ -121,20 +121,11 @@ endif
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
    # FoX libraries are provided and built by CDEPS
-   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
+   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
    ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
    SLIBS += $(FoX_LIBS)
 else
    CPPDEFS += -DMCT_INTERFACE
-endif
-
-ifeq ($(PIO_VERSION),2)
-  ifneq ($(COMPILER),nag)
-    # Needed by SCORPIO not default PIO, does not work with NAG compiler
-    USE_CXX := TRUE
-  endif
-else
-  CPPDEFS += -DPIO1
 endif
 
 ifeq ($(USE_CXX), TRUE)
