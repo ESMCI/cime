@@ -367,6 +367,8 @@ ifeq ($(ULIBDEP),$(null))
   endif
 endif
 
+CPPDEFS += -DPIO$(PIO_VERSION)
+
 ifdef CPRE
   FPPDEFS := $(subst $(comma),\\$(comma),$(CPPDEFS))
   FPPDEFS := $(patsubst -D%,$(CPRE)%,$(FPPDEFS))
