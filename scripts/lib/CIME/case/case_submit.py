@@ -29,7 +29,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
     import resource
     import sys
  
-    if "fram" in case.get_value("MACH"):
+    if "fram" in case.get_value("MACH") or "betzy" in case.get_value("MACH"):
         resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     caseroot = case.get_value("CASEROOT")
 

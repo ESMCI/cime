@@ -12,7 +12,7 @@
   <xs:attribute name="unit_testing" type="xs:boolean"/>
   <xs:attribute name="type" type="xs:NCName"/>
   <xs:attribute name="lang" type="xs:NCName"/>
-  <xs:attribute name="name" type="xs:NCName"/>
+  <xs:attribute name="name" type="xs:string"/>
 
   <!-- simple elements -->
   <xs:simpleType name="upperBoolean">

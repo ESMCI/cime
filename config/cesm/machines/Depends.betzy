@@ -1,0 +1,9 @@
+#
+#betzy related optimization
+CCSM_DRIVER_OBJS=\
+cime_driver.o
+
+ifeq ($(DEBUG),FALSE)
+  $(CCSM_DRIVER_OBJS): %.o: %.F90
+	  $(FC) -c $(INCLDIR) $(INCS) -qno-opt-dynamic-align  -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model source -O2 $(SLIBS) $(CPPDEFS) -free  -DUSE_CONTIGUOUS= $<
+endif
