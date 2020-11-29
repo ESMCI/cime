@@ -595,7 +595,7 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
     import resource
     import sys
 
-    if "fram" in self.get_value("MACH"):
+    if "fram" in self.get_value("MACH") or "betzy" in self.get_value("MACH"):
         resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     """
     Create archive object and perform short term archiving
@@ -634,7 +634,7 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
     logger.info("st_archive completed")
 
     # resubmit case if appropriate
-    if "fram" in self.get_value("MACH"):
+    if "fram" in self.get_value("MACH") or "betzy" in self.get_value("MACH"):
         resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     resubmit_cnt = self.get_value("RESUBMIT")
     logger.debug("resubmit_cnt {} resubmit {}".format(resubmit_cnt, resubmit))
