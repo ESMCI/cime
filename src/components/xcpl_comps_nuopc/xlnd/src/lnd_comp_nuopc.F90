@@ -269,6 +269,8 @@ contains
        call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_topo_elev'        , ungridded_lbound=1, ungridded_ubound=glc_nec+1)
        call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_ice_covered_elev' , ungridded_lbound=1, ungridded_ubound=glc_nec+1)
        call fld_list_add(fldsToLnd_num, fldsTolnd, 'Flgg_hflx_elev'      , ungridded_lbound=1, ungridded_ubound=glc_nec+1)
+       call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_icemask')
+       call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_icemask_coupled_fluxes')
 
        do n = 1,fldsFrLnd_num
           if (mastertask) write(logunit,*)'Advertising From Xlnd ',trim(fldsFrLnd(n)%stdname)
