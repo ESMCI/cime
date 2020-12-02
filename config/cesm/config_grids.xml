@@ -1336,7 +1336,7 @@
       <nx>464</nx> <ny>224</ny>
       <file grid="atm|lnd" mask="nldas2">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.0.125nldas2_0.125nldas2.190410.nc</file>
       <file grid="ocnice"  mask="nldas2">$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.0.125nldas2.190410.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
+      <mesh               driver="nuopc">$DIN_LOC_ROOT/lnd/clm2/mappingdata/grids/0.125nldas2_nomask_ESMFmesh_c20201202.nc</mesh>
       <desc>Regional NLDAS-2 grid over the U.S. (0.125 degree resolution; 25-53N, 235-293E)</desc>
     </domain>
 
