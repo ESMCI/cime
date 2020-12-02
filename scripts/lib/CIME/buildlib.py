@@ -40,7 +40,7 @@ def parse_input(argv):
     return args.caseroot, args.libroot, args.bldroot
 
 ###############################################################################
-def build_cime_component_lib(case, compname, libroot, bldroot, use_old=True):
+def build_cime_component_lib(case, compname, libroot, bldroot):
 ###############################################################################
 
     cimeroot  = case.get_value("CIMEROOT")
@@ -66,13 +66,16 @@ def build_cime_component_lib(case, compname, libroot, bldroot, use_old=True):
         elif compname.startswith('s'):
             out.write(os.path.join(cimeroot, "src", "components", "stub_comps_"+comp_interface, compname, "src") + "\n")
 
-    with open(os.path.join(confdir, "CCSM_cppdefs"), "w") as out:
+    with open(os.path.join(confdir, "CIME_cppdefs"), "w") as out:
         out.write("")
 
     # Build the component
-    if get_model() != "e3sm" or use_old:
+    if get_model() != "e3sm":
         safe_copy(os.path.join(confdir, "Filepath"), bldroot)
-        safe_copy(os.path.join(confdir, "CCSM_cppdefs"), bldroot)
+        if os.path.exists(os.path.join(confdir, "CIME_cppdefs")):
+            safe_copy(os.path.join(confdir, "CIME_cppdefs"), bldroot)
+        elif os.path.exists(os.path.join(confdir, "CCSM_cppdefs")):
+            safe_copy(os.path.join(confdir, "CCSM_cppdefs"), bldroot)
         run_gmake(case, compclass, compname, libroot, bldroot)
 
 ###############################################################################

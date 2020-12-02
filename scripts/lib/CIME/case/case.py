@@ -865,7 +865,7 @@ class Case(object):
 
         if other is not None:
             logger.info("setting additional fields from config_pes: {}".format(other))
-            for key, value in other.items():
+            for key, value in list(other.items()):
                 self.set_value(key, value)
 
         totaltasks = []
@@ -935,7 +935,7 @@ class Case(object):
 
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname, driver=driver)
         self._gridname = gridinfo["GRID"]
-        for key,value in gridinfo.items():
+        for key,value in list(gridinfo.items()):
             logger.debug("Set grid {} {}".format(key,value))
             self.set_lookup_value(key,value)
 
@@ -980,10 +980,11 @@ class Case(object):
 
         for nodename in nodenames:
             value = machobj.get_value(nodename, resolved=False)
-            type_str = self.get_type_info(nodename)
-            if type_str is not None:
-                logger.debug("machine nodname {} value {}".format(nodename, value))
-                self.set_value(nodename, convert_to_type(value, type_str, nodename))
+            if value:
+                type_str = self.get_type_info(nodename)
+                if type_str is not None:
+                    logger.debug("machine nodename {} value {}".format(nodename, value))
+                    self.set_value(nodename, convert_to_type(value, type_str, nodename))
 
         if compiler is None:
             compiler = machobj.get_default_compiler()
@@ -1014,7 +1015,7 @@ class Case(object):
 
         self._setup_mach_pes(pecount, multi_driver, ninst, machine_name, mpilib)
 
-        if multi_driver and ninst>1:
+        if multi_driver and int(ninst)>1:
             logger.info(" Driver/Coupler has %s instances" % ninst)
 
         #--------------------------------------------
@@ -1164,7 +1165,7 @@ class Case(object):
 
         defaults = pioobj.get_defaults(grid=grid, compset=compset, mach=mach, compiler=compiler, mpilib=mpilib)
 
-        for vid, value in defaults.items():
+        for vid, value in list(defaults.items()):
             self.set_value(vid,value)
 
     def _create_caseroot_tools(self):
@@ -1218,6 +1219,8 @@ class Case(object):
                 safe_copy(os.path.join(machines_dir, "syslog.{}".format(machine)), os.path.join(casetools, "mach_syslog"))
             else:
                 safe_copy(os.path.join(machines_dir, "syslog.noop"), os.path.join(casetools, "mach_syslog"))
+
+            safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
 
         # add archive_metadata to the CASEROOT but only for CESM
         if get_model() == "cesm":
@@ -1401,7 +1404,7 @@ directory, NOT in this subdirectory."""
         if not jobmap:
             logger.info("No job ids associated with this case. Either case.submit was not run or was run with no-batch")
         else:
-            for jobname, jobid in jobmap.items():
+            for jobname, jobid in list(jobmap.items()):
                 status = self.get_env("batch").get_status(jobid)
                 if status:
                     logger.info("{}: {}".format(jobname, status))

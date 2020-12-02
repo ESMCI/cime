@@ -3,7 +3,7 @@ Base class for CIME system tests
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
-from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect
+from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect, get_current_commit
 from CIME.test_status import *
 from CIME.hist_utils import copy_histfiles, compare_test, generate_teststatus, \
     compare_baseline, get_ts_synopsis, generate_baseline
@@ -34,9 +34,9 @@ class SystemTestsCommon(object):
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
         self._cpllog = "med" if self._case.get_value("COMP_INTERFACE")=="nuopc" else "cpl"
-        self._old_build = False
         self._ninja     = False
         self._dry_run   = False
+        self._user_separate_builds = False
 
     def _init_environment(self, caseroot):
         """
@@ -70,16 +70,16 @@ class SystemTestsCommon(object):
 
             self._case.case_setup(reset=True, test_mode=True)
 
-    def build(self, sharedlib_only=False, model_only=False, old_build=False, ninja=False, dry_run=False):
+    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False):
         """
         Do NOT override this method, this method is the framework that
         controls the build phase. build_phase is the extension point
         that subclasses should use.
         """
         success = True
-        self._old_build = old_build
-        self._ninja     = ninja
-        self._dry_run   = dry_run
+        self._ninja           = ninja
+        self._dry_run         = dry_run
+        self._user_separate_builds = separate_builds
         for phase_name, phase_bool in [(SHAREDLIB_BUILD_PHASE, not model_only),
                                        (MODEL_BUILD_PHASE, not sharedlib_only)]:
             if phase_bool:
@@ -128,7 +128,7 @@ class SystemTestsCommon(object):
         build.case_build(self._caseroot, case=self._case,
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
-                         use_old=self._old_build, ninja=self._ninja, dry_run=self._dry_run)
+                         ninja=self._ninja, dry_run=self._dry_run, separate_builds=self._user_separate_builds)
         logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
@@ -202,7 +202,8 @@ class SystemTestsCommon(object):
                 # If run phase worked, remember the time it took in order to improve later walltime ests
                 baseline_root = self._case.get_value("BASELINE_ROOT")
                 if success:
-                    save_test_time(baseline_root, self._casebaseid, time_taken)
+                    srcroot = self._case.get_value("SRCROOT")
+                    save_test_time(baseline_root, self._casebaseid, time_taken, get_current_commit(repo=srcroot))
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
                 overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
@@ -259,7 +260,7 @@ class SystemTestsCommon(object):
         self._case.load_env(reset=True)
         self._caseroot = case.get_value("CASEROOT")
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
         """
         Perform an individual run. Raises an EXCEPTION on fail.
         """
@@ -267,7 +268,10 @@ class SystemTestsCommon(object):
         stop_option = self._case.get_value("STOP_OPTION")
         run_type    = self._case.get_value("RUN_TYPE")
         rundir      = self._case.get_value("RUNDIR")
-        is_batch    = self._case.get_value("BATCH_SYSTEM") != "none"
+        if submit_resubmits is None:
+            do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
+        else:
+            do_resub = submit_resubmits
 
         # remove any cprnc output leftover from previous runs
         for compout in glob.iglob(os.path.join(rundir,"*.cprnc.out")):
@@ -284,7 +288,7 @@ class SystemTestsCommon(object):
 
         logger.info(infostr)
 
-        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=is_batch)
+        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=do_resub)
 
         if not self._coupler_log_indicates_run_complete():
             expect(False, "Coupler did not indicate run passed")
@@ -420,9 +424,9 @@ class SystemTestsCommon(object):
                     self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS, comments="insuffiencient data for memleak test")
                 else:
                     finaldate = int(memlist[-1][0])
-                    originaldate = int(memlist[0][0])
+                    originaldate = int(memlist[1][0]) # skip first day mem record, it can be too low while initializing
                     finalmem = float(memlist[-1][1])
-                    originalmem = float(memlist[0][1])
+                    originalmem = float(memlist[1][1])
                     memdiff = -1
                     if originalmem > 0:
                         memdiff = (finalmem - originalmem)/originalmem
@@ -609,12 +613,12 @@ class FakeTest(SystemTestsCommon):
                 expect(os.path.exists(modelexe),"Could not find expected file {}".format(modelexe))
                 logger.info("FakeTest build_phase complete {} {}".format(modelexe, self._requires_exe))
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
         mpilib = self._case.get_value("MPILIB")
         # This flag is needed by mpt to run a script under mpiexec
         if mpilib == "mpt":
             os.environ["MPI_SHEPHERD"] = "true"
-        super(FakeTest, self).run_indv(suffix, st_archive)
+        super(FakeTest, self).run_indv(suffix, st_archive=st_archive, submit_resubmits=submit_resubmits)
 
 class TESTRUNPASS(FakeTest):
 
@@ -746,22 +750,13 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
         script = \
 """
 cd {caseroot}
-./xmlchange DOUT_S=TRUE
-./xmlchange DOUT_S=TRUE --file env_test.xml
-./xmlchange RESUBMIT=1
-./xmlchange STOP_N={stopn}
-./xmlchange CONTINUE_RUN=FALSE
-./xmlchange RESUBMIT_SETS_CONTINUE_RUN=FALSE
+./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
-sleep 5
 {modelexe}.real "$@"
-sleep 5
 
 # Need to remove self in order to avoid infinite loop
-ls $(dirname {modelexe})
 mv {modelexe} {modelexe}.old
 mv {modelexe}.real {modelexe}
-ls $(dirname {modelexe})
 sleep 5
 """.format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
@@ -769,7 +764,7 @@ sleep 5
                              sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run_phase(self):
-        self.run_indv(st_archive=True)
+        self.run_indv(submit_resubmits=True)
 
 class TESTRUNSLOWPASS(FakeTest):
 

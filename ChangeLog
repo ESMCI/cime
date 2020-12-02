@@ -1,6 +1,302 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 11-12-2020
+Tag: cime5.8.34
+Answer Changes: None
+Tests: code-checker, ERP_Ln9.f09_f09_mg17.F2000climo.cheyenne_intel.cam-outfrq9s_mg3
+       github actions, scripts_regression_tests.py, P_TestJenkinsGenericJob 
+Dependencies:
+
+Brief Summary:
+    - MPAS build fix for nag and pgi.
+    - Remove timing flags for e3sm build.
+    - New build wrapper for e3sm.
+    - More build updates for e3sm.
+    - Revert one e3sm-only line change for timing.
+    - Avoid building CDEPS with CTSM's LILAC.
+    - Add ability to add timings to all build operations for E3SM.
+    - Rename _separate_builds to _user_separate_builds.
+    - Support separate_builds for tests.
+    - Add an error check for separate builds.
+    - Merge branch 'master'.
+    - Merge branch 'master'.
+    - Fix merge issue.
+    - Remove the flags that fail the ERP test.
+    - Fix E3SM nightly TSC test failure.
+    - Revert "Use enhanced compiler flags for PUMAS/MG3 related F90 codes".
+    - Use enhanced compiler flags for PUMAS/MG3 related F90 codes.
+    - Create srt.yml.
+    - ESMF and pgi cheyenne update.
+    - Correctly attribute scorpio timers in cime_pre_init2.
+    - Fix test Y for nuopc driver.
+    - Add nuopc tests to cdash.
+    - Fix hang in TESTRUNDIFFRESUBMIT.
+    - Fix for pop ecosys rh files.
+    - Merge branch 'master'.
+    - Update ESMF on cheyenne.
+    - Change name ccsm cppdefs.
+    - Fixes Y_TestUserConcurrentMods by adding a more-robust waiting scheme.
+    - Add a no-submit option to jenkins_generic_job.
+    - In MEMLEAK checks, skip first day memory highwater while initializing.
+    - Some updates to E3SM test infrastructure.
+    - Add EAM case for 20TR CMIP6 docn component.
+    - Fix check_input_data to fail over to svn when a wget download fails.
+    - Change permissions on ref case rpointer files.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+726e53cf7 Merge pull request #3775 from ESMCI/fischer/MPAS_build
+a64bdaef6 Merge pull request #3774 from ESMCI/jgfouca/remove_timing
+f80d0d085 Merge pull request #3773 from ESMCI/jgfouca/e3sm_compile_wrap
+e8bda07ed Merge pull request #3772 from ESMCI/jgfouca/more_build_updates
+c23554bdd Revert one e3sm-only line change for timing
+9d4b101a1 Merge pull request #3770 from billsacks/lilac_no_cdeps_v2
+7855ee406 Merge pull request #3767 from ESMCI/jgfouca/e3sm_build_timings
+12d98a4a5 Merge pull request #3764 from ESMCI/jgfouca/another_build_fix
+
+5316eabdf Merge pull request #3761 from ESMCI/jgfouca/sep_builds_for_tests
+c75b863a7 Merge pull request #3760 from ESMCI/jgfouca/add_error_check_sep_builds
+798bea6b9 Merge branch 'master' of https://github.com/ESMCI/cime
+775b67815 Merge branch 'master' of https://github.com/ESMCI/cime
+0c0227c58 fix merge issue
+3adf301d8 Merge pull request #3757 from sjsprecious/enhanced_compiler_flags
+810e0e7a7 Merge pull request #3755 from ESMCI/mkstratos/fix_tsc_test
+9df7abc1b Merge pull request #3753 from ESMCI/revert-3752-enhanced_compiler_flags
+068b57aa4 Merge pull request #3752 from sjsprecious/enhanced_compiler_flags
+d1fac4348 Merge pull request #3748 from ESMCI/add_github_action
+10e20076d Merge pull request #3747 from ESMCI/esmf_and_pgi_cheyenne_update
+7b9ba680a Merge pull request #3740 from ESMCI/worleyph/driver/fix-e3sm-issue-3886
+f7dfa69db Merge pull request #3746 from jedwards4b/nuopc_Y_testfix
+0d621adf8 add nuopc tests to cdash
+c892b0fec Merge pull request #3744 from ESMCI/jgfouca/fix_test_rundiff_resubmit_hang
+634b33d3b fix for pop ecosys rh files
+01b0e9f7b Merge branch 'master' of https://github.com/ESMCI/cime
+4021365b2 update esmf on cheyenne
+fb2a56cf5 Merge pull request #3737 from ESMCI/wpcoomb_change_name_CCSM_cppdefs
+dffe4b939 Merge pull request #3739 from ESMCI/jgfouca/fix_current_mods_test
+af7c1e726 Merge pull request #3738 from ESMCI/jgfouca/jenkins_no_submit
+c97d17e47 Merge pull request #3736 from ESMCI/azamat/memleak-tests/skip-first-mem-highwater
+83a941283 Merge pull request #3734 from ESMCI/jgfouca/update_e3sm_test_infra
+83ed19271 Merge pull request #3729 from ESMCI/rljacob/docn/add-eam
+64bdbbbdb Merge pull request #3730 from lukaszlacinski/lukaszlacinski/check_input_data
+82ac63dc7 Merge pull request #3726 from jedwards4b/rpointer_perms
+
+
+Modified files: git diff --name-status [previous_tag]
+A       .github/workflows/srt.yml
+D       .travis.yml
+M       ChangeLog
+M       config/cesm/config_archive.xml
+M       config/cesm/machines/Depends.intel
+M       config/cesm/machines/config_machines.xml
+M       config/config_tests.xml
+M       scripts/Tools/Makefile
+M       scripts/Tools/case.build
+A       scripts/Tools/e3sm_compile_wrap.py
+M       scripts/Tools/jenkins_generic_job
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/buildlib.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_run.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/case/check_input_data.py
+M       scripts/lib/CIME/get_timing.py
+M       scripts/lib/CIME/hist_utils.py
+M       scripts/lib/CIME/provenance.py
+M       scripts/lib/CIME/tests/SystemTests/test_system_tests_compare_two.py
+M       scripts/lib/CIME/wait_for_tests.py
+M       scripts/tests/CTestConfig.cmake
+M       scripts/tests/scripts_regression_tests.py
+M       scripts/tests/user_mods_test3/shell_commands
+M       src/build_scripts/buildlib.csm_share
+M       src/build_scripts/buildlib.internal_components
+M       src/build_scripts/buildlib_cmake.internal_components
+M       src/components/data_comps_mct/docn/cime_config/config_component.xml
+M       src/drivers/mct/cime_config/buildlib_cmake
+M       src/drivers/mct/main/cime_comp_mod.F90
+M       src/drivers/mct/main/cime_driver.F90
+
+
+======================================================================
+
+
+======================================================================
+
+Originator: Chris Fischer
+Date: 11-2-2020
+Tag: cime5.8.33
+Answer Changes: None
+Tests: code-checker, ERP_Ln9.f09_f09_mg17.F2000climo.cheyenne_intel.cam-outfrq9s_mg3
+       github actions, scripts_regression_tests.py, P_TestJenkinsGenericJob
+Dependencies:
+
+Brief Summary:
+    - Support separate_builds for tests.
+    - Add an error check for separate builds.
+    - Merge branch 'master'.
+    - Merge branch 'master'.
+    - Fix merge issue.
+    - Remove the flags that fail the ERP test.
+    - Fix E3SM nightly TSC test failure.
+    - Revert "Use enhanced compiler flags for PUMAS/MG3 related F90 codes".
+    - Use enhanced compiler flags for PUMAS/MG3 related F90 codes.
+    - Create srt.yml.
+    - ESMF and pgi cheyenne update. 
+    - Correctly attribute scorpio timers in cime_pre_init2.
+    - Fix test Y for nuopc driver.
+    - Add nuopc tests to cdash.
+    - Fix hang in TESTRUNDIFFRESUBMIT.
+    - Fix for pop ecosys rh files.
+    - Merge branch 'master'.
+    - Update ESMF on cheyenne.
+    - Change name ccsm cppdefs. 
+    - Fixes Y_TestUserConcurrentMods by adding a more-robust waiting scheme.
+    - Add a no-submit option to jenkins_generic_job.
+    - In MEMLEAK checks, skip first day memory highwater while initializing.
+    - Some updates to E3SM test infrastructure.
+    - Add EAM case for 20TR CMIP6 docn component.
+    - Fix check_input_data to fail over to svn when a wget download fails.
+    - Change permissions on ref case rpointer files.
+    - Add support for MPAS grids.
+    - Allow for different atm names in chem_mech file generation.
+    - Change name of cam to eam in E3SM.
+    - Add mpi_init timer and ouput memory usage before CIME Run loop.
+    - Fix path to FMS in CESM.
+    - Support csh source cmd.
+    - Skip preview namelist.
+    - Downgrade Intel Compiler for UFS applications.
+    - Add JRA Repeat Year Forcing data modes.
+    - Change name of clm to elm in E3SM.
+    - Update cmeps paths.
+    - Fix mct build issue.
+    - Fix path the cmeps buildexe.
+    - Fix path to cdeps buildlib for cesm.
+    - Update impi version for ufs model.
+    - Change name of clm to elm in E3SM.
+    - Change NCPL's for G-case default and grids EC30 to 60E2r2 and WC14 to 60E2r3.
+    - Sets coupling frequencies for new MPAS-Ocean grid in E3SM.
+    - Include submodule status in provenance.
+    - Cime changes required by the topounit inplementation in E3SM.
+    - Update for UFS app.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+5316eabdf Merge pull request #3761 from ESMCI/jgfouca/sep_builds_for_tests
+c75b863a7 Merge pull request #3760 from ESMCI/jgfouca/add_error_check_sep_builds
+798bea6b9 Merge branch 'master' of https://github.com/ESMCI/cime
+775b67815 Merge branch 'master' of https://github.com/ESMCI/cime
+0c0227c58 fix merge issue
+3adf301d8 Merge pull request #3757 from sjsprecious/enhanced_compiler_flags
+810e0e7a7 Merge pull request #3755 from ESMCI/mkstratos/fix_tsc_test
+9df7abc1b Merge pull request #3753 from ESMCI/revert-3752-enhanced_compiler_flags
+068b57aa4 Merge pull request #3752 from sjsprecious/enhanced_compiler_flags
+d1fac4348 Merge pull request #3748 from ESMCI/add_github_action
+10e20076d Merge pull request #3747 from ESMCI/esmf_and_pgi_cheyenne_update
+7b9ba680a Merge pull request #3740 from ESMCI/worleyph/driver/fix-e3sm-issue-3886
+f7dfa69db Merge pull request #3746 from jedwards4b/nuopc_Y_testfix
+0d621adf8 add nuopc tests to cdash
+c892b0fec Merge pull request #3744 from ESMCI/jgfouca/fix_test_rundiff_resubmit_hang
+634b33d3b fix for pop ecosys rh files
+01b0e9f7b Merge branch 'master' of https://github.com/ESMCI/cime
+4021365b2 update esmf on cheyenne
+fb2a56cf5 Merge pull request #3737 from ESMCI/wpcoomb_change_name_CCSM_cppdefs
+dffe4b939 Merge pull request #3739 from ESMCI/jgfouca/fix_current_mods_test
+af7c1e726 Merge pull request #3738 from ESMCI/jgfouca/jenkins_no_submit
+c97d17e47 Merge pull request #3736 from ESMCI/azamat/memleak-tests/skip-first-mem-highwater
+83a941283 Merge pull request #3734 from ESMCI/jgfouca/update_e3sm_test_infra
+83ed19271 Merge pull request #3729 from ESMCI/rljacob/docn/add-eam
+64bdbbbdb Merge pull request #3730 from lukaszlacinski/lukaszlacinski/check_input_data
+82ac63dc7 Merge pull request #3726 from jedwards4b/rpointer_perms
+14e85613b Merge pull request #3727 from ESMCI/fischer/mpas_bld_grds
+7188df18b Merge pull request #3725 from jedwards4b/fix_atm_chem_mech
+516f7c275 Merge pull request #3723 from ESMCI/rljacob/e3smconfig/eam-name
+10004fe33 Merge pull request #3716 from ESMCI/worleyph/driver/init_profiling2
+19b07d7ce fix path to FMS in CESM
+19c9e54d0 Merge pull request #3718 from jedwards4b/support_csh_source_cmd
+2e25aa97d Merge pull request #3719 from jedwards4b/skip_preview_namelist
+098ac2ea7 Merge pull request #3721 from ESMCI/ufs_down_intel
+24996612a Merge pull request #3691 from alperaltuntas/add_jra_ryf
+2d0d0a9d1 Merge pull request #3714 from ESMCI/rljacob/e3smconfig/elm-name
+329f400c1 update cmeps paths
+91904cc35 fix mct build issue
+f3aaa582f fix path to cmeps buildexe
+99484d5f5 fix path to cdeps buildlib for cesm
+f7791fbf3 update impi version for ufs model
+4a3dccde4 Merge pull request #3703 from jedwards4b/s2sport
+84df62862 Merge pull request #3701 from ESMCI/jonbob/add-new-ocnice-grids
+e0dcc5902 Merge pull request #3694 from ESMCI/darincomeau/add_MPASO_grid_ECwISC30to60E1r2
+07b7d3bc5 Merge pull request #3696 from ESMCI/wpcoomb/include_submodule_status_in_provenance
+edbd2d08a Merge branch 'cime_for_topounits2' (PR #3695)
+35fb2d7e9 Merge pull request #3697 from ESMCI/ufs_fix
+
+Modified files: git diff --name-status [previous_tag]
+A	.github/workflows/srt.yml
+D	.travis.yml
+M	config/cesm/config_archive.xml
+M	config/cesm/config_files.xml
+M	config/cesm/config_grids.xml
+M	config/cesm/machines/Depends.intel
+M	config/cesm/machines/config_machines.xml
+M	config/config_tests.xml
+M	config/e3sm/config_files.xml
+M	config/ufs/config_files.xml
+M	config/ufs/config_grids.xml
+M	config/ufs/config_inputdata.xml
+M	config/ufs/machines/config_compilers.xml
+M	config/ufs/machines/config_machines.xml
+M	scripts/Tools/Makefile
+M	scripts/Tools/case.build
+M	scripts/Tools/jenkins_generic_job
+M	scripts/lib/CIME/SystemTests/system_tests_common.py
+M	scripts/lib/CIME/XML/env_mach_specific.py
+M	scripts/lib/CIME/XML/grids.py
+M	scripts/lib/CIME/XML/pes.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/buildlib.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/case/case_run.py
+M	scripts/lib/CIME/case/case_st_archive.py
+M	scripts/lib/CIME/case/case_submit.py
+M	scripts/lib/CIME/case/check_input_data.py
+M	scripts/lib/CIME/case/preview_namelists.py
+M	scripts/lib/CIME/get_timing.py
+M	scripts/lib/CIME/hist_utils.py
+M	scripts/lib/CIME/nmlgen.py
+M	scripts/lib/CIME/provenance.py
+M	scripts/lib/CIME/test_scheduler.py
+M	scripts/lib/CIME/tests/SystemTests/test_system_tests_compare_two.py
+M	scripts/lib/CIME/utils.py
+M	scripts/lib/CIME/wait_for_tests.py
+M	scripts/tests/CTestConfig.cmake
+M	scripts/tests/scripts_regression_tests.py
+M	scripts/tests/user_mods_test3/shell_commands
+M	src/build_scripts/buildlib.csm_share
+M	src/build_scripts/buildlib.internal_components
+M	src/build_scripts/buildlib_cmake.internal_components
+M	src/components/data_comps_mct/datm/cime_config/config_component.xml
+M	src/components/data_comps_mct/datm/cime_config/namelist_definition_datm.xml
+M	src/components/data_comps_mct/datm/src/datm_comp_mod.F90
+M	src/components/data_comps_mct/datm/src/datm_shr_mod.F90
+M	src/components/data_comps_mct/docn/cime_config/config_component.xml
+M	src/components/data_comps_mct/drof/cime_config/config_component.xml
+M	src/components/data_comps_mct/drof/cime_config/namelist_definition_drof.xml
+M	src/drivers/mct/cime_config/buildlib_cmake
+M	src/drivers/mct/cime_config/buildnml
+M	src/drivers/mct/cime_config/config_component_e3sm.xml
+M	src/drivers/mct/cime_config/namelist_definition_drv.xml
+M	src/drivers/mct/main/cime_comp_mod.F90
+M	src/drivers/mct/main/cime_driver.F90
+M	src/drivers/mct/shr/seq_flds_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-28-2020
 Tag: cime5.8.32
 Answer Changes: None

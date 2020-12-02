@@ -63,13 +63,13 @@ def parse_command_line(args, description):
                         "Default is current directory.")
 
     if get_model() == "e3sm":
-        parser.add_argument("--use-old", action="store_true",
-                            help="Use old Makefile build system (not cmake)")
-
         parser.add_argument("--ninja", action="store_true",
                             help="Use ninja backed for CMake (instead of gmake). "
                             "The ninja backend is better at scanning fortran dependencies but "
                             "seems to be less reliable across different platforms and compilers.")
+
+        parser.add_argument("--separate-builds", action="store_true",
+                            help="Build each component one at a time, separately, with output going to separate logs")
 
     parser.add_argument("--dry-run", action="store_true",
                         help="Just print the cmake and ninja commands.")
@@ -119,15 +119,15 @@ def parse_command_line(args, description):
     buildlist = None if args.build is None or len(args.build) == 0 else args.build
 
     if get_model() != "e3sm":
-        args.use_old = False
-        args.ninja   = False
+        args.separate_builds = False
+        args.ninja           = False
 
-    return args.caseroot, args.sharedlib_only, args.model_only, cleanlist, args.clean_all, buildlist, clean_depends, not args.skip_provenance_check, args.use_old, args.ninja, args.dry_run
+    return args.caseroot, args.sharedlib_only, args.model_only, cleanlist, args.clean_all, buildlist, clean_depends, not args.skip_provenance_check, args.separate_builds, args.ninja, args.dry_run
 
 ###############################################################################
 def _main_func(description):
 ###############################################################################
-    caseroot, sharedlib_only, model_only, cleanlist, clean_all, buildlist,clean_depends, save_build_provenance, use_old, ninja, dry_run = \
+    caseroot, sharedlib_only, model_only, cleanlist, clean_all, buildlist,clean_depends, save_build_provenance, separate_builds, ninja, dry_run = \
         parse_command_line(sys.argv, description)
 
     success = True
@@ -151,13 +151,15 @@ def _main_func(description):
                     ts.set_status(phase_to_fail, TEST_FAIL_STATUS, comments="failed to initialize")
                 raise
 
-            expect(buildlist is None, "Build lists don't work with tests")
-            success = test.build(sharedlib_only=sharedlib_only, model_only=model_only, old_build=use_old, ninja=ninja, dry_run=dry_run)
+            expect(buildlist is None,
+                   "Build lists don't work with tests, use create_newcase (not create_test) to use this feature")
+            success = test.build(sharedlib_only=sharedlib_only, model_only=model_only, ninja=ninja, dry_run=dry_run, separate_builds=separate_builds)
+
         else:
             success = build.case_build(caseroot, case=case, sharedlib_only=sharedlib_only,
                                        model_only=model_only, buildlist=buildlist,
                                        save_build_provenance=save_build_provenance,
-                                       use_old=use_old, ninja=ninja, dry_run=dry_run)
+                                       separate_builds=separate_builds, ninja=ninja, dry_run=dry_run)
 
     sys.exit(0 if success else 1)
 

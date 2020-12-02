@@ -22,7 +22,7 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, Timeout
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -46,6 +46,7 @@ NO_BATCH    = False
 NO_CMAKE    = False
 TEST_ROOT   = None
 NO_TEARDOWN = False
+NO_FORTRAN_RUN      = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -462,6 +463,7 @@ class J_TestCreateNewcase(unittest.TestCase):
                               % (SCRIPT_DIR, args),from_dir=SCRIPT_DIR)
 
         self.assertTrue(os.path.isfile(os.path.join(testdir,"SourceMods","src.drv","somefile.F90")), msg="User_mods SourceMod missing")
+
         with open(os.path.join(testdir,"user_nl_cpl"),"r") as fd:
             contents = fd.read()
             self.assertTrue("a different cpl test option" in contents, msg="User_mods contents of user_nl_cpl missing")
@@ -1694,6 +1696,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
             walltime="00:15:00"
@@ -1710,6 +1714,8 @@ class T_TestRunRestart(TestCreateTestCommon):
     ###########################################################################
     def test_run_restart_too_many_fails(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
             walltime="00:15:00"
@@ -1750,6 +1756,8 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     ###############################################################################
     def test_bless_test_results(self):
     ###############################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         # Test resubmit scenario if Machine has a batch system
         if MACHINE.has_batch_system():
             test_names = ["TESTRUNDIFFRESUBMIT_P1.f19_g16_rx1.A", "TESTRUNDIFF_P1.f19_g16_rx1.A"]
@@ -1800,6 +1808,8 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
     def test_rebless_namelist(self):
     ###############################################################################
         # Generate some namelist baselines
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
         if CIME.utils.get_model() == "e3sm":
             genargs = ["-n", "-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
@@ -1906,20 +1916,24 @@ class Y_TestUserConcurrentMods(TestCreateTestCommon):
         if (FAST_ONLY):
             self.skipTest("Skipping slow test")
 
-        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE.f19_g16.X"], test_id=self._baseline_name)
+        casedir = self._create_test(["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Mmpi-serial.f19_g16.X"], test_id=self._baseline_name)
 
-        # We need to be careful since we are running a resubmit. The first run should
-        # report a RUN PASS, which will cause our waiting code to stop waiting. But we
-        # want to wait for the second run too.
-        time.sleep(10) # give second run a chance to begin
-        self._wait_for_tests(self._baseline_name) # wait for second run
+        with Timeout(3000):
+            while True:
+                with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
+                    self._wait_for_tests(self._baseline_name)
+                    contents = fd.read()
+                    if contents.count("model execution success") == 2:
+                        break
 
-        with open(os.path.join(casedir, "CaseStatus"), "r") as fd:
-            contents = fd.read()
-            self.assertEqual(contents.count("model execution success"), 2)
+                time.sleep(5)
 
         rundir = run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
-        with open(os.path.join(rundir, "drv_in"), "r") as fd:
+        if CIME.utils.get_cime_default_driver() == 'nuopc':
+            chk_file = "nuopc.runconfig"
+        else:
+            chk_file = "drv_in"
+        with open(os.path.join(rundir, chk_file), "r") as fd:
             contents = fd.read()
             self.assertTrue("stop_n = 6" in contents)
 
@@ -2492,6 +2506,9 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
+
         testname = "ERS_Ln7.f19_g16_rx1.A"
         casedir = self._create_test([testname, "--no-build"], test_id=self._baseline_name)
 
@@ -2557,6 +2574,8 @@ class L_TestSaveTimings(TestCreateTestCommon):
     ###########################################################################
     def simple_test(self, manual_timing=False):
     ###########################################################################
+        if (NO_FORTRAN_RUN):
+            self.skipTest("Skipping fortran test")
         timing_flag = "" if manual_timing else "--save-timing"
         driver = CIME.utils.get_cime_default_driver()
         if driver == "mct":
@@ -3480,10 +3499,15 @@ def write_provenance_info():
     if TEST_MPILIB is not None:
         logging.info("Testing mpilib = %s"% TEST_MPILIB)
     logging.info("Test root: %s" % TEST_ROOT)
-    logging.info("Test driver: %s\n" % CIME.utils.get_cime_default_driver())
+    logging.info("Test driver: %s" % CIME.utils.get_cime_default_driver())
+    logging.info("Python version {}\n".format(sys.version))
 
 def cleanup():
     # if the TEST_ROOT directory exists and is empty, remove it
+    testreporter = os.path.join(TEST_ROOT,"testreporter")
+    files = os.listdir(TEST_ROOT)
+    if len(files)==1 and os.path.isfile(testreporter):
+        os.unlink(testreporter)
     if os.path.exists(TEST_ROOT) and not os.listdir(TEST_ROOT):
         print("All pass, removing directory:", TEST_ROOT)
         os.rmdir(TEST_ROOT)
@@ -3498,6 +3522,7 @@ def _main_func(description):
     global TEST_ROOT
     global GLOBAL_TIMEOUT
     global NO_TEARDOWN
+    global NO_FORTRAN_RUN
     config = CIME.utils.get_cime_config()
 
     help_str = \
@@ -3527,6 +3552,10 @@ OR
     parser.add_argument("--no-batch", action="store_true",
                         help="Do not submit jobs to batch system, run locally."
                         " If false, will default to machine setting.")
+
+    parser.add_argument("--no-fortran-run", action="store_true",
+                        help="Do not run any fortran jobs. Implies --fast"
+                        " Used for github actions")
 
     parser.add_argument("--no-cmake", action="store_true",
                         help="Do not run cmake tests")
@@ -3559,6 +3588,9 @@ OR
     NO_CMAKE       = ns.no_cmake
     GLOBAL_TIMEOUT = ns.timeout
     NO_TEARDOWN    = ns.no_teardown
+    NO_FORTRAN_RUN = ns.no_fortran_run
+    if NO_FORTRAN_RUN:
+        FAST_ONLY = True
 
     os.chdir(os.path.dirname(__file__))
 
