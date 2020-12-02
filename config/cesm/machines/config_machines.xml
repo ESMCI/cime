@@ -448,6 +448,7 @@ This allows using a different mpirun command to launch unit tests
     <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+
     <mpirun mpilib="default">
       <executable>mpiexec_mpt</executable>
       <arguments>
@@ -463,6 +464,19 @@ This allows using a different mpirun command to launch unit tests
         <arg name="anum_tasks"> -np {{ total_tasks }}</arg>
         <!-- the omplace argument needs to be last -->
         <arg name="zthreadplacement"> omplace -tm open64 </arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="default" comp_interface="nuopc">
+      <executable>mpiexec_mpt</executable>
+      <arguments>
+        <arg name="labelstdout">-p "%g:"</arg>
+        <arg name="num_tasks"> -np {{ total_tasks }}</arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="mpt" queue="share" comp_interface="nuopc">
+      <executable>mpirun `hostname`</executable>
+      <arguments>
+        <arg name="anum_tasks"> -np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
@@ -501,24 +515,23 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">openblas/0.3.6</command>
       </modules>
       <modules compiler="pgi">
-        <command name="load">pgi/20.4</command>
+        <command name="load">pgi/19.2</command>
       </modules>
-
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b37-ncdfio-mpt-g</command>
+        <command name="load">esmf-8.1.0b38-ncdfio-mpt-g</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b37-ncdfio-mpt-O</command>
+        <command name="load">esmf-8.1.0b38-ncdfio-mpt-O</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b37-ncdfio-mpiuni-g</command>
+        <command name="load">esmf-8.1.0b38-ncdfio-mpiuni-g</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
-        <command name="load">esmf-8.1.0b37-ncdfio-mpiuni-O</command>
+        <command name="load">esmf-8.1.0b38-ncdfio-mpiuni-O</command>
       </modules>
       <modules compiler="gnu" mpilib="mpt" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/</command>
@@ -547,27 +560,27 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="pgi" mpilib="mpt" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
-        <command name="load">esmf-8.1.0b29-ncdfio-mpt-g</command>
+        <command name="load">esmf-8.1.0b37-ncdfio-mpt-g</command>
       </modules>
       <modules compiler="pgi" mpilib="mpt" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
-        <command name="load">esmf-8.1.0b29-ncdfio-mpt-O</command>
+        <command name="load">esmf-8.1.0b37-ncdfio-mpt-O</command>
       </modules>
       <modules compiler="pgi" mpilib="openmpi" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
-        <command name="load">esmf-8.1.0b29-ncdfio-openmpi-g</command>
+        <command name="load">esmf-8.1.0b37-ncdfio-openmpi-g</command>
       </modules>
       <modules compiler="pgi" mpilib="openmpi" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
-        <command name="load">esmf-8.1.0b29-ncdfio-openmpi-O</command>
+        <command name="load">esmf-8.1.0b37-ncdfio-openmpi-O</command>
       </modules>
       <modules compiler="pgi" mpilib="mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
-        <command name="load">esmf-8.1.0b29-ncdfio-mpiuni-g</command>
+        <command name="load">esmf-8.1.0b37-ncdfio-mpiuni-g</command>
       </modules>
       <modules compiler="pgi" mpilib="mpi-serial" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
-        <command name="load">esmf-8.1.0b29-ncdfio-mpiuni-O</command>
+        <command name="load">esmf-8.1.0b37-ncdfio-mpiuni-O</command>
       </modules>
 
 

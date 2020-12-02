@@ -161,6 +161,7 @@
       <xs:attribute name="threaded" type="xs:boolean"/>
       <xs:attribute ref="queue"/>
       <xs:attribute ref="unit_testing"/>
+      <xs:attribute ref="comp_interface"/>
     </xs:complexType>
   </xs:element>
 

@@ -16,7 +16,7 @@ class EnvMachSpecific(EnvBase):
     # pylint: disable=unused-argument
     def __init__(self, caseroot=None, infile="env_mach_specific.xml",
                  components=None, unit_testing=False, read_only=False,
-                 standalone_configure=False):
+                 standalone_configure=False, comp_interface=None):
         """
         initialize an object interface to file env_mach_specific.xml in the case directory
 
@@ -26,7 +26,8 @@ class EnvMachSpecific(EnvBase):
         """
         schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_mach_specific.xsd")
         EnvBase.__init__(self, caseroot, infile, schema=schema, read_only=read_only)
-        self._allowed_mpi_attributes = ("compiler", "mpilib", "threaded", "unit_testing", "queue")
+        self._allowed_mpi_attributes = ("compiler", "mpilib", "threaded", "unit_testing", "queue", "comp_interface")
+        self._comp_interface = comp_interface
         self._unit_testing = unit_testing
         self._standalone_configure = standalone_configure
 
