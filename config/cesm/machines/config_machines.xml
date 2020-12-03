@@ -515,7 +515,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">openblas/0.3.6</command>
       </modules>
       <modules compiler="pgi">
-        <command name="load">pgi/19.2</command>
+        <command name="load">pgi/19.9</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
