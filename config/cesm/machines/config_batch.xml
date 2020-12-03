@@ -424,6 +424,20 @@
       <queue default="true" jobmin="1" jobmax="8">scavenge</queue>
     </queues>
   </batch_system>
+  <batch_system type="slurm" MACH="greenplanet40">
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <queues>
+      <!-- Want case.st_archiver to run on scavenge, but case.run to use sky2.4
+           We achieve this setting scavenge as the default queue but limiting it
+           to jobs that use 8 tasks or fewer; other jobs will land in sky2.4    -->
+      <queue nodemin="1" nodemax="13">sky2.4</queue>
+      <queue default="true" jobmin="1" jobmax="8">scavenge</queue>
+    </queues>
+  </batch_system>
 
   <!-- hobart is PBS -->
   <batch_system type="pbs" MACH="hobart" >
