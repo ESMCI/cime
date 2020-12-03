@@ -70,7 +70,7 @@ def _main_func(description):
             case.load_env(job=job_id, reset=True, verbose=True)
 
             if "OMP_NUM_THREADS" in os.environ:
-                print("      Setting Environment OMP_NUM_THREADS={}".format(os.environ["OMP_NUM_THREADS"]))
+                print("      Setting Environment OMP_NUM_THREADS={}".format(case.thread_count))
             print("")
             print("    SUBMIT CMD:")
             print("      {}".format(case.get_resolved_value(cmd)))
