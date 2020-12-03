@@ -1384,9 +1384,8 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
-  <machine MACH="greenplanet">
+  <machine MACH="greenplanet-sib29">
     <DESC>UCI Linux Cluster; 16 pes/node, batch system is slurm</DESC>
-    <NODENAME_REGEX>gplogin\d.gp.local</NODENAME_REGEX>
     <OS>LINUX</OS>
     <!-- PROXY: optional http proxy for access to the internet-->
     <!-- <PROXY> https://howto.get.out </PROXY> -->
@@ -1464,8 +1463,9 @@ This allows using a different mpirun command to launch unit tests
     </resource_limits>
   </machine>
 
-  <machine MACH="greenplanet40">
+  <machine MACH="greenplanet-sky24">
     <DESC>UCI Linux Cluster; 40 pes/node, batch system is slurm</DESC>
+    <NODENAME_REGEX>gplogin\d.gp.local</NODENAME_REGEX>
     <OS>LINUX</OS>
     <!-- PROXY: optional http proxy for access to the internet-->
     <!-- <PROXY> https://howto.get.out </PROXY> -->
