@@ -1411,7 +1411,7 @@ This allows using a different mpirun command to launch unit tests
     <!-- CCSM_CPRNC: location of the cprnc tool, compares model output in testing-->
     <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cime/tools/cprnc/cprnc.cheyenne</CCSM_CPRNC>
     <GMAKE>gmake</GMAKE>
-    <GMAKE_J>8</GMAKE_J>
+    <GMAKE_J>16</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
     <SUPPORTED_BY>mlevy@ucar.edu</SUPPORTED_BY>
     <MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
@@ -1491,7 +1491,7 @@ This allows using a different mpirun command to launch unit tests
     <!-- CCSM_CPRNC: location of the cprnc tool, compares model output in testing-->
     <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cime/tools/cprnc/cprnc.cheyenne</CCSM_CPRNC>
     <GMAKE>gmake</GMAKE>
-    <GMAKE_J>8</GMAKE_J>
+    <GMAKE_J>16</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
     <SUPPORTED_BY>mlevy@ucar.edu</SUPPORTED_BY>
     <MAX_TASKS_PER_NODE>40</MAX_TASKS_PER_NODE>
