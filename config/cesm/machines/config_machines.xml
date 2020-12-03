@@ -1403,7 +1403,7 @@ This allows using a different mpirun command to launch unit tests
          to PROJECT if not set.
 	 can be overridden in environment or $HOME/.cime/config -->
     <!-- <CHARGE_ACCOUNT>couldbethis</CHARGE_ACCOUNT> -->
-    <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER</CIME_OUTPUT_ROOT>
+    <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER/cesm_runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
@@ -1483,7 +1483,7 @@ This allows using a different mpirun command to launch unit tests
          to PROJECT if not set.
 	 can be overridden in environment or $HOME/.cime/config -->
     <!-- <CHARGE_ACCOUNT>couldbethis</CHARGE_ACCOUNT> -->
-    <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER</CIME_OUTPUT_ROOT>
+    <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER/cesm_runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
