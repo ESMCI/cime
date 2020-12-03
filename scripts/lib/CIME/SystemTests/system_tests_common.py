@@ -532,7 +532,7 @@ class SystemTestsCommon(object):
                         if tolerance is None:
                             tolerance = 0.1
                         expect(tolerance > 0.0, "Bad value for throughput tolerance in test")
-                        comment = "TPUTCOMP: Computation time changed by {:.2f}%".format(diff*100)
+                        comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(diff*100)
                         append_testlog(comment, self._orig_caseroot)
                         if diff < tolerance and self._test_status.get_status(THROUGHPUT_PHASE) is None:
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
