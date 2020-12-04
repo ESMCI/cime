@@ -18,7 +18,7 @@ fi
 cd $ABASE
 
 # Set arguments
-nthreads=16
+nthreads=4
 
 # Set various variables
 ncdump=`which ncdump`
