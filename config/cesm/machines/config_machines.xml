@@ -1448,8 +1448,8 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">netcdf/4.7.0</command>
       </modules>
       <modules mpilib="openmpi">
-	<command name="load">openmpi/4.0.5</command>
-	<command name="load">pnetcdf/1.11.2</command>
+	<command name="load">openmpi/3.1.6</command>
+	<command name="load">pnetcdf/1.10.0</command>
       </modules>
     </module_system>
 <!-- environment variables, a blank entry will unset a variable -->
@@ -1528,8 +1528,8 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">netcdf/4.7.0</command>
       </modules>
       <modules mpilib="openmpi">
-	<command name="load">openmpi/4.0.5</command>
-	<command name="load">pnetcdf/1.11.2</command>
+	<command name="load">openmpi/3.1.6</command>
+	<command name="load">pnetcdf/1.10.0</command>
       </modules>
     </module_system>
 <!-- environment variables, a blank entry will unset a variable -->
