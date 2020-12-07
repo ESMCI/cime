@@ -90,16 +90,19 @@ class _TimingParser:
     def _gettime2_nuopc(self):
         self.nprocs = 0
         self.ncount = 0
-        expression = re.compile(r'\s*\MED:\s*\(med_phases_profile\)\s+(\d+)\s+(\d+)')
+        expression = re.compile(r'.*\] RunPhase1\s+(\d+)\s+(\d+)\s')
 
         for line in self.finlines:
             match = expression.match(line)
             if match:
-                self.nprocs = int(match.group(1))
-                self.ncount = int(match.group(2))
-                return (self.nprocs, self.ncount)
+                nprocs = int(match.group(1))
+                ncount = int(match.group(2))
+                if nprocs > self.nprocs:
+                    self.nprocs = nprocs
+                if ncount > self.ncount:
+                    self.ncount = ncount
 
-        return (0, 0)
+        return (self.nprocs, self.ncount)
 
     def gettime(self, heading_padded):
         if self._driver == 'mct':
@@ -289,7 +292,10 @@ class _TimingParser:
                             int(self.case.get_value("{}_{}".format(key, m.name))))
 
             m.comp = self.case.get_value("COMP_{}".format(m.name))
-            m.pemax = m.rootpe + m.ntasks * m.pstrid - 1
+            if self._driver == "nuopc":
+                m.pemax = m.rootpe + m.nthrds * m.ntasks * m.pstrid - 1
+            else:
+                m.pemax = m.rootpe + m.ntasks * m.pstrid - 1
 
         now = datetime.datetime.ctime(datetime.datetime.now())
         inittype = "FALSE"
@@ -353,7 +359,6 @@ class _TimingParser:
             nprocs, nsteps = self.gettime2('')
 
         adays = nsteps*tlen/ncpl
-        print("adays = {} nsteps {} tlen {} ncpl {} nprocs {}".format(adays, nsteps, tlen, ncpl, nprocs))
         odays = nsteps*tlen/ncpl
         if ocn_ncpl and inittype == "TRUE":
             odays = odays - (tlen/ocn_ncpl)
@@ -365,7 +370,7 @@ class _TimingParser:
                 odays = int(odays)
         self.adays = adays
         maxoffset = 40
-        extraoff = 20
+        extraoff = 0
         for m in self.models.values():
             m.offset = int((maxoffset*m.rootpe)/peminmax) + extraoff
         if cpl:
@@ -385,6 +390,10 @@ class _TimingParser:
         self.write("  Timeroot    : {}/Tools\n".format(self.caseroot))
         self.write("  User        : {}\n".format(user))
         self.write("  Curr Date   : {}\n".format(now))
+        if self._driver == "nuopc":
+            self.write("  Driver      : CMEPS\n")
+        else:
+            self.write("  Driver      : CPL7\n")
 
         self.write("  grid        : {}\n".format(grid))
         self.write("  compset     : {}\n".format(compset))
@@ -459,7 +468,6 @@ class _TimingParser:
             xmaxr = adays*86400.0/(xmax*365.0)
         tmaxr = 0
         if tmax > 0:
-            print ("HERE adays {} tmax {}".format(adays, tmax))
             tmaxr = adays*86400.0/(tmax*365.0)
 
         self.write("\n")
