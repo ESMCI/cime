@@ -1,6 +1,187 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 12-7-2020
+Tag: cime5.8.35
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Make the default pio_version = 2.
+    - Changes for nuopc xcpl_comps needed for new ice sheets capability.
+    - Print TPUTCOMP difference to TestStatus.log.
+    - Correct typo in pgi module on cheyenne.
+    - Changes to implement ESMF aware threading in the nuopc driver.
+    - Add back pio version cpp.
+    - Fix pgi nuopc build issue.
+    - More e3sm build upgrades.
+    - Fix some build issues, for nuopc and cam_dycore.
+    - Build nuopc_cap with csm_share.
+    - Update seq_io_write_time to work for CPLHIST run.
+    - Fix python3 incompatibilities in case.py.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+184f5886f Merge pull request #3732 from jedwards4b/change_pio_default_version
+bfe14e4aa Merge pull request #3787 from ESMCI/mvertens/icesheets
+ca6712bb8 Merge pull request #3786 from billsacks/log_tputcomp
+aff5b52e2 correct typo in pgi module on cheyenne
+13996b82d Merge pull request #3784 from jedwards4b/nuopc_timing_cheyenne_esmf
+1bcacca70 add back pio version cpp
+073f83989 fix pgi nuopc build issue
+55b6096ec Merge pull request #3782 from ESMCI/jgfouca/more_e3sm_build_upgrades
+c06710482 Merge pull request #3779 from jedwards4b/fix_bld_issues
+9db73e464 Merge pull request #3777 from jedwards4b/add_cap_share_to_csm
+e23562c59 Merge pull request #3754 from ESMCI/jonbob/update-seq-io-write-time
+1b7eb3e18 Merge pull request #3765 from johnsonb-ucar/fix_python3_incompatibility_in_case
+
+
+Modified files: git diff --name-status [previous_tag]
+M	config/cesm/machines/config_machines.xml
+M	config/cesm/machines/config_pio.xml
+M	config/xml_schemas/config_machines.xsd
+M	config/xml_schemas/env_mach_specific.xsd
+M	scripts/Tools/Makefile
+M	scripts/Tools/preview_run
+M	scripts/lib/CIME/SystemTests/system_tests_common.py
+M	scripts/lib/CIME/XML/env_mach_pes.py
+M	scripts/lib/CIME/XML/env_mach_specific.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/get_timing.py
+M	scripts/lib/CIME/provenance.py
+M	src/build_scripts/buildlib.csm_share
+M	src/build_scripts/buildlib.pio
+M	src/components/xcpl_comps_nuopc/xatm/src/atm_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xglc/src/glc_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xice/src/ice_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xlnd/src/lnd_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xocn/src/ocn_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xrof/src/rof_comp_nuopc.F90
+M	src/components/xcpl_comps_nuopc/xwav/src/wav_comp_nuopc.F90
+M	src/drivers/mct/cime_config/config_component.xml
+M	src/drivers/mct/main/seq_hist_mod.F90
+M	src/drivers/mct/main/seq_io_mod.F90
+A	src/externals/pio2/.github/workflows/a3.yml
+A	src/externals/pio2/.github/workflows/a4.yml
+M	src/externals/pio2/.github/workflows/autotools.yml
+M	src/externals/pio2/.github/workflows/cmake.yml
+A	src/externals/pio2/.github/workflows/cmake_ncint.yml
+M	src/externals/pio2/.github/workflows/strict_autotools.yml
+M	src/externals/pio2/.travis.yml
+M	src/externals/pio2/CMakeLists.txt
+M	src/externals/pio2/Makefile.am
+M	src/externals/pio2/cmake/LibMPI.cmake
+M	src/externals/pio2/cmake_config.h.in
+M	src/externals/pio2/configure.ac
+M	src/externals/pio2/ctest/runcdash-nwscla-gnu.sh
+M	src/externals/pio2/ctest/runcdash-nwscla-intel.sh
+M	src/externals/pio2/ctest/runcdash-nwscla-pgi.sh
+M	src/externals/pio2/examples/basic/gdecomp_mod.F90
+M	src/externals/pio2/examples/basic/testpio.F90
+M	src/externals/pio2/examples/c/Makefile.am
+R087	src/externals/pio2/examples/c/run_tests.sh	src/externals/pio2/examples/c/run_tests.sh.in
+M	src/externals/pio2/examples/f03/CMakeLists.txt
+M	src/externals/pio2/examples/f03/Makefile.am
+R099	src/externals/pio2/examples/f03/examplePio.f90	src/externals/pio2/examples/f03/examplePio.F90
+R091	src/externals/pio2/examples/f03/run_tests.sh	src/externals/pio2/examples/f03/run_tests.sh.in
+M	src/externals/pio2/libpio.settings.in
+D	src/externals/pio2/set_flags.am
+M	src/externals/pio2/src/clib/CMakeLists.txt
+M	src/externals/pio2/src/clib/Makefile.am
+D	src/externals/pio2/src/clib/bget.c
+D	src/externals/pio2/src/clib/bget.h
+M	src/externals/pio2/src/clib/pio_darray.c
+M	src/externals/pio2/src/clib/pio_darray_int.c
+M	src/externals/pio2/src/clib/pio_file.c
+M	src/externals/pio2/src/clib/pio_getput_int.c
+M	src/externals/pio2/src/clib/pio_internal.h
+M	src/externals/pio2/src/clib/pio_meta.h.in
+M	src/externals/pio2/src/clib/pio_nc.c
+M	src/externals/pio2/src/clib/pio_nc4.c
+M	src/externals/pio2/src/clib/pio_rearrange.c
+M	src/externals/pio2/src/clib/pioc.c
+M	src/externals/pio2/src/clib/pioc_support.c
+M	src/externals/pio2/src/flib/CMakeLists.txt
+M	src/externals/pio2/src/flib/Makefile.am
+M	src/externals/pio2/src/flib/pio.F90
+M	src/externals/pio2/src/flib/pio_kinds.F90
+M	src/externals/pio2/src/flib/pio_nf.F90
+M	src/externals/pio2/src/flib/pio_support.F90
+M	src/externals/pio2/src/flib/pio_types.F90
+M	src/externals/pio2/src/flib/piodarray.F90.in
+M	src/externals/pio2/src/flib/piolib_mod.F90
+M	src/externals/pio2/src/flib/pionfatt_mod.F90.in
+M	src/externals/pio2/src/flib/pionfget_mod.F90.in
+M	src/externals/pio2/src/flib/pionfput_mod.F90.in
+M	src/externals/pio2/src/gptl/CMakeLists.txt
+M	src/externals/pio2/src/ncint/ncintdispatch.c
+M	src/externals/pio2/src/ncint/ncintdispatch.h
+M	src/externals/pio2/tests/CMakeLists.txt
+M	src/externals/pio2/tests/cunit/CMakeLists.txt
+M	src/externals/pio2/tests/cunit/Makefile.am
+M	src/externals/pio2/tests/cunit/pio_tests.h
+R089	src/externals/pio2/tests/cunit/run_tests.sh	src/externals/pio2/tests/cunit/run_tests.sh.in
+M	src/externals/pio2/tests/cunit/test_common.c
+M	src/externals/pio2/tests/cunit/test_darray_append.c
+M	src/externals/pio2/tests/cunit/test_darray_frame.c
+M	src/externals/pio2/tests/cunit/test_iosystem3.c
+M	src/externals/pio2/tests/cunit/test_pioc.c
+A	src/externals/pio2/tests/cunit/test_simple.c
+M	src/externals/pio2/tests/fncint/Makefile.am
+R090	src/externals/pio2/tests/fncint/run_tests.sh	src/externals/pio2/tests/fncint/run_tests.sh.in
+M	src/externals/pio2/tests/general/Makefile.am
+M	src/externals/pio2/tests/general/ncdf_fail.F90.in
+M	src/externals/pio2/tests/general/ncdf_get_put.F90.in
+M	src/externals/pio2/tests/general/ncdf_inq.F90.in
+M	src/externals/pio2/tests/general/ncdf_simple_tests.F90.in
+M	src/externals/pio2/tests/general/pio_decomp_fillval.F90.in
+M	src/externals/pio2/tests/general/pio_decomp_frame_tests.F90.in
+M	src/externals/pio2/tests/general/pio_decomp_tests.F90.in
+M	src/externals/pio2/tests/general/pio_decomp_tests_1d.F90.in
+M	src/externals/pio2/tests/general/pio_decomp_tests_2d.F90.in
+M	src/externals/pio2/tests/general/pio_decomp_tests_3d.F90.in
+M	src/externals/pio2/tests/general/pio_fail.F90.in
+M	src/externals/pio2/tests/general/pio_file_fail.F90.in
+M	src/externals/pio2/tests/general/pio_file_simple_tests.F90.in
+M	src/externals/pio2/tests/general/pio_init_finalize.F90.in
+M	src/externals/pio2/tests/general/pio_iosystem_tests.F90.in
+M	src/externals/pio2/tests/general/pio_iosystem_tests2.F90.in
+M	src/externals/pio2/tests/general/pio_iosystem_tests3.F90.in
+M	src/externals/pio2/tests/general/pio_rearr.F90.in
+M	src/externals/pio2/tests/general/pio_rearr_opts.F90.in
+M	src/externals/pio2/tests/general/pio_rearr_opts2.F90.in
+R094	src/externals/pio2/tests/general/run_tests.sh	src/externals/pio2/tests/general/run_tests.sh.in
+M	src/externals/pio2/tests/general/util/pio_tf_f90gen.pl
+M	src/externals/pio2/tests/general/util/pio_tutil.F90
+A	src/externals/pio2/tests/ncint/CMakeLists.txt
+M	src/externals/pio2/tests/ncint/Makefile.am
+R091	src/externals/pio2/tests/ncint/run_perf.sh	src/externals/pio2/tests/ncint/run_perf.sh.in
+R079	src/externals/pio2/tests/ncint/run_tests.sh	src/externals/pio2/tests/ncint/run_tests.sh.in
+M	src/externals/pio2/tests/ncint/tst_ncint_async_perf.c
+M	src/externals/pio2/tests/ncint/tst_ncint_perf.c
+A	src/externals/pio2/tests/ncint/tst_var_compress.c
+M	src/externals/pio2/tests/performance/Makefile.am
+M	src/externals/pio2/tests/performance/pioperformance.F90
+R090	src/externals/pio2/tests/performance/run_tests.sh	src/externals/pio2/tests/performance/run_tests.sh.in
+M	src/externals/pio2/tests/unit/CMakeLists.txt
+M	src/externals/pio2/tests/unit/Makefile.am
+M	src/externals/pio2/tests/unit/basic_tests.F90
+M	src/externals/pio2/tests/unit/driver.F90
+A	src/externals/pio2/tests/unit/ftst_vars_chunking.F90
+M	src/externals/pio2/tests/unit/global_vars.F90
+M	src/externals/pio2/tests/unit/ncdf_tests.F90
+R081	src/externals/pio2/tests/unit/run_tests.sh	src/externals/pio2/tests/unit/run_tests.sh.in
+M	src/share/timing/perf_mod.F90
+M	src/share/util/shr_pio_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 11-12-2020
 Tag: cime5.8.34
 Answer Changes: None
