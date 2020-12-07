@@ -557,6 +557,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/9.1.0/</command>
         <command name="load">esmf-8.1.0b37-ncdfio-mpiuni-O</command>
       </modules>
+
       <modules compiler="pgi" mpilib="mpt" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
         <command name="load">esmf-8.1.0b37-ncdfio-mpt-g</command>
@@ -581,6 +582,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/19.9/</command>
         <command name="load">esmf-8.1.0b37-ncdfio-mpiuni-O</command>
       </modules>
+
+
       <modules mpilib="mpt" compiler="gnu">
         <command name="load">mpt/2.21</command>
         <command name="load">netcdf-mpi/4.7.3</command>
