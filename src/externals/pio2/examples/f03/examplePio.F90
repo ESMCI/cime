@@ -1,3 +1,4 @@
+#include "config.h"
 !> @file
 !! A simple Fortran example for the ParallelIO Library.
 module pioExample

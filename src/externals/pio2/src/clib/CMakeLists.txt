@@ -6,10 +6,15 @@ project (PIOC C)
 #  DEFINE THE TARGET
 #==============================================================================
 
-add_library (pioc topology.c pio_file.c pioc_support.c pio_lists.c
-  pioc.c pioc_sc.c pio_spmd.c pio_rearrange.c pio_nc4.c bget.c
+set (src topology.c pio_file.c pioc_support.c pio_lists.c
+  pioc.c pioc_sc.c pio_spmd.c pio_rearrange.c pio_nc4.c 
   pio_nc.c pio_put_nc.c pio_get_nc.c pio_getput_int.c pio_msg.c
   pio_darray.c pio_darray_int.c pio_get_vard.c pio_put_vard.c pio_error.c)
+if (NETCDF_INTEGRATION)
+  set (src ${src} ../ncint/nc_get_vard.c ../ncint/ncintdispatch.c ../ncint/ncint_pio.c ../ncint/nc_put_vard.c)
+endif ()
+
+add_library (pioc ${src})
 
 # set up include-directories
 include_directories(
@@ -20,6 +25,10 @@ include_directories(
 # Include the clib source directory
 target_include_directories (pioc
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Include the ncint source directory
+target_include_directories (pioc
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ncint)
 
 # System and compiler CPP directives
 target_compile_definitions (pioc
@@ -66,7 +75,6 @@ endif ()
 
 #===== GPTL =====
 if (PIO_ENABLE_TIMING)
-  find_package (GPTL COMPONENTS C QUIET)
   if (GPTL_C_FOUND)
     message (STATUS "Found GPTL C: ${GPTL_C_LIBRARIES}")
     target_include_directories (pioc
@@ -83,53 +91,27 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-C =====
-find_package (NetCDF "4.3.3" COMPONENTS C)
 if (NetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${NetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _NETCDF)
   target_link_libraries (pioc
     PUBLIC ${NetCDF_C_LIBRARIES})
-  if (${NetCDF_C_HAS_PARALLEL})
-    target_compile_definitions (pioc
-      PUBLIC _NETCDF4)
-  endif ()
   if (${NetCDF_C_LOGGING_ENABLED})
-    target_compile_definitions (pioc
-      PUBLIC NETCDF_C_LOGGING_ENABLED)
     # netcdf.h needs this to be defined to use netCDF logging.
     target_compile_definitions (pioc
       PUBLIC LOGGING)
   endif()
-else ()
-  target_compile_definitions (pioc
-    PUBLIC _NONETCDF)
 endif ()
 
 #===== PnetCDF-C =====
-if (WITH_PNETCDF)
-  find_package (PnetCDF "1.7.0" COMPONENTS C)
-endif ()
 if (PnetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _PNETCDF)
   target_link_libraries (pioc
     PUBLIC ${PnetCDF_C_LIBRARIES})
 
   # Check library for varn functions
   set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_C_LIBRARY})
-  check_function_exists (ncmpi_get_varn PnetCDF_C_HAS_VARN)
-  if (PnetCDF_C_HAS_VARN)
-    target_compile_definitions(pioc
-      PUBLIC USE_PNETCDF_VARN
-      PUBLIC USE_PNETCDF_VARN_ON_READ)
-  endif()
-else ()
-  target_compile_definitions (pioc
-    PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====

@@ -128,6 +128,13 @@ else
    CPPDEFS += -DMCT_INTERFACE
 endif
 
+
+ifeq ($(PIO_VERSION),2)
+  CPPDEFS += -DPIO2
+else
+  CPPDEFS += -DPIO1
+endif
+
 ifeq ($(USE_CXX), TRUE)
   ifeq ($(SUPPORTS_CXX), FALSE)
     $(error Fatal attempt to include C++ code on a compiler/machine combo that has not been set up to support C++)
@@ -757,7 +764,11 @@ CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(IN
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" \
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" 
+
+ifeq ($(DEBUG), TRUE)
+  CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
+endif
 
 # Allow for separate installations of the NetCDF C and Fortran libraries
 ifeq ($(NETCDF_SEPARATE), FALSE)

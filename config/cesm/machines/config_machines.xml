@@ -1596,14 +1596,16 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="mvapich2">
       <executable>mpiexec</executable>
       <arguments>
-        <arg name="machine_file">--machinefile $ENV{PBS_NODEFILE}</arg>
-        <arg name="num_tasks"> -n {{ total_tasks }} </arg>
+	       <arg name="machine_file">--machinefile $ENV{PBS_NODEFILE}</arg>
+	       <arg name="num_tasks"> -n {{ total_tasks }} </arg>
+	       <arg name="addrank"> --prepend-rank </arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
       <executable>mpiexec</executable>
       <arguments>
-        <arg name="num_tasks"> -n {{ total_tasks }} </arg>
+	      <arg name="num_tasks"> -n {{ total_tasks }} </arg>
+	      <arg name="addrank"> --tag-output </arg>
       </arguments>
     </mpirun>
     <module_system type="module" allow_error="true">

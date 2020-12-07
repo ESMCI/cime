@@ -419,7 +419,7 @@ PIOc_sync(int ncid)
                 if (wmb->num_arrays > 0)
                     flush_buffer(ncid, wmb, true);
                 HASH_DEL(file->buffer, wmb);
-                brel(wmb);
+                free(wmb);
 
             }
             file->buffer = NULL;

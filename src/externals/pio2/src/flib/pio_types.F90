@@ -1,3 +1,4 @@
+#include "config.h"
 !>
 !! @file
 !! Derived datatypes and constants for PIO Fortran API.
@@ -144,12 +145,14 @@ module pio_types
   integer, public, parameter :: PIO_nowrite  = nf_nowrite    !< read-only
   integer, public, parameter :: PIO_CLOBBER = nf_clobber     !< clobber existing file
   integer, public, parameter :: PIO_NOCLOBBER = nf_NOclobber !< do not clobber existing file
+  integer, public, parameter :: PIO_FILL = nf_fill           !< use fill values
   integer, public, parameter :: PIO_NOFILL = nf_nofill       !< do not use fill values
   integer, public, parameter :: PIO_MAX_NAME = nf_max_name   !< max name len
   integer, public, parameter :: PIO_MAX_VAR_DIMS = min(6,nf_max_var_dims) !< max dims for a var
   integer, public, parameter :: PIO_64BIT_OFFSET = nf_64bit_offset        !< 64bit offset format
   integer, public, parameter :: PIO_FILL_INT = nf_fill_int;               !< int fill value
   real, public, parameter :: PIO_FILL_FLOAT = nf_fill_float;              !< float fill value
+
   double precision, public, parameter :: PIO_FILL_DOUBLE = nf_fill_double; !< double fill value
 
   enum, bind(c)

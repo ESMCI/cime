@@ -7,12 +7,10 @@
 # The library we are building.
 lib_LTLIBRARIES = libpiof.la
 
-AM_CPPFLAGS = -D_NETCDF -D_NETCDF4 -D_PNETCDF
-
 # These linker flags specify libtool version info.
 # See http://www.gnu.org/software/libtool/manual/libtool.html#Libtool-versioning
 # for information regarding incrementing `-version-info`.
-libpiof_la_LDFLAGS = -version-info 3:1:2
+libpiof_la_LDFLAGS = -version-info 4:0:0
 
 # The library soure files.
 libpiof_la_LIBADD = libpio_nf.la libpio_kinds.la libpio_support.la	\
@@ -59,17 +57,17 @@ pionfput_mod.F90: pionfput_mod.F90.in
 	${top_srcdir}/scripts/genf90.pl $< > $@
 
 # Each mod file depends on the .o file.
-pio_kinds.mod: pio_kinds.$(OBJEXT)
-pio_types.mod: pio_types.$(OBJEXT)
-pio_support.mod: pio_support.$(OBJEXT)
-pio_nf.mod: pio_nf.$(OBJEXT)
-piodarray.mod: piodarray.F90 piodarray.$(OBJEXT)
-pionfatt_mod.mod: pionfatt_mod.F90 pionfatt_mod.$(OBJEXT)
-pionfget_mod.mod: pionfget_mod.F90 pionfget_mod.$(OBJEXT)
-pionfput_mod.mod: pionfput_mod.F90 pionfput_mod.$(OBJEXT)
-piolib_mod.mod: piolib_mod.$(OBJEXT)
-ncint_mod.mod: ncint_mod.$(OBJEXT)
-pio.mod: pio.$(OBJEXT)
+pio_kinds.mod: pio_kinds.lo
+pio_types.mod: pio_types.lo
+pio_support.mod: pio_support.lo
+pio_nf.mod: pio_nf.lo
+piodarray.mod: piodarray.F90 piodarray.lo
+pionfatt_mod.mod: pionfatt_mod.F90 pionfatt_mod.lo
+pionfget_mod.mod: pionfget_mod.F90 pionfget_mod.lo
+pionfput_mod.mod: pionfput_mod.F90 pionfput_mod.lo
+piolib_mod.mod: piolib_mod.lo
+ncint_mod.mod: ncint_mod.lo
+pio.mod: pio.lo
 
 # Some mod files depend on other mod files.
 DEPEND_FILES = pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod \
@@ -77,7 +75,7 @@ pio_nf.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod pio_support.mod
 if NETCDF_INTEGRATION
 DEPEND_FILES += ncint_mod.mod
 endif
-pio.$(OBJEXT): $(DEPEND_FILES)
+pio.lo: $(DEPEND_FILES)
 
 # Mod files are built and then installed as headers.
 MODFILES = pio_kinds.mod pio_types.mod pio_support.mod pio_nf.mod	\
@@ -97,15 +95,15 @@ if BUILD_DOCS
 BUILT_SOURCES += piodarray.f90 piolib_mod.f90 pionfatt_mod.f90 pionfget_mod.f90 \
 pionfput_mod.f90 pionfatt_mod_2.f90 pionfget_mod_2.f90
 piodarray.f90: piodarray.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 piolib_mod.f90: piolib_mod.F90
 	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfatt_mod.f90: pionfatt_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfget_mod.f90: pionfget_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 pionfput_mod.f90: pionfput_mod.F90
-	$(CC) -E $< > $@
+	$(CC) -I../.. $(AM_CPPFLAGS) -E $< > $@
 
 # Unfortunately the genf90.pl script which generates these fortran
 # files has no way of handling doxygen documentation. So use sed to

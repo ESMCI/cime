@@ -132,7 +132,7 @@ contains
   !
   ! !INTERFACE: ------------------------------------------------------------------
 
-  subroutine seq_io_wopen(filename,clobber,file_ind, model_doi_url)
+  subroutine seq_io_wopen(filename,clobber,file_ind, model_doi_url, set_fill)
 
     ! !INPUT/OUTPUT PARAMETERS:
     implicit none
@@ -140,9 +140,9 @@ contains
     logical,optional,intent(in):: clobber
     integer,optional,intent(in):: file_ind
     character(CL), optional, intent(in)  :: model_doi_url
-
+    logical, optional, intent(in) :: set_fill
     !EOP
-
+    integer :: lset_fill = PIO_NOFILL, old_set_fill
     logical :: exists
     logical :: lclobber
     integer :: iam,mpicom
@@ -158,7 +158,11 @@ contains
     !-------------------------------------------------------------------------------
 
     lversion=trim(version0)
-
+#ifdef PIO2
+    if(present(set_fill)) then
+       if(set_fill) lset_fill = PIO_FILL
+    endif
+#endif
     lclobber = .false.
     if (present(clobber)) lclobber=clobber
 
@@ -168,7 +172,7 @@ contains
     lfile_ind = 0
     if (present(file_ind)) lfile_ind=file_ind
 
-    call seq_comm_setptrs(CPLID, iam=iam, mpicom=mpicom) 
+    call seq_comm_setptrs(CPLID, iam=iam, mpicom=mpicom)
 
     if (.not. pio_file_is_open(cpl_io_file(lfile_ind))) then
        ! filename not open
@@ -186,6 +190,9 @@ contains
 
              rcode = pio_createfile(cpl_io_subsystem, cpl_io_file(lfile_ind), cpl_pio_iotype, trim(filename), nmode)
              if(iam==0) write(logunit,*) subname,' create file ',trim(filename)
+#ifdef PIO2
+             rcode = pio_set_fill(cpl_io_file(lfile_ind), lset_fill, old_set_fill)
+#endif
              rcode = pio_put_att(cpl_io_file(lfile_ind),pio_global,"file_version",version)
              rcode = pio_put_att(cpl_io_file(lfile_ind),pio_global,"model_doi_url",lmodel_doi_url)
           else
@@ -425,6 +432,7 @@ contains
     logical :: lcolumn
 
     real(r8), allocatable :: tmpdata(:)
+    real(r4), allocatable :: tmpr4data(:)
 
     !-------------------------------------------------------------------------------
     !
@@ -479,7 +487,7 @@ contains
     if (present(ny)) then
        if (ny /= 0) lny = ny
     endif
-    if (lnx*lny /= ng .and. .not. lcolumn) then 
+    if (lnx*lny /= ng .and. .not. lcolumn) then
        if(iam==0) write(logunit,*) subname,' ERROR: grid2d size not consistent ',ng,lnx,lny,trim(dname)
        call shr_sys_abort(subname//'ERROR: grid2d size not consistent ')
     endif
@@ -528,10 +536,16 @@ contains
 
     if (lwdata) then
        call mct_gsmap_OrderedPoints(gsmap, iam, Dof)
-       call pio_initdecomp(cpl_io_subsystem, pio_double, (/lnx,lny/), dof, iodesc)
        ns = size(dof)
+       if(luse_float) then
+          allocate(tmpr4data(ns))
+          call pio_initdecomp(cpl_io_subsystem, pio_real, (/lnx,lny/), dof, iodesc)
+       else
+          allocate(tmpdata(ns))
+          call pio_initdecomp(cpl_io_subsystem, pio_double, (/lnx,lny/), dof, iodesc)
+       endif
        deallocate(dof)
-       allocate(tmpdata(ns))
+
        do k = 1,nf
           call mct_aVect_getRList(mstring,k,AV)
           itemc = mct_string_toChar(mstring)
@@ -541,12 +555,18 @@ contains
              name1 = trim(lpre)//'_'//trim(itemc)
              rcode = pio_inq_varid(cpl_io_file(lfile_ind),trim(name1),varid)
              call pio_setframe(cpl_io_file(lfile_ind),varid,frame)
-             tmpdata = av%rattr(k,:)
-             call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, tmpdata, rcode, fillval=lfillvalue)
+             if(luse_float) then
+                tmpr4data = real(av%rattr(k,:), kind=r4)
+                call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, tmpr4data, rcode, fillval=real(lfillvalue, kind=r4))
+             else
+                tmpdata = av%rattr(k,:)
+                call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, tmpdata, rcode, fillval=lfillvalue)
+             endif
              !-------tcraig
           endif
        enddo
-       deallocate(tmpdata)
+       if(allocated(tmpdata)) deallocate(tmpdata)
+       if(allocated(tmpr4data)) deallocate(tmpr4data)
        call pio_freedecomp(cpl_io_file(lfile_ind), iodesc)
 
     end if
@@ -633,7 +653,7 @@ contains
 
     lwhead = .true.
     lwdata = .true.
-    lcolumn = .false. 
+    lcolumn = .false.
     if (present(whead)) lwhead = whead
     if (present(wdata)) lwdata = wdata
     if (present(scolumn)) lcolumn = scolumn
@@ -674,7 +694,7 @@ contains
     if (present(ny)) then
        if (ny /= 0) lny = ny
     endif
-    if (lnx*lny /= ng .and. .not. lcolumn) then 
+    if (lnx*lny /= ng .and. .not. lcolumn) then
        if(iam==0) write(logunit,*) subname,' ERROR: grid2d size not consistent ',ng,lnx,lny,trim(dname)
        call shr_sys_abort(subname//' ERROR: grid2d size not consistent ')
     endif
@@ -810,7 +830,7 @@ contains
     logical          ,optional,intent(in) :: tavg      ! is this a tavg
     logical          ,optional,intent(in) :: use_float ! write output as float rather than double
     integer          ,optional,intent(in) :: file_ind
-    logical          ,optional,intent(in) :: scolumn    ! single column model flag 
+    logical          ,optional,intent(in) :: scolumn    ! single column model flag
 
     !EOP
 
@@ -862,7 +882,7 @@ contains
 
     lwhead = .true.
     lwdata = .true.
-    lcolumn = .false. 
+    lcolumn = .false.
     if (present(whead)) lwhead = whead
     if (present(wdata)) lwdata = wdata
     if (present(scolumn)) lcolumn = scolumn
@@ -1443,7 +1463,7 @@ contains
     real(r8) :: time_val_1d(1)
     integer :: lfile_ind
     character(*),parameter :: subName = '(seq_io_write_time) '
-
+    integer :: ndims
     !-------------------------------------------------------------------------------
     !
     !-------------------------------------------------------------------------------
@@ -1484,25 +1504,24 @@ contains
     endif
 
     if (lwdata) then
-       start = 1
-       count = 0
-       if (present(nt)) then
-          start(1) = nt
-       endif
-       count(1) = 1
-       time_val_1d(1) = time_val
        rcode = pio_inq_varid(cpl_io_file(lfile_ind),'time',varid)
-       rcode = pio_put_var(cpl_io_file(lfile_ind),varid,start=start,count=count,ival=time_val_1d)
+       if (present(nt)) then
+          rcode = pio_put_var(cpl_io_file(lfile_ind),varid,(/nt/),time_val)
+       else
+          rcode = pio_put_var(cpl_io_file(lfile_ind),varid,time_val)
+       endif
        if (present(tbnds)) then
           rcode = pio_inq_varid(cpl_io_file(lfile_ind),'time_bnds',varid)
           start = 1
           count = 0
+          ndims = 1
           if (present(nt)) then
              start(2) = nt
+             ndims = 2
           endif
           count(1) = 2
           count(2) = 1
-          rcode = pio_put_var(cpl_io_file(lfile_ind),varid,start,count,tbnds)
+          rcode = pio_put_var(cpl_io_file(lfile_ind),varid,start(1:ndims),count(1:ndims),tbnds)
        endif
 
        !      write(logunit,*) subname,' wrote time ',lwhead,lwdata

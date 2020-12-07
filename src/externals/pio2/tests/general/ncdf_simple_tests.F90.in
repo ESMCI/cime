@@ -1,3 +1,4 @@
+#include "config.h"
 MODULE ncdf_simple_tests_tgv
   use pio_tutil
   ! tgv in prefix corresponds to module name (ncdf_simple_tests_tgv)
