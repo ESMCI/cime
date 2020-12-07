@@ -66,6 +66,28 @@ def _build_usernl_files(case, model, comp):
                 if os.path.exists(model_nl):
                     safe_copy(model_nl, nlfile)
 
+def _pelayout_sanity(case, comp_interface, models):
+    # sanity check for ROOTPE
+    rootpe = {};
+    nthrds = {};
+    maxnthrds = 0;
+    maxrootpe = 0;
+    for comp in models:
+        rootpe[comp] = case.get_value("ROOTPE_{}".format(comp))
+        nthrds[comp] = case.get_value("NTHRDS_{}".format(comp))
+        if nthrds[comp] > maxnthrds:
+            maxnthrds = nthrds[comp]
+        if rootpe[comp] > maxrootpe:
+            maxrootpe = rootpe[comp]
+    if comp_interface == "nuopc":
+        basis = case.get_value("MAX_MPITASKS_PER_NODE")
+    else:
+        basis = case.get_value("MAX_MPITASKS_PER_NODE")//maxnthrds
+
+    if maxnthrds > 0 and maxrootpe > 0:
+        logger.warning("\nReminder: Driver {} variable ROOTPE is based on {} tasks per node.".format(comp_interface, basis))
+        logger.warning("          Make sure that your pelayout is consistant with this definition.\n")
+
 ###############################################################################
 def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, keep=None):
 ###############################################################################
@@ -167,6 +189,10 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
 
                 case.set_value("NTASKS_PER_INST_{}".format(comp), max(1,int(ntasks / ninst)))
 
+
+        case._pelayout_sanity(comp_interface, models)
+
+
         if os.path.exists(get_batch_script_for_job(case.get_primary_job())):
             logger.info("Machine/Decomp/Pes configuration has already been done ...skipping")
 
@@ -245,6 +271,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             env_module.save_all_env_info("software_environment.txt")
 
         logger.info("You can now run './preview_run' to get more info on how your case will be run")
+
 
 ###############################################################################
 def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
