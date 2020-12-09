@@ -518,6 +518,7 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
       </modules>
+<!--
       <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.0.5/</command>
         <command name="load">esmf-8.1.0b41-ncdfio-mpt-g</command>
@@ -583,6 +584,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/</command>
         <command name="load">esmf-8.1.0b41-ncdfio-mpiuni-O</command>
       </modules>
+-->
+
       <modules mpilib="mpt" compiler="gnu">
         <command name="load">mpt/2.21</command>
         <command name="load">netcdf-mpi/4.7.3</command>
@@ -633,6 +636,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
+      <env name="ESMFMKFILE">/glade/p/cesmdata/cseg/PROGS/esmf/initialize_pre_mpi/mpt/2.21/intel/19.0.5/lib/libg/Linux.intel.64.mpt.default/esmf.mk</env>
     </environment_variables>
     <environment_variables unit_testing="true">
       <env name="MPI_USE_ARRAY">false</env>
@@ -642,7 +646,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="MPI_USE_ARRAY">false</env>
     </environment_variables>
     <resource_limits>
-      <resource name="RLIMIT_STACK"> -1</resource>
+      <resource name="RLIMIT_STACK"> 40000000000</resource>
     </resource_limits>
   </machine>
 
