@@ -120,21 +120,17 @@ endif
 
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
-   ifneq ($(realpath $(INSTALL_SHAREDPATH)/lib/libstreams.a),)
-     # FoX libraries are provided and built by CDEPS
-     FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
-     ULIBS += -ldshr -lstreams
-     SLIBS += $(FoX_LIBS)
-   endif
+   # FoX libraries are provided and built by CDEPS
+   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
+   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+   SLIBS += $(FoX_LIBS)
 else
    CPPDEFS += -DMCT_INTERFACE
 endif
 
+
 ifeq ($(PIO_VERSION),2)
-  ifneq ($(COMPILER),nag)
-    # Needed by SCORPIO not default PIO, does not work with NAG compiler
-    USE_CXX := TRUE
-  endif
+  CPPDEFS += -DPIO2
 else
   CPPDEFS += -DPIO1
 endif
@@ -378,6 +374,8 @@ ifeq ($(ULIBDEP),$(null))
   endif
 endif
 
+CPPDEFS += -DPIO$(PIO_VERSION)
+
 ifdef CPRE
   FPPDEFS := $(subst $(comma),\\$(comma),$(CPPDEFS))
   FPPDEFS := $(patsubst -D%,$(CPRE)%,$(FPPDEFS))
@@ -568,16 +566,21 @@ ifeq ($(findstring -cosp,$(CAM_CONFIG_OPTS)),-cosp)
 endif
 
 COMP_ATM ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) COMP_ATM --value)
-CAM_DYCORE ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_DYCORE --value)
 ifeq ($(strip $(COMP_ATM)),cam)
+  CAM_DYCORE ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_DYCORE --value)
   ifeq ($(CAM_DYCORE),fv3)
     FV3CORE_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/atmos_cubed_sphere)
     INCLDIR+=-I$(FV3CORE_LIBDIR) -I$(FV3CORE_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE) -I$(abspath $(EXEROOT)/FMS) -I$(CIMEROOT)/../libraries/FMS/src/include
   endif
-endif
 
-ifeq ($(CAM_DYCORE),mpas)
-MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+  ifeq ($(CAM_DYCORE),mpas)
+    # For building CAM with the MPAS dycore
+    MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+    ifeq ($(MODEL),driver)
+      # This is needed by some compilers when building the driver.
+      INCLDIR+=-I$(MPAS_LIBDIR)
+    endif
+  endif
 endif
 
 ifeq ($(MODEL),cam)
@@ -761,7 +764,11 @@ CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(IN
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" \
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" 
+
+ifeq ($(DEBUG), TRUE)
+  CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
+endif
 
 # Allow for separate installations of the NetCDF C and Fortran libraries
 ifeq ($(NETCDF_SEPARATE), FALSE)

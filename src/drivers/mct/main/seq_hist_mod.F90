@@ -171,7 +171,7 @@ contains
     character(len=18) :: date_str
     type(mct_gsMap), pointer :: gsmap
     type(mct_gGrid), pointer :: dom    ! comp domain on cpl pes
-    character(CL) :: model_doi_url 
+    character(CL) :: model_doi_url
     !-------------------------------------------------------------------------------
     !
     !-------------------------------------------------------------------------------
@@ -252,11 +252,11 @@ contains
           if (tbnds(1) >= tbnds(2)) then
              call seq_io_write(hist_file,&
                   time_units=time_units, time_cal=calendar, time_val=curr_time, &
-                  whead=whead, wdata=wdata)
+                  nt=1,whead=whead, wdata=wdata)
           else
              call seq_io_write(hist_file, &
                   time_units=time_units, time_cal=calendar, time_val=curr_time, &
-                  whead=whead, wdata=wdata, tbnds=tbnds)
+                  nt=1,whead=whead, wdata=wdata, tbnds=tbnds)
           endif
 
           if (atm_present) then
@@ -870,7 +870,7 @@ contains
              else
                 call seq_io_write(hist_file, &
                      time_units=time_units, time_cal=calendar, time_val=avg_time, &
-                     whead=whead, wdata=wdata, tbnds=tbnds)
+                     whead=whead, wdata=wdata, nt=1, tbnds=tbnds)
              endif
              if (atm_present .and. histavg_atm) then
                 gsmap => component_get_gsmap_cx(atm(1))
@@ -1254,7 +1254,7 @@ contains
 
           if (drv_threading) call seq_comm_setnthreads(nthreads_CPLID)
           if (fk1 == 1) then
-             call seq_io_wopen(hist_file(found), clobber=.true., file_ind=found, model_doi_url=model_doi_url)
+             call seq_io_wopen(hist_file(found), clobber=.true., file_ind=found, model_doi_url=model_doi_url, set_fill=.true.)
           endif
 
           ! loop twice,  first time write header,  second time write data for perf

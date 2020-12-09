@@ -170,7 +170,7 @@ def _build_model(build_threaded, exeroot, incroot, complist,
 
 ###############################################################################
 def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
-                       comp_interface, sharedpath, separate_builds, ninja, dry_run, timing, case):
+                       comp_interface, sharedpath, separate_builds, ninja, dry_run, case):
 ###############################################################################
     cime_model = get_model()
     bldroot    = os.path.join(exeroot, "cmake-bld")
@@ -205,15 +205,13 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
         cmake_args += " -GNinja "
         cmake_env += "PATH={}:$PATH ".format(ninja_path)
 
-    if timing:
-        cmake_args += " -DE3SM_ENABLE_TIMING=True "
-
     # Glue all pieces together:
     #  - cmake environment
     #  - common (i.e. project-wide) cmake args
     #  - component-specific cmake args
     #  - path to src folder
-    cmake_cmd = "{} time cmake {} {} {}/components".format(cmake_env, cmake_args, cmp_cmake_args, srcroot)
+    do_timing = "/usr/bin/time -p " if os.path.exists("/usr/bin/time") else ""
+    cmake_cmd = "{} {}cmake {} {} {}/components".format(cmake_env, do_timing, cmake_args, cmp_cmake_args, srcroot)
     stat = 0
     if dry_run:
         logger.info("CMake cmd:\ncd {} && {}\n\n".format(bldroot, cmake_cmd))
@@ -242,7 +240,9 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     # Call Make
     logs = []
     for model in buildlist:
-        make_cmd = "time {} -j {}".format(gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), gmake_j)
+        t1 = time.time()
+
+        make_cmd = "{}{} -j {}".format(do_timing, gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), gmake_j)
         if model != "cpl":
             make_cmd += " {}".format(model)
             curr_log = os.path.join(exeroot, "{}.bldlog.{}".format(model, lid))
@@ -263,6 +263,10 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
             make_cmd = "({}) >> {} 2>&1".format(make_cmd, curr_log)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
             expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(model_name, curr_log))
+
+            t2 = time.time()
+            if separate_builds:
+                logger.info("   {} built in {:f} seconds".format(model_name, (t2 - t1)))
 
         logs.append(curr_log)
 
@@ -598,7 +602,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
 
 ###############################################################################
 def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
-                     save_build_provenance, separate_builds, ninja, dry_run, timing):
+                     save_build_provenance, separate_builds, ninja, dry_run):
 ###############################################################################
 
     t1 = time.time()
@@ -713,7 +717,6 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
                                debug, compiler, mpilib, complist, ninst_build, smp_value,
                                model_only, buildlist)
 
-    t2 = time.time()
     logs = []
 
     if not model_only:
@@ -723,7 +726,7 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
     if not sharedlib_only:
         if get_model() == "e3sm":
             logs.extend(_build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
-                                           comp_interface, sharedpath, separate_builds, ninja, dry_run, timing, case))
+                                           comp_interface, sharedpath, separate_builds, ninja, dry_run, case))
         else:
             os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
             logs.extend(_build_model(build_threaded, exeroot, incroot, complist,
@@ -737,11 +740,10 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
     post_build(case, logs, build_complete=not (buildlist or sharedlib_only),
                save_build_provenance=save_build_provenance)
 
-    t3 = time.time()
+    t2 = time.time()
 
     if not sharedlib_only:
-        logger.info("Time spent not building: {:f} sec".format(t2 - t1))
-        logger.info("Time spent building: {:f} sec".format(t3 - t2))
+        logger.info("Total build time: {:f} seconds".format(t2 - t1))
         logger.info("MODEL BUILD HAS FINISHED SUCCESSFULLY")
 
     return True
@@ -768,10 +770,10 @@ def post_build(case, logs, build_complete=False, save_build_provenance=True):
         lock_file("env_build.xml", caseroot=case.get_value("CASEROOT"))
 
 ###############################################################################
-def case_build(caseroot, case, sharedlib_only=False, model_only=False, buildlist=None, save_build_provenance=True, separate_builds=False, ninja=False, dry_run=False, timing=False):
+def case_build(caseroot, case, sharedlib_only=False, model_only=False, buildlist=None, save_build_provenance=True, separate_builds=False, ninja=False, dry_run=False):
 ###############################################################################
     functor = lambda: _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
-                                       save_build_provenance, separate_builds, ninja, dry_run, timing)
+                                       save_build_provenance, separate_builds, ninja, dry_run)
     cb = "case.build"
     if (sharedlib_only == True):
         cb = cb + " (SHAREDLIB_BUILD)"

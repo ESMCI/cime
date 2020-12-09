@@ -10,7 +10,7 @@ trap exit INT TERM
 
 printf 'running PIO tests...\n'
 
-PIO_TESTS='tst_pio_udf tst_pio_async tst_async_multi'
+PIO_TESTS='tst_pio_udf tst_pio_async tst_async_multi tst_var_compress'
 
 success1=true
 success2=true
@@ -18,7 +18,7 @@ for TEST in $PIO_TESTS
 do
     success1=false
     echo "running ${TEST}"
-    mpiexec -n 4 ./${TEST} && success1=true
+    @WITH_MPIEXEC@ -n 4 ./${TEST} && success1=true
     if test $success1 = false; then
         break
     fi
@@ -30,7 +30,7 @@ done
 # do
 #     success2=false
 #     echo "running ${TEST}"
-#     mpiexec -n 8 ./${TEST} && success2=true
+#     @WITH_MPIEXEC@ -n 8 ./${TEST} && success2=true
 #     if test $success2 = false; then
 #         break
 #     fi

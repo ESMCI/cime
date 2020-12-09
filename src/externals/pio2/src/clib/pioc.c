@@ -732,8 +732,8 @@ PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int ma
           iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->llen,
           iodesc->maxiobuflen));
     if (iodesc->rindex)
-	for (int j = 0; j < iodesc->llen; j++)
-	    PLOG((3, "rindex[%d] = %lld", j, iodesc->rindex[j]));
+        for (int j = 0; j < iodesc->llen; j++)
+            PLOG((3, "rindex[%d] = %lld", j, iodesc->rindex[j]));
 #endif /* PIO_ENABLE_LOGGING */
 
     /* This function only does something if pre-processor macro
@@ -913,7 +913,6 @@ PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
  * <li>On IO tasks, create an IO communicator (ios->io_comm).
  * <li>Assign an iosystemid, and put this iosystem_desc_t into the
  * list of open iosystems.
- * <li>Initialize the bget buffer, unless PIO_USE_MALLOC was used.
  * </ul>
  *
  * When complete, there are three MPI communicators (ios->comp_comm,
@@ -1075,10 +1074,6 @@ PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
 
     /* Add this ios struct to the list in the PIO library. */
     *iosysidp = pio_add_to_iosystem_list(ios);
-
-    /* Allocate buffer space for compute nodes. */
-    if ((ret = compute_buffer_init(ios)))
-        return ret;
 
 #ifdef USE_MPE
     pio_stop_mpe_log(INIT, __func__);
@@ -1242,13 +1237,6 @@ PIOc_free_iosystem(int iosysid)
     if ((ierr = pio_num_iosystem(&niosysid)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     PLOG((2, "%d iosystems are still open.", niosysid));
-
-    /* Only free the buffer pool if this is the last open iosysid. */
-    if (niosysid == 1)
-    {
-        free_cn_buffer_pool(ios);
-        PLOG((2, "Freed buffer pool."));
-    }
 
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()

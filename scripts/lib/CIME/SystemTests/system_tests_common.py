@@ -37,7 +37,6 @@ class SystemTestsCommon(object):
         self._ninja     = False
         self._dry_run   = False
         self._user_separate_builds = False
-        self._timing = False
 
     def _init_environment(self, caseroot):
         """
@@ -71,7 +70,7 @@ class SystemTestsCommon(object):
 
             self._case.case_setup(reset=True, test_mode=True)
 
-    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False, timing=False):
+    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False):
         """
         Do NOT override this method, this method is the framework that
         controls the build phase. build_phase is the extension point
@@ -81,7 +80,6 @@ class SystemTestsCommon(object):
         self._ninja           = ninja
         self._dry_run         = dry_run
         self._user_separate_builds = separate_builds
-        self._timing = timing
         for phase_name, phase_bool in [(SHAREDLIB_BUILD_PHASE, not model_only),
                                        (MODEL_BUILD_PHASE, not sharedlib_only)]:
             if phase_bool:
@@ -130,7 +128,7 @@ class SystemTestsCommon(object):
         build.case_build(self._caseroot, case=self._case,
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
-                         ninja=self._ninja, dry_run=self._dry_run, separate_builds=self._user_separate_builds, timing=self._timing)
+                         ninja=self._ninja, dry_run=self._dry_run, separate_builds=self._user_separate_builds)
         logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
@@ -534,10 +532,12 @@ class SystemTestsCommon(object):
                         if tolerance is None:
                             tolerance = 0.1
                         expect(tolerance > 0.0, "Bad value for throughput tolerance in test")
+                        comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(diff*100)
+                        append_testlog(comment, self._orig_caseroot)
                         if diff < tolerance and self._test_status.get_status(THROUGHPUT_PHASE) is None:
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
                         elif self._test_status.get_status(THROUGHPUT_PHASE) != TEST_FAIL_STATUS:
-                            comment = "Error: Computation time increase > {:d} pct from baseline".format(int(tolerance*100))
+                            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(int(tolerance*100))
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment)
                             append_testlog(comment, self._orig_caseroot)
 

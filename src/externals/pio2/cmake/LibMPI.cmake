@@ -1,3 +1,8 @@
+# This is part of the PIO library.
+
+# THis file contains CMake code related to MPI.
+
+# Jim Edwards
 include (CMakeParseArguments)
 
 # Find Valgrind to perform memory leak check
@@ -89,6 +94,11 @@ function (add_mpi_test TESTNAME)
 
     # Get the platform name
     platform_name (PLATFORM)
+
+    get_property(WITH_MPIEXEC GLOBAL PROPERTY WITH_MPIEXEC)
+    if (WITH_MPIEXEC)
+      set(MPIEXEC "${WITH_MPIEXEC}")
+    endif ()
 
     # Default ("unknown" platform) execution
     if (PLATFORM STREQUAL "unknown")

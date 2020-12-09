@@ -26,3 +26,7 @@ if (PIO_ENABLE_FORTRAN)
     message (STATUS "Cannot build performance test without gptl timing library")
   endif ()
 endif()
+
+if (NETCDF_INTEGRATION)
+  add_subdirectory(ncint)
+endif ()
