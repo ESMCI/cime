@@ -499,6 +499,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
         with Timeout(timeout):
             proc = subprocess.Popen(cmd,
                                     shell=True,
+                                    bufsize=0,
                                     stdout=arg_stdout,
                                     stderr=arg_stderr,
                                     stdin=stdin,
