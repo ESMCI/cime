@@ -90,6 +90,10 @@ class NamelistGenerator(object):
         # Create namelist object.
         self._namelist = Namelist()
 
+        # entries for which we should potentially call add_default (variables that do not
+        # set skip_default_entry)
+        self._default_nodes = []
+
     # Define __enter__ and __exit__ so that we can use this as a context manager
     def __enter__(self):
         return self
@@ -97,16 +101,25 @@ class NamelistGenerator(object):
     def __exit__(self, *_):
         return False
 
-    def init_defaults(self, infiles, config, skip_groups=None, skip_entry_loop=False):
+    def init_defaults(self, infiles, config, skip_groups=None, skip_entry_loop=False,
+                      skip_default_for_groups=None):
         """Return array of names of all definition nodes
+
+        If skip_default_for_groups is provided, it should be a list of namelist group
+        names; the add_default call will not be done for any variables in these
+        groups. This is often paired with later conditional calls to
+        add_defaults_for_group.
         """
+        if skip_default_for_groups is None:
+            skip_default_for_groups = []
+
         # first clean out any settings left over from previous calls
         self.new_instance()
 
         self._definition.set_nodes(skip_groups=skip_groups)
 
         # Determine the array of entry nodes that will be acted upon
-        entry_nodes = self._definition.set_nodes(skip_groups=skip_groups)
+        self._default_nodes = self._definition.set_nodes(skip_groups=skip_groups)
 
         # Add attributes to definition object
         self._definition.add_attributes(config)
@@ -128,10 +141,26 @@ class NamelistGenerator(object):
             self._namelist.merge_nl(new_namelist)
 
         if not skip_entry_loop:
-            for entry in entry_nodes:
-                self.add_default(self._definition.get(entry, "id"))
+            for entry in self._default_nodes:
+                group_name = self._definition.get_group_name(entry)
+                if not group_name in skip_default_for_groups:
+                    self.add_default(self._definition.get(entry, "id"))
 
-        return [self._definition.get(entry, "id") for entry in entry_nodes]
+        return [self._definition.get(entry, "id") for entry in self._default_nodes]
+
+    def add_defaults_for_group(self, group):
+        """Call add_default for namelist variables in the given group
+
+        This still skips variables that have attributes of skip_default_entry or
+        per_stream_entry.
+
+        This must be called after init_defaults. It is often paired with use of
+        skip_default_for_groups in the init_defaults call.
+        """
+        for entry in self._default_nodes:
+            group_name = self._definition.get_group_name(entry)
+            if group_name == group:
+                self.add_default(self._definition.get(entry, "id"))
 
     @staticmethod
     def quote_string(string):
