@@ -87,6 +87,11 @@ def test_to_string(test, category_field_width=0, test_field_width=0, show_option
     >>> test_to_string(mytest, 10)
     'prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks'
 
+    Newlines in comments are converted to spaces
+    >>> mytest = {'name': 'SMS.f19_g16.A.cheyenne_intel', 'category': 'prealpha', 'options': {'comment': 'my\\nremarks'}}
+    >>> test_to_string(mytest, 10)
+    'prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks'
+
     Printing other options, too:
     >>> mytest = {'name': 'SMS.f19_g16.A.cheyenne_intel', 'category': 'prealpha', 'options': {'comment': 'my remarks', 'wallclock': '0:20', 'memleak_tolerance': 0.2}}
     >>> test_to_string(mytest, 10, show_options=True)
@@ -98,6 +103,7 @@ def test_to_string(test, category_field_width=0, test_field_width=0, show_option
         myopts = test['options'].copy()
         comment = myopts.pop('comment', None)
         if comment:
+            comment = comment.replace('\n', ' ')
             mystr += " # {}".format(comment)
         if show_options:
             for one_opt in sorted(myopts):
