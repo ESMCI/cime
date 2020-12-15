@@ -2,15 +2,15 @@
 !! @file
 !! @brief Module containing variables used across all unit test files
 !<
+#include "config.h"
 
 module global_vars
 
   use pio
+  use mpi
 
   Implicit None
   public
-
-  include 'mpif.h' ! _EXTERNAL
 
   integer, parameter :: str_len = pio_max_name, ntest=4
    integer, parameter ::NETCDF =1, &

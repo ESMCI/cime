@@ -5,8 +5,6 @@
  */
 #ifndef _PIO_CONFIG_
 #define _PIO_CONFIG_
-/* Set to avoid warning in intel19 compiler wrt strnlen */
-#define _GNU_SOURCE
 
 /** The major part of the version number. */
 #define PIO_VERSION_MAJOR @VERSION_MAJOR@
@@ -31,5 +29,24 @@
 #define PIO_BUFFER_SIZE @PIO_BUFFER_SIZE@
 
 #define USE_VARD @USE_VARD@
+
+/* Does netCDF support netCDF/HDF5 files? */
+#cmakedefine HAVE_NETCDF4
+
+/* Does netCDF support parallel I/O for netCDF/HDF5 files? */
+#cmakedefine HAVE_NETCDF_PAR
+
+/* Does PIO support netCDF/HDF5 files? (Will be same as
+ * HAVE_NETCDF_PAR). */
+#cmakedefine _NETCDF4
+
+/* Does netCDF and HDF5 support parallel I/O filters? */
+#cmakedefine HAVE_PAR_FILTERS
+
+/* Was PIO built with netCDF integration? */
+#cmakedefine NETCDF_INTEGRATION
+
+/* Does PIO support using pnetcdf for I/O? */
+#cmakedefine _PNETCDF
 
 #endif /* _PIO_CONFIG_ */

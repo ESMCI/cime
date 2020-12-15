@@ -422,6 +422,7 @@ def wait_for_tests_impl(test_paths, no_wait=False, check_throughput=False, check
             else:
                 raise CIMEError("Test name '{}' was found in both '{}' and '{}' with different results".format(test_name, test_path, prior_path))
 
+        expect(test_name is not None, "Failed to get test name for test_path: {}".format(test_path))
         test_results[test_name] = (test_path, test_status)
         completed_test_paths.append(test_path)
 

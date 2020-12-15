@@ -131,7 +131,6 @@ contains
        atm, lnd, ice, ocn, rof, glc, wav, iac, &
        fractions_ax, fractions_lx, fractions_ix, fractions_ox, fractions_rx,  &
        fractions_gx, fractions_wx, fractions_zx, cpl_inst_tag)
-
     implicit none
     !
     ! Arguments
@@ -171,7 +170,8 @@ contains
     character(len=18) :: date_str
     type(mct_gsMap), pointer :: gsmap
     type(mct_gGrid), pointer :: dom    ! comp domain on cpl pes
-    character(CL) :: model_doi_url 
+    character(CL) :: model_doi_url
+
     !-------------------------------------------------------------------------------
     !
     !-------------------------------------------------------------------------------
@@ -248,17 +248,9 @@ contains
           end if
 
           tbnds = curr_time
-          !------- tcx nov 2011 tbnds of same values causes problems in ferret
-          if (tbnds(1) >= tbnds(2)) then
-             call seq_io_write(hist_file,&
-                  time_units=time_units, time_cal=calendar, time_val=curr_time, &
-                  whead=whead, wdata=wdata)
-          else
-             call seq_io_write(hist_file, &
-                  time_units=time_units, time_cal=calendar, time_val=curr_time, &
-                  whead=whead, wdata=wdata, tbnds=tbnds)
-          endif
-
+          call seq_io_write(hist_file,&
+               time_units=time_units, time_cal=calendar, time_val=curr_time, &
+               nt=1,whead=whead, wdata=wdata)
           if (atm_present) then
              gsmap => component_get_gsmap_cx(atm(1))
              dom   => component_get_dom_cx(atm(1))
@@ -360,9 +352,9 @@ contains
              call seq_io_write(hist_file, gsmap, fractions_ix, 'fractions_ix',  &
                   nx=ice_nx, ny=ice_ny, nt=1, whead=whead, wdata=wdata, pre='fraci')
              call seq_io_write(hist_file, ice, 'c2x', 'i2x_ix', &
-                  nx=ice_nx, ny=ice_ny, nt=1, whead=whead, wdata=wdata, pre='i2x')
+                  nx=ice_nx, ny=ice_ny, nt=1, whead=whead, wdata=wdata, pre='i2x', mask=dom%data%rattr(1,:))
              call seq_io_write(hist_file, ice, 'x2c', 'x2i_ix', &
-                  nx=ice_nx, ny=ice_ny, nt=1, whead=whead, wdata=wdata, pre='x2i')
+                  nx=ice_nx, ny=ice_ny, nt=1, whead=whead, wdata=wdata, pre='x2i', mask=dom%data%rattr(1,:))
           endif
 
           if (glc_present) then
@@ -404,7 +396,6 @@ contains
                   nx=iac_nx, ny=iac_ny, nt=1, whead=whead, wdata=wdata, pre='x2w')
           endif
        enddo
-
        call seq_io_close(hist_file)
        if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
     endif
@@ -480,6 +471,7 @@ contains
     type(mct_avect),  pointer :: c2x    ! component->coupler avs on cpl pes
     type(mct_avect),  pointer :: x2c    ! coupler->component avs on cpl pes
     character(CL) :: model_doi_url
+
     !-------------------------------------------------------------------------------
     !
     !-------------------------------------------------------------------------------
@@ -862,16 +854,18 @@ contains
              end if
 
              avg_time = 0.5_r8 * (tbnds(1) + tbnds(2))
+
              !---------- tcx nov 2011 tbnds of same values causes problems in ferret
-             if (tbnds(1) >= tbnds(2)) then
+             if (tbnds(1) == tbnds(2)) then
                 call seq_io_write(hist_file, &
                      time_units=time_units, time_cal=calendar, time_val=avg_time, &
-                     whead=whead, wdata=wdata)
+                     whead=whead, wdata=wdata, nt=1)
              else
                 call seq_io_write(hist_file, &
                      time_units=time_units, time_cal=calendar, time_val=avg_time, &
-                     whead=whead, wdata=wdata, tbnds=tbnds)
+                     whead=whead, wdata=wdata, nt=1, tbnds=tbnds)
              endif
+
              if (atm_present .and. histavg_atm) then
                 gsmap => component_get_gsmap_cx(atm(1))
                 dom   => component_get_dom_cx(atm(1))
@@ -985,6 +979,7 @@ contains
           enddo
 
           call seq_io_close(hist_file)
+
           if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
 
           if (atm_present .and. histavg_atm) then
@@ -1254,7 +1249,7 @@ contains
 
           if (drv_threading) call seq_comm_setnthreads(nthreads_CPLID)
           if (fk1 == 1) then
-             call seq_io_wopen(hist_file(found), clobber=.true., file_ind=found, model_doi_url=model_doi_url)
+             call seq_io_wopen(hist_file(found), clobber=.true., file_ind=found, model_doi_url=model_doi_url, set_fill=.true.)
           endif
 
           ! loop twice,  first time write header,  second time write data for perf

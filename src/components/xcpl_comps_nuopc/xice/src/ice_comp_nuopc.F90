@@ -11,7 +11,7 @@ module ice_comp_nuopc
   use NUOPC_Model       , only : model_label_Advance     => label_Advance
   use NUOPC_Model       , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model       , only : model_label_Finalize    => label_Finalize
-  use NUOPC_Model       , only : NUOPC_ModelGet
+  use NUOPC_Model       , only : NUOPC_ModelGet, SetVM
   use shr_sys_mod       , only : shr_sys_abort
   use shr_kind_mod      , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
   use shr_file_mod      , only : shr_file_getlogunit, shr_file_setlogunit
@@ -24,7 +24,7 @@ module ice_comp_nuopc
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -453,7 +453,7 @@ contains
        lat(n) = ownedElemCoords(2*n)
     end do
 
-    ! Start from index 2 in order to skip the scalar field 
+    ! Start from index 2 in order to skip the scalar field
     do nf = 2,fldsFrIce_num
        if (fldsFrIce(nf)%ungridded_ubound == 0) then
           call field_setexport(exportState, trim(fldsFrIce(nf)%stdname), lon, lat, nf=nf, rc=rc)

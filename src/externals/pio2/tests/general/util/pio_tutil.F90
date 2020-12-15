@@ -35,6 +35,7 @@ MODULE pio_tutil
 
   ! integer types
   INTEGER, PARAMETER, PUBLIC :: fc_short   = selected_int_kind(4)
+  INTEGER, PARAMETER, PUBLIC :: fc_int     = selected_int_kind(6)
 
   ! Misc constants
   INTEGER, PARAMETER :: PIO_TF_MAX_STR_LEN=100
@@ -91,6 +92,10 @@ MODULE pio_tutil
   ! integer arrays
   INTERFACE PIO_TF_Check_val_
     MODULE PROCEDURE                  &
+        PIO_TF_Check_int_val_val,     &
+        PIO_TF_Check_short_val_val,     &
+        PIO_TF_Check_real_val_val,     &
+        PIO_TF_Check_double_val_val,     &
         PIO_TF_Check_int_arr_val,     &
         PIO_TF_Check_int_arr_arr,     &
         PIO_TF_Check_int_arr_arr_tol, &
@@ -295,10 +300,8 @@ CONTAINS
       ! netcdf, netcdf4p, netcdf4c
       num_iotypes = num_iotypes + 3
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       num_iotypes = num_iotypes + 1
-#endif
 #endif
 #ifdef _PNETCDF
       ! pnetcdf
@@ -328,12 +331,10 @@ CONTAINS
       iotype_descs(i) = "NETCDF4P"
       i = i + 1
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       iotypes(i) = PIO_iotype_netcdf
       iotype_descs(i) = "NETCDF"
       i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -355,14 +356,6 @@ CONTAINS
 
     num_iotypes = 0
     ! First find the number of io types
-#ifndef _NETCDF
-      ! netcdf
-      num_iotypes = num_iotypes + 1
-#ifndef _NETCDF4
-        ! netcdf4p, netcdf4c
-        num_iotypes = num_iotypes + 2
-#endif
-#endif
 #ifndef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
@@ -378,21 +371,6 @@ CONTAINS
       iotypes(i) = PIO_iotype_pnetcdf
       iotype_descs(i) = "PNETCDF"
       i = i + 1
-#endif
-#ifndef _NETCDF
-      ! netcdf
-      iotypes(i) = PIO_iotype_netcdf
-      iotype_descs(i) = "NETCDF"
-      i = i + 1
-#ifndef _NETCDF4
-        ! netcdf4p, netcdf4c
-        iotypes(i) = PIO_iotype_netcdf4c
-        iotype_descs(i) = "NETCDF4C"
-        i = i + 1
-        iotypes(i) = PIO_iotype_netcdf4p
-        iotype_descs(i) = "NETCDF4P"
-        i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -416,10 +394,8 @@ CONTAINS
       ! netcdf, netcdf4p, netcdf4c
     num_iotypes = num_iotypes + 3
 #else
-#ifdef _NETCDF
-      ! netcdf
+    ! netcdf is always present.
     num_iotypes = num_iotypes + 1
-#endif
 #endif
 #ifdef _PNETCDF
       ! pnetcdf
@@ -449,12 +425,10 @@ CONTAINS
       iotype_descs(i) = "NETCDF4P"
       i = i + 1
 #else
-#ifdef _NETCDF
-      ! netcdf
+      ! netcdf is always present.
       iotypes(i) = PIO_iotype_netcdf
       iotype_descs(i) = "NETCDF"
       i = i + 1
-#endif
 #endif
   END SUBROUTINE
 
@@ -476,14 +450,6 @@ CONTAINS
 
     ! First find the number of io types
     num_iotypes = 0
-#ifndef _NETCDF
-      ! netcdf
-      num_iotypes = num_iotypes + 1
-#ifndef _NETCDF4
-      ! netcdf4p, netcdf4c
-      num_iotypes = num_iotypes + 2
-#endif
-#endif
 #ifndef _PNETCDF
       ! pnetcdf
       num_iotypes = num_iotypes + 1
@@ -494,27 +460,6 @@ CONTAINS
     ALLOCATE(iotype_descs(num_iotypes))
 
     i = 1
-#ifndef _NETCDF
-      ! netcdf
-      iotypes(i) = PIO_iotype_netcdf
-      iotype_descs(i) = "NETCDF"
-      i = i + 1
-#ifndef _PNETCDF
-      ! pnetcdf
-      iotypes(i) = PIO_iotype_pnetcdf
-      iotype_descs(i) = "PNETCDF"
-      i = i + 1
-#endif
-#ifndef _NETCDF4
-      ! netcdf4p, netcdf4c
-      iotypes(i) = PIO_iotype_netcdf4c
-      iotype_descs(i) = "NETCDF4C"
-      i = i + 1
-      iotypes(i) = PIO_iotype_netcdf4p
-      iotype_descs(i) = "NETCDF4P"
-      i = i + 1
-#endif
-#endif
   END SUBROUTINE
 
   ! Returns a list of PIO base types
@@ -664,6 +609,27 @@ CONTAINS
     if (tol /= 0) continue ! to suppress warning
 
     PIO_TF_Check_int_arr_arr_tol = PIO_TF_Check_int_arr_arr(arr, exp_arr)
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_int_val_val(val1, val2)
+    INTEGER, INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_int_val_val = val1 == val2
+  END FUNCTION
+  LOGICAL FUNCTION PIO_TF_Check_short_val_val(val1, val2)
+    INTEGER(kind=fc_short), INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_short_val_val = val1 == val2
+  END FUNCTION
+  LOGICAL FUNCTION PIO_TF_Check_real_val_val(val1, val2)
+    real(kind=fc_real), INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_real_val_val = val1 == val2
+  END FUNCTION
+  LOGICAL FUNCTION PIO_TF_Check_double_val_val(val1, val2)
+    real(kind=fc_double), INTENT(IN) :: val1, val2
+
+    PIO_TF_Check_double_val_val = val1 == val2
   END FUNCTION
 
   LOGICAL FUNCTION PIO_TF_Check_int_arr_val(arr, val)
