@@ -636,7 +636,12 @@ This allows using a different mpirun command to launch unit tests
       <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc" DEBUG="TRUE">
       <env name="ESMFMKFILE">/glade/p/cesmdata/cseg/PROGS/esmf/initialize_pre_mpi/mpt/2.21/intel/19.0.5/lib/libg/Linux.intel.64.mpt.default/esmf.mk</env>
+    </environment_variables>
+    <environment_variables comp_interface="nuopc" DEBUG="FALSE">
+      <env name="ESMFMKFILE">/glade/p/cesmdata/cseg/PROGS/esmf/initialize_pre_mpi/mpt/2.21/intel/19.0.5/lib/libO/Linux.intel.64.mpt.default/esmf.mk</env>
     </environment_variables>
     <environment_variables unit_testing="true">
       <env name="MPI_USE_ARRAY">false</env>
@@ -646,7 +651,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="MPI_USE_ARRAY">false</env>
     </environment_variables>
     <resource_limits>
-      <resource name="RLIMIT_STACK"> 40000000000</resource>
+      <resource name="RLIMIT_STACK"> 2500000000</resource>
     </resource_limits>
   </machine>
 

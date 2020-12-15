@@ -487,6 +487,7 @@ class _TimingParser:
         self.write("    Init Time   :  {:10.3f} seconds \n".format(nmax))
         if adays > 0:
             self.write("    Run Time    :  {:10.3f} seconds   {:10.3f} seconds/day \n".format(tmax, tmax/adays))
+        print("HERE tmax {}, adays {}".format(tmax,adays))
         self.write("    Final Time  :  {:10.3f} seconds \n".format(fmax))
 
         self.write("\n")

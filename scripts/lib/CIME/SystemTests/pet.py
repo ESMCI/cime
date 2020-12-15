@@ -26,17 +26,32 @@ class PET(SystemTestsCompareTwo):
 
     def _case_one_setup(self):
         # first make sure that all components have threaded settings
+        comp_interface = self._case.get_value("COMP_INTERFACE")
         for comp in self._case.get_values("COMP_CLASSES"):
             if self._case.get_value("NTHRDS_{}".format(comp)) <= 1:
                 self._case.set_value("NTHRDS_{}".format(comp), 2)
+                # For nuopc we must also adjust the ROOTPE
+                if comp_interface == 'nuopc':
+                    rootpe = self._case.get_value("ROOTPE_{}".format(comp))
+                    if rootpe > 0:
+                        self._case.set_value("ROOTPE_{}".format(comp), rootpe + self._case.get_value("NTASKS_{}".format(comp)))
+
+
 
         # Need to redo case_setup because we may have changed the number of threads
 
 
     def _case_two_setup(self):
         #Do a run with all threads set to 1
+        comp_interface = self._case.get_value("COMP_INTERFACE")
         for comp in self._case.get_values("COMP_CLASSES"):
+            nthrds = self._case.get_value("NTHRDS_{}".format(comp))
             self._case.set_value("NTHRDS_{}".format(comp), 1)
+            if comp_interface == 'nuopc':
+                rootpe = self._case.get_value("ROOTPE_{}".format(comp))
+                if rootpe > 0:
+                    self._case.set_value("ROOTPE_{}".format(comp), rootpe//nthrds)
+
 
         # Need to redo case_setup because we may have changed the number of threads
         self._case.case_setup(reset=True, test_mode=True)
