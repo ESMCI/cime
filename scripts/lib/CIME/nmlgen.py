@@ -162,6 +162,27 @@ class NamelistGenerator(object):
             if group_name == group:
                 self.add_default(self._definition.get(entry, "id"))
 
+    def confirm_group_is_empty(self, group_name, errmsg):
+        """Confirms that no values have been added to the given group
+
+        If any values HAVE been added to this group, aborts with the given error message.
+
+        This is often paired with use of skip_default_for_groups in the init_defaults call
+        and add_defaults_for_group, as in:
+
+            if nmlgen.get_value("enable_frac_overrides") == ".true.":
+                nmlgen.add_defaults_for_group("glc_override_nml")
+            else:
+                nmlgen.confirm_empty("glc_override_nml", "some message")
+
+        Args:
+        group_name: string - name of namelist group
+        errmsg: string - error message to print if group is not empty
+        """
+        variables_in_group = self._namelist.get_variable_names(group_name)
+        fullmsg = "{}\nOffending variables: {}".format(errmsg, variables_in_group)
+        expect(len(variables_in_group) == 0, fullmsg)
+
     @staticmethod
     def quote_string(string):
         """Convert a string to a quoted Fortran literal.
