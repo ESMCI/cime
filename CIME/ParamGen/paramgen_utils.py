@@ -56,6 +56,8 @@ def is_logical_expr(expr):
     True
     """
 
+    assert isinstance(expr,get_str_type()), "Expression passed to is_logical_expr function must be a string."
+
     evaluated_val = None
     if expr.strip() == "else":
         evaluated_val = True
@@ -151,7 +153,7 @@ def eval_formula(formula):
     15
     >>> eval_formula("'tx0.66v1' != 'gx1v6'")
     True
-    >>> eval_formula('$OCN_GRiD != "gx1v6"')
+    >>> eval_formula('$OCN_GRID != "gx1v6"')
     Traceback (most recent call last):
     ...
     AssertionError

@@ -6,11 +6,11 @@ import re
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from paramgen_utils import get_str_type, is_logical_expr
-from paramgen_utils import has_expandable_var
+from paramgen_utils import has_expandable_var, eval_formula
 
 class ParamGen(ABC):
     """
-    Base class for CIME Flexible Parameter Generator. 
+    Base class for CIME Flexible Parameter Generator.
     Attributes
     ----------
     data : dict or OrderedDict
@@ -23,12 +23,13 @@ class ParamGen(ABC):
         Reads in a given yalm input file and initializes a ParamGen object.
     """
 
-    def __init__(self, data_dict):
+    def __init__(self, data_dict, match='last'):
         assert type(data_dict) in [dict, OrderedDict], \
             "ParamGen class requires a dict or OrderedDict as the initial data."
         #self._validate_schema(data_dict)
         self._data = deepcopy(data_dict)
         self._reduced = False
+        self._match = match
 
     @property
     def data(self):
@@ -88,14 +89,13 @@ class ParamGen(ABC):
             expr = expr.replace(word,word_expanded)
         return expr
 
-    @classmethod
-    def _eval_guards(cls, data_dict):
+    def _impose_guards(self, data_dict):
 
         def _is_guarded_dict():
             """ returns true if all the keys of a dictionary are logical expressions, i.e., guards."""
             assert type(data_dict) in [dict, OrderedDict]
 
-            keys_logical = [is_logical_expr(key) for key in data_dict]
+            keys_logical = [is_logical_expr(str(key)) for key in data_dict]
             if all(keys_logical):
                 return True
             elif any(keys_logical):
@@ -104,37 +104,70 @@ class ParamGen(ABC):
             else:
                 return False
 
+        def _eval_guard(guard):
+            """ returns true if a guard evaluates to true."""
+            assert isinstance(guard, get_str_type()), "Expression passed to expand_var must be string."
+
+            if has_expandable_var(guard):
+                raise RuntimeError("The guard "+guard+" has an expandable case variable! "+\
+                    "All variables must already be expanded before guards can be evaluated.")
+            
+            guard_evaluated = eval_formula(guard)
+            assert type(guard_evaluated)==type(True), "Guard is not boolean: "+guard
+            return guard_evaluated
+
+
         if not _is_guarded_dict():
-            return
+            return data_dict
         else:
-            raise NotImplementedError();
-            pass #todo
+
+            guards_eval_true = [] # list of guards that evaluate to true.
+            for guard in data_dict:
+                if guard=="else" or _eval_guard(str(guard)) == True:
+                    guards_eval_true.append(guard)
+                    
+            if len(guards_eval_true)>1 and "else" in guards_eval_true:
+                guards_eval_true.remove("else")
+            
+            if self._match == 'first':
+                return data_dict[guards_eval_true[0]]
+            elif self._match == 'last':
+                return data_dict[guards_eval_true[-1]]
+            else:
+                raise RuntimeError("Unknown match option.")
 
 
-    @classmethod
-    def _reduce_bfirst(cls, data_dict, expand_func):
-        
-        # first, expand the variables in keys:
-        data_dict_copy = data_dict.copy() # copy to iteate over while manipulating the original
-        for key, val in data_dict_copy.items():
+    def _reduce_bfirst(self, data_dict, expand_func):
+ 
+        # data copy to manipulate while iterating over original.
+        # while the original data is a dictionary, the reduced data
+        # may be a single element depending on the "guards".
+        reduced_data = data_dict.copy()
+
+        # First, expand the variables in keys:
+        for key in data_dict:
             if has_expandable_var(key):
                 new_key = ParamGen.expand_var(key, expand_func)
-                data_dict[new_key] = data_dict.pop(key)
+                reduced_data[new_key] = reduced_data.pop(key)
 
-        # now, evaluate guards if data_dict corresponds to a guarded entry
-        ParamGen._eval_guards(data_dict)
+        # Now, evaluate guards if all the keys ofdata_dict are guards, i.e., logical expressions
+        reduced_data = self._impose_guards(reduced_data)
 
-        
-        q = []
-        for key, val in data_dict.items():
-            if isinstance(val,(dict,OrderedDict)):
-                q.append(key)
-            else:
-                print(val)
+        # if the reduced data is still a dictionary, recursively call _reduce_bfirst before returning
+        if isinstance(reduced_data,(dict,OrderedDict)):
 
-        for key in q:
-            cls._reduce_bfirst(data_dict[key], expand_func)
-        
+            keys_of_remaining_dicts = []
+            for key, val in reduced_data.items():
+                if isinstance(val,(dict,OrderedDict)):
+                    keys_of_remaining_dicts.append(key)
+                else:
+                    print(val)
+
+            for key in keys_of_remaining_dicts:
+                reduced_data[key] = self._reduce_bfirst(reduced_data[key], expand_func)
+
+        return reduced_data
+
 
     def reduce(self, expand_func, search_method="bfirst"):
         """
@@ -142,16 +175,16 @@ class ParamGen(ABC):
         (2) dropping entries whose conditional guards evaluate to true and (3) evaluating
         formulas to determine the final values
         """
-        
+
         assert callable(expand_func), "expand_func argument must be a function"
         assert not self._reduced, "ParamGen data already reduced."
         assert len(self._data)>0, "Empty ParamGen data."
 
         if search_method=="bfirst":
-            ParamGen._reduce_bfirst(self._data, expand_func)
+            self._data = self._reduce_bfirst(self._data, expand_func)
         #elif search_method=="dfirst"
         #    todo
         else:
             raise RuntimeError("Unknown search method.")
-            
+
         self._reduced = True
