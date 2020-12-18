@@ -892,9 +892,6 @@ class Case(object):
             mach_pes_obj.set_value(rootpe_str, rootpe)
             mach_pes_obj.set_value(pstrid_str, pstrid)
 
-        if multi_driver:
-            mach_pes_obj.set_value("MULTI_DRIVER", True)
-
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
         for compclass in self._component_classes:
@@ -909,6 +906,9 @@ class Case(object):
             key = "NTHRDS_{}".format(compclass)
             if compclass not in pes_nthrds:
                 mach_pes_obj.set_value(compclass,1)
+        if multi_driver:
+            mach_pes_obj.set_value("MULTI_DRIVER", True)
+
 
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
