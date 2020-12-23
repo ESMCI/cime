@@ -474,6 +474,8 @@ int inq_att_handler(iosystem_desc_t *ios)
     int varid;
     char name[PIO_MAX_NAME + 1];
     int namelen;
+    int eh;
+
     nc_type xtype, *xtypep = NULL;
     PIO_Offset len, *lenp = NULL;
     char xtype_present, len_present;
@@ -497,6 +499,8 @@ int inq_att_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&eh, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Match NULLs in collective function call. */
     if (xtype_present)
@@ -505,7 +509,7 @@ int inq_att_handler(iosystem_desc_t *ios)
         lenp = &len;
 
     /* Call the function to learn about the attribute. */
-    PIOc_inq_att(ncid, varid, name, xtypep, lenp);
+    PIOc_inq_att_eh(ncid, varid, name, eh, xtypep, lenp);
 
     return PIO_NOERR;
 }
@@ -2104,10 +2108,13 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler iosysid %d",iosysid));
     if ((mpierr = MPI_Bcast(&pio_type, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler pio_type %d", pio_type));
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler ndims %d", ndims));
 
     /* Now we know the size of these arrays. */
     int dims[ndims];
@@ -2116,8 +2123,11 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
 
     if ((mpierr = MPI_Bcast(dims, ndims, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    for(int i=0; i<ndims; i++)
+        PLOG((3, "initdecomp_dof_handler dims[%d] %d", i, dims[i]));
     if ((mpierr = MPI_Bcast(&maplen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler maplen %d", maplen));
 
     PIO_Offset *compmap;
     if (!(compmap = malloc(maplen * sizeof(PIO_Offset))))
@@ -2607,7 +2617,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         for (int cmp = 0; cmp < component_count; cmp++)
         {
             my_iosys = iosys[cmp];
-            PLOG((1, "about to call MPI_Irecv union_comm = %d", my_iosys->union_comm));
+            PLOG((1, "about to call MPI_Irecv union_comm = %d comproot %d", my_iosys->union_comm, my_iosys->comproot));
             if ((mpierr = MPI_Irecv(&(messages[cmp]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
                                     my_iosys->union_comm, &req[cmp])))
                 return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -2629,8 +2639,10 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
                   req[0], MPI_REQUEST_NULL));
             for (int c = 0; c < component_count; c++)
                 PLOG((3, "req[%d] = %d", c, req[c]));
-            if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
+            if ((mpierr = MPI_Waitany(component_count, req, &index, &status))){
+                PLOG((1, "Error from mpi_waitany %d",mpierr));
                 return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+            }
             PLOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
             msg = messages[index];
             for (int c = 0; c < component_count; c++)

@@ -1231,6 +1231,8 @@ PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
                 mpierr = MPI_Bcast(&xtype_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&eh, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -1250,7 +1252,7 @@ PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
 
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
             ierr = nc_inq_att(file->fh, varid, name, xtypep, (size_t *)lenp);
-        PLOG((2, "PIOc_inq netcdf call returned %d", ierr));
+        PLOG((2, "PIOc_inq_att netcdf call %s returned %d", name,ierr));
     }
 
     /* Broadcast and check the return code. */

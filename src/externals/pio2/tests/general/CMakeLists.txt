@@ -22,6 +22,7 @@ SET(GENERATED_SRCS pio_file_simple_tests.F90
   pio_decomp_frame_tests.F90
   pio_decomp_fillval.F90
   pio_iosystem_tests.F90
+  pio_iosystem_async_tests.F90
   pio_iosystem_tests2.F90
   pio_iosystem_tests3.F90)
 
@@ -782,6 +783,17 @@ else ()
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 
+add_executable (pio_iosystem_async_tests EXCLUDE_FROM_ALL
+  pio_iosystem_async_tests.F90)
+target_link_libraries (pio_iosystem_async_tests pio_tutil)
+add_dependencies (tests pio_iosystem_async_tests)
+
+if (NOT PIO_USE_MPISERIAL)
+  add_mpi_test(pio_iosystem_async_tests
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_iosystem_async_tests
+    NUMPROCS 5
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+endif ()
 
 #===== pio_iosystems_test2 =====
 add_executable (pio_iosystem_tests2 EXCLUDE_FROM_ALL

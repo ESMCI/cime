@@ -104,7 +104,7 @@ program pioperformance
     rearrangers(1)=1
     rearrangers(2)=2
   endif
-
+  i = pio_set_log_level(-1)
   do i=1,max_decomp_files
      if(len_trim(decompfile(i))==0) exit
      if(mype == 0) print *, ' Testing decomp: ',trim(decompfile(i))
@@ -222,7 +222,7 @@ contains
        dfld = PIO_FILL_DOUBLE
        do nv=1,nvars
           do j=1,maplen
-	     if(compmap(j) > 0) then
+             if(compmap(j) > 0) then
                ifld(j,nv) = compmap(j)
                dfld(j,nv) = ifld(j,nv)/1000000.0
                rfld(j,nv) = 1.0E5*ifld(j,nv)
@@ -334,7 +334,7 @@ contains
                 call MPI_Reduce(wall(1), wall(2), 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, comm, ierr)
                 if(mype==0) then
                    ! print out performance in MB/s
-		   nvarmult = 0
+                   nvarmult = 0
 #ifdef VARINT
                    nvarmult = nvarmult+1
 #endif
@@ -414,7 +414,7 @@ contains
 #ifdef VARINT
 #ifdef DEBUG
                              write(*,'(a11,i2,a9,i11,a9,i11,a9,i2)') &
-			        ' Int    PE=',mype,'ifld=',ifld(j,nv),' ifld_in=',ifld_in(j,nv,frame),' compmap=',compmap(j)
+                                ' Int    PE=',mype,'ifld=',ifld(j,nv),' ifld_in=',ifld_in(j,nv,frame),' compmap=',compmap(j)
 #endif
                             if(ifld(j,nv) /= ifld_in(j,nv,frame)) then
                                !if(errorcnt < 10) then
@@ -422,7 +422,7 @@ contains
                                !endif
                                write(*,*) '***ERROR:Mismatch!***'
                                write(*,'(a11,i2,a9,i11,a9,i11,a9,i2)') &
-			         ' Int    PE=',mype,'ifld=',ifld(j,nv),' ifld_in=',ifld_in(j,nv,frame),' compmap=',compmap(j)
+                                 ' Int    PE=',mype,'ifld=',ifld(j,nv),' ifld_in=',ifld_in(j,nv,frame),' compmap=',compmap(j)
 
                                errorcnt = errorcnt+1
                             endif
@@ -430,7 +430,7 @@ contains
 #ifdef VARREAL
 #ifdef DEBUG
                             write(*,'(a11,i2,a9,f11.2,a9,f11.2,a9,i2)') &
-			        ' Real   PE=',mype,'rfld=',rfld(j,nv),' rfld_in=',rfld_in(j,nv,frame),' compmap=',compmap(j)
+                                ' Real   PE=',mype,'rfld=',rfld(j,nv),' rfld_in=',rfld_in(j,nv,frame),' compmap=',compmap(j)
 #endif
 
                             if(rfld(j,nv) /= rfld_in(j,nv,frame) ) then
@@ -439,7 +439,7 @@ contains
                                !endif
                                write(*,*) '***ERROR:Mismatch!***'
                                write(*,'(a11,i2,a9,f11.2,a9,f11.2,a9,i2)') &
-			         ' Real   PE=',mype,'rfld=',rfld(j,nv),' rfld_in=',rfld_in(j,nv,frame),' compmap=',compmap(j)
+                                 ' Real   PE=',mype,'rfld=',rfld(j,nv),' rfld_in=',rfld_in(j,nv,frame),' compmap=',compmap(j)
 
                                errorcnt = errorcnt+1
                             endif
@@ -447,7 +447,7 @@ contains
 #ifdef VARDOUBLE
 #ifdef DEBUG
                             write(*,'(a11,i2,a9,d11.4,a9,d11.4,a9,i2)') &
-			        'Double PE=',mype,'dfld=',dfld(j,nv),'dfld_in=',dfld_in(j,nv,frame),'compmap=',compmap(j)
+                                'Double PE=',mype,'dfld=',dfld(j,nv),'dfld_in=',dfld_in(j,nv,frame),'compmap=',compmap(j)
 #endif
                             if(dfld(j,nv) /= dfld_in(j,nv,frame) ) then
                                !if(errorcnt < 10) then
@@ -455,7 +455,7 @@ contains
                                !endif
                                write(*,*) '***ERROR:Mismatch!***'
                                write(*,'(a11,i2,a9,d11.4,a9,d11.4,a9,i2)') &
-			        'Double PE=',mype,'dfld=',dfld(j,nv),'dfld_in=',dfld_in(j,nv,frame),'compmap=',compmap(j)
+                                'Double PE=',mype,'dfld=',dfld(j,nv),'dfld_in=',dfld_in(j,nv,frame),'compmap=',compmap(j)
 
                                errorcnt = errorcnt+1
                             endif
@@ -471,7 +471,7 @@ contains
                    if(errorcnt > 0) then
                       print *,'ERROR: INPUT/OUTPUT data mismatch ',errorcnt
                    endif
-		   nvarmult = 0
+                   nvarmult = 0
 #ifdef VARINT
                    nvarmult = nvarmult+1
 #endif
@@ -483,7 +483,7 @@ contains
 #endif
                    write(*,'(a15,a9,i10,i10,i10,f20.10)') &
                         'RESULT: read ',rearr_name(rearr), piotypes(k), ntasks, nvars, &
-			           nvarmult*nvars*nframes*gmaplen*4.0/(1048576.0*wall(2))
+                                   nvarmult*nvars*nframes*gmaplen*4.0/(1048576.0*wall(2))
 #ifdef BGQTRY
   call print_memusage()
 #endif
