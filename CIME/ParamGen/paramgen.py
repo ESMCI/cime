@@ -76,8 +76,8 @@ class ParamGen(ABC):
 
 
     @classmethod
-    def expand_var(cls, expr, expand_func):
-        assert isinstance(expr, get_str_type()), "Expression passed to expand_var must be string."
+    def expand_vars(cls, expr, expand_func):
+        assert isinstance(expr, get_str_type()), "Expression passed to expand_vars must be string."
         expandable_vars = re.findall(r'(\$\w+|\${\w+\})',expr)
         for word in expandable_vars:
             word_stripped = word.\
@@ -106,7 +106,7 @@ class ParamGen(ABC):
 
         def _eval_guard(guard):
             """ returns true if a guard evaluates to true."""
-            assert isinstance(guard, get_str_type()), "Expression passed to expand_var must be string."
+            assert isinstance(guard, get_str_type()), "Expression passed to _eval_guard must be string."
 
             if has_expandable_var(guard):
                 raise RuntimeError("The guard "+guard+" has an expandable case variable! "+\
@@ -137,7 +137,7 @@ class ParamGen(ABC):
                 raise RuntimeError("Unknown match option.")
 
 
-    def _reduce_bfirst(self, data_dict, expand_func):
+    def _reduce_recursive(self, data_dict, expand_func=None):
  
         # data copy to manipulate while iterating over original.
         # while the original data is a dictionary, the reduced data
@@ -145,46 +145,44 @@ class ParamGen(ABC):
         reduced_data = data_dict.copy()
 
         # First, expand the variables in keys:
-        for key in data_dict:
-            if has_expandable_var(key):
-                new_key = ParamGen.expand_var(key, expand_func)
-                reduced_data[new_key] = reduced_data.pop(key)
+        if expand_func!=None:
+            for key in data_dict:
+                if has_expandable_var(key):
+                    new_key = ParamGen.expand_vars(key, expand_func)
+                    reduced_data[new_key] = reduced_data.pop(key)
 
-        # Now, evaluate guards if all the keys ofdata_dict are guards, i.e., logical expressions
+        # Now, evaluate guards if all the keys of data_dict are guards, i.e., logical expressions
         reduced_data = self._impose_guards(reduced_data)
 
-        # if the reduced data is still a dictionary, recursively call _reduce_bfirst before returning
+        # if the reduced data is still a dictionary, recursively call _reduce_recursive before returning
         if isinstance(reduced_data,(dict,OrderedDict)):
 
-            keys_of_remaining_dicts = []
+            keys_of_nested_dicts = [] # i.e., keys of values that are of type dict
             for key, val in reduced_data.items():
                 if isinstance(val,(dict,OrderedDict)):
-                    keys_of_remaining_dicts.append(key)
+                    keys_of_nested_dicts.append(key)
                 else:
                     print(val)
 
-            for key in keys_of_remaining_dicts:
-                reduced_data[key] = self._reduce_bfirst(reduced_data[key], expand_func)
+            for key in keys_of_nested_dicts:
+                reduced_data[key] = self._reduce_recursive(reduced_data[key], expand_func)
+        else:
+            print(reduced_data , '-')
 
         return reduced_data
 
 
-    def reduce(self, expand_func, search_method="bfirst"):
+    def reduce(self, expand_func=None):
         """
         Reduces the data of a ParamGen instances by recursively (1) expanding its variables,
         (2) dropping entries whose conditional guards evaluate to true and (3) evaluating
         formulas to determine the final values
         """
 
-        assert callable(expand_func), "expand_func argument must be a function"
+        assert callable(expand_func) or expand_func==None, "expand_func argument must be a function"
         assert not self._reduced, "ParamGen data already reduced."
         assert len(self._data)>0, "Empty ParamGen data."
 
-        if search_method=="bfirst":
-            self._data = self._reduce_bfirst(self._data, expand_func)
-        #elif search_method=="dfirst"
-        #    todo
-        else:
-            raise RuntimeError("Unknown search method.")
+        self._data = self._reduce_recursive(self._data, expand_func)
 
         self._reduced = True
