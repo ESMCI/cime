@@ -75,9 +75,9 @@ class ParamGen(ABC):
         return cls(_data)
 
 
-    @classmethod
-    def expand_vars(cls, expr, expand_func):
-        assert isinstance(expr, get_str_type()), "Expression passed to expand_vars must be string."
+    @staticmethod
+    def _expand_vars(expr, expand_func):
+        assert isinstance(expr, get_str_type()), "Expression passed to _expand_vars must be string."
         expandable_vars = re.findall(r'(\$\w+|\${\w+\})',expr)
         for word in expandable_vars:
             word_stripped = word.\
@@ -89,20 +89,23 @@ class ParamGen(ABC):
             expr = expr.replace(word,word_expanded)
         return expr
 
+
+    @staticmethod
+    def _is_guarded_dict(data_dict):
+        """ returns true if all the keys of a dictionary are logical expressions, i.e., guards."""
+        if not type(data_dict) in [dict, OrderedDict]:
+            return False
+
+        keys_logical = [is_logical_expr(str(key)) for key in data_dict]
+        if all(keys_logical):
+            return True
+        elif any(keys_logical):
+            print("data_dict: ", data_dict)
+            raise RuntimeError("Only subset of the keys of the above dict are guards, i.e., logical expressions")
+        else:
+            return False
+
     def _impose_guards(self, data_dict):
-
-        def _is_guarded_dict():
-            """ returns true if all the keys of a dictionary are logical expressions, i.e., guards."""
-            assert type(data_dict) in [dict, OrderedDict]
-
-            keys_logical = [is_logical_expr(str(key)) for key in data_dict]
-            if all(keys_logical):
-                return True
-            elif any(keys_logical):
-                print("data_dict: ", data_dict)
-                raise RuntimeError("Only subset of the keys of the above dict are guards, i.e., logical expressions")
-            else:
-                return False
 
         def _eval_guard(guard):
             """ returns true if a guard evaluates to true."""
@@ -117,7 +120,7 @@ class ParamGen(ABC):
             return guard_evaluated
 
 
-        if not _is_guarded_dict():
+        if not ParamGen._is_guarded_dict(data_dict):
             return data_dict
         else:
 
@@ -128,6 +131,8 @@ class ParamGen(ABC):
                     
             if len(guards_eval_true)>1 and "else" in guards_eval_true:
                 guards_eval_true.remove("else")
+            elif len(guards_eval_true)==0:
+                raise RuntimeError("None of the guards evaluate to true: "+str(data_dict))
             
             if self._match == 'first':
                 return data_dict[guards_eval_true[0]]
@@ -139,37 +144,28 @@ class ParamGen(ABC):
 
     def _reduce_recursive(self, data_dict, expand_func=None):
  
-        # data copy to manipulate while iterating over original.
-        # while the original data is a dictionary, the reduced data
-        # may be a single element depending on the "guards".
-        reduced_data = data_dict.copy()
-
         # First, expand the variables in keys:
         if expand_func!=None:
-            for key in data_dict:
+            for key in data_dict.copy():
                 if has_expandable_var(key):
-                    new_key = ParamGen.expand_vars(key, expand_func)
-                    reduced_data[new_key] = reduced_data.pop(key)
+                    new_key = ParamGen._expand_vars(key, expand_func)
+                    data_dict[new_key] = data_dict.pop(key)
 
-        # Now, evaluate guards if all the keys of data_dict are guards, i.e., logical expressions
-        reduced_data = self._impose_guards(reduced_data)
+        # Now, evaluate the keys if they are all logical expressions, i.e., guards.
+        # Pick the value of the first or last key evaluating to True and drop everything else.
+        while ParamGen._is_guarded_dict(data_dict):
+            data_dict = self._impose_guards(data_dict)
 
         # if the reduced data is still a dictionary, recursively call _reduce_recursive before returning
-        if isinstance(reduced_data,(dict,OrderedDict)):
-
+        if isinstance(data_dict,(dict,OrderedDict)):
             keys_of_nested_dicts = [] # i.e., keys of values that are of type dict
-            for key, val in reduced_data.items():
+            for key, val in data_dict.items():
                 if isinstance(val,(dict,OrderedDict)):
                     keys_of_nested_dicts.append(key)
-                else:
-                    print(val)
-
             for key in keys_of_nested_dicts:
-                reduced_data[key] = self._reduce_recursive(reduced_data[key], expand_func)
-        else:
-            print(reduced_data , '-')
+                data_dict[key] = self._reduce_recursive(data_dict[key], expand_func)
 
-        return reduced_data
+        return data_dict
 
 
     def reduce(self, expand_func=None):
