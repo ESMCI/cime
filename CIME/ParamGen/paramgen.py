@@ -5,7 +5,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from paramgen_utils import get_str_type, is_logical_expr
+from paramgen_utils import is_logical_expr
 from paramgen_utils import has_expandable_var, eval_formula
 
 class ParamGen(ABC):
@@ -24,7 +24,7 @@ class ParamGen(ABC):
     """
 
     def __init__(self, data_dict, match='last'):
-        assert type(data_dict) in [dict, OrderedDict], \
+        assert isinstance(data_dict, dict), \
             "ParamGen class requires a dict or OrderedDict as the initial data."
         #self._validate_schema(data_dict)
         self._data = deepcopy(data_dict)
@@ -77,7 +77,7 @@ class ParamGen(ABC):
 
     @staticmethod
     def _expand_vars(expr, expand_func):
-        assert isinstance(expr, get_str_type()), "Expression passed to _expand_vars must be string."
+        assert isinstance(expr, str), "Expression passed to _expand_vars must be string."
         expandable_vars = re.findall(r'(\$\w+|\${\w+\})',expr)
         for word in expandable_vars:
             word_stripped = word.\
@@ -86,6 +86,7 @@ class ParamGen(ABC):
                 replace("}","")
             word_expanded = expand_func(word_stripped)
             assert word_expanded!=None, "Cannot expand the variable "+word+" using the given expand_func."
+            assert isinstance(word_expanded,str), "expand_func must return string."
             expr = expr.replace(word,word_expanded)
         return expr
 
@@ -93,7 +94,7 @@ class ParamGen(ABC):
     @staticmethod
     def _is_guarded_dict(data_dict):
         """ returns true if all the keys of a dictionary are logical expressions, i.e., guards."""
-        if not type(data_dict) in [dict, OrderedDict]:
+        if not isinstance(data_dict, dict):
             return False
 
         keys_logical = [is_logical_expr(str(key)) for key in data_dict]
@@ -109,7 +110,7 @@ class ParamGen(ABC):
 
         def _eval_guard(guard):
             """ returns true if a guard evaluates to true."""
-            assert isinstance(guard, get_str_type()), "Expression passed to _eval_guard must be string."
+            assert isinstance(guard, str), "Expression passed to _eval_guard must be string."
 
             if has_expandable_var(guard):
                 raise RuntimeError("The guard "+guard+" has an expandable case variable! "+\
@@ -144,23 +145,29 @@ class ParamGen(ABC):
 
     def _reduce_recursive(self, data_dict, expand_func=None):
  
-        # First, expand the variables in keys:
+        # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
         if expand_func!=None:
             for key in data_dict.copy():
                 if has_expandable_var(key):
                     new_key = ParamGen._expand_vars(key, expand_func)
                     data_dict[new_key] = data_dict.pop(key)
 
-        # Now, evaluate the keys if they are all logical expressions, i.e., guards.
+        # (2) Evaluate the keys if they are all logical expressions, i.e., guards.
         # Pick the value of the first or last key evaluating to True and drop everything else.
         while ParamGen._is_guarded_dict(data_dict):
             data_dict = self._impose_guards(data_dict)
 
+        # (3) Expand variables in values, .e.g, "$OCN_GRID" to "gx1v7":
+        if isinstance(data_dict, dict):
+            for key, val in data_dict.copy().items():
+                if isinstance(val, str):
+                    data_dict[key] = ParamGen._expand_vars(val, expand_func)
+
         # if the reduced data is still a dictionary, recursively call _reduce_recursive before returning
-        if isinstance(data_dict,(dict,OrderedDict)):
+        if isinstance(data_dict, dict):
             keys_of_nested_dicts = [] # i.e., keys of values that are of type dict
             for key, val in data_dict.items():
-                if isinstance(val,(dict,OrderedDict)):
+                if isinstance(val, dict):
                     keys_of_nested_dicts.append(key)
             for key in keys_of_nested_dicts:
                 data_dict[key] = self._reduce_recursive(data_dict[key], expand_func)
