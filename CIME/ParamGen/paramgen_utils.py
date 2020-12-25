@@ -86,7 +86,7 @@ def is_formula(expr):
     True
     """
 
-    return (isinstance(expr, get_str_type()) and len(expr)>0 and expr[0]=='=')
+    return (isinstance(expr, get_str_type()) and len(expr)>0 and expr.strip()[0]=='=')
 
 def has_expandable_var(expr):
     """

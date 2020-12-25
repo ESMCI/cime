@@ -5,8 +5,8 @@ import os
 import re
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from paramgen_utils import is_logical_expr
-from paramgen_utils import has_expandable_var, eval_formula
+from paramgen_utils import is_logical_expr, is_formula, has_expandable_var
+from paramgen_utils import eval_formula
 
 class ParamGen(ABC):
     """
@@ -115,7 +115,7 @@ class ParamGen(ABC):
             if has_expandable_var(guard):
                 raise RuntimeError("The guard "+guard+" has an expandable case variable! "+\
                     "All variables must already be expanded before guards can be evaluated.")
-            
+
             guard_evaluated = eval_formula(guard)
             assert type(guard_evaluated)==type(True), "Guard is not boolean: "+guard
             return guard_evaluated
@@ -129,12 +129,12 @@ class ParamGen(ABC):
             for guard in data_dict:
                 if guard=="else" or _eval_guard(str(guard)) == True:
                     guards_eval_true.append(guard)
-                    
+
             if len(guards_eval_true)>1 and "else" in guards_eval_true:
                 guards_eval_true.remove("else")
             elif len(guards_eval_true)==0:
                 raise RuntimeError("None of the guards evaluate to true: "+str(data_dict))
-            
+
             if self._match == 'first':
                 return data_dict[guards_eval_true[0]]
             elif self._match == 'last':
@@ -144,7 +144,7 @@ class ParamGen(ABC):
 
 
     def _reduce_recursive(self, data_dict, expand_func=None):
- 
+
         # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
         if expand_func!=None:
             for key in data_dict.copy():
@@ -157,14 +157,20 @@ class ParamGen(ABC):
         while ParamGen._is_guarded_dict(data_dict):
             data_dict = self._impose_guards(data_dict)
 
-        # (3) Expand variables in values, .e.g, "$OCN_GRID" to "gx1v7":
+        # Continue reducing the data if it is still a dictionary (nested or not).
         if isinstance(data_dict, dict):
+
+            # (3) Expand variables in values, .e.g, "$OCN_GRID" to "gx1v7":
             for key, val in data_dict.copy().items():
                 if isinstance(val, str):
                     data_dict[key] = ParamGen._expand_vars(val, expand_func)
 
-        # if the reduced data is still a dictionary, recursively call _reduce_recursive before returning
-        if isinstance(data_dict, dict):
+            # (4) Evaluate the formulas as values, e.g., "= 3+4", "= [i for i in range(5)]", etc.
+            for key, val in data_dict.copy().items():
+                if is_formula(val):
+                    data_dict[key] = eval_formula(val.strip()[1:])
+
+            # (5) Recursively call _reduce_recursive for the remaining nested dicts before returning
             keys_of_nested_dicts = [] # i.e., keys of values that are of type dict
             for key, val in data_dict.items():
                 if isinstance(val, dict):
@@ -177,9 +183,9 @@ class ParamGen(ABC):
 
     def reduce(self, expand_func=None):
         """
-        Reduces the data of a ParamGen instances by recursively (1) expanding its variables,
-        (2) dropping entries whose conditional guards evaluate to true and (3) evaluating
-        formulas to determine the final values
+        Reduces the data of a ParamGen instances by recursively expanding its variables,
+        imposing conditional guards, and evaluating the formulas in values to determine
+        the final values of parameters.
         """
 
         assert callable(expand_func) or expand_func==None, "expand_func argument must be a function"
