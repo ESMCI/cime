@@ -209,3 +209,24 @@ class ParamGen(ABC):
 
         self._data = self._reduce_recursive(self._data, expand_func)
         self._reduced = True
+
+    def append(self, pg):
+        """ Adds the data of a given ParamGen instance to the self data. If a data entry already exists in self,
+            the value is overriden. Otherwise, the new data entry is simply added to self.
+        """
+
+        assert isinstance(pg,ParamGen), "can only append ParamGen to Paramgen"
+        assert self._reduced == pg._reduced, "Cannot append reduced ParamGen instance to unreduced, and vice versa."
+
+        def _append_recursive(old_dict, new_dict):
+            for key, val in new_dict.items():
+                if key in old_dict:
+                    old_val = old_dict[key]
+                    if isinstance(val, dict) and isinstance(old_val, dict):
+                        _append_recursive(old_dict[key], new_dict[key])
+                    else:
+                        old_dict[key] = new_dict[key]
+                else:
+                    old_dict[key] = new_dict[key]
+
+        _append_recursive(self._data, pg._data)
