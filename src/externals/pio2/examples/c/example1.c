@@ -316,7 +316,6 @@ int check_file(int ntasks, char *filename) {
 #endif /* USE_MPE */
 
         /* keep things simple - 1 iotask per MPI process */
-
         niotasks = ntasks;
 
         /* Turn on logging if available. */

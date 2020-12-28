@@ -2326,6 +2326,7 @@ int read_darray_handler(iosystem_desc_t *ios)
     PIOc_read_darray(ncid, varid, ioid, arraylen, data);
 
     PLOG((1, "read_darray_handler succeeded!"));
+
     return PIO_NOERR;
 }
 

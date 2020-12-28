@@ -879,6 +879,7 @@ find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size)
     /* If caller wants MPI type, set it. */
     if (mpi_type)
         *mpi_type = my_mpi_type;
+
     /* If caller wants type size, set it. */
     if (type_size)
         *type_size = my_type_size;

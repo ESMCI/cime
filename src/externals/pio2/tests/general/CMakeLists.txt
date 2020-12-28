@@ -236,7 +236,6 @@ else ()
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
-
 #===== pio_rearr_opts =====
 add_executable (pio_rearr_opts EXCLUDE_FROM_ALL
     pio_rearr_opts.F90)

@@ -189,7 +189,6 @@ PIO_TF_AUTO_TEST_SUB_BEGIN two_comps_odd_even_async
 
   ! Split world to odd even and io procs
   call split_world_odd_even_io(pio_tf_comm_, all_comp_comm, comp_comm, io_comm, ret)
-
   call PIO_init(iosys, pio_tf_comm_, comp_comm, io_comm, PIO_REARR_BOX)
   if(io_comm == MPI_COMM_NULL) then
      if(comp_comm(1) /= MPI_COMM_NULL) then
