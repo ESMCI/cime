@@ -665,6 +665,17 @@ class TestScheduler(object):
                         envtest.set_test_parameter("ROOTPE_"+comp, "0")
                         envtest.set_test_parameter("PIO_TYPENAME", "netcdf")
 
+                elif opt.startswith('A'):
+                    # A option is for testing in ASYNC IO mode, only available with nuopc driver and pio2
+                    envtest.set_test_parameter("PIO_ASYNC_INTERFACE", "TRUE")
+                    envtest.set_test_parameter("CIME_DRIVER", "nuopc")
+                    envtest.set_test_parameter("PIO_VERSION", "2")
+                    match =  re.match('A([0-9]+)x?([0-9])*', opt)
+                    envtest.set_test_parameter("PIO_NUMTASKS_CPL",  match.group(1))
+                    if match.group(2):
+                        envtest.set_test_parameter("PIO_STRIDE_CPL",match.group(2))
+
+
                 elif (opt.startswith('I') or # Marker to distinguish tests with same name - ignored
                       opt.startswith('M') or # handled in create_newcase
                       opt.startswith('P') or # handled in create_newcase

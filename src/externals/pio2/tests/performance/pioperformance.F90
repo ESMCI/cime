@@ -28,8 +28,9 @@ program pioperformance
   integer :: nv, nframes, nvars(max_nvars)
   integer :: vs, varsize(max_nvars) !  Local size of array for idealized decomps
   logical :: unlimdimindof
+  integer :: log_level
   namelist /pioperf/ decompfile, pio_typenames, rearrangers, niotasks, nframes, &
-       nvars, varsize, unlimdimindof
+       nvars, varsize, unlimdimindof, log_level
 #ifdef BGQTRY
   external :: print_memusage
 #endif
@@ -65,6 +66,7 @@ program pioperformance
   varsize = 0
   varsize(1) = 1
   unlimdimindof=.false.
+  log_level = -1
   if(mype==0) then
      open(unit=12,file='pioperf.nl',status='old')
      read(12,pioperf)
@@ -94,6 +96,7 @@ program pioperformance
   call MPI_Bcast(unlimdimindof, 1, MPI_INTEGER, 0, MPI_COMM_WORLD,ierr)
   call MPI_Bcast(nvars, max_nvars, MPI_INTEGER, 0, MPI_COMM_WORLD,ierr)
   call MPI_Bcast(varsize, max_nvars, MPI_INTEGER, 0, MPI_COMM_WORLD,ierr)
+  call MPI_Bcast(log_level, 1, MPI_INTEGER, 0, MPI_COMM_WORLD,ierr)
 
   call t_initf('pioperf.nl', LogPrint=.false., mpicom=MPI_COMM_WORLD, MasterTask=MasterTask)
   niotypes = 0
@@ -104,7 +107,7 @@ program pioperformance
     rearrangers(1)=1
     rearrangers(2)=2
   endif
-  i = pio_set_log_level(-1)
+  i = pio_set_log_level(log_level)
   do i=1,max_decomp_files
      if(len_trim(decompfile(i))==0) exit
      if(mype == 0) print *, ' Testing decomp: ',trim(decompfile(i))
@@ -238,13 +241,13 @@ contains
           iotype = piotypes(k)
           call MPI_Barrier(comm,ierr)
           if(mype==0) then
-             print *,'iotype=',piotypes(k)
+             print *,'iotype=',piotypes(k), ' of ',size(piotypes)
           endif
-!          if(iotype==PIO_IOTYPE_PNETCDF) then
+          if(iotype==PIO_IOTYPE_PNETCDF) then
              mode = PIO_64BIT_DATA
-!          else
-!             mode = 0
-!          endif
+          else
+             mode = 0
+          endif
           do rearrtype=1,2
              rearr = rearrangers(rearrtype)
              if(rearr /= PIO_REARR_SUBSET .and. rearr /= PIO_REARR_BOX) exit
@@ -299,6 +302,7 @@ contains
                    !if(mype==0) print *,__FILE__,__LINE__,'Frame: ',recnum
 
                    do nv=1,nvars
+                      !if(mype==0) print *,__FILE__,__LINE__,'var: ',nv
 #ifdef VARINT
                       call PIO_setframe(File, vari(nv), recnum)
                       call pio_write_darray(File, vari(nv), iodesc_i4, ifld(:,nv)    , ierr, fillval= PIO_FILL_INT)

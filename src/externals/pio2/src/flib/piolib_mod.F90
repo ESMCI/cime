@@ -1216,6 +1216,7 @@ contains
        end function PIOc_get_numiotasks
     end interface
     ierr = PIOc_get_numiotasks(iosystem%iosysid, numiotasks)
+
   end subroutine getnumiotasks
 
   !> Is an iotype available?

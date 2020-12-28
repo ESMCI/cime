@@ -1460,7 +1460,6 @@ int
 PIOc_iotask_rank(int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
-
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
@@ -1962,6 +1961,76 @@ PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         if ((ret = MPI_Group_free(&union_group[cmp])))
             return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
     }
+    if ((ret = MPI_Allreduce(MPI_IN_PLACE, &num_io_procs, 1, MPI_INT, MPI_MAX, world)))
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+    /* Get io_proc_list from io_comm, share with world */
+    io_proc_list = (int*) calloc(num_io_procs, sizeof(int));
+    if(io_comm != MPI_COMM_NULL) {
+        int my_io_rank;
+        if ((ret = MPI_Comm_rank(io_comm, &my_io_rank)))
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+        if ((ret = MPI_Comm_rank(world, &my_rank)))
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+        io_proc_list[my_io_rank] = my_rank;
+        component_count = 0;
+    }
+    if ((ret = MPI_Allreduce(MPI_IN_PLACE, io_proc_list, num_io_procs, MPI_INT, MPI_MAX, world)))
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+    /* Get num_procs_per_comp for each comp and share with world */
+    num_procs_per_comp = (int *) malloc(component_count * sizeof(int));
+    if ((ret = MPI_Allreduce(MPI_IN_PLACE, &(component_count), 1, MPI_INT, MPI_MAX, world)))
+        return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+    for(int cmp=0; cmp < component_count; cmp++)
+    {
+        num_procs_per_comp[cmp] = 0;
+        if(comp_comm[cmp] != MPI_COMM_NULL)
+            if ((ret = MPI_Comm_size(comp_comm[cmp], &(num_procs_per_comp[cmp]))))
+                return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+        if ((ret = MPI_Allreduce(MPI_IN_PLACE, &(num_procs_per_comp[cmp]), 1, MPI_INT, MPI_MAX, world)))
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+    }
+
+    /* Get proc list for each comp and share with world */
+    my_proc_list = (int**) malloc(component_count * sizeof(int*));
+
+    for(int cmp=0; cmp < component_count; cmp++)
+    {
+        if (!(my_proc_list[cmp] = (int *) malloc(num_procs_per_comp[cmp] * sizeof(int))))
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        for(int i = 0; i < num_procs_per_comp[cmp]; i++)
+            my_proc_list[cmp][i] = 0;
+        if(comp_comm[cmp] != MPI_COMM_NULL){
+            int my_comp_rank;
+            if ((ret = MPI_Comm_rank(comp_comm[cmp], &my_comp_rank)))
+                return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+            if ((ret = MPI_Comm_rank(world, &my_rank)))
+                return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+            my_proc_list[cmp][my_comp_rank] = my_rank;
+        }
+        if ((ret = MPI_Allreduce(MPI_IN_PLACE, my_proc_list[cmp], num_procs_per_comp[cmp],
+                                 MPI_INT, MPI_MAX, world)))
+            return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+    }
+
+    if((ret = PIOc_init_async(world, num_io_procs, io_proc_list, component_count,
+                           num_procs_per_comp, my_proc_list, NULL, NULL, rearranger,
+                              iosysidp)))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+
+    for(int cmp=0; cmp < component_count; cmp++)
+        free(my_proc_list[cmp]);
+    free(my_proc_list);
+    free(io_proc_list);
+    free(num_procs_per_comp);
+
+#ifdef USE_MPE
+    if (!in_io)
+        pio_stop_mpe_log(INIT, __func__);
+#endif /* USE_MPE */
 
     if ((ret = MPI_Group_free(&world_group)))
         return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
@@ -2086,9 +2155,10 @@ PIOc_init_async_from_comms(MPI_Comm world, int component_count, MPI_Comm *comp_c
         return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
 
     /* Get num_procs_per_comp for each comp and share with world */
-    num_procs_per_comp = (int *) malloc(component_count * sizeof(int));
     if ((ret = MPI_Allreduce(MPI_IN_PLACE, &(component_count), 1, MPI_INT, MPI_MAX, world)))
         return check_mpi(NULL, NULL, ret, __FILE__, __LINE__);
+
+    num_procs_per_comp = (int *) malloc(component_count * sizeof(int));
 
     for(int cmp=0; cmp < component_count; cmp++)
     {

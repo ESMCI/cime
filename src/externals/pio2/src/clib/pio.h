@@ -561,6 +561,7 @@ typedef struct file_desc_t
 
     /** List of variables in this file. */
     struct var_desc_t *varlist;
+
     /** Number of variables. */
     int nvars;
 
@@ -774,6 +775,7 @@ extern "C" {
     /* Error handling. */
     int PIOc_strerror(int pioerr, char *errstr);
     int PIOc_set_log_level(int level);
+    int PIOc_set_global_log_level(int iosysid, int level);
 
     /* Decomposition. */
 

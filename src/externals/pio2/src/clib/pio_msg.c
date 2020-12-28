@@ -475,7 +475,6 @@ int inq_att_handler(iosystem_desc_t *ios)
     char name[PIO_MAX_NAME + 1];
     int namelen;
     int eh;
-
     nc_type xtype, *xtypep = NULL;
     PIO_Offset len, *lenp = NULL;
     char xtype_present, len_present;
@@ -2583,6 +2582,24 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     return PIO_NOERR;
 }
 
+int set_loglevel_handler(iosystem_desc_t *ios)
+{
+    int iosysid;
+    int level;
+    int mpierr;
+
+    PLOG((0, "set_loglevel_handler called"));
+    assert(ios);
+#if PIO_ENABLE_LOGGING
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    PIOc_set_global_log_level(iosysid, level);
+
+#endif
+    return PIO_NOERR;
+}
+
 /**
  * This function is called by the IO tasks.  This function will not
  * return, unless there is an error.
@@ -2640,7 +2657,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             for (int c = 0; c < component_count; c++)
                 PLOG((3, "req[%d] = %d", c, req[c]));
             if ((mpierr = MPI_Waitany(component_count, req, &index, &status))){
-                PLOG((1, "Error from mpi_waitany %d",mpierr));
+                PLOG((0, "Error from mpi_waitany %d",mpierr));
                 return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
             }
             PLOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
@@ -2809,6 +2826,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_SET_FILL:
             ret = set_fill_handler(my_iosys);
+            break;
+        case PIO_MSG_SETLOGLEVEL:
+            ret = set_loglevel_handler(my_iosys);
             break;
         case PIO_MSG_EXIT:
             finalize++;

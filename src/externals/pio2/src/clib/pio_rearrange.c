@@ -1336,7 +1336,7 @@ box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap
     /* Determine whether fill values will be needed. */
     if ((ret = determine_fill(ios, iodesc, gdimlen, compmap)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    PLOG((2, "iodesc->needsfill = %d ios->num_iotasks = %d", iodesc->needsfill,
+    PLOG((2, "a iodesc->needsfill = %d ios->num_iotasks = %d", iodesc->needsfill,
           ios->num_iotasks));
 
     /* Set the iomaplen in the sc_info msg */
@@ -1636,7 +1636,7 @@ box_rearrange_create_with_holes(iosystem_desc_t *ios, int maplen,
     /* Determine whether fill values will be needed. */
     if ((ret = determine_fill(ios, iodesc, gdimlen, compmap)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    PLOG((2, "iodesc->needsfill = %d ios->num_iotasks = %d", iodesc->needsfill,
+    PLOG((2, "b iodesc->needsfill = %d ios->num_iotasks = %d", iodesc->needsfill,
           ios->num_iotasks));
 
     /* Set up receive counts and displacements to for an AllToAll
