@@ -38,6 +38,7 @@ LT_INIT
 
 # Find and learn about the C compiler.
 AC_PROG_CC
+AC_PROG_CC_C99
 
 # Compiler with version information. This consists of the full path
 # name of the compiler and the reported version number.

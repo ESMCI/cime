@@ -461,7 +461,6 @@ PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
             if (!mpierr)
                 mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
         }
-
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);

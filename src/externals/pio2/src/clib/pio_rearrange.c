@@ -1955,14 +1955,14 @@ default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
     }
     else
     {
-        int taskratio = ios->num_comptasks / ios->num_iotasks;
+        int taskratio = max(1,ios->num_comptasks / ios->num_iotasks);
         key = max(1, ios->comp_rank % taskratio + 1);
         color = min(ios->num_iotasks - 1, ios->comp_rank / taskratio);
     }
     PLOG((3, "key = %d color = %d", key, color));
 
     /* Create new communicators. */
-    if ((mpierr = MPI_Comm_split(ios->comp_comm, color, key, &iodesc->subset_comm)))
+    if ((mpierr = MPI_Comm_split(ios->union_comm, color, key, &iodesc->subset_comm)))
         return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
@@ -2069,6 +2069,10 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         rcnt = 1;
+
+        if(ios->async)
+            iodesc->ndof = 0;
+
     }
 
     /* Allocate space to hold count of data to be sent in pio_swapm(). */
@@ -2085,7 +2089,7 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
     /* Determine scount[0], the number of data elements in the
      * computation task that are to be written, by looking at
      * compmap. */
-    for (i = 0; i < maplen; i++)
+    for (i = 0; i < iodesc->ndof; i++)
     {
         /*  turns out this can be allowed in some cases
             pioassert(compmap[i]>=0 && compmap[i]<=totalgridsize, "Compmap value out of bounds",
@@ -2101,7 +2105,7 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     j = 0;
-    for (i = 0; i < maplen; i++)
+    for (i = 0; i < iodesc->ndof; i++)
         if (compmap[i] > 0)
             iodesc->sindex[j++] = i;
 
@@ -2110,6 +2114,7 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
     if ((mpierr = MPI_Gather(iodesc->scount, 1, MPI_INT, iodesc->rcount, rcnt,
                              MPI_INT, 0, iodesc->subset_comm)))
         return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+
 
     iodesc->llen = 0;
 
@@ -2255,6 +2260,7 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
         thisgridsize[0] =  totalgridsize / ios->num_iotasks;
         thisgridmax[0] = thisgridsize[0];
         int xtra = totalgridsize - thisgridsize[0] * ios->num_iotasks;
+
         PLOG((4, "xtra %d", xtra));
 
         for (nio = 0; nio < ios->num_iotasks; nio++)
@@ -2307,10 +2313,11 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
         }
 
         /* Allocate and initialize a grid to fill in missing values. ??? */
-        PIO_Offset grid[thisgridsize[ios->io_rank]];
-        PLOG((4, "thisgridsize[ios->io_rank] %d", thisgridsize[ios->io_rank]));
-        for (i = 0; i < thisgridsize[ios->io_rank]; i++)
-            grid[i] = 0;
+        PLOG((2, "thisgridsize[ios->io_rank] %d", thisgridsize[ios->io_rank]));
+        PIO_Offset *grid;
+        if (!(grid = calloc(thisgridsize[ios->io_rank], sizeof(PIO_Offset))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
 
         int cnt = 0;
         for (i = 0; i < thisgridsize[ios->io_rank]; i++)
@@ -2353,6 +2360,8 @@ subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
                     return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
             }
         }
+        free(grid);
+
         maxregions = 0;
         iodesc->maxfillregions = 0;
         if (myfillgrid)

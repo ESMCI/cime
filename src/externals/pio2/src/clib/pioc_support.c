@@ -114,10 +114,8 @@ PIOc_strerror(int pioerr, char *errmsg)
     }
     else if (pioerr == PIO_NOERR)
         strcpy(errmsg, "No error");
-#if defined(_NETCDF)
     else if (pioerr <= NC2_ERR && pioerr >= NC4_LAST_ERROR)     /* NetCDF error? */
         strncpy(errmsg, nc_strerror(pioerr), PIO_MAX_NAME);
-#endif /* endif defined(_NETCDF) */
 #if defined(_PNETCDF)
     else if (pioerr > PIO_FIRST_ERROR_CODE)     /* pNetCDF error? */
         strncpy(errmsg, ncmpi_strerror(pioerr), PIO_MAX_NAME);
@@ -131,6 +129,9 @@ PIOc_strerror(int pioerr, char *errmsg)
             break;
         case PIO_EVARDIMMISMATCH:
             strcpy(errmsg, "Variable dim mismatch in multivar call");
+            break;
+	case PIO_EBADREARR:
+            strcpy(errmsg, "Rearranger mismatch in async mode");
             break;
         default:
             strcpy(errmsg, "Unknown Error: Unrecognized error code");
@@ -168,7 +169,6 @@ PIOc_set_log_level(int level)
 
     return PIO_NOERR;
 }
-
 /**
  * Set the logging level value from the root compute task on all tasks
  * if PIO was built with
@@ -993,6 +993,7 @@ PIOc_freedecomp(int iosysid, int ioid)
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
+
     PLOG((1, "PIOc_freedecomp iosysid = %d ioid = %d", iosysid, ioid));
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -3000,15 +3001,17 @@ pioc_change_def(int ncid, int is_enddef)
         {
             int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
             if (ios->compmaster == MPI_ROOT)
+	      {
+		PLOG((2, "pioc_change_def request sent"));
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
+	      }
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             PLOG((3, "pioc_change_def ncid = %d mpierr = %d", ncid, mpierr));
         }
 
         /* Handle MPI errors. */
-        PLOG((3, "pioc_change_def handling MPI errors"));
+        PLOG((3, "pioc_change_def handling MPI errors my_comm=%d", ios->my_comm));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
         if (mpierr)

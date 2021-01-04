@@ -246,13 +246,13 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
 
     /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
-        return ret;
+        PBAIL(ret);
 
     int fortran_order;
     int ioid2;
     if ((ret = PIOc_read_nc_decomp(iosysid, decomp_filename, &ioid2, comp_comm,
                                    PIO_INT, NULL, NULL, &fortran_order)))
-        return ret;
+        PBAIL(ret);
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid2)))
@@ -564,7 +564,7 @@ int main(int argc, char **argv)
                 /* Run the simple darray async test. */
                 if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, comp_comm[0], num_flavors,
                                                  flavor, test_type[t])))
-                    return ret;
+                    AERR(ret);
 
                 /* Finalize PIO system. */
                 if ((ret = PIOc_free_iosystem (iosysid)))

@@ -355,6 +355,7 @@ int check_file(int ntasks, char *filename) {
         format[num_flavors++] = PIO_IOTYPE_NETCDF4C;
         format[num_flavors++] = PIO_IOTYPE_NETCDF4P;
 #endif
+
         /* Use PIO to create the example file in each of the four
          * available ways. */
         for (int fmt = 0; fmt < num_flavors; fmt++)
