@@ -103,7 +103,7 @@ def verify_perms(test_obj, root_dir):
 def get_casedir(test_obj, case_fragment, all_cases):
 ###############################################################################
     potential_matches = [item for item in all_cases if case_fragment in item]
-    test_obj.assertTrue(len(potential_matches) <= 1, "Ambiguous casedir selection for {}, found  {}  among  {}".format(case_fragment, potential_matches, all_cases))
+    test_obj.assertTrue(len(potential_matches) == 1, "Ambiguous casedir selection for {}, found  {}  among  {}".format(case_fragment, potential_matches, all_cases))
     return potential_matches[0]
 
 ###############################################################################
@@ -1969,8 +1969,6 @@ class Z_FullSystemTest(TestCreateTestCommon):
         if CIME.utils.get_cime_default_driver() == 'nuopc':
             skip_tests=["SMS_Ln3.T42_T42.S","PRE.f19_f19.ADESP_TEST","PRE.f19_f19.ADESP","DAE.ww3a.ADWAV"]
         tests = get_tests.get_test_suite("cime_developer", machine=self._machine, compiler=self._compiler,skip_tests=skip_tests)
-
-
 
         for test in tests:
             casedir = get_casedir(self, test, cases)
