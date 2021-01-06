@@ -178,7 +178,7 @@ def buildlib(bldroot, installpath, case):
         valid_values += ",pnetcdf"
     if netcdf4_parallel_found:
         valid_values += ",netcdf4p,netcdf4c"
-    print("HERE valid_values {}".format(valid_values))
+
     _set_pio_valid_values(case, valid_values)
 
 
