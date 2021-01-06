@@ -26,7 +26,7 @@ class EnvMachSpecific(EnvBase):
         """
         schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_mach_specific.xsd")
         EnvBase.__init__(self, caseroot, infile, schema=schema, read_only=read_only)
-        self._allowed_mpi_attributes = ("compiler", "mpilib", "threaded", "unit_testing", "queue", "comp_interface")
+        self._allowed_mpi_attributes = ("compiler", "mpilib", "unit_testing", "queue", "comp_interface")
         self._comp_interface = comp_interface
         self._unit_testing = unit_testing
         self._standalone_configure = standalone_configure
@@ -78,7 +78,7 @@ class EnvMachSpecific(EnvBase):
 
         return envs_to_set
 
-    def load_env(self, case, force_method=None, job=None, verbose=False):
+    def load_env(self, case, force_method=None, job=None, verbose=False, attributes=None):
         """
         Should only be called by case.load_env
         """
@@ -223,7 +223,6 @@ class EnvMachSpecific(EnvBase):
                     shell, cmd = env_value.split(" ",1)
                     self._source_shell_file("source "+cmd, shell, verbose=verbose)
                 else:
-                    print("Setting Environment {}={}".format(env_name, env_value))
                     logger_func("Setting Environment {}={}".format(env_name, env_value))
                     os.environ[env_name] = env_value
 
@@ -234,6 +233,8 @@ class EnvMachSpecific(EnvBase):
         return self._compute_actions(env_nodes, "env", case, job=job)
 
     def _compute_resource_actions(self, resource_nodes, case, job=None):
+        import pdb
+
         return self._compute_actions(resource_nodes, "resource", case, job=job)
 
     def _compute_actions(self, nodes, child_tag, case, job=None):

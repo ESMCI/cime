@@ -9,7 +9,7 @@
 <xs:attribute name="PIO_VERSION" type="xs:integer"/>
 <xs:attribute name="mpilib" type="xs:string"/>
 <xs:attribute name="comp_interface" type="xs:string"/>
-<xs:attribute name="SMP_PRESENT" type="xs:string"/>
+<xs:attribute name="smp_present" type="upperBoolean"/>
 <xs:attribute name="value" type="xs:string"/>
 <xs:attribute name="unit_testing" type="xs:boolean"/>
 <xs:attribute name="queue" type="xs:string"/>
@@ -40,7 +40,7 @@
         <xs:element ref="group"/>
         <xs:element ref="module_system"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="environment_variables"/>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="resource_limits"/>
+        <xs:element minOccurs="0" maxOccurs="1" ref="resource_limits"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="mpirun"/>
       </xs:sequence>
       <xs:attribute ref="id" use="required"/>
@@ -130,16 +130,17 @@
       <xs:sequence>
         <xs:element maxOccurs="unbounded" ref="resource"/>
       </xs:sequence>
-      <xs:attribute ref="DEBUG"/>
-      <xs:attribute ref="mpilib"/>
-      <xs:attribute ref="compiler"/>
-      <xs:attribute ref="unit_testing"/>
-      <xs:attribute ref="SMP_PRESENT"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="resource">
     <xs:complexType mixed="true">
       <xs:attribute name="name" use="required" type="xs:NCName"/>
+      <xs:attribute ref="smp_present"/>
+      <xs:attribute ref="comp_interface"/>
+      <xs:attribute ref="DEBUG"/>
+      <xs:attribute ref="mpilib"/>
+      <xs:attribute ref="compiler"/>
+      <xs:attribute ref="unit_testing"/>
     </xs:complexType>
   </xs:element>
 
@@ -158,7 +159,7 @@
       </xs:sequence>
       <xs:attribute ref="compiler"/>
       <xs:attribute ref="mpilib"/>
-      <xs:attribute name="threaded" type="xs:boolean"/>
+      <xs:attribute ref="smp_present"/>
       <xs:attribute ref="queue"/>
       <xs:attribute ref="unit_testing"/>
       <xs:attribute ref="comp_interface"/>

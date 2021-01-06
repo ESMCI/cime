@@ -53,7 +53,7 @@
     <xs:attribute ref="compile_threaded"/>
     <xs:attribute ref="DEBUG"/>
     <!-- We could try enumerating all the valid names for models, but that could
-	 complicate the process of adding new models. -->
+         complicate the process of adding new models. -->
     <xs:attribute ref="MODEL"/>
     <xs:attribute ref="COMP_NAME"/>
     <xs:attribute ref="COMP_CLASS"/>
@@ -116,7 +116,7 @@
   <xs:element name="config_compilers">
     <xs:complexType>
       <xs:sequence>
-	<xs:element ref="compiler" maxOccurs="unbounded"/>
+        <xs:element ref="compiler" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute ref="version" use="required"/>
     </xs:complexType>

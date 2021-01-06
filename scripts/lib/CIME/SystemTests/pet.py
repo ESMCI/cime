@@ -29,12 +29,15 @@ class PET(SystemTestsCompareTwo):
         comp_interface = self._case.get_value("COMP_INTERFACE")
         for comp in self._case.get_values("COMP_CLASSES"):
             if self._case.get_value("NTHRDS_{}".format(comp)) <= 1:
-                self._case.set_value("NTHRDS_{}".format(comp), 2)
                 # For nuopc we must also adjust the ROOTPE
                 if comp_interface == 'nuopc':
                     rootpe = self._case.get_value("ROOTPE_{}".format(comp))
                     if rootpe > 0:
                         self._case.set_value("ROOTPE_{}".format(comp), rootpe + self._case.get_value("NTASKS_{}".format(comp)))
+                compname = self._case.get_value("COMP_{}".format(comp))
+                print("compname {} d{}".format(compname, comp.lower()))
+                if not (comp_interface == "nuopc" and compname == "d{}".format(comp.lower())):
+                    self._case.set_value("NTHRDS_{}".format(comp), 2)
 
 
 

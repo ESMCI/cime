@@ -9,7 +9,7 @@
   <xs:attribute name="queue" type="xs:string"/>
   <xs:attribute name="DEBUG" type="upperBoolean"/>
   <xs:attribute name="PIO_VERSION" type="xs:integer"/>
-  <xs:attribute name="threaded" type="xs:boolean"/>
+  <xs:attribute name="smp_present" type="upperBoolean"/>
   <xs:attribute name="allow_error" type="xs:boolean"/>
   <xs:attribute name="unit_testing" type="xs:boolean"/>
   <xs:attribute name="type" type="xs:NCName"/>
@@ -180,7 +180,7 @@
         <xs:element ref="TEST_TPUT_TOLERANCE" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="MAX_GB_OLD_TEST_DATA" minOccurs="0" maxOccurs="1"/>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="environment_variables"/>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="resource_limits"/>
+        <xs:element minOccurs="0" maxOccurs="1" ref="resource_limits"/>
       </xs:sequence>
       <xs:attribute ref="MACH" use="required"/>
     </xs:complexType>
@@ -199,7 +199,7 @@
       <xs:attribute ref="compiler"/>
       <xs:attribute ref="queue"/>
       <xs:attribute ref="mpilib"/>
-      <xs:attribute ref="threaded"/>
+      <xs:attribute ref="smp_present"/>
       <xs:attribute ref="unit_testing"/>
       <xs:attribute ref="comp_interface"/>
     </xs:complexType>
@@ -263,10 +263,6 @@
       <xs:sequence>
         <xs:element maxOccurs="unbounded" ref="resource"/>
       </xs:sequence>
-      <xs:attribute ref="DEBUG"/>
-      <xs:attribute ref="mpilib"/>
-      <xs:attribute ref="compiler"/>
-      <xs:attribute ref="unit_testing"/>
     </xs:complexType>
   </xs:element>
 
@@ -279,6 +275,12 @@
   <xs:element name="resource">
     <xs:complexType mixed="true">
       <xs:attribute ref="name" use="required"/>
+      <xs:attribute ref="DEBUG"/>
+      <xs:attribute ref="smp_present"/>
+      <xs:attribute ref="comp_interface"/>
+      <xs:attribute ref="mpilib"/>
+      <xs:attribute ref="compiler"/>
+      <xs:attribute ref="unit_testing"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="default_run_suffix">

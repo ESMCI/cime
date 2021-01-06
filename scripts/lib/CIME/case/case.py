@@ -161,7 +161,6 @@ class Case(object):
         mpi_attribs = {
             "compiler" : self.get_value("COMPILER"),
             "mpilib"   : self.get_value("MPILIB"),
-            "threaded" : self.get_build_threaded(),
             }
 
         job = self.get_primary_job()
@@ -1448,7 +1447,6 @@ directory, NOT in this subdirectory."""
         mpi_attribs = {
             "compiler" : self.get_value("COMPILER"),
             "mpilib"   : self.get_value("MPILIB"),
-            "threaded" : self.get_build_threaded(),
             "queue" : self.get_value("JOB_QUEUE", subgroup=job),
             "unit_testing" : False,
             "comp_interface" : self._comp_interface
