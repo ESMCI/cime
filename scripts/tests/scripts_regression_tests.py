@@ -1965,7 +1965,11 @@ class Z_FullSystemTest(TestCreateTestCommon):
             self.assertTrue(test_time > 0, msg="test time was zero for %s" % test_status)
 
         # Test that re-running works
-        tests = get_tests.get_test_suite("cime_developer", machine=self._machine, compiler=self._compiler)
+        skip_tests = None
+        if CIME.utils.get_cime_default_driver() == 'nuopc':
+            skip_tests=["SMS_Ln3.T42_T42.S","PRE.f19_f19.ADESP_TEST","PRE.f19_f19.ADESP","DAE.ww3a.ADWAV"]
+        tests = get_tests.get_test_suite("cime_developer", machine=self._machine, compiler=self._compiler,skip_tests=skip_tests)
+
         for test in tests:
             casedir = get_casedir(self, test, cases)
 
