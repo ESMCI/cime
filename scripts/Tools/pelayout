@@ -63,11 +63,11 @@ def parse_command_line(args, description):
                         help="Number of threads to set for all components")
 
     parser.add_argument("--format",
-                        default="%4C: %6T/%6H; %6R",
+                        default="%4C: %6T/%6H; %6R; %6S;",
                         help="Format the PE layout items for each component (see below)")
 
     parser.add_argument("--header",
-                        default="Comp  NTASKS  NTHRDS  ROOTPE",
+                        default="Comp  NTASKS  NTHRDS  ROOTPE STRIDE",
                         help="Custom header for PE layout display")
 
     parser.add_argument("--no-header", default=False , action="store_true" ,
@@ -96,23 +96,24 @@ def get_value_as_string(case, var, attribute=None, resolved=False, subgroup=None
     return value
 
 ###############################################################################
-def format_pelayout(comp, ntasks, nthreads, rootpe, arg_format):
+def format_pelayout(comp, ntasks, nthreads, rootpe, stride, arg_format):
 ###############################################################################
     """
     Format the PE layout information for each component, using a default format,
     or using the arg_format input, if it exists.
     """
-    subs = { 'C': comp, 'T': ntasks, 'H': nthreads, 'R': rootpe }
+    subs = { 'C': comp, 'T': ntasks, 'H': nthreads, 'R': rootpe, 'S': stride }
     layout_str = re.sub(r"%([0-9]*)C", r"{C:\1}", arg_format)
     layout_str = re.sub(r"%([-+0-9]*)T", r"{T:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)H", r"{H:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)R", r"{R:\1}", layout_str)
+    layout_str = re.sub(r"%([-+0-9]*)S", r"{S:\1}", layout_str)
     layout_str = layout_str.format(**subs)
     return layout_str
 # End def format_pelayout
 
 ###############################################################################
-def print_pelayout(case, ntasks, nthreads, rootpes, arg_format, header):
+def print_pelayout(case, ntasks, nthreads, rootpes, stride, arg_format, header):
 ###############################################################################
     """
     Print the PE layout information for each component, using the format,
@@ -124,7 +125,7 @@ def print_pelayout(case, ntasks, nthreads, rootpes, arg_format, header):
         print(header)
     # End if
     for comp in comp_classes:
-        print(format_pelayout(comp, ntasks[comp], nthreads[comp], rootpes[comp], arg_format))
+        print(format_pelayout(comp, ntasks[comp], nthreads[comp], rootpes[comp], stride[comp], arg_format))
     # End for
 
 # End def print_pelayout
@@ -138,14 +139,16 @@ def gather_pelayout(case):
     ntasks = {}
     nthreads = {}
     rootpes = {}
+    stride = {}
     comp_classes = case.get_values("COMP_CLASSES")
 
     for comp in comp_classes:
         ntasks[comp]   = int(case.get_value("NTASKS_"+comp))
         nthreads[comp] = int(case.get_value("NTHRDS_"+comp))
         rootpes[comp]  = int(case.get_value("ROOTPE_"+comp))
+        stride[comp] = int(case.get_value("PSTRID_"+comp))
     # End for
-    return ntasks, nthreads, rootpes
+    return ntasks, nthreads, rootpes, stride
 # End def gather_pelayout
 
 ###############################################################################
@@ -167,7 +170,7 @@ def modify_ntasks(case, new_tot_tasks):
     curr_tot_tasks = 0
 
     # First, gather current task and root pe info
-    curr_tasks, _, curr_roots = gather_pelayout(case)
+    curr_tasks, _, curr_roots, _ = gather_pelayout(case)
 
     # How many tasks are currently being used?
     for comp in comp_classes:
@@ -218,8 +221,8 @@ def _main_func(description):
         if (set_ntasks is not None):
             modify_ntasks(case, int(set_ntasks))
         # End if
-        ntasks, nthreads, rootpes = gather_pelayout(case)
-        print_pelayout(case, ntasks, nthreads, rootpes, arg_format, header)
+        ntasks, nthreads, rootpes, stride = gather_pelayout(case)
+        print_pelayout(case, ntasks, nthreads, rootpes, stride, arg_format, header)
     # End with
 
 # End def _main_func
