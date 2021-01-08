@@ -127,6 +127,8 @@ class Case(object):
         self.tasks_per_numa = None
         self.cores_per_task = None
         self.srun_binding = None
+        self.async_io = False
+        self.iotasks = 0
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
@@ -150,6 +152,9 @@ class Case(object):
         env_mach_spec = self.get_env('mach_specific')
         comp_classes  = self.get_values("COMP_CLASSES")
         max_mpitasks_per_node  = self.get_value("MAX_MPITASKS_PER_NODE")
+        self.async_io = self.get_value("PIO_ASYNC_INTERFACE")
+        if self.async_io:
+            self.iotasks = max(1,self.get_value("PIO_NUMTASKS_CPL"))
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
@@ -166,7 +171,7 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes)
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count)
 
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count)

@@ -266,7 +266,12 @@ PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void *ip
     {
         /* Get the type and length of the attribute. */
         if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, &attlen)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        {
+            if (ios->async)
+                return ierr;
+            else
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+        }
         PLOG((2, "atttype = %d attlen = %d", atttype, attlen));
 
         /* Get the length (in bytes) of the type of the attribute. */

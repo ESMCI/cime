@@ -583,8 +583,6 @@ This allows using a different mpirun command to launch unit tests
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/</command>
         <command name="load">esmf-8.1.0b41-ncdfio-mpiuni-O</command>
       </modules>
-
-
       <modules mpilib="mpt" compiler="gnu">
         <command name="load">mpt/2.21</command>
         <command name="load">netcdf-mpi/4.7.3</command>
@@ -644,7 +642,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="MPI_USE_ARRAY">false</env>
     </environment_variables>
     <resource_limits>
-      <resource name="RLIMIT_STACK">-1</resource>
+      <resource name="RLIMIT_STACK"> -1</resource>
     </resource_limits>
   </machine>
 

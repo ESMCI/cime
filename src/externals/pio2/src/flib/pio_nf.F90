@@ -301,7 +301,8 @@ module pio_nf
 
   interface pio_set_log_level
      module procedure &
-          set_log_level
+          set_log_level                                    , &
+          set_global_log_level
   end interface pio_set_log_level
 
   interface pio_strerror
@@ -857,6 +858,32 @@ contains
     end interface
     ierr = PIOc_set_log_level(log_level)
   end function set_log_level
+
+  !>
+  !! @public
+  !! @ingroup PIO_set_log_level
+  !! Sets the logging level globally from comp root. Only takes effect if PIO was built with
+  !! PIO_ENABLE_LOGGING=On
+  !!
+  !! @param iosys a defined pio system descriptor, see PIO_types
+  !! @param log_level the logging level.
+  !! @retval ierr @copydoc error_return
+  !! @author Jim Edwards
+  !<
+  integer function set_global_log_level(iosys, log_level) result(ierr)
+    use pio_types, only : iosystem_desc_t
+    type(iosystem_desc_t), intent(in) :: iosys
+    integer, intent(in) :: log_level
+    interface
+       integer(C_INT) function PIOc_set_global_log_level(iosysid, log_level) &
+            bind(C, name="PIOc_set_global_log_level")
+         use iso_c_binding
+         integer(C_INT), value :: iosysid
+         integer(C_INT), value :: log_level
+       end function PIOc_set_global_log_level
+    end interface
+    ierr = PIOc_set_global_log_level(iosys%iosysid, log_level)
+  end function set_global_log_level
 
   !>
   !! @public
