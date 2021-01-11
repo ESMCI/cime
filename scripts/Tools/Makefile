@@ -59,17 +59,6 @@ else
    ESMFDIR = noesmf
 endif
 
-# Determine whether any C++ code will be included in the build;
-# currently, C++ code is included if and only if we're linking to the
-# trilinos library or the Albany library.
-USE_CXX = FALSE
-ifeq ($(strip $(USE_TRILINOS)), TRUE)
-   USE_CXX = TRUE
-endif
-ifeq ($(strip $(USE_ALBANY)), TRUE)
-   USE_CXX = TRUE
-endif
-
 SLIBS ?= $(USER_SLIBS)
 
 ifeq ($(strip $(USE_FMS)), TRUE)
@@ -128,17 +117,10 @@ else
    CPPDEFS += -DMCT_INTERFACE
 endif
 
-
 ifeq ($(PIO_VERSION),2)
   CPPDEFS += -DPIO2
 else
   CPPDEFS += -DPIO1
-endif
-
-ifeq ($(USE_CXX), TRUE)
-  ifeq ($(SUPPORTS_CXX), FALSE)
-    $(error Fatal attempt to include C++ code on a compiler/machine combo that has not been set up to support C++)
-  endif
 endif
 
 # Not clear how to escape commas for libraries with their own configure
@@ -196,7 +178,6 @@ else
   endif
 endif
 
-
 ifeq ($(MPILIB),mpi-serial)
   ifdef PNETCDF_PATH
     undefine PNETCDF_PATH
@@ -211,6 +192,7 @@ else
     endif
   endif
 endif
+
 # Set PETSc info if it is being used
 ifeq ($(strip $(USE_PETSC)), TRUE)
   ifdef PETSC_PATH
@@ -226,42 +208,6 @@ ifeq ($(strip $(USE_PETSC)), TRUE)
 
   # Get the "PETSC_LIB" list an env var
   include $(PETSC_PATH)/lib/petsc/conf/variables
-
-endif
-
-# Set Trilinos info if it is being used
-ifeq ($(strip $(USE_TRILINOS)), TRUE)
-  ifdef TRILINOS_PATH
-    ifndef INC_TRILINOS
-      INC_TRILINOS:=$(TRILINOS_PATH)/include
-    endif
-    ifndef LIB_TRILINOS
-      LIB_TRILINOS:=$(TRILINOS_PATH)/lib
-    endif
-  else
-    $(error TRILINOS_PATH must be defined when USE_TRILINOS is TRUE)
-  endif
-
-  # get a bunch of variables related to this trilinos installation;
-  # these variables begin with "Trilinos_"
-  include $(INC_TRILINOS)/Makefile.export.Trilinos
-endif
-
-# Set Albany info if it is being used
-ifeq ($(strip $(USE_ALBANY)), TRUE)
-  ifdef ALBANY_PATH
-    ifndef INC_ALBANY
-      INC_ALBANY:=$(ALBANY_PATH)/include
-    endif
-    ifndef LIB_ALBANY
-      LIB_ALBANY:=$(ALBANY_PATH)/lib
-    endif
-  else
-    $(error ALBANY_PATH must be defined when USE_ALBANY is TRUE)
-  endif
-
-  # get the "ALBANY_LINK_LIBS" list as an env var
-  include $(ALBANY_PATH)/export_albany.in
 endif
 
 # Set MOAB info if it is being used
@@ -429,18 +375,6 @@ else
   endif
 endif
 LD := $(MPIFC)
-# Decide whether to use a C++ or Fortran linker, based on whether we
-# are using any C++ code and the compiler-dependent CXX_LINKER variable
-ifeq ($(USE_CXX), TRUE)
-  # The following is essentially an "if... elseif... else", but gmake
-  # 3.80 and earlier doesn't support elseif
-  ifeq ($(CXX_LINKER), CXX)
-    LD := $(MPICXX)
-  endif
-  ifeq ($(CXX_LINKER), FORTRAN)
-    LD := $(MPIFC)
-  endif
-endif
 
 CSM_SHR_INCLUDE:=$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include
 # This is needed so that dependancies are found
@@ -467,12 +401,6 @@ ifdef INC_PNETCDF
 endif
 ifdef INC_PETSC
   INCLDIR += -I$(INC_PETSC)
-endif
-ifdef INC_TRILINOS
-  INCLDIR += -I$(INC_TRILINOS)
-endif
-ifdef INC_ALBANY
-  INCLDIR += -I$(INC_ALBANY)
 endif
 ifdef INC_MOAB
   INCLDIR += -I$(INC_MOAB)
@@ -593,7 +521,6 @@ rrtmg_lw_k_g.o: rrtmg_lw_k_g.f90
 rrtmg_sw_k_g.o: rrtmg_sw_k_g.f90
 	$(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
 
-
 ifdef COSP_LIBDIR
 INCLDIR+=-I$(COSP_LIBDIR) -I$(COSP_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE)
 $(COSP_LIBDIR)/libcosp.a: cam_abortutils.o
@@ -661,33 +588,9 @@ ifeq ($(strip $(USE_PETSC)), TRUE)
   SLIBS += ${PETSC_LIB}
 endif
 
-# Add trilinos libraries; too be safe, we include all libraries included in the trilinos build,
-# as well as all necessary third-party libraries
-ifeq ($(strip $(USE_TRILINOS)), TRUE)
-  SLIBS += -L$(LIB_TRILINOS) $(Trilinos_LIBRARIES) $(Trilinos_TPL_LIBRARY_DIRS) $(Trilinos_TPL_LIBRARIES)
-endif
-
-# Add Albany libraries.	 These are defined in the ALBANY_LINK_LIBS env var that was included above
-ifeq ($(strip $(USE_ALBANY)), TRUE)
-  SLIBS += $(ALBANY_LINK_LIBS)
-endif
-
 # Add MOAB libraries.  These are defined in the MOAB_LINK_LIBS env var that was included above
 ifeq ($(strip $(USE_MOAB)), TRUE)
   SLIBS += $(IMESH_LIBS)
-endif
-
-# Add libraries and flags that we need on the link line when C++ code is included
-# We need to do these additions after CONFIG_ARGS is set, because they can sometimes break configure for mct, etc.,
-# if they are added to LDFLAGS in CONFIG_ARGS.
-ifeq ($(USE_CXX), TRUE)
-  ifdef CXX_LIBS
-    SLIBS += $(CXX_LIBS)
-  endif
-
-  ifdef CXX_LDFLAGS
-    LDFLAGS += $(CXX_LDFLAGS)
-  endif
 endif
 
 # Remove arch flag if it exists
@@ -728,7 +631,6 @@ else
   PIO_SRC_DIR = $(IO_LIB_SRCROOT)/$(IO_LIB_v$(PIO_VERSION)_SRCDIR)
 endif
 
-
 ifeq ($(PIO_VERSION),2)
 # This is a pio2 library
   PIOLIB = $(PIO_LIBDIR)/libpiof.a $(PIO_LIBDIR)/libpioc.a
@@ -764,7 +666,7 @@ CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(IN
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" 
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake"
 
 ifeq ($(DEBUG), TRUE)
   CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
@@ -861,7 +763,6 @@ Srcfiles: Filepath
 Filepath:
 	@echo "$(VPATH)" > $@
 
-
 #-------------------------------------------------------------------------------
 # echo file names, paths, compile flags, etc. used during build
 #-------------------------------------------------------------------------------
@@ -876,9 +777,6 @@ db_flags:
 	@echo "* cc      := $(CC)  $(CFLAGS) $(INCS) $(INCLDIR)"
 	@echo "* .F.o    := $(FC)  $(FFLAGS) $(FIXEDFLAGS) $(INCS) $(INCLDIR)"
 	@echo "* .F90.o  := $(FC)  $(FFLAGS) $(FREEFLAGS) $(INCS) $(INCLDIR)"
-	ifeq ($(USE_CXX), TRUE)
-	  @echo "* .cpp.o  := $(CXX) $(CXXFLAGS) $(INCS) $(INCLDIR)"
-	endif
 
 #-------------------------------------------------------------------------------
 # Rules used for the tests run by "configure -test"
@@ -901,15 +799,12 @@ test_esmf: test_esmf.o
 #-------------------------------------------------------------------------------
 # create list of component libraries - hard-wired for current ccsm components
 #-------------------------------------------------------------------------------
-ifneq ($(CIME_MODEL),e3sm)
-  ifeq ($(COMP_LND),clm)
-    USE_SHARED_CLM=TRUE
-  else
-    USE_SHARED_CLM=FALSE
-  endif
+ifeq ($(COMP_LND),clm)
+  USE_SHARED_CLM=TRUE
 else
   USE_SHARED_CLM=FALSE
 endif
+
 ifeq ($(USE_SHARED_CLM),FALSE)
   LNDOBJDIR = $(EXEROOT)/lnd/obj
   LNDLIBDIR=$(LIBROOT)
@@ -933,9 +828,6 @@ ifeq ($(LND_PRESENT),TRUE)
 endif
 ifeq ($(COMP_GLC), cism)
   ULIBDEP += $(CISM_LIBDIR)/libglimmercismfortran.a
-  ifeq ($(CISM_USE_TRILINOS), TRUE)
-    ULIBDEP += $(CISM_LIBDIR)/libglimmercismcpp.a
-  endif
 endif
 ifeq ($(OCN_SUBMODEL),moby)
   ULIBDEP += $(LIBROOT)/libmoby.a
