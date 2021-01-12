@@ -1018,10 +1018,10 @@ class TestScheduler(object):
 
     ###########################################################################
     def run_tests(self, wait=False,
-                  wait_check_throughput=False,
-                  wait_check_memory=False,
-                  wait_ignore_namelists=False,
-                  wait_ignore_memleak=False):
+                  check_throughput=False,
+                  check_memory=False,
+                  ignore_namelists=False,
+                  ignore_memleak=False):
     ###########################################################################
         """
         Main API for this class.
@@ -1053,55 +1053,21 @@ class TestScheduler(object):
                     test_dir = self._get_test_dir(test)
                     generate_teststatus(test_dir, basegen_case_fullpath)
 
-        wait_handles_report = False
-        if not self._no_run and not self._no_batch:
-            if wait:
-                logger.info("Waiting for tests to finish")
-                rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*{}/TestStatus".format(self._test_id))),
-                                    check_throughput=wait_check_throughput,
-                                    check_memory=wait_check_memory,
-                                    ignore_namelists=wait_ignore_namelists,
-                                    ignore_memleak=wait_ignore_memleak)
-                wait_handles_report = True
-            else:
-                logger.info("Due to presence of batch system, create_test will exit before tests are complete.\n" \
-                            "To force create_test to wait for full completion, use --wait")
+        no_need_to_wait = self._no_run or self._no_batch
+        if no_need_to_wait:
+            wait = False
 
-        # Return True if all tests passed from our point of view
-        if not wait_handles_report:
-            logger.info( "At test-scheduler close, state is:")
-            rv = True
-            for test in self._tests:
-                phase, status = self._get_test_data(test)
+        logger.info("Waiting for tests to finish")
+        rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*{}/TestStatus".format(self._test_id))),
+                            no_wait=not wait,
+                            check_throughput=check_throughput,
+                            check_memory=check_memory,
+                            ignore_namelists=ignore_namelists,
+                            ignore_memleak=ignore_memleak)
 
-                # Give highest priority to fails in test schduler
-                if status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
-                    logger.info( "{} {} (phase {})".format(status, test, phase))
-                    rv = False
-
-                else:
-                    # Be cautious about telling the user that the test passed. This
-                    # status should match what they would see on the dashboard. Our
-                    # self._test_states does not include comparison fail information,
-                    # so we need to parse test status.
-                    ts = TestStatus(self._get_test_dir(test))
-                    nlfail = ts.get_status(NAMELIST_PHASE) == TEST_FAIL_STATUS
-                    ts_status = ts.get_overall_test_status(ignore_namelists=True, check_memory=False, check_throughput=False)
-                    local_run = not self._no_run and self._no_batch
-
-                    if ts_status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
-                        logger.info( "{} {} (phase {})".format(ts_status, test, phase))
-                        rv = False
-                    elif ts_status == TEST_PEND_STATUS and local_run:
-                        logger.info( "{} {} (Some phases left in PEND)".format(TEST_FAIL_STATUS, test))
-                        rv = False
-                    elif nlfail:
-                        logger.info( "{} {} (but otherwise OK) {}".format(NAMELIST_FAIL_STATUS, test, phase))
-                        rv = False
-                    else:
-                        logger.info("{} {} {}".format(status, test, phase))
-
-                logger.info( "    Case dir: {}".format(self._get_test_dir(test)))
+        if not no_need_to_wait and not wait:
+            logger.info("Due to presence of batch system, create_test will exit before tests are complete.\n" \
+                        "To force create_test to wait for full completion, use --wait")
 
         logger.info( "test-scheduler took {} seconds".format(time.time() - start_time))
 
