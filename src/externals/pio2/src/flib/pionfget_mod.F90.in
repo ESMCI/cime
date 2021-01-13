@@ -135,7 +135,6 @@ CONTAINS
     integer, intent(in) :: ncid
     integer, intent(in) :: varid, index(:)
     character(len=*), intent(out) :: ival
-    character, allocatable :: cval(:)
     integer :: i, ndims
     integer(kind=C_SIZE_T), allocatable :: lindex(:), count(:)
 
@@ -316,6 +315,7 @@ CONTAINS
     integer, intent(in) :: varid
     character(len=*), intent(out) :: ival{DIMSTR}
 
+    ival = ' '
     ierr = get_var_text_internal(File%fh, varid, size(ival), ival, len(ival))
 
   end function get_var_{DIMS}d_text

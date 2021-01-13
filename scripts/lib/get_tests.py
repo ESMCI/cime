@@ -182,7 +182,7 @@ def get_test_suites():
     return list(_ALL_TESTS.keys())
 
 ###############################################################################
-def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False):
+def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False, skip_tests=None):
 ###############################################################################
     """
     Return a list of FULL test names for a suite.
@@ -209,8 +209,8 @@ def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False):
             test_mod = test_components[-1]
         else:
             test_name = item
-
-        tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmod=test_mod))
+        if not skip_tests or not test_name in skip_tests:
+            tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmod=test_mod))
 
     if not skip_inherit:
         for inherits in inherits_from:

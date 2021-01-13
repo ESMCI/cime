@@ -1,14 +1,14 @@
 #include "config.h"
 !> @file
-!! A simple Fortran example for the ParallelIO Library.
-module pioExample
+!! A simple Fortran example for Async use of the ParallelIO Library.
+module pioAsyncExample
 
-    use pio, only : PIO_init, PIO_rearr_subset, iosystem_desc_t, file_desc_t
+    use pio, only : PIO_init, PIO_rearr_box, iosystem_desc_t, file_desc_t
     use pio, only : PIO_finalize, PIO_noerr, PIO_iotype_netcdf, PIO_createfile
     use pio, only : PIO_int,var_desc_t, PIO_redef, PIO_def_dim, PIO_def_var, PIO_enddef
     use pio, only : PIO_closefile, io_desc_t, PIO_initdecomp, PIO_write_darray
     use pio, only : PIO_freedecomp, PIO_clobber, PIO_read_darray, PIO_syncfile, PIO_OFFSET_KIND
-    use pio, only : PIO_nowrite, PIO_openfile
+    use pio, only : PIO_nowrite, PIO_openfile, pio_set_log_level
     use mpi
     implicit none
 
@@ -29,6 +29,12 @@ module pioExample
     !! example.
     type, public :: pioExampleClass
 
+        !> @brief Compute task comm
+        integer, allocatable :: comm(:)
+
+        !> @brief true if this is an iotask
+        logical :: iotask
+
         !> @brief Rank of processor running the code.
         integer :: myRank
 
@@ -41,14 +47,11 @@ module pioExample
         !> @brief Stride in the mpi rank between io tasks.
         integer :: stride
 
-        !> @brief Number of aggregator.
-        integer :: numAggregator
-
         !> @brief Start index of I/O processors.
         integer :: optBase
 
         !> @brief The ParallelIO system set up by @ref PIO_init.
-        type(iosystem_desc_t) :: pioIoSystem
+        type(iosystem_desc_t), allocatable :: pioIoSystem(:)
 
         !> @brief Contains data identifying the file.
         type(file_desc_t)     :: pioFileDesc
@@ -145,8 +148,10 @@ contains
         implicit none
 
         class(pioExampleClass), intent(inout) :: this
-
+        integer :: io_comm
         integer :: ierr,i
+        integer :: procs_per_component(1), io_proc_list(1)
+        integer, allocatable :: comp_proc_list(:,:)
 
         !
         ! initialize MPI
@@ -156,29 +161,51 @@ contains
         call MPI_Comm_rank(MPI_COMM_WORLD, this%myRank, ierr)
         call MPI_Comm_size(MPI_COMM_WORLD, this%ntasks , ierr)
 
+        if(this%ntasks < 2) then
+           print *,"ERROR: not enough tasks specified for example code"
+           call mpi_abort(mpi_comm_world, -1 ,ierr)
+        endif
+
         !
         ! set up PIO for rest of example
         !
 
         this%stride        = 1
-        this%numAggregator = 0
-        this%optBase       = 1
+        this%optBase       = 0
         this%iotype        = PIO_iotype_netcdf
         this%fileName      = "examplePio_f90.nc"
         this%dimLen(1)     = LEN
 
-        this%niotasks = this%ntasks ! keep things simple - 1 iotask per MPI process
+        this%niotasks = 1 ! keep things simple - 1 iotask
 
-        !write(*,*) 'this%niotasks ',this%niotasks
+!        io_proc_list(1) = 0
+        io_proc_list(1) = this%ntasks-1
+        this%ntasks = this%ntasks - this%niotasks
 
-        call PIO_init(this%myRank,      & ! MPI rank
-            MPI_COMM_WORLD,             & ! MPI communicator
-            this%niotasks,              & ! Number of iotasks (ntasks/stride)
-            this%numAggregator,         & ! number of aggregators to use
-            this%stride,                & ! stride
-            PIO_rearr_subset,           & ! do not use any form of rearrangement
-            this%pioIoSystem,           & ! iosystem
-            base=this%optBase)            ! base (optional argument)
+        procs_per_component(1) = this%ntasks
+        allocate(comp_proc_list(this%ntasks,1))
+        do i=1,this%ntasks
+           comp_proc_list(i,1) = i - 1
+!           comp_proc_list(i,1) = i
+        enddo
+
+        allocate(this%pioIOSystem(1), this%comm(1))
+
+        call PIO_init(this%pioIOSystem,      & ! iosystem
+             MPI_COMM_WORLD,             & ! MPI communicator
+             procs_per_component,        & ! number of tasks per component model
+             comp_proc_list,             & ! list of procs per component
+             io_proc_list,               & ! list of io procs
+             PIO_REARR_BOX,              & ! rearranger to use (currently only BOX is supported)
+             this%comm,                  & ! comp_comm to be returned
+             io_comm)                      ! io_comm to be returned
+        if (io_comm /= MPI_COMM_NULL) then
+           this%iotask = .true.
+           return
+        endif
+        this%iotask = .false.
+        call MPI_Comm_rank(this%comm(1), this%myRank, ierr)
+        call MPI_Comm_size(this%comm(1), this%ntasks , ierr)
 
         !
         ! set up some data that we will write to a netcdf file
@@ -208,14 +235,9 @@ contains
         implicit none
 
         class(pioExampleClass), intent(inout) :: this
+        integer :: ierr
 
-        integer(PIO_OFFSET_KIND) :: start(1)
-        integer(PIO_OFFSET_KIND) :: count(1)
-
-        start(1) = this%ista
-        count(1) = this%arrIdxPerPe
-
-        call PIO_initdecomp(this%pioIoSystem, PIO_int, this%dimLen, this%compdof(this%ista:this%isto), &
+        call PIO_initdecomp(this%pioIoSystem(1), PIO_int, this%dimLen, this%compdof(this%ista:this%isto), &
             this%iodescNCells)
 
     end subroutine createDecomp
@@ -228,7 +250,8 @@ contains
 
         integer :: retVal
 
-        retVal = PIO_createfile(this%pioIoSystem, this%pioFileDesc, this%iotype, trim(this%fileName), PIO_clobber)
+        retVal = PIO_createfile(this%pioIoSystem(1), this%pioFileDesc, this%iotype, trim(this%fileName), PIO_clobber)
+
         call this%errorHandle("Could not create "//trim(this%fileName), retVal)
 
     end subroutine createFile
@@ -301,9 +324,8 @@ contains
         deallocate(this%dataBuffer)
         deallocate(this%readBuffer)
 
-        call PIO_freedecomp(this%pioIoSystem, this%iodescNCells)
-        call PIO_finalize(this%pioIoSystem, ierr)
-        call MPI_Finalize(ierr)
+        call PIO_freedecomp(this%pioIoSystem(1), this%iodescNCells)
+        call PIO_finalize(this%pioIoSystem(1), ierr)
 
     end subroutine cleanUp
 
@@ -318,12 +340,12 @@ contains
         if (retVal .ne. PIO_NOERR) then
             write(*,*) retVal,errMsg
             call PIO_closefile(this%pioFileDesc)
-            call mpi_abort(MPI_COMM_WORLD,retVal, lretval)
+            call mpi_abort(this%comm(1),retVal, lretval)
         end if
 
     end subroutine errorHandle
 
-end module pioExample
+end module pioAsyncExample
 
 !> @brief Main execution of example code.
 !! This is an example program for the ParallelIO library.
@@ -358,7 +380,8 @@ end module pioExample
 !!
 program main
 
-    use pioExample, only : pioExampleClass
+    use pioAsyncExample, only : pioExampleClass
+    use pio, only : pio_set_log_level
 #ifdef TIMING
     use perf_mod, only : t_initf, t_finalizef, t_prf
 #endif
@@ -366,20 +389,25 @@ program main
     implicit none
 
     type(pioExampleClass) :: pioExInst
+    integer :: ierr
 #ifdef TIMING
     call t_initf('timing.nl')
 #endif
     call pioExInst%init()
-    call pioExInst%createDecomp()
-    call pioExInst%createFile()
-    call pioExInst%defineVar()
-    call pioExInst%writeVar()
-    call pioExInst%readVar()
-    call pioExInst%closeFile()
-    call pioExInst%cleanUp()
+    if (.not. pioExInst%iotask) then
+       call pioExInst%createDecomp()
+       call pioExInst%createFile()
+       call pioExInst%defineVar()
+       call pioExInst%writeVar()
+       call pioExInst%readVar()
+       call pioExInst%closeFile()
+       call pioExInst%cleanUp()
+    endif
 #ifdef TIMING
     call t_prf()
     call t_finalizef()
 #endif
+    call MPI_Finalize(ierr)
+
 
 end program main

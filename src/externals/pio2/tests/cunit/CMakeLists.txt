@@ -1,6 +1,7 @@
 include (LibMPI)
 
 include_directories("${CMAKE_SOURCE_DIR}/tests/cunit")
+include_directories("${CMAKE_SOURCE_DIR}/src/clib")
 include_directories("${CMAKE_BINARY_DIR}")
 
 # Compiler-specific compiler options
@@ -114,6 +115,8 @@ if (NOT PIO_USE_MPISERIAL)
     target_link_libraries (test_async_1d pioc)
     add_executable (test_simple EXCLUDE_FROM_ALL test_simple.c test_common.c)
     target_link_libraries (test_simple pioc)
+    add_executable (test_async_perf EXCLUDE_FROM_ALL test_async_perf.c test_common.c)
+    target_link_libraries(test_async_perf pioc)
 endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
 target_link_libraries (test_spmd pioc)
@@ -146,6 +149,7 @@ add_dependencies (tests test_async_multi2)
 add_dependencies (tests test_async_manyproc)
 add_dependencies (tests test_async_1d)
 add_dependencies (tests test_simple)
+add_dependencies (tests test_async_perf)
 
 # Test Timeout in seconds.
 if (PIO_VALGRIND_CHECK)
@@ -319,5 +323,9 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_simple
     NUMPROCS ${EXACTLY_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  # add_mpi_test(test_async_perf
+  #   EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_perf
+  #   NUMPROCS ${EXACTLY_FOUR_TASKS}
+  #   TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 MESSAGE("CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}")

@@ -941,7 +941,7 @@ int test_default_subset_partition(MPI_Comm test_comm, int my_rank)
 
     ios->ioproc = 1;
     ios->io_rank = my_rank;
-    ios->comp_comm = test_comm;
+    ios->union_comm = test_comm;
 
     /* Run the function to test. */
     if ((ret = default_subset_partition(ios, iodesc)))
@@ -1058,44 +1058,44 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
         for (int r = 0; r < iodesc->nrecvs; r++)
             if (iodesc->rtype[r] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(&iodesc->rtype[r])))
-		    MPIBAIL(mpierr);
+                    MPIBAIL(mpierr);
 
 exit:
     /* Free resources allocated in library code. */
     if (iodesc->rtype)
-	free(iodesc->rtype);
+        free(iodesc->rtype);
     if (iodesc->sindex)
-	free(iodesc->sindex);
+        free(iodesc->sindex);
     if (iodesc->scount)
-	free(iodesc->scount);
+        free(iodesc->scount);
     if (iodesc->stype)
-	free(iodesc->stype);
+        free(iodesc->stype);
     if (iodesc->rcount)
-	free(iodesc->rcount);
+        free(iodesc->rcount);
     if (iodesc->rfrom)
-	free(iodesc->rfrom);
+        free(iodesc->rfrom);
     if (iodesc->rindex)
-	free(iodesc->rindex);
+        free(iodesc->rindex);
 
     /* Free resources from test. */
     if (ior1)
     {
-	free(ior1->start);
-	free(ior1->count);
-	free(ior1);
+        free(ior1->start);
+        free(ior1->count);
+        free(ior1);
     }
     if (ios)
     {
-	free(ios->ioranks);
-	free(ios->compranks);
-	free(ios);
+        free(ios->ioranks);
+        free(ios->compranks);
+        free(ios);
     }
     if (iodesc)
-	free(iodesc);
+        free(iodesc);
     if (sbuf)
-	free(sbuf);
+        free(sbuf);
     if (rbuf)
-	free(rbuf);
+        free(rbuf);
 
     return ret;
 }

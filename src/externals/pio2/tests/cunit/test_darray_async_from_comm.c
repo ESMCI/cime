@@ -1,8 +1,8 @@
 /*
- * This program tests darrays with async.
+ * This program tests darrays with async using comms.
  *
- * @author Ed Hartnett
- * @date 5/4/17
+ * @author Ed Hartnet, Jim Edwards
+ * @date 11/20/20
  */
 #include <config.h>
 #include <pio.h>
@@ -13,10 +13,10 @@
 #define TARGET_NTASKS 4
 
 /* The minimum number of tasks this test should run on. */
-#define MIN_NTASKS 1
+#define MIN_NTASKS 2
 
 /* The name of this test. */
-#define TEST_NAME "test_darray_async"
+#define TEST_NAME "test_darray_async_from_comms"
 
 /* For 1-D use. */
 #define NDIM1 1
@@ -246,13 +246,13 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
 
     /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
-        return ret;
+        PBAIL(ret);
 
     int fortran_order;
     int ioid2;
     if ((ret = PIOc_read_nc_decomp(iosysid, decomp_filename, &ioid2, comp_comm,
                                    PIO_INT, NULL, NULL, &fortran_order)))
-        return ret;
+        PBAIL(ret);
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid2)))
@@ -521,15 +521,40 @@ int main(int argc, char **argv)
 #define NUM_COMPUTATION_PROCS 3
 #define COMPONENT_COUNT 1
         int num_computation_procs = NUM_COMPUTATION_PROCS;
-        MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
-        MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
+        MPI_Comm io_comm;              /* Input io_comm */
+        MPI_Comm comp_comm[COMPONENT_COUNT]; /* Input comp_comms */
         int mpierr;
+        int color, key;
+        MPI_Comm new_comm;
+
+        if (my_rank == 0)
+        {
+            color = 0;
+            key = 0;
+        }
+        else
+        {
+            color = 1;
+            key = my_rank - 1;
+        }
+
+        if ((ret = MPI_Comm_split(test_comm, color, key, &new_comm)))
+            return ret;
+        if (color == 0)
+        {
+            io_comm = new_comm;
+            comp_comm[0] = MPI_COMM_NULL;
+        }
+        else
+        {
+            comp_comm[0] = new_comm;
+            io_comm = MPI_COMM_NULL;
+        }
 
         /* Run the test for each data type. */
         for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
-            if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                                       &num_computation_procs, NULL, &io_comm, comp_comm,
+            if ((ret = PIOc_init_async_from_comms(test_comm, COMPONENT_COUNT, comp_comm, io_comm,
                                        PIO_REARR_BOX, &iosysid)))
                 ERR(ERR_INIT);
 
@@ -545,17 +570,23 @@ int main(int argc, char **argv)
                 if ((ret = PIOc_free_iosystem (iosysid)))
                     return ret;
 
-                /* Free the computation conomponent communicator. */
-                if ((mpierr = MPI_Comm_free(comp_comm)))
-                    MPIERR(mpierr);
             }
-            else
-            {
-                /* Free the IO communicator. */
-                if ((mpierr = MPI_Comm_free(&io_comm)))
-                    MPIERR(mpierr);
-            }
+
         } /* next type */
+        if (my_rank)
+        {
+            /* Free the computation conomponent communicator. */
+            if ((mpierr = MPI_Comm_free(comp_comm)))
+                MPIERR(mpierr);
+        }
+        else
+        {
+            /* Free the IO communicator. */
+            if ((mpierr = MPI_Comm_free(&io_comm)))
+                MPIERR(mpierr);
+        }
+
+
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
