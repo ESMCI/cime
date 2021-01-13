@@ -217,9 +217,8 @@ def make_fake_teststatus(path, testname, status, phase):
 ###############################################################################
 def parse_test_status(line):
 ###############################################################################
-    regex = re.compile(r"Test '(\w+)' finished with status '(\w+)'")
-    m = regex.match(line)
-    return m.groups()
+    status, test, phase = line.split()
+    return test, status
 
 ###############################################################################
 def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, tester=None):
@@ -985,7 +984,7 @@ class M_TestWaitForTests(unittest.TestCase):
         output = run_cmd_assert_result(self, "%s/wait_for_tests -p ACME_test */TestStatus %s" % (TOOLS_DIR, extra_args),
                                        from_dir=testdir, expected_stat=expected_stat)
 
-        lines = [line for line in output.splitlines() if line.startswith("Test '")]
+        lines = [line for line in output.splitlines() if not line.startswith(" ")]
         self.assertEqual(len(lines), len(expected_results))
         for idx, line in enumerate(lines):
             testname, status = parse_test_status(line)
