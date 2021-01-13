@@ -1057,13 +1057,16 @@ class TestScheduler(object):
         if no_need_to_wait:
             wait = False
 
+        expect_test_complete = no_need_to_wait or wait
+
         logger.info("Waiting for tests to finish")
         rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*{}/TestStatus".format(self._test_id))),
                             no_wait=not wait,
                             check_throughput=check_throughput,
                             check_memory=check_memory,
                             ignore_namelists=ignore_namelists,
-                            ignore_memleak=ignore_memleak)
+                            ignore_memleak=ignore_memleak,
+                            expect_test_complete=expect_test_complete)
 
         if not no_need_to_wait and not wait:
             logger.info("Due to presence of batch system, create_test will exit before tests are complete.\n" \

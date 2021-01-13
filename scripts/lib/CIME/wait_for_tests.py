@@ -135,7 +135,7 @@ def create_cdash_test_xml(results, cdash_build_name, cdash_build_group, utc_time
         xmlet.SubElement(test_list_elem, "Test").text = test_name
 
     for test_name in sorted(results):
-        test_path, test_status = results[test_name]
+        test_path, test_status, _ = results[test_name]
         test_passed = test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]
         test_norm_path = test_path if os.path.isdir(test_path) else os.path.dirname(test_path)
 
@@ -217,7 +217,7 @@ def create_cdash_upload_xml(results, cdash_build_name, cdash_build_group, utc_ti
         need_to_upload = False
 
         for test_name, test_data in results.items():
-            test_path, test_status = test_data
+            test_path, test_status, _ = test_data
 
             if test_status != TEST_PASS_STATUS or force_log_upload:
                 test_case_dir = os.path.dirname(test_path)
@@ -370,11 +370,11 @@ def wait_for_test(test_path, results, wait, check_throughput, check_memory, igno
             if (os.path.exists(test_status_filepath)):
                 ts = TestStatus(test_dir=os.path.dirname(test_status_filepath))
                 test_name = ts.get_name()
-                test_status = ts.get_overall_test_status(wait_for_run=not no_run, # Important
-                                                         no_run=no_run,
-                                                         check_throughput=check_throughput,
-                                                         check_memory=check_memory, ignore_namelists=ignore_namelists,
-                                                         ignore_memleak=ignore_memleak)
+                test_status, test_phase = ts.get_overall_test_status(wait_for_run=not no_run, # Important
+                                                                     no_run=no_run,
+                                                                     check_throughput=check_throughput,
+                                                                     check_memory=check_memory, ignore_namelists=ignore_namelists,
+                                                                     ignore_memleak=ignore_memleak)
 
                 if prior_ts is not None and prior_ts != ts:
                     log_fd.write(ts.phase_statuses_dump())
@@ -386,7 +386,7 @@ def wait_for_test(test_path, results, wait, check_throughput, check_memory, igno
                     time.sleep(SLEEP_INTERVAL_SEC)
                     logging.debug("Waiting for test to finish")
                 else:
-                    results.put( (test_name, test_path, test_status) )
+                    results.put( (test_name, test_path, test_status, test_phase) )
                     break
 
             else:
@@ -395,7 +395,7 @@ def wait_for_test(test_path, results, wait, check_throughput, check_memory, igno
                     time.sleep(SLEEP_INTERVAL_SEC)
                 else:
                     test_name = os.path.abspath(test_status_filepath).split("/")[-2]
-                    results.put( (test_name, test_path, "File '{}' doesn't exist".format(test_status_filepath)) )
+                    results.put( (test_name, test_path, "File '{}' doesn't exist".format(test_status_filepath), CREATE_NEWCASE_PHASE) )
                     break
 
 ###############################################################################
@@ -414,16 +414,16 @@ def wait_for_tests_impl(test_paths, no_wait=False, check_throughput=False, check
     test_results = {}
     completed_test_paths = []
     while (not results.empty()):
-        test_name, test_path, test_status = results.get()
+        test_name, test_path, test_status, test_phase = results.get()
         if (test_name in test_results):
-            prior_path, prior_status = test_results[test_name]
+            prior_path, prior_status, _ = test_results[test_name]
             if (test_status == prior_status):
                 logging.warning("Test name '{}' was found in both '{}' and '{}'".format(test_name, test_path, prior_path))
             else:
                 raise CIMEError("Test name '{}' was found in both '{}' and '{}' with different results".format(test_name, test_path, prior_path))
 
         expect(test_name is not None, "Failed to get test name for test_path: {}".format(test_path))
-        test_results[test_name] = (test_path, test_status)
+        test_results[test_name] = (test_path, test_status, test_phase)
         completed_test_paths.append(test_path)
 
     expect(set(test_paths) == set(completed_test_paths),
@@ -443,7 +443,8 @@ def wait_for_tests(test_paths,
                    timeout=None,
                    force_log_upload=False,
                    no_run=False,
-                   update_success=False):
+                   update_success=False,
+                   expect_test_complete=True):
 ###############################################################################
     # Set up signal handling, we want to print results before the program
     # is terminated
@@ -454,10 +455,30 @@ def wait_for_tests(test_paths,
 
     all_pass = True
     for test_name, test_data in sorted(test_results.items()):
-        test_path, test_status = test_data
-        logging.info("Test '{}' finished with status '{}'".format(test_name, test_status))
-        logging.info("    Path: {}".format(test_path))
-        all_pass &= test_status == TEST_PASS_STATUS
+        test_path, test_status, phase = test_data
+        case_dir = os.path.dirname(test_path)
+
+        if test_status[0] == TEST_FAIL_STATUS:
+            # Report failed phases
+            logging.info( "{} {} (phase {})".format(test_status, test_name, phase))
+            all_pass = False
+        else:
+            # Be cautious about telling the user that the test passed since we might
+            # not know that the test passed yet.
+            if test_status == TEST_PEND_STATUS:
+                if expect_test_complete:
+                    logging.info( "{} {} (phase {} unexpectedly left in PEND)".format(TEST_FAIL_STATUS, test_name, phase))
+                    all_pass = False
+                else:
+                    logging.info( "{} {} (phase {} has not yet completed)".format(TEST_PEND_STATUS, test_name, phase))
+
+            elif test_status == NAMELIST_FAIL_STATUS:
+                logging.info( "{} {} (but otherwise OK) {}".format(NAMELIST_FAIL_STATUS, test_name, phase))
+                all_pass = False
+            else:
+                logging.info("{} {} {}".format(test_status, test_name, phase))
+
+        logging.info("    Case dir: {}".format(case_dir))
 
         if update_success:
             caseroot = os.path.dirname(test_data[0])

@@ -206,7 +206,7 @@ class SystemTestsCommon(object):
                     save_test_time(baseline_root, self._casebaseid, time_taken, get_current_commit(repo=srcroot))
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
-                overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
+                overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)[0]
                 if overall_status != TEST_PASS_STATUS:
                     srcroot = self._case.get_value("SRCROOT")
                     worked_before, last_pass, last_fail_transition = \

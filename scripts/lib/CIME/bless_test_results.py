@@ -97,7 +97,7 @@ def bless_test_results(baseline_name, baseline_root, test_root, compiler, test_i
                 continue
 
         if (bless_tests in [[], None] or CIME.utils.match_any(test_name, bless_tests)):
-            overall_result = ts.get_overall_test_status()
+            overall_result = ts.get_overall_test_status()[0]
 
             # See if we need to bless namelist
             if (not hist_only):
