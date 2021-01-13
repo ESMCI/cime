@@ -349,7 +349,7 @@ class TestStatus(object):
             if phase in [SUBMIT_PHASE, RUN_PHASE] and no_run:
                 break
 
-            if (status == TEST_PEND_STATUS):
+            if status == TEST_PEND_STATUS and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]:
                 rv = TEST_PEND_STATUS
                 phase_responsible_for_status = phase
                 if not no_run:
@@ -383,7 +383,7 @@ class TestStatus(object):
 
         # The test did not fail but the RUN phase was not found, so if the user requested
         # that we wait for the RUN phase, then the test must still be considered pending.
-        if rv != TEST_FAIL_STATUS and not run_phase_found and wait_for_run:
+        if rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS] and not run_phase_found and wait_for_run:
             phase_responsible_for_status = RUN_PHASE
             rv = TEST_PEND_STATUS
 
@@ -427,6 +427,8 @@ class TestStatus(object):
         ('PEND', 'COMPARE_2')
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD')
         ('PASS', 'MODEL_BUILD')
+        >>> _test_helper2('PEND ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN')
+        ('PEND', 'MODEL_BUILD')
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD', wait_for_run=True)
         ('PEND', 'RUN')
         >>> _test_helper2('FAIL ERS.foo.A MODEL_BUILD', wait_for_run=True)
