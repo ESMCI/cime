@@ -1057,7 +1057,7 @@ class TestScheduler(object):
         if no_need_to_wait:
             wait = False
 
-        expect_test_complete = no_need_to_wait or wait
+        expect_test_complete = not self._no_run and (self._no_batch or wait)
 
         logger.info("Waiting for tests to finish")
         rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*{}/TestStatus".format(self._test_id))),
