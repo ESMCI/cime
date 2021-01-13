@@ -44,7 +44,7 @@ module shr_reprosum_mod
                             shr_infnan_isnan, shr_infnan_isinf, &
                             shr_infnan_isposinf, shr_infnan_isneginf
    use perf_mod
-
+!$ use omp_lib, only : omp_get_num_threads
 !-----------------------------------------------------------------------
 !- module boilerplate --------------------------------------------------
 !-----------------------------------------------------------------------
@@ -538,7 +538,7 @@ module shr_reprosum_mod
 
 ! get number of OpenMP threads
 #ifdef _OPENMP
-         omp_nthreads = omp_get_max_threads()
+         omp_nthreads = omp_get_num_threads()
 #else
          omp_nthreads = 1
 #endif

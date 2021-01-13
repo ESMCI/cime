@@ -471,7 +471,12 @@ class _TimingParser:
             tmaxr = adays*86400.0/(tmax*365.0)
 
         self.write("\n")
-        self.write("  total pes active           : {} \n".format(totalpes*maxthrds*smt_factor ))
+
+        if self._driver == 'nuopc':
+            self.write("  total pes active           : {} \n".format(totalpes ))
+        else:
+            self.write("  total pes active           : {} \n".format(totalpes*maxthrds*smt_factor ))
+
         self.write("  mpi tasks per node               : {} \n".format(max_mpitasks_per_node))
         self.write("  pe count for cost estimate : {} \n".format(pecost))
         self.write("\n")

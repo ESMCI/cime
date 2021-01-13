@@ -586,14 +586,13 @@ This allows using a different mpirun command to launch unit tests
       </modules>
 
       <modules mpilib="mpt" compiler="gnu">
-        <command name="load">mpt/2.21</command>
+        <command name="load">mpt/2.22</command>
         <command name="load">netcdf-mpi/4.7.3</command>
         <command name="load">pnetcdf/1.12.1</command>
       </modules>
       <modules mpilib="mpt" compiler="intel">
-        <command name="load">mpt/2.21</command>
-        <!-- known failure in parallel netcdf with mpt, use serial -->
-        <command name="load">netcdf/4.7.3</command>
+        <command name="load">mpt/2.22</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.1</command>
       </modules>
       <modules mpilib="mpt" compiler="pgi">
@@ -623,7 +622,7 @@ This allows using a different mpirun command to launch unit tests
       </modules>
     </module_system>
     <environment_variables>
-      <env name="OMP_STACKSIZE">1024M</env>
+      <env name="OMP_STACKSIZE">500M</env>
       <env name="TMPDIR">/glade/scratch/$USER</env>
       <env name="MPI_TYPE_DEPTH">16</env>
       <env name="MPI_IB_CONGESTED">1</env>
@@ -635,6 +634,7 @@ This allows using a different mpirun command to launch unit tests
       <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
+<!--      <env name="ESMFMKFILE">/glade/u/home/theurich/BigWorkDir/Jim-CESM-Threading-January2021/ESMF/INSTALLDIR2/lib/esmf.mk</env> -->
     </environment_variables>
     <environment_variables unit_testing="true">
       <env name="MPI_USE_ARRAY">false</env>
@@ -645,7 +645,7 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
-      <resource name="RLIMIT_STACK" smp_present="TRUE" comp_interface="nuopc"> 2500000000</resource>
+      <resource name="RLIMIT_STACK" smp_present="TRUE" comp_interface="nuopc"> 200000000</resource>
     </resource_limits>
   </machine>
 
