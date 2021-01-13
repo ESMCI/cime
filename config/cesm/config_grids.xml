@@ -160,6 +160,14 @@
       <mask>nldas2</mask>
     </model_grid>
 
+    <model_grid alias="nldas2_rMERIT_mnldas2" compset="DATM.+CLM.+MIZUROUTE">
+      <grid name="atm">0.125nldas2</grid>
+      <grid name="lnd">0.125nldas2</grid>
+      <grid name="ocnice">0.125nldas2</grid>
+      <grid name="rof">MERIT_CONUSmz</grid>
+      <mask>nldas2</mask>
+    </model_grid>
+
     <model_grid alias="hcru_hcru" compset="DATM.+CLM">
       <grid name="atm">360x720cru</grid>
       <grid name="lnd">360x720cru</grid>
@@ -613,6 +621,14 @@
       <grid name="lnd">1.9x2.5</grid>
       <grid name="ocnice">gx1v7</grid>
       <grid name="rof">HDMAmz</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="f19_g17_rMERIT" compset="MIZUROUTE">
+      <grid name="atm">1.9x2.5</grid>
+      <grid name="lnd">1.9x2.5</grid>
+      <grid name="ocnice">gx1v7</grid>
+      <grid name="rof">MERITmz</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
@@ -1836,6 +1852,14 @@
       <desc>HDMAmz is a medium resolution global river routing grid for mizuRoute:</desc>
     </domain>
 
+    <domain name="MERITmz">
+      <nx>2996635</nx> <ny>1</ny>
+      <!-- The full mesh for MERIT-Hydro does not work with ESMF so we only have the simplified mesh -->
+      <!-- This is a simplified mesh that only includes the polygon centers, so requires a mapping file with it -->
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/polygon_centroid/MERITmz_global_ctrcrd_sqr_cdf5_ESMFmesh_c20210113.nc</mesh>
+      <desc>MERITmz (MERIT-Hydro) is a higher resolution global river routing grid for mizuRoute:</desc>
+    </domain>
+
     <domain name="HDMAmz_amazon">
       <nx>4347</nx> <ny>1</ny>
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/HDMAmz_5x5_amazon_ctrcrd_cdf5_ESMFmesh_c20200731.nc</mesh>
@@ -1850,6 +1874,14 @@
       <!-- This is a simplified mesh that only includes the polygon centers, so requires a mapping file with it -->
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/polygon_centroid/HDMAmz_0.125nldas2_ctrcrd_sqr_cdf5_ESMFmesh_c20201005.nc</mesh>
       <desc>HDMAmz_CONUS is a medium resolution river routing grid just over the Continental US (CONUS) area for mizuRoute:</desc>
+    </domain>
+
+    <domain name="MERIT_CONUSmz">
+      <nx>227247</nx> <ny>1</ny>
+      <!-- The full mesh for MERIT-Hydro does not work with ESMF so we only have the simplified mesh -->
+      <!-- This is a simplified mesh that only includes the polygon centers, so requires a mapping file with it -->
+      <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/polygon_centroid/MERITmz_0.125nldas2_ctrcrd_sqr_cdf5_ESMFmesh_c20210113.nc</mesh>
+      <desc>MERITmz_CONUS is a higher resolution river routing grid just over the Continental US (CONUS) area for mizuRoute:</desc>
     </domain>
 
     <domain name="USGS_GFmz">
