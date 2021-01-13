@@ -5,7 +5,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from paramgen_utils import is_logical_expr, is_formula, has_expandable_var
+from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
 from paramgen_utils import eval_formula
 
 class ParamGen(ABC):
@@ -91,7 +91,6 @@ class ParamGen(ABC):
             _data = yaml.safe_load(yaml_file)
         return cls(_data, match)
 
-
     @staticmethod
     def _expand_vars(expr, expand_func):
 
@@ -118,7 +117,6 @@ class ParamGen(ABC):
 
         return expr
 
-
     @staticmethod
     def _is_guarded_dict(data_dict):
         """ returns true if all the keys of a dictionary are logical expressions, i.e., guards."""
@@ -140,9 +138,10 @@ class ParamGen(ABC):
             """ returns true if a guard evaluates to true."""
             assert isinstance(guard, str), "Expression passed to _eval_guard must be string."
 
-            if has_expandable_var(guard):
-                raise RuntimeError("The guard "+guard+" has an expandable case variable! "+\
-                    "All variables must already be expanded before guards can be evaluated.")
+            if has_unexpanded_var(guard):
+                raise RuntimeError("The guard "+guard+" has an expandable variable ($var) "+\
+                    "that's not expanded yet. All variables must already be expanded before "+\
+                    "guards can be evaluated.")
 
             guard_evaluated = eval_formula(guard)
             assert type(guard_evaluated)==type(True), "Guard is not boolean: "+guard
@@ -178,7 +177,7 @@ class ParamGen(ABC):
             new_data_dict  = {}
             for key in data_dict:
                 new_key = key
-                if has_expandable_var(key):
+                if has_unexpanded_var(key):
                     new_key = ParamGen._expand_vars(key, expand_func)
                 new_data_dict[new_key] = data_dict[key]
             data_dict = new_data_dict
