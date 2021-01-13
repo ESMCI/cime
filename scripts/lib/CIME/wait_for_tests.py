@@ -458,7 +458,7 @@ def wait_for_tests(test_paths,
         test_path, test_status, phase = test_data
         case_dir = os.path.dirname(test_path)
 
-        if test_status[0] == TEST_FAIL_STATUS:
+        if test_status not in [TEST_PASS_STATUS, TEST_PEND_STATUS, NAMELIST_FAIL_STATUS]:
             # Report failed phases
             logging.info( "{} {} (phase {})".format(test_status, test_name, phase))
             all_pass = False
@@ -467,7 +467,7 @@ def wait_for_tests(test_paths,
             # not know that the test passed yet.
             if test_status == TEST_PEND_STATUS:
                 if expect_test_complete:
-                    logging.info( "{} {} (phase {} unexpectedly left in PEND)".format(TEST_FAIL_STATUS, test_name, phase))
+                    logging.info( "{} {} (phase {} unexpectedly left in PEND)".format(TEST_PEND_STATUS, test_name, phase))
                     all_pass = False
                 else:
                     logging.info( "{} {} (phase {} has not yet completed)".format(TEST_PEND_STATUS, test_name, phase))
@@ -476,13 +476,13 @@ def wait_for_tests(test_paths,
                 logging.info( "{} {} (but otherwise OK) {}".format(NAMELIST_FAIL_STATUS, test_name, phase))
                 all_pass = False
             else:
+                expect(test_status == TEST_PASS_STATUS, "Expected pass if we made it here, instead: {}".format(test_status))
                 logging.info("{} {} {}".format(test_status, test_name, phase))
 
         logging.info("    Case dir: {}".format(case_dir))
 
         if update_success:
-            caseroot = os.path.dirname(test_data[0])
-            with Case(caseroot, read_only=True) as case:
+            with Case(case_dir, read_only=True) as case:
                 srcroot = case.get_value("SRCROOT")
                 baseline_root = case.get_value("BASELINE_ROOT")
                 save_test_success(baseline_root, srcroot, test_name, test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS])

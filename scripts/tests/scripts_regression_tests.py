@@ -217,7 +217,7 @@ def make_fake_teststatus(path, testname, status, phase):
 ###############################################################################
 def parse_test_status(line):
 ###############################################################################
-    status, test, phase = line.split()
+    status, test = line.split()[0:2]
     return test, status
 
 ###############################################################################
@@ -980,11 +980,15 @@ class M_TestWaitForTests(unittest.TestCase):
         if CIME.utils.get_model() == "e3sm" and build_name is not None:
             extra_args += " -b %s" % build_name
 
-        expected_stat = 0 if expected_results == ["PASS"]*len(expected_results) else CIME.utils.TESTS_FAILED_ERR_CODE
+        expected_stat = 0
+        for expected_result in expected_results:
+            if not (expected_result == "PASS" or (expected_result == "PEND" and "-n" in extra_args)):
+                expected_stat = CIME.utils.TESTS_FAILED_ERR_CODE
+
         output = run_cmd_assert_result(self, "%s/wait_for_tests -p ACME_test */TestStatus %s" % (TOOLS_DIR, extra_args),
                                        from_dir=testdir, expected_stat=expected_stat)
 
-        lines = [line for line in output.splitlines() if not line.startswith(" ")]
+        lines = [line for line in output.splitlines() if (line.startswith("PASS") or line.startswith("FAIL") or line.startswith("PEND"))]
         self.assertEqual(len(lines), len(expected_results))
         for idx, line in enumerate(lines):
             testname, status = parse_test_status(line)
