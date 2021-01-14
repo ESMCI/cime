@@ -1066,6 +1066,7 @@ class TestScheduler(object):
                             check_memory=check_memory,
                             ignore_namelists=ignore_namelists,
                             ignore_memleak=ignore_memleak,
+                            no_run=self._no_run,
                             expect_test_complete=expect_test_complete)
 
         if not no_need_to_wait and not wait:

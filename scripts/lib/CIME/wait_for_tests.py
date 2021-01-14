@@ -43,6 +43,31 @@ def get_test_time(test_path):
         return int(time_data.split("=")[1])
 
 ###############################################################################
+def get_test_phase(test_path, phase):
+###############################################################################
+    ts = TestStatus(test_dir=test_path)
+    return ts.get_status(phase)
+
+###############################################################################
+def get_nml_diff(test_path):
+###############################################################################
+    test_log = os.path.join(test_path, "TestStatus.log")
+
+    diffs = ""
+    with open(test_log, "r") as fd:
+        started = False
+        for line in fd.readlines():
+            if "NLCOMP" in line:
+                started = True
+            elif started:
+                if "------------" in line:
+                    break
+                else:
+                    diffs += line
+
+    return diffs
+
+###############################################################################
 def get_test_output(test_path):
 ###############################################################################
     output_file = os.path.join(test_path, "TestStatus.log")
@@ -85,8 +110,15 @@ def create_cdash_config_xml(results, cdash_build_name, cdash_build_group, utc_ti
 
     config_results = []
     for test_name in sorted(results):
-        test_status = results[test_name][1]
-        config_results.append("{} {} Config {}".format("" if test_status != NAMELIST_FAIL_STATUS else "CMake Warning:\n", test_name, "PASS" if test_status != NAMELIST_FAIL_STATUS else "NML DIFF"))
+        test_path, test_status, _ = results[test_name]
+        test_norm_path = test_path if os.path.isdir(test_path) else os.path.dirname(test_path)
+        nml_phase_result = get_test_phase(test_norm_path, NAMELIST_PHASE)
+        cdash_warning = "{} Config PASS".format(test_name)
+        if nml_phase_result == TEST_FAIL_STATUS:
+            nml_diff = get_nml_diff(test_norm_path)
+            cdash_warning = "CMake Warning:\n\n{} NML DIFF:\n{}\n".format(test_name, nml_diff)
+
+        config_results.append(cdash_warning)
 
     xmlet.SubElement(config_elem, "Log").text = "\n".join(config_results)
 
@@ -110,9 +142,9 @@ def create_cdash_build_xml(results, cdash_build_name, cdash_build_group, utc_tim
     xmlet.SubElement(build_elem, "Log").text = "\n".join(build_results)
 
     for idx, test_name in enumerate(sorted(results)):
-        test_path = results[test_name][0]
+        test_path, test_status, _ = results[test_name]
         test_norm_path = test_path if os.path.isdir(test_path) else os.path.dirname(test_path)
-        if get_test_time(test_norm_path) == 0:
+        if test_status == TEST_FAIL_STATUS and get_test_time(test_norm_path) == 0:
             error_elem = xmlet.SubElement(build_elem, "Error")
             xmlet.SubElement(error_elem, "Text").text = test_name
             xmlet.SubElement(error_elem, "BuildLogLine").text = str(idx)

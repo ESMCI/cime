@@ -339,10 +339,11 @@ class TestStatus(object):
             else:
                 continue
 
-            if phase in CORE_PHASES and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]:
+            status = data[0]
+
+            if phase in CORE_PHASES and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS] and status != TEST_PEND_STATUS:
                 phase_responsible_for_status = phase
 
-            status = data[0]
             if phase == RUN_PHASE:
                 run_phase_found = True
 
@@ -350,9 +351,9 @@ class TestStatus(object):
                 break
 
             if status == TEST_PEND_STATUS and rv in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]:
-                rv = TEST_PEND_STATUS
-                phase_responsible_for_status = phase
                 if not no_run:
+                    rv = TEST_PEND_STATUS
+                    phase_responsible_for_status = phase
                     break
 
             elif (status == TEST_FAIL_STATUS):
@@ -371,7 +372,7 @@ class TestStatus(object):
                         phase_responsible_for_status = phase
                         rv = TEST_DIFF_STATUS
                     else:
-                        pass # a DIFF doesn't not trump a FAIL
+                        pass # a DIFF does not trump a FAIL
 
                 elif phase in CORE_PHASES:
                     phase_responsible_for_status = phase
@@ -442,7 +443,7 @@ class TestStatus(object):
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD\nFAIL ERS.foo.A RUN\nPEND ERS.foo.A COMPARE')
         ('FAIL', 'RUN')
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN', no_run=True)
-        ('PASS', 'RUN')
+        ('PASS', 'MODEL_BUILD')
         >>> s = '''PASS ERS.foo.A CREATE_NEWCASE
         ... PASS ERS.foo.A XML
         ... PASS ERS.foo.A SETUP
@@ -459,6 +460,16 @@ class TestStatus(object):
         ... '''
         >>> _test_helper2(s, no_perm=True)
         ('PEND', 'COMPARE_base_single_thread')
+        >>> s = '''PASS ERS.foo.A CREATE_NEWCASE
+        ... PASS ERS.foo.A XML
+        ... PASS ERS.foo.A SETUP
+        ... PEND ERS.foo.A SHAREDLIB_BUILD
+        ... FAIL ERS.foo.A NLCOMP
+        ... '''
+        >>> _test_helper2(s, no_run=True)
+        ('NLFAIL', 'SETUP')
+        >>> _test_helper2(s, no_run=False)
+        ('PEND', 'SHAREDLIB_BUILD')
         """
         # Core phases take priority
         core_rv, phase = self._get_overall_status_based_on_phases(CORE_PHASES,
