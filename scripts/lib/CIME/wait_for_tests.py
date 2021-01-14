@@ -110,7 +110,7 @@ def create_cdash_config_xml(results, cdash_build_name, cdash_build_group, utc_ti
 
     config_results = []
     for test_name in sorted(results):
-        test_path, test_status, _ = results[test_name]
+        test_path = results[test_name][0]
         test_norm_path = test_path if os.path.isdir(test_path) else os.path.dirname(test_path)
         nml_phase_result = get_test_phase(test_norm_path, NAMELIST_PHASE)
         cdash_warning = "{} Config PASS".format(test_name)
