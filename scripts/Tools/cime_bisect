@@ -4,6 +4,9 @@
 A script to help track down the commit that caused tests to fail. This script
 can do bisections for both cime and the model that houses it, just be sure
 you run this script from the root of the repo you want to bisect.
+
+NOTE: this tool will only work for models that use git and, for bisecting CIME,
+bring in CIME via submodule or clone.
 """
 
 from standard_script_setup import *
