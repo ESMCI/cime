@@ -217,9 +217,8 @@ def make_fake_teststatus(path, testname, status, phase):
 ###############################################################################
 def parse_test_status(line):
 ###############################################################################
-    regex = re.compile(r"Test '(\w+)' finished with status '(\w+)'")
-    m = regex.match(line)
-    return m.groups()
+    status, test = line.split()[0:2]
+    return test, status
 
 ###############################################################################
 def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, tester=None):
@@ -981,11 +980,15 @@ class M_TestWaitForTests(unittest.TestCase):
         if CIME.utils.get_model() == "e3sm" and build_name is not None:
             extra_args += " -b %s" % build_name
 
-        expected_stat = 0 if expected_results == ["PASS"]*len(expected_results) else CIME.utils.TESTS_FAILED_ERR_CODE
+        expected_stat = 0
+        for expected_result in expected_results:
+            if not (expected_result == "PASS" or (expected_result == "PEND" and "-n" in extra_args)):
+                expected_stat = CIME.utils.TESTS_FAILED_ERR_CODE
+
         output = run_cmd_assert_result(self, "%s/wait_for_tests -p ACME_test */TestStatus %s" % (TOOLS_DIR, extra_args),
                                        from_dir=testdir, expected_stat=expected_stat)
 
-        lines = [line for line in output.splitlines() if line.startswith("Test '")]
+        lines = [line for line in output.splitlines() if (line.startswith("PASS") or line.startswith("FAIL") or line.startswith("PEND"))]
         self.assertEqual(len(lines), len(expected_results))
         for idx, line in enumerate(lines):
             testname, status = parse_test_status(line)
@@ -1234,7 +1237,7 @@ class TestCreateTestCommon(unittest.TestCase):
                     os.remove(file_to_clean)
 
     ###########################################################################
-    def _create_test(self, extra_args, test_id=None, pre_run_errors=False, run_errors=False, env_changes=""):
+    def _create_test(self, extra_args, test_id=None, run_errors=False, env_changes=""):
     ###########################################################################
         """
         Convenience wrapper around create_test. Returns list of full paths to created cases. If multiple cases,
@@ -1257,11 +1260,10 @@ class TestCreateTestCommon(unittest.TestCase):
         extra_args.append("--test-root={0} --output-root={0}".format(self._testroot))
 
         full_run = (set(extra_args) & set(["-n", "--namelist-only", "--no-setup", "--no-build", "--no-run"])) == set()
+        if full_run and not NO_BATCH:
+            extra_args.append("--wait")
 
-        if self._hasbatch:
-            expected_stat = 0 if not pre_run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
-        else:
-            expected_stat = 0 if not pre_run_errors and not run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
+        expected_stat = 0 if not run_errors else CIME.utils.TESTS_FAILED_ERR_CODE
 
         output = run_cmd_assert_result(self, "{} {}/create_test {}".format(env_changes, SCRIPT_DIR, " ".join(extra_args)),
                                        expected_stat=expected_stat)
@@ -1273,9 +1275,6 @@ class TestCreateTestCommon(unittest.TestCase):
                 cases.append(casedir)
 
         self.assertTrue(len(cases) > 0, "create_test made no cases")
-
-        if full_run:
-            self._wait_for_tests(test_id, expect_works=(not pre_run_errors and not run_errors))
 
         return cases[0] if len(cases) == 1 else cases
 
@@ -1812,11 +1811,11 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
             self.skipTest("Skipping fortran test")
         test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
         if CIME.utils.get_model() == "e3sm":
-            genargs = ["-n", "-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
-            compargs = ["-n", "-c", "-b", self._baseline_name, "cime_test_only_pass"]
+            genargs = ["-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
+            compargs = ["-c", "-b", self._baseline_name, "cime_test_only_pass"]
         else:
-            genargs = ["-n", "-g", self._baseline_name, "-o",  "cime_test_only_pass"]
-            compargs = ["-n", "-c", self._baseline_name, "cime_test_only_pass"]
+            genargs = ["-g", self._baseline_name, "-o",  "cime_test_only_pass"]
+            compargs = ["-c", self._baseline_name, "cime_test_only_pass"]
 
         self._create_test(genargs)
 
@@ -1860,8 +1859,12 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
 
         # Basic namelist compare should now fail
         test_id = "%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
-        self._create_test(compargs, test_id=test_id, pre_run_errors=True)
+        self._create_test(compargs, test_id=test_id, run_errors=True)
         casedir = get_casedir(self, test_to_change, cases)
+
+        # Unless namelists are explicitly ignored
+        test_id2 = "%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
+        self._create_test(compargs + ["--ignore-namelists"], test_id=test_id2)
 
         run_cmd_assert_result(self, "./case.cmpgen_namelists", from_dir=casedir, expected_stat=100)
 
