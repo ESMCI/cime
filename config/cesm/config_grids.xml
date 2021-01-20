@@ -1734,6 +1734,7 @@
     </domain>
     <domain name="mpasa120">
       <nx>40962</nx> <ny>1</ny>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/mpasa120z32_ESMFmesh_cdf5_c20210120.nc</mesh>
       <desc>MPAS-A 120-km quasi-uniform mesh:</desc>
     </domain>
     <domain name="mpasa60">
