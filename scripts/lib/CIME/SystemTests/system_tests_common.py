@@ -596,13 +596,9 @@ class FakeTest(SystemTestsCommon):
         if not sharedlib_only:
             exeroot = self._case.get_value("EXEROOT")
             cime_model = self._case.get_value("MODEL")
-            modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
-            real_modelexe = modelexe + ".real"
-
-            if self._requires_exe and os.path.exists(modelexe):
-                logger.info("moving {} to {}".format(modelexe, real_modelexe))
-                os.rename(modelexe, real_modelexe)
-                expect(os.path.exists(real_modelexe),"Could not find expected file {}".format(real_modelexe))
+            modelexe = os.path.join(exeroot, "fake.exe")
+            real_modelexe = self._case.get_value("run_exe")
+            self._case.set_value("run_exe",modelexe)
 
             with open(modelexe, 'w') as f:
                 f.write("#!/bin/bash\n")
@@ -747,7 +743,7 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
         exeroot = self._case.get_value("EXEROOT")
         caseroot = self._case.get_value("CASEROOT")
         cime_model = self._case.get_value("MODEL")
-        modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
+        modelexe = self._case.get_value("run_exe")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
         script = \
@@ -755,11 +751,11 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
 cd {caseroot}
 ./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
-{modelexe}.real "$@"
+fake.exe "$@"
 
 # Need to remove self in order to avoid infinite loop
-mv {modelexe} {modelexe}.old
-mv {modelexe}.real {modelexe}
+cd {caseroot}
+./xmlchange run_exe={modelexe}
 sleep 5
 """.format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)

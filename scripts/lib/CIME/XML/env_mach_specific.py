@@ -35,8 +35,6 @@ class EnvMachSpecific(EnvBase):
         """Add entries to the file using information from a Machines object."""
         items = ("module_system", "environment_variables", "resource_limits", "mpirun")
         default_run_suffix = machobj.get_child("default_run_suffix", root=machobj.root)
-        default_run_exe_node = machobj.get_child("default_run_exe", root=default_run_suffix)
-        default_run_misc_suffix_node = machobj.get_child("default_run_misc_suffix", root=default_run_suffix)
 
         group_node = self.make_child("group", {"id":"compliant_values"})
         settings = {"run_exe":None,"run_misc_suffix":None}
