@@ -33,12 +33,13 @@ class EnvMachSpecific(EnvBase):
 
     def populate(self, machobj):
         """Add entries to the file using information from a Machines object."""
-        items = ("module_system", "environment_variables", "resource_limits", "mpirun", "run_exe","run_misc_suffix")
+        items = ("module_system", "environment_variables", "resource_limits", "mpirun")
         default_run_suffix = machobj.get_child("default_run_suffix", root=machobj.root)
         default_run_exe_node = machobj.get_child("default_run_exe", root=default_run_suffix)
         default_run_misc_suffix_node = machobj.get_child("default_run_misc_suffix", root=default_run_suffix)
 
         group_node = self.make_child("group", {"id":"compliant_values"})
+        settings = {"run_exe":None,"run_misc_suffix":None}
 
         for item in items:
             nodes = machobj.get_first_child_nodes(item)
@@ -46,20 +47,28 @@ class EnvMachSpecific(EnvBase):
                 if len(nodes) == 0:
                     example_text = """This section is for the user to specify any additional machine-specific env var, or to overwite existing ones.\n  <environment_variables>\n    <env name="NAME">ARGUMENT</env>\n  </environment_variables>\n  """
                     self.make_child_comment(text = example_text)
-            if item == "run_exe" or item == "run_misc_suffix":
-                if len(nodes) == 0:
-                    value = self.text(default_run_exe_node) if item == "run_exe" else self.text(default_run_misc_suffix_node)
-                else:
-                    value = self.text(nodes[0])
-
-                entity_node = self.make_child("entry", {"id":item, "value":value}, root=group_node)
-
-                self.make_child("type", root=entity_node, text="char")
-                self.make_child("desc", root=entity_node, text=("executable name" if item == "run_exe" else "redirect for job output"))
-
+            
+            if item == "mpirun":
+                mpirunnode = machobj.copy(nodes[0])
+                for subnode in machobj.get_children(root=mpirunnode):
+                    subname = machobj.name(subnode)
+                    if subname == "run_exe" or subname == "run_misc_suffix":
+                        settings[subname] = self.text(subnode)
+                        self.remove_child(subnode, root=mpirunnode)
+                self.add_child(mpirunnode)
             else:
                 for node in nodes:
                     self.add_child(node)
+
+        for item in ("run_exe","run_misc_suffix"):
+            if settings[item]:
+                value = settings[item]
+            else:
+                value = self.text(machobj.get_child("default_"+item, root=default_run_suffix))
+                
+            entity_node = self.make_child("entry", {"id":item, "value":value}, root=group_node)
+            self.make_child("type", root=entity_node, text="char")
+            self.make_child("desc", root=entity_node, text=("executable name" if item == "run_exe" else "redirect for job output"))
 
     def _get_modules_for_case(self, case, job=None):
         module_nodes = self.get_children("modules", root=self.get_child("module_system"))

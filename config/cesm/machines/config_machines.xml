@@ -1374,6 +1374,92 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="frontera">
+    <DESC>Intel Xeon Cascade Lake,56 cores, batch system is SLURM</DESC>
+    <NODENAME_REGEX>.*frontera</NODENAME_REGEX>
+    <OS>LINUX</OS>
+    <COMPILERS>intel</COMPILERS>
+    <MPILIBS>impi,mvapich</MPILIBS>
+    <PROJECT>ATM20005</PROJECT>
+    <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/work/02503/edwardsj/CESM/inputdata/</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/work/02503/edwardsj/CESM/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$ENV{SCRATCH}/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>/work/02503/edwardsj/CESM/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>/work/02503/edwardsj/CESM/tools/cprnc</CCSM_CPRNC>
+    <GMAKE_J>4</GMAKE_J>
+    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+    <SUPPORTED_BY>cseg</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>112</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>56</MAX_MPITASKS_PER_NODE>
+    <mpirun mpilib="impi">
+      <executable>sbcast ${EXEROOT}/cesm.exe /tmp/cesm.exe; ibrun</executable>
+      <arguments>
+	<arg name="ntasks"> -n {{ total_tasks }} </arg>
+      </arguments>
+      <run_exe>/tmp/cesm.exe</run_exe>
+    </mpirun>
+    <mpirun mpilib="mvapich">
+      <executable>ibrun</executable>
+      <arguments>
+	<arg name="ntasks"> -n {{ total_tasks }} </arg>
+      </arguments>
+    </mpirun>
+    <module_system type="module" allow_error="true">
+      <init_path lang="perl">/opt/apps/lmod/lmod/init/perl</init_path>
+      <init_path lang="python">/opt/apps/lmod/lmod/init/env_modules_python.py</init_path>
+      <init_path lang="sh">/opt/apps/lmod/lmod/init/sh</init_path>
+      <init_path lang="csh">/opt/apps/lmod/lmod/init/csh</init_path>
+      <cmd_path lang="perl">/opt/apps/lmod/lmod/libexec/lmod perl</cmd_path>
+      <cmd_path lang="python">/opt/apps/lmod/lmod/libexec/lmod python</cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules>
+        <command name="purge"></command>
+        <command name="load">TACC</command>
+        <command name="load">intel/19.1.1</command>
+        <command name="load">cmake/3.16.1</command>
+      </modules>
+      <modules mpilib="impi">
+        <command name="load">impi/19.0.9</command>
+        <command name="load">pnetcdf/1.11.2</command>
+        <command name="load">parallel-netcdf/4.6.2</command>
+      </modules>
+      <modules mpilib="mvapich">
+	<command name="rm">impi</command>
+	<command name="load">mvapich2-x/2.3</command>
+        <command name="load">pnetcdf/1.11.2</command>
+        <command name="load">parallel-netcdf/4.6.2</command>
+      </modules>
+      <modules mpilib="mpi-serial">
+        <command name="load">netcdf/4.6.2</command>
+      </modules>
+    </module_system>
+    <environment_variables>
+      <env name="OMP_STACKSIZE">256M</env>
+      <env name="UCX_DC_MLX5_RETRY_COUNT">20</env>
+    </environment_variables>
+    <environment_variables mpilib="impi">
+      <env name="MY_MPIRUN_OPTIONS">-prepend-rank </env>
+      <env name="I_MPI_ADJUST_ALLREDUCE">4</env>
+      <env name="I_MPI_ADJUST_GATHER">3</env>
+      <env name="I_MPI_ADJUST_GATHERV">3</env>
+      <env name="I_MPI_ADJUST_SCATTER">3</env>
+      <env name="I_MPI_ADJUST_SCATTERV">2</env>
+      <env name="I_MPI_EXTRA_FILESYSTEM">enable</env>
+     </environment_variables>
+  <environment_variables mpilib="mvapich">
+    <env name="MV2_HOMOGENEOUS_CLUSTER"/>
+    <env name="MV2_HYBRID_BINDING_POLICY">spread</env>
+    <env name="MV2_CPU_BINDING_POLICY">hybrid</env>
+    <env name="MV2_USE_DC">0</env>
+    <env name="MV2_HYBRID_ENABLE_THRESHOLD">1</env>
+    <env name="MV2_UD_MAX_SEND_WQE">4096</env>
+    <env name="MV2_UD_MAX_RECV_WQE">4096</env>
+    <env name="TACC_MPI_GETMODE">mvapich2_ssh</env>
+  </environment_variables>
+  </machine>
+
   <machine MACH="gaea">
     <DESC>NOAA XE6, os is CNL, 24 pes/node, batch system is PBS</DESC>
     <OS>CNL</OS>
