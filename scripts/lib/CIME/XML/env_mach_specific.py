@@ -31,8 +31,10 @@ class EnvMachSpecific(EnvBase):
         self._unit_testing = unit_testing
         self._standalone_configure = standalone_configure
 
-    def populate(self, machobj):
-        """Add entries to the file using information from a Machines object."""
+    def populate(self, machobj, attributes=None):
+        """Add entries to the file using information from a Machines object.
+           mpilib must match attributes if set
+        """
         items = ("module_system", "environment_variables", "resource_limits", "mpirun")
         default_run_suffix = machobj.get_child("default_run_suffix", root=machobj.root)
 
@@ -48,10 +50,19 @@ class EnvMachSpecific(EnvBase):
             
             if item == "mpirun":
                 mpirunnode = machobj.copy(nodes[0])
+                match = True
+                if attributes:
+                    for attrib in attributes:
+                        val = self.get(mpirunnode, attrib)
+                        if val and attributes[attrib] != val:
+                            match = False
+                            print( "Found attrib = {} val = {}".format(attrib, val))
+
                 for subnode in machobj.get_children(root=mpirunnode):
                     subname = machobj.name(subnode)
                     if subname == "run_exe" or subname == "run_misc_suffix":
-                        settings[subname] = self.text(subnode)
+                        if match:
+                            settings[subname] = self.text(subnode)
                         self.remove_child(subnode, root=mpirunnode)
                 self.add_child(mpirunnode)
             else:
@@ -64,7 +75,7 @@ class EnvMachSpecific(EnvBase):
             else:
                 value = self.text(machobj.get_child("default_"+item, root=default_run_suffix))
                 
-            entity_node = self.make_child("entry", {"id":item, "value":value}, root=group_node)
+            entity_node = self.make_child("entry", {"id":item,"value":value}, root=group_node)
             self.make_child("type", root=entity_node, text="char")
             self.make_child("desc", root=entity_node, text=("executable name" if item == "run_exe" else "redirect for job output"))
 
