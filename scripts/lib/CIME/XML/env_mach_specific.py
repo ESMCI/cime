@@ -51,12 +51,13 @@ class EnvMachSpecific(EnvBase):
             if item == "mpirun":
                 mpirunnode = machobj.copy(nodes[0])
                 match = True
+                # We pull the run_exe and run_misc_suffix from the mpirun node if attributes match and use it 
+                # otherwise we use the default.  
                 if attributes:
                     for attrib in attributes:
                         val = self.get(mpirunnode, attrib)
                         if val and attributes[attrib] != val:
                             match = False
-                            print( "Found attrib = {} val = {}".format(attrib, val))
 
                 for subnode in machobj.get_children(root=mpirunnode):
                     subname = machobj.name(subnode)

@@ -1503,6 +1503,8 @@ directory, NOT in this subdirectory."""
         Returns True if current settings require a threaded build/run.
         """
         force_threaded = self.get_value("FORCE_BUILD_SMP")
+        if not self.thread_count:
+            return False
         smp_present = force_threaded or self.thread_count > 1
         return smp_present
 
