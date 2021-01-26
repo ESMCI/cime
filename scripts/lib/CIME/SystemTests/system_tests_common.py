@@ -595,9 +595,7 @@ class FakeTest(SystemTestsCommon):
 
         if not sharedlib_only:
             exeroot = self._case.get_value("EXEROOT")
-            cime_model = self._case.get_value("MODEL")
             modelexe = os.path.join(exeroot, "fake.exe")
-            real_modelexe = self._case.get_value("run_exe")
             self._case.set_value("run_exe",modelexe)
 
             with open(modelexe, 'w') as f:
@@ -740,9 +738,8 @@ class TESTBUILDFAILEXC(FakeTest):
 class TESTRUNUSERXMLCHANGE(FakeTest):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
-        exeroot = self._case.get_value("EXEROOT")
         caseroot = self._case.get_value("CASEROOT")
-        cime_model = self._case.get_value("MODEL")
+        exeroot = self._case.get_value("EXEROOT")
         modelexe = self._case.get_value("run_exe")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
@@ -751,13 +748,13 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
 cd {caseroot}
 ./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
-fake.exe "$@"
+{exeroot}fake.exe "$@"
 
 # Need to remove self in order to avoid infinite loop
 cd {caseroot}
 ./xmlchange run_exe={modelexe}
 sleep 5
-""".format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
+""".format(exeroot=exeroot, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)

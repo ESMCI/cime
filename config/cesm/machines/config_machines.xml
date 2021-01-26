@@ -1386,7 +1386,7 @@ This allows using a different mpirun command to launch unit tests
     <DIN_LOC_ROOT_CLMFORC>/work/02503/edwardsj/CESM/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$ENV{SCRATCH}/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>/work/02503/edwardsj/CESM/cesm_baselines</BASELINE_ROOT>
-    <CCSM_CPRNC>/work/02503/edwardsj/CESM/tools/cprnc</CCSM_CPRNC>
+    <CCSM_CPRNC>/work/02503/edwardsj/CESM/cime/tools/cprnc/cprnc</CCSM_CPRNC>
     <GMAKE_J>4</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
     <SUPPORTED_BY>cseg</SUPPORTED_BY>
