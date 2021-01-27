@@ -165,7 +165,7 @@
       <directive> --nodes={{ num_nodes }}</directive>
       <directive> --ntasks-per-node={{ tasks_per_node }}</directive>
       <directive> --output={{ job_id }}   </directive>
-      <directive> --exclusive                        </directive>
+      <directive> --exclusive             </directive>
     </directives>
   </batch_system>
 
@@ -393,13 +393,18 @@
     </queues>
   </batch_system>
 
-<batch_system MACH="frontera" type="slurm" >
-    <batch_submit>ssh login1 cd $CASEROOT ; sbatch</batch_submit>
+  <batch_system MACH="frontera" type="slurm" >
+    <!--    <batch_submit>ssh -o SendEnv login1 cd $CASEROOT ; sbatch</batch_submit> -->
+    <batch_submit>sbatch</batch_submit>
     <submit_args>
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
       <arg flag="-p" name="$JOB_QUEUE"/>
       <arg flag="--account" name="$PROJECT"/>
     </submit_args>
+    <directives>
+      <directive> --export=ALL            </directive>
+    </directives>
+
     <queues>
       <queue walltimemax="02:00:00" nodemin="1" nodemax="40">development</queue>
       <queue walltimemax="24:00:00" nodemin="1" nodemax="512" default="true">normal</queue>

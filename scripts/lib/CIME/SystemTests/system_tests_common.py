@@ -67,7 +67,6 @@ class SystemTestsCommon(object):
 
             logging.warning("Resetting case due to detected re-run of phase {}".format(phase))
             self._case.set_initial_test_values()
-
             self._case.case_setup(reset=True, test_mode=True)
 
     def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False):
@@ -588,6 +587,11 @@ class FakeTest(SystemTestsCommon):
     def _set_script(self, script, requires_exe=False):
         self._script = script # pylint: disable=attribute-defined-outside-init
         self._requires_exe = requires_exe # pylint: disable=attribute-defined-outside-init
+
+    def _resetup_case(self, phase, reset=False):
+        run_exe = self._case.get_value("run_exe")
+        super(FakeTest, self)._resetup_case(phase, reset=reset)
+        self._case.set_value("run_exe", run_exe)
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         if self._requires_exe:
