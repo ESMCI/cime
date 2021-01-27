@@ -4,7 +4,7 @@ Originator: Chris Fischer
 Date: 1-27-2021
 Tag: cime5.8.37
 Answer Changes: Some fill_values and pgi on cheyenne
-Tests: scrtips_regression_tests
+Tests: scripts_regression_tests
 Dependencies:
 
 Brief Summary:
