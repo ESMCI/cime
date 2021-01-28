@@ -287,8 +287,8 @@
 <span class="c1"># Disable these because this is our standard setup</span>
 <span class="c1"># pylint: disable=wildcard-import,unused-wildcard-import</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">string_in_list</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">string_in_list</span>
 <span class="kn">import</span> <span class="nn">six</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -1063,7 +1063,7 @@
 <span class="sd">    write</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct a new `Namelist` object.</span>
 
 <span class="sd">        The `groups` argument is a dictionary associating group names to</span>
@@ -1469,12 +1469,12 @@
 <span class="sd">    converted to some other error, or ignored.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `_NamelistEOF`, optionally using an error message.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">_NamelistEOF</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">message</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get an error message suitable for display.&quot;&quot;&quot;</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Unexpected end of file encountered in namelist.&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1491,12 +1491,12 @@
 <span class="sd">    converted to some other error, or ignored.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `_NamelistParseError`, optionally using an error message.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">_NamelistParseError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">message</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get an error message suitable for display.&quot;&quot;&quot;</span>
         <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;Error in parsing namelist&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1512,7 +1512,7 @@
 <span class="sd">    directly. Use the `parse` function in this module instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">groupless</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">groupless</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create a `_NamelistParser` given text to parse in a string.&quot;&quot;&quot;</span>
         <span class="c1"># Current location within the file.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2460,7 +2460,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

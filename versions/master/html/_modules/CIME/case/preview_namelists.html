@@ -184,8 +184,8 @@
 <span class="sd">create_dirs and create_namelists are members of Class case from file case.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">run_sub_or_cmd</span><span class="p">,</span> <span class="n">safe_copy</span>
 <span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">glob</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -243,8 +243,6 @@
 
     <span class="bp">self</span><span class="o">.</span><span class="n">stage_refcase</span><span class="p">()</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating component namelists&quot;</span><span class="p">)</span>
-
     <span class="c1"># Create namelists - must have cpl last in the list below</span>
     <span class="c1"># Note - cpl must be last in the loop below so that in generating its namelist,</span>
     <span class="c1"># it can use xml vars potentially set by other component&#39;s buildnml scripts</span>
@@ -268,6 +266,7 @@
                 <span class="c1"># otherwise look in the component config_dir</span>
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="s2">&quot;buildnml&quot;</span><span class="p">)</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cmd</span><span class="p">),</span> <span class="s2">&quot;Could not find buildnml file for component </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Create namelist for component </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">))</span>
             <span class="n">run_sub_or_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">(</span><span class="n">caseroot</span><span class="p">),</span> <span class="s2">&quot;buildnml&quot;</span><span class="p">,</span>
                            <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">compname</span><span class="p">),</span> <span class="n">case</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
@@ -289,8 +288,9 @@
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span>
 
     <span class="c1"># Copy over chemistry mechanism docs if they exist</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="s2">&quot;camconf&quot;</span><span class="p">))):</span>
-        <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="s2">&quot;camconf&quot;</span><span class="p">,</span> <span class="s2">&quot;*chem_mech*&quot;</span><span class="p">)):</span>
+    <span class="n">atmconf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ATM&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;conf&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">))):</span>
+        <span class="k">for</span> <span class="n">file_to_copy</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casebuild</span><span class="p">,</span> <span class="n">atmconf</span><span class="p">,</span> <span class="s2">&quot;*chem_mech*&quot;</span><span class="p">)):</span>
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">file_to_copy</span><span class="p">,</span> <span class="n">docdir</span><span class="p">)</span></div>
 </pre></div>
 
@@ -334,7 +334,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

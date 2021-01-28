@@ -185,39 +185,39 @@
 <span class="sd">All interaction with and between the module files in XML/ takes place</span>
 <span class="sd">through the Case module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">six</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="c1">#pylint: disable=import-error,redefined-builtin</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">input</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">append_status</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">convert_to_type</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">set_model</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">get_project</span><span class="p">,</span> <span class="n">get_charge_account</span><span class="p">,</span> <span class="n">check_name</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">get_cime_default_driver</span>
-<span class="kn">from</span> <span class="nn">CIME.locked_files</span>              <span class="k">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.machines</span>              <span class="k">import</span> <span class="n">Machines</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.pes</span>                   <span class="k">import</span> <span class="n">Pes</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span>                 <span class="k">import</span> <span class="n">Files</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.testlist</span>              <span class="k">import</span> <span class="n">Testlist</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.component</span>             <span class="k">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.compsets</span>              <span class="k">import</span> <span class="n">Compsets</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.grids</span>                 <span class="k">import</span> <span class="n">Grids</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.batch</span>                 <span class="k">import</span> <span class="n">Batch</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.workflow</span>              <span class="k">import</span> <span class="n">Workflow</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.pio</span>                   <span class="k">import</span> <span class="n">PIO</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.archive</span>               <span class="k">import</span> <span class="n">Archive</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_test</span>              <span class="k">import</span> <span class="n">EnvTest</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_specific</span>     <span class="k">import</span> <span class="n">EnvMachSpecific</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_case</span>              <span class="k">import</span> <span class="n">EnvCase</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_pes</span>          <span class="k">import</span> <span class="n">EnvMachPes</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_build</span>             <span class="k">import</span> <span class="n">EnvBuild</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_run</span>               <span class="k">import</span> <span class="n">EnvRun</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_archive</span>           <span class="k">import</span> <span class="n">EnvArchive</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_batch</span>             <span class="k">import</span> <span class="n">EnvBatch</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_workflow</span>          <span class="k">import</span> <span class="n">EnvWorkflow</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span>           <span class="k">import</span> <span class="n">GenericXML</span>
-<span class="kn">from</span> <span class="nn">CIME.user_mod_support</span>          <span class="k">import</span> <span class="n">apply_user_mods</span>
-<span class="kn">from</span> <span class="nn">CIME.aprun</span> <span class="k">import</span> <span class="n">get_aprun_cmd_for_case</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">input</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">append_status</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">convert_to_type</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">set_model</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_project</span><span class="p">,</span> <span class="n">get_charge_account</span><span class="p">,</span> <span class="n">check_name</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">get_current_commit</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">get_cime_default_driver</span>
+<span class="kn">from</span> <span class="nn">CIME.locked_files</span>              <span class="kn">import</span> <span class="n">LOCKED_DIR</span><span class="p">,</span> <span class="n">lock_file</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.machines</span>              <span class="kn">import</span> <span class="n">Machines</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.pes</span>                   <span class="kn">import</span> <span class="n">Pes</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span>                 <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.testlist</span>              <span class="kn">import</span> <span class="n">Testlist</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.component</span>             <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.compsets</span>              <span class="kn">import</span> <span class="n">Compsets</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.grids</span>                 <span class="kn">import</span> <span class="n">Grids</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.batch</span>                 <span class="kn">import</span> <span class="n">Batch</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.workflow</span>              <span class="kn">import</span> <span class="n">Workflow</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.pio</span>                   <span class="kn">import</span> <span class="n">PIO</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.archive</span>               <span class="kn">import</span> <span class="n">Archive</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_test</span>              <span class="kn">import</span> <span class="n">EnvTest</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_specific</span>     <span class="kn">import</span> <span class="n">EnvMachSpecific</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_case</span>              <span class="kn">import</span> <span class="n">EnvCase</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_pes</span>          <span class="kn">import</span> <span class="n">EnvMachPes</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_build</span>             <span class="kn">import</span> <span class="n">EnvBuild</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_run</span>               <span class="kn">import</span> <span class="n">EnvRun</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_archive</span>           <span class="kn">import</span> <span class="n">EnvArchive</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_batch</span>             <span class="kn">import</span> <span class="n">EnvBatch</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_workflow</span>          <span class="kn">import</span> <span class="n">EnvWorkflow</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span>           <span class="kn">import</span> <span class="n">GenericXML</span>
+<span class="kn">from</span> <span class="nn">CIME.user_mod_support</span>          <span class="kn">import</span> <span class="n">apply_user_mods</span>
+<span class="kn">from</span> <span class="nn">CIME.aprun</span> <span class="kn">import</span> <span class="n">get_aprun_cmd_for_case</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -249,19 +249,19 @@
 <span class="sd">    This class extends across multiple files, class members external to this file</span>
 <span class="sd">    are listed in the following imports</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_setup</span> <span class="k">import</span> <span class="n">case_setup</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_clone</span> <span class="k">import</span> <span class="n">create_clone</span><span class="p">,</span> <span class="n">_copy_user_modified_to_clone</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_test</span>  <span class="k">import</span> <span class="n">case_test</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_submit</span> <span class="k">import</span> <span class="n">check_DA_settings</span><span class="p">,</span> <span class="n">check_case</span><span class="p">,</span> <span class="n">submit</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_st_archive</span> <span class="k">import</span> <span class="n">case_st_archive</span><span class="p">,</span> <span class="n">restore_from_archive</span><span class="p">,</span> \
+    <span class="kn">from</span> <span class="nn">CIME.case.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_clone</span> <span class="kn">import</span> <span class="n">create_clone</span><span class="p">,</span> <span class="n">_copy_user_modified_to_clone</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_test</span>  <span class="kn">import</span> <span class="n">case_test</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_submit</span> <span class="kn">import</span> <span class="n">check_DA_settings</span><span class="p">,</span> <span class="n">check_case</span><span class="p">,</span> <span class="n">submit</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_st_archive</span> <span class="kn">import</span> <span class="n">case_st_archive</span><span class="p">,</span> <span class="n">restore_from_archive</span><span class="p">,</span> \
         <span class="n">archive_last_restarts</span><span class="p">,</span> <span class="n">test_st_archive</span><span class="p">,</span> <span class="n">test_env_archive</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_run</span> <span class="k">import</span> <span class="n">case_run</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.case_cmpgen_namelists</span> <span class="k">import</span> <span class="n">case_cmpgen_namelists</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.check_lockedfiles</span> <span class="k">import</span> <span class="n">check_lockedfile</span><span class="p">,</span> <span class="n">check_lockedfiles</span><span class="p">,</span> <span class="n">check_pelayouts_require_rebuild</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.preview_namelists</span> <span class="k">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">create_namelists</span>
-    <span class="kn">from</span> <span class="nn">CIME.case.check_input_data</span> <span class="k">import</span> <span class="n">check_all_input_data</span><span class="p">,</span> <span class="n">stage_refcase</span><span class="p">,</span> <span class="n">check_input_data</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_run</span> <span class="kn">import</span> <span class="n">case_run</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.case_cmpgen_namelists</span> <span class="kn">import</span> <span class="n">case_cmpgen_namelists</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.check_lockedfiles</span> <span class="kn">import</span> <span class="n">check_lockedfile</span><span class="p">,</span> <span class="n">check_lockedfiles</span><span class="p">,</span> <span class="n">check_pelayouts_require_rebuild</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.preview_namelists</span> <span class="kn">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">create_namelists</span>
+    <span class="kn">from</span> <span class="nn">CIME.case.check_input_data</span> <span class="kn">import</span> <span class="n">check_all_input_data</span><span class="p">,</span> <span class="n">stage_refcase</span><span class="p">,</span> <span class="n">check_input_data</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="n">case_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">case_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
@@ -274,6 +274,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
@@ -307,6 +308,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_numa</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cores_per_task</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># check if case has been configured and if so initialize derived</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -330,6 +333,9 @@
         <span class="n">env_mach_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;mach_specific&#39;</span><span class="p">)</span>
         <span class="n">comp_classes</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
         <span class="n">max_mpitasks_per_node</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MAX_MPITASKS_PER_NODE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_io</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PIO_NUMTASKS_CPL&quot;</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_max_thread_count</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span>
 
@@ -346,7 +352,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_spare_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">iotasks</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_tasks_per_node</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spare_nodes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_tasks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
@@ -363,16 +369,17 @@
 
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread_count</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="n">smt_factor</span><span class="o">*</span><span class="n">max_mpitasks_per_node</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">smt_factor</span><span class="o">*</span><span class="n">max_mpitasks_per_node</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks_per_node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">srun_binding</span><span class="p">)</span></div>
 
     <span class="c1"># Define __enter__ and __exit__ so that we can use this as a context manager</span>
     <span class="c1"># and force a flush on exit.</span>
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_read_only_mode</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -386,14 +393,18 @@
         <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvBuild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvMachPes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvMachPes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">,</span>
+                                                  <span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvBatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvWorkflow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span><span class="s2">&quot;env_test.xml&quot;</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvTest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvMachSpecific</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvMachSpecific</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">,</span>
+                                                       <span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EnvArchive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_force_read_only</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_generic_files</span></div>
 
@@ -622,7 +633,7 @@
             <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookups</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="s2">&quot;mct&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_compset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loop through all the compset files and find the compset</span>
 <span class="sd">        specifation file that matches either the input &#39;compset_name&#39;.</span>
@@ -639,16 +650,16 @@
         <span class="n">components</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_components</span><span class="p">(</span><span class="s2">&quot;COMPSETS_SPEC_FILE&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; Possible components for COMPSETS_SPEC_FILE are </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">components</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">,</span> <span class="n">driver</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;COMP_INTERFACE&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s1">&#39;ufs&#39;</span><span class="p">:</span>
-            <span class="n">cmeps_driver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UFS_DRIVER&quot;</span><span class="p">)</span>
+            <span class="n">ufs_driver</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UFS_DRIVER&quot;</span><span class="p">)</span>
             <span class="n">attribute</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">cmeps_driver</span><span class="p">:</span>
-                <span class="n">attribute</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">cmeps_driver</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">ufs_driver</span><span class="p">:</span>
+                <span class="n">attribute</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="s2">&quot;nems&quot;</span><span class="p">}</span>
             <span class="n">comp_root_dir_cpl</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s1">&#39;cesm&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="o">==</span> <span class="s1">&#39;cesm&#39;</span><span class="p">:</span>
             <span class="n">comp_root_dir_cpl</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;cesm&#39;</span><span class="p">,</span><span class="s1">&#39;ufs&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;COMP_ROOT_DIR_CPL&quot;</span><span class="p">,</span><span class="n">comp_root_dir_cpl</span><span class="p">)</span>
 
@@ -710,6 +721,9 @@
             <span class="n">primary_component</span> <span class="o">=</span> <span class="s2">&quot;allactive&quot;</span>
         <span class="k">elif</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;LND&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;OCN&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;ICE&quot;</span><span class="p">]:</span>
             <span class="c1"># this is a &quot;J&quot; compset</span>
+            <span class="n">primary_component</span> <span class="o">=</span> <span class="s2">&quot;allactive&quot;</span>
+        <span class="k">elif</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;ATM&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;OCN&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;ICE&quot;</span><span class="p">]:</span>
+            <span class="c1"># this is a ufs s2s compset</span>
             <span class="n">primary_component</span> <span class="o">=</span> <span class="s2">&quot;allactive&quot;</span>
         <span class="k">elif</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;ATM&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="s2">&quot;DOCN%SOM&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span> <span class="ow">and</span> <span class="n">progcomps</span><span class="p">[</span><span class="s2">&quot;LND&quot;</span><span class="p">]:</span>
@@ -895,7 +909,7 @@
         <span class="k">return</span> <span class="n">components</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">entryid_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">entryid_file</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;$&#39;</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
@@ -908,7 +922,7 @@
         <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
             <span class="n">env_file</span><span class="o">.</span><span class="n">set_components</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_component_config_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_component_config_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
         <span class="c1"># attributes used for multi valued defaults</span>
         <span class="c1"># attlist is a dictionary used to determine the value element that has the most matches</span>
         <span class="n">attlist</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;compset&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">,</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_gridname</span><span class="p">,</span> <span class="s2">&quot;cime_model&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_cime_model</span><span class="p">}</span>
@@ -927,7 +941,7 @@
 
         <span class="n">drv_config_file_model_specific</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_CPL_FILE_MODEL_SPECIFIC&quot;</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">drv_config_file_model_specific</span><span class="p">),</span>
-               <span class="s2">&quot;No </span><span class="si">{}</span><span class="s2"> specific file found for driver </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_model</span><span class="p">(),</span><span class="n">driver</span><span class="p">))</span>
+               <span class="s2">&quot;No </span><span class="si">{}</span><span class="s2"> specific file found for driver </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_model</span><span class="p">(),</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">))</span>
         <span class="n">drv_comp_model_specific</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">drv_config_file_model_specific</span><span class="p">,</span> <span class="s1">&#39;CPL&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_description</span><span class="p">[</span><span class="s2">&quot;forcing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">drv_comp_model_specific</span><span class="o">.</span><span class="n">get_forcing_description</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">)</span>
@@ -946,7 +960,7 @@
 
         <span class="c1"># will need a change here for new cpl components</span>
         <span class="n">root_dir_node_name</span> <span class="o">=</span> <span class="s1">&#39;COMP_ROOT_DIR_CPL&#39;</span>
-        <span class="n">comp_root_dir</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">root_dir_node_name</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">driver</span><span class="p">},</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">comp_root_dir</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">root_dir_node_name</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">},</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">comp_root_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">root_dir_node_name</span><span class="p">,</span> <span class="n">comp_root_dir</span><span class="p">)</span>
@@ -979,7 +993,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> component is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_component_description</span><span class="p">[</span><span class="n">comp_class</span><span class="p">]))</span>
             <span class="k">for</span> <span class="n">env_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_env_entryid_files</span><span class="p">:</span>
                 <span class="n">env_file</span><span class="o">.</span><span class="n">add_elements_by_group</span><span class="p">(</span><span class="n">compobj</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attlist</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clean_up_lookups</span><span class="p">(</span><span class="n">allow_undefined</span><span class="o">=</span><span class="n">driver</span><span class="o">==</span><span class="s1">&#39;nuopc&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_up_lookups</span><span class="p">(</span><span class="n">allow_undefined</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="o">==</span><span class="s1">&#39;nuopc&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_setup_mach_pes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pecount</span><span class="p">,</span> <span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
         <span class="c1">#--------------------------------------------</span>
@@ -991,7 +1005,7 @@
         <span class="n">ftype</span> <span class="o">=</span> <span class="n">gfile</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span> <span class="ow">or</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;config_pes&quot;</span><span class="p">,</span> <span class="s2">&quot; Do not recognize </span><span class="si">{}</span><span class="s2"> as a valid CIME pes file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span><span class="p">,</span> <span class="n">ftype</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">:</span>
-            <span class="n">new_mach_pes_obj</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">)</span>
+            <span class="n">new_mach_pes_obj</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pesfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_env</span><span class="p">(</span><span class="n">new_mach_pes_obj</span><span class="p">,</span> <span class="s2">&quot;mach_pes&quot;</span><span class="p">,</span> <span class="n">blow_away</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">new_mach_pes_obj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">)</span>
 
@@ -1042,7 +1056,8 @@
         <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;setting additional fields from config_pes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
         <span class="n">totaltasks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1064,9 +1079,6 @@
             <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">rootpe_str</span><span class="p">,</span> <span class="n">rootpe</span><span class="p">)</span>
             <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">pstrid_str</span><span class="p">,</span> <span class="n">pstrid</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
-            <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-
         <span class="c1"># Make sure that every component has been accounted for</span>
         <span class="c1"># set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.</span>
         <span class="k">for</span> <span class="n">compclass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">:</span>
@@ -1081,6 +1093,9 @@
             <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">compclass</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pes_nthrds</span><span class="p">:</span>
                 <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">compclass</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
+            <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="Case.configure"><a class="viewcode-back" href="../../../CIME_api/CIME.case.html#CIME.case.case.Case.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pecount</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1093,15 +1108,17 @@
 
         <span class="n">expect</span><span class="p">(</span><span class="n">check_name</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="s2">&quot;Invalid compset name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="n">driver</span>
         <span class="c1">#--------------------------------------------</span>
         <span class="c1"># compset, pesfile, and compset components</span>
         <span class="c1">#--------------------------------------------</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="n">comp_interface</span><span class="o">=</span><span class="n">driver</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">(</span><span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
 
         <span class="c1">#--------------------------------------------</span>
         <span class="c1"># find and/or fill out compset name</span>
         <span class="c1">#--------------------------------------------</span>
-        <span class="n">compset_alias</span><span class="p">,</span> <span class="n">science_support</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_compset</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">driver</span><span class="p">)</span>
+
+        <span class="n">compset_alias</span><span class="p">,</span> <span class="n">science_support</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_compset</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
 
@@ -1110,10 +1127,9 @@
         <span class="c1">#--------------------------------------------</span>
         <span class="n">grids</span> <span class="o">=</span> <span class="n">Grids</span><span class="p">(</span><span class="n">gridfile</span><span class="p">)</span>
 
-        <span class="n">gridinfo</span> <span class="o">=</span> <span class="n">grids</span><span class="o">.</span><span class="n">get_grid_info</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">grid_name</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="n">driver</span><span class="p">)</span>
-
+        <span class="n">gridinfo</span> <span class="o">=</span> <span class="n">grids</span><span class="o">.</span><span class="n">get_grid_info</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">grid_name</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gridname</span> <span class="o">=</span> <span class="n">gridinfo</span><span class="p">[</span><span class="s2">&quot;GRID&quot;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">gridinfo</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">gridinfo</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Set grid </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 
@@ -1121,7 +1137,7 @@
         <span class="c1"># component config data</span>
         <span class="c1">#--------------------------------------------</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_component_config_data</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">driver</span><span class="o">=</span><span class="n">driver</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_component_config_data</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
 
         <span class="c1"># This needs to be called after self.set_comp_classes, which is called</span>
         <span class="c1"># from self._get_component_config_data</span>
@@ -1158,10 +1174,11 @@
 
         <span class="k">for</span> <span class="n">nodename</span> <span class="ow">in</span> <span class="n">nodenames</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">type_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_type_info</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">type_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;machine nodname </span><span class="si">{}</span><span class="s2"> value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">type_str</span><span class="p">,</span> <span class="n">nodename</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">type_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_type_info</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">type_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;machine nodename </span><span class="si">{}</span><span class="s2"> value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">nodename</span><span class="p">,</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">type_str</span><span class="p">,</span> <span class="n">nodename</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">compiler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">compiler</span> <span class="o">=</span> <span class="n">machobj</span><span class="o">.</span><span class="n">get_default_compiler</span><span class="p">()</span>
@@ -1192,7 +1209,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_mach_pes</span><span class="p">(</span><span class="n">pecount</span><span class="p">,</span> <span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">multi_driver</span> <span class="ow">and</span> <span class="n">ninst</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">multi_driver</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">ninst</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Driver/Coupler has </span><span class="si">%s</span><span class="s2"> instances&quot;</span> <span class="o">%</span> <span class="n">ninst</span><span class="p">)</span>
 
         <span class="c1">#--------------------------------------------</span>
@@ -1342,7 +1359,7 @@
 
         <span class="n">defaults</span> <span class="o">=</span> <span class="n">pioobj</span><span class="o">.</span><span class="n">get_defaults</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">compset</span><span class="o">=</span><span class="n">compset</span><span class="p">,</span> <span class="n">mach</span><span class="o">=</span><span class="n">mach</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="n">mpilib</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">defaults</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_caseroot_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1396,6 +1413,8 @@
                 <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">machine</span><span class="p">)),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">machines_dir</span><span class="p">,</span> <span class="s2">&quot;syslog.noop&quot;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">casetools</span><span class="p">,</span> <span class="s2">&quot;mach_syslog&quot;</span><span class="p">))</span>
+
+            <span class="n">safe_copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">toolsdir</span><span class="p">,</span> <span class="s2">&quot;e3sm_compile_wrap.py&quot;</span><span class="p">),</span> <span class="n">casetools</span><span class="p">)</span>
 
         <span class="c1"># add archive_metadata to the CASEROOT but only for CESM</span>
         <span class="k">if</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;cesm&quot;</span><span class="p">:</span>
@@ -1579,7 +1598,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">jobmap</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No job ids associated with this case. Either case.submit was not run or was run with no-batch&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">jobid</span> <span class="ow">in</span> <span class="n">jobmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">jobname</span><span class="p">,</span> <span class="n">jobid</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">jobmap</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
                 <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">jobid</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">jobname</span><span class="p">,</span> <span class="n">status</span><span class="p">))</span>
@@ -1612,7 +1631,8 @@
             <span class="s2">&quot;mpilib&quot;</span>   <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">),</span>
             <span class="s2">&quot;threaded&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_build_threaded</span><span class="p">(),</span>
             <span class="s2">&quot;queue&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;JOB_QUEUE&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">),</span>
-            <span class="s2">&quot;unit_testing&quot;</span> <span class="p">:</span> <span class="kc">False</span>
+            <span class="s2">&quot;unit_testing&quot;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;comp_interface&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span>
             <span class="p">}</span>
 
         <span class="n">executable</span><span class="p">,</span> <span class="n">mpi_arg_list</span><span class="p">,</span> <span class="n">custom_run_exe</span><span class="p">,</span> <span class="n">custom_run_misc_suffix</span> <span class="o">=</span> <span class="n">env_mach_specific</span><span class="o">.</span><span class="n">get_mpirun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpi_attribs</span><span class="p">,</span> <span class="n">job</span><span class="p">)</span>
@@ -1726,7 +1746,7 @@
                 <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_case.xml&quot;</span><span class="p">:</span>
                     <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvCase</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">:</span>
-                    <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
+                    <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_batch.xml&quot;</span><span class="p">:</span>
                     <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_workflow.xml&quot;</span><span class="p">:</span>
@@ -1736,7 +1756,7 @@
                 <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_archive.xml&quot;</span><span class="p">:</span>
                     <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvArchive</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">:</span>
-                    <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvMachSpecific</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">)</span>
+                    <span class="n">new_env_file</span> <span class="o">=</span> <span class="n">EnvMachSpecific</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">xmlfile</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;No match found for file type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ftype</span><span class="p">))</span>
 
@@ -1908,7 +1928,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

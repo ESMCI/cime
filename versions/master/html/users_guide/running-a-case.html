@@ -503,7 +503,7 @@ type of run. <code class="docutils literal notranslate"><span class="pre">$RUN_R
 branch runs. To set up a branch run, locate the restart tar file or
 restart directory for <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> from a
 previous run, then place those files in the <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>  directory.
-See <span class="xref std std-ref">setting up a branch run</span>.</p>
+See <a class="reference internal" href="#starting-from-a-refcase"><span class="std std-ref">Starting from a reference case</span></a>.</p>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">hybrid</span></code></p>
 <blockquote>
@@ -537,7 +537,7 @@ a hybrid or branch run, you must specify values for <code class="docutils litera
 <div class="section" id="starting-from-a-reference-case-refcase">
 <span id="starting-from-a-refcase"></span><h3><span class="section-number">5.3.2. </span>Starting from a reference case (REFCASE)<a class="headerlink" href="#starting-from-a-reference-case-refcase" title="Permalink to this headline">¶</a></h3>
 <p>There are several xml variables that control how either a branch or a hybrid case can start up from another case.
-The initial/restart files needed to start up a run from another case are required to be in $EXEROOT.
+The initial/restart files needed to start up a run from another case are required to be in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>.
 The xml variable <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is a flag that if set will automatically prestaging the refcase restart data.</p>
 <ul>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, then the the values set by <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code>, <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> and  <code class="docutils literal notranslate"><span class="pre">$RUN_TOD</span></code> are
@@ -549,7 +549,7 @@ used to prestage the data by symbolic links to the appropriate path.</p>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">$RUN_REFDIR</span></code> is a relative pathname AND is not available in <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> then CIME will attempt to download the data from the input data repositories.</p></li>
 </ul>
 </li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> then the data is assumed to already exist in <code class="docutils literal notranslate"><span class="pre">$EXEROOT</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">$GET_REFCASE</span></code> is <code class="docutils literal notranslate"><span class="pre">FALSE</span></code> then the data is assumed to already exist in <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code>.</p></li>
 </ul>
 </div>
 </div>
@@ -615,10 +615,10 @@ had not stopped. The driver coordinates the writing of restart
 files as well as the time evolution of the model.</p>
 <p>Runs that are initialized as branch or hybrid runs require
 restart/initial files from previous model runs (as specified by the
-variables <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code>). Pre-stage these
-iles to the case <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> (normally <code class="docutils literal notranslate"><span class="pre">$EXEROOT/run</span></code>)
-before the model run starts. Normally this is done by copying the contents
-of the relevant <strong>$RUN_REFCASE/rest/$RUN_REFDATE.00000</strong> directory.</p>
+variables <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code>). Pre-stage these files
+to the case <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> (normally <code class="docutils literal notranslate"><span class="pre">$EXEROOT/../run</span></code>) before the model
+run starts. Normally this is done by copying the contents of the
+relevant <strong>$RUN_REFCASE/rest/$RUN_REFDATE.00000</strong> directory.</p>
 <p>Whenever a component writes a restart file, it also writes a restart
 pointer file in the format <strong>rpointer.$component</strong>. Upon a restart, each
 component reads the pointer file to determine which file to read in
@@ -667,7 +667,7 @@ remain in the run directory as specified by <code class="docutils literal notran
 <h3><span class="section-number">5.6.2. </span>Short-term archiving<a class="headerlink" href="#short-term-archiving" title="Permalink to this headline">¶</a></h3>
 <p>If short-term archiving is enabled, component output files are moved
 to the short-term archiving area on local disk, as specified by
-<code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>. The directory normally is <strong>$EXEROOT/../archive/$CASE.</strong>
+<code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>. The directory normally is <strong>$EXEROOT/../../archive/$CASE.</strong>
 and has the following directory structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rest</span><span class="o">/</span><span class="n">yyyy</span><span class="o">-</span><span class="n">mm</span><span class="o">-</span><span class="n">dd</span><span class="o">-</span><span class="n">sssss</span><span class="o">/</span>
 <span class="n">logs</span><span class="o">/</span>
@@ -733,7 +733,7 @@ as an external shell script.</p>
 <p>..: A simple example pre run script.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="k">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
 
 <span class="k">def</span> <span class="nf">myprerun</span><span class="p">(</span><span class="n">caseroot</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">Case</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span> <span class="k">as</span> <span class="n">case</span><span class="p">:</span>
@@ -798,7 +798,6 @@ as an external shell script.</p>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 

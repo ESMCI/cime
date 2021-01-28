@@ -182,17 +182,17 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Class for config_pio files .  This class inherits from EntryID.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="k">import</span> <span class="n">EntryID</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="k">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="kn">import</span> <span class="n">EntryID</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PIO"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.pio.PIO">[docs]</a><span class="k">class</span> <span class="nc">PIO</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp_classes</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
@@ -287,7 +287,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

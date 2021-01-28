@@ -28,7 +28,6 @@ CIME.tests.SystemTests.test\_system\_tests\_compare\_two\_link\_to\_case2\_outpu
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

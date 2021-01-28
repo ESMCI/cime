@@ -223,16 +223,16 @@
 <span class="sd">&lt;/expectedFails&gt;</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="k">import</span> <span class="n">GenericXML</span>
-<span class="kn">from</span> <span class="nn">CIME.expected_fails</span> <span class="k">import</span> <span class="n">ExpectedFails</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="kn">import</span> <span class="n">GenericXML</span>
+<span class="kn">from</span> <span class="nn">CIME.expected_fails</span> <span class="kn">import</span> <span class="n">ExpectedFails</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExpectedFailsFile"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.expected_fails_file.ExpectedFailsFile">[docs]</a><span class="k">class</span> <span class="nc">ExpectedFailsFile</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">):</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;expected_fails_file.xsd&quot;</span><span class="p">)</span>
         <span class="n">GenericXML</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
@@ -295,7 +295,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

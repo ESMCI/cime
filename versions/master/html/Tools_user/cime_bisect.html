@@ -148,6 +148,7 @@
 <li class="toctree-l2"><a class="reference internal" href="create_test.html">create_test</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cs.status.html">cs.status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e3sm_check_env.html">e3sm_check_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e3sm_compile_wrap.py.html">e3sm_compile_wrap.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_case_env.html">get_case_env</a></li>
@@ -250,13 +251,17 @@
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./cime_bisect --help
 usage: 
-cime_bisect &lt;testargs&gt; &lt;last-known-good-commit&gt; [--bad=&lt;bad&gt;] [--compare=&lt;baseline-id&gt;] [--no-batch]  [--verbose]
+cime_bisect &lt;testargs&gt; &lt;last-known-good-commit&gt; [--bad=&lt;bad&gt;] [--verbose]
 OR
 cime_bisect --help
 
 [1mEXAMPLES:[0m
-    [1;32m# Bisect ERS.f45_g37.B1850C5 which got broken in the last 4 commits [0m
+    [1;32m# Bisect ERS.f45_g37.B1850C5 which got broken in the last 4 CIME commits [0m
     &gt; cd &lt;root-of-broken-cime-repo&gt;
+    &gt; cime_bisect HEAD~4 ERS.f45_g37.B1850C5
+
+    [1;32m# Bisect ERS.f45_g37.B1850C5 which got broken in the last 4 MODEL commits [0m
+    &gt; cd &lt;root-of-broken-model&gt;
     &gt; cime_bisect HEAD~4 ERS.f45_g37.B1850C5
 
     [1;32m# Bisect ERS.f45_g37.B1850C5 which started to DIFF in the last 4 commits [0m
@@ -271,10 +276,16 @@ cime_bisect --help
     &gt; cd &lt;root-of-broken-cime-repo&gt;
     &gt; cime_bisect HEAD~4 &#39;ERS.f45_g37.B1850C5 --no-run&#39; &#39;SMS.f45_g37.F&#39;
 
-A script to help track down the commit that caused tests to fail.
+A script to help track down the commit that caused tests to fail. This script
+can do bisections for both cime and the model that houses it, just be sure you
+run this script from the root of the repo you want to bisect. NOTE: this tool
+will only work for models that use git and, for bisecting CIME, bring in CIME
+via submodule or clone.
 
 positional arguments:
   good                  Name of most recent known good commit.
+  testargs              String to pass to create_test. Combine with single
+                        quotes if it includes multiple args. (default: None)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -288,31 +299,8 @@ optional arguments:
   -B BAD, --bad BAD     Name of bad commit, default is current HEAD. (default:
                         HEAD)
   -a, --all-commits     Test all commits, not just merges (default: False)
-  -C, --cime-integration
-                        Bisect CIME instead of the whole code. Useful for
-                        finding errors after CIME merges (default: False)
   -S SCRIPT, --script SCRIPT
                         Use your own custom script instead (default: None)
-
-create_test:
-  flags for modifying create_test call to be bisected
-
-  testargs              String to pass to create_test. Combine with single
-                        quotes if it includes multiple args. (default: None)
-  -r TEST_ROOT, --test-root TEST_ROOT
-                        Path to testroot to use for testcases for bisect.
-                        WARNING. This will be cleared by this script.
-                        (default: None)
-  -n, --check-namelists
-                        Consider a commit to be broken if namelist check fails
-                        (default: False)
-  -t, --check-throughput
-                        Consider a commit to be broken if throughput check
-                        fails (fail if tests slow down) (default: False)
-  -m, --check-memory    Consider a commit to be broken if memory check fails
-                        (fail if tests footprint grows) (default: False)
-  -l, --check-memleak   Consider a commit to be broken if a memleak is
-                        detected (default: False)
 </pre></div>
 </div>
 </div>
@@ -367,7 +355,6 @@ create_test:
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 

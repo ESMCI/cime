@@ -182,9 +182,9 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">API for checking input for testcase</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">SharedArea</span><span class="p">,</span> <span class="n">find_files</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">expect</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.inputdata</span> <span class="k">import</span> <span class="n">Inputdata</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">SharedArea</span><span class="p">,</span> <span class="n">find_files</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.inputdata</span> <span class="kn">import</span> <span class="n">Inputdata</span>
 <span class="kn">import</span> <span class="nn">CIME.Servers</span>
 
 <span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">hashlib</span><span class="o">,</span> <span class="nn">shutil</span>
@@ -427,6 +427,7 @@
         <span class="k">for</span> <span class="n">rpointerfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;*rpointer*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">)):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copy rpointer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">))</span>
             <span class="n">safe_copy</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">)),</span> <span class="mo">0o644</span><span class="p">)</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">,</span><span class="s2">&quot;Reference case directory </span><span class="si">{}</span><span class="s2"> does not contain any rpointer files&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">))</span>
         <span class="c1"># link everything else</span>
 
@@ -538,18 +539,21 @@
 
                         <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">rel_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">full_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;unknown&#39;</span><span class="p">)):</span>
                             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model </span><span class="si">{}</span><span class="s2"> missing file </span><span class="si">{}</span><span class="s2"> = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
-                            <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
                             <span class="k">if</span> <span class="p">(</span><span class="n">download</span><span class="p">):</span>
                                 <span class="k">if</span> <span class="n">use_ic_path</span><span class="p">:</span>
-                                    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
+                                    <span class="n">success</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
                                                                             <span class="n">input_ic_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
                                                                             <span class="n">isdirectory</span><span class="o">=</span><span class="n">isdirectory</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="n">ic_filepath</span><span class="p">)</span>
                                 <span class="k">else</span><span class="p">:</span>
-                                    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
+                                    <span class="n">success</span> <span class="o">=</span> <span class="n">_download_if_in_repo</span><span class="p">(</span><span class="n">server</span><span class="p">,</span>
                                                                             <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
                                                                             <span class="n">isdirectory</span><span class="o">=</span><span class="n">isdirectory</span><span class="p">,</span> <span class="n">ic_filepath</span><span class="o">=</span><span class="n">ic_filepath</span><span class="p">)</span>
-                                <span class="k">if</span> <span class="n">no_files_missing</span> <span class="ow">and</span> <span class="n">chksum</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+                                    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
+                                <span class="k">if</span> <span class="n">success</span> <span class="ow">and</span> <span class="n">chksum</span><span class="p">:</span>
                                     <span class="n">verify_chksum</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">isdirectory</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">chksum</span><span class="p">:</span>
                                 <span class="n">verify_chksum</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">isdirectory</span><span class="p">)</span>
@@ -648,7 +652,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

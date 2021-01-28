@@ -196,10 +196,10 @@
 <span class="sd">COMPILER, MPILIB, and DEBUG, respectively.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">safe_copy</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.compilers</span> <span class="k">import</span> <span class="n">Compilers</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_specific</span> <span class="k">import</span> <span class="n">EnvMachSpecific</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">safe_copy</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.compilers</span> <span class="kn">import</span> <span class="n">Compilers</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_specific</span> <span class="kn">import</span> <span class="n">EnvMachSpecific</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -257,7 +257,7 @@
 
 <div class="viewcode-block" id="FakeCase"><a class="viewcode-back" href="../../../CIME_api/CIME.BuildTools.html#CIME.BuildTools.configure.FakeCase">[docs]</a><span class="k">class</span> <span class="nc">FakeCase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">comp_interface</span><span class="p">):</span>
         <span class="c1"># PIO_VERSION is needed to parse config_machines.xml but isn&#39;t otherwise used</span>
         <span class="c1"># by FakeCase</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">:</span><span class="n">compiler</span><span class="p">,</span> <span class="s2">&quot;MPILIB&quot;</span><span class="p">:</span><span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span><span class="n">debug</span><span class="p">,</span>
@@ -343,7 +343,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

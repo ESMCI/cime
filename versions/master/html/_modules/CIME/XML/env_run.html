@@ -182,22 +182,62 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Interface to the env_run.xml file.  This class inherits from EnvBase</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="k">import</span> <span class="n">EnvBase</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="kn">import</span> <span class="n">EnvBase</span>
+
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">convert_to_type</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EnvRun"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_run.EnvRun">[docs]</a><span class="k">class</span> <span class="nc">EnvRun</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_run.xml&quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_run.xml&quot;</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_run.xml in the case directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="n">components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_entry_id.xsd&quot;</span><span class="p">)</span>
 
-        <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span></div>
+        <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EnvRun.get_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_run.EnvRun.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a value for entry with id attribute vid.</span>
+<span class="sd">        or from the values field if the attribute argument is provided</span>
+<span class="sd">        and matches.   Special case for pio variables when PIO_ASYNC_INTERFACE is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span><span class="p">:</span>
+            <span class="n">vid</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">iscompvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_comp_var</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">vid</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;PIO&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">iscompvar</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">comp</span> <span class="ow">and</span> <span class="n">comp</span> <span class="o">!=</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Only CPL settings are used for PIO in async mode&quot;</span><span class="p">)</span>
+                <span class="n">subgroup</span> <span class="o">=</span> <span class="s2">&quot;CPL&quot;</span>
+
+        <span class="k">return</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolved</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnvRun.set_value"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_run.EnvRun.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_type</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the value of an entry-id field to value</span>
+<span class="sd">        Returns the value or None if not found</span>
+<span class="sd">        subgroup is ignored in the general routine and applied in specific methods</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span><span class="p">:</span>
+            <span class="n">vid</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">iscompvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_comp_var</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">vid</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;PIO&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">iscompvar</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">comp</span> <span class="ow">and</span> <span class="n">comp</span> <span class="o">!=</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Only CPL settings are used for PIO in async mode&quot;</span><span class="p">)</span>
+                <span class="n">subgroup</span> <span class="o">=</span> <span class="s2">&quot;CPL&quot;</span>
+
+
+        <span class="k">if</span> <span class="n">vid</span> <span class="o">==</span> <span class="s2">&quot;PIO_ASYNC_INTERFACE&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pio_async_interface</span> <span class="o">=</span> <span class="n">convert_to_type</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;logical&quot;</span> <span class="p">,</span> <span class="n">vid</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">EnvBase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">subgroup</span><span class="p">,</span> <span class="n">ignore_type</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -240,7 +280,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

@@ -181,8 +181,8 @@
   <h1>Source code for CIME.compare_namelists</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">six</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>  <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">CIMEError</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>  <span class="kn">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">CIMEError</span>
 <span class="n">logger</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># pragma pylint: disable=unsubscriptable-object</span>
@@ -484,13 +484,9 @@
         <span class="n">case_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">[.]([GC]+)[.]([^./\s]+)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">))</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">case_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ACTION.TESTID&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;runid&quot;</span><span class="p">,</span> <span class="s2">&quot;model_version&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;runid&quot;</span><span class="p">,</span> <span class="s2">&quot;model_version&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;logfile&quot;</span><span class="p">]):</span>
         <span class="c1"># Don&#39;t even attempt to diff these, we don&#39;t care</span>
         <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;.log.&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
-        <span class="c1"># Remove the part that&#39;s prone to diff</span>
-        <span class="n">components</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">elif</span> <span class="p">(</span><span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">items</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
         <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">_normalize_string_value</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
@@ -771,7 +767,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

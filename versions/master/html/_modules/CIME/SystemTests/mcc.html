@@ -185,15 +185,15 @@
 <span class="sd">This does two runs: In the first we run a three member ensemble using the</span>
 <span class="sd"> MULTI_DRIVER capability, then we run a second single instance case and compare</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="k">import</span> <span class="n">SystemTestsCompareTwo</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MCC"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.mcc.MCC">[docs]</a><span class="k">class</span> <span class="nc">MCC</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_comp_classes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_instances</span> <span class="o">=</span> <span class="mi">3</span>
         <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
@@ -252,7 +252,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

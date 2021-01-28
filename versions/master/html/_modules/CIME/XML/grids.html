@@ -184,15 +184,15 @@
 <span class="sd">This is not an abstract class - but inherits from the abstact class GenericXML</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="k">import</span> <span class="n">Files</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="k">import</span> <span class="n">GenericXML</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="kn">import</span> <span class="n">GenericXML</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Grids"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.grids.Grids">[docs]</a><span class="k">class</span> <span class="nc">Grids</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="n">Files</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">infile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -398,7 +398,6 @@
 
         <span class="k">for</span> <span class="n">grid</span> <span class="ow">in</span> <span class="n">grids</span><span class="p">:</span>
             <span class="n">grid_name</span> <span class="o">=</span> <span class="n">component_grids</span><span class="p">[</span><span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-
             <span class="c1"># Determine grid name with no nlev suffix if there is one</span>
             <span class="n">grid_name_nonlev</span> <span class="o">=</span> <span class="n">grid_name</span>
             <span class="n">levmatch</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">atmlevregex</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">)</span>
@@ -457,6 +456,16 @@
                         <span class="n">driver_attrib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mesh_node</span><span class="p">,</span> <span class="s2">&quot;driver&quot;</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="n">driver_attrib</span><span class="p">:</span>
                             <span class="n">domains</span><span class="p">[</span><span class="n">mesh_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">mesh_node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="s2">&quot;nuopc&quot;</span><span class="p">:</span>
+            <span class="n">mask_domain_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optional_child</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="n">domains</span><span class="p">[</span><span class="s2">&quot;MASK_GRID&quot;</span><span class="p">]},</span>
+                                                       <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="s2">&quot;domains&quot;</span><span class="p">))</span>
+            <span class="n">mesh_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s2">&quot;mesh&quot;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">mask_domain_node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">mesh_node</span> <span class="ow">in</span> <span class="n">mesh_nodes</span><span class="p">:</span>
+                <span class="n">driver_attrib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mesh_node</span><span class="p">,</span> <span class="s2">&quot;driver&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">driver</span> <span class="o">==</span> <span class="n">driver_attrib</span><span class="p">:</span>
+                    <span class="n">domains</span><span class="p">[</span><span class="s2">&quot;MASK_MESH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">mesh_node</span><span class="p">)</span>
+
 
         <span class="k">return</span> <span class="n">domains</span>
 
@@ -666,7 +675,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

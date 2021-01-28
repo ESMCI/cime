@@ -92,7 +92,6 @@ CIME.case.preview\_namelists module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

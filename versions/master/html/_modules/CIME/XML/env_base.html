@@ -182,15 +182,15 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Base class for env files.  This class inherits from EntryID.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="k">import</span> <span class="n">EntryID</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.headers</span> <span class="k">import</span> <span class="n">Headers</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">convert_to_type</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.entry_id</span> <span class="kn">import</span> <span class="n">EntryID</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.headers</span> <span class="kn">import</span> <span class="n">Headers</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">convert_to_type</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EnvBase"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_base.EnvBase">[docs]</a><span class="k">class</span> <span class="nc">EnvBase</span><span class="p">(</span><span class="n">EntryID</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case_root</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">case_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">case_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span> <span class="o">=</span> <span class="n">case_root</span>
@@ -449,7 +449,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

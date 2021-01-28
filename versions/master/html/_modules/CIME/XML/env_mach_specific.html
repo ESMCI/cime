@@ -182,12 +182,12 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Interface to the env_mach_specific.xml file.  This class inherits from EnvBase</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="k">import</span> <span class="n">EnvBase</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">transform_vars</span><span class="p">,</span> <span class="n">get_cime_root</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_base</span> <span class="kn">import</span> <span class="n">EnvBase</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">transform_vars</span><span class="p">,</span> <span class="n">get_cime_root</span>
 <span class="kn">import</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">resource</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -195,9 +195,9 @@
 <span class="c1"># get_type) otherwise need to implement own functions and make GenericXML parent class</span>
 <div class="viewcode-block" id="EnvMachSpecific"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.env_mach_specific.EnvMachSpecific">[docs]</a><span class="k">class</span> <span class="nc">EnvMachSpecific</span><span class="p">(</span><span class="n">EnvBase</span><span class="p">):</span>
     <span class="c1"># pylint: disable=unused-argument</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infile</span><span class="o">=</span><span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">,</span>
                  <span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit_testing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">standalone_configure</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">standalone_configure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">comp_interface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_mach_specific.xml in the case directory</span>
 
@@ -207,7 +207,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">(),</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;xml_schemas&quot;</span><span class="p">,</span> <span class="s2">&quot;env_mach_specific.xsd&quot;</span><span class="p">)</span>
         <span class="n">EnvBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_mpi_attributes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;compiler&quot;</span><span class="p">,</span> <span class="s2">&quot;mpilib&quot;</span><span class="p">,</span> <span class="s2">&quot;threaded&quot;</span><span class="p">,</span> <span class="s2">&quot;unit_testing&quot;</span><span class="p">,</span> <span class="s2">&quot;queue&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allowed_mpi_attributes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;compiler&quot;</span><span class="p">,</span> <span class="s2">&quot;mpilib&quot;</span><span class="p">,</span> <span class="s2">&quot;threaded&quot;</span><span class="p">,</span> <span class="s2">&quot;unit_testing&quot;</span><span class="p">,</span> <span class="s2">&quot;queue&quot;</span><span class="p">,</span> <span class="s2">&quot;comp_interface&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_comp_interface</span> <span class="o">=</span> <span class="n">comp_interface</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unit_testing</span> <span class="o">=</span> <span class="n">unit_testing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_standalone_configure</span> <span class="o">=</span> <span class="n">standalone_configure</span>
 
@@ -372,16 +373,18 @@
         <span class="k">if</span> <span class="n">envs_to_set</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span> <span class="ow">in</span> <span class="n">envs_to_set</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;sh&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">env_name</span><span class="p">:</span>
-                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;export </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">env_name</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">env_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;sh&quot;</span><span class="p">):</span>
+                            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">))</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;source </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_value</span><span class="p">))</span>
+                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;export </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
 
                 <span class="k">elif</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;csh&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">env_name</span><span class="p">:</span>
-                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;setenv </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">env_name</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">env_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;csh&quot;</span><span class="p">):</span>
+                            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">))</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;echo </span><span class="se">\&quot;</span><span class="s2">This case includes a shell source file </span><span class="si">{}</span><span class="s2"> which cannot be used from csh type shells</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_value</span><span class="p">))</span>
+                        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;setenv </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Unknown shell type: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">shell</span><span class="p">))</span>
 
@@ -397,9 +400,9 @@
                 <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">env_name</span><span class="p">]</span>
                 <span class="n">logger_func</span><span class="p">(</span><span class="s2">&quot;Unsetting Environment </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">env_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">env_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;source &quot;</span><span class="o">+</span> <span class="n">env_value</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_source_sh_file</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">env_name</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
+                    <span class="n">shell</span><span class="p">,</span> <span class="n">cmd</span> <span class="o">=</span> <span class="n">env_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_source_shell_file</span><span class="p">(</span><span class="s2">&quot;source &quot;</span><span class="o">+</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting Environment </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
                     <span class="n">logger_func</span><span class="p">(</span><span class="s2">&quot;Setting Environment </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">env_value</span><span class="p">))</span>
@@ -433,7 +436,11 @@
                             <span class="n">expect</span><span class="p">(</span><span class="s2">&quot;$&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">val</span><span class="p">,</span> <span class="s2">&quot;Not safe to leave unresolved items in env var value: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
 
                         <span class="c1"># intentional unindent, result is appended even if val is None</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span> <span class="p">)</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">val</span><span class="p">)</span> <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span>
 
@@ -449,7 +456,9 @@
                     <span class="n">expect</span><span class="p">(</span><span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Cannot match attrib &#39;</span><span class="si">%s</span><span class="s2">&#39;, case has no value for it&quot;</span> <span class="o">%</span> <span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">attribs</span><span class="p">[</span><span class="n">attrib</span><span class="p">]):</span>
                         <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">elif</span> <span class="n">attrib</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">attrib</span> <span class="o">==</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">attrib</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
@@ -541,15 +550,15 @@
         <span class="k">for</span> <span class="n">action</span><span class="p">,</span><span class="n">argument</span> <span class="ow">in</span> <span class="n">modules_to_load</span><span class="p">:</span>
             <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; &amp;&amp; </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sh_mod_cmd</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">argument</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_source_sh_file</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source_shell_file</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_source_sh_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_source_shell_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="s2">&quot;sh&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Use null terminated lines to give us something more definitive to split on.</span>
         <span class="c1"># Env vars can contain newlines, so splitting on newlines can be ambiguous</span>
         <span class="n">logger_func</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">warning</span> <span class="k">if</span> <span class="n">verbose</span> <span class="k">else</span> <span class="n">logger</span><span class="o">.</span><span class="n">debug</span>
         <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; &amp;&amp; env -0&quot;</span>
         <span class="n">logger_func</span><span class="p">(</span><span class="s2">&quot;cmd: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="n">shell</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
         <span class="c1">###################################################</span>
         <span class="c1"># Parse the output to set the os.environ dictionary</span>
@@ -748,7 +757,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

@@ -204,12 +204,12 @@
 <span class="sd">   RUN state are no longer valid.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">CIME</span> <span class="k">import</span> <span class="n">expected_fails</span>
+<span class="kn">from</span> <span class="nn">CIME</span> <span class="kn">import</span> <span class="n">expected_fails</span>
 
 <span class="n">TEST_STATUS_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;TestStatus&quot;</span>
 
@@ -299,7 +299,7 @@
 
 <div class="viewcode-block" id="TestStatus"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus">[docs]</a><span class="k">class</span> <span class="nc">TestStatus</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_io</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_io</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a TestStatus object</span>
 
@@ -322,22 +322,22 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">test_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Must provide test_name if TestStatus file doesn&#39;t exist&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ok_to_modify</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ok_to_modify</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">yield</span> <span class="n">phase</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">_phase_statuses</span> <span class="c1"># pylint: disable=protected-access</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TestStatus.get_name"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -513,6 +513,7 @@
 
         <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_PASS_STATUS</span>
         <span class="n">run_phase_found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">phases</span><span class="p">:</span> <span class="c1"># ensure correct order of processing phases</span>
             <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
@@ -520,15 +521,20 @@
                 <span class="k">continue</span>
 
             <span class="n">status</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">CORE_PHASES</span> <span class="ow">and</span> <span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span> <span class="n">NAMELIST_FAIL_STATUS</span><span class="p">]</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">TEST_PEND_STATUS</span><span class="p">:</span>
+                <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
+
             <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">RUN_PHASE</span><span class="p">:</span>
                 <span class="n">run_phase_found</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">if</span> <span class="n">phase</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SUBMIT_PHASE</span><span class="p">,</span> <span class="n">RUN_PHASE</span><span class="p">]</span> <span class="ow">and</span> <span class="n">no_run</span><span class="p">:</span>
                 <span class="k">break</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">TEST_PEND_STATUS</span><span class="p">):</span>
-                <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_PEND_STATUS</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">TEST_PEND_STATUS</span> <span class="ow">and</span> <span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span> <span class="n">NAMELIST_FAIL_STATUS</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">no_run</span><span class="p">:</span>
+                    <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_PEND_STATUS</span>
+                    <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
                     <span class="k">break</span>
 
             <span class="k">elif</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">):</span>
@@ -538,25 +544,32 @@
                      <span class="p">(</span><span class="n">ignore_memleak</span> <span class="ow">and</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">MEMLEAK_PHASE</span><span class="p">)</span> <span class="p">):</span>
                     <span class="k">continue</span>
 
-                <span class="k">if</span> <span class="p">(</span><span class="n">phase</span> <span class="o">==</span> <span class="n">NAMELIST_PHASE</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">NAMELIST_PHASE</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span><span class="n">rv</span> <span class="o">==</span> <span class="n">TEST_PASS_STATUS</span><span class="p">):</span>
                         <span class="n">rv</span> <span class="o">=</span> <span class="n">NAMELIST_FAIL_STATUS</span>
 
-                <span class="k">elif</span> <span class="p">(</span><span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">NAMELIST_FAIL_STATUS</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">]</span> <span class="ow">and</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">BASELINE_PHASE</span><span class="p">):</span>
-                    <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_DIFF_STATUS</span>
+                <span class="k">elif</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">BASELINE_PHASE</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">NAMELIST_FAIL_STATUS</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">]:</span>
+                        <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
+                        <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_DIFF_STATUS</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">pass</span> <span class="c1"># a DIFF does not trump a FAIL</span>
 
                 <span class="k">elif</span> <span class="n">phase</span> <span class="ow">in</span> <span class="n">CORE_PHASES</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">TEST_FAIL_STATUS</span>
+                    <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
+                    <span class="k">return</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">,</span> <span class="n">phase_responsible_for_status</span>
 
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">phase</span>
                     <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_FAIL_STATUS</span>
 
         <span class="c1"># The test did not fail but the RUN phase was not found, so if the user requested</span>
         <span class="c1"># that we wait for the RUN phase, then the test must still be considered pending.</span>
-        <span class="k">if</span> <span class="n">rv</span> <span class="o">!=</span> <span class="n">TEST_FAIL_STATUS</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">run_phase_found</span> <span class="ow">and</span> <span class="n">wait_for_run</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rv</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TEST_PASS_STATUS</span><span class="p">,</span> <span class="n">NAMELIST_FAIL_STATUS</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">run_phase_found</span> <span class="ow">and</span> <span class="n">wait_for_run</span><span class="p">:</span>
+            <span class="n">phase_responsible_for_status</span> <span class="o">=</span> <span class="n">RUN_PHASE</span>
             <span class="n">rv</span> <span class="o">=</span> <span class="n">TEST_PEND_STATUS</span>
 
-        <span class="k">return</span> <span class="n">rv</span>
+        <span class="k">return</span> <span class="n">rv</span><span class="p">,</span> <span class="n">phase_responsible_for_status</span>
 
 <div class="viewcode-block" id="TestStatus.get_overall_test_status"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.test_status.TestStatus.get_overall_test_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_overall_test_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait_for_run</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_throughput</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_namelists</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_memleak</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_run</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -565,51 +578,53 @@
 <span class="sd">        that hasn&#39;t finished. Namelist diffs are given the lowest precedence.</span>
 
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A SHAREDLIB_BUILD\nPEND ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;PEND&#39;</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;FAIL ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nPASS ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A RUN\nFAIL ERS.foo.A TPUTCOMP&#39;)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A RUN\nFAIL ERS.foo.A TPUTCOMP&#39;, check_throughput=True)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;TPUTCOMP&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nPASS ERS.foo.A RUN\nFAIL ERS.foo.A NLCOMP&#39;)</span>
-<span class="sd">        &#39;NLFAIL&#39;</span>
+<span class="sd">        (&#39;NLFAIL&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN\nFAIL ERS.foo.A NLCOMP&#39;)</span>
-<span class="sd">        &#39;PEND&#39;</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A RUN\nFAIL ERS.foo.A MEMCOMP&#39;)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A RUN\nFAIL ERS.foo.A NLCOMP&#39;, ignore_namelists=True)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A COMPARE_1\nFAIL ERS.foo.A NLCOMP\nFAIL ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;COMPARE_2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;FAIL ERS.foo.A BASELINE\nFAIL ERS.foo.A NLCOMP\nPASS ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;DIFF&#39;</span>
+<span class="sd">        (&#39;DIFF&#39;, &#39;BASELINE&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;FAIL ERS.foo.A BASELINE\nFAIL ERS.foo.A NLCOMP\nFAIL ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;COMPARE_2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PEND ERS.foo.A COMPARE_2\nFAIL ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PEND ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN&#39;)</span>
-<span class="sd">        &#39;PEND&#39;</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;COMPARE_2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD&#39;)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;MODEL_BUILD&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PEND ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN&#39;)</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD&#39;, wait_for_run=True)</span>
-<span class="sd">        &#39;PEND&#39;</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;FAIL ERS.foo.A MODEL_BUILD&#39;, wait_for_run=True)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN&#39;, wait_for_run=True)</span>
-<span class="sd">        &#39;PEND&#39;</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nFAIL ERS.foo.A RUN&#39;, wait_for_run=True)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nPASS ERS.foo.A RUN&#39;, wait_for_run=True)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nFAIL ERS.foo.A RUN\nPEND ERS.foo.A COMPARE&#39;)</span>
-<span class="sd">        &#39;FAIL&#39;</span>
+<span class="sd">        (&#39;FAIL&#39;, &#39;RUN&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(&#39;PASS ERS.foo.A MODEL_BUILD\nPEND ERS.foo.A RUN&#39;, no_run=True)</span>
-<span class="sd">        &#39;PASS&#39;</span>
+<span class="sd">        (&#39;PASS&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; s = &#39;&#39;&#39;PASS ERS.foo.A CREATE_NEWCASE</span>
 <span class="sd">        ... PASS ERS.foo.A XML</span>
 <span class="sd">        ... PASS ERS.foo.A SETUP</span>
@@ -625,18 +640,28 @@
 <span class="sd">        ... PASS ERS.foo.A SHORT_TERM_ARCHIVER</span>
 <span class="sd">        ... &#39;&#39;&#39;</span>
 <span class="sd">        &gt;&gt;&gt; _test_helper2(s, no_perm=True)</span>
-<span class="sd">        &#39;PEND&#39;</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;COMPARE_base_single_thread&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; s = &#39;&#39;&#39;PASS ERS.foo.A CREATE_NEWCASE</span>
+<span class="sd">        ... PASS ERS.foo.A XML</span>
+<span class="sd">        ... PASS ERS.foo.A SETUP</span>
+<span class="sd">        ... PEND ERS.foo.A SHAREDLIB_BUILD</span>
+<span class="sd">        ... FAIL ERS.foo.A NLCOMP</span>
+<span class="sd">        ... &#39;&#39;&#39;</span>
+<span class="sd">        &gt;&gt;&gt; _test_helper2(s, no_run=True)</span>
+<span class="sd">        (&#39;NLFAIL&#39;, &#39;SETUP&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; _test_helper2(s, no_run=False)</span>
+<span class="sd">        (&#39;PEND&#39;, &#39;SHAREDLIB_BUILD&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Core phases take priority</span>
-        <span class="n">core_rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_overall_status_based_on_phases</span><span class="p">(</span><span class="n">CORE_PHASES</span><span class="p">,</span>
-                                                           <span class="n">wait_for_run</span><span class="o">=</span><span class="n">wait_for_run</span><span class="p">,</span>
-                                                           <span class="n">check_throughput</span><span class="o">=</span><span class="n">check_throughput</span><span class="p">,</span>
-                                                           <span class="n">check_memory</span><span class="o">=</span><span class="n">check_memory</span><span class="p">,</span>
-                                                           <span class="n">ignore_namelists</span><span class="o">=</span><span class="n">ignore_namelists</span><span class="p">,</span>
-                                                           <span class="n">ignore_memleak</span><span class="o">=</span><span class="n">ignore_memleak</span><span class="p">,</span>
-                                                           <span class="n">no_run</span><span class="o">=</span><span class="n">no_run</span><span class="p">)</span>
+        <span class="n">core_rv</span><span class="p">,</span> <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_overall_status_based_on_phases</span><span class="p">(</span><span class="n">CORE_PHASES</span><span class="p">,</span>
+                                                                  <span class="n">wait_for_run</span><span class="o">=</span><span class="n">wait_for_run</span><span class="p">,</span>
+                                                                  <span class="n">check_throughput</span><span class="o">=</span><span class="n">check_throughput</span><span class="p">,</span>
+                                                                  <span class="n">check_memory</span><span class="o">=</span><span class="n">check_memory</span><span class="p">,</span>
+                                                                  <span class="n">ignore_namelists</span><span class="o">=</span><span class="n">ignore_namelists</span><span class="p">,</span>
+                                                                  <span class="n">ignore_memleak</span><span class="o">=</span><span class="n">ignore_memleak</span><span class="p">,</span>
+                                                                  <span class="n">no_run</span><span class="o">=</span><span class="n">no_run</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">core_rv</span> <span class="o">!=</span> <span class="n">TEST_PASS_STATUS</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">core_rv</span>
+            <span class="k">return</span> <span class="n">core_rv</span><span class="p">,</span> <span class="n">phase</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">phase_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">CORE_PHASES</span><span class="p">)</span>
             <span class="n">phase_order</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_statuses</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CORE_PHASES</span><span class="p">])</span>
@@ -691,7 +716,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

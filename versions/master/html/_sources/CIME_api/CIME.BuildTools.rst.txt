@@ -60,7 +60,6 @@ CIME.BuildTools.valuesetting module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

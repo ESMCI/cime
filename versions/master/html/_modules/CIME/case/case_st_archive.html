@@ -187,14 +187,19 @@
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span><span class="p">,</span> <span class="n">symlink_force</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">find_files</span>
-<span class="kn">from</span> <span class="nn">CIME.date</span>                      <span class="k">import</span> <span class="n">get_file_date</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.archive</span>       <span class="k">import</span> <span class="n">Archive</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span>            <span class="k">import</span> <span class="n">Files</span>
-<span class="kn">from</span> <span class="nn">os.path</span>                        <span class="k">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="kn">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span><span class="p">,</span> <span class="n">symlink_force</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">find_files</span>
+<span class="kn">from</span> <span class="nn">CIME.date</span>                      <span class="kn">import</span> <span class="n">get_file_date</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.archive</span>       <span class="kn">import</span> <span class="n">Archive</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span>            <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">os.path</span>                        <span class="kn">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">join</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_get_archive_fn_desc</span><span class="p">(</span><span class="n">archive_fn</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="k">return</span> <span class="s2">&quot;moving&quot;</span> <span class="k">if</span> <span class="n">archive_fn</span> <span class="ow">is</span> <span class="n">shutil</span><span class="o">.</span><span class="n">move</span> <span class="k">else</span> <span class="s2">&quot;copying&quot;</span>
 
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_get_archive_file_fn</span><span class="p">(</span><span class="n">copy_only</span><span class="p">):</span>
@@ -377,8 +382,8 @@
     <span class="k">for</span> <span class="n">logfile</span> <span class="ow">in</span> <span class="n">logfiles</span><span class="p">:</span>
         <span class="n">srcfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span>
         <span class="n">destfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">archive_logdir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_get_archive_fn_desc</span><span class="p">(</span><span class="n">archive_file_fn</span><span class="p">),</span> <span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
         <span class="n">archive_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;moving </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
 
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_archive_history_files</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">histfiles_savein_rundir</span><span class="p">,</span>
@@ -415,7 +420,7 @@
             <span class="k">for</span> <span class="n">rbldfile</span> <span class="ow">in</span> <span class="n">rbldfiles</span><span class="p">:</span>
                 <span class="n">srcfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rbldfile</span><span class="p">)</span>
                 <span class="n">destfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">archive_rblddir</span><span class="p">,</span> <span class="n">rbldfile</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;moving </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_get_archive_fn_desc</span><span class="p">(</span><span class="n">archive_file_fn</span><span class="p">),</span> <span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
                 <span class="n">archive_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
 
         <span class="n">sfxhst</span> <span class="o">=</span> <span class="n">casename</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;_[0-9][mdy]_&#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;[0-9]*&#39;</span>
@@ -427,7 +432,7 @@
             <span class="k">for</span> <span class="n">hstfile</span> <span class="ow">in</span> <span class="n">hstfiles</span><span class="p">:</span>
                 <span class="n">srcfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">hstfile</span><span class="p">)</span>
                 <span class="n">destfile</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">archive_histdir</span><span class="p">,</span> <span class="n">hstfile</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;moving </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_get_archive_fn_desc</span><span class="p">(</span><span class="n">archive_file_fn</span><span class="p">),</span> <span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
                 <span class="n">archive_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
 
     <span class="c1"># determine ninst and ninst_string</span>
@@ -448,7 +453,7 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;copying </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
                     <span class="n">safe_copy</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;moving </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_get_archive_fn_desc</span><span class="p">(</span><span class="n">archive_file_fn</span><span class="p">),</span> <span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
                     <span class="n">archive_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
@@ -643,8 +648,8 @@
                     <span class="n">destfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_restdir</span><span class="p">,</span> <span class="n">rfile</span><span class="p">)</span>
                     <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">srcfile</span><span class="p">),</span>
                            <span class="s2">&quot;restart file </span><span class="si">{}</span><span class="s2"> does not exist &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> file </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_get_archive_fn_desc</span><span class="p">(</span><span class="n">archive_file_fn</span><span class="p">),</span> <span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
                     <span class="n">archive_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;moving file </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
 
                     <span class="c1"># need to copy the history files needed for interim restarts - since</span>
                     <span class="c1"># have not archived all of the history files yet</span>
@@ -1126,7 +1131,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

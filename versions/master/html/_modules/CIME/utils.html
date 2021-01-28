@@ -187,10 +187,10 @@
 <span class="kn">import</span> <span class="nn">errno</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">warnings</span><span class="o">,</span> <span class="nn">filecmp</span>
 <span class="kn">import</span> <span class="nn">stat</span> <span class="k">as</span> <span class="nn">statlib</span>
 <span class="kn">import</span> <span class="nn">six</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="c1">#pylint: disable=import-error</span>
-<span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">configparser</span>
-<span class="kn">from</span> <span class="nn">distutils</span> <span class="k">import</span> <span class="n">file_util</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">configparser</span>
+<span class="kn">from</span> <span class="nn">distutils</span> <span class="kn">import</span> <span class="n">file_util</span>
 
 <span class="c1"># Return this error code if the scripts worked but tests failed</span>
 <span class="n">TESTS_FAILED_ERR_CODE</span> <span class="o">=</span> <span class="mi">100</span>
@@ -239,7 +239,7 @@
         <span class="n">log</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="n">orig_handlers</span></div>
 
 <div class="viewcode-block" id="IndentFormatter"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.IndentFormatter">[docs]</a><span class="k">class</span> <span class="nc">IndentFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">datefmt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_indent</span> <span class="o">=</span> <span class="n">indent</span>
 
@@ -271,17 +271,17 @@
 <span class="sd">    CREDIT: https://github.com/sakurai-youhei/envcontext</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old_envs</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">old_envs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">old_envs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_envs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
@@ -517,7 +517,7 @@
             <span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;cesm&#39;</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">srcroot</span><span class="p">,</span> <span class="s2">&quot;Externals.cfg&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;fv3gfs&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;ufs&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
                         <span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;ufs&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="s1">&#39;e3sm&#39;</span>
@@ -639,7 +639,7 @@
 
 <div class="viewcode-block" id="run_cmd"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_cmd">[docs]</a><span class="k">def</span> <span class="nf">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">input_str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">arg_stdout</span><span class="o">=</span><span class="n">_hack</span><span class="p">,</span> <span class="n">arg_stderr</span><span class="o">=</span><span class="n">_hack</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">combine_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">combine_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper around subprocess to make it much more convenient to run shell commands</span>
 
@@ -674,6 +674,7 @@
                                     <span class="n">stderr</span><span class="o">=</span><span class="n">arg_stderr</span><span class="p">,</span>
                                     <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span>
                                     <span class="n">cwd</span><span class="o">=</span><span class="n">from_dir</span><span class="p">,</span>
+                                    <span class="n">executable</span><span class="o">=</span><span class="n">executable</span><span class="p">,</span>
                                     <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
 
             <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>
@@ -684,6 +685,7 @@
                                 <span class="n">stderr</span><span class="o">=</span><span class="n">arg_stderr</span><span class="p">,</span>
                                 <span class="n">stdin</span><span class="o">=</span><span class="n">stdin</span><span class="p">,</span>
                                 <span class="n">cwd</span><span class="o">=</span><span class="n">from_dir</span><span class="p">,</span>
+                                <span class="n">executable</span><span class="o">=</span><span class="n">executable</span><span class="p">,</span>
                                 <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
 
         <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span>
@@ -735,7 +737,7 @@
 
 <div class="viewcode-block" id="run_cmd_no_fail"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.run_cmd_no_fail">[docs]</a><span class="k">def</span> <span class="nf">run_cmd_no_fail</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">input_str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">arg_stdout</span><span class="o">=</span><span class="n">_hack</span><span class="p">,</span> <span class="n">arg_stderr</span><span class="o">=</span><span class="n">_hack</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">combine_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">combine_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper around subprocess to make it much more convenient to run shell commands.</span>
 <span class="sd">    Expects command to work. Just returns output string.</span>
@@ -753,7 +755,8 @@
 <span class="sd">    True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">input_str</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="p">,</span>
-                                   <span class="n">arg_stderr</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">combine_output</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                                   <span class="n">arg_stderr</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">combine_output</span><span class="p">,</span>
+                                   <span class="n">executable</span><span class="o">=</span><span class="n">executable</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># If command produced no errput, put output in the exception since we</span>
         <span class="c1"># have nothing else to go on.</span>
@@ -1043,6 +1046,18 @@
 
     <span class="k">return</span> <span class="kc">False</span></div>
 
+<div class="viewcode-block" id="get_current_submodule_status"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.get_current_submodule_status">[docs]</a><span class="k">def</span> <span class="nf">get_current_submodule_status</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the sha1s of the current currently checked out commit for each submodule,</span>
+<span class="sd">    along with the submodule path and the output of git describe for the SHA-1.</span>
+
+<span class="sd">    &gt;&gt;&gt; get_current_submodule_status() is not None</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;git submodule status </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;--recursive&quot;</span> <span class="k">if</span> <span class="n">recursive</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">repo</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span> <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;unknown&quot;</span></div>
+
 <div class="viewcode-block" id="safe_copy"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.safe_copy">[docs]</a><span class="k">def</span> <span class="nf">safe_copy</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">tgt_path</span><span class="p">,</span> <span class="n">preserve_meta</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A flexbile and safe copy routine. Will try to copy file and metadata, but this</span>
@@ -1272,7 +1287,7 @@
                         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print only warnings and error messages&quot;</span><span class="p">)</span></div>
 
 <span class="k">class</span> <span class="nc">_LessThanFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclusive_maximum</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclusive_maximum</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">_LessThanFilter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_level</span> <span class="o">=</span> <span class="n">exclusive_maximum</span>
 
@@ -1786,7 +1801,7 @@
 <span class="sd">    path to that directory to sys.path if its not there and return the test object</span>
 <span class="sd">    Fail if the test is not found in any of the paths.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
+    <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
     <span class="n">system_test_path</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">testname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
         <span class="n">system_test_path</span> <span class="o">=</span>  <span class="s2">&quot;CIME.SystemTests.system_tests_common.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testname</span><span class="p">)</span>
@@ -1995,14 +2010,14 @@
 <span class="sd">    Enable 0002 umask within this manager</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_perms</span><span class="o">=</span><span class="mo">0o002</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_perms</span><span class="o">=</span><span class="mo">0o002</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_orig_umask</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_new_perms</span>  <span class="o">=</span> <span class="n">new_perms</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_orig_umask</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">umask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_perms</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">umask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_orig_umask</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Timeout"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.utils.Timeout">[docs]</a><span class="k">class</span> <span class="nc">Timeout</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -2011,19 +2026,19 @@
 <span class="sd">    will raise exception, but a custon function call can be provided.</span>
 <span class="sd">    Provided None as seconds makes this class a no-op</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span> <span class="o">=</span> <span class="n">seconds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_action</span>  <span class="o">=</span> <span class="n">action</span> <span class="k">if</span> <span class="n">action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_timeout</span>
 
     <span class="k">def</span> <span class="nf">_handle_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Timeout expired&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action</span><span class="p">)</span>
             <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seconds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
@@ -2162,7 +2177,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

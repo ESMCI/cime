@@ -284,7 +284,6 @@ CIME.XML.workflow module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

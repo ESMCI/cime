@@ -832,13 +832,14 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
   &lt;test NAME=&quot;TESTRUNUSERXMLCHANGE&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Test simultaneous xmlchanges while first run is running.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
-    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_OPTION&gt;nsteps&lt;/STOP_OPTION&gt;
     &lt;STOP_N&gt;3&lt;/STOP_N&gt;
+    &lt;NTASKS&gt;1&lt;/NTASKS&gt;
     &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
-    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
     &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
     &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
     &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;NODEFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
@@ -1082,7 +1083,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 

@@ -191,14 +191,14 @@
 <span class="c1"># pylint:disable=protected-access</span>
 
 <span class="kn">import</span> <span class="nn">unittest</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="k">import</span> <span class="n">SystemTestsCompareTwo</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="kn">import</span> <span class="n">SystemTestsCompareTwo</span>
 <span class="kn">import</span> <span class="nn">CIME.test_status</span> <span class="k">as</span> <span class="nn">test_status</span>
-<span class="kn">from</span> <span class="nn">CIME.tests.case_fake</span> <span class="k">import</span> <span class="n">CaseFake</span>
+<span class="kn">from</span> <span class="nn">CIME.tests.case_fake</span> <span class="kn">import</span> <span class="n">CaseFake</span>
 
 <span class="c1"># ========================================================================</span>
 <span class="c1"># Structure for storing information about calls made to methods</span>
@@ -249,7 +249,7 @@
 <span class="c1"># is a list of Call objects (see above for their definition).</span>
 
 <div class="viewcode-block" id="SystemTestsCompareTwoFake"><a class="viewcode-back" href="../../../../CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake">[docs]</a><span class="k">class</span> <span class="nc">SystemTestsCompareTwoFake</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">case1</span><span class="p">,</span>
                  <span class="n">run_one_suffix</span> <span class="o">=</span> <span class="s1">&#39;base&#39;</span><span class="p">,</span>
                  <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
@@ -337,7 +337,7 @@
     <span class="c1"># SystemTestsCommon</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="SystemTestsCompareTwoFake.run_indv"><a class="viewcode-back" href="../../../../CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake.run_indv">[docs]</a>    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemTestsCompareTwoFake.run_indv"><a class="viewcode-back" href="../../../../CIME_api/CIME.tests.SystemTests.html#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake.run_indv">[docs]</a>    <span class="k">def</span> <span class="nf">run_indv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="n">st_archive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">submit_resubmits</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This fake implementation appends to the log and raises an exception if</span>
 <span class="sd">        it&#39;s supposed to</span>
@@ -783,7 +783,6 @@
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
         <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
         <script src="../../../../_static/pop_ver.js"></script>
     
 

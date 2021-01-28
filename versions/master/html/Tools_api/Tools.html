@@ -120,6 +120,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Tools</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tools package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-Tools.e3sm_compile_wrap">Tools.e3sm_compile_wrap module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tools-generate-cylc-workflow-module">Tools.generate_cylc_workflow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-Tools.standard_script_setup">Tools.standard_script_setup module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tools-testreporter-module">Tools.testreporter module</a></li>
@@ -198,6 +199,26 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-Tools.e3sm_compile_wrap">
+<span id="tools-e3sm-compile-wrap-module"></span><h2>Tools.e3sm_compile_wrap module<a class="headerlink" href="#module-Tools.e3sm_compile_wrap" title="Permalink to this headline">¶</a></h2>
+<p>A script to wrap all e3sm compilations. This script should be enabled
+by prefixing it to all compiler and link calls. This can be done easily in
+CMake by using the RULE_LAUNCH_COMPILE and RULE_LAUNCH_LINK global properties.</p>
+<p>This script will allow us to do whatever bookeeping, timing, logging, etc that
+we want in our build system.</p>
+<p>We want this script to be super-lean, so we do not load any of the standard CIME
+stuff.</p>
+<dl class="py function">
+<dt id="Tools.e3sm_compile_wrap.parse_command_line">
+<code class="sig-prename descclassname">Tools.e3sm_compile_wrap.</code><code class="sig-name descname">parse_command_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">_</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/e3sm_compile_wrap.html#parse_command_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tools.e3sm_compile_wrap.parse_command_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="Tools.e3sm_compile_wrap.run_cmd">
+<code class="sig-prename descclassname">Tools.e3sm_compile_wrap.</code><code class="sig-name descname">run_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Tools/e3sm_compile_wrap.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Tools.e3sm_compile_wrap.run_cmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="tools-generate-cylc-workflow-module">
 <h2>Tools.generate_cylc_workflow module<a class="headerlink" href="#tools-generate-cylc-workflow-module" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -262,7 +283,6 @@ that every script should do.</p>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 

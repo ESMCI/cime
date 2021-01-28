@@ -148,6 +148,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cs.status.html">cs.status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e3sm_check_env.html">e3sm_check_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e3sm_compile_wrap.py.html">e3sm_compile_wrap.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getTiming.html">getTiming</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get_case_env.html">get_case_env</a></li>
@@ -261,13 +262,13 @@ usage: create_test [-h] [-d] [-v] [-s] [--no-run] [--no-build] [--no-setup]
                    [-p PROJECT] [-t TEST_ID] [-j PARALLEL_JOBS]
                    [--proc-pool PROC_POOL] [--walltime WALLTIME] [-q QUEUE]
                    [-f TESTFILE] [-o] [--wait] [--allow-pnl]
-                   [--wait-check-throughput] [--wait-check-memory]
-                   [--wait-ignore-namelists] [--wait-ignore-memleak]
-                   [--force-procs FORCE_PROCS] [--force-threads FORCE_THREADS]
-                   [-i INPUT_DIR] [--pesfile PESFILE] [--retry RETRY] [-N]
+                   [--check-throughput] [--check-memory] [--ignore-namelists]
+                   [--ignore-memleak] [--force-procs FORCE_PROCS]
+                   [--force-threads FORCE_THREADS] [-i INPUT_DIR]
+                   [--pesfile PESFILE] [--retry RETRY] [-N]
                    [--workflow WORKFLOW] [--mail-user MAIL_USER]
                    [-M MAIL_TYPE]
-                   [testargs [testargs ...]]
+                   [testargs ...]
 
 Script to create, build and run CIME tests. This script can:
 
@@ -387,13 +388,10 @@ optional arguments:
                         option will allow existing baseline directories to be silently overwritten.
   --wait                On batch systems, wait for submitted jobs to complete
   --allow-pnl           Do not pass skip-pnl to case.submit
-  --wait-check-throughput
-                        If waiting, fail if throughput check fails
-  --wait-check-memory   If waiting, fail if memory check fails
-  --wait-ignore-namelists
-                        If waiting, ignore if namelist diffs
-  --wait-ignore-memleak
-                        If waiting, ignore if there&#39;s a memleak
+  --check-throughput    Fail if throughput check fails. Requires --wait on batch systems
+  --check-memory        Fail if memory check fails. Requires --wait on batch systems
+  --ignore-namelists    Do not fail if there namelist diffs
+  --ignore-memleak      Do not fail if there&#39;s a memleak
   --force-procs FORCE_PROCS
                         For all tests to run with this number of processors
   --force-threads FORCE_THREADS
@@ -464,7 +462,6 @@ optional arguments:
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 

@@ -183,26 +183,26 @@
 <span class="sd">Contains the definition of a class to hold information on expected failures for a single test</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">EXPECTED_FAILURE_COMMENT</span> <span class="o">=</span> <span class="s2">&quot;(EXPECTED FAILURE)&quot;</span>
 <span class="n">UNEXPECTED_FAILURE_COMMENT_START</span> <span class="o">=</span> <span class="s2">&quot;(UNEXPECTED&quot;</span> <span class="c1"># There will be some additional text after this, before the end parentheses</span>
 
 <div class="viewcode-block" id="ExpectedFails"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.expected_fails.ExpectedFails">[docs]</a><span class="k">class</span> <span class="nc">ExpectedFails</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize an empty ExpectedFails object&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fails</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">ExpectedFails</span><span class="p">),</span> <span class="s2">&quot;Wrong type&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fails</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">_fails</span> <span class="c1"># pylint: disable=protected-access</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fails</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExpectedFails.add_failure"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.expected_fails.ExpectedFails.add_failure">[docs]</a>    <span class="k">def</span> <span class="nf">add_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">expected_status</span><span class="p">):</span>
@@ -262,7 +262,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

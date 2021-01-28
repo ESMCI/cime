@@ -180,7 +180,7 @@
             
   <h1>Source code for CIME.date</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="get_file_date"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.get_file_date">[docs]</a><span class="k">def</span> <span class="nf">get_file_date</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -375,13 +375,13 @@
                  <span class="s1">&#39;second&#39;</span><span class="p">:</span> <span class="n">second</span> <span class="o">%</span> <span class="n">_SECONDS_PER_MINUTE</span>
         <span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">year</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">month</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">day</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_second</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hms_to_second</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &gt;&gt;&gt; str(date(4, 5, 7, second=64))</span>
 <span class="sd">        &#39;date(4, 5, 7, 0, 1, 4)&#39;</span>
@@ -415,18 +415,18 @@
 <div class="viewcode-block" id="date.second_of_day"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.date.date.second_of_day">[docs]</a>    <span class="k">def</span> <span class="nf">second_of_day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_second</span></div>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">year</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">month</span><span class="p">())</span>
                 <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">day</span><span class="p">())</span>
                 <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_of_day</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">second_of_day</span><span class="p">()))</span>
 
-    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">year</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">year</span><span class="p">():</span>
@@ -448,13 +448,13 @@
             <span class="c1"># the dates are equal</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">((</span><span class="bp">self</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span> <span class="o">&lt;=</span> <span class="n">other</span><span class="p">)</span></div>
 </pre></div>
 
@@ -498,7 +498,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

@@ -12,7 +12,6 @@ CIME.SystemTests.test\_utils.user\_nl\_utils module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

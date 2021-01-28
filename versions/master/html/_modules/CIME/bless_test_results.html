@@ -180,12 +180,12 @@
             
   <h1>Source code for CIME.bless_test_results</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">CIME.compare_namelists</span><span class="o">,</span> <span class="nn">CIME.simple_compare</span>
-<span class="kn">from</span> <span class="nn">CIME.test_scheduler</span> <span class="k">import</span> <span class="n">NAMELIST_PHASE</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">run_cmd</span><span class="p">,</span> <span class="n">get_scripts_root</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">EnvironmentContext</span>
-<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.hist_utils</span> <span class="k">import</span> <span class="n">generate_baseline</span><span class="p">,</span> <span class="n">compare_baseline</span>
-<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="k">import</span> <span class="n">Case</span>
-<span class="kn">from</span> <span class="nn">CIME.test_utils</span> <span class="k">import</span> <span class="n">get_test_status_files</span>
+<span class="kn">from</span> <span class="nn">CIME.test_scheduler</span> <span class="kn">import</span> <span class="n">NAMELIST_PHASE</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">run_cmd</span><span class="p">,</span> <span class="n">get_scripts_root</span><span class="p">,</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">EnvironmentContext</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.hist_utils</span> <span class="kn">import</span> <span class="n">generate_baseline</span><span class="p">,</span> <span class="n">compare_baseline</span>
+<span class="kn">from</span> <span class="nn">CIME.case</span> <span class="kn">import</span> <span class="n">Case</span>
+<span class="kn">from</span> <span class="nn">CIME.test_utils</span> <span class="kn">import</span> <span class="n">get_test_status_files</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span>  <span class="nn">time</span><span class="o">,</span> <span class="nn">six</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -278,7 +278,7 @@
                 <span class="k">continue</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">bless_tests</span> <span class="ow">in</span> <span class="p">[[],</span> <span class="kc">None</span><span class="p">]</span> <span class="ow">or</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">match_any</span><span class="p">(</span><span class="n">test_name</span><span class="p">,</span> <span class="n">bless_tests</span><span class="p">)):</span>
-            <span class="n">overall_result</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()</span>
+            <span class="n">overall_result</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_overall_test_status</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># See if we need to bless namelist</span>
             <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">hist_only</span><span class="p">):</span>
@@ -407,7 +407,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

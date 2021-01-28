@@ -217,7 +217,6 @@ CIME.wait\_for\_tests module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

@@ -182,16 +182,16 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Interface to the config_pes.xml file.  This class inherits from GenericXML.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="k">import</span> <span class="n">GenericXML</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="k">import</span> <span class="n">Files</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span> <span class="kn">import</span> <span class="n">GenericXML</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">expect</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Pes"><a class="viewcode-back" href="../../../CIME_api/CIME.XML.html#CIME.XML.pes.Pes">[docs]</a><span class="k">class</span> <span class="nc">Pes</span><span class="p">(</span><span class="n">GenericXML</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infile</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize a files object given input pes specification file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -340,7 +340,9 @@
                         <span class="n">pes_pstrid</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
             <span class="c1"># if the value is already upper case its something else we are trying to set</span>
                 <span class="k">elif</span> <span class="n">vid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
-                    <span class="n">other_settings</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+                        <span class="n">other_settings</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">grid_choice</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pes setting: grid match    is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_choice</span> <span class="p">))</span>
             <span class="k">if</span> <span class="n">mach_choice</span> <span class="o">!=</span> <span class="s1">&#39;any&#39;</span> <span class="ow">or</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
@@ -393,7 +395,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

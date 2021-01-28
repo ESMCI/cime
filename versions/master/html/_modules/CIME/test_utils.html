@@ -184,10 +184,10 @@
 <span class="sd">get test lists.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.testlist</span> <span class="k">import</span> <span class="n">Testlist</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="k">import</span> <span class="n">Files</span>
-<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="k">import</span> <span class="n">TEST_STATUS_FILENAME</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.testlist</span> <span class="kn">import</span> <span class="n">Testlist</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.files</span> <span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="n">TEST_STATUS_FILENAME</span>
 <span class="kn">import</span> <span class="nn">CIME.utils</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -268,6 +268,11 @@
 <span class="sd">    &gt;&gt;&gt; test_to_string(mytest, 10)</span>
 <span class="sd">    &#39;prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks&#39;</span>
 
+<span class="sd">    Newlines in comments are converted to spaces</span>
+<span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.cheyenne_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {&#39;comment&#39;: &#39;my\\nremarks&#39;}}</span>
+<span class="sd">    &gt;&gt;&gt; test_to_string(mytest, 10)</span>
+<span class="sd">    &#39;prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks&#39;</span>
+
 <span class="sd">    Printing other options, too:</span>
 <span class="sd">    &gt;&gt;&gt; mytest = {&#39;name&#39;: &#39;SMS.f19_g16.A.cheyenne_intel&#39;, &#39;category&#39;: &#39;prealpha&#39;, &#39;options&#39;: {&#39;comment&#39;: &#39;my remarks&#39;, &#39;wallclock&#39;: &#39;0:20&#39;, &#39;memleak_tolerance&#39;: 0.2}}</span>
 <span class="sd">    &gt;&gt;&gt; test_to_string(mytest, 10, show_options=True)</span>
@@ -279,6 +284,7 @@
         <span class="n">myopts</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">comment</span> <span class="o">=</span> <span class="n">myopts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;comment&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">comment</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
             <span class="n">mystr</span> <span class="o">+=</span> <span class="s2">&quot; # </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">show_options</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">one_opt</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">myopts</span><span class="p">):</span>
@@ -335,7 +341,6 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
         <script src="../../_static/pop_ver.js"></script>
     
 

@@ -184,15 +184,15 @@
 <span class="sd">case_cmpgen_namelists is a member of Class case from file case.py</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">CIME.compare_namelists</span> <span class="k">import</span> <span class="n">is_namelist_file</span><span class="p">,</span> <span class="n">compare_namelist_files</span>
-<span class="kn">from</span> <span class="nn">CIME.simple_compare</span> <span class="k">import</span> <span class="n">compare_files</span><span class="p">,</span> <span class="n">compare_runconfigfiles</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">SharedArea</span>
-<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.compare_namelists</span> <span class="kn">import</span> <span class="n">is_namelist_file</span><span class="p">,</span> <span class="n">compare_namelist_files</span>
+<span class="kn">from</span> <span class="nn">CIME.simple_compare</span> <span class="kn">import</span> <span class="n">compare_files</span><span class="p">,</span> <span class="n">compare_runconfigfiles</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">append_status</span><span class="p">,</span> <span class="n">safe_copy</span><span class="p">,</span> <span class="n">SharedArea</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">glob</span>
-<span class="kn">from</span> <span class="nn">distutils</span> <span class="k">import</span> <span class="n">dir_util</span>
+<span class="kn">from</span> <span class="nn">distutils</span> <span class="kn">import</span> <span class="n">dir_util</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -367,7 +367,6 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
         <script src="../../../_static/pop_ver.js"></script>
     
 

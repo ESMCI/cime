@@ -1136,9 +1136,9 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;
       Determines what ESMF log files (if any) are generated when
-          USE_ESMF_LIB is TRUE.
+	  USE_ESMF_LIB is TRUE.
       ESMF_LOGKIND_SINGLE: Use a single log file, combining messages from
-          all of the PETs. Not supported on some platforms.
+	  all of the PETs. Not supported on some platforms.
       ESMF_LOGKIND_MULTI: Use multiple log files -- one per PET.
       ESMF_LOGKIND_NONE: Do not issue messages to a log file.
       By default, no ESMF log files are generated.
@@ -2601,7 +2601,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;PIO_VERSION&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;2&lt;/default_value&gt;
     &lt;valid_values&gt;1,2&lt;/valid_values&gt;
     &lt;group&gt;build_macros&lt;/group&gt;
     &lt;file&gt;env_build.xml&lt;/file&gt;
@@ -3285,6 +3285,30 @@ to define behavior.</p>
     (0: no output; 1: compact; 2: verbose).&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;INFO_MPROF&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;valid_values&gt;0,1,2,3,4&lt;/valid_values&gt;
+    &lt;default_value&gt;3&lt;/default_value&gt;
+    &lt;group&gt;run_flags&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Sets level of memory profile logging:
+      0: no output
+      1: log mem-usage from component ROOTPE tasks
+      2: log mem-usage from all tasks
+      3: aggregate logging to node-level mem-usage on ROOTPE nodes
+      4: aggregate logging to node-level mem-usage on all nodes
+      Aggregation requires INFO_TASKMAP_MODEL&gt;0.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;INFO_MPROF_DT&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;86400&lt;/default_value&gt;
+    &lt;group&gt;run_flags&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;number of seconds between memory profiling logs&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;SAVE_TIMING&quot;&gt;
     &lt;type&gt;logical&lt;/type&gt;
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
@@ -3370,7 +3394,7 @@ to define behavior.</p>
     &lt;valid_values&gt;none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end&lt;/valid_values&gt;
     &lt;default_value&gt;never&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;_DATM.+_CLM&quot;&gt;ndays&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.+_ELM&quot;&gt;ndays&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_begin_stop_restart&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3444,7 +3468,7 @@ to define behavior.</p>
     &lt;valid_values&gt;none,CO2A,CO2A_OI,CO2B,CO2C,CO2C_OI,CO2_DMSA&lt;/valid_values&gt;
     &lt;default_value&gt;none&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;_CAM\d+&quot;     &gt;CO2A&lt;/value&gt;
+      &lt;value compset=&quot;_EAM&quot;     &gt;CO2A&lt;/value&gt;
       &lt;value compset=&quot;_DATM&quot;    &gt;none&lt;/value&gt;
       &lt;value compset=&quot;_BGC%BPRP&quot;&gt;CO2C&lt;/value&gt;
       &lt;value compset=&quot;HIST.*_DATM%(QIA|CRU|GSW)&quot;&gt;CO2A&lt;/value&gt;
@@ -3516,9 +3540,9 @@ to define behavior.</p>
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;day&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot;       &gt;day&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;day&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;day&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;day&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;day&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot;&gt;day&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;day&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;day&lt;/value&gt;
     &lt;/values&gt;
     &lt;desc&gt;Base period associated with NCPL coupling frequency.
     This xml variable is only used to set the driver namelist variables,
@@ -3531,20 +3555,20 @@ to define behavior.</p>
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_SATM&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_XATM&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_CAM\d+%WCBC&quot;&gt;144&lt;/value&gt;
-      &lt;value compset=&quot;_CAM\d+%WCMX&quot;&gt;288&lt;/value&gt;
-      &lt;value compset=&quot;_CAM\d+%WCXI&quot;&gt;288&lt;/value&gt;
-      &lt;value compset=&quot;_CAM%ADIAB&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_CAM%IDEAL&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_EAM\d+%WCBC&quot;&gt;144&lt;/value&gt;
+      &lt;value compset=&quot;_EAM\d+%WCMX&quot;&gt;288&lt;/value&gt;
+      &lt;value compset=&quot;_EAM\d+%WCXI&quot;&gt;288&lt;/value&gt;
+      &lt;value compset=&quot;_EAM%ADIAB&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_EAM%IDEAL&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM%COPYALL_NPS&quot;&gt;72&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_CLM&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_ELM&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2&quot;&gt;4&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*_CICE.*_POP2&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_CICE.*_DOCN&quot;&gt;24&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DOCN%US20&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_MPASO&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_MPASO&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
@@ -3555,16 +3579,19 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oEC60to30&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oEC60to30v3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oEC60to30wLI&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%ECwISC30to60E1r2&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%EC30to60E2r2&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%WC14to60E2r3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS30to10v3&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS30to10wLI&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS18to6v3&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oRRS15to5&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPAS&quot; grid=&quot;oi%oARRM60to6&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%0.23x0.31&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne4np4&quot;&gt;12&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne4np4.pg2&quot;&gt;24&lt;/value&gt;
@@ -3596,10 +3623,10 @@ to define behavior.</p>
       &lt;value compset=&quot;_DATM.*_DICE.*_POP2.*_DWAV&quot;&gt;4&lt;/value&gt;
       &lt;!-- a shorter timestep is needed for stability in MMF compsets --&gt;
       &lt;!-- (i.e. super-parameterization, MMF, CRM) --&gt;
-      &lt;value compset=&quot;_CAM5%SP&quot;       grid=&quot;a%ne4np4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_CAM5%SP.*ECPP&quot; grid=&quot;a%ne4np4&quot;&gt;72&lt;/value&gt;
-      &lt;value compset=&quot;_CAM5%MMF&quot;      grid=&quot;a%ne4np4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_CAM5%MMF&quot;      grid=&quot;a%ne4np4.pg2&quot;&gt;72&lt;/value&gt;
+      &lt;value compset=&quot;_EAM%SP&quot;       grid=&quot;a%ne4np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_EAM%SP.*ECPP&quot; grid=&quot;a%ne4np4&quot;&gt;72&lt;/value&gt;
+      &lt;value compset=&quot;_EAM%MMF&quot;      grid=&quot;a%ne4np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_EAM%MMF&quot;      grid=&quot;a%ne4np4.pg2&quot;&gt;72&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3616,11 +3643,11 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;$ATM_NCPL&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;48&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;$ATM_NCPL&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;12&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;oi%oARRM60to10&quot;&gt;96&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3637,7 +3664,7 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;$ATM_NCPL&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;$ATM_NCPL&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot;&gt;$ATM_NCPL&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3652,12 +3679,12 @@ to define behavior.</p>
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_POP2&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_POP2&quot; grid=&quot;oi%tx0.1v2&quot;&gt;4&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_CLM4.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_ELM.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DLND.*_DICE.*_DOCN.*_SWAV&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_DLND.*_DICE.*_DOCN.*_DWAV&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM%NYF.*_SLND.*_DICE.*_DOCN.*_SWAV&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_XATM.*_XLND.*_XICE.*_XOCN&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_DATM.*_CLM4.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_DATM.*_ELM.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SATM.*_SLND.*_SICE.*_SOCN&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_CISM\d&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
@@ -3670,6 +3697,9 @@ to define behavior.</p>
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oEC60to30&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oEC60to30v3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oEC60to30wLI&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%ECwISC30to60E1r2&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%EC30to60E2r2&quot;&gt;48&lt;/value&gt;
+      &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%WC14to60E2r3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oRRS30to10v3&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oRRS30to10wLI&quot;&gt;48&lt;/value&gt;
       &lt;value compset=&quot;_MPASO&quot; grid=&quot;oi%oRRS18to6v3&quot;&gt;48&lt;/value&gt;
@@ -3693,9 +3723,9 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;1&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;1&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3738,10 +3768,10 @@ to define behavior.</p>
       &lt;value compset=&quot;_DLND.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_SLND.*SOCN.*_MALI&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;_DATM.*_SLND.*MPASO.*_MALI&quot;&gt;24&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot;&gt;8&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;6&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;4&lt;/value&gt;
-      &lt;value compset=&quot;_CAM.*_CLM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;8&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot;&gt;8&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne4np4&quot;&gt;6&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne11np4&quot;&gt;4&lt;/value&gt;
+      &lt;value compset=&quot;_EAM.*_ELM.*MPASO&quot; grid=&quot;a%ne120np4&quot;&gt;8&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_coupling&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3857,9 +3887,9 @@ to define behavior.</p>
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;DATM.*_POP\d&quot;    &gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;CAM.*_POP\d&quot;     &gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;CAM.*_MPASO&quot;     &gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;CAM.*_DOCN%SOM&quot;&gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;EAM.*_POP\d&quot;     &gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;EAM.*_MPASO&quot;     &gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;EAM.*_DOCN%SOM&quot;&gt;TRUE&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_budgets&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3874,8 +3904,6 @@ to define behavior.</p>
       &lt;value compset=&quot;^1850&quot;					&gt;284.7&lt;/value&gt;
       &lt;value compset=&quot;^HIST.+BGC%BPRP&quot;				&gt;284.7&lt;/value&gt;
       &lt;value compset=&quot;^20TR.+BGC%BPRP&quot;				&gt;284.7&lt;/value&gt;
-      &lt;value compset=&quot;^HIST_CAM4%FCHM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^20TR_CAM4%FCHM&quot;				&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;^2000&quot;					&gt;367.0&lt;/value&gt;
       &lt;value compset=&quot;^1850.+DATM%NYF&quot;				&gt;379.000&lt;/value&gt;
       &lt;value compset=&quot;^1850.+DATM%NYF.*_POP2%ECO&quot;		&gt;284.7&lt;/value&gt;
@@ -3889,16 +3917,16 @@ to define behavior.</p>
       &lt;value compset=&quot;^RCP6.+DATM&quot;				&gt;367.0&lt;/value&gt;
       &lt;value compset=&quot;^RCP8.+DATM&quot;				&gt;367.0&lt;/value&gt;
       &lt;value compset=&quot;^2000.+XATM&quot;				&gt;379.000&lt;/value&gt;
-      &lt;value compset=&quot;^HIST.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^20TR.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^5505.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^RCP2.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^RCP4.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^RCP6.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^RCP8.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^2013.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^GEOS.+CAM&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^AMIP.+CAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^HIST.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^20TR.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^5505.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^RCP2.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^RCP4.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^RCP6.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^RCP8.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2013.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^GEOS.+EAM&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^AMIP.+EAM&quot;				&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;^AR95&quot;					&gt;368.9&lt;/value&gt;
       &lt;value compset=&quot;^AR97&quot;					&gt;368.9&lt;/value&gt;
       &lt;value compset=&quot;^2003&quot;					&gt;367.0&lt;/value&gt;
@@ -3921,23 +3949,23 @@ to define behavior.</p>
       &lt;value compset=&quot;^20TR.*BGC%BDRC&quot;                          &gt;284.317&lt;/value&gt;
       &lt;value compset=&quot;^20TR.*BGC%BDRD&quot;                          &gt;284.317&lt;/value&gt;
       &lt;value compset=&quot;^SSP585.*BGC%B&quot;                           &gt;284.317&lt;/value&gt;  
-      &lt;!-- Override values based on CAM (WACCM) chemistry --&gt;
-      &lt;value compset=&quot;CAM[45]%W&quot;				&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;CAM[45]%SSOA&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;!-- Override values based on EAM (WACCM) chemistry --&gt;
+      &lt;value compset=&quot;EAM%W&quot;				&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;EAM%SSOA&quot;				&gt;0.000001&lt;/value&gt;
       &lt;!-- Mariana&#39;s fix to allow isotopes to get the proper CO2 value --&gt;
-      &lt;value compset=&quot;CAM[45]%WISOall&quot;				&gt;284.7&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%WCSC&quot;			&gt;368.9&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%MOZM&quot;			&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%MMOS&quot;			&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%TMOZ&quot;			&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%SMA3&quot;			&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%SMA7&quot;			&gt;0.000001&lt;/value&gt;
-      &lt;value compset=&quot;^2000.+CAM[45]%SSOA&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;EAM%WISOall&quot;				&gt;284.7&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%WCSC&quot;			&gt;368.9&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%MOZM&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%MMOS&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%TMOZ&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%SMA3&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%SMA7&quot;			&gt;0.000001&lt;/value&gt;
+      &lt;value compset=&quot;^2000.+EAM%SSOA&quot;			&gt;0.000001&lt;/value&gt;
       &lt;value compset=&quot;^2000.+%RCE&quot;              &gt;348.0&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_co2&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;This set the namelist values of CO2 ppmv for CAM and CLM. This variables is
+    &lt;desc&gt;This set the namelist values of CO2 ppmv for EAM and ELM. This variables is
       introduced to coordinate this value among multiple components.&lt;/desc&gt;
   &lt;/entry&gt;
 
@@ -3969,7 +3997,7 @@ to define behavior.</p>
     &lt;group&gt;run_glc&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Glacier model number of elevation classes, 0 implies no glacier land unit in clm
-    Used by both CLM and CISM (even if CISM is not running, and only SGLC is used).&lt;/desc&gt;
+    Used by both ELM and CISM (even if CISM is not running, and only SGLC is used).&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;GLC_TWO_WAY_COUPLING&quot;&gt;
@@ -3977,9 +4005,8 @@ to define behavior.</p>
     &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
     &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;_CLM45.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;_CLM45.*_MALI&quot;&gt;TRUE&lt;/value&gt;
-      &lt;value compset=&quot;_CLM50.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;_ELM.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
+      &lt;value compset=&quot;_ELM.*_MALI&quot;&gt;TRUE&lt;/value&gt;
       &lt;!-- Turn on two-way coupling for TG compsets - even though there are no
 	   feedbacks for a TG compset, this will give us additional diagnostics --&gt;
       &lt;value compset=&quot;_DLND.+CISM\d&quot;&gt;TRUE&lt;/value&gt;
@@ -3988,7 +4015,7 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Whether the glacier component feeds back to the rest of the system
       This affects:
-      (1) Whether CLM updates its areas based on glacier areas sent from GLC
+      (1) Whether ELM updates its areas based on glacier areas sent from GLC
       (2) Whether GLC sends fluxes (e.g., calving fluxes) to the coupler
       Note that this is set to TRUE by default for TG compsets - even though there are
       no feedbacks for TG compsets, this enables extra coupler diagnostics for these
@@ -4041,24 +4068,18 @@ to define behavior.</p>
     &lt;desc compset=&quot;RCP4_&quot;&gt;RCP4.5 future scenario:&lt;/desc&gt;
     &lt;desc compset=&quot;RCP2_&quot;&gt;RCP2.6 future scenario:&lt;/desc&gt;
     &lt;desc compset=&quot;2013_&quot;&gt;RCP4.5 based scenario from 2013 (control for WACCM/CARMA nuclear winter study):&lt;/desc&gt;
-    &lt;desc compset=&quot;9205_CAM&quot;&gt;1992 to 2005 transient:&lt;/desc&gt;
-    &lt;desc compset=&quot;SDYN_CAM&quot;&gt;prescribed meteorology: for stand-alone cam&lt;/desc&gt;
-    &lt;desc compset=&quot;AR95_CAM&quot;&gt;ARM95 IOP: for stand-alone cam&lt;/desc&gt;
-    &lt;desc compset=&quot;AR97_CAM&quot;&gt;ARM97 IOP: for stand-alone cam&lt;/desc&gt;
-    &lt;desc compset=&quot;HIST_CLM4[05]%CN&quot;&gt;CLM transient land use:&lt;/desc&gt;
-    &lt;desc compset=&quot;20TR_CLM4[05]%CN&quot;&gt;CLM transient land use:&lt;/desc&gt;
+    &lt;desc compset=&quot;9205_EAM&quot;&gt;1992 to 2005 transient:&lt;/desc&gt;
+    &lt;desc compset=&quot;SDYN_EAM&quot;&gt;prescribed meteorology: for stand-alone cam&lt;/desc&gt;
+    &lt;desc compset=&quot;AR95_EAM&quot;&gt;ARM95 IOP: for stand-alone cam&lt;/desc&gt;
+    &lt;desc compset=&quot;AR97_EAM&quot;&gt;ARM97 IOP: for stand-alone cam&lt;/desc&gt;
+    &lt;desc compset=&quot;HIST_ELM%CN&quot;&gt;ELM transient land use:&lt;/desc&gt;
+    &lt;desc compset=&quot;20TR_ELM%CN&quot;&gt;ELM transient land use:&lt;/desc&gt;
     &lt;desc compset=&quot;PIPD&quot;&gt;
       pre-industrial (1850) to present day:
       -----------------------------WARNING ------------------------------------------------
       &quot;PIPD&quot; compsets use complete forcing data from observed sources
       up to the year 2005. Following this period they are a combination of observed sources
       (land-use, SST, sea ice, CO2, CH4, N2O) to present day and IPCC RCP4.5 scenario data.
-      -------------------------------------------------------------------------------------
-    &lt;/desc&gt;
-    &lt;desc compset=&quot;CAM4.*_BGC%B&quot;&gt;
-      -----------------------------WARNING ------------------------------------------------
-      This compset is not spun-up! In later versions of the model, spun-up initial
-      conditions will be provided and this warning will be removed.
       -------------------------------------------------------------------------------------
     &lt;/desc&gt;
   &lt;/description&gt;
@@ -4120,7 +4141,7 @@ to define behavior.</p>
   &lt;entry id=&quot;INFO_TASKMAP_MODEL&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;0,1,2&lt;/valid_values&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
+    &lt;default_value&gt;1&lt;/default_value&gt;
     &lt;group&gt;run_flags&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Sets level of task-to-node mapping output for the whole model
@@ -4135,6 +4156,30 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;Sets level of task-to-node mapping output for supported component models
     (0: no output; 1: compact; 2: verbose).&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;INFO_MPROF&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;valid_values&gt;0,1,2,3,4&lt;/valid_values&gt;
+    &lt;default_value&gt;3&lt;/default_value&gt;
+    &lt;group&gt;run_flags&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;Sets level of memory profile logging:
+      0: no output
+      1: log mem-usage from component ROOTPE tasks
+      2: log mem-usage from all tasks
+      3: aggregate logging to node-level mem-usage on ROOTPE nodes
+      4: aggregate logging to node-level mem-usage on all nodes
+      Aggregation requires INFO_TASKMAP_MODEL&gt;0.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;INFO_MPROF_DT&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;86400&lt;/default_value&gt;
+    &lt;group&gt;run_flags&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;number of seconds between memory profiling logs&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;SAVE_TIMING&quot;&gt;
@@ -8089,6 +8134,36 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;info_mprof&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;cime_pes&lt;/category&gt;
+    &lt;group&gt;cime_pes&lt;/group&gt;
+    &lt;desc&gt;
+      Sets level of memory profile logging:
+      0: no output
+      1: log mem-usage from component ROOTPE tasks
+      2: log mem-usage from all tasks
+      3: aggregate logging to node-level mem-usage on ROOTPE nodes
+      4: aggregate logging to node-level mem-usage on all nodes
+      Aggregation requires info_taskmap_model&gt;0.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$INFO_MPROF&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;info_mprof_dt&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;cime_pes&lt;/category&gt;
+    &lt;group&gt;cime_pes&lt;/group&gt;
+    &lt;desc&gt;
+      number of seconds between memory profiling logs
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;$INFO_MPROF_DT&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
   &lt;!-- =========================== --&gt;
   &lt;!-- group prof_inparm           --&gt;
   &lt;!--  in perf_mod.F90            --&gt;
@@ -9600,7 +9675,8 @@ to define behavior.</p>
       components that need to look at the same data.
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value&gt;Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in&lt;/value&gt;
+      &lt;value cime_model=&#39;cesm&#39;&gt;Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in&lt;/value&gt;
+      &lt;value cime_model=&#39;e3sm&#39;&gt;Buildconf/eamconf/drv_flds_in,Buildconf/elmconf/drv_flds_in&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -10292,7 +10368,6 @@ to define behavior.</p>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 

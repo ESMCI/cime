@@ -12,7 +12,6 @@ CIME.tests.XML.test\_expected\_fails\_file module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

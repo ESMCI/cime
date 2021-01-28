@@ -427,7 +427,7 @@ code to compute and assemble aprun commands.</p>
 <p>functions for building CIME models</p>
 <dl class="py function">
 <dt id="CIME.build.case_build">
-<code class="sig-prename descclassname">CIME.build.</code><code class="sig-name descname">case_build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caseroot</span></em>, <em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">sharedlib_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">model_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">buildlist</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_build_provenance</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_old</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ninja</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dry_run</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#case_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.case_build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.build.</code><code class="sig-name descname">case_build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caseroot</span></em>, <em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">sharedlib_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">model_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">buildlist</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_build_provenance</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">separate_builds</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ninja</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dry_run</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#case_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.case_build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -466,7 +466,7 @@ code to compute and assemble aprun commands.</p>
 <p>common utilities for buildlib</p>
 <dl class="py function">
 <dt id="CIME.buildlib.build_cime_component_lib">
-<code class="sig-prename descclassname">CIME.buildlib.</code><code class="sig-name descname">build_cime_component_lib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">compname</span></em>, <em class="sig-param"><span class="n">libroot</span></em>, <em class="sig-param"><span class="n">bldroot</span></em>, <em class="sig-param"><span class="n">use_old</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/buildlib.html#build_cime_component_lib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.buildlib.build_cime_component_lib" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.buildlib.</code><code class="sig-name descname">build_cime_component_lib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">case</span></em>, <em class="sig-param"><span class="n">compname</span></em>, <em class="sig-param"><span class="n">libroot</span></em>, <em class="sig-param"><span class="n">bldroot</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/buildlib.html#build_cime_component_lib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.buildlib.build_cime_component_lib" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -574,7 +574,7 @@ there was at least one FAIL result.</p>
 of the tests in one or more test suites</p>
 <dl class="py function">
 <dt id="CIME.cs_status.cs_status">
-<code class="sig-prename descclassname">CIME.cs_status.</code><code class="sig-name descname">cs_status</code><span class="sig-paren">(</span><em class="sig-param">test_paths</em>, <em class="sig-param">summary=False</em>, <em class="sig-param">fails_only=False</em>, <em class="sig-param">count_fails_phase_list=None</em>, <em class="sig-param">expected_fails_filepath=None</em>, <em class="sig-param">out=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/cs_status.html#cs_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.cs_status.cs_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.cs_status.</code><code class="sig-name descname">cs_status</code><span class="sig-paren">(</span><em class="sig-param">test_paths</em>, <em class="sig-param">summary=False</em>, <em class="sig-param">fails_only=False</em>, <em class="sig-param">count_fails_phase_list=None</em>, <em class="sig-param">expected_fails_filepath=None</em>, <em class="sig-param">out=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='utf-8'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/cs_status.html#cs_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.cs_status.cs_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print the test statuses of all tests in test_paths. The default
 is to print to stdout, but this can be overridden with the ‘out’
 argument.</p>
@@ -1568,7 +1568,7 @@ NaN values can also contain additional information in parentheses, e.g.
 - Must begin and end with the same delimiter character, either a single
 quote (apostrophe), or a double quote (quotation mark).
 - Whichever character is used as a delimiter must not appear in the
-string itself, unless it appears in doubled pairs (e.g. ‘’‘’ or “’” are the
+string itself, unless it appears in doubled pairs (e.g. ‘’’’ or “’” are the
 two ways of representing a string containing a single apostrophe).
 - Note that newlines cannot be represented in a namelist character literal
 since they are interpreted as an “end of record”, but they are allowed as
@@ -1831,6 +1831,16 @@ will raise an exception.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="CIME.nmlgen.NamelistGenerator.add_defaults_for_group">
+<code class="sig-name descname">add_defaults_for_group</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.add_defaults_for_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.add_defaults_for_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call add_default for namelist variables in the given group</p>
+<p>This still skips variables that have attributes of skip_default_entry or
+per_stream_entry.</p>
+<p>This must be called after init_defaults. It is often paired with use of
+skip_default_for_groups in the init_defaults call.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="CIME.nmlgen.NamelistGenerator.add_nmlcontents">
 <code class="sig-name descname">add_nmlcontents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">group</span></em>, <em class="sig-param"><span class="n">append</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">format_</span><span class="o">=</span><span class="default_value">'nmlcontents'</span></em>, <em class="sig-param"><span class="n">sorted_groups</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.add_nmlcontents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.add_nmlcontents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write only contents of nml group</p>
@@ -1840,6 +1850,26 @@ will raise an exception.</p>
 <dt id="CIME.nmlgen.NamelistGenerator.clean_streams">
 <code class="sig-name descname">clean_streams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.clean_streams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.clean_streams" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="CIME.nmlgen.NamelistGenerator.confirm_group_is_empty">
+<code class="sig-name descname">confirm_group_is_empty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group_name</span></em>, <em class="sig-param"><span class="n">errmsg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.confirm_group_is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.confirm_group_is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirms that no values have been added to the given group</p>
+<p>If any values HAVE been added to this group, aborts with the given error message.</p>
+<p>This is often paired with use of skip_default_for_groups in the init_defaults call
+and add_defaults_for_group, as in:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>if nmlgen.get_value(“enable_frac_overrides”) == “.true.”:</dt><dd><p>nmlgen.add_defaults_for_group(“glc_override_nml”)</p>
+</dd>
+<dt>else:</dt><dd><p>nmlgen.confirm_empty(“glc_override_nml”, “some message”)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Args:
+group_name: string - name of namelist group
+errmsg: string - error message to print if group is not empty</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="CIME.nmlgen.NamelistGenerator.create_shr_strdata_nml">
@@ -1926,8 +1956,12 @@ written to the namelist.</p>
 
 <dl class="py method">
 <dt id="CIME.nmlgen.NamelistGenerator.init_defaults">
-<code class="sig-name descname">init_defaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infiles</span></em>, <em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">skip_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skip_entry_loop</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.init_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.init_defaults" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">init_defaults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infiles</span></em>, <em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">skip_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skip_entry_loop</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">skip_default_for_groups</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.init_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.init_defaults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return array of names of all definition nodes</p>
+<p>If skip_default_for_groups is provided, it should be a list of namelist group
+names; the add_default call will not be done for any variables in these
+groups. This is often paired with later conditional calls to
+add_defaults_for_group.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1983,7 +2017,7 @@ directly, since <cite>create_stream_file</cite> calls this method itself.</p>
 
 <dl class="py method">
 <dt id="CIME.nmlgen.NamelistGenerator.write_nuopc_config_file">
-<code class="sig-name descname">write_nuopc_config_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">data_list_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.write_nuopc_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write_nuopc_config_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">data_list_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sorted_groups</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.write_nuopc_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.write_nuopc_config_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the nuopc config file</p>
 </dd></dl>
 
@@ -2050,7 +2084,7 @@ file, which will have the input data files added to it.</p>
 
 <dl class="py function">
 <dt id="CIME.provenance.save_test_time">
-<code class="sig-prename descclassname">CIME.provenance.</code><code class="sig-name descname">save_test_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">baseline_root</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">time_seconds</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/provenance.html#save_test_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.provenance.save_test_time" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.provenance.</code><code class="sig-name descname">save_test_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">baseline_root</span></em>, <em class="sig-param"><span class="n">test</span></em>, <em class="sig-param"><span class="n">time_seconds</span></em>, <em class="sig-param"><span class="n">commit</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/provenance.html#save_test_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.provenance.save_test_time" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -2095,7 +2129,7 @@ they can be run outside the context of TestScheduler.</p>
 
 <dl class="py method">
 <dt id="CIME.test_scheduler.TestScheduler.run_tests">
-<code class="sig-name descname">run_tests</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">wait_check_throughput</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">wait_check_memory</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">wait_ignore_namelists</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">wait_ignore_memleak</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler.run_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler.run_tests" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run_tests</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wait</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">check_throughput</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">check_memory</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ignore_namelists</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ignore_memleak</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler.run_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler.run_tests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main API for this class.</p>
 <p>Return True if all tests passed.</p>
 </dd></dl>
@@ -2157,51 +2191,53 @@ RUN state are no longer valid.</p></li>
 is given to PEND since we don’t want to stop waiting for a test
 that hasn’t finished. Namelist diffs are given the lowest precedence.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A SHAREDLIB_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;PEND&#39;</span>
+<span class="go">(&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;FAIL ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A TPUTCOMP&#39;</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A TPUTCOMP&#39;</span><span class="p">,</span> <span class="n">check_throughput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;TPUTCOMP&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A NLCOMP&#39;</span><span class="p">)</span>
-<span class="go">&#39;NLFAIL&#39;</span>
+<span class="go">(&#39;NLFAIL&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A NLCOMP&#39;</span><span class="p">)</span>
-<span class="go">&#39;PEND&#39;</span>
+<span class="go">(&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A MEMCOMP&#39;</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A NLCOMP&#39;</span><span class="p">,</span> <span class="n">ignore_namelists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A COMPARE_1</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A NLCOMP</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A COMPARE_2</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;COMPARE_2&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;FAIL ERS.foo.A BASELINE</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A NLCOMP</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A COMPARE_2</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;DIFF&#39;</span>
+<span class="go">(&#39;DIFF&#39;, &#39;BASELINE&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;FAIL ERS.foo.A BASELINE</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A NLCOMP</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A COMPARE_2</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;COMPARE_2&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PEND ERS.foo.A COMPARE_2</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PEND ERS.foo.A COMPARE_2</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
-<span class="go">&#39;PEND&#39;</span>
+<span class="go">(&#39;PEND&#39;, &#39;COMPARE_2&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD&#39;</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;MODEL_BUILD&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PEND ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN&#39;</span><span class="p">)</span>
+<span class="go">(&#39;PEND&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD&#39;</span><span class="p">,</span> <span class="n">wait_for_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;PEND&#39;</span>
+<span class="go">(&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;FAIL ERS.foo.A MODEL_BUILD&#39;</span><span class="p">,</span> <span class="n">wait_for_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN&#39;</span><span class="p">,</span> <span class="n">wait_for_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;PEND&#39;</span>
+<span class="go">(&#39;PEND&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A RUN&#39;</span><span class="p">,</span> <span class="n">wait_for_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PASS ERS.foo.A RUN&#39;</span><span class="p">,</span> <span class="n">wait_for_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">FAIL ERS.foo.A RUN</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A COMPARE&#39;</span><span class="p">)</span>
-<span class="go">&#39;FAIL&#39;</span>
+<span class="go">(&#39;FAIL&#39;, &#39;RUN&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A MODEL_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN&#39;</span><span class="p">,</span> <span class="n">no_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;PASS&#39;</span>
+<span class="go">(&#39;PASS&#39;, &#39;MODEL_BUILD&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;PASS ERS.foo.A CREATE_NEWCASE</span>
 <span class="gp">... </span><span class="s1">PASS ERS.foo.A XML</span>
 <span class="gp">... </span><span class="s1">PASS ERS.foo.A SETUP</span>
@@ -2217,7 +2253,17 @@ that hasn’t finished. Namelist diffs are given the lowest precedence.</p>
 <span class="gp">... </span><span class="s1">PASS ERS.foo.A SHORT_TERM_ARCHIVER</span>
 <span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">no_perm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;PEND&#39;</span>
+<span class="go">(&#39;PEND&#39;, &#39;COMPARE_base_single_thread&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;PASS ERS.foo.A CREATE_NEWCASE</span>
+<span class="gp">... </span><span class="s1">PASS ERS.foo.A XML</span>
+<span class="gp">... </span><span class="s1">PASS ERS.foo.A SETUP</span>
+<span class="gp">... </span><span class="s1">PEND ERS.foo.A SHAREDLIB_BUILD</span>
+<span class="gp">... </span><span class="s1">FAIL ERS.foo.A NLCOMP</span>
+<span class="gp">... </span><span class="s1">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">no_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">(&#39;NLFAIL&#39;, &#39;SETUP&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">no_run</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">(&#39;PEND&#39;, &#39;SHAREDLIB_BUILD&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2330,6 +2376,10 @@ show_options (bool): if True, print test options, too (note that the ‘comment�
 ‘prealpha  : SMS.f19_g16.A.cheyenne_intel’</p>
 <p>Printing comments:
 &gt;&gt;&gt; mytest = {‘name’: ‘SMS.f19_g16.A.cheyenne_intel’, ‘category’: ‘prealpha’, ‘options’: {‘comment’: ‘my remarks’}}
+&gt;&gt;&gt; test_to_string(mytest, 10)
+‘prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks’</p>
+<p>Newlines in comments are converted to spaces
+&gt;&gt;&gt; mytest = {‘name’: ‘SMS.f19_g16.A.cheyenne_intel’, ‘category’: ‘prealpha’, ‘options’: {‘comment’: ‘mynremarks’}}
 &gt;&gt;&gt; test_to_string(mytest, 10)
 ‘prealpha  : SMS.f19_g16.A.cheyenne_intel # my remarks’</p>
 <p>Printing other options, too:
@@ -2731,6 +2781,17 @@ Unlike strptime, this does support %H &gt;= 24</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="CIME.utils.get_current_submodule_status">
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">get_current_submodule_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">repo</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_current_submodule_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_current_submodule_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sha1s of the current currently checked out commit for each submodule,
+along with the submodule path and the output of git describe for the SHA-1.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_current_submodule_status</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt id="CIME.utils.get_e3sm_root">
 <code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">get_e3sm_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_e3sm_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_e3sm_root" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the absolute path to the root of E3SM that contains this script</p>
@@ -3069,7 +3130,7 @@ parse and return the partial results.</p>
 
 <dl class="py function">
 <dt id="CIME.utils.run_cmd">
-<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">run_cmd</code><span class="sig-paren">(</span><em class="sig-param">cmd</em>, <em class="sig-param">input_str=None</em>, <em class="sig-param">from_dir=None</em>, <em class="sig-param">verbose=None</em>, <em class="sig-param">arg_stdout=&lt;object object&gt;</em>, <em class="sig-param">arg_stderr=&lt;object object&gt;</em>, <em class="sig-param">env=None</em>, <em class="sig-param">combine_output=False</em>, <em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">run_cmd</code><span class="sig-paren">(</span><em class="sig-param">cmd</em>, <em class="sig-param">input_str=None</em>, <em class="sig-param">from_dir=None</em>, <em class="sig-param">verbose=None</em>, <em class="sig-param">arg_stdout=&lt;object object&gt;</em>, <em class="sig-param">arg_stderr=&lt;object object&gt;</em>, <em class="sig-param">env=None</em>, <em class="sig-param">combine_output=False</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">executable=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around subprocess to make it much more convenient to run shell commands</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd</span><span class="p">(</span><span class="s1">&#39;ls file_i_hope_doesnt_exist&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
 <span class="go">True</span>
@@ -3079,7 +3140,7 @@ parse and return the partial results.</p>
 
 <dl class="py function">
 <dt id="CIME.utils.run_cmd_no_fail">
-<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">run_cmd_no_fail</code><span class="sig-paren">(</span><em class="sig-param">cmd</em>, <em class="sig-param">input_str=None</em>, <em class="sig-param">from_dir=None</em>, <em class="sig-param">verbose=None</em>, <em class="sig-param">arg_stdout=&lt;object object&gt;</em>, <em class="sig-param">arg_stderr=&lt;object object&gt;</em>, <em class="sig-param">env=None</em>, <em class="sig-param">combine_output=False</em>, <em class="sig-param">timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd_no_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd_no_fail" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.utils.</code><code class="sig-name descname">run_cmd_no_fail</code><span class="sig-paren">(</span><em class="sig-param">cmd</em>, <em class="sig-param">input_str=None</em>, <em class="sig-param">from_dir=None</em>, <em class="sig-param">verbose=None</em>, <em class="sig-param">arg_stdout=&lt;object object&gt;</em>, <em class="sig-param">arg_stderr=&lt;object object&gt;</em>, <em class="sig-param">env=None</em>, <em class="sig-param">combine_output=False</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">executable=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd_no_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd_no_fail" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around subprocess to make it much more convenient to run shell commands.
 Expects command to work. Just returns output string.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo foo&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;foo&#39;</span>
@@ -3252,8 +3313,18 @@ recursively.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt id="CIME.wait_for_tests.get_nml_diff">
+<code class="sig-prename descclassname">CIME.wait_for_tests.</code><code class="sig-name descname">get_nml_diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#get_nml_diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.get_nml_diff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt id="CIME.wait_for_tests.get_test_output">
 <code class="sig-prename descclassname">CIME.wait_for_tests.</code><code class="sig-name descname">get_test_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#get_test_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.get_test_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="CIME.wait_for_tests.get_test_phase">
+<code class="sig-prename descclassname">CIME.wait_for_tests.</code><code class="sig-name descname">get_test_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_path</span></em>, <em class="sig-param"><span class="n">phase</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#get_test_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.get_test_phase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -3278,7 +3349,7 @@ recursively.</p>
 
 <dl class="py function">
 <dt id="CIME.wait_for_tests.wait_for_tests">
-<code class="sig-prename descclassname">CIME.wait_for_tests.</code><code class="sig-name descname">wait_for_tests</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_paths</span></em>, <em class="sig-param"><span class="n">no_wait</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">check_throughput</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">check_memory</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ignore_namelists</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ignore_memleak</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cdash_build_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cdash_project</span><span class="o">=</span><span class="default_value">'E3SM'</span></em>, <em class="sig-param"><span class="n">cdash_build_group</span><span class="o">=</span><span class="default_value">'ACME_Latest'</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_log_upload</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_run</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">update_success</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#wait_for_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.wait_for_tests" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">CIME.wait_for_tests.</code><code class="sig-name descname">wait_for_tests</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test_paths</span></em>, <em class="sig-param"><span class="n">no_wait</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">check_throughput</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">check_memory</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ignore_namelists</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ignore_memleak</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cdash_build_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cdash_project</span><span class="o">=</span><span class="default_value">'E3SM'</span></em>, <em class="sig-param"><span class="n">cdash_build_group</span><span class="o">=</span><span class="default_value">'ACME_Latest'</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_log_upload</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">no_run</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">update_success</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">expect_test_complete</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#wait_for_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.wait_for_tests" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -3342,7 +3413,6 @@ recursively.</p>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script src="../_static/pop_ver.js"></script>
     
 
