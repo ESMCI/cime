@@ -749,7 +749,6 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         caseroot = self._case.get_value("CASEROOT")
-        exeroot = self._case.get_value("EXEROOT")
         modelexe = self._case.get_value("run_exe")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
@@ -763,7 +762,7 @@ cd -
 cd {caseroot}
 ./xmlchange run_exe={modelexe}
 sleep 5
-""".format(exeroot=exeroot, originalexe=self._original_exe, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
+""".format(originalexe=self._original_exe, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)
