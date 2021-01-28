@@ -1024,7 +1024,7 @@ class Case(object):
 
         # Create env_mach_specific settings from machine info.
         env_mach_specific_obj = self.get_env("mach_specific")
-        env_mach_specific_obj.populate(machobj)
+        env_mach_specific_obj.populate(machobj, attributes={"mpilib":mpilib, "compiler":compiler,"threaded":self.get_build_threaded()})
 
         self._setup_mach_pes(pecount, multi_driver, ninst, machine_name, mpilib)
 
@@ -1503,6 +1503,8 @@ directory, NOT in this subdirectory."""
         Returns True if current settings require a threaded build/run.
         """
         force_threaded = self.get_value("FORCE_BUILD_SMP")
+        if not self.thread_count:
+            return False
         smp_present = force_threaded or self.thread_count > 1
         return smp_present
 
