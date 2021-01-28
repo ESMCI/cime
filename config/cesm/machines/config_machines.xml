@@ -639,7 +639,7 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
     <environment_variables queue="share">
       <env name="TMPDIR">/glade/scratch/$USER</env>
-      <env name="MPI_USE_ARRAY">false</env>
+<!--      <env name="MPI_USE_ARRAY">false</env> -->
     </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK"> -1</resource>
@@ -1395,14 +1395,14 @@ This allows using a different mpirun command to launch unit tests
     <mpirun mpilib="impi">
       <executable>sbcast ${EXEROOT}/cesm.exe /tmp/cesm.exe; ibrun</executable>
       <arguments>
-	<arg name="ntasks"> -n {{ total_tasks }} </arg>
+        <arg name="ntasks"> -n {{ total_tasks }} </arg>
       </arguments>
       <run_exe>/tmp/cesm.exe</run_exe>
     </mpirun>
     <mpirun mpilib="mvapich">
       <executable>ibrun</executable>
       <arguments>
-	<arg name="ntasks"> -n {{ total_tasks }} </arg>
+        <arg name="ntasks"> -n {{ total_tasks }} </arg>
       </arguments>
     </mpirun>
     <module_system type="module" allow_error="true">
@@ -1426,8 +1426,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">parallel-netcdf/4.6.2</command>
       </modules>
       <modules mpilib="mvapich">
-	<command name="rm">impi</command>
-	<command name="load">mvapich2-x/2.3</command>
+        <command name="rm">impi</command>
+        <command name="load">mvapich2-x/2.3</command>
         <command name="load">pnetcdf/1.11.2</command>
         <command name="load">parallel-netcdf/4.6.2</command>
       </modules>

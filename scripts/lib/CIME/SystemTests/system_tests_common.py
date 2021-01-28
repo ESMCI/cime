@@ -584,9 +584,15 @@ class FakeTest(SystemTestsCommon):
     have names beginnig with "TEST" this is so that the find_system_test
     in utils.py will work with these classes.
     """
+    def __init__(self, case, expected=None):
+        super(FakeTest, self).__init__(case,expected=expected)
+        self._script = None
+        self._requires_exe = False
+        self._original_exe = self._case.get_value("run_exe")
+
     def _set_script(self, script, requires_exe=False):
-        self._script = script # pylint: disable=attribute-defined-outside-init
-        self._requires_exe = requires_exe # pylint: disable=attribute-defined-outside-init
+        self._script = script
+        self._requires_exe = requires_exe
 
     def _resetup_case(self, phase, reset=False):
         run_exe = self._case.get_value("run_exe")
@@ -750,15 +756,14 @@ class TESTRUNUSERXMLCHANGE(FakeTest):
         script = \
 """
 cd {caseroot}
+./xmlchange --file env_test.xml STOP_N={stopn}
 ./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
-{exeroot}fake.exe "$@"
-
-# Need to remove self in order to avoid infinite loop
+{originalexe} "$@"
 cd {caseroot}
 ./xmlchange run_exe={modelexe}
 sleep 5
-""".format(exeroot=exeroot, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
+""".format(exeroot=exeroot, originalexe=self._original_exe, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)
