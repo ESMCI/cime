@@ -31,19 +31,19 @@
       <grid name="ocnice"    compset="SOCN"        >null</grid>
       <grid name="rof"       compset="SROF"        >null</grid>
       <grid name="rof"       compset="DWAV"        >rx1</grid>
-      <grid name="rof"       compset="RTM"	   >r05</grid>
+      <grid name="rof"       compset="RTM"         >r05</grid>
       <grid name="rof"       compset="MOSART"      >r05</grid>
       <grid name="rof"       compset="MIZUROUTE"   >HDMA</grid>
       <grid name="rof"       compset="DROF"        >rx1</grid>
       <grid name="rof"       compset="DROF%CPLHIST">r05</grid>
       <grid name="rof"       compset="XROF"        >r05</grid>
-      <grid name="glc"	     compset="SGLC"        >null</grid>
-      <grid name="glc"	     compset="CISM1"       >gland5UM</grid>
-      <grid name="glc"	     compset="CISM2"       >gland4</grid>
+      <grid name="glc"       compset="SGLC"        >null</grid>
+      <grid name="glc"       compset="CISM1"       >gland5UM</grid>
+      <grid name="glc"       compset="CISM2"       >gland4</grid>
       <grid name="glc"       compset="XGLC"        >gland4</grid>
-      <grid name="wav"	     compset="SWAV"        >null</grid>
-      <grid name="wav"	     compset="DWAV"        >ww3a</grid>
-      <grid name="wav"	     compset="WW3"	   >ww3a</grid>
+      <grid name="wav"       compset="SWAV"        >null</grid>
+      <grid name="wav"       compset="DWAV"        >ww3a</grid>
+      <grid name="wav"       compset="WW3"         >ww3a</grid>
       <grid name="wav"       compset="XWAV"        >ww3a</grid>
       <grid name="iac"       compset="SIAC"        >null</grid>
     </model_grid_defaults>
@@ -107,6 +107,12 @@
     <model_grid alias="1x1_vancouverCAN" compset="DATM.+CLM|DATM.+SLND">
       <grid name="atm">1x1_vancouverCAN</grid>
       <grid name="lnd">1x1_vancouverCAN</grid>
+      <grid name="rof">null</grid>
+    </model_grid>
+
+    <model_grid alias="1x1_NEON" compset="DATM.+CLM|DATM.+SLND">
+      <grid name="atm">1x1_NEON</grid>
+      <grid name="lnd">1x1_NEON</grid>
       <grid name="rof">null</grid>
     </model_grid>
 
@@ -1297,6 +1303,13 @@
       <file>$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc</file>
       <mesh driver="nuopc">create_mesh</mesh>
       <desc>user specified domain - only valid for DATM/CLM compset</desc>
+    </domain>
+
+    <domain name="1x1_NEON">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">/glade/p/cgd/tss/people/wwieder/inputdata/single_point/datmdata_NEON/$NEONSITE/domain.lnd.fv0.9x1.25_gx1v7_$NEONSITE.nc</file>
+      <mesh driver="nuopc">create_mesh</mesh>
+      <desc>1x1 NEON tower site -- only valid for DATM/CLM compset</desc>
     </domain>
 
     <domain name="1x1_numaIA">
