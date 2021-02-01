@@ -1759,7 +1759,7 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
             self.skipTest("Skipping fortran test")
         # Test resubmit scenario if Machine has a batch system
         if MACHINE.has_batch_system():
-            test_names = ["TESTRUNDIFFRESUBMIT_P1.f19_g16_rx1.A", "TESTRUNDIFF_P1.f19_g16_rx1.A"]
+            test_names = ["TESTRUNDIFFRESUBMIT_Mmpi-serial.f19_g16_rx1.A", "TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A"]
         else:
             test_names = ["TESTRUNDIFF_P1.f19_g16_rx1.A"]
 
