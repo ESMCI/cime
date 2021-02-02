@@ -1,4 +1,11 @@
-
+        subroutine mpi_init_thread(required, provided, ierror)
+          implicit none
+          integer, intent(in) :: required
+          integer, intent(out) :: provided, ierror
+          provided = required
+          call mpi_init(ierror)
+          return
+        end subroutine mpi_init_thread
 
 	subroutine mpi_init(ierror)
 
@@ -59,4 +66,3 @@
 	call mpi_save_fort_pointers(MPI_STATUS_IGNORE,MPI_STATUSES_IGNORE,MPI_IN_PLACE)
 
 	end subroutine mpi_get_fort_pointers
-

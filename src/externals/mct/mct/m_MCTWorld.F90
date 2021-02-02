@@ -315,10 +315,16 @@
 !
 ! allocate space to hold global ids
 ! only needed on root, but allocate everywhere to avoid complaints.
-      allocate(Gprocids(mysize),stat=ier)
+      if (myLid==0) then
+         allocate(Gprocids(mysize),stat=ier)
+      else
+         allocate(Gprocids(1),stat=ier)
+      endif
       if(ier/=0) call die(myname_,'allocate(Gprocids)',ier)
 ! gather over the LOCAL comm
       call MPI_GATHER(myGid,1,MP_INTEGER,Gprocids,1,MP_INTEGER,0,mycomms(i),ier)
+      call MPI_Barrier(mycomms(i), ier)
+
       if(ier/=0) call die(myname_,'MPI_GATHER Gprocids',ier)
 
       if(myLid == 0) then
@@ -372,7 +378,6 @@
    deallocate(compids,reqs,status,nprocs,tmparray,stat=ier)
    if(ier/=0) call die(myname_,'deallocate(compids,..)',ier)
  endif
-
  end subroutine initm_
 
 !BOP -------------------------------------------------------------------
@@ -473,7 +478,7 @@
 !
 ! !DESCRIPTION:
 ! Initialize MCTWorld using information valid only on the global root.
-! This is called by initm\_ but could also be called by the user
+! This is called by initm_ but could also be called by the user
 ! for very complex model--processor geometries.
 !
 ! !INTERFACE:

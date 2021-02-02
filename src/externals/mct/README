@@ -11,7 +11,7 @@
 
     For more information, see http://www.mcs.anl.gov/mct
 
-    See MCT/COPYRIGHT for license.
+    See MCT/LICENSE for license.
 
 ######################################################################
 
@@ -28,7 +28,7 @@
 
   README   -- this file
 
-  COPYRIGHT - copyright statement and license.
+  LICENSE  -- copyright statement and license.
 
   mct/     -- Source code for the Model Coupling Toolkit.
 
@@ -72,10 +72,6 @@ Optional Contents available
   MacOSX: gfortran
   IBM (AIX) xlf
   IBM BlueGene (see PLATFORM NOTE below)
-  SGI Altix
-  Cray XT/XK
-  Compaq  Compaq Fortran Compiler (X5.5-2801-48CAG or later)
-  SUN (Solaris) f90 WorkShop
   NEC
   Fujitsu
 
@@ -196,4 +192,4 @@ Optional Contents available
   12 Sep, 2012 -- version 2.8.2 (not released)
   16 Dec, 2012 -- version 2.8.3
   19 Jun, 2015 -- version 2.9.0
-  12 Mar, 2018 -- version 2.10.0
+  19 Apr, 2018 -- version 2.10.0

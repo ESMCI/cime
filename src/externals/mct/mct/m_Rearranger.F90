@@ -142,12 +142,12 @@
    character(len=*),parameter :: myname_=myname//'::init_'
    integer,dimension(:,:),pointer :: temp_seg_starts,temp_seg_lengths
    integer,dimension(:),pointer :: temp_pe_list,temp_numsegs,temp_locsize
+   integer,dimension(:),pointer :: temp_pe_list_loc
    integer :: temp_maxsize,temp_nprocs,maxsegcount
    integer :: procindex,nprocs,nseg,len,myPid
    integer :: src_seg_start,src_seg_length,trg_seg_start,trg_seg_length
    integer :: i,j,k,l,m,n,ier
    logical :: SendingToMyself,ReceivingFromMyself
-
 
    ! Initialize Router component of Rearranger
    call Router_init(SourceGSMap,TargetGSMap,myComm,OutRearranger%SendRouter)
@@ -211,10 +211,12 @@
 
    ! Allocate temporary Router structures to be used for modifying SendRouter
    nullify(temp_seg_starts,temp_seg_lengths,temp_pe_list, &
+           temp_pe_list_loc, &
            temp_numsegs,temp_locsize)
    allocate(temp_seg_starts(temp_nprocs,maxsegcount), &
             temp_seg_lengths(temp_nprocs,maxsegcount), &
 	    temp_pe_list(temp_nprocs), &
+	    temp_pe_list_loc(temp_nprocs), &
             temp_numsegs(temp_nprocs), &
             temp_locsize(temp_nprocs), stat=ier)
    if(ier/=0) call die(myname_,'allocate(temp_seg_starts...)',ier)
@@ -255,6 +257,7 @@
 	 temp_seg_lengths(procindex,1:maxsegcount) = &
             OutRearranger%SendRouter%seg_lengths(i,1:maxsegcount)
 	 temp_pe_list(procindex) = OutRearranger%SendRouter%pe_list(i)
+	 temp_pe_list_loc(procindex) = OutRearranger%SendRouter%pe_list_loc(i)
 	 temp_numsegs(procindex) = OutRearranger%SendRouter%num_segs(i)
 	 temp_locsize(procindex) = OutRearranger%SendRouter%locsize(i)
 	 temp_maxsize = max(temp_locsize(procindex),temp_maxsize)
@@ -269,6 +272,7 @@
    deallocate(OutRearranger%SendRouter%seg_starts,&
               OutRearranger%SendRouter%seg_lengths, &
 	      OutRearranger%SendRouter%pe_list, &
+              OutRearranger%SendRouter%pe_list_loc, &
               OutRearranger%SendRouter%num_segs, &
               OutRearranger%SendRouter%locsize,stat=ier)
    if(ier/=0) call die(myname_, &
@@ -278,6 +282,7 @@
    allocate(OutRearranger%SendRouter%seg_starts(temp_nprocs,maxsegcount), &
             OutRearranger%SendRouter%seg_lengths(temp_nprocs,maxsegcount), &
 	    OutRearranger%SendRouter%pe_list(temp_nprocs), &
+            OutRearranger%SendRouter%pe_list_loc(temp_nprocs), &
 	    OutRearranger%SendRouter%num_segs(temp_nprocs), &
             OutRearranger%SendRouter%locsize(temp_nprocs),stat=ier)
    if(ier/=0) call die(myname_, &
@@ -291,6 +296,8 @@
       temp_seg_lengths(1:temp_nprocs,1:maxsegcount)
    OutRearranger%SendRouter%pe_list(1:temp_nprocs) = &
       temp_pe_list(1:temp_nprocs)
+   OutRearranger%SendRouter%pe_list_loc(1:temp_nprocs) = &
+      temp_pe_list_loc(1:temp_nprocs)
    OutRearranger%SendRouter%num_segs(1:temp_nprocs) = &
       temp_numsegs(1:temp_nprocs)
    OutRearranger%SendRouter%locsize(1:temp_nprocs) = &
@@ -298,6 +305,7 @@
    OutRearranger%SendRouter%maxsize = temp_maxsize
 
    deallocate(temp_seg_starts,temp_seg_lengths,temp_pe_list, &
+              temp_pe_list_loc, &
               temp_numsegs,temp_locsize,stat=ier)
    if(ier/=0) call die(myname_,'deallocate(temp_seg_starts...)',ier)
 
@@ -312,10 +320,12 @@
 
   ! Allocate temporary Router structures to be used for modifying RecvRouter
    nullify(temp_seg_starts,temp_seg_lengths,temp_pe_list, &
+           temp_pe_list_loc, &
            temp_numsegs,temp_locsize)
    allocate(temp_seg_starts(temp_nprocs,maxsegcount), &
             temp_seg_lengths(temp_nprocs,maxsegcount), &
 	    temp_pe_list(temp_nprocs),temp_numsegs(temp_nprocs), &
+            temp_pe_list_loc(temp_nprocs), &
             temp_locsize(temp_nprocs),stat=ier)
    if(ier/=0) call die(myname_,'allocate(temp_seg_starts...)',ier)
 
@@ -358,6 +368,7 @@
 	 temp_seg_lengths(procindex,1:maxsegcount) = &
             OutRearranger%RecvRouter%seg_lengths(i,1:maxsegcount)
 	 temp_pe_list(procindex) = OutRearranger%RecvRouter%pe_list(i)
+	 temp_pe_list_loc(procindex) = OutRearranger%RecvRouter%pe_list_loc(i)
 	 temp_numsegs(procindex) = OutRearranger%RecvRouter%num_segs(i)
 	 temp_locsize(procindex) = OutRearranger%RecvRouter%locsize(i)
 	 temp_maxsize = max(temp_locsize(procindex),temp_maxsize)
@@ -372,6 +383,7 @@
    deallocate(OutRearranger%RecvRouter%seg_starts, &
               OutRearranger%RecvRouter%seg_lengths, &
 	      OutRearranger%RecvRouter%pe_list, &
+              OutRearranger%RecvRouter%pe_list_loc, &
               OutRearranger%RecvRouter%num_segs, &
               OutRearranger%RecvRouter%locsize,stat=ier)
    if(ier/=0) call die(myname_, &
@@ -381,6 +393,7 @@
    allocate(OutRearranger%RecvRouter%seg_starts(temp_nprocs,maxsegcount), &
             OutRearranger%RecvRouter%seg_lengths(temp_nprocs,maxsegcount), &
 	    OutRearranger%RecvRouter%pe_list(temp_nprocs), &
+            OutRearranger%RecvRouter%pe_list_loc(temp_nprocs), &
 	    OutRearranger%RecvRouter%num_segs(temp_nprocs), &
             OutRearranger%RecvRouter%locsize(temp_nprocs),stat=ier)
    if(ier/=0) call die(myname_, &
@@ -394,6 +407,8 @@
       temp_seg_lengths(1:temp_nprocs,1:maxsegcount)
    OutRearranger%RecvRouter%pe_list(1:temp_nprocs) = &
       temp_pe_list(1:temp_nprocs)
+   OutRearranger%RecvRouter%pe_list_loc(1:temp_nprocs) = &
+      temp_pe_list_loc(1:temp_nprocs)
    OutRearranger%RecvRouter%num_segs(1:temp_nprocs) = &
       temp_numsegs(1:temp_nprocs)
    OutRearranger%RecvRouter%locsize(1:temp_nprocs) = &
@@ -401,10 +416,11 @@
    OutRearranger%RecvRouter%maxsize = temp_maxsize
 
    deallocate(temp_seg_starts,temp_seg_lengths,temp_pe_list, &
+              temp_pe_list_loc, &
               temp_numsegs,temp_locsize,stat=ier)
    if(ier/=0) call die(myname_,'deallocate(temp_seg_starts...)',ier)
 
-   endif
+   endif ! if( SendingToMyself.and.ReceivingFromMyself )
 
  end subroutine init_
 
@@ -842,12 +858,20 @@
 
   SendList(:) = -1
   do proc = 1,SendRout%nprocs
-     SendList(SendRout%pe_list(proc)) = proc
+     if (usealltoall .and. .not. useswapm) then
+        SendList(SendRout%pe_list_loc(proc)) = proc
+     else
+        SendList(SendRout%pe_list(proc)) = proc
+     endif
   enddo
 
   RecvList(:) = -1
   do proc = 1,RecvRout%nprocs
-     RecvList(RecvRout%pe_list(proc)) = proc
+     if (usealltoall .and. .not. useswapm) then
+        RecvList(RecvRout%pe_list_loc(proc)) = proc
+     else
+        RecvList(RecvRout%pe_list(proc)) = proc
+     endif
   enddo
 
   if (usealltoall) then
@@ -1141,13 +1165,13 @@ if (usealltoall) then
   if (numi .ge. 1) then
      call MPI_Alltoallv(ISendBuf, ISendCnts, ISdispls, MP_INTEGER, &
                         IRecvBuf, IRecvCnts, IRdispls, MP_INTEGER, &
-                        ThisMCTWorld%MCT_comm,ier)
+                        InRearranger%SendRouter%mpicomm,ier)
   endif
 
   if (numr .ge. 1) then
      call MPI_Alltoallv(RSendBuf, RSendCnts, RSdispls, mp_Type_rp, &
                         RRecvBuf, RRecvCnts, RRdispls, mp_Type_rp, &
-                        ThisMCTWorld%MCT_comm,ier)
+                        InRearranger%SendRouter%mpicomm,ier)
   endif
 
  endif

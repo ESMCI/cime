@@ -106,6 +106,15 @@ parameter (MPI_BOTTOM=0)
   integer MPI_ERRORS_RETURN
   parameter (MPI_ERRORS_RETURN= -1)
 
+  integer  MPI_THREAD_SINGLE
+  parameter (MPI_THREAD_SINGLE=0)
+  integer MPI_THREAD_FUNNELED
+  parameter (MPI_THREAD_FUNNELED=1)
+  integer MPI_THREAD_SERIALIZED
+  parameter (MPI_THREAD_SERIALIZED=2)
+  integer MPI_THREAD_MULTIPLE
+  parameter (MPI_THREAD_MULTIPLE=3)
+
   !
   !
 

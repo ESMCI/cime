@@ -161,6 +161,10 @@ typedef int MPI_Fint;
 #define MPI_MAX_ERROR_STRING (128)
 #define MPI_MAX_PROCESSOR_NAME (128)
 
+#define MPI_THREAD_SINGLE (0)
+#define MPI_THREAD_FUNNELED (1)
+#define MPI_THREAD_SERIALIZED (2)
+#define MPI_THREAD_MULTIPLE (3)
 
 /*
  * MPI_Status

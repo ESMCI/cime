@@ -15,7 +15,7 @@ static int *f_MPI_STATUS_IGNORE;
 static int *f_MPI_STATUSES_IGNORE;
 static int *f_MPI_IN_PLACE;
 
-static char *mpi_version_string="mpi-serial 2.0";
+static char *mpi_version_string="mpi-serial 2.3";
 
 
 /****************************************************************************/
@@ -154,6 +154,12 @@ FC_FUNC( mpi_init_fort , MPI_INIT_FORT)
 
   if (err)
     abort();
+}
+
+int MPI_Init_thread(int *argc, char **argv[], int required, int *provided)
+{
+    *provided = required;
+    return MPI_Init(argc, argv);
 }
 
 int MPI_Init(int *argc, char **argv[])

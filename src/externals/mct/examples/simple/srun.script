@@ -1,0 +1,11 @@
+#!/bin/sh
+# Batch system directives
+#SBATCH  --job-name=run.MCTtest
+#SBATCH  --nodes=1
+#SBATCH  --output=run.MCTtest.%j 
+#SBATCH  --exclusive 
+#SBATCH -A condo
+#SBATCH -p acme-small
+
+
+srun  -l -n 4 -N 1 --kill-on-bad-exit ./twocon

@@ -3,19 +3,26 @@
 
 mpi-serial
 
-   Version 2.0
+   Version 2.3
+
    Ray Loy (rloy@alcf.anl.gov)
    John Yackovich
+
+   plus contributions from:
+   Jim Edwards
+   Steve Goldhaber
+   Robert Jacob
+   Sean Patrick Santos
+   Katherine Thayer-Calder
 
 ######################################################################
 
 
-This library provides a one-processor version of MPI.  Most common MPI
-calls, including all that are necessary for MCT, are supported.  This
-includes sends and receives (which cannot be simply stubbed out).  See
+This library provides a one-processor version of MPI.  Most common MPI calls,
+including all that are necessary for the Model Coupling Toolkit, are supported.
+This includes sends and receives (which cannot be simply stubbed out).  See
 below for a complete list.
 
-Version 2.0 adds support for user-defined MPI types and MPI_STATUS_IGNORE.
 
 
 ---------------
@@ -60,9 +67,11 @@ List of MPI calls supported
 
     general ops
       mpi_init
+      mpi_init_thread
       mpi_finalize
       mpi_abort
       mpi_error_string
+      mpi_errhandler_set
       mpi_initialized
       mpi_get_processor_name
       mpi_get_library_version
@@ -76,6 +85,9 @@ List of MPI calls supported
       mpi_comm_create
       mpi_comm_split
       mpi_comm_group
+      mpi_comm_new
+      mpi_comm_f2c
+      mpi_comm_c2f
       mpi_group_incl
       mpi_group_range_incl
       mpi_group_union
@@ -83,9 +95,17 @@ List of MPI calls supported
       mpi_group_difference
       mpi_group_translate_ranks
       mpi_group_free
+      mpi_group_f2c
+      mpi_group_c2f
       mpi_cart_create
       mpi_cart_coords
       mpi_dims_create
+      mpi_intercomm_create
+      mpi_intercomm_merge
+      mpi_op_create
+      mpi_op_free
+      mpi_op_f2c
+      mpi_op_c2f
 
     send/receive ops
       mpi_irecv
@@ -99,6 +119,7 @@ List of MPI calls supported
       mpi_waitall
       mpi_waitsome
       mpi_isend
+      mpi_irecv
       mpi_send
       mpi_ssend
       mpi_rsend
@@ -107,6 +128,8 @@ List of MPI calls supported
       mpi_iprobe
       mpi_probe
       mpi_request_free
+      mpi_request_f2c
+      mpi_request_c2f
 
     collective operations
       mpi_barrier
@@ -123,8 +146,6 @@ List of MPI calls supported
       mpi_alltoall
       mpi_alltoallv
       mpi_alltoallw
-      mpi_op_create
-      mpi_op_free
 
     data types and info objects
       mpi_get_count
@@ -135,6 +156,19 @@ List of MPI calls supported
       mpi_info_create
       mpi_info_set
       mpi_info_free
+      mpi_type_contigious
+      mpi_type_vector
+      mpi_type_hvector
+      mpi_type_create_hvector
+      mpi_type_indexed
+      mpi_type_size
+      mpi_type_struct
+      mpi_type_dup
+      mpi_type_extent
+      mpi_type_commit
+      mpi_type_free
+      mpi_type_lb
+      mpi_type_ub
 
 -----
 EOF

@@ -1,0 +1,28 @@
+cff-version: 1.0.3
+message: If you use this software, please cite it as below.
+authors: 
+  - 
+    affiliation: "Argonne National Laboratory"
+    family-names: Jacob
+    given-names: Robert
+    email: "jacob@anl.gov"
+    orcid: "https://orcid.org/0000-0002-9444-6593"
+  - 
+    affiliation: "Argonne National Laboratory"
+    family-names: Larson
+    given-names: Jay
+  - 
+    affiliation: "Argonne National Laboratory"
+    family-names: Ong
+    given-names: Everest
+commit: 96e72223ce06f98778ee844ed2267cec02038391
+date-released: 2018-04-19
+doi: 10.11578/MCT/dc.20180413.2
+keywords: 
+  - "climate modeling"
+  - "coupling"
+  - "fortran"
+license: BSD3
+repository-code: "https://github.com/MCSclimate/MCT"
+title: Model Coupling Toolkit
+version: 2.10.0

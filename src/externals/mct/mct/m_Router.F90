@@ -68,6 +68,8 @@
       integer :: numiatt                           ! Number of integer attributes currently in use
       integer :: numratt                           ! Number of real attributes currently in use
       integer,dimension(:),pointer   :: pe_list    ! processor ranks of send/receive in MCT_comm
+      integer,dimension(:),pointer   :: pe_list_loc! processor ranks of send/receive in local comm
+      integer                        :: mpicomm    ! local MPI communicator
       integer,dimension(:),pointer   :: num_segs   ! number of segments to send/receive
       integer,dimension(:),pointer   :: locsize    ! total of seg_lengths for a proc
       integer,dimension(:),pointer   :: permarr    ! possible permutation array
@@ -275,6 +277,7 @@
   character(len=*),parameter :: myname_=myname//'::initp_'
   integer			     :: ier,i,j,k,m,n
   integer			     :: mysize,myPid,othercomp
+  integer                            :: mctgrp,mygrp
   integer			     :: lmaxsize,totallength
   integer                            :: maxsegcount,count
   logical, dimension(:), allocatable :: tmppe_list
@@ -672,6 +675,7 @@
   Rout%numratt = 0
 
   allocate(Rout%pe_list(count),Rout%num_segs(count), &
+    Rout%pe_list_loc(count), &
     Rout%seg_starts(count,maxsegcount), &
     Rout%seg_lengths(count,maxsegcount), &
     Rout%locsize(count),stat=ier)
@@ -699,6 +703,16 @@
       Rout%pe_list(m)=ThisMCTWorld%idGprocid(othercomp,proc-1)
     endif
   enddo
+
+  ! translate MCT_comm task ids to task ids in local comm
+  call mpi_comm_group(ThisMCTWorld%MCT_comm, mctgrp, ier)
+  if(ier/=0) call die(myname_,'mpi_comm_group(MCT_comm..)',ier)
+  call mpi_comm_group(myComm, mygrp, ier)
+  if(ier/=0) call die(myname_,'mpi_comm_group(my_comm..)',ier)
+  call mpi_group_translate_ranks(mctgrp, Rout%nprocs, &
+         Rout%pe_list, mygrp, Rout%pe_list_loc, ier)
+  if(ier/=0) call die(myname_,'mpi_group_translate_ranks',ier)
+  Rout%mpicomm=myComm
 
   lmaxsize=0
   do i=1,count
@@ -772,6 +786,7 @@
   integer :: ier
 
   deallocate(Rout%pe_list,Rout%num_segs,Rout%seg_starts, &
+             Rout%pe_list_loc, &
   Rout%locsize,Rout%seg_lengths,stat=ier)
   if(present(stat)) then
      stat=ier

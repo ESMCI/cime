@@ -1895,13 +1895,16 @@
 ! {\tt SparseMatrix} argument {\tt sMat} is examined to determine the
 ! number of nonzero elements it holds, and this value is divided by the
 ! product of the number of rows and columns in {\tt sMat}.  If the
-! optional input argument {\tt comm} is given, then the distributed
-! elements are counted and the sparsity computed accordingly, and the
-! resulting value of {\tt sparsity} is returned {\em to all processes}.
+! optional input argument {\tt comm} is given, the number of elements is
+! reduced with a SUM operation and the sparsity computed from that.
+! The resulting value of {\tt sparsity} is computed identically on all
+! processors.
 !
-! Given the inherent problems with multiplying and dividing large integers,
-! the work in this routine is performed using floating point arithmetic on
-! the logarithms of the number of rows, columns, and nonzero elements.
+! The rows and columns in an {\tt sMat} are always the global values so
+! there is no need to do a reduction on those.
+!
+! The calculation is always done in double precision even with the argument is
+! single precision.
 !
 ! !INTERFACE:
 
@@ -1912,7 +1915,7 @@
 !
       use m_die
       use m_mpif90
-      use m_realkinds, only : SP, FP
+      use m_realkinds, only : SP, FP, DP
 
       use m_AttrVect, only : AttrVect_lsize => lsize
 
@@ -1928,6 +1931,7 @@
       real(SP),           intent(out) :: sparsity
 
 ! !REVISION HISTORY:
+! 04Aug20 - Robert Jacob <jacob@anl.gov> - new algorithm
 ! 23Apr01 - Jay Larson <larson@mcs.anl.gov> - New routine.
 !
 !EOP ___________________________________________________________________
@@ -1935,46 +1939,42 @@
   character(len=*),parameter :: myname_=myname//'::ComputeSparsitySP_'
 
   integer  :: num_elements, num_rows, num_cols
-  real(FP) :: Lnum_elements, Lnum_rows, Lnum_cols, LMySparsity
-  real(FP) :: MySparsity
+  real(DP) :: Lnum_elements, Lnum_rows, Lnum_cols
+  real(DP) :: tot_elements
   integer  :: ierr
 
-       ! Extract number of nonzero elements and compute its logarithm
+       ! Extract number of nonzero elements and convert to real
 
   num_elements = lsize_(sMat)
-  Lnum_elements = log(REAL(num_elements,FP))
-
-       ! Extract number of rows and compute its logarithm
-
-  num_rows = nRows_(sMat)
-  Lnum_rows = log(REAL(num_rows,FP))
-
-       ! Extract number of columns and compute its logarithm
-
-  num_cols = nCols_(sMat)
-  Lnum_cols = log(REAL(num_cols,FP))
-
-       ! Compute logarithm of the (local) sparsity
-
-  LMySparsity = Lnum_elements - Lnum_rows - Lnum_cols
-
-       ! Compute the (local) sparsity from its logarithm.
-
-  MySparsity = exp(LMySparsity)
+  Lnum_elements = REAL(num_elements,DP)
 
        ! If a communicator handle is present, sum up the
-       ! distributed sparsity values to all processes.  If not,
-       ! return the value of MySparsity computed above.
+       ! distributed num_elements to all processes.  If not,
+       ! use the value of lnum_elements
 
   if(present(comm)) then
-     call MPI_ALLREDUCE(MySparsity, sparsity, 1, MP_INTEGER, &
+     call MPI_ALLREDUCE(Lnum_elements, tot_elements, 1, MP_REAL8, &
                         MP_SUM, comm, ierr)
      if(ierr /= 0) then
 	call MP_perr_die(myname_,"MPI_ALLREDUCE(MySparsity...",ierr)
      endif
   else
-     sparsity = MySparsity
+     tot_elements = Lnum_elements
   endif
+
+       ! Extract number of rows and convert to real
+
+  num_rows = nRows_(sMat)
+  Lnum_rows = REAL(num_rows,DP)
+
+       ! Extract number of columns and convert to real
+
+  num_cols = nCols_(sMat)
+  Lnum_cols = REAL(num_cols,DP)
+
+       ! Compute sparsity
+
+  sparsity = tot_elements / (Lnum_rows * Lnum_cols)
 
  end subroutine ComputeSparsitySP_
 
@@ -2012,6 +2012,7 @@
       real(DP),           intent(out) :: sparsity
 
 ! !REVISION HISTORY:
+! 04Aug20 - Robert Jacob <jacob@anl.gov> - new algorithm
 ! 23Apr01 - Jay Larson <larson@mcs.anl.gov> - New routine.
 !
 ! ______________________________________________________________________
@@ -2019,46 +2020,42 @@
   character(len=*),parameter :: myname_=myname//'::ComputeSparsityDP_'
 
   integer  :: num_elements, num_rows, num_cols
-  real(FP) :: Lnum_elements, Lnum_rows, Lnum_cols, LMySparsity
-  real(FP) :: MySparsity
+  real(FP) :: Lnum_elements, Lnum_rows, Lnum_cols
+  real(FP) :: tot_elements
   integer  :: ierr
 
-       ! Extract number of nonzero elements and compute its logarithm
+       ! Extract number of nonzero elements and convert to real
 
   num_elements = lsize_(sMat)
-  Lnum_elements = log(REAL(num_elements,FP))
-
-       ! Extract number of rows and compute its logarithm
-
-  num_rows = nRows_(sMat)
-  Lnum_rows = log(REAL(num_rows,FP))
-
-       ! Extract number of columns and compute its logarithm
-
-  num_cols = nCols_(sMat)
-  Lnum_cols = log(REAL(num_cols,FP))
-
-       ! Compute logarithm of the (local) sparsity
-
-  LMySparsity = Lnum_elements - Lnum_rows - Lnum_cols
-
-       ! Compute the (local) sparsity from its logarithm.
-
-  MySparsity = exp(LMySparsity)
+  Lnum_elements = REAL(num_elements,FP)
 
        ! If a communicator handle is present, sum up the
-       ! distributed sparsity values to all processes.  If not,
-       ! return the value of MySparsity computed above.
+       ! distributed num_elements to all processes.  If not,
+       ! use the value of lnum_elements
 
   if(present(comm)) then
-     call MPI_ALLREDUCE(MySparsity, sparsity, 1, MP_INTEGER, &
+     call MPI_ALLREDUCE(Lnum_elements, tot_elements, 1, MP_REAL8, &
                         MP_SUM, comm, ierr)
      if(ierr /= 0) then
 	call MP_perr_die(myname_,"MPI_ALLREDUCE(MySparsity...",ierr)
      endif
   else
-     sparsity = MySparsity
+     tot_elements = Lnum_elements
   endif
+
+       ! Extract number of rows and convert to real
+
+  num_rows = nRows_(sMat)
+  Lnum_rows = REAL(num_rows,FP)
+
+       ! Extract number of columns and convert to real
+
+  num_cols = nCols_(sMat)
+  Lnum_cols = REAL(num_cols,FP)
+
+       ! Compute sparsity
+
+  sparsity = tot_elements / (Lnum_rows * Lnum_cols)
 
  end subroutine ComputeSparsityDP_
 

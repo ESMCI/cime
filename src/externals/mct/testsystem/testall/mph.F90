@@ -393,6 +393,7 @@
       subroutine MPH_global_ME_SE ()
       implicit none
       integer sendtag, recvtag, i, color, key
+      type(Acomponent) sendbuf
 
 ! create a MPI communicator COMM_master for all submasters
 ! arrange the rank of the submasters in COMM_master by their component_id
@@ -407,7 +408,10 @@
 
 ! gather Acomponents to 0th proc in COMM_master
       if (local_proc_id == 0) then
-         call MPI_GATHER (components(component_id), 1, MPI_Acomponent,&
+         ! cannot send and recv from same buffer anymore
+         ! copy sendbuf local variable
+         sendbuf = components(component_id)
+         call MPI_GATHER (sendbuf, 1, MPI_Acomponent,&
                           components, 1, MPI_Acomponent,&
                           0, COMM_master, ierr)
 

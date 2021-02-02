@@ -1,39 +1,36 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(MCT, 2.8)
+AC_INIT([MCT],[2.10])
 
 # PROCESS THE FOLLOWING MAKEFILES
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES(Makefile.conf)
-AC_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 
 # DECLARE PACKAGE OPTIONS
 
 AC_ARG_ENABLE(mpiserial,
-AC_HELP_STRING([--enable-mpiserial],
-[Use the included MPI replacement library for single processor]),
+AS_HELP_STRING([--enable-mpiserial],[Use the included MPI replacement library for single processor]),
 [DONOTCHECKMPI="DONOTCHECKMPI"]
 )
 
 AC_ARG_ENABLE(debugging,
-AC_HELP_STRING([--enable-debugging],
-[Use the debugging flag and disable the optimization flag]),
+AS_HELP_STRING([--enable-debugging],[Use the debugging flag and disable the optimization flag]),
 [DEBUGGING="ENABLED"]
 )
 
 AC_ARG_ENABLE(selectedrealkind,
-AC_HELP_STRING([--enable-selectedrealkind],
-[define single precision and double precision numbers using the selected_real_kind function. Default uses the kind inquiry function.]),
+AS_HELP_STRING([--enable-selectedrealkind],[define single precision and double precision numbers using the selected_real_kind function. Default uses the kind inquiry function.]),
 [SRKDEF="SELECTEDREALKIND"]
 )
 
 AC_ARG_ENABLE(sequence,
-AC_HELP_STRING([--enable-sequence],[Modify MCT types to make them contiguous in memory.]),
+AS_HELP_STRING([--enable-sequence],[Modify MCT types to make them contiguous in memory.]),
 [SRKDEF="SEQUENCE"],)
 
 AC_ARG_ENABLE(babel,
-AC_HELP_STRING([--enable-babel],[Supply this option if you plan on building the Babel bindings to MCT]),
+AS_HELP_STRING([--enable-babel],[Supply this option if you plan on building the Babel bindings to MCT]),
 [SRKDEF="SEQUENCE"],)
 
 
@@ -74,65 +71,6 @@ test "$osname"=NONE && osname=`uname -s`
 test "$machinename"=NONE && machinename=`uname -m`
 fullhostname=`hostname -f`
 
-
-# HARDCODE SPECIFIC MACHINES FOR EXTRAORDINARY CIRCUMSTANCES
-
-# CHECK IF WE ARE ON THE EARTH SIMULATOR
-ES="NO"
-if echo $osname | grep -i esos >/dev/null 2>&1; then
-   ES="YES"
-fi
-if echo $osname | grep -i hp-ux >/dev/null 2>&1; then
-   if test "$ac_hostname" = "moon"; then
-      ES="YES"
-      # TELLS CONFIGURE NOT TO RUN ANY TESTS THAT REQUIRE EXECUTION
-      cross_compiling="yes"
-   fi
-fi
-if test "$ES" = "YES"; then
-   echo "Using preset configuration values for the Earth Simulator"
-   if test -z "$CC"; then
-      CC="escc"
-   fi
-   if test -z "$FC"; then
-      FC="esf90"
-   fi
-   if test -z "$MPIFC"; then
-      MPIFC="esmpif90"
-   fi
-   if test -z "$AR"; then
-      AR="esar cqs"
-   fi
-   if test -z "FPP"; then
-      FPPFLAGS=" "
-   fi
-   if test -z "$FCFLAGS"; then
-      FCFLAGS="-EP -Wf'-pvctl fullmsg -L fmtlist transform map'"
-   fi
-   if test -z "$OPT"; then
-      OPT="-C vopt"
-   fi
-   if test -z "$CPPDEFS"; then
-      CPPDEFS="-DESVEC"
-   fi
-fi
-
-# Check if we are on the ANL BG/P
-
-if echo $fullhostname | egrep -q '.\.(challenger|intrepid)\.alcf\.anl\.gov'
-  then if test -z "$FC"; then
-         FC=bgxlf90_r
-       fi
-       if test -z "$MPIFC"; then
-         MPIFC=mpixlf90_r
-       fi
-       if test -z "$CC"; then
-         CC=mpixlc_r
-       fi
-fi
-
-
-
 # START TESTS
 
 # CHECK FOR THE C COMPILER
@@ -143,7 +81,13 @@ AC_C_BIGENDIAN
 
 # CHECK FOR THE FORTRAN COMPILER
 # RLJ- specify the order, include PathScale and do not search for F77
-AC_PROG_FC([nagfor xlf95 pgf95 ifort gfortran pathf95 ftn lf95 f95 fort ifc efc g95 xlf90 pgf90 pathf90 epcf90 pghpf])
+AC_PROG_FC([nagfor xlf95 pgf95 ifort gfortran pathf95 ftn lf95 f95 fort ifc efc xlf90 pgf90 pathf90 epcf90 pghpf])
+
+if test -z "$GFC"; then
+   IS_GNU="no"
+else
+   IS_GNU=$GFC
+fi
 
 # CHECK FOR MPI LIBRARIES
 AC_LANG_PUSH(Fortran)
@@ -276,9 +220,6 @@ fi
 if echo $osname | grep -i sun >/dev/null 2>&1; then
    SYSDEF="SUNOS"
 fi
-if echo $osname | grep -i t3e >/dev/null 2>&1; then
-   SYSDEF="T3E"
-fi
 if echo $osname | grep -i unicos >/dev/null 2>&1; then
    SYSDEF="UNICOS"
 fi
@@ -308,7 +249,7 @@ if echo $FC | grep xlf >/dev/null 2>&1; then
    if test "$FCFLAGS" = "$DEFFCFLAGS"; then
        FCFLAGS=""
    fi
-elif echo $FC | grep pgf >/dev/null 2>&1; then
+elif echo $ac_fc_version_output | grep -i pgfor >/dev/null 2>&1; then
    echo "Fortran Compiler is Portland Group"
    CPRDEF="PGI"
    if test -z "$REAL8"; then
@@ -329,6 +270,49 @@ elif echo $FC | grep pgf >/dev/null 2>&1; then
    if test -z "$DEBUG"; then
       DEBUG="-g"
    fi
+elif test "$IS_GNU" = "yes" ; then
+# The GNU compiler can hide inside other compilers like ftn
+  if echo $ac_fc_version_output | grep -i Cray >/dev/null 2>&1; then
+   echo "Fortran Compiler is GNU, Cray"
+    CPRDEF="GNU"
+  else
+    echo "Fortran Compiler is GNU"
+    CPRDEF="GNU"
+  fi
+# For gfortran, default flags are different
+    if test "$FCFLAGS" = "-g -O2"; then
+       FCFLAGS=""
+    fi
+    if test -z "$DEBUG"; then
+       DEBUG="-g"
+    fi
+    if test -z "$OPT"; then
+       OPT="-O2"
+    fi
+#  Put ifort after gnu in case wrapper script mpifort
+#  from openmpi is wrapping gnu.  Prevents misidentification
+elif echo $ac_fc_version_output | grep -i 'intel.*fortran' >/dev/null 2>&1; then
+   echo "Fortran Compiler is Intel ifort"
+   CPRDEF="INTEL"
+   if test -z "$REAL8"; then
+      REAL8="-r8"
+   fi
+   if test "$FCFLAGS" = "$DEFFCFLAGS"; then
+      FCFLAGS="-w -ftz"
+   fi
+   if test -z "$PROGFCFLAGS"; then
+      PROGFCFLAGS="-assume byterecl"
+   fi
+   if test -z "$ENDIAN"; then
+      ENDIAN="-convert big_endian"
+   fi
+   if test -z "$OPT"; then
+      OPT="-O2"
+   fi
+   if test -z "$DEBUG"; then
+      DEBUG="-g"
+   fi
+# Put ftn after GNU for the case where ftn is wrapping PGF
 elif echo $FC | grep ftn >/dev/null 2>&1; then
  if echo $ac_fc_version_output | grep -i Portland >/dev/null 2>&1; then
    echo "Fortran Compiler is Portland Group, Cray"
@@ -353,43 +337,6 @@ elif echo $FC | grep ftn >/dev/null 2>&1; then
       DEBUG="-g"
    fi
  fi
-elif echo $FC | grep ifort >/dev/null 2>&1; then
-   echo "Fortran Compiler is Intel ifort"
-   CPRDEF="INTEL"
-   if test -z "$REAL8"; then
-      REAL8="-r8"
-   fi
-   if test "$FCFLAGS" = "$DEFFCFLAGS"; then
-      FCFLAGS="-w -ftz"
-   fi
-   if test -z "$PROGFCFLAGS"; then
-      PROGFCFLAGS="-assume byterecl"
-   fi
-   if test -z "$ENDIAN"; then
-      ENDIAN="-convert big_endian"
-   fi
-   if test -z "$OPT"; then
-      OPT="-O2"
-   fi
-   if test -z "$DEBUG"; then
-      DEBUG="-g"
-   fi
-elif echo $FC | grep g95 >/dev/null 2>&1; then
-   echo "Fortran Compiler is GNU"
-   CPRDEF="GNU"
-elif echo $FC | grep gfortran >/dev/null 2>&1; then
-   echo "Fortran Compiler is GNU"
-   CPRDEF="GNU"
-# For gfortran, default flags are different
-   if test "$FCFLAGS" = "-g -O2"; then
-      FCFLAGS=""
-   fi
-   if test -z "$DEBUG"; then
-      DEBUG="-g"
-   fi
-   if test -z "$OPT"; then
-      OPT="-O2"
-   fi
 elif echo $ac_fc_version_output | grep -i nag >/dev/null 2>&1; then
    echo "Fortran Compiler is NAG"
    CPRDEF="NAG"
@@ -427,32 +374,6 @@ elif echo $FC | grep frt >/dev/null 2>&1; then
 elif echo $ac_fc_version_output | grep Lahey >/dev/null 2>&1; then
    echo "Fortran Compiler is Lahey"
    CPRDEF="LAHEY"
-elif echo $FC | grep ifc >/dev/null 2>&1; then
-   echo "Fortran Compiler is Intel 7.x or earlier"
-   echo "Intel ifc compiler must set the environment variable F_UFMTENDIAN=big to do endian conversion"
-   CPRDEF="INTEL"
-   if test -z "$REAL8"; then
-      REAL8="-r8"
-   fi
-   if test -z "$F90FLAGS"; then
-      F90FLAGS="-w"
-   fi
-   if test -z "$OPT"; then
-      OPT="-O2"
-   fi
-elif echo $FC | grep efc >/dev/null 2>&1; then
-   echo "Fortran Compiler is Intel 7.x or earlier for IA-64"
-   echo "Intel efc compiler must set the environment variable F_UFMTENDIAN=big to do endian conversion"
-   CPRDEF="INTEL"
-   if test -z "$REAL8"; then
-      REAL8="-r8"
-   fi
-   if test -z "$F90FLAGS"; then
-      F90FLAGS="-w -ftz"
-   fi
-   if test -z "$OPT"; then
-      OPT="-O2"
-   fi
 elif echo $FC | grep pathf90 >/dev/null 2>&1; then
    echo "Fortran Compiler is PathScale"
    CPRDEF="PATHSC"
@@ -536,6 +457,52 @@ elif echo $ac_fc_version_output | grep -i sx >/dev/null 2>&1; then
       OPT="-Chopt"
    fi
 fi
+
+# Test to see if fortran compiler supports the flag
+# -fallow-argument-mismatch flag introduced in gfortran 10.
+#
+# Also allow support for NAG compiler using the -mismatch_all flag.
+#
+# See https://github.com/Unidata/netcdf-fortran/issues/212
+# See https://github.com/Unidata/netcdf-fortran/issues/218
+ac_save_FCFLAGS="$FCFLAGS"
+AC_MSG_CHECKING([if Fortran compiler supports allow-mismatch flag])
+cat <<EOF >conftest.f90
+Program test
+USE ISO_C_BINDING, ONLY: C_PTRDIFF_T
+End Program
+EOF
+doit='$FC -c ${FCFLAGS} ${FCFLAGS_f90} -fallow-argument-mismatch conftest.f90'
+if AC_TRY_EVAL(doit); then
+   nf_allow_mismatch=yes
+   FCFLAGS="${FCFLAGS} -fallow-argument-mismatch"
+  else
+   nf_allow_mismatch=no
+fi
+AC_MSG_RESULT([$nf_allow_mismatch])
+# End testing of gfortan allow-mismatch flags.
+
+AC_MSG_CHECKING([if Fortran compiler supports mismatch_all flag])
+cat <<EOF >conftest.f90
+Program test
+USE ISO_C_BINDING, ONLY: C_PTRDIFF_T
+End Program
+EOF
+doit='$FC -c ${FCFLAGS} ${FCFLAGS_f90} -mismatch_all conftest.f90'
+if AC_TRY_EVAL(doit); then
+   nf_mismatch_all=yes
+   FCFLAGS="${FCFLAGS} -mismatch_all"
+  else
+   nf_mismatch_all=no
+fi
+AC_MSG_RESULT([$nf_mismatch_all])
+
+#end testing of NAG mismatch_all flag.
+
+##
+# End mismatch checks
+##
+
 
 ###########################################################
 # END of compiler-specific flag setting
