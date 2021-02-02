@@ -131,7 +131,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             case.flush()
             configure(Machines(machine=mach, extra_machines_dir=extra_machines_dir),
                       caseroot, ["Makefile"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
-                      extra_machines_dir=extra_machines_dir)
+                      threaded=case.get_build_threaded(),extra_machines_dir=extra_machines_dir)
             case.read_xml()
 
     if not clean:
