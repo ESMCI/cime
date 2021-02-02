@@ -863,6 +863,35 @@ using a fortran linker.
   </FFLAGS>
 </compiler>
 
+<compiler MACH="grace" COMPILER="intel">
+  <CPPDEFS>
+    <append> -DHAVE_NANOTIME -DNO_R16 </append>
+  </CPPDEFS>
+  <CFLAGS>
+    <append></append>
+  </CFLAGS>
+  <FFLAGS>
+    <append></append>
+  </FFLAGS>
+  <MPIFC>mpiifort</MPIFC>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <SFC>ifort</SFC>
+  <SCC>icc</SCC>
+  <SCXX>icpc</SCXX>
+  <NETCDF_PATH>/scratch/group/ihesp/software/share/netcdf-c-4.7.4/install2019b</NETCDF_PATH>
+  <NETCDF_C_PATH>/scratch/group/ihesp/software/share/netcdf-c-4.7.4/install2019b</NETCDF_C_PATH>
+  <NETCDF_FORTRAN_PATH>/scratch/group/ihesp/software/share/netcdf-fortran-4.5.3/install2019b</NETCDF_FORTRAN_PATH>
+  <PNETCDF_PATH>/scratch/group/ihesp/software/share/pnetcdf-1.12.1/install2019b</PNETCDF_PATH>
+  <SLIBS>
+    <append>-L$(NETCDF_C_PATH)/lib -Wl,-rpath,$(NETCDF_PATH)/lib -lnetcdf</append>
+    <append>-L$(NETCDF_FORTRAN_PATH)/lib -Wl,-rpath,$(NETCDF_FORTRAN_PATH)/lib -lnetcdff</append>
+    <append>-L$(PNETCDF_PATH)/lib -Wl,-rpath,$(PNETCDF_PATH)/lib -lpnetcdf</append>
+  </SLIBS>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+</compiler>
+
 <compiler MACH="hobart">
   <CPPDEFS>
     <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
