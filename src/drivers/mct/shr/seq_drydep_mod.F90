@@ -36,9 +36,10 @@ module seq_drydep_mod
   ! !PRIVATE ARRAY SIZES
 
   integer, private, parameter :: maxspc = 100              ! Maximum number of species
-  integer, public,  parameter :: n_species_table = 77      ! Number of species to work with
+  integer, public,  parameter :: n_species_table = 251     ! Number of species to work with
   integer, private, parameter :: NSeas = 5                 ! Number of seasons
-  integer, private, parameter :: NLUse = 11                ! Number of land-use types
+  integer, public,  parameter :: NLUse = 11                ! Number of land-use types
+  integer, public,  parameter :: NPatch = 80               ! Number of patch types
 
   ! !PUBLIC DATA MEMBERS:
 
@@ -55,6 +56,9 @@ module seq_drydep_mod
   character(len=32), public, dimension(maxspc) :: drydep_list = ''   ! List of dry-dep species
 
   character(len=CS), public :: drydep_fields_token = ''   ! First drydep fields token
+  character(len=CS), public :: luse_fields_token = ''     ! First landunit fields token
+  character(len=CS), public :: patch_fields_token = ''    ! First patch fields token
+  character(len=CS), public :: lai_fields_token = ''      ! First lai fields token
 
   real(r8), public, allocatable, dimension(:) :: foxd      ! reactivity factor for oxidation (dimensioness)
   real(r8), public, allocatable, dimension(:) :: drat      ! ratio of molecular diffusivity (D_H2O/D_species; dimensionless)
@@ -224,83 +228,257 @@ module seq_drydep_mod
 
   !--- data for foxd (reactivity factor for oxidation) ----
   real(r8), public, parameter :: dfoxd(n_species_table) = &
-       (/  1._r8     &
-       ,1._r8     &
-       ,1._r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1._r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,0._r8     &
-       ,0._r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,1._r8     &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,1._r8     &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,.1_r8     &
-       ,1.e-36_r8 &
-       ,1.e-36_r8 & ! HCN
-       ,1.e-36_r8 & ! CH3CN
-       ,1.e-36_r8 & ! SO2
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
-       ,0.1_r8    &
+       (/  1.0e+00_r8   & !OX
+       ,1.0e+00_r8      & !H2O2
+       ,1.0e+00_r8      & !OH
+       ,0.1e+00_r8      & !HO2
+       ,1.0e-36_r8      & !CO
+       ,1.0e-36_r8      & !CH4
+       ,1.0e+00_r8      & !CH3O2
+       ,0.1e+00_r8      & !CH3OOH
+       ,1.0e-36_r8      & !CH2O
+       ,0.0e+00_r8      & !CHOOH
+       ,0.0e+00_r8      & !NO
+       ,0.1e+00_r8      & !NO2
+       ,1.0e-36_r8      & !HNO3
+       ,1.0e-36_r8      & !CO2
+       ,1.0e-36_r8      & !NH3
+       ,0.1e+00_r8      & !N2O5
+       ,1.0e+00_r8      & !NO3
+       ,1.0e-36_r8      & !CH3OH
+       ,0.1e+00_r8      & !HO2NO2
+       ,1.0e+00_r8      & !O1D
+       ,1.0e-36_r8      & !C2H6
+       ,0.1e+00_r8      & !C2H5O2
+       ,0.1e+00_r8      & !PO2
+       ,0.1e+00_r8      & !MACRO2
+       ,0.1e+00_r8      & !ISOPO2
+       ,1.0e-36_r8      & !C4H10
+       ,1.0e-36_r8      & !CH3CHO
+       ,0.1e+00_r8      & !C2H5OOH
+       ,1.0e-36_r8      & !C3H6
+       ,0.1e+00_r8      & !POOH
+       ,1.0e-36_r8      & !C2H4
+       ,0.1e+00_r8      & !PAN
+       ,0.1e+00_r8      & !CH3COOOH
+       ,1.0e-36_r8      & !C10H16
+       ,1.0e-36_r8      & !CHOCHO
+       ,1.0e-36_r8      & !CH3COCHO
+       ,1.0e-36_r8      & !GLYALD
+       ,0.1e+00_r8      & !CH3CO3
+       ,1.0e-36_r8      & !C3H8
+       ,0.1e+00_r8      & !C3H7O2
+       ,1.0e-36_r8      & !CH3COCH3
+       ,0.1e+00_r8      & !C3H7OOH
+       ,0.1e+00_r8      & !RO2
+       ,0.1e+00_r8      & !ROOH
+       ,1.0e-36_r8      & !Rn
+       ,1.0e-36_r8      & !ISOP
+       ,1.0e-36_r8      & !MVK
+       ,1.0e-36_r8      & !MACR
+       ,1.0e-36_r8      & !C2H5OH
+       ,0.1e+00_r8      & !ONITR
+       ,0.1e+00_r8      & !ONIT
+       ,0.1e+00_r8      & !ISOPNO3
+       ,1.0e-36_r8      & !HYDRALD
+       ,1.0e-36_r8      & !HCN
+       ,1.0e-36_r8      & !CH3CN
+       ,1.0e-36_r8      & !SO2
+       ,0.1e+00_r8      & !SOAGff0
+       ,0.1e+00_r8      & !SOAGff1
+       ,0.1e+00_r8      & !SOAGff2
+       ,0.1e+00_r8      & !SOAGff3
+       ,0.1e+00_r8      & !SOAGff4
+       ,0.1e+00_r8      & !SOAGbg0
+       ,0.1e+00_r8      & !SOAGbg1
+       ,0.1e+00_r8      & !SOAGbg2
+       ,0.1e+00_r8      & !SOAGbg3
+       ,0.1e+00_r8      & !SOAGbg4
+       ,0.1e+00_r8      & !SOAG0
+       ,0.1e+00_r8      & !SOAG1
+       ,0.1e+00_r8      & !SOAG2
+       ,0.1e+00_r8      & !SOAG3
+       ,0.1e+00_r8      & !SOAG4
+       ,0.1e+00_r8      & !IVOC
+       ,0.1e+00_r8      & !SVOC
+       ,0.1e+00_r8      & !IVOCbb
+       ,0.1e+00_r8      & !IVOCff
+       ,0.1e+00_r8      & !SVOCbb
+       ,0.1e+00_r8      & !SVOCff
+       ,1.0e+00_r8      & !ACET
+       ,1.0e+00_r8      & !ACTA
+       ,0.0e+00_r8      & !AERI
+       ,1.0e+00_r8      & !ALD2
+       ,0.0e+00_r8      & !ASOA
+       ,0.0e+00_r8      & !ASOG
+       ,1.0e+00_r8      & !ATOOH
+       ,0.0e+00_r8      & !BCPI
+       ,0.0e+00_r8      & !BCPO
+       ,0.0e+00_r8      & !Be10
+       ,0.0e+00_r8      & !Be10Strat
+       ,0.0e+00_r8      & !Be7
+       ,0.0e+00_r8      & !Be7Strat
+       ,0.0e+00_r8      & !Br2
+       ,0.0e+00_r8      & !BrCl
+       ,0.0e+00_r8      & !BrNO3
+       ,0.0e+00_r8      & !BrSALA
+       ,0.0e+00_r8      & !BrSALC
+       ,1.0e+00_r8      & !CH2O
+       ,0.0e+00_r8      & !Cl2
+       ,0.0e+00_r8      & !ClNO2
+       ,0.0e+00_r8      & !ClNO3
+       ,0.0e+00_r8      & !ClO
+       ,0.0e+00_r8      & !ClOO
+       ,0.0e+00_r8      & !DST1
+       ,0.0e+00_r8      & !DST2
+       ,0.0e+00_r8      & !DST3
+       ,0.0e+00_r8      & !DST4
+       ,0.0e+00_r8      & !EOH
+       ,1.0e+00_r8      & !ETHLN
+       ,1.0e-01_r8      & !ETNO3
+       ,1.0e+00_r8      & !ETP
+       ,1.0e+00_r8      & !GLYC
+       ,1.0e+00_r8      & !GLYX
+       ,1.0e+00_r8      & !H2O2
+       ,1.0e+00_r8      & !HAC
+       ,0.0e+00_r8      & !HBr
+       ,0.0e+00_r8      & !HC5A
+       ,0.0e+00_r8      & !HCl
+       ,1.0e+00_r8      & !HCOOH
+       ,1.0e-05_r8      & !Hg0
+       ,0.0e+00_r8      & !Hg2
+       ,0.0e+00_r8      & !HgP
+       ,0.0e+00_r8      & !HI
+       ,1.0e+00_r8      & !HMHP
+       ,1.0e+00_r8      & !HMML
+       ,0.0e+00_r8      & !HNO3
+       ,0.0e+00_r8      & !HOBr
+       ,0.0e+00_r8      & !HOCl
+       ,0.0e+00_r8      & !HOI
+       ,1.0e+00_r8      & !HONIT
+       ,0.0e+00_r8      & !HPALD1
+       ,0.0e+00_r8      & !HPALD2
+       ,0.0e+00_r8      & !HPALD3
+       ,0.0e+00_r8      & !HPALD4
+       ,1.0e+00_r8      & !HPETHNL
+       ,0.0e+00_r8      & !I2
+       ,0.0e+00_r8      & !I2O2
+       ,0.0e+00_r8      & !I2O3
+       ,0.0e+00_r8      & !I2O4
+       ,0.0e+00_r8      & !IBr
+       ,1.0e+00_r8      & !ICHE
+       ,0.0e+00_r8      & !ICl
+       ,1.0e+00_r8      & !ICN
+       ,1.0e+00_r8      & !ICPDH
+       ,0.0e+00_r8      & !IDC
+       ,1.0e+00_r8      & !IDCHP
+       ,1.0e+00_r8      & !IDHDP
+       ,1.0e+00_r8      & !IDHPE
+       ,1.0e+00_r8      & !IDN
+       ,1.0e+00_r8      & !IEPOXA
+       ,1.0e+00_r8      & !IEPOXB
+       ,1.0e+00_r8      & !IEPOXD
+       ,1.0e+00_r8      & !IHN1
+       ,1.0e+00_r8      & !IHN2
+       ,1.0e+00_r8      & !IHN3
+       ,1.0e+00_r8      & !IHN4
+       ,0.0e+00_r8      & !INDIOL
+       ,1.0e+00_r8      & !INPB
+       ,1.0e+00_r8      & !INPD
+       ,0.0e+00_r8      & !IONITA
+       ,0.0e+00_r8      & !IONO
+       ,0.0e+00_r8      & !IONO2
+       ,1.0e-01_r8      & !IPRNO3
+       ,0.0e+00_r8      & !ISALA
+       ,0.0e+00_r8      & !ISALC
+       ,1.0e+00_r8      & !ITCN
+       ,1.0e+00_r8      & !ITHN
+       ,0.0e+00_r8      & !LIMO
+       ,1.0e+00_r8      & !LVOC
+       ,0.0e+00_r8      & !LVOCOA
+       ,1.0e+00_r8      & !MACR
+       ,1.0e+00_r8      & !MACR1OOH
+       ,1.0e+00_r8      & !MAP
+       ,1.0e+00_r8      & !MCRDH
+       ,1.0e+00_r8      & !MCRENOL
+       ,1.0e+00_r8      & !MCRHN
+       ,1.0e+00_r8      & !MCRHNB
+       ,1.0e+00_r8      & !MCRHP
+       ,1.0e-01_r8      & !MENO3
+       ,1.0e+00_r8      & !MGLY
+       ,1.0e+00_r8      & !MOH
+       ,0.0e+00_r8      & !MONITA
+       ,1.0e+00_r8      & !MONITS
+       ,1.0e+00_r8      & !MONITU
+       ,0.0e+00_r8      & !MOPI
+       ,0.0e+00_r8      & !MOPO
+       ,1.0e+00_r8      & !MPAN
+       ,0.0e+00_r8      & !MSA
+       ,0.0e+00_r8      & !MTPA
+       ,0.0e+00_r8      & !MTPO
+       ,1.0e+00_r8      & !MVK
+       ,1.0e+00_r8      & !MVKDH
+       ,1.0e+00_r8      & !MVKHC
+       ,1.0e+00_r8      & !MVKHCB
+       ,1.0e+00_r8      & !MVKHP
+       ,1.0e+00_r8      & !MVKN
+       ,1.0e+00_r8      & !MVKPC
+       ,0.0e+00_r8      & !N2O5
+       ,0.0e+00_r8      & !NH3
+       ,0.0e+00_r8      & !NIT
+       ,0.0e+00_r8      & !NITs
+       ,1.0e-01_r8      & !NO2
+       ,1.0e-01_r8      & !NPRNO3
+       ,1.0e+00_r8      & !O3
+       ,0.0e+00_r8      & !OCPI
+       ,0.0e+00_r8      & !OCPO
+       ,0.0e+00_r8      & !OPOA1
+       ,0.0e+00_r8      & !OPOA2
+       ,0.0e+00_r8      & !OPOG1
+       ,0.0e+00_r8      & !OPOG2
+       ,1.0e+00_r8      & !PAN
+       ,0.0e+00_r8      & !Pb210
+       ,0.0e+00_r8      & !Pb210
+       ,0.0e+00_r8      & !Pb210Strat
+       ,0.0e+00_r8      & !pFe
+       ,0.0e+00_r8      & !POA1
+       ,0.0e+00_r8      & !POA2
+       ,0.0e+00_r8      & !POG1
+       ,0.0e+00_r8      & !POG2
+       ,0.0e+00_r8      & !POPG_BaP
+       ,0.0e+00_r8      & !POPG_PHE
+       ,0.0e+00_r8      & !POPG_PYR
+       ,1.0e+00_r8      & !PP
+       ,1.0e+00_r8      & !PPN
+       ,1.0e+00_r8      & !PROPNN
+       ,1.0e+00_r8      & !PRPN
+       ,1.0e+00_r8      & !PYAC
+       ,1.0e+00_r8      & !R4N2
+       ,1.0e+00_r8      & !R4P
+       ,1.0e+00_r8      & !RA3P
+       ,1.0e+00_r8      & !RB3P
+       ,1.0e+00_r8      & !RIPA
+       ,1.0e+00_r8      & !RIPB
+       ,1.0e+00_r8      & !RIPC
+       ,1.0e+00_r8      & !RIPD
+       ,1.0e+00_r8      & !RP
+       ,0.0e+00_r8      & !SALA
+       ,0.0e+00_r8      & !SALAAL
+       ,0.0e+00_r8      & !SALACL
+       ,0.0e+00_r8      & !SALC
+       ,0.0e+00_r8      & !SALCAL
+       ,0.0e+00_r8      & !SALCCL
+       ,0.0e+00_r8      & !SO2
+       ,0.0e+00_r8      & !SO4s
+       ,0.0e+00_r8      & !SOAGX
+       ,0.0e+00_r8      & !SOAIE
+       ,0.0e+00_r8      & !SOAS
+       ,0.0e+00_r8      & !TSOA
+       ,0.0e+00_r8      & !TSOG
+       ,0.0e+00_r8      & !MEK
+       ,0.0e+00_r8      & !MP
+       ,0.0e+00_r8      & !MPN
+       ,0.0e+00_r8      & !PRPE
        /)
 
   ! PRIVATE DATA:
@@ -318,83 +496,257 @@ module seq_drydep_mod
 
   !--- Names of species that can work with ---
   character(len=20), public, parameter :: species_name_table(n_species_table) = &
-       (/ 'OX      '                       &
-       ,'H2O2    '                       &
-       ,'OH      '                       &
-       ,'HO2     '                       &
-       ,'CO      '                       &
-       ,'CH4     '                       &
-       ,'CH3O2   '                       &
-       ,'CH3OOH  '                       &
-       ,'CH2O    '                       &
-       ,'CHOOH   '                       &
-       ,'NO      '                       &
-       ,'NO2     '                       &
-       ,'HNO3    '                       &
-       ,'CO2     '                       &
-       ,'NH3     '                       &
-       ,'N2O5    '                       &
-       ,'NO3     '                       &
-       ,'CH3OH   '                       &
-       ,'HO2NO2  '                       &
-       ,'O1D     '                       &
-       ,'C2H6    '                       &
-       ,'C2H5O2  '                       &
-       ,'PO2     '                       &
-       ,'MACRO2  '                       &
-       ,'ISOPO2  '                       &
-       ,'C4H10   '                       &
-       ,'CH3CHO  '                       &
-       ,'C2H5OOH '                       &
-       ,'C3H6    '                       &
-       ,'POOH    '                       &
-       ,'C2H4    '                       &
-       ,'PAN     '                       &
-       ,'CH3COOOH'                       &
-       ,'C10H16  '                       &
-       ,'CHOCHO  '                       &
-       ,'CH3COCHO'                       &
-       ,'GLYALD  '                       &
-       ,'CH3CO3  '                       &
-       ,'C3H8    '                       &
-       ,'C3H7O2  '                       &
-       ,'CH3COCH3'                       &
-       ,'C3H7OOH '                       &
-       ,'RO2     '                       &
-       ,'ROOH    '                       &
-       ,'Rn      '                       &
-       ,'ISOP    '                       &
-       ,'MVK     '                       &
-       ,'MACR    '                       &
-       ,'C2H5OH  '                       &
-       ,'ONITR   '                       &
-       ,'ONIT    '                       &
-       ,'ISOPNO3 '                       &
-       ,'HYDRALD '                       &
-       ,'HCN     '                       &
-       ,'CH3CN   '                       &
-       ,'SO2     '                       &
-       ,'SOAGff0 '                       &
-       ,'SOAGff1 '                       &
-       ,'SOAGff2 '                       &
-       ,'SOAGff3 '                       &
-       ,'SOAGff4 '                       &
-       ,'SOAGbg0 '                       &
-       ,'SOAGbg1 '                       &
-       ,'SOAGbg2 '                       &
-       ,'SOAGbg3 '                       &
-       ,'SOAGbg4 '                       &
-       ,'SOAG0   '                       &
-       ,'SOAG1   '                       &
-       ,'SOAG2   '                       &
-       ,'SOAG3   '                       &
-       ,'SOAG4   '                       &
-       ,'IVOC    '                       &
-       ,'SVOC    '                       &
-       ,'IVOCbb  '                       &
-       ,'IVOCff  '                       &
-       ,'SVOCbb  '                       &
-       ,'SVOCff  '                       &
+       (/ 'OX        '                       &
+       ,'H2O2      '                       &
+       ,'OH        '                       &
+       ,'HO2       '                       &
+       ,'CO        '                       &
+       ,'CH4       '                       &
+       ,'CH3O2     '                       &
+       ,'CH3OOH    '                       &
+       ,'CH2O      '                       &
+       ,'CHOOH     '                       &
+       ,'NO        '                       &
+       ,'NO2       '                       &
+       ,'HNO3      '                       &
+       ,'CO2       '                       &
+       ,'NH3       '                       &
+       ,'N2O5      '                       &
+       ,'NO3       '                       &
+       ,'CH3OH     '                       &
+       ,'HO2NO2    '                       &
+       ,'O1D       '                       &
+       ,'C2H6      '                       &
+       ,'C2H5O2    '                       &
+       ,'PO2       '                       &
+       ,'MACRO2    '                       &
+       ,'ISOPO2    '                       &
+       ,'C4H10     '                       &
+       ,'CH3CHO    '                       &
+       ,'C2H5OOH   '                       &
+       ,'C3H6      '                       &
+       ,'POOH      '                       &
+       ,'C2H4      '                       &
+       ,'PAN       '                       &
+       ,'CH3COOOH  '                       &
+       ,'C10H16    '                       &
+       ,'CHOCHO    '                       &
+       ,'CH3COCHO  '                       &
+       ,'GLYALD    '                       &
+       ,'CH3CO3    '                       &
+       ,'C3H8      '                       &
+       ,'C3H7O2    '                       &
+       ,'CH3COCH3  '                       &
+       ,'C3H7OOH   '                       &
+       ,'RO2       '                       &
+       ,'ROOH      '                       &
+       ,'Rn        '                       &
+       ,'ISOP      '                       &
+       ,'MVK       '                       &
+       ,'MACR      '                       &
+       ,'C2H5OH    '                       &
+       ,'ONITR     '                       &
+       ,'ONIT      '                       &
+       ,'ISOPNO3   '                       &
+       ,'HYDRALD   '                       &
+       ,'HCN       '                       &
+       ,'CH3CN     '                       &
+       ,'SO2       '                       &
+       ,'SOAGff0   '                       &
+       ,'SOAGff1   '                       &
+       ,'SOAGff2   '                       &
+       ,'SOAGff3   '                       &
+       ,'SOAGff4   '                       &
+       ,'SOAGbg0   '                       &
+       ,'SOAGbg1   '                       &
+       ,'SOAGbg2   '                       &
+       ,'SOAGbg3   '                       &
+       ,'SOAGbg4   '                       &
+       ,'SOAG0     '                       &
+       ,'SOAG1     '                       &
+       ,'SOAG2     '                       &
+       ,'SOAG3     '                       &
+       ,'SOAG4     '                       &
+       ,'IVOC      '                       &
+       ,'SVOC      '                       &
+       ,'IVOCbb    '                       &
+       ,'IVOCff    '                       &
+       ,'SVOCbb    '                       &
+       ,'SVOCff    '                       &
+       ,'ACET      '                       & ! GEOS-Chem species starting here
+       ,'ACTA      '                       & ! Species that are found twice in
+       ,'AERI      '                       & ! this list are prepended with GC_
+       ,'ALD2      '                       &
+       ,'ASOA      '                       &
+       ,'ASOG      '                       &
+       ,'ATOOH     '                       &
+       ,'BCPI      '                       &
+       ,'BCPO      '                       &
+       ,'Be10      '                       &
+       ,'Be10Strat '                       &
+       ,'Be7       '                       &
+       ,'Be7Strat  '                       &
+       ,'Br2       '                       &
+       ,'BrCl      '                       &
+       ,'BrNO3     '                       &
+       ,'BrSALA    '                       &
+       ,'BrSALC    '                       &
+       ,'GC_CH2O   '                       &
+       ,'Cl2       '                       &
+       ,'ClNO2     '                       &
+       ,'ClNO3     '                       &
+       ,'ClO       '                       &
+       ,'ClOO      '                       &
+       ,'DST1      '                       &
+       ,'DST2      '                       &
+       ,'DST3      '                       &
+       ,'DST4      '                       &
+       ,'EOH       '                       &
+       ,'ETHLN     '                       &
+       ,'ETNO3     '                       &
+       ,'ETP       '                       &
+       ,'GLYC      '                       &
+       ,'GLYX      '                       &
+       ,'GC_H2O2   '                       &
+       ,'HAC       '                       &
+       ,'HBr       '                       &
+       ,'HC5A      '                       &
+       ,'HCl       '                       &
+       ,'HCOOH     '                       &
+       ,'Hg0       '                       &
+       ,'Hg2       '                       &
+       ,'HgP       '                       &
+       ,'HI        '                       &
+       ,'HMHP      '                       &
+       ,'HMML      '                       &
+       ,'GC_HNO3   '                       &
+       ,'HOBr      '                       &
+       ,'HOCl      '                       &
+       ,'HOI       '                       &
+       ,'HONIT     '                       &
+       ,'HPALD1    '                       &
+       ,'HPALD2    '                       &
+       ,'HPALD3    '                       &
+       ,'HPALD4    '                       &
+       ,'HPETHNL   '                       &
+       ,'I2        '                       &
+       ,'I2O2      '                       &
+       ,'I2O3      '                       &
+       ,'I2O4      '                       &
+       ,'IBr       '                       &
+       ,'ICHE      '                       &
+       ,'ICl       '                       &
+       ,'ICN       '                       &
+       ,'ICPDH     '                       &
+       ,'IDC       '                       &
+       ,'IDCHP     '                       &
+       ,'IDHDP     '                       &
+       ,'IDHPE     '                       &
+       ,'IDN       '                       &
+       ,'IEPOXA    '                       &
+       ,'IEPOXB    '                       &
+       ,'IEPOXD    '                       &
+       ,'IHN1      '                       &
+       ,'IHN2      '                       &
+       ,'IHN3      '                       &
+       ,'IHN4      '                       &
+       ,'INDIOL    '                       &
+       ,'INPB      '                       &
+       ,'INPD      '                       &
+       ,'IONITA    '                       &
+       ,'IONO      '                       &
+       ,'IONO2     '                       &
+       ,'IPRNO3    '                       &
+       ,'ISALA     '                       &
+       ,'ISALC     '                       &
+       ,'ITCN      '                       &
+       ,'ITHN      '                       &
+       ,'LIMO      '                       &
+       ,'LVOC      '                       &
+       ,'LVOCOA    '                       &
+       ,'MACR      '                       &
+       ,'MACR1OOH  '                       &
+       ,'MAP       '                       &
+       ,'MCRDH     '                       &
+       ,'MCRENOL   '                       &
+       ,'MCRHN     '                       &
+       ,'MCRHNB    '                       &
+       ,'MCRHP     '                       &
+       ,'MENO3     '                       &
+       ,'MGLY      '                       &
+       ,'MOH       '                       &
+       ,'MONITA    '                       &
+       ,'MONITS    '                       &
+       ,'MONITU    '                       &
+       ,'MOPI      '                       &
+       ,'MOPO      '                       &
+       ,'MPAN      '                       &
+       ,'MSA       '                       &
+       ,'MTPA      '                       &
+       ,'MTPO      '                       &
+       ,'MVK       '                       &
+       ,'MVKDH     '                       &
+       ,'MVKHC     '                       &
+       ,'MVKHCB    '                       &
+       ,'MVKHP     '                       &
+       ,'MVKN      '                       &
+       ,'MVKPC     '                       &
+       ,'GC_N2O5   '                       &
+       ,'GC_NH3    '                       &
+       ,'NIT       '                       &
+       ,'NITs      '                       &
+       ,'GC_NO2    '                       &
+       ,'NPRNO3    '                       &
+       ,'O3        '                       &
+       ,'OCPI      '                       &
+       ,'OCPO      '                       &
+       ,'OPOA1     '                       &
+       ,'OPOA2     '                       &
+       ,'OPOG1     '                       &
+       ,'OPOG2     '                       &
+       ,'GC_PAN    '                       &
+       ,'Pb210     '                       &
+       ,'Pb210     '                       &
+       ,'Pb210Strat'                       &
+       ,'pFe       '                       &
+       ,'POA1      '                       &
+       ,'POA2      '                       &
+       ,'POG1      '                       &
+       ,'POG2      '                       &
+       ,'POPG_BaP  '                       &
+       ,'POPG_PHE  '                       &
+       ,'POPG_PYR  '                       &
+       ,'PP        '                       &
+       ,'PPN       '                       &
+       ,'PROPNN    '                       &
+       ,'PRPN      '                       &
+       ,'PYAC      '                       &
+       ,'R4N2      '                       &
+       ,'R4P       '                       &
+       ,'RA3P      '                       &
+       ,'RB3P      '                       &
+       ,'RIPA      '                       &
+       ,'RIPB      '                       &
+       ,'RIPC      '                       &
+       ,'RIPD      '                       &
+       ,'RP        '                       &
+       ,'SALA      '                       &
+       ,'SALAAL    '                       &
+       ,'SALACL    '                       &
+       ,'SALC      '                       &
+       ,'SALCAL    '                       &
+       ,'SALCCL    '                       &
+       ,'GC_SO2    '                       &
+       ,'SO4s      '                       &
+       ,'SOAGX     '                       &
+       ,'SOAIE     '                       &
+       ,'SOAS      '                       &
+       ,'TSOA      '                       &
+       ,'TSOG      '                       &
+       ,'MEK       '                       &
+       ,'MP        '                       &
+       ,'MPN       '                       &
+       ,'PRPE      '                       &
        /)
 
   !--- data for effective Henry's Law coefficient ---
@@ -476,6 +828,180 @@ module seq_drydep_mod
        ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
        ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
        ,1.e+03_r8,      0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  &
+       ,2.74e+01_r8, 5500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ACET
+       ,4.05e+03_r8, 6200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ACTA
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !AERI
+       ,1.32e+01_r8, 5900._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ALD2
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ASOA
+       ,1.00e+05_r8, 6039._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ASOG
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ATOOH
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !BCPI
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !BCPO
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Be10
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Be10Strat
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Be7
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Be7Strat
+       ,7.60e-01_r8, 3720._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Br2
+       ,9.70e-01_r8, 5600._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !BrCl
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !BrNO3
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !BrSALA
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !BrSALC
+       ,3.24e+03_r8, 6800._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !CH2O
+       ,9.20e-02_r8, 2000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Cl2
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ClNO2
+       ,1.00e+20_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ClNO3
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ClO
+       ,1.00e+00_r8, 3500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ClOO
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !DST1
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !DST2
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !DST3
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !DST4
+       ,1.93e+02_r8, 6400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !EOH
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ETHLN
+       ,1.60e+00_r8, 5400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ETNO3
+       ,3.34e+02_r8, 6000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ETP
+       ,4.15e+04_r8, 4600._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !GLYC
+       ,4.15e+05_r8, 7500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !GLYX
+       ,8.30e+04_r8, 7400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !H2O2
+       ,7.80e+03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HAC
+       ,7.10e+13_r8, 10200._r8,0._r8    ,    0._r8,0._r8     ,    0._r8  & !HBr
+       ,7.80e+03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HC5A
+       ,6.30e+10_r8, 9000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HCl
+       ,8.92e+03_r8, 6100._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HCOOH
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Hg0
+       ,1.40e+06_r8, 8400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Hg2
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HgP
+       ,7.43e+13_r8, 3187._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HI
+       ,1.30e+06_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HMHP
+       ,1.20e+05_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HMML
+       ,8.30e+04_r8, 7400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HNO3
+       ,1.30e+03_r8, 4000._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HOBr
+       ,6.50e+02_r8, 5900._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HOCl
+       ,1.54e+04_r8, 8371._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HOI
+       ,2.69e+13_r8, 5487._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HONIT
+       ,4.00e+04_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HPALD1
+       ,4.00e+04_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HPALD2
+       ,4.00e+04_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HPALD3
+       ,4.00e+04_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HPALD4
+       ,4.10e+04_r8, 4600._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !HPETHNL
+       ,2.70e+00_r8, 7507._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !I2
+       ,1.00e+20_r8, 18900._r8,0._r8    ,    0._r8,0._r8     ,    0._r8  & !I2O2
+       ,1.00e+20_r8, 13400._r8,0._r8    ,    0._r8,0._r8     ,    0._r8  & !I2O3
+       ,1.00e+20_r8, 13400._r8,0._r8    ,    0._r8,0._r8     ,    0._r8  & !I2O4
+       ,2.40e+01_r8, 4917._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IBr
+       ,8.00e+07_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ICHE
+       ,1.11e+02_r8, 2106._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ICl
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ICN
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ICPDH
+       ,4.00e+04_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IDC
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IDCHP
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IDHDP
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IDHPE
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IDN
+       ,8.00e+07_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IEPOXA
+       ,8.00e+07_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IEPOXB
+       ,8.00e+07_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IEPOXD
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IHN1
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IHN2
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IHN3
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IHN4
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !INDIOL
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !INPB
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !INPD
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IONITA
+       ,3.00e-01_r8, 7240._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IONO
+       ,1.00e+20_r8, 3980._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IONO2
+       ,7.90e-01_r8, 5400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !IPRNO3
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ISALA
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ISALC
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ITCN
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !ITHN
+       ,7.00e-02_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !LIMO
+       ,1.00e+08_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !LVOC
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !LVOCOA
+       ,4.86e+00_r8, 4300._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MACR
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MACR1OOH
+       ,8.40e+02_r8, 5300._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MAP
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MCRDH
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MCRENOL
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MCRHN
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MCRHNB
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MCRHP
+       ,1.10e+01_r8, 4700._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MENO3
+       ,3.24e+04_r8, 6200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MGLY
+       ,2.03e+02_r8, 5600._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MOH
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MONITA
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MONITS
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MONITU
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MOPI
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MOPO
+       ,1.72e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MPAN
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MSA
+       ,4.90e-02_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MTPA
+       ,4.90e-02_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MTPO
+       ,2.63e+01_r8, 4800._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVK
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVKDH
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVKHC
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVKHCB
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVKHP
+       ,1.70e+04_r8, 9200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVKN
+       ,1.40e+06_r8, 7200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MVKPC
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !N2O5
+       ,3.30e+06_r8, 4100._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !NH3
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !NIT
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !NITs
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !NO2
+       ,1.10e+00_r8, 5500._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !NPRNO3
+       ,1.00e-02_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !O3
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !OCPI
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !OCPO
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !OPOA1
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !OPOA2
+       ,1.00e+05_r8, 6039._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !OPOG1
+       ,1.00e+05_r8, 6039._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !OPOG2
+       ,2.94e+00_r8, 5700._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PAN
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Pb210
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Pb210
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !Pb210Strat
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !pFe
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POA1
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POA2
+       ,9.50e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POG1
+       ,9.50e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POG2
+       ,1.32e+03_r8, 5168._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POPG_BaP
+       ,2.35e+01_r8, 5649._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POPG_PHE
+       ,7.61e+01_r8, 5168._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !POPG_PYR
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PP
+       ,2.94e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PPN
+       ,1.00e+03_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PROPNN
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PRPN
+       ,3.14e+05_r8, 5100._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PYAC
+       ,1.00e+00_r8, 5800._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !R4N2
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !R4P
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RA3P
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RB3P
+       ,1.70e+06_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RIPA
+       ,1.70e+06_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RIPB
+       ,1.70e+06_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RIPC
+       ,1.70e+06_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RIPD
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !RP
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALA
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALAAL
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALACL
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALC
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALCAL
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALCCL
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SO2
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SO4s
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SOAGX
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SOAIE
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SOAS
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !TSOA
+       ,1.00e+05_r8, 6039._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !TSOG
+       ,1.82e+01_r8, 5700._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MEK
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MP
+       ,2.94e+02_r8, 5200._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !MPN
+       ,7.40e-03_r8, 3400._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !PRPE
        /)
 
   real(r8), private, parameter :: wh2o = SHR_CONST_MWWV
@@ -494,8 +1020,43 @@ module seq_drydep_mod
        64.064800_r8,  250._r8,       250._r8,       250._r8,       250._r8,       &
        250._r8,       250._r8,       250._r8,       250._r8,       250._r8,       &
        250._r8,       250._r8,       250._r8,       250._r8,       250._r8,       &
-       250._r8,       170.3_r8,      170.3_r8,      170.3_r8,       170.3_r8,     &
-       170.3_r8,      170.3_r8  /)
+       250._r8,       170.3_r8,      170.3_r8,      170.3_r8,      170.3_r8,      &
+       170.3_r8,      170.3_r8,      58.090000_r8,  60.060000_r8,  126.900000_r8, &
+       44.060000_r8,  150.000000_r8, 150.000000_r8, 90.090000_r8,  12.010000_r8,  &
+       12.010000_r8,  10.000000_r8,  10.000000_r8,  7.000000_r8,   7.000000_r8,   &
+       159.800000_r8, 115.450000_r8, 141.910000_r8, 79.900000_r8,  79.900000_r8,  &
+       30.030000_r8,  70.900000_r8,  81.450000_r8,  97.450000_r8,  51.450000_r8,  &
+       67.450000_r8,  29.000000_r8,  29.000000_r8,  29.000000_r8,  29.000000_r8,  &
+       46.080000_r8,  105.060000_r8, 91.080000_r8,  62.080000_r8,  60.060000_r8,  &
+       58.040000_r8,  34.020000_r8,  74.080000_r8,  80.910000_r8,  100.13000_r8,  &
+       36.450000_r8,  46.030000_r8,  200.590000_r8, 200.59000_r8,  200.59000_r8,  &
+       127.910000_r8, 64.050000_r8,  102.100000_r8, 63.010000_r8,  96.910000_r8,  &
+       52.450000_r8,  143.890000_r8, 215.000000_r8, 116.130000_r8, 116.130000_r8, &
+       116.130000_r8, 116.130000_r8, 76.060000_r8,  253.800000_r8, 285.800000_r8, &
+       301.800000_r8, 317.800000_r8, 206.900000_r8, 116.130000_r8, 162.450000_r8, &
+       145.130000_r8, 150.150000_r8, 98.110000_r8,  148.130000_r8, 168.170000_r8, &
+       150.150000_r8, 192.150000_r8, 106.140000_r8, 106.140000_r8, 106.140000_r8, &
+       147.150000_r8, 147.150000_r8, 147.150000_r8, 147.150000_r8, 102.000000_r8, &
+       163.150000_r8, 163.150000_r8, 14.010000_r8,  172.910000_r8, 188.910000_r8, &
+       105.110000_r8, 126.900000_r8, 126.900000_r8, 195.150000_r8, 197.170000_r8, &
+       136.260000_r8, 154.190000_r8, 154.190000_r8, 70.100000_r8,  102.100000_r8, &
+       76.060000_r8,  104.120000_r8, 86.100000_r8,  149.110000_r8, 149.110000_r8, &
+       120.120000_r8, 77.050000_r8,  72.070000_r8,  32.050000_r8,  14.010000_r8,  &
+       215.280000_r8, 215.280000_r8, 12.010000_r8,  12.010000_r8,  147.100000_r8, &
+       96.100000_r8,  136.260000_r8, 136.260000_r8, 70.090000_r8,  105.130000_r8, &
+       102.100000_r8, 102.100000_r8, 120.120000_r8, 149.120000_r8, 118.100000_r8, &
+       108.020000_r8, 17.040000_r8,  62.010000_r8,  31.400000_r8,  46.010000_r8,  &
+       105.110000_r8, 48.000000_r8,  12.010000_r8,  12.010000_r8,  12.010000_r8,  &
+       12.010000_r8,  12.010000_r8,  12.010000_r8,  121.060000_r8, 210.000000_r8, &
+       210.000000_r8, 210.000000_r8, 55.850000_r8,  12.010000_r8,  12.010000_r8,  &
+       12.010000_r8,  12.010000_r8,  252.320000_r8, 178.240000_r8, 202.260000_r8, &
+       92.110000_r8,  135.080000_r8, 119.080000_r8, 137.110000_r8, 88.070000_r8,  &
+       119.100000_r8, 90.140000_r8,  76.110000_r8,  76.110000_r8,  118.150000_r8, &
+       118.150000_r8, 118.150000_r8, 118.150000_r8, 90.090000_r8,  31.400000_r8,  &
+       31.400000_r8,  35.450000_r8,  31.400000_r8,  31.400000_r8,  35.450000_r8,  &
+       64.040000_r8,  31.400000_r8,  58.040000_r8,  118.150000_r8, 150.000000_r8, &
+       150.000000_r8, 150.000000_r8, 12.000000_r8,  48.050000_r8,  93.050000_r8,  &
+       42.090000_r8 /)
 
 
   !===============================================================================
@@ -590,6 +1151,27 @@ CONTAINS
        endif
        n_drydep = n_drydep+1
     enddo
+    do i=1,NLUse
+        write(token,334) i
+        seq_drydep_fields = trim(seq_drydep_fields)//':'//trim(token)
+        if ( i == 1 ) then
+            luse_fields_token = trim(token)
+        endif
+    enddo
+    do i=1,NPatch
+        write(token,335) i
+        seq_drydep_fields = trim(seq_drydep_fields)//':'//trim(token)
+        if ( i == 1 ) then
+            patch_fields_token = trim(token)
+        endif
+    enddo
+    do i=1,NPatch
+        write(token,336) i
+        seq_drydep_fields = trim(seq_drydep_fields)//':'//trim(token)
+        if ( i == 1 ) then
+            lai_fields_token = trim(token)
+        endif
+    enddo
 
     !--- Make sure method is valid and determine if land is passing drydep fields ---
     lnd_drydep = n_drydep>0 .and. drydep_method == DD_XLND
@@ -617,6 +1199,9 @@ CONTAINS
 
     ! Need to explicitly add Sl_ based on naming convention
 333 format ('Sl_dd',i3.3)
+334 format ('Sl_lu',i3.3)
+335 format ('Sl_pa',i3.3)
+336 format ('Sl_la',i3.3)
 
   end subroutine seq_drydep_readnl
 
@@ -673,7 +1258,10 @@ CONTAINS
        test_name = drydep_list(i)
 
        if( trim(test_name) == 'O3' ) then
-          test_name = 'OX'
+          ! CESM default
+          !test_name = 'OX'
+          ! GEOS-Chem
+          test_name = 'O3'
        end if
 
        !--- Figure out if species maps to a species in the species table ---
@@ -697,7 +1285,7 @@ CONTAINS
              test_name = 'HNO3'
           case( 'ALKOOH', 'MEKOOH', 'TOLOOH', 'BENOOH', 'XYLOOH', 'SOGM','SOGI','SOGT','SOGB','SOGX' )
              test_name = 'CH3OOH'
-          case( 'SOA', 'SO4', 'CB1', 'CB2', 'OC1', 'OC2', 'NH3', 'NH4', 'SA1', 'SA2', 'SA3', 'SA4','HCN','CH3CN','HCOOH' )
+          case( 'SOA', 'SO4', 'CB1', 'CB2', 'OC1', 'OC2', 'NH4', 'SA1', 'SA2', 'SA3', 'SA4','HCN','CH3CN','HCOOH' )
              test_name = 'OX'  ! this is just a place holder. values are explicitly set below
           case( 'SOAM', 'SOAI', 'SOAT', 'SOAB', 'SOAX' )
              test_name = 'OX'  ! this is just a place holder. values are explicitly set below
@@ -753,6 +1341,93 @@ CONTAINS
              test_name = 'CO'  ! this is just a place holder. values are set in drydep_fromlnd
           case( 'NH4NO3' )
              test_name = 'HNO3'
+          ! Below add GEOS-Chem species or mappings
+          ! Uncomment the following lines ...
+          !case( 'ACET' )
+          !    test_name = 'CH3COCH3'
+          !case( 'ALD2' )
+          !    test_name = 'CH3CHO'
+          !case( 'MGLY' )
+          !    test_name = 'CH3COCHO'
+          !case( 'HAC' )
+          !    test_name = 'HYAC'
+          !case( 'HNO4' )
+          !   test_name = 'HO2NO2'
+          !case( 'GLYC' )
+          !    test_name = 'GLYALD'
+          !case( 'ACTA' )
+          !    test_name = 'CH3COOH'
+          !case( 'GLYX' )
+          !    test_name = 'CHOCHO'
+          !case( 'LIMO' )
+          !    test_name = 'C10H16'
+          !case( 'EOH' )
+          !    test_name = 'C2H5OH'
+          !case( 'HCHO' )
+          !   test_name = 'CH2O'
+
+          ! ... and comment the following lines if you want to use the CESM default
+          ! Henry and oxidation factors, rather than the GEOS-Chem ones ...
+          case( 'H2O2' )
+             test_name = 'GC_H2O2'
+          case( 'HCHO' )
+             test_name = 'GC_CH2O'
+          case( 'CH2O' )
+             test_name = 'GC_CH2O'
+          case( 'NO2' )
+             test_name = 'GC_NO2'
+          case( 'HNO3' )
+             test_name = 'GC_HNO3'
+          case( 'NH3' )
+             test_name = 'GC_NH3'
+          case( 'N2O5' )
+             test_name = 'GC_N2O5'
+          case( 'PAN' )
+             test_name = 'GC_PAN'
+          case( 'SO2' )
+             test_name = 'GC_SO2'
+          ! Thibaud M. Fritz - 8/3/2020
+
+          case( 'IEPOXA', 'IEPOXB', 'IEPOXD' )
+              test_name = 'IEPOX'
+          case( 'DST1', 'DSTAL1', 'NITD1', 'SO4D1' )
+              test_name = 'DST1'
+          case( 'DST2', 'DSTAL2', 'NITD2', 'SO4D2' )
+              test_name = 'DST2'
+          case( 'DST3', 'DSTAL3', 'NITD3', 'SO4D3' )
+              test_name = 'DST3'
+          case( 'DST4', 'DSTAL4', 'NITD4', 'SO4D4' )
+              test_name = 'DST4'
+          case( 'ASOA1', 'ASOA2', 'ASOA3', 'ASOAN' )
+              test_name = 'ASOA'
+          case( 'ASOG1', 'ASOG2', 'ASOG3' )
+              test_name = 'ASOG'
+          case( 'BE10', 'BE10STRAT', 'BE7', 'BE7STRAT' )
+              test_name = 'BE'
+          case( 'PB210', 'PB210STRAT' )
+              test_name = 'PB'
+          case( 'TSOA0', 'TSOA1', 'TSOA2', 'TSOA3' )
+              test_name = 'TSOA'
+          case( 'TSOG0', 'TSOG1', 'TSOG2', 'TSOG3' )
+              test_name = 'TSOG'
+          case( 'HG0', 'HG0_ANT', 'HG0_ARC', 'HG0_ATL', 'HG0_BB', 'HG0_CAM', &
+                'HG0_CAN', 'HG0_EAF', 'HG0_EAS', 'HG0_EEU', 'HG0_EUR', 'HG0_GEO', &
+                'HG0_JPN', 'HG0_MDE', 'HG0_NAF', 'HG0_NAT', 'HG0_NPA', 'HG0_OCE', &
+                'HG0_OCN', 'HG0_SAF', 'HG0_SAM', 'HG0_SAS', 'HG0_SAT', 'HG0_SEA', &
+                'HG0_SO', 'HG0_SOV', 'HG0_STR', 'HG0_USA', 'HG0_WAF' )
+              test_name = 'HG0'
+          case( 'HG2', 'HG2_ANT', 'HG2_ARC', 'HG2_ATL', 'HG2_BB', 'HG2_CAM', &
+                'HG2_CAN', 'HG2_EAF', 'HG2_EAS', 'HG2_EEU', 'HG2_EUR', 'HG2_GEO', &
+                'HG2_JPN', 'HG2_MDE', 'HG2_NAF', 'HG2_NAT', 'HG2_NPA', 'HG2_OCE', &
+                'HG2_OCN', 'HG2_SAF', 'HG2_SAM', 'HG2_SAS', 'HG2_SAT', 'HG2_SEA', &
+                'HG2_SO', 'HG2_SOV', 'HG2_STR', 'HG2_USA', 'HG2_WAF' )
+              test_name = 'HG2'
+          case( 'HGP', 'HGP_ANT', 'HGP_ARC', 'HGP_ATL', 'HGP_BB', 'HGP_CAM', &
+                'HGP_CAN', 'HGP_EAF', 'HGP_EAS', 'HGP_EEU', 'HGP_EUR', 'HGP_GEO', &
+                'HGP_JPN', 'HGP_MDE', 'HGP_NAF', 'HGP_NAT', 'HGP_NPA', 'HGP_OCE', &
+                'HGP_OCN', 'HGP_SAF', 'HGP_SAM', 'HGP_SAS', 'HGP_SAT', 'HGP_SEA', &
+                'HGP_SO', 'HGP_SOV', 'HGP_STR', 'HGP_USA', 'HGP_WAF' )
+              test_name = 'HGP'
           case default
              test_name = 'blank'
           end select
