@@ -1098,14 +1098,14 @@ class Case(object):
                     expect(response.startswith("u"), "Aborting by user request")
 
         # miscellaneous settings
-        model = get_model()
         if self.get_value("RUN_TYPE") == 'hybrid':
             self.set_value("GET_REFCASE", True)
 
-        if model == "e3sm" and case_group:
+        if case_group:
             self.set_value("CASE_GROUP", case_group)
 
         # Turn on short term archiving as cesm default setting
+        model = get_model()
         self.set_model_version(model)
         if model == "cesm" and not test:
             self.set_value("DOUT_S",True)

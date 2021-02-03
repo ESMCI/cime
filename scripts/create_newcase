@@ -154,8 +154,7 @@ def parse_command_line(args, cimeroot, description):
                         "\nIf provided, the contents of these files will be appended to"
                         "\nthe standard machine files (and any files in ~/.cime).")
 
-    if model == "e3sm":
-        parser.add_argument("--case-group", help="Add this case to a case group")
+    parser.add_argument("--case-group", help="Add this case to a case group")
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
@@ -176,10 +175,6 @@ def parse_command_line(args, cimeroot, description):
     if model == "cesm":
         run_unsupported = args.run_unsupported
 
-    case_group = None
-    if model == "e3sm":
-        case_group = args.case_group
-
     expect(CIME.utils.check_name(args.case, fullpath=True),
            "Illegal case name argument provided")
 
@@ -194,7 +189,7 @@ def parse_command_line(args, cimeroot, description):
         args.gridfile, args.srcroot, args.test, args.multi_driver, \
         args.ninst, args.walltime, args.queue, args.output_root, args.script_root, \
         run_unsupported, args.answer, args.input_dir, args.driver, args.workflow, args.non_local, \
-        args.extra_machines_dir, case_group
+        args.extra_machines_dir, args.case_group
 
 ###############################################################################
 def _main_func(description):
