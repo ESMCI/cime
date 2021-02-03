@@ -923,7 +923,7 @@ class Case(object):
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
                   input_dir=None, driver=None, workflowid="default",
-                  non_local=False, extra_machines_dir=None):
+                  non_local=False, extra_machines_dir=None, case_group=None):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
 
@@ -1100,6 +1100,9 @@ class Case(object):
         # miscellaneous settings
         if self.get_value("RUN_TYPE") == 'hybrid':
             self.set_value("GET_REFCASE", True)
+
+        if case_group:
+            self.set_value("CASE_GROUP", case_group)
 
         # Turn on short term archiving as cesm default setting
         model = get_model()
@@ -1635,7 +1638,7 @@ directory, NOT in this subdirectory."""
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
                input_dir=None, driver=None, workflowid="default", non_local=False,
-               extra_machines_dir=None):
+               extra_machines_dir=None, case_group=None):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
@@ -1663,7 +1666,7 @@ directory, NOT in this subdirectory."""
                            run_unsupported=run_unsupported, answer=answer,
                            input_dir=input_dir, driver=driver,
                            workflowid=workflowid, non_local=non_local,
-                           extra_machines_dir=extra_machines_dir)
+                           extra_machines_dir=extra_machines_dir, case_group=case_group)
 
             self.create_caseroot()
 
