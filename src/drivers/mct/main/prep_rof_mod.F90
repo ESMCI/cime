@@ -447,6 +447,8 @@ contains
     integer, save :: index_x2r_Faxa_swvdr
     integer, save :: index_x2r_Faxa_swvdf
     integer, save :: index_x2r_Faxa_lwdn
+    integer, save :: index_l2x_Flrl_inundinf
+    integer, save :: index_x2r_Flrl_inundinf
     
     integer, save :: index_l2x_coszen_str
     integer, save :: index_x2r_coszen_str
@@ -583,6 +585,11 @@ contains
           index_x2r_Faxa_swvdf = mct_aVect_indexRA(x2r_r,'Faxa_swvdf')
           index_x2r_Faxa_lwdn  = mct_aVect_indexRA(x2r_r,'Faxa_lwdn')
 
+          if (trim(cime_model) .eq. 'e3sm') then
+             index_l2x_Flrl_inundinf = mct_aVect_indexRA(l2x_r,'Flrl_inundinf')
+             index_x2r_Flrl_inundinf = mct_aVect_indexRA(x2r_r,'Flrl_inundinf')
+          endif
+
           mrgstr(index_x2r_Sa_tbot)    = trim(mrgstr(index_x2r_Sa_tbot))//' = '//'a2x%Sa_tbot'
           mrgstr(index_x2r_Sa_pbot)    = trim(mrgstr(index_x2r_Sa_pbot))//' = '//'a2x%Sa_pbot'
           mrgstr(index_x2r_Sa_u)       = trim(mrgstr(index_x2r_Sa_u))//' = '//'a2x%Sa_u'
@@ -593,6 +600,7 @@ contains
           mrgstr(index_x2r_Faxa_swvdr) = trim(mrgstr(index_x2r_Faxa_swvdr))//' = '//'a2x%Faxa_swvdr'
           mrgstr(index_x2r_Faxa_swvdf) = trim(mrgstr(index_x2r_Faxa_swvdf))//' = '//'a2x%Faxa_swvdf'
           mrgstr(index_x2r_Faxa_lwdn)  = trim(mrgstr(index_x2r_Faxa_lwdn))//' = '//'a2x%Faxa_lwdn'
+          mrgstr(index_x2r_Flrl_inundinf) = trim(mrgstr(index_x2r_Flrl_inundinf))//' = '//'l2x%Flrl_inundinf'
        endif 
 
     end if
@@ -610,9 +618,10 @@ contains
        if (have_irrig_field) then
           x2r_r%rAttr(index_x2r_Flrl_irrig,i) = l2x_r%rAttr(index_l2x_Flrl_irrig,i) * lfrac
        end if
-       if(trim(cime_model) .eq. 'e3sm') then
-         x2r_r%rAttr(index_x2r_Flrl_Tqsur,i) = l2x_r%rAttr(index_l2x_Flrl_Tqsur,i)
-         x2r_r%rAttr(index_x2r_Flrl_Tqsub,i) = l2x_r%rAttr(index_l2x_Flrl_Tqsub,i)
+       if (trim(cime_model) .eq. 'e3sm') then
+          x2r_r%rAttr(index_x2r_Flrl_Tqsur,i)    = l2x_r%rAttr(index_l2x_Flrl_Tqsur,i)
+          x2r_r%rAttr(index_x2r_Flrl_Tqsub,i)    = l2x_r%rAttr(index_l2x_Flrl_Tqsub,i)
+          x2r_r%rAttr(index_x2r_Flrl_inundinf,i) = l2x_r%rAttr(index_l2x_Flrl_inundinf,i)
        endif
        if ( flds_wiso_rof ) then
           x2r_r%rAttr(index_x2r_Flrl_rofl_16O,i) = l2x_r%rAttr(index_l2x_Flrl_rofl_16O,i) * lfrac
