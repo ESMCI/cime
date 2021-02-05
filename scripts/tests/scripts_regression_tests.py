@@ -47,6 +47,7 @@ NO_CMAKE    = False
 TEST_ROOT   = None
 NO_TEARDOWN = False
 NO_FORTRAN_RUN      = False
+TEST_RESULT = None
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -3511,7 +3512,7 @@ def write_provenance_info():
 
 def cleanup():
     # if the TEST_ROOT directory exists and is empty, remove it
-    if os.path.exists(TEST_ROOT):
+    if os.path.exists(TEST_ROOT) and TEST_RESULT.result.wasSuccessful():
         testreporter = os.path.join(TEST_ROOT,"testreporter")
         files = os.listdir(TEST_ROOT)
         if len(files)==1 and os.path.isfile(testreporter):
@@ -3531,6 +3532,7 @@ def _main_func(description):
     global GLOBAL_TIMEOUT
     global NO_TEARDOWN
     global NO_FORTRAN_RUN
+    global TEST_RESULT
     config = CIME.utils.get_cime_config()
 
     help_str = \
@@ -3662,12 +3664,15 @@ OR
             setattr(B_CheckCode, testname, pylint_test)
 
     try:
-        unittest.main(verbosity=2, catchbreak=True)
+        TEST_RESULT = unittest.main(verbosity=2, catchbreak=True, exit=False)
     except CIMEError as e:
         if e.__str__() != "False":
             print("Detected failures, leaving directory:", TEST_ROOT)
             raise
-
+    else:
+        # Implements same behavior as unittesst.main
+        # https://github.com/python/cpython/blob/b6d68aa08baebb753534a26d537ac3c0d2c21c79/Lib/unittest/main.py#L272-L273
+        sys.exit(not TEST_RESULT.result.wasSuccessful())
 
 if (__name__ == "__main__"):
     _main_func(__doc__)
