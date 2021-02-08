@@ -113,12 +113,10 @@ def create_cdash_config_xml(results, cdash_build_name, cdash_build_group, utc_ti
         test_path = results[test_name][0]
         test_norm_path = test_path if os.path.isdir(test_path) else os.path.dirname(test_path)
         nml_phase_result = get_test_phase(test_norm_path, NAMELIST_PHASE)
-        cdash_warning = "{} Config PASS".format(test_name)
         if nml_phase_result == TEST_FAIL_STATUS:
             nml_diff = get_nml_diff(test_norm_path)
             cdash_warning = "CMake Warning:\n\n{} NML DIFF:\n{}\n".format(test_name, nml_diff)
-
-        config_results.append(cdash_warning)
+            config_results.append(cdash_warning)
 
     xmlet.SubElement(config_elem, "Log").text = "\n".join(config_results)
 
