@@ -47,25 +47,27 @@ class EnvMachSpecific(EnvBase):
                 if len(nodes) == 0:
                     example_text = """This section is for the user to specify any additional machine-specific env var, or to overwite existing ones.\n  <environment_variables>\n    <env name="NAME">ARGUMENT</env>\n  </environment_variables>\n  """
                     self.make_child_comment(text = example_text)
-            
-            if item == "mpirun":
-                mpirunnode = machobj.copy(nodes[0])
-                match = True
-                # We pull the run_exe and run_misc_suffix from the mpirun node if attributes match and use it 
-                # otherwise we use the default.  
-                if attributes:
-                    for attrib in attributes:
-                        val = self.get(mpirunnode, attrib)
-                        if val and attributes[attrib] != val:
-                            match = False
 
-                for subnode in machobj.get_children(root=mpirunnode):
-                    subname = machobj.name(subnode)
-                    if subname == "run_exe" or subname == "run_misc_suffix":
-                        if match:
-                            settings[subname] = self.text(subnode)
-                        self.remove_child(subnode, root=mpirunnode)
-                self.add_child(mpirunnode)
+            if item == "mpirun":
+                for node in nodes:
+                    mpirunnode = machobj.copy(node)
+                    match = True
+                    # We pull the run_exe and run_misc_suffix from the mpirun node if attributes match and use it
+                    # otherwise we use the default.
+                    if attributes:
+                        for attrib in attributes:
+                            val = self.get(mpirunnode, attrib)
+                            if val and attributes[attrib] != val:
+                                match = False
+
+                    for subnode in machobj.get_children(root=mpirunnode):
+                        subname = machobj.name(subnode)
+                        if subname == "run_exe" or subname == "run_misc_suffix":
+                            if match:
+                                settings[subname] = self.text(subnode)
+                            self.remove_child(subnode, root=mpirunnode)
+
+                    self.add_child(mpirunnode)
             else:
                 for node in nodes:
                     self.add_child(node)
@@ -75,7 +77,7 @@ class EnvMachSpecific(EnvBase):
                 value = settings[item]
             else:
                 value = self.text(machobj.get_child("default_"+item, root=default_run_suffix))
-                
+
             entity_node = self.make_child("entry", {"id":item,"value":value}, root=group_node)
             self.make_child("type", root=entity_node, text="char")
             self.make_child("desc", root=entity_node, text=("executable name" if item == "run_exe" else "redirect for job output"))
