@@ -36,4 +36,8 @@
     <address>https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata</address>
   </server>
 
+  <server>
+    <comment> NEON Tower data for datm </comment>
+    <protocol>wget</protocol>
+    <address>
 </inputdata>
