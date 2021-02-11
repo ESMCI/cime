@@ -55,8 +55,8 @@ class _TimingParser:
         pstrlen = 25
         if mind >= 0 and maxd >= 0 and found:
             if coff >= 0:
-                zoff = pstrlen + coff + int((datalen-clen)/2)
-                csp = offset - coff - int((datalen-clen)/2)
+                zoff = max(1,pstrlen + coff + int((datalen-clen)/2))
+                csp = max(1,offset - coff - int((datalen-clen)/2))
                 self.write(" {label:<{width1}}{cstr:<{width2}} {minv:8.3f}:{maxv:8.3f} \n".format(label=label, width1=zoff, cstr=cstr, width2=csp, minv=mind, maxv=maxd))
             else:
                 zoff = pstrlen + offset
