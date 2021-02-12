@@ -865,14 +865,8 @@ using a fortran linker.
 
 <compiler MACH="grace" COMPILER="intel">
   <CPPDEFS>
-    <append> -DHAVE_NANOTIME -DNO_R16 </append>
+    <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
   </CPPDEFS>
-  <CFLAGS>
-    <append></append>
-  </CFLAGS>
-  <FFLAGS>
-    <append></append>
-  </FFLAGS>
   <MPIFC>mpiifort</MPIFC>
   <MPICC>mpiicc</MPICC>
   <MPICXX>mpiicpc</MPICXX>
@@ -889,7 +883,6 @@ using a fortran linker.
     <append>-L$(PNETCDF_PATH)/lib -Wl,-rpath,$(PNETCDF_PATH)/lib -lpnetcdf</append>
   </SLIBS>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
-  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="hobart">

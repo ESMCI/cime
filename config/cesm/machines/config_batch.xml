@@ -378,6 +378,9 @@
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
       <arg flag="-p" name="$JOB_QUEUE"/>
     </submit_args>
+    <directives>
+      <directive> --mem=360GB </directive>
+    </directives>
     <queues>
       <queue walltimemax="02:00:00" nodemin="1" nodemax="32" default="true">short</queue>
       <queue walltimemax="24:00:00" nodemin="1" nodemax="128">medium</queue>

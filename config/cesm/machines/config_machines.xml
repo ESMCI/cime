@@ -1246,9 +1246,12 @@ This allows using a different mpirun command to launch unit tests
     <MAX_TASKS_PER_NODE>96</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>48</MAX_MPITASKS_PER_NODE>
     <mpirun mpilib="impi">
-      <executable>mpirun</executable>
+      <executable>srun</executable>
       <arguments>
         <arg name="num_tasks"> -n $TOTALPES</arg>
+	<arg name="hint"> --hint compute_bound </arg>
+	<arg name="bindinfo"> --cpu-bind=verbose </arg>
+	<!--	<arg name="bindinfo"> -print-rank-map </arg> -->
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1275,6 +1278,8 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">256M</env>
+      <env name="I_MPI_PMI_LIBRARY">/usr/lib64/libpmi.so</env>
+      <env name="I_MPI_DEBUG">+4</env>
     </environment_variables>
   </machine>
 
@@ -1693,6 +1698,7 @@ This allows using a different mpirun command to launch unit tests
       <executable>srun</executable>
       <arguments>
 	<arg name="num_tasks">--ntasks={{ total_tasks }}</arg>
+	<arg name="cpu-bind">--cpu-bind=v</arg>
       </arguments>
     </mpirun>
     <!-- allow ls5 modules to write to stderr without cime error -->
