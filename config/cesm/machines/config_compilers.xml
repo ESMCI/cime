@@ -1224,7 +1224,7 @@ using a fortran linker.
    <append> -D$(OS) </append>
   </CPPDEFS>
   <FFLAGS>
-   <append> -xavx2 -no-fma </append>
+   <append> -xavx2 -no-fma -mcmodel medium</append>
   </FFLAGS>
   <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
   <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>

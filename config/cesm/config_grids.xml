@@ -341,6 +341,12 @@
       <grid name="lnd">T62</grid>
       <grid name="ocnice">tnx0.25v4</grid>
     </model_grid>
+    
+    <model_grid alias="T62_tn01254" not_compset="_CAM">
+      <grid name="atm">T62</grid>
+      <grid name="lnd">T62</grid>
+      <grid name="ocnice">tnx0.125v4</grid>
+    </model_grid>
 
     <!-- finite volume grids -->
 
@@ -733,6 +739,13 @@
       <grid name="lnd">0.9x1.25</grid>
       <grid name="ocnice">tnx0.25v4</grid>
       <mask>tnx0.25v4</mask>
+    </model_grid>
+    
+    <model_grid alias="f09_tn01254" not_compset="_POP">
+      <grid name="atm">0.9x1.25</grid>
+      <grid name="lnd">0.9x1.25</grid>
+      <grid name="ocnice">tnx0.125v4</grid>
+      <mask>tnx0.125v4</mask>
     </model_grid>
 
     <model_grid alias="f19_tn11" not_compset="_POP">
@@ -1237,6 +1250,8 @@
       <file grid="ocnice"  mask="tnx0.25v3">domain.ocn.tnx0.25v3.170629.nc</file>
       <file grid="atm|lnd" mask="tnx0.25v4">domain.lnd.fv0.9x1.25_tnx0.25v4.170629.nc</file>
       <file grid="ocnice"  mask="tnx0.25v4">domain.ocn.tnx0.25v4.170629.nc</file>
+      <file grid="atm|lnd" mask="tnx0.125v4">domain.lnd.fv0.9x1.25_tnx0.125v4.200830.nc</file>
+      <file grid="ocnice"  mask="tnx0.125v4">domain.ocn.tnx0.125v4.200725.nc</file>
       <!--file grid="ocnice" mask="tnx0.25v1">domain.ocn.0.9x1.25_tnx0.25v1.140618.nc</file-->
       <desc>0.9x1.25 is FV 1-deg grid:</desc>
     </domain>
@@ -1317,6 +1332,7 @@
       <file grid="atm|lnd" mask="tnx0.25v1">$DIN_LOC_ROOT/share/domains/domain.lnd.T62_tnx0.25v1.130930.nc</file>
       <file grid="atm|lnd" mask="tnx0.25v3">$DIN_LOC_ROOT/share/domains/domain.lnd.T62_tnx0.25v3.170629.nc</file>
       <file grid="atm|lnd" mask="tnx0.25v4">$DIN_LOC_ROOT/share/domains/domain.lnd.T62_tnx0.25v4.170629.nc</file>
+      <file grid="atm|lnd" mask="tnx0.125v4">$DIN_LOC_ROOT/share/domains/domain.lnd.T62_tnx0.125v4.200725.nc</file>
       <desc>T62 is Gaussian grid:</desc>
     </domain>
 
@@ -1601,6 +1617,13 @@
       <support>tripole ocean grid</support>
     </domain>
 
+    <domain name="tnx0.125v4">
+      <nx>2880</nx> <ny>2164</ny>
+      <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tnx0.125v4.200725.nc</file>
+      <desc>tripole v4 1/8-deg grid</desc>
+      <support>tripole ocean grid</support>
+    </domain>    
+
     <domain name="rx1">
       <nx>360</nx> <ny>180</ny>
       <!-- TODO: create a domain file for rx1 -->
@@ -1820,6 +1843,13 @@
       <map name="ATM2OCN_VMAPNAME">cpl/cpl6/map_fv0.9x1.25_to_tnx0.25v4_patch_170629.nc</map>
       <map name="OCN2ATM_FMAPNAME">cpl/cpl6/map_tnx0.25v4_to_fv0.9x1.25_aave_da_170629.nc</map>
       <map name="OCN2ATM_SMAPNAME">cpl/cpl6/map_tnx0.25v4_to_fv0.9x1.25_aave_da_170629.nc</map>
+    </gridmap>
+    <gridmap atm_grid="0.9x1.25" ocn_grid="tnx0.125v4">
+      <map name="ATM2OCN_FMAPNAME">cpl/cpl6/map_fv0.9x1.25_to_tnx0.125v4_aave_da_200827.nc</map>
+      <map name="ATM2OCN_SMAPNAME">cpl/cpl6/map_fv0.9x1.25_to_tnx0.125v4_patch_200827.nc</map>
+      <map name="ATM2OCN_VMAPNAME">cpl/cpl6/map_fv0.9x1.25_to_tnx0.125v4_patch_200827.nc</map>
+      <map name="OCN2ATM_FMAPNAME">cpl/cpl6/map_tnx0.125v4_to_fv0.9x1.25_aave_da_200827.nc</map>
+      <map name="OCN2ATM_SMAPNAME">cpl/cpl6/map_tnx0.125v4_to_fv0.9x1.25_aave_da_200827.nc</map>
     </gridmap>
 
     <gridmap atm_grid="1.9x2.5" ocn_grid="tnx1v1">
@@ -2062,7 +2092,13 @@
       <map name="OCN2ATM_FMAPNAME">cpl/cpl6/map_tnx0.25v4_to_T62_aave_da_170629.nc</map>
       <map name="OCN2ATM_SMAPNAME">cpl/cpl6/map_tnx0.25v4_to_T62_aave_da_170629.nc</map>
     </gridmap>
-
+    <gridmap atm_grid="T62" ocn_grid="tnx0.125v4">
+      <map name="ATM2OCN_FMAPNAME">cpl/cpl6/map_T62_to_tnx0.125v4_aave_da_200725.nc</map>
+      <map name="ATM2OCN_SMAPNAME">cpl/cpl6/map_T62_to_tnx0.125v4_patch_200725.nc</map>
+      <map name="ATM2OCN_VMAPNAME">cpl/cpl6/map_T62_to_tnx0.125v4_patch_200725.nc</map>
+      <map name="OCN2ATM_FMAPNAME">cpl/cpl6/map_tnx0.125v4_to_T62_aave_da_200725.nc</map>
+      <map name="OCN2ATM_SMAPNAME">cpl/cpl6/map_tnx0.125v4_to_T62_aave_da_200725.nc</map>
+    </gridmap>
     <gridmap atm_grid="T62" ocn_grid="tnx1v1">
       <map name="ATM2OCN_FMAPNAME">cpl/cpl6/map_T62_to_tnx1v1_aave_da_120120.nc</map>
       <map name="ATM2OCN_SMAPNAME">cpl/cpl6/map_T62_to_tnx1v1_patch_120120.nc</map>
@@ -2339,6 +2375,9 @@
     <gridmap rof_grid="r05" ocn_grid="tnx0.25v4" >
       <map name="ROF2OCN_FMAPNAME">cpl/cpl6/map_r05_to_tnx0.25v4_e300r100_170629.nc</map>
     </gridmap>
+    <gridmap rof_grid="r05" ocn_grid="tnx0.125v4" >
+      <map name="ROF2OCN_FMAPNAME">cpl/cpl6/map_r05_to_tnx0.125v4_e300r100_200827.nc</map>
+    </gridmap>
 
     <gridmap rof_grid="r05" ocn_grid="tnx1v1" >
       <map name="ROF2OCN_FMAPNAME">cpl/cpl6/map_r05_to_tnx1v1_e1000r300_120120.nc</map>
@@ -2411,6 +2450,10 @@
       <map name="ROF2OCN_LIQ_RMAPNAME">cpl/cpl6/map_rx1_to_tnx0.25v4_e300r100_170629.nc</map>
       <map name="ROF2OCN_ICE_RMAPNAME">cpl/cpl6/map_rx1_to_tnx0.25v4_e300r100_170629.nc</map>
     </gridmap>
+    <gridmap rof_grid="rx1" ocn_grid="tnx0.125v4" >
+      <map name="ROF2OCN_LIQ_RMAPNAME">cpl/cpl6/map_rx1_to_tnx0.125v4_e300r100_200725.nc</map>
+      <map name="ROF2OCN_ICE_RMAPNAME">cpl/cpl6/map_rx1_to_tnx0.125v4_e300r100_200725.nc</map>
+    </gridmap>
     <gridmap rof_grid="rx1" ocn_grid="oQU120" >
       <map name="ROF2OCN_LIQ_RMAPNAME">cpl/gridmaps/rx1/map_rx1_to_oQU120_nn.160527.nc</map>
       <map name="ROF2OCN_ICE_RMAPNAME">cpl/gridmaps/rx1/map_rx1_to_oQU120_nn.160527.nc</map>
@@ -2463,6 +2506,10 @@
     <gridmap rof_grid="r05" ocn_grid="tnx0.25v4" >
       <map name="ROF2OCN_LIQ_RMAPNAME">cpl/cpl6/map_r05_to_tnx0.25v4_e300r100_170629.nc</map>
       <map name="ROF2OCN_ICE_RMAPNAME">cpl/cpl6/map_r05_to_tnx0.25v4_e300r100_170629.nc</map>
+    </gridmap>
+    <gridmap rof_grid="r05" ocn_grid="tnx0.125v4" >
+      <map name="ROF2OCN_LIQ_RMAPNAME">cpl/cpl6/map_r05_to_tnx0.125v4_e300r100_200827.nc</map>
+      <map name="ROF2OCN_ICE_RMAPNAME">cpl/cpl6/map_r05_to_tnx0.125v4_e300r100_200827.nc</map>
     </gridmap>
 
     <gridmap rof_grid="r01" ocn_grid="gx1v6" >
