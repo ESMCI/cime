@@ -107,8 +107,17 @@ ifeq (,$(SHAREDPATH))
   INSTALL_SHAREDPATH = $(EXEROOT)/$(SHAREDPATH)
 endif
 
+#===============================================================================
+# User-specified INCLDIR
+#===============================================================================
+INCLDIR := -I.
+ifdef USER_INCLDIR
+  INCLDIR += $(USER_INCLDIR)
+endif
+
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
+   INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include
    # FoX libraries are provided and built by CDEPS
    FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
    ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
@@ -343,14 +352,6 @@ ifeq  ($(findstring pio,$(MODEL)),pio)
   ifeq ($DEBUG,TRUE)
      CONFIG_ARGS+= --enable-debug
   endif
-endif
-
-#===============================================================================
-# User-specified INCLDIR
-#===============================================================================
-INCLDIR := -I.
-ifdef USER_INCLDIR
-  INCLDIR += $(USER_INCLDIR)
 endif
 
 #===============================================================================
