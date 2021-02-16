@@ -1723,6 +1723,14 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="nag" mpilib="mvapich2">
         <command name="load">mpi/2.3.3/nag/6.2</command>
       </modules>
+      <modules compiler="nag" mpilib="mvapich2" DEBUG="FALSE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/nag/6.2</command>
+        <command name="load">esmf-8.1.0b45-ncdfio-mvapich2-O</command>
+      </modules>
+      <modules compiler="nag" mpilib="mvapich2" DEBUG="TRUE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/nag/6.2</command>
+        <command name="load">esmf-8.1.0b45-ncdfio-mvapich2-g</command>
+      </modules>
       <modules compiler="gnu">
         <command name="load">compiler/gnu/9.3.0</command>
         <command name="load">tool/netcdf/4.7.4/gnu/9.3.0</command>
@@ -1744,12 +1752,6 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
     <environment_variables compiler="intel" comp_interface="nuopc" mpilib="mvapich2" DEBUG="TRUE">
       <env name="ESMFMKFILE">/scratch/cluster/himanshu/PROGS/esmf/master/mvapich2/2.3.3/intel/20.0.1/lib/libg/Linux.intel.64.mvapich2.default/esmf.mk</env>
-    </environment_variables>
-    <environment_variables compiler="nag" mpilib="mvapich2" DEBUG="FALSE">
-      <env name="ESMFMKFILE">/home/fvitt/esmf_8_1_0b45/esmf/lib/libO/Linux.nag.64.mvapich2.default/esmf.mk</env>
-    </environment_variables>
-    <environment_variables compiler="nag" mpilib="mvapich2" DEBUG="TRUE">
-      <env name="ESMFMKFILE">/home/fvitt/esmf_8_1_0b45/esmf/lib/libg/Linux.nag.64.mvapich2.default/esmf.mk</env>
     </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
