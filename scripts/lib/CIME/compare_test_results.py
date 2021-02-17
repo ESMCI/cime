@@ -1,5 +1,5 @@
 import CIME.compare_namelists, CIME.simple_compare
-from CIME.utils import append_status, EnvironmentContext
+from CIME.utils import append_status, EnvironmentContext, parse_test_name
 from CIME.test_status import *
 from CIME.hist_utils import compare_baseline, get_ts_synopsis
 from CIME.case import Case
@@ -71,6 +71,10 @@ def compare_test_results(baseline_name, baseline_root, test_root, compiler, test
         test_dir = os.path.dirname(test_status_file)
         ts = TestStatus(test_dir=test_dir)
         test_name = ts.get_name()
+        testopts = parse_test_name(test_name)[1]
+        testopts = [] if testopts is None else testopts
+        build_only = "B" in testopts
+
         if (compare_tests in [[], None] or CIME.utils.match_any(test_name, compare_tests)):
 
             if (not hist_only):
@@ -87,7 +91,7 @@ def compare_test_results(baseline_name, baseline_root, test_root, compiler, test
                 nl_do_compare = False
 
             detailed_comments = ""
-            if (not namelists_only):
+            if (not namelists_only and not build_only):
                 compare_result = None
                 compare_comment = ""
                 run_result = ts.get_status(RUN_PHASE)
