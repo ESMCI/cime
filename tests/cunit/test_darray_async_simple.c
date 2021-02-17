@@ -49,24 +49,24 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
-        ERR(ret);
+        AERR(ret);
 
     /* Check the metadata. */
     if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid)))
-        ERR(ret);
+        AERR(ret);
     if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid)))
-        ERR(ret);
+        AERR(ret);
 
     /* Check the data. */
     if ((ret = PIOc_get_var(ncid, varid, &data_in)))
-        ERR(ret);
+        AERR(ret);
     for (int r = 1; r < TARGET_NTASKS; r++)
         if (data_in[r - 1] != r * 10.0)
-            ERR(ret);
+            AERR(ret);
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
-        ERR(ret);
+        AERR(ret);
 
     return 0;
 }
@@ -107,31 +107,31 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         /* Create sample output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
-            ERR(ret);
+            AERR(ret);
 
         /* Define dimension. */
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len, &dimid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Define variable. */
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM1, &dimid, &varid)))
-            ERR(ret);
+            AERR(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Write some data. */
         if ((ret = PIOc_write_darray(ncid, varid, ioid, ELEM1, &my_data, NULL)))
-            ERR(ret);
+            AERR(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Check the file for correctness. */
         if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
-            ERR(ret);
+            AERR(ret);
 
     } /* next iotype */
 

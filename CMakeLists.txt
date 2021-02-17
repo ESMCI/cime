@@ -243,10 +243,14 @@ INCLUDE(FindNetCDF)
 message("Fortran Library build is ${PIO_ENABLE_FORTRAN}")
 if (PIO_ENABLE_FORTRAN)
   find_package (NetCDF REQUIRED COMPONENTS C Fortran)
-  find_package (PnetCDF COMPONENTS C Fortran)
+  if (WITH_PNETCDF)
+    find_package (PnetCDF COMPONENTS C Fortran)
+  endif()
 else()
   find_package (NetCDF REQUIRED COMPONENTS C)
-  find_package (PnetCDF COMPONENTS C)
+  if (WITH_PNETCDF)
+    find_package (PnetCDF COMPONENTS C)
+  endif()
 endif()
 
 # Did we find pnetCDF? If so, set _PNETCDF in config.h.
@@ -287,8 +291,6 @@ endif ()
 if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
-
-
 
 SET(STATUS_PNETCDF PnetCDF_C_FOUND)
 
