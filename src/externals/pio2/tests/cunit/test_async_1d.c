@@ -150,6 +150,5 @@ int main(int argc, char **argv)
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 #endif /* USE_NETCDF4 */
-
     return 0;
 }

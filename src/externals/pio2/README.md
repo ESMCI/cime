@@ -1,6 +1,33 @@
 # ParallelIO
 
-A high-level Parallel I/O Library for structured grid applications
+The Parallel IO libraries (PIO) are high-level parallel I/O C and
+Fortran libraries for applications that need to do netCDF I/O from
+large numbers of processors on a HPC system.
+
+PIO provides a netCDF-like API, and allows users to designate some
+subset of processors to perform IO. Computational code calls
+netCDF-like functions to read and write data, and PIO uses the IO
+processors to perform all necessary IO.
+
+## Intracomm Mode
+
+In Intracomm mode, PIO allows the user to designate some subset of
+processors to do all I/O. The I/O processors also participate in
+computational work.
+
+![I/O on Many Processors with Async
+ Mode](./doc/images/I_O_on_Many_Intracomm.png)
+
+## Async Mode
+
+PIO also supports the creation of multiple computation components,
+each containing many processors, and one shared set of IO
+processors. The computational components can perform write operation
+asynchronously, and the IO processors will take care of all storage
+interaction.
+
+![I/O on Many Processors with Async
+ Mode](./doc/images/I_O_on_Many_Async.png)
 
 ## Website
 
@@ -13,10 +40,15 @@ The (low-traffic) PIO mailing list is at
 https://groups.google.com/forum/#!forum/parallelio, send email to the
 list at parallelio@googlegroups.com.
 
-## Nightly Tests
+## Testing
 
-The results of our nightly tests on multiple platforms can be found on our
-cdash site at [http://my.cdash.org/index.php?project=PIO](http://my.cdash.org/index.php?project=PIO).
+The results of our continuous integration testing with GitHub actions
+can be found on any of the Pull Requests on the GitHub site:
+https://github.com/NCAR/ParallelIO.
+
+The results of our nightly tests on multiple platforms can be found on
+our cdash site at
+[http://my.cdash.org/index.php?project=PIO](http://my.cdash.org/index.php?project=PIO).
 
 ## Dependencies
 
@@ -24,10 +56,10 @@ PIO can use NetCDF (version 4.6.1+) and/or PnetCDF (version 1.9.0+)
 for I/O. NetCDF may be built with or without netCDF-4 features. NetCDF
 is required for PIO, PnetCDF is optional.
 
-Ideally, the NetCDF version should be built with MPI, which requires that it
-be linked with an MPI-enabled version of HDF5.  Optionally, NetCDF can be 
-built with DAP support, which introduces a dependency on CURL.  Additionally,
-HDF5, itself, introduces dependencies on LIBZ and (optionally) SZIP.
+The NetCDF C library must be built with MPI, which requires that it be
+linked with an MPI-enabled version of HDF5. Optionally, NetCDF can be
+built with DAP support, which introduces a dependency on CURL.  HDF5,
+itself, introduces dependencies on LIBZ and (optionally) SZIP.
 
 ## Building PIO
 
@@ -69,3 +101,17 @@ CC=mpicc FC=mpif90 cmake [-DOPTION1=value1 -DOPTION2=value2 ...] /path/to/pio/so
 
 Full instructions for the cmake build can be found in the installation
 documentation.
+
+# References
+
+Hartnett, E., Edwards, J., "THE PARALLELIO (PIO) C/FORTRAN LIBRARIES
+FOR SCALABLE HPC PERFORMANCE", 37th Conference on Environmental
+Information Processing Technologies, American Meteorological Society
+Annual Meeting, January, 2021. Retrieved on Feb 3, 2021, from
+[https://www.researchgate.net/publication/348169990_THE_PARALLELIO_PIO_CFORTRAN_LIBRARIES_FOR_SCALABLE_HPC_PERFORMANCE].
+
+Hartnett, E., Edwards, J., "POSTER: THE PARALLELIO (PIO) C/FORTRAN LIBRARIES
+FOR SCALABLE HPC PERFORMANCE", 37th Conference on Environmental
+Information Processing Technologies, American Meteorological Society
+Annual Meeting, January, 2021. Retrieved on Feb 3, 2021, from
+[https://www.researchgate.net/publication/348170136_THE_PARALLELIO_PIO_CFORTRAN_LIBRARIES_FOR_SCALABLE_HPC_PERFORMANCE].

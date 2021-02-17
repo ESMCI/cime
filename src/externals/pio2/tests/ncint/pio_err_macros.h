@@ -23,6 +23,17 @@
 static int total_err = 0, err = 0;
 
 /* This macro prints an error message with line number and name of
+ * test program, also a netCDF error message. */
+#define NCPERR(e) do {                                                  \
+        fflush(stdout); /* Make sure our stdout is synced with stderr. */ \
+        err++;                                                          \
+        fprintf(stderr, "Sorry! Unexpected result, %s, line: %d msg: %s\n",     \
+                __FILE__, __LINE__, nc_strerror(e));                    \
+        fflush(stderr);                                                 \
+        return 2;                                                       \
+    } while (0)
+
+/* This macro prints an error message with line number and name of
  * test program. */
 #define PERR do {                                                        \
         fflush(stdout); /* Make sure our stdout is synced with stderr. */ \

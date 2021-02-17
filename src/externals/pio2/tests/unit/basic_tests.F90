@@ -52,7 +52,7 @@ module basic_tests
         ! Error in PIO_createfile
          print *,' ret_val = ', ret_val
         err_msg = "Could not create " // trim(filename)
-        call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+        call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
       end if
 
       call mpi_barrier(mpi_comm_world,ret_val)
@@ -63,7 +63,7 @@ module basic_tests
           ! Error in PIO_enddef
           err_msg = "Could not end define mode"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
       end if
       call PIO_closefile(pio_file)
@@ -74,7 +74,7 @@ module basic_tests
       if (ret_val .ne. PIO_NOERR) then
         ! Error in PIO_openfile
         err_msg = "Could not open " // trim(filename)
-        call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+        call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
       end if
 
       ! Close file
@@ -86,7 +86,7 @@ module basic_tests
         if (ret_val .ne. PIO_NOERR) then
           ! Error in PIO_createfile
           err_msg = "Could not clobber " // trim(filename)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         ! Leave define mode
@@ -95,7 +95,7 @@ module basic_tests
           ! Error in PIO_enddef
           err_msg = "Could not end define mode in clobbered file"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         ! Close file
@@ -114,7 +114,7 @@ module basic_tests
           err_msg = "Was able to clobber file despite PIO_NOCLOBBER"
           ret_val = PIO_enddef(pio_file)
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
       end if
 
@@ -167,7 +167,7 @@ module basic_tests
         ! Error in PIO_openfile
         err_msg = "Successfully opened file that doesn't exist"
         call PIO_closefile(pio_file)
-        call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+        call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
       end if
 
       ! Open existing file, write data to it (for binary file, need to create new file)
@@ -179,7 +179,7 @@ module basic_tests
       if (ret_val .ne. PIO_NOERR) then
         ! Error in PIO_openfile (or PIO_createfile)
         err_msg = "Could not open " // trim(filename) // " in write mode"
-        call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+        call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
       end if
 
       ! Enter define mode for netcdf files
@@ -188,7 +188,7 @@ module basic_tests
         if (ret_val .ne. PIO_NOERR) then
           err_msg = "Could not enter redef mode"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         ! Define a new dimension N
@@ -197,7 +197,7 @@ module basic_tests
           ! Error in PIO_def_dim
           err_msg = "Could not define dimension N"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         ! Define a new variable foo
@@ -207,7 +207,7 @@ module basic_tests
           ! Error in PIO_def_var
           err_msg = "Could not define variable foo"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         ret_val = PIO_put_att(pio_file, pio_var, '_FillValue', -1)
@@ -215,7 +215,7 @@ module basic_tests
           ! Error in PIO_def_var
           err_msg = "Could not define _FillValue attribute"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
 
@@ -227,7 +227,7 @@ module basic_tests
            print *,__FILE__,__LINE__,ret_val
           err_msg = "Could not end define mode"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
       end if
 
@@ -239,7 +239,7 @@ module basic_tests
         ! Error in PIO_write_darray
         err_msg = "Could not write data"
         call PIO_closefile(pio_file)
-        call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+        call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
       end if
 
       ! Close file
@@ -252,7 +252,7 @@ module basic_tests
         if (ret_val .ne. PIO_NOERR) then
           ! Error opening file
           err_msg = "Could not open file in NoWrite mode"
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         ! Try to write (should fail)
@@ -264,7 +264,7 @@ module basic_tests
           ! Error in PIO_write_darray
           err_msg = "Wrote to file opened in NoWrite mode"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         call mpi_barrier(MPI_COMM_WORLD,ret_val)
@@ -277,13 +277,13 @@ module basic_tests
           err_msg = "Error in read_darray"
           call PIO_closefile(pio_file)
           print *,__FILE__,__LINE__,err_msg
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
         if(any(data_buffer /= my_rank)) then
           err_msg = "Error reading data"
           call PIO_closefile(pio_file)
           print *,__FILE__,__LINE__,iotype, trim(err_msg), data_buffer
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
 
         !ret_val = PIO_set_log_level(3)
@@ -292,7 +292,7 @@ module basic_tests
            err_msg = "Error in inq_unlimdim"
            call PIO_closefile(pio_file)
            print *,__FILE__,__LINE__,iotype, trim(err_msg)
-           call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+           call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
         !ret_val = PIO_set_log_level(0)
 
@@ -314,7 +314,7 @@ module basic_tests
           ! Error in PIO_openfile
           err_msg = "Opened a non-netcdf file as netcdf"
           call PIO_closefile(pio_file)
-          call mpi_abort(MPI_COMM_WORLD, 0, ret_val2)
+          call mpi_abort(MPI_COMM_WORLD, ret_val, ret_val2)
         end if
       end if
 

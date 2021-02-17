@@ -2303,7 +2303,7 @@ int read_darray_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int ioid;
-    int arraylen;
+    PIO_Offset arraylen;
     void *data = NULL;
     int mpierr;
 
@@ -2590,6 +2590,34 @@ int set_loglevel_handler(iosystem_desc_t *ios)
     int level;
     int mpierr;
 
+    PLOG((0, "set_loglevel_handler called"));
+    assert(ios);
+#if PIO_ENABLE_LOGGING
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    PIOc_set_global_log_level(iosysid, level);
+
+#endif
+    return PIO_NOERR;
+}
+
+
+/**
+ * Set the log level.
+ *
+ * @param ios pointer to iosystem info
+ * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
+ */
+int set_loglevel_handler(iosystem_desc_t *ios)
+{
+#if PIO_ENABLE_LOGGING    
+    int iosysid;
+    int level;
+    int mpierr;
+#endif
+    
     PLOG((0, "set_loglevel_handler called"));
     assert(ios);
 #if PIO_ENABLE_LOGGING
