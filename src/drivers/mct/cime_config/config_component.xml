@@ -1151,6 +1151,22 @@
     <desc>Propogate a single point to the global grid  - DO NOT EDIT (for experts only)</desc>
   </entry>
 
+  <entry id="IOP_NX">
+    <type>integer</type>
+    <default_value>0</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>number of cells for doubly periodic iop mode in i direction</desc>
+  </entry>
+
+  <entry id="IOP_NY">
+    <type>integer</type>
+    <default_value>0</default_value>
+    <group>run_domain</group>
+    <file>env_run.xml</file>
+    <desc>number of cells for doubly periodic iop mode in j directions</desc>
+  </entry>
+
   <entry id="PTS_MODE">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
