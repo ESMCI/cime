@@ -192,7 +192,7 @@ CONTAINS
 
   subroutine shr_dmodel_readgrid( gGrid, gsMap, nxgo, nygo, nzgo, filename, compid, mpicom, &
        decomp, lonname, latname, hgtname, maskname, areaname, fracname, readfrac, &
-       scmmode, iop_mode, scmlon, scmlat)
+       scmmode, iop_mode, scmlon, scmlat, iop_nx, iop_ny)
 
     use shr_file_mod  , only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
     use shr_string_mod, only : shr_string_lastindex
@@ -220,6 +220,8 @@ CONTAINS
     logical          ,optional, intent(in)    :: iop_mode ! iop mode
     real(R8)         ,optional, intent(in)    :: scmlon   ! single column lon
     real(R8)         ,optional, intent(in)    :: scmlat   ! single column lat
+    integer(IN)      ,optional, intent(in)    :: iop_nx   ! number points in x direction
+    integer(IN)      ,optional, intent(in)    :: iop_ny   ! number points in y direction
 
     !----- local -----
     integer(IN)   :: n,k,j,i     ! indices
@@ -246,6 +248,7 @@ CONTAINS
     integer(IN)   :: nlon,nlat,narea,nmask,nfrac,nhgt
     logical       :: lscmmode    ! local scm mode
     logical       :: liopmode    ! local iop mode
+    logical       :: liopgrid    ! have iop grid information
     real(R8)      :: dist,mind   ! scmmode point search
     integer(IN)   :: ni,nj       ! scmmode point search
     real(R8)      :: lscmlon     ! local copy of scmlon
@@ -283,6 +286,7 @@ CONTAINS
 
     lscmmode = .false.
     liopmode = .false.
+    liopgrid = .false.
     if (present(scmmode)) then
        lscmmode = scmmode
        liopmode = iop_mode
@@ -299,6 +303,11 @@ CONTAINS
              write(logunit,*) subname,' ERROR: scmmode must be run on one pe'
              call shr_sys_abort(subname//' ERROR: scmmode2 tasks')
           endif
+       endif
+       if (liopmode) then
+         if (present(iop_nx) .and. present(iop_ny)) then
+           liopgrid = .true.
+         endif
        endif
     endif
 
@@ -368,10 +377,17 @@ CONTAINS
        nzgo = -1
        gsize = 1
     else
-       nxgo = nxg
-       nygo = nyg
-       nzgo = nzg
-       gsize = abs(nxg*nyg*nzg)
+       if (liopgrid) then
+         nxgo = iop_nx
+         nygo = iop_ny
+         nzgo = -1
+         gsize = abs(iop_nx*iop_nx*nzgo)
+       else
+         nxgo = nxg
+         nygo = nyg
+         nzgo = nzg
+         gsize = abs(nxg*nyg*nzg)
+       endif
        if (gsize < 1) return
     endif
 

@@ -155,6 +155,7 @@ contains
 
   subroutine shr_strdata_init( &
        SDAT,mpicom,compid,name,scmmode,iop_mode,scmlon,scmlat, &
+       iop_nx,iop_ny, &
        gsmap, ggrid, nxg, nyg, nzg, &
        calendar, reset_domain_mask, dmodel_domain_fracname_from_stream)
 
@@ -171,6 +172,8 @@ contains
     logical               ,intent(in),optional :: iop_mode
     real(R8)              ,intent(in),optional :: scmlon
     real(R8)              ,intent(in),optional :: scmlat
+    integer(IN)           ,intent(in),optional :: iop_nx
+    integer(IN)           ,intent(in),optional :: iop_ny
     type(mct_gsmap)       ,intent(in),optional :: gsmap
     type(mct_ggrid)       ,intent(in),optional :: ggrid
     integer(IN)           ,intent(in),optional :: nxg
@@ -213,7 +216,8 @@ contains
          gsmap=gsmap, ggrid=ggrid, nxg=nxg, nyg=nyg, nzg=nzg, &
          reset_domain_mask=reset_domain_mask, &
          dmodel_domain_fracname_from_stream=dmodel_domain_fracname_from_stream, &
-         scmmode=scmmode, iop_mode=iop_mode, scmlon=scmlon, scmlat=scmlat)
+         scmmode=scmmode, iop_mode=iop_mode, scmlon=scmlon, scmlat=scmlat, &
+         iop_nx=iop_nx,iop_ny=iop_ny)
 
     !------------------------------------------------------
     ! --- (2) initialize streams and stream domains ---
@@ -233,7 +237,7 @@ contains
 
   subroutine shr_strdata_init_model_domain(SDAT, mpicom, compid, my_task, &
        gsmap, ggrid, nxg, nyg, nzg, scmmode, iop_mode, scmlon, scmlat, &
-       reset_domain_mask, dmodel_domain_fracname_from_stream)
+       iop_nx, iop_ny, reset_domain_mask, dmodel_domain_fracname_from_stream)
 
     ! input/output variables
     type(shr_strdata_type),intent(inout)       :: SDAT
@@ -249,6 +253,8 @@ contains
     logical               ,intent(in),optional :: iop_mode
     real(R8)              ,intent(in),optional :: scmlon
     real(R8)              ,intent(in),optional :: scmlat
+    integer(IN)           ,intent(in),optional :: iop_nx
+    integer(IN)           ,intent(in),optional :: iop_ny
     logical               ,intent(in),optional :: reset_domain_mask
     character(len=*)      ,intent(in),optional :: dmodel_domain_fracname_from_stream
 
@@ -381,7 +387,7 @@ contains
              call shr_dmodel_readgrid(SDAT%grid,SDAT%gsmap,SDAT%nxg,SDAT%nyg,SDAT%nzg, &
                   SDAT%domainfile, compid, mpicom, &
                   decomp=decomp, readfrac=.true., scmmode=lscmmode, iop_mode=liop_mode, &
-                  scmlon=scmlon, scmlat=scmlat)
+                  scmlon=scmlon, scmlat=scmlat, iop_nx=iop_nx, iop_ny=iop_ny)
           else
              call shr_dmodel_readgrid(SDAT%grid, SDAT%gsmap, SDAT%nxg, SDAT%nyg, SDAT%nzg, &
                   SDAT%domainfile, compid, mpicom, &

@@ -95,7 +95,7 @@ CONTAINS
        seq_flds_x2o_fields, seq_flds_o2x_fields, &
        SDOCN, gsmap, ggrid, mpicom, compid, my_task, master_task, &
        inst_suffix, inst_name, logunit, read_restart, &
-       scmMode, iop_mode, scmlat, scmlon)
+       scmMode, iop_mode, scmlat, scmlon, iop_nx, iop_ny)
 
     ! !DESCRIPTION: initialize docn model
     use pio        , only : iosystem_desc_t
@@ -124,6 +124,9 @@ CONTAINS
                                                                   ! identical surface
     real(R8)               , intent(in)    :: scmLat              ! single column lat
     real(R8)               , intent(in)    :: scmLon              ! single column lon
+    integer(IN)            , intent(in)    :: iop_nx              ! number of points for
+                                                                  ! doubly periodic mode (x)
+    integer(IN)            , intent(in)    :: iop_ny              ! same but for y direction
 
     !--- local variables ---
     integer(IN)   :: n,k      ! generic counters
@@ -176,6 +179,7 @@ CONTAINS
             write(logunit,F05) ' scm lon lat = ',scmlon,scmlat
        call shr_strdata_init(SDOCN,mpicom,compid,name='ocn', &
             scmmode=scmmode,iop_mode=iop_mode,scmlon=scmlon,scmlat=scmlat, &
+            iop_nx=iop_nx,iop_ny=iop_ny, &
             calendar=calendar, reset_domain_mask=.true.)
     else
        if (datamode == 'SST_AQUAPANAL' .or. datamode == 'SST_AQUAPFILE' .or. &

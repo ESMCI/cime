@@ -1498,6 +1498,30 @@
     </values>
   </entry>
 
+  <entry id="iop_nx" modify_via_xml="IOP_NX">
+    <type>integer</type>
+    <category>seq_infodata_inparm</category>
+    <group>seq_infodata_inparm</group>
+    <desc>
+      number of points in x direction for doubly periodic mode
+    </desc>
+    <values>
+      <value>$IOP_NX</value>
+    </values>
+  </entry>
+
+  <entry id="iop_ny" modify_via_xml="IOP_NY">
+    <type>integer</type>
+    <category>seq_infodata_inparm</category>
+    <group>seq_infodata_inparm</group>
+    <desc>
+      number of points in Y direction for doubly periodic mode
+    </desc>
+    <values>
+      <value>$IOP_NY</value>
+    </values>
+  </entry>
+
   <entry id="single_column" modify_via_xml="PTS_MODE">
     <type>logical</type>
     <category>seq_infodata_inparm</category>

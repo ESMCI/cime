@@ -86,6 +86,8 @@ MODULE seq_infodata_mod
      logical                 :: iop_mode        ! IOP mode
      real (SHR_KIND_R8)      :: scmlat          ! single column lat
      real (SHR_KIND_R8)      :: scmlon          ! single column lon
+     integer(SHR_KIND_IN)    :: iop_nx          ! points in x direction doubly periodic
+     integer(SHR_KIND_IN)    :: iop_ny          ! points in y direction doubly periodic
      character(SHR_KIND_CS)  :: logFilePostFix  ! postfix for output log files
      character(SHR_KIND_CL)  :: outPathRoot     ! root for output log files
      logical                 :: perpetual       ! perpetual flag
@@ -335,6 +337,8 @@ CONTAINS
     logical                :: iop_mode           ! IOP mode
     real (SHR_KIND_R8)     :: scmlat             ! single column mode latitude
     real (SHR_KIND_R8)     :: scmlon             ! single column mode longitude
+    integer(SHR_KIND_IN)    :: iop_nx          ! points in x direction doubly periodic
+    integer(SHR_KIND_IN)    :: iop_ny          ! points in y direction doubly periodic
     character(SHR_KIND_CS) :: logFilePostFix     ! postfix for output log files
     character(SHR_KIND_CL) :: outPathRoot        ! root output files
     logical                :: perpetual          ! perpetual mode
@@ -431,6 +435,7 @@ CONTAINS
          restart_pfile, restart_file, run_barriers,        &
          single_column, scmlat, force_stop_at,             &
          scmlon, iop_mode, logFilePostFix, outPathRoot, flux_diurnal,&
+         iop_nx, iop_ny,          &
          ocn_surface_flux_scheme, &
          coldair_outbreak_mod, &
          flux_convergence, flux_max_iteration,             &
@@ -496,6 +501,8 @@ CONTAINS
        iop_mode              = .false.
        scmlat                = -999.
        scmlon                = -999.
+       iop_nx                = -1
+       iop_ny                = -1
        logFilePostFix        = '.log'
        outPathRoot           = './'
        perpetual             = .false.
@@ -632,6 +639,8 @@ CONTAINS
        infodata%iop_mode              = iop_mode
        infodata%scmlat                = scmlat
        infodata%scmlon                = scmlon
+       infodata%iop_nx                = iop_nx
+       infodata%iop_ny                = iop_ny
        infodata%logFilePostFix        = logFilePostFix
        infodata%outPathRoot           = outPathRoot
        infodata%perpetual             = perpetual
@@ -969,6 +978,7 @@ CONTAINS
        start_type, restart_pfile, restart_file, perpetual, perpetual_ymd, &
        aqua_planet,aqua_planet_sst, brnch_retain_casename, &
        single_column, scmlat,scmlon,iop_mode,logFilePostFix, outPathRoot,&
+       iop_nx, iop_ny,                                                    &
        atm_present, atm_prognostic,                                       &
        lnd_present, lnd_prognostic,                                       &
        rof_present, rof_prognostic,                                       &
@@ -1038,6 +1048,8 @@ CONTAINS
     real (SHR_KIND_R8),     optional, intent(OUT) :: scmlat
     real (SHR_KIND_R8),     optional, intent(OUT) :: scmlon
     logical,                optional, intent(OUT) :: iop_mode
+    integer,                optional, intent(OUT) :: iop_nx
+    integer,                optional, intent(OUT) :: iop_ny
     character(len=*),       optional, intent(OUT) :: logFilePostFix          ! output log file postfix
     character(len=*),       optional, intent(OUT) :: outPathRoot             ! output file root
     logical,                optional, intent(OUT) :: perpetual               ! If this is perpetual
@@ -1216,6 +1228,8 @@ CONTAINS
     if ( present(iop_mode  )     ) iop_mode       = infodata%iop_mode
     if ( present(scmlat)         ) scmlat         = infodata%scmlat
     if ( present(scmlon)         ) scmlon         = infodata%scmlon
+    if ( present(iop_nx)         ) iop_nx         = infodata%iop_nx
+    if ( present(iop_ny)         ) iop_ny         = infodata%iop_ny
     if ( present(logFilePostFix) ) logFilePostFix = infodata%logFilePostFix
     if ( present(outPathRoot)    ) outPathRoot    = infodata%outPathRoot
     if ( present(perpetual)      ) perpetual      = infodata%perpetual
@@ -1506,6 +1520,7 @@ CONTAINS
        start_type, restart_pfile, restart_file, perpetual, perpetual_ymd, &
        aqua_planet,aqua_planet_sst, brnch_retain_casename, &
        single_column, scmlat,scmlon,iop_mode,logFilePostFix, outPathRoot,          &
+       iop_nx, iop_ny,                                                    &
        atm_present, atm_prognostic,                                       &
        lnd_present, lnd_prognostic,                                       &
        rof_present, rof_prognostic,                                       &
@@ -1574,6 +1589,8 @@ CONTAINS
     real (SHR_KIND_R8),     optional, intent(IN)    :: scmlat
     real (SHR_KIND_R8),     optional, intent(IN)    :: scmlon
     logical,                optional, intent(IN)    :: iop_mode
+    integer,                optional, intent(IN)    :: iop_nx
+    integer,                optional, intent(IN)    :: iop_ny
     character(len=*),       optional, intent(IN)    :: logFilePostFix          ! output log file postfix
     character(len=*),       optional, intent(IN)    :: outPathRoot             ! output file root
     logical,                optional, intent(IN)    :: perpetual               ! If this is perpetual
@@ -1749,6 +1766,8 @@ CONTAINS
     if ( present(iop_mode)       ) infodata%iop_mode       = iop_mode
     if ( present(scmlat)         ) infodata%scmlat         = scmlat
     if ( present(scmlon)         ) infodata%scmlon         = scmlon
+    if ( present(iop_nx)         ) infodata%iop_nx         = iop_nx
+    if ( present(iop_ny)         ) infodata%iop_ny         = iop_ny
     if ( present(logFilePostFix) ) infodata%logFilePostFix = logFilePostFix
     if ( present(outPathRoot)    ) infodata%outPathRoot    = outPathRoot
     if ( present(perpetual)      ) infodata%perpetual      = perpetual
@@ -2052,6 +2071,8 @@ CONTAINS
     call shr_mpi_bcast(infodata%iop_mode,                mpicom)
     call shr_mpi_bcast(infodata%scmlat,                  mpicom)
     call shr_mpi_bcast(infodata%scmlon,                  mpicom)
+    call shr_mpi_bcast(infodata%iop_nx,                  mpicom)
+    call shr_mpi_bcast(infodata%iop_ny,                  mpicom)
     call shr_mpi_bcast(infodata%logFilePostFix,          mpicom)
     call shr_mpi_bcast(infodata%outPathRoot,             mpicom)
     call shr_mpi_bcast(infodata%perpetual,               mpicom)
@@ -2735,6 +2756,8 @@ CONTAINS
     write(logunit,F0L) subname,'iop_mode                 = ', infodata%iop_mode
     write(logunit,F0R) subname,'scmlat                   = ', infodata%scmlat
     write(logunit,F0R) subname,'scmlon                   = ', infodata%scmlon
+    write(logunit,F0I) subname,'iop_nx                   = ', infodata%iop_nx
+    write(logunit,F0I) subname,'iop_ny                   = ', infodata%iop_ny
 
     write(logunit,F0A) subname,'Log output end name      = ', trim(infodata%logFilePostFix)
     write(logunit,F0A) subname,'Output path dir          = ', trim(infodata%outPathRoot)
