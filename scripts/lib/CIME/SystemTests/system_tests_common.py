@@ -318,6 +318,19 @@ class SystemTestsCommon(object):
         comments = copy_histfiles(self._case, suffix)
         append_testlog(comments, self._orig_caseroot)
 
+    def _log_cprnc_output_tail(self):
+        rundir = self._case.get_value('RUNDIR')
+
+        cprnc_logs = glob.glob("{}/*.cprnc.out".format(rundir))
+
+        for output in cprnc_logs:
+            with open(output) as fin:
+                cprnc_log_tail = fin.readlines()[-20:]
+            
+            cprnc_log_tail.insert(0, "tail -n20 {}\n\n".format(output))
+
+            append_testlog("".join(cprnc_log_tail), self._orig_caseroot)
+
     def _component_compare_test(self, suffix1, suffix2,
                                 success_change=False,
                                 ignore_fieldlist_diffs=False):
@@ -334,6 +347,8 @@ class SystemTestsCommon(object):
                                                   ignore_fieldlist_diffs=ignore_fieldlist_diffs)
         if success_change:
             success = not success
+
+        self._log_cprnc_output_tail()
 
         append_testlog(comments, self._orig_caseroot)
         status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
@@ -547,6 +562,9 @@ class SystemTestsCommon(object):
         with self._test_status:
             # compare baseline
             success, comments = compare_baseline(self._case)
+
+            self._log_cprnc_output_tail()
+
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
