@@ -4,7 +4,6 @@
 This module contains unit tests for compare_test_results
 """
 
-import time
 import unittest
 import tempfile
 import os
