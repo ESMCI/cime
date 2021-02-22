@@ -107,8 +107,17 @@ ifeq (,$(SHAREDPATH))
   INSTALL_SHAREDPATH = $(EXEROOT)/$(SHAREDPATH)
 endif
 
+#===============================================================================
+# User-specified INCLDIR
+#===============================================================================
+INCLDIR := -I.
+ifdef USER_INCLDIR
+  INCLDIR += $(USER_INCLDIR)
+endif
+
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
+   INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include
    # FoX libraries are provided and built by CDEPS
    FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
    ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
@@ -257,11 +266,12 @@ endif
 # ESMF_F90ESMFLINKPATHS
 # ESMF_F90LINKRPATHS
 # ESMF_F90ESMFLINKLIBS
+# ESMF_F90LINKPATHS
 ifeq ($(USE_ESMF_LIB), TRUE)
   -include $(CIME_ESMFMKFILE)
   CPPDEFS += -DESMF_VERSION_MAJOR=$(ESMF_VERSION_MAJOR) -DESMF_VERSION_MINOR=$(ESMF_VERSION_MINOR)
   FFLAGS += $(ESMF_F90COMPILEPATHS)
-  SLIBS	 += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS)
+  SLIBS += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS) $(ESMF_F90LINKPATHS)
 endif
 
 # Stub libraries do not need to be built for nuopc driver
@@ -342,14 +352,6 @@ ifeq  ($(findstring pio,$(MODEL)),pio)
   ifeq ($DEBUG,TRUE)
      CONFIG_ARGS+= --enable-debug
   endif
-endif
-
-#===============================================================================
-# User-specified INCLDIR
-#===============================================================================
-INCLDIR := -I.
-ifdef USER_INCLDIR
-  INCLDIR += $(USER_INCLDIR)
 endif
 
 #===============================================================================
@@ -664,6 +666,7 @@ CMAKE_OPTS += -Wno-dev -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPD
 	      -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
+	      -D PIO_USE_MALLOC:BOOL=ON \
 	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake"
 
 ifeq ($(DEBUG), TRUE)

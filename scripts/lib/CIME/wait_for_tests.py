@@ -512,10 +512,14 @@ def wait_for_tests(test_paths,
         logging.info("    Case dir: {}".format(case_dir))
 
         if update_success:
-            with Case(case_dir, read_only=True) as case:
-                srcroot = case.get_value("SRCROOT")
-                baseline_root = case.get_value("BASELINE_ROOT")
-                save_test_success(baseline_root, srcroot, test_name, test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS])
+            try:
+                # This can fail if the case crashed before setup completed
+                with Case(case_dir, read_only=True) as case:
+                    srcroot = case.get_value("SRCROOT")
+                    baseline_root = case.get_value("BASELINE_ROOT")
+                    save_test_success(baseline_root, srcroot, test_name, test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS])
+            except CIMEError as e:
+                logging.warning("Failed to update success for Case {}: {}".format(case_dir, e))
 
     if cdash_build_name:
         create_cdash_xml(test_results, cdash_build_name, cdash_project, cdash_build_group, force_log_upload)

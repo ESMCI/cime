@@ -1,6 +1,6 @@
 import CIME.compare_namelists, CIME.simple_compare
 from CIME.test_scheduler import NAMELIST_PHASE
-from CIME.utils import run_cmd, get_scripts_root, get_model, EnvironmentContext
+from CIME.utils import run_cmd, get_scripts_root, get_model, EnvironmentContext, parse_test_name
 from CIME.test_status import *
 from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
@@ -87,6 +87,9 @@ def bless_test_results(baseline_name, baseline_root, test_root, compiler, test_i
         test_dir = os.path.dirname(test_status_file)
         ts = TestStatus(test_dir=test_dir)
         test_name = ts.get_name()
+        testopts = parse_test_name(test_name)[1]
+        testopts = [] if testopts is None else testopts
+        build_only = "B" in testopts
         if test_name is None:
             case_dir = os.path.basename(test_dir)
             test_name = CIME.utils.normalize_case_id(case_dir)
@@ -109,7 +112,7 @@ def bless_test_results(baseline_name, baseline_root, test_root, compiler, test_i
                 nl_bless = False
 
             # See if we need to bless baselines
-            if (not namelists_only):
+            if (not namelists_only and not build_only):
                 run_result = ts.get_status(RUN_PHASE)
                 if (run_result is None):
                     broken_blesses.append((test_name, "no run phase"))
