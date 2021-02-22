@@ -66,12 +66,12 @@ def _build_usernl_files(case, model, comp):
                 if os.path.exists(model_nl):
                     safe_copy(model_nl, nlfile)
 
-def _pelayout_sanity(case, comp_interface, models):
+def pelayout_sanity(case, comp_interface, models):
     # sanity check for ROOTPE
-    rootpe = {};
-    nthrds = {};
-    maxnthrds = 0;
-    maxrootpe = 0;
+    rootpe = {}
+    nthrds = {}
+    maxnthrds = 0
+    maxrootpe = 0
     for comp in models:
         rootpe[comp] = case.get_value("ROOTPE_{}".format(comp))
         nthrds[comp] = case.get_value("NTHRDS_{}".format(comp))
@@ -190,7 +190,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
                 case.set_value("NTASKS_PER_INST_{}".format(comp), max(1,int(ntasks / ninst)))
 
 
-        case._pelayout_sanity(comp_interface, models)
+        case.pelayout_sanity(comp_interface, models)
 
 
         if os.path.exists(get_batch_script_for_job(case.get_primary_job())):
