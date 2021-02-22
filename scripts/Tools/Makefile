@@ -249,6 +249,7 @@ ifeq ($(findstring -DLINUX,$(CPPDEFS)),-DLINUX)
 endif
 
 ifdef LIB_PNETCDF
+   CPPDEFS += -D_PNETCDF
    SLIBS += -L$(LIB_PNETCDF) -lpnetcdf
 endif
 
