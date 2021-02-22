@@ -254,8 +254,6 @@ class EnvMachSpecific(EnvBase):
         return self._compute_actions(env_nodes, "env", case, job=job)
 
     def _compute_resource_actions(self, resource_nodes, case, job=None):
-        import pdb
-
         return self._compute_actions(resource_nodes, "resource", case, job=job)
 
     def _compute_actions(self, nodes, child_tag, case, job=None):
