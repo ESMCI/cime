@@ -68,7 +68,7 @@ class Case(object):
     This class extends across multiple files, class members external to this file
     are listed in the following imports
     """
-    from CIME.case.case_setup import case_setup, _pelayout_sanity
+    from CIME.case.case_setup import case_setup, pelayout_sanity
     from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
     from CIME.case.case_test  import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
