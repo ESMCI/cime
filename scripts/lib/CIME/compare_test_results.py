@@ -108,44 +108,43 @@ def compare_test_results(baseline_name, baseline_root, test_root, compiler, test
             else:
                 do_compare = False
 
+            with Case(test_dir) as case:
+                if baseline_name is None:
+                    baseline_name = case.get_value("BASELINE_NAME_CMP")
+                    if not baseline_name:
+                        baseline_name = CIME.utils.get_current_branch(repo=CIME.utils.get_cime_root())
+
+                if baseline_root is None:
+                    baseline_root = case.get_value("BASELINE_ROOT")
+
+                logfile_name = "compare.log.{}.{}".format(baseline_name.replace("/", "_"), log_id)
+
+                append_status_cprnc_log(
+                    "Comparing against baseline with compare_test_results:\n"
+                    "Baseline: {}\n In baseline_root: {}".format(baseline_name, baseline_root),
+                    logfile_name,
+                    test_dir)
+
             if nl_do_compare or do_compare:
-                with Case(test_dir) as case:
+                if nl_do_compare:
+                    nl_success = compare_namelists(case, baseline_name, baseline_root, logfile_name)
+                    if nl_success:
+                        nl_compare_result = TEST_PASS_STATUS
+                        nl_compare_comment = ""
+                    else:
+                        nl_compare_result = TEST_FAIL_STATUS
+                        nl_compare_comment = "See {}/{}".format(test_dir, logfile_name)
+                        all_pass_or_skip = False
 
-                    if baseline_name is None:
-                        baseline_name = case.get_value("BASELINE_NAME_CMP")
-                        if not baseline_name:
-                            baseline_name = CIME.utils.get_current_branch(repo=CIME.utils.get_cime_root())
+                if do_compare:
+                    success, detailed_comments = compare_history(case, baseline_name, baseline_root, log_id)
+                    if success:
+                        compare_result = TEST_PASS_STATUS
+                    else:
+                        compare_result = TEST_FAIL_STATUS
+                        all_pass_or_skip = False
 
-                    if baseline_root is None:
-                        baseline_root = case.get_value("BASELINE_ROOT")
-
-                    logfile_name = "compare.log.{}.{}".format(baseline_name.replace("/", "_"), log_id)
-
-                    append_status_cprnc_log(
-                        "Comparing against baseline with compare_test_results:\n"
-                        "Baseline: {}\n In baseline_root: {}".format(baseline_name, baseline_root),
-                        logfile_name,
-                        test_dir)
-
-                    if nl_do_compare:
-                        nl_success = compare_namelists(case, baseline_name, baseline_root, logfile_name)
-                        if nl_success:
-                            nl_compare_result = TEST_PASS_STATUS
-                            nl_compare_comment = ""
-                        else:
-                            nl_compare_result = TEST_FAIL_STATUS
-                            nl_compare_comment = "See {}/{}".format(test_dir, logfile_name)
-                            all_pass_or_skip = False
-
-                    if do_compare:
-                        success, detailed_comments = compare_history(case, baseline_name, baseline_root, log_id)
-                        if success:
-                            compare_result = TEST_PASS_STATUS
-                        else:
-                            compare_result = TEST_FAIL_STATUS
-                            all_pass_or_skip = False
-
-                        compare_comment = get_ts_synopsis(detailed_comments)
+                    compare_comment = get_ts_synopsis(detailed_comments)
 
             brief_result = ""
             if not hist_only:
