@@ -165,7 +165,6 @@
       <directive> --nodes={{ num_nodes }}</directive>
       <directive> --ntasks-per-node={{ tasks_per_node }}</directive>
       <directive> --output={{ job_id }}   </directive>
-      <directive> --exclusive                        </directive>
     </directives>
   </batch_system>
 
@@ -252,7 +251,7 @@
     </submit_args>
     <queues>
       <queue walltimemax="48:00:00" nodemin="1" nodemax="72">compute</queue>
-      <queue default="true" walltimemax="48:00:00" jobmin="1" jobmax="1">share</queue>
+      <queue default="true" walltimemax="48:00:00" jobmin="1" jobmax="1">shared</queue>
       <queue walltimemax="00:30:00" nodemin="1" nodemax="2">debug</queue>
     </queues>
   </batch_system>
