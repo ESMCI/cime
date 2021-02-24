@@ -217,7 +217,6 @@ class Grids(GenericXML):
 
         for grid in grids:
             grid_name = component_grids[grid[1]]
-
             # Determine grid name with no nlev suffix if there is one
             grid_name_nonlev = grid_name
             levmatch = re.match(atmlevregex, grid_name)
@@ -276,6 +275,16 @@ class Grids(GenericXML):
                         driver_attrib = self.get(mesh_node, "driver")
                         if driver == driver_attrib:
                             domains[mesh_name] = self.text(mesh_node)
+
+        if driver == "nuopc":
+            mask_domain_node = self.get_optional_child("domain", attributes={"name":domains["MASK_GRID"]},
+                                                       root=self.get_child("domains"))
+            mesh_nodes = self.get_children("mesh", root=mask_domain_node)
+            for mesh_node in mesh_nodes:
+                driver_attrib = self.get(mesh_node, "driver")
+                if driver == driver_attrib:
+                    domains["MASK_MESH"] = self.text(mesh_node)
+
 
         return domains
 

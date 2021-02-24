@@ -1,3 +1,4 @@
+#include "config.h"
 !>
 !! @file
 !! Code to implement the classic netCDF Fortran API in PIO.
@@ -7,12 +8,34 @@
 !> @defgroup PIO_inquire_dimension Learn About Dimension
 !! Learn dimension name, ID, or length in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function  | Function(s)
+!! ----------------  | -----------
+!! pio_inq_dimlen()  | inq_dimlen_desc(), inq_dimlen_id(), inq_dimlen_desc_long(), inq_dimlen_id_long()
+!! pio_inq_ndims()   | inq_ndims_id()
+!! pio_inq_dimid()   | inq_dimid_desc(), inq_dimid_id()
+!! pio_inq_dimname() | inq_dimname_desc(), inq_dimname_id()
+!!
 !! @defgroup PIO_inquire Learn About a File
 !! Learn the number of variables, dimensions, global attributes, and
 !! the unlimited dimension ID in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function  | Function(s)
+!! ----------------  | -----------
+!! pio_inquire()     | inquire_desc(), inquire_id()
+!!
 !! @defgroup PIO_enddef Define Mode
 !! End or re-enter define mode in Fortran.
+!!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function  | Function(s)
+!! ----------------  | -----------
+!! pio_enddef()      | enddef_desc(), enddef_id()
+!! pio_redef()       | redef_desc(), redef_id()
 !!
 !! @defgroup PIO_set_log_level Debug Logging
 !! Set debugging log level in Fortran.
@@ -23,15 +46,50 @@
 !! @defgroup PIO_def_dim Define a Dimension
 !! Define a new dimension, with name and length in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! pio_def_dim() | def_dim_desc(), def_dim_id(), def_dim_int_desc(), def_dim_int_id()
+!!
 !! @defgroup PIO_inquire_variable Learn About a Variable
 !! Learn variable name, ID, type, dimensions, compression, chunking in
 !! Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! pio_inquire_variable() | inquire_variable_desc(), inquire_variable_vid(), inquire_variable_id()
+!! pio_inq_varid()        | inq_varid_desc(), inq_varid_vid(), inq_varid_id()
+!! pio_inq_vartype()      | inq_varname_desc(), inq_varname_vid(), inq_varname_id()
+!! pio_inq_varndims()     | inq_varndims_desc(), inq_varndims_vid(), inq_varndims_id()
+!! pio_inq_vardimid()     | inq_vardimid_desc(), inq_vardimid_vid(), inq_vardimid_id()
+!! pio_inq_varnatts()     | inq_varnatts_desc(), inq_varnatts_vid(), inq_varnatts_id()
+!! pio_inq_var_deflate()  | inq_var_deflate_desc(), inq_var_deflate_vid(), inq_var_deflate_id()
+!! pio_inq_var_chunking() | inq_var_chunking_desc(), inq_var_chunking_vid(), inq_var_chunking_id()
+!!
 !! @defgroup PIO_inq_att Learn About an Attribute
 !! Learn attribute name, number, type, size in Fortran.
 !!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function   | Function(s)
+!! ----------------   | -----------
+!! pio_inq_attname()  | inq_attname_desc(), inq_attname_vid(), inq_attname_id()
+!! pio_inq_att()      | inq_att_desc(), inq_att_vid(), inq_att_id()
+!! pio_inq_attlen()   | inq_attlen_desc(), inq_attlen_vid(), inq_attlen_id()
+!!
 !! @defgroup PIO_def_var Define a Variable
 !! Define a new variable in Fortran.
+!!
+!! Use the generic functions to call the underlying Fortran functions.
+!!
+!! Generic Function       | Function(s)
+!! ----------------       | -----------
+!! pio_def_var()          | def_var_0d_desc(), def_var_md_desc(), def_var_0d_id(), def_var_md_id()
+!! pio_def_var_deflate()  | def_var_deflate_desc(), def_var_deflate_id()
+!! pio_def_var_chunking() | def_var_chunking_desc()
 !<
 
 module pio_nf
@@ -60,6 +118,7 @@ module pio_nf
        pio_inq_vardimid                                     , &
        pio_inq_varnatts                                     , &
        pio_inq_var_deflate                                  , &
+       pio_inq_var_chunking                                 , &
        pio_inquire_variable                                 , &
        pio_inquire_dimension                                , &
        pio_inq_dimname                                      , &
@@ -74,7 +133,8 @@ module pio_nf
        pio_get_var_chunk_cache                              , &
        pio_redef                                            , &
        pio_set_log_level                                    , &
-       pio_strerror
+       pio_strerror                                         , &
+       pio_set_fill
   !       pio_copy_att    to be done
 
   interface pio_def_var
@@ -91,7 +151,7 @@ module pio_nf
   end interface pio_def_var_deflate
   interface pio_def_var_chunking
      module procedure &
-          def_var_chunking
+          def_var_chunking_desc
   end interface pio_def_var_chunking
   interface pio_inq_attname
      module procedure &
@@ -155,6 +215,12 @@ module pio_nf
           inq_var_deflate_vid                                  , &
           inq_var_deflate_id
   end interface pio_inq_var_deflate
+  interface pio_inq_var_chunking
+     module procedure &
+          inq_var_chunking_desc                                 , &
+          inq_var_chunking_vid                                  , &
+          inq_var_chunking_id
+  end interface pio_inq_var_chunking
   interface pio_inquire_dimension
      module procedure &
           inquire_dimension_desc                            , &
@@ -198,6 +264,13 @@ module pio_nf
           inq_dimname_id
   end interface pio_inq_dimname
 
+  interface PIO_set_fill
+     module procedure &
+          set_fill_id ,&
+          set_fill_desc
+  end interface PIO_set_fill
+
+
   interface pio_inq_nvars
      module procedure &
           inq_nvars_id
@@ -228,7 +301,8 @@ module pio_nf
 
   interface pio_set_log_level
      module procedure &
-          set_log_level
+          set_log_level                                    , &
+          set_global_log_level
   end interface pio_set_log_level
 
   interface pio_strerror
@@ -285,6 +359,55 @@ contains
     integer                                                 , intent(out)           :: dimid        !dimension ID
     ierr = inq_dimid_id(file%fh                             ,name,dimid)
   end function inq_dimid_desc
+
+  !>
+  !! @public
+  !! @ingroup PIO_set_fill
+  !! Set the netcdf fill mode
+  !!
+  !! @param ncid A netcdf file ID returned by \ref
+  !! PIO_openfile or \ref PIO_createfile.
+  !! @param fillmode Desired fill mode for the dataset, either PIO_NOFILL or PIO_FILL.
+  !! @param old_mode Returned current fill mode of the dataset before this call, either PIO_NOFILL or PIO_FILL.
+  !! @retval ierr @copydoc error_return
+  !! @author Jim Edwards
+  !<
+  integer function set_fill_id(ncid                         ,fillmode, old_mode) result(ierr)
+    integer                                                 , intent(in) :: ncid
+    integer                                                 , intent(in) :: fillmode
+    integer                                                 , intent(out) :: old_mode
+    interface
+       integer(C_INT) function PIOc_set_fill(ncid           ,fillmode, old_mode) &
+            bind(C                                          ,name="PIOc_set_fill")
+         use iso_c_binding
+         integer(c_int), value     :: ncid
+         integer(c_int), value     :: fillmode
+         integer(c_int)            :: old_mode
+       end function PIOc_set_fill
+    end interface
+
+    ierr = PIOc_set_fill(ncid, fillmode, old_mode)
+
+  end function set_fill_id
+
+  !>
+  !! @public
+  !! @ingroup PIO_set_fill
+  !! Set the netcdf fill mode
+  !!
+  !! @param File @copydoc file_desc_t
+  !! @param fillmode Desired fill mode for the dataset, either PIO_NOFILL or PIO_FILL.
+  !! @param old_mode Returned current fill mode of the dataset before this call, either PIO_NOFILL or PIO_FILL.
+  !! @retval ierr @copydoc error_return
+  !! @author Jim Edwards
+  !<
+  integer function set_fill_desc(File, fillmode, old_mode) result(ierr)
+    type(File_desc_t)                                       ,intent(in) :: File
+    integer                                                 ,intent(in) :: fillmode
+    integer                                                 ,intent(out):: old_mode
+    ierr = set_fill_id(file%fh                              ,fillmode, old_mode)
+  end function set_fill_desc
+
 
   !>
   !! @public
@@ -735,6 +858,32 @@ contains
     end interface
     ierr = PIOc_set_log_level(log_level)
   end function set_log_level
+
+  !>
+  !! @public
+  !! @ingroup PIO_set_log_level
+  !! Sets the logging level globally from comp root. Only takes effect if PIO was built with
+  !! PIO_ENABLE_LOGGING=On
+  !!
+  !! @param iosys a defined pio system descriptor, see PIO_types
+  !! @param log_level the logging level.
+  !! @retval ierr @copydoc error_return
+  !! @author Jim Edwards
+  !<
+  integer function set_global_log_level(iosys, log_level) result(ierr)
+    use pio_types, only : iosystem_desc_t
+    type(iosystem_desc_t), intent(in) :: iosys
+    integer, intent(in) :: log_level
+    interface
+       integer(C_INT) function PIOc_set_global_log_level(iosysid, log_level) &
+            bind(C, name="PIOc_set_global_log_level")
+         use iso_c_binding
+         integer(C_INT), value :: iosysid
+         integer(C_INT), value :: log_level
+       end function PIOc_set_global_log_level
+    end interface
+    ierr = PIOc_set_global_log_level(iosys%iosysid, log_level)
+  end function set_global_log_level
 
   !>
   !! @public
@@ -1244,6 +1393,77 @@ contains
   !>
   !! @public
   !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !!
+  !! @param File @copydoc file_desc_t
+  !! @param vardesc @copydoc var_desc_t
+  !! @param storage 0 for chunked, 1 for contiguous
+  !! @param chunksizes Array of chunk sizes.
+  !! @retval ierr @copydoc error_return
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_desc(File, vardesc, storage, chunksizes) result(ierr)
+
+    type (File_desc_t), intent(in) :: File
+    type (Var_desc_t), intent(in) :: vardesc
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    ierr = pio_inq_var_chunking(File%fh, vardesc%varid, storage, chunksizes)
+  end function inq_var_chunking_desc
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_vid(File, varid, storage, chunksizes) result(ierr)
+
+    type (File_desc_t), intent(in) :: File
+    integer, intent(in) :: varid
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+
+    ierr = pio_inq_var_chunking(File%fh, varid, storage, chunksizes)
+  end function inq_var_chunking_vid
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
+  !! Gets metadata information for netcdf file.
+  !! @author Ed Hartnett
+  !<
+  integer function inq_var_chunking_id(ncid, varid, storage, chunksizes) result(ierr)
+    integer, intent(in) :: ncid
+    integer, intent(in) :: varid
+    integer, intent(out) :: storage
+    integer (kind=PIO_OFFSET_KIND), intent(out) :: chunksizes(*)
+    integer(kind=PIO_OFFSET_KIND) :: cchunksizes(PIO_MAX_VAR_DIMS)
+    integer :: ndims, i
+
+    interface
+       integer(C_INT) function PIOc_inq_var_chunking(ncid, varid, storage, cchunksizes) &
+            bind(C, name="PIOc_inq_var_chunking")
+         use iso_c_binding
+         integer(C_INT), value :: ncid
+         integer(C_INT), value :: varid
+         integer(C_INT) :: storage
+         integer(C_SIZE_T) :: cchunksizes(*)
+       end function PIOc_inq_var_chunking
+    end interface
+
+    ierr = PIOc_inq_var_chunking(ncid, varid-1, storage, cchunksizes)
+    ierr = pio_inq_varndims(ncid, varid, ndims)
+    do i = 1, ndims
+       chunksizes(i) = cchunksizes(ndims - i + 1)
+    enddo
+
+  end function inq_var_chunking_id
+
+  !>
+  !! @public
+  !! @ingroup PIO_inquire_variable
   !! Get the name associated with a variable.
   !!
   !! @param File @copydoc file_desc_t
@@ -1362,7 +1582,9 @@ contains
     ierr = PIOc_inq_varid(ncid, trim(name)//C_NULL_CHAR, varid)
 
     ! the fortran value is one based while the c value is 0 based
-    varid = varid+1
+    if (ierr == 0) then
+       varid = varid+1
+    endif
   end function inq_varid_id
 
   !>
@@ -1704,12 +1926,12 @@ contains
   !! Changes chunking settings for a netCDF-4/HDF5 variable.
   !! @author Ed Hartnett
   !<
-  integer function def_var_chunking(file, vardesc, storage, chunksizes) result(ierr)
+  integer function def_var_chunking_desc(file, vardesc, storage, chunksizes) result(ierr)
     type (File_desc_t), intent(in)  :: file
     type (var_desc_t), intent(in) :: vardesc
     integer, intent(in) :: storage
     integer, intent(in) :: chunksizes(:)
-    integer(C_INT) :: cchunksizes(PIO_MAX_VAR_DIMS)
+    integer(kind=PIO_OFFSET_KIND) :: cchunksizes(PIO_MAX_VAR_DIMS)
     integer :: ndims, i
 
     interface
@@ -1719,16 +1941,16 @@ contains
          integer(c_int), value :: ncid
          integer(c_int), value :: varid
          integer(c_int), value :: storage
-         integer(c_int) :: chunksizes(*)
+         integer(c_size_t) :: chunksizes(*)
        end function PIOc_def_var_chunking
     end interface
     ndims = size(chunksizes)
     do i=1,ndims
-       cchunksizes(i) = chunksizes(ndims-i+1)-1
+       cchunksizes(i) = chunksizes(ndims-i+1)
     enddo
 
     ierr = PIOc_def_var_chunking(file%fh, vardesc%varid-1, storage, cchunksizes)
-  end function def_var_chunking
+  end function def_var_chunking_desc
 
   !>
   !! @ingroup PIO_set_chunk_cache

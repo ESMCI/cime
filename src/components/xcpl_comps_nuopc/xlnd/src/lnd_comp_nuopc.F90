@@ -11,7 +11,7 @@ module lnd_comp_nuopc
   use NUOPC_Model      , only : model_label_Advance     => label_Advance
   use NUOPC_Model      , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model      , only : model_label_Finalize    => label_Finalize
-  use NUOPC_Model      , only : NUOPC_ModelGet
+  use NUOPC_Model      , only : NUOPC_ModelGet, SetVM
   use shr_sys_mod      , only : shr_sys_abort
   use shr_kind_mod     , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
   use shr_file_mod     , only : shr_file_getlogunit, shr_file_setlogunit
@@ -24,7 +24,7 @@ module lnd_comp_nuopc
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -40,7 +40,7 @@ module lnd_comp_nuopc
   type (fld_list_type)   :: fldsToLnd(fldsMax)
   type (fld_list_type)   :: fldsFrLnd(fldsMax)
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
-  integer                :: glc_nec 
+  integer                :: glc_nec
 
   type(ESMF_Mesh)        :: mesh
   integer                :: nxg                  ! global dim i-direction
@@ -269,6 +269,8 @@ contains
        call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_topo_elev'        , ungridded_lbound=1, ungridded_ubound=glc_nec+1)
        call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_ice_covered_elev' , ungridded_lbound=1, ungridded_ubound=glc_nec+1)
        call fld_list_add(fldsToLnd_num, fldsTolnd, 'Flgg_hflx_elev'      , ungridded_lbound=1, ungridded_ubound=glc_nec+1)
+       call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_icemask')
+       call fld_list_add(fldsToLnd_num, fldsTolnd, 'Sg_icemask_coupled_fluxes')
 
        do n = 1,fldsFrLnd_num
           if (mastertask) write(logunit,*)'Advertising From Xlnd ',trim(fldsFrLnd(n)%stdname)
@@ -468,7 +470,7 @@ contains
        lat(n) = ownedElemCoords(2*n)
     end do
 
-    ! Start from index 2 in order to Skip the scalar field here  
+    ! Start from index 2 in order to Skip the scalar field here
     do nf = 2,fldsFrLnd_num
        if (fldsFrLnd(nf)%ungridded_ubound == 0) then
           call field_setexport(exportState, trim(fldsFrLnd(nf)%stdname), lon, lat, nf=nf, rc=rc)

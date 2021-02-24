@@ -90,7 +90,7 @@ class _TimingParser:
     def _gettime2_nuopc(self):
         self.nprocs = 0
         self.ncount = 0
-        expression = re.compile(r'\s*\MED:\(med_fraction_set\)\s+(\d+)\s+(\d+)')
+        expression = re.compile(r'\s*\MED:\s*\(med_phases_profile\)\s+(\d+)\s+(\d+)')
 
         for line in self.finlines:
             match = expression.match(line)
@@ -351,7 +351,9 @@ class _TimingParser:
             nsteps = ncount / nprocs
         elif self._driver == 'nuopc':
             nprocs, nsteps = self.gettime2('')
+
         adays = nsteps*tlen/ncpl
+        print("adays = {} nsteps {} tlen {} ncpl {} nprocs {}".format(adays, nsteps, tlen, ncpl, nprocs))
         odays = nsteps*tlen/ncpl
         if ocn_ncpl and inittype == "TRUE":
             odays = odays - (tlen/ocn_ncpl)
@@ -452,12 +454,13 @@ class _TimingParser:
             m.tmaxr = 0
             if m.tmax > 0:
                 m.tmaxr = adays*86400.0/(m.tmax*365.0)
-            xmaxr = 0
-            if xmax > 0:
-                xmaxr = adays*86400.0/(xmax*365.0)
-            tmaxr = 0
-            if tmax > 0:
-                tmaxr = adays*86400.0/(tmax*365.0)
+        xmaxr = 0
+        if xmax > 0:
+            xmaxr = adays*86400.0/(xmax*365.0)
+        tmaxr = 0
+        if tmax > 0:
+            print ("HERE adays {} tmax {}".format(adays, tmax))
+            tmaxr = adays*86400.0/(tmax*365.0)
 
         self.write("\n")
         self.write("  total pes active           : {} \n".format(totalpes*maxthrds*smt_factor ))

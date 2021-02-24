@@ -162,10 +162,11 @@ main(int argc, char **argv)
                     printf("%s,\t%d,\t%d,\t%d,\t%8.3f,\t%8.1f,\t%8.3f\n", mode_name[m],
                            ntasks, num_io_procs, 1, delta_in_sec, num_megabytes,
                            mb_per_sec);
+
+		free(my_data);
+		if (nc_free_decomp(ioid)) PERR;
             } /* next mode flag */
 
-            free(my_data);
-            if (nc_free_decomp(ioid)) PERR;
             if (nc_free_iosystem(iosysid)) PERR;
         }
     }

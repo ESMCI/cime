@@ -1,3 +1,4 @@
+#include "config.h"
 MODULE ncdf_inq_tests_tgv
   use pio_tutil
   character(len=PIO_TF_MAX_STR_LEN), parameter :: tgv_fname = "pio_ncdf_inq_test_file.nc"

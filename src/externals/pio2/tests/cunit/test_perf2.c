@@ -1,5 +1,8 @@
 /*
- * Tests for PIO distributed arrays.
+ * This program tests performance in intracomm mode. It writes out
+ * NUM_TIMESTEPS records of a single NC_INT variable. The number of
+ * I/O tasks, IOTYPE, fill mode, and rearranger are varied and write
+ * performance is measured.
  *
  * @author Ed Hartnett
  * @date 2/21/17
@@ -10,17 +13,8 @@
 #include <pio_tests.h>
 #include <sys/time.h>
 
-/* The number of tasks this test should run on. */
-#define TARGET_NTASKS 16
-
-/* The minimum number of tasks this test should run on. */
-#define MIN_NTASKS TARGET_NTASKS
-
 /* The name of this test. */
 #define TEST_NAME "test_perf2"
-
-/* Number of computational components to create. */
-#define COMPONENT_COUNT 1
 
 /* The number of dimensions in the example data. In this test, we
  * are using three-dimensional data. */
@@ -30,11 +24,11 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 128
-#define Y_DIM_LEN 128
+/* #define X_DIM_LEN 128 */
+/* #define Y_DIM_LEN 128 */
 #define Z_DIM_LEN 32
-/* #define X_DIM_LEN 1024 */
-/* #define Y_DIM_LEN 1024 */
+#define X_DIM_LEN 1024
+#define Y_DIM_LEN 1024
 /* #define Z_DIM_LEN 128 */
 
 /* The number of timesteps of data to write. */
@@ -150,6 +144,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
+	char flavorname[PIO_MAX_NAME + 1];
         struct timeval starttime, endtime;
         long long startt, endt;
         long long delta;
@@ -166,6 +161,10 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         /* sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt], */
         /*         rearranger); */
         sprintf(filename, "data_%s.nc", TEST_NAME);
+
+	/* Get name of this IOTYPE. */
+	if ((ret = get_iotype_name(flavor[fmt], flavorname)))
+	    ERR(ret);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -254,8 +253,9 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         delta_in_sec = (float)delta / 1000000;
         mb_per_sec = num_megabytes / delta_in_sec;
         if (!my_rank)
-            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
-                   rearranger, provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
+            printf("%d,\t%d,\t%s,\t%s,\t%s,\t%8.3f,\t%8.1f,\t%8.3f\n", ntasks, num_io_procs,
+                   (rearranger == 1 ? "box" : "subset"), (provide_fill ? "fill" : "nofill"),
+		   flavorname, delta_in_sec, num_megabytes, mb_per_sec);
     }
 
     free(test_data);
@@ -394,8 +394,7 @@ test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 #endif /* USE_MPE */
 
     /* Test with/without providing a fill value to PIOc_write_darray(). */
-    /* for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++) */
-    for (int provide_fill = 0; provide_fill < 1; provide_fill++)
+    for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
     {
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
@@ -456,7 +455,7 @@ main(int argc, char **argv)
         ERR(ret);
 
     if (!my_rank)
-        printf("ntasks\tnio\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+        printf("ntasks,\tnio,\trearr,\tfill,\tIOTYPE,\ttime(s),\tdata size(MB),\t"
                "performance(MB/s)\n");
 
     /* How many processors for IO? */
@@ -472,8 +471,8 @@ main(int argc, char **argv)
 
     for (i = 0; i < num_io_tests; i++)
     {
-        /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
-        for (r = 0; r < 1; r++)
+        for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+        /* for (r = 0; r < 1; r++) */
         {
 #ifdef USE_MPE
             test_start_mpe_log(TEST_INIT);

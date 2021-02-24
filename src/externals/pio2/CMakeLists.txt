@@ -1,3 +1,9 @@
+# This is part of the PIO library.
+
+# This is the CMake build file for the main directory.
+
+# Jim Edwards
+
 cmake_minimum_required (VERSION 2.8.12)
 project (PIO C Fortran)
 #cmake_policy(VERSION 3.5.2)
@@ -5,7 +11,7 @@ project (PIO C Fortran)
 # The project version number.
 set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   5   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+set(VERSION_PATCH   2   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
 # Create version info in autotools parlance for pio_meta.h.
@@ -16,20 +22,23 @@ set(PIO_VERSION_PATCH ${VERSION_PATCH})
 # This is needed for the libpio.settings file.
 SET(PACKAGE_VERSION ${PIO_VERSION_MAJOR}.${PIO_VERSION_MINOR}.${PIO_VERSION_PATCH})
 
+# This provides cmake_print_variables() function for debugging.
+include(CMakePrintHelpers)
+
 # Determine the configure date.
 IF(DEFINED ENV{SOURCE_DATE_EPOCH})
-	EXECUTE_PROCESS(
-	  COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
-	  OUTPUT_VARIABLE CONFIG_DATE
-	  )
+        EXECUTE_PROCESS(
+          COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}"
+          OUTPUT_VARIABLE CONFIG_DATE
+          )
 ELSE()
-	EXECUTE_PROCESS(
-	  COMMAND date
-	  OUTPUT_VARIABLE CONFIG_DATE
-	  )
+        EXECUTE_PROCESS(
+          COMMAND date
+          OUTPUT_VARIABLE CONFIG_DATE
+          )
 ENDIF()
 IF(CONFIG_DATE)
-	string(STRIP ${CONFIG_DATE} CONFIG_DATE)
+        string(STRIP ${CONFIG_DATE} CONFIG_DATE)
 ENDIF()
 
 # A function used to create autotools-style 'yes/no' definitions.
@@ -77,12 +86,12 @@ option (PIO_ENABLE_LOGGING   "Enable debug logging (large output possible)" OFF)
 option (PIO_ENABLE_DOC       "Enable building PIO documentation"            ON)
 option (PIO_ENABLE_COVERAGE  "Enable code coverage"                         OFF)
 option (PIO_ENABLE_EXAMPLES  "Enable PIO examples"                          ON)
+option (PIO_ENABLE_NETCDF_INTEGRATION  "Enable netCDF integration"          OFF)
 option (PIO_INTERNAL_DOC     "Enable PIO developer documentation"           OFF)
 option (PIO_TEST_BIG_ENDIAN  "Enable test to see if machine is big endian"  ON)
 option (PIO_USE_MPIIO        "Enable support for MPI-IO auto detect"        ON)
 option (PIO_USE_MPISERIAL    "Enable mpi-serial support (instead of MPI)"   OFF)
-option (PIO_USE_MALLOC       "Use native malloc (instead of bget package)"  ON)
-option (PIO_USE_PNETCDF_VARD       "Use pnetcdf put_vard "                  OFF)
+option (PIO_USE_PNETCDF_VARD       "Use pnetcdf put_vard "  OFF)
 option (WITH_PNETCDF         "Require the use of PnetCDF"                   ON)
 
 # Set a variable that appears in the config.h.in file.
@@ -93,17 +102,22 @@ else()
 endif()
 
 # Set a variable that appears in the config.h.in file.
-if(PIO_USE_MALLOC)
-  set(USE_MALLOC 1)
-else()
-  set(USE_MALLOC 0)
-endif()
+set(USE_MALLOC 1)
 
 # Set a variable that appears in the config.h.in file.
 if(PIO_ENABLE_LOGGING)
   set(ENABLE_LOGGING 1)
+  set(HAS_LOGGING "yes")
 else()
   set(ENABLE_LOGGING 0)
+  set(HAS_LOGGING "no")
+endif()
+
+# Set a variable that appears in the config.h.in file.
+if(PIO_ENABLE_NETCDF_INTEGRATION)
+  set(NETCDF_INTEGRATION 1)
+else()
+  set(NETCDF_INTEGRATION 0)
 endif()
 
 if(PIO_USE_MPISERIAL)
@@ -205,13 +219,6 @@ endif ()
 set (CMAKE_Fortran_COMPILER_DIRECTIVE "CPR${CMAKE_Fortran_COMPILER_NAME}"
   CACHE STRING "Fortran compiler name preprocessor directive")
 
-# configure a header file to pass some of the CMake settings
-# to the source code
-configure_file (
-  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
-  "${PROJECT_BINARY_DIR}/config.h"
-  )
-
 #==============================================================================
 #  SET CODE COVERAGE COMPILER FLAGS
 #==============================================================================
@@ -228,6 +235,27 @@ if (PIO_ENABLE_COVERAGE)
   else ()
     message (WARNING "The Fortran compiler is non-GNU: coverage of Fortran code could NOT be enabled")
   endif ()
+endif ()
+
+# Include this so we can check values in netcdf_meta.h.
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(FindNetCDF)
+message("Fortran Library build is ${PIO_ENABLE_FORTRAN}")
+if (PIO_ENABLE_FORTRAN)
+  find_package (NetCDF REQUIRED COMPONENTS C Fortran)
+  if (WITH_PNETCDF)
+    find_package (PnetCDF COMPONENTS C Fortran)
+  endif()
+else()
+  find_package (NetCDF REQUIRED COMPONENTS C)
+  if (WITH_PNETCDF)
+    find_package (PnetCDF COMPONENTS C)
+  endif()
+endif()
+
+# Did we find pnetCDF? If so, set _PNETCDF in config.h.
+if (PnetCDF_C_FOUND)
+  set(_PNETCDF 1)
 endif ()
 
 #==============================================================================
@@ -264,13 +292,6 @@ if (PIO_ENABLE_DOC)
   add_subdirectory (doc)
 endif ()
 
-# Include this so we can check values in netcdf_meta.h.
-INCLUDE(CheckCSourceCompiles)
-INCLUDE(FindNetCDF)
-find_package (NetCDF REQUIRED)
-find_package (PnetCDF)
-
-
 SET(STATUS_PNETCDF PnetCDF_C_FOUND)
 
 ###
@@ -295,6 +316,11 @@ CHECK_C_SOURCE_COMPILES("
 #endif
 int main() {return 0;}" HAVE_NETCDF_PAR)
 
+# Set this synonym for HAVE_NETCDF_PAR. It is defined in config.h.
+if (HAVE_NETCDF_PAR)
+  set(_NETCDF4 1)
+endif ()
+
 ###
 # Check to see if szip write capability is present in netcdf-c.
 ###
@@ -315,6 +341,52 @@ CHECK_C_SOURCE_COMPILES("
       choke me
 #endif
 int main() {return 0;}" HDF5_HAS_PAR_FILTERS)
+if(HDF5_HAS_PAR_FILTERS)
+  set(HAVE_PAR_FILTERS 1)
+else()
+  set(HAVE_PAR_FILTERS 0)
+endif()
+
+###
+# Check to see if this is netcdf-c-4.7.2, which won't work.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_VERSION_MAJOR == 4 && NC_VERSION_MINOR == 7 && NC_VERSION_PATCH == 2
+#else
+      choke me
+#endif
+int main() {return 0;}" HAVE_472)
+if (HAVE_472)
+  message (FATAL_ERROR "PIO cannot build with netcdf-c-4.7.2, please upgrade your netCDF library")
+endif ()
+
+###
+# Check to see if dispatch table version 2 is supported for netcdf integration.
+###
+CHECK_C_SOURCE_COMPILES("
+#include <netcdf_meta.h>
+#if NC_DISPATCH_VERSION != 2
+      choke me
+#endif
+int main() {return 0;}" HAVE_DISPATCH2)
+
+if (NETCDF_INTEGRATION)
+  if (NOT HAVE_DISPATCH2)
+    message (FATAL_ERROR "Need newer version of netcdf-c for netcdf integration feature, please upgrade your netCDF library")
+  endif ()
+  set(HAVE_NETCDF_INTEGRATION 1)
+else ()
+  set(HAVE_NETCDF_INTEGRATION 0)
+endif ()
+
+# Configure testing with MPIEXEC.
+if (NOT WITH_MPIEXEC)
+  set(WITH_MPIEXEC mpiexec)
+endif()
+#set(MPIEXEC "${WITH_MPIEXEC}" CACHE INTERNAL "")
+set(MPIEXEC "${WITH_MPIEXEC}")
+set_property(GLOBAL PROPERTY WITH_MPIEXEC "${WITH_MPIEXEC}")
 
 #####
 # Configure and print the libpio.settings file.
@@ -363,6 +435,8 @@ is_enabled(HAVE_H5Z_SZIP HAS_SZLIB)
 is_enabled(HDF5_HAS_PAR_FILTERS HAS_PAR_FILTERS)
 is_enabled(HAVE_NETCDF4 HAS_NETCDF4)
 is_enabled(HAVE_NETCDF_PAR HAS_NETCDF4_PAR)
+is_enabled(HAVE_NETCDF_INTEGRATION HAS_NETCDF_INTEGRATION)
+is_enabled(PIO_ENABLE_FORTRAN HAS_PIO_FORTRAN)
 
 # Generate file from template.
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libpio.settings.in"
@@ -387,7 +461,11 @@ INSTALL(FILES "${PIO_BINARY_DIR}/libpio.settings"
 #####
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h @ONLY)
+  ${CMAKE_CURRENT_BINARY_DIR}/src/clib/pio_meta.h @ONLY)
 
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/clib/pio_meta.h
-  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/src/clib/)
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/cmake_config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
+  )

@@ -8,7 +8,7 @@
   <xs:attribute name="name"	   type="xs:NMTOKEN"/>
   <xs:attribute name="grid"	   type="xs:token"/>
   <xs:attribute name="lnd_mask"	   type="xs:NMTOKEN"/>
-  <xs:attribute name="mask"	   type="xs:NCName"/>
+  <xs:attribute name="mask"	   type="xs:NMTOKEN"/>
   <xs:attribute name="ocn_mask"	   type="xs:NMTOKEN"/>
   <xs:attribute name="grid1"	   type="xs:NCName"/>
   <xs:attribute name="grid2"	   type="xs:NCName"/>
@@ -23,7 +23,7 @@
   <!-- simple elements -->
   <xs:element name="support" type="xs:string"/>
   <xs:element name="help" type="xs:string"/>
-  <xs:element name="mask" type="xs:NCName"/>
+  <xs:element name="mask" type="xs:string"/>
   <xs:element name="nx" type="xs:integer"/>
   <xs:element name="ny" type="xs:integer"/>
   <xs:element name="desc" type="xs:string"/>

@@ -767,6 +767,7 @@ enum PIO_ERROR_HANDLERS
 #define PIO_FIRST_ERROR_CODE (-500)  /**< The first error code for PIO. */
 #define PIO_EBADIOTYPE  (-500)       /**< Bad IOTYPE error. */
 #define PIO_EVARDIMMISMATCH (-501)   /**< Variable dimensions do not match in a multivar call. */
+#define PIO_EBADREARR (-502)        /**< Rearranger error in async mode.  */
 #define PIO_REQ_NULL (NC_REQ_NULL-1) /**< Request null. */
 
 #if defined(__cplusplus)
@@ -775,6 +776,7 @@ extern "C" {
     /* Error handling. */
     int PIOc_strerror(int pioerr, char *errstr);
     int PIOc_set_log_level(int level);
+    int PIOc_set_global_log_level(int iosysid, int level);
 
     /* Decomposition. */
 
@@ -817,6 +819,10 @@ extern "C" {
     int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
                         int rearranger, int *iosysidp);
+
+    /* Initializing IO system for async - alternative interface. */
+    int PIOc_init_async_from_comms(MPI_Comm world, int component_count, MPI_Comm *comp_comm,
+                                   MPI_Comm io_comm, int rearranger, int *iosysidp);
 
     /* How many IO tasks in this iosysid? */
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);

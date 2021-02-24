@@ -17,11 +17,9 @@ def _get_batch_job_id_for_syslog(case):
     """
     mach = case.get_value("MACH")
     try:
-        if mach in ['titan']:
-            return os.environ["PBS_JOBID"]
-        elif mach in ['anvil', 'compy', 'cori-haswell', 'cori-knl']:
+        if mach in ['anvil', 'chrysalis', 'compy', 'cori-haswell', 'cori-knl']:
             return os.environ["SLURM_JOB_ID"]
-        elif mach in ['mira', 'theta']:
+        elif mach in ['theta']:
             return os.environ["COBALT_JOBID"]
         elif mach in ['summit']:
             return os.environ["LSB_JOBID"]
@@ -29,6 +27,22 @@ def _get_batch_job_id_for_syslog(case):
         pass
 
     return None
+
+def _extract_times(zipfiles, target_file):
+
+    contents ="Target Build_time\n"
+    for zipfile in zipfiles:
+        stat, output, _ = run_cmd("zgrep 'built in' {}".format(zipfile))
+        if stat == 0:
+            for line in output.splitlines():
+                line = line.strip()
+                if line:
+                    items = line.split()
+                    target, the_time = items[1], items[-2]
+                    contents += "{} {}\n".format(target, the_time)
+
+    with open(target_file, "w") as fd:
+        fd.write(contents)
 
 def _save_build_provenance_e3sm(case, lid):
     srcroot = case.get_value("SRCROOT")
@@ -71,9 +85,18 @@ def _save_build_provenance_e3sm(case, lid):
     env_module = case.get_env("mach_specific")
     env_module.save_all_env_info(env_prov)
 
+    # Save build times
+    build_times = os.path.join(exeroot, "build_times.{}.txt".format(lid))
+    if os.path.exists(build_times):
+        os.remove(build_times)
+    globstr = "{}/*bldlog*{}.gz".format(exeroot, lid)
+    matches = glob.glob(globstr)
+    if matches:
+        _extract_times(matches, build_times)
+
     # For all the just-created post-build provenance files, symlink a generic name
     # to them to indicate that these are the most recent or active.
-    for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "GIT_SUBMODULE_STATUS", "SourceMods", "build_environment"]:
+    for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "GIT_SUBMODULE_STATUS", "SourceMods", "build_environment", "build_times"]:
         globstr = "{}/{}.{}*".format(exeroot, item, lid)
         matches = glob.glob(globstr)
         expect(len(matches) < 2, "Multiple matches for glob {} should not have happened".format(globstr))
@@ -162,12 +185,7 @@ def _save_prerun_timing_e3sm(case, lid):
     # For some batch machines save queue info
     job_id = _get_batch_job_id_for_syslog(case)
     if job_id is not None:
-        if mach == "mira":
-            for cmd, filename in [("qstat -f", "qstatf"), ("qstat -lf %s" % job_id, "qstatf_jobid")]:
-                filename = "%s.%s" % (filename, lid)
-                run_cmd_no_fail(cmd, arg_stdout=filename, from_dir=full_timing_dir)
-                gzip_existing_file(os.path.join(full_timing_dir, filename))
-        elif mach == "theta":
+        if mach == "theta":
             for cmd, filename in [("qstat -l --header JobID:JobName:User:Project:WallTime:QueuedTime:Score:RunTime:TimeRemaining:Nodes:State:Location:Mode:Command:Args:Procs:Queue:StartTime:attrs:Geometry", "qstatf"),
                                   ("qstat -lf %s" % job_id, "qstatf_jobid"),
                                   ("xtnodestat", "xtnodestat"),
@@ -183,16 +201,7 @@ def _save_prerun_timing_e3sm(case, lid):
                 filename = "%s.%s" % (filename, lid)
                 run_cmd_no_fail(cmd, arg_stdout=filename, from_dir=full_timing_dir)
                 gzip_existing_file(os.path.join(full_timing_dir, filename))
-        elif mach == "titan":
-            for cmd, filename in [("qstat -f %s >" % job_id, "qstatf_jobid"),
-                                  ("xtnodestat >", "xtnodestat"),
-                                  # ("qstat -f >", "qstatf"),
-                                  # ("xtdb2proc -f", "xtdb2proc"),
-                                  ("showq >", "showq")]:
-                full_cmd = cmd + " " + filename
-                run_cmd_no_fail(full_cmd + "." + lid, from_dir=full_timing_dir)
-                gzip_existing_file(os.path.join(full_timing_dir, filename + "." + lid))
-        elif mach in ["anvil", "compy"]:
+        elif mach in ["anvil", "chrysalis", "compy"]:
             for cmd, filename in [("sinfo -l", "sinfol"), 
                                   ("squeue -o '%all' --job {}".format(job_id), "squeueall_jobid"),
                                   ("squeue -o '%.10i %.10P %.15u %.20a %.2t %.6D %.8C %.12M %.12l %.20S %.20V %j'", "squeuef"),
@@ -238,7 +247,8 @@ def _save_prerun_timing_e3sm(case, lid):
     # Copy some items from build provenance
     blddir_globs_to_copy = [
         "GIT_LOGS_HEAD",
-        "build_environment.txt"
+        "build_environment.txt",
+        "build_times.txt"
         ]
     for blddir_glob_to_copy in blddir_globs_to_copy:
         for item in glob.glob(os.path.join(blddir, blddir_glob_to_copy)):
@@ -368,19 +378,12 @@ def _save_postrun_timing_e3sm(case, lid):
     #
     globs_to_copy = []
     if job_id is not None:
-        if mach == "titan":
-            globs_to_copy.append("%s*OU" % job_id)
-        elif mach == "anvil":
-            globs_to_copy.append("%s*run*%s" % (case.get_value("CASE"), job_id))
-        elif mach == "compy":
-            globs_to_copy.append("slurm.err")
-            globs_to_copy.append("slurm.out")
-        elif mach in ["mira", "theta"]:
+        if mach in ["anvil", "chrysalis", "compy", "cori-haswell", "cori-knl"]:
+            globs_to_copy.append("run*%s*%s" % (case.get_value("CASE"), job_id))
+        elif mach == "theta":
             globs_to_copy.append("%s*error" % job_id)
             globs_to_copy.append("%s*output" % job_id)
             globs_to_copy.append("%s*cobaltlog" % job_id)
-        elif mach in ["cori-haswell", "cori-knl"]:
-            globs_to_copy.append("%s*run*%s" % (case.get_value("CASE"), job_id))
         elif mach == "summit":
             globs_to_copy.append("e3sm.stderr.%s" % job_id)
             globs_to_copy.append("e3sm.stdout.%s" % job_id)
@@ -432,7 +435,7 @@ def get_recommended_test_time_based_on_past(baseline_root, test, raw=False):
         try:
             the_path = os.path.join(baseline_root, _WALLTIME_BASELINE_NAME, test, _WALLTIME_FILE_NAME)
             if os.path.exists(the_path):
-                last_line = int(open(the_path, "r").readlines()[-1])
+                last_line = int(open(the_path, "r").readlines()[-1].split()[0])
                 if raw:
                     best_walltime = last_line
                 else:
@@ -454,7 +457,7 @@ def get_recommended_test_time_based_on_past(baseline_root, test, raw=False):
 
     return None
 
-def save_test_time(baseline_root, test, time_seconds):
+def save_test_time(baseline_root, test, time_seconds, commit):
     if baseline_root is not None:
         try:
             with SharedArea():
@@ -464,7 +467,7 @@ def save_test_time(baseline_root, test, time_seconds):
 
                 the_path = os.path.join(the_dir, _WALLTIME_FILE_NAME)
                 with open(the_path, "a") as fd:
-                    fd.write("{}\n".format(int(time_seconds)))
+                    fd.write("{} {}\n".format(int(time_seconds), commit))
 
         except Exception:
             # We NEVER want a failure here to kill the run

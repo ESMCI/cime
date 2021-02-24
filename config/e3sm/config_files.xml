@@ -107,9 +107,9 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/allactive/config_compsets.xml</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/config_compsets.xml</value>
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/config_compsets.xml</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/config_compsets.xml</value>
       <value component="scream"   >$SRCROOT/components/scream/cime_config/config_compsets.xml</value>
-      <value component="clm"      >$SRCROOT/components/clm/cime_config/config_compsets.xml</value>
+      <value component="elm"      >$SRCROOT/components/elm/cime_config/config_compsets.xml</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/config_compsets.xml</value>
       <value component="mpaso"    >$SRCROOT/components/mpas-ocean/cime_config/config_compsets.xml</value>
       <value component="mali"     >$SRCROOT/components/mpas-albany-landice/cime_config/config_compsets.xml</value>
@@ -128,8 +128,8 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/config_pes.xml</value>
-      <value component="cam"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-      <value component="clm"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
+      <value component="eam"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
+      <value component="elm"      >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="cice"     >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="mpaso"    >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
       <value component="mali"     >$SRCROOT/cime_config/allactive/config_pesall.xml</value>
@@ -153,8 +153,8 @@
       <value component="docn">$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/docn/cime_config/config_archive.xml</value>
       <value component="dwav">$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dwav/cime_config/config_archive.xml</value>
       <!-- external model components -->
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/config_archive.xml</value>
-      <value component="clm"      >$SRCROOT/components/clm/cime_config/config_archive.xml</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/config_archive.xml</value>
+      <value component="elm"      >$SRCROOT/components/elm/cime_config/config_archive.xml</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/config_archive.xml</value>
     </values>
     <group>case_last</group>
@@ -167,8 +167,8 @@
     <type>char</type>
     <values>
       <value component="any">$CIMEROOT/scripts/lib/CIME/SystemTests</value>
-      <value component="clm">$SRCROOT/components/clm/cime_config/SystemTests</value>
-      <value component="cam">$SRCROOT/components/cam/cime_config/SystemTests</value>
+      <value component="elm">$SRCROOT/components/elm/cime_config/SystemTests</value>
+      <value component="eam">$SRCROOT/components/eam/cime_config/SystemTests</value>
       <value component="cice">$SRCROOT/components/cice/cime_config/SystemTests</value>
     </values>
     <group>test</group>
@@ -190,10 +190,11 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/testmods_dirs</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/testdefs/testmods_dirs</value>
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/testdefs/testmods_dirs</value>
-      <value component="clm"      >$SRCROOT/components/clm/cime_config/testdefs/testmods_dirs</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/testdefs/testmods_dirs</value>
+      <value component="elm"      >$SRCROOT/components/elm/cime_config/testdefs/testmods_dirs</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/testdefs/testmods_dirs</value>
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/testdefs/testmods_dirs</value>
+      <value component="scream"   >$SRCROOT/components/scream/cime_config/testdefs/testmods_dirs</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -206,10 +207,11 @@
     <values>
       <value component="allactive">$SRCROOT/cime_config/usermods_dirs</value>
       <value component="drv"      >$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/usermods_dirs</value>
-      <value component="cam"      >$SRCROOT/components/cam/cime_config/usermods_dirs</value>
-      <value component="clm"      >$SRCROOT/components/clm/cime_config/usermods_dirs</value>
+      <value component="eam"      >$SRCROOT/components/eam/cime_config/usermods_dirs</value>
+      <value component="elm"      >$SRCROOT/components/elm/cime_config/usermods_dirs</value>
       <value component="cice"     >$SRCROOT/components/cice/cime_config/usermods_dirs</value>
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/usermods_dirs</value>
+      <value component="scream"   >$SRCROOT/components/scream/cime_config/usermods_dirs</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -274,7 +276,7 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="cam"   >$SRCROOT/components/cam/cime_config/config_component.xml</value>
+      <value component="eam"   >$SRCROOT/components/eam/cime_config/config_component.xml</value>
       <value component="scream">$SRCROOT/components/scream/cime_config/config_component.xml</value>
       <value component="datm"  >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/datm/cime_config/config_component.xml</value>
       <value component="satm"  >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm/cime_config/config_component.xml</value>
@@ -291,7 +293,7 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="clm" >$SRCROOT/components/clm/cime_config/config_component.xml</value>
+      <value component="elm" >$SRCROOT/components/elm/cime_config/config_component.xml</value>
       <value component="dlnd">$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dlnd/cime_config/config_component.xml</value>
       <value component="slnd">$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/slnd/cime_config/config_component.xml</value>
       <value component="xlnd">$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xlnd/cime_config/config_component.xml</value>
@@ -407,6 +409,21 @@
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
     <schema version="2.0">$CIMEROOT/config/xml_schemas/entry_id.xsd</schema>
     <schema version="3.0">$CIMEROOT/config/xml_schemas/entry_id_version3.xsd</schema>
+  </entry>
+  <entry id="BUILD_LIB_FILE">
+    <type>char</type>
+    <values>
+      <value lib="kokkos">$CIMEROOT/src/build_scripts/buildlib.kokkos</value>
+      <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
+      <value lib="pio">$CIMEROOT/src/build_scripts/buildlib.pio</value>
+      <value lib="mct">$CIMEROOT/src/build_scripts/buildlib.mct</value>
+      <value lib="csm_share">$CIMEROOT/src/build_scripts/buildlib.csm_share</value>
+      <value lib="mpi-serial">$CIMEROOT/src/build_scripts/buildlib.mpi-serial</value>
+      <value lib="cprnc">$CIMEROOT/src/build_scripts/buildlib.cprnc</value>
+    </values>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc> path to buildlib script for the given library </desc>
   </entry>
 
 </entry_id>
