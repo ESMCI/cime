@@ -320,7 +320,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                     continue
                 if description.endswith('file') or description.endswith('filename'):
                     expect((not full_path.endswith(os.sep)), "Unsupported directory in input_data_list '{} = {}'".format(description, full_path))
-
                 if(full_path):
                     # expand xml variables
                     full_path = case.get_resolved_value(full_path)
