@@ -244,6 +244,19 @@
     </queues>
   </batch_system>
 
+  <batch_system type="slurm" MACH="comet">
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <queues>
+      <queue walltimemax="48:00:00" nodemin="1" nodemax="72">compute</queue>
+      <queue default="true" walltimemax="48:00:00" jobmin="1" jobmax="1">share</queue>
+      <queue walltimemax="00:30:00" nodemin="1" nodemax="2">debug</queue>
+    </queues>
+  </batch_system>
+
   <batch_system type="slurm" MACH="constance">
     <batch_submit>sbatch</batch_submit>
     <submit_args>

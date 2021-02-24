@@ -551,6 +551,16 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
+
+<compiler MACH="comet" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NETCDFHOME}</NETCDF_PATH>
+  <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+  <SLIBS>
+    <append> -L$ENV{NETCDFHOME}/lib -lnetcdff -lnetcdf </append>
+    <append MPILIB="mvapich"> -L/cw3e/mead/projects/csg100/cesm/tools/pnetcdf/intel/mvapich/lib -lpnetcdf</append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="daint" COMPILER="pgi">
   <FFLAGS>
     <append> -I/project/s824/edavin/OASIS3-MCT_2.0/build.pgi/build/lib/mct -I/project/s824/edavin/OASIS3-MCT_2.0/build.pgi/build/lib/psmile.MPI1 </append>
