@@ -319,6 +319,11 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                 if description.endswith('datapath') or description.endswith('data_path') or full_path.endswith('/dev/null'):
                     continue
                 if description.endswith('file') or description.endswith('filename'):
+                    # There are required input data with key, or 'description' entries
+                    # that specify in their names whether they are files or filenames
+                    # rather than 'datapath's or 'data_path's so we check to make sure
+                    # the input data list has correct non-path values for input files.
+                    # This check happens whether or not a file already exists locally. 
                     expect((not full_path.endswith(os.sep)), "Unsupported directory in input_data_list '{} = {}'".format(description, full_path))
                 if(full_path):
                     # expand xml variables
