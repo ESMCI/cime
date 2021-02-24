@@ -316,7 +316,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
             if (line and not line.startswith("#")):
                 tokens = line.split('=')
                 description, full_path = tokens[0].strip(), tokens[1].strip()
-                #print("wpc2a. line {}.\ndescription {}. full_path '{}'".format(line, description, full_path))
                 if description.endswith('datapath') or description.endswith('data_path') or full_path.endswith('/dev/null'):
                     continue
                 if description.endswith('file') or description.endswith('filename'):
@@ -337,7 +336,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         if ic_filepath:
                             rel_path  = full_path.replace(input_ic_root, ic_filepath)
                         use_ic_path = True
-                    #print("wpc2b. rel_path is {}.\n full_path is {}.\n not os.path.isfile(full_path) is {}. not full_path.startswith('unknown') is '{}'\n\n".format(rel_path, full_path, (not os.path.isfile(full_path)), (not full_path.startswith('unknown'))))
                     model = os.path.basename(data_list_file).split('.')[0]
 
                     if ("/" in rel_path and rel_path == full_path and not full_path.startswith('unknown')):
