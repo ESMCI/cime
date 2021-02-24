@@ -324,7 +324,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                     # rather than 'datapath's or 'data_path's so we check to make sure
                     # the input data list has correct non-path values for input files.
                     # This check happens whether or not a file already exists locally. 
-                    expect((not full_path.endswith(os.sep)), "Unsupported directory path in input_data_list '{} = {}'".format(description, full_path))
+                    expect((not full_path.endswith(os.sep)), "Unsupported directory path in input_data_list named {}. Line entry is '{} = {}'.".format(data_list_file, description, full_path))
                 if(full_path):
                     # expand xml variables
                     full_path = case.get_resolved_value(full_path)
