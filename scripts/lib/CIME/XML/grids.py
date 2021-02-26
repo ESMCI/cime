@@ -24,7 +24,7 @@ class Grids(GenericXML):
             expect(False, "Could not initialize Grids")
 
         self._version = self.get_version()
-
+        print("grid version is {}".format(self._version))
         self._comp_gridnames = self._get_grid_names()
 
     def _get_grid_names(self):
@@ -229,7 +229,10 @@ class Grids(GenericXML):
             # Determine all domain information search for the grid name with no level suffix in config_grids.xml
             domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
                                                   root=self.get_child("domains"))
-            if domain_node is not None:
+            if not domain_node:
+                domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
+                                                      root=self.get_child("domains",{"driver":driver}))
+            if domain_node:
                 comp_name = grid[0].upper()
 
                 # determine xml variable name
