@@ -24,7 +24,6 @@ class Grids(GenericXML):
             expect(False, "Could not initialize Grids")
 
         self._version = self.get_version()
-        print("grid version is {}".format(self._version))
         self._comp_gridnames = self._get_grid_names()
 
     def _get_grid_names(self):
