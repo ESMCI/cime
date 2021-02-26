@@ -245,7 +245,8 @@ class Grids(GenericXML):
                         domains["PTS_LAT"] = self.get_element_text("lat", root=domain_node)
                         domains["PTS_LON"] = self.get_element_text("lon", root=domain_node)
                     else:
-                        expect(False,"In config_grids.xml either nx and ny or lat and lon must be set")
+                        domains[comp_name + "_NX"] = 1
+                        domains[comp_name + "_NY"] = 1
 
                     file_name = comp_name + "_DOMAIN_FILE"
                     path_name = comp_name + "_DOMAIN_PATH"
