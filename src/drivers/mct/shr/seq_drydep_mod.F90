@@ -35,7 +35,7 @@ module seq_drydep_mod
 
   ! !PRIVATE ARRAY SIZES
 
-  integer, private, parameter :: maxspc = 120              ! Maximum number of species
+  integer, private, parameter :: maxspc = 150              ! Maximum number of species
   integer, public,  parameter :: n_species_table = 252     ! Number of species to work with
   integer, private, parameter :: NSeas = 5                 ! Number of seasons
   integer, public,  parameter :: NLUse = 11                ! Number of land-use types
@@ -469,7 +469,7 @@ module seq_drydep_mod
        ,0.0e+00_r8      & !SALCAL
        ,0.0e+00_r8      & !SALCCL
        ,0.0e+00_r8      & !SO2
-       ,0.0e+00_r8      & !SO4       
+       ,0.0e+00_r8      & !SO4
        ,0.0e+00_r8      & !SO4s
        ,0.0e+00_r8      & !SOAGX
        ,0.0e+00_r8      & !SOAIE
@@ -583,21 +583,21 @@ module seq_drydep_mod
        ,'ATOOH     '                       &
        ,'BCPI      '                       &
        ,'BCPO      '                       &
-       ,'Be10      '                       &
-       ,'Be10Strat '                       &
-       ,'Be7       '                       &
-       ,'Be7Strat  '                       &
-       ,'Br2       '                       &
-       ,'BrCl      '                       &
-       ,'BrNO3     '                       &
-       ,'BrSALA    '                       &
-       ,'BrSALC    '                       &
+       ,'BE10      '                       &
+       ,'BE10STRAT '                       &
+       ,'BE7       '                       &
+       ,'BE7STRAT  '                       &
+       ,'BR2       '                       &
+       ,'BRCL      '                       &
+       ,'BRNO3     '                       &
+       ,'BRSALA    '                       &
+       ,'BRSALC    '                       &
        ,'GC_CH2O   '                       &
-       ,'Cl2       '                       &
-       ,'ClNO2     '                       &
-       ,'ClNO3     '                       &
-       ,'ClO       '                       &
-       ,'ClOO      '                       &
+       ,'CL2       '                       &
+       ,'CLNO2     '                       &
+       ,'CLNO3     '                       &
+       ,'CLO       '                       &
+       ,'CLOO      '                       &
        ,'DST1      '                       &
        ,'DST2      '                       &
        ,'DST3      '                       &
@@ -610,19 +610,19 @@ module seq_drydep_mod
        ,'GLYX      '                       &
        ,'GC_H2O2   '                       &
        ,'HAC       '                       &
-       ,'HBr       '                       &
+       ,'HBR       '                       &
        ,'HC5A      '                       &
-       ,'HCl       '                       &
+       ,'HCL       '                       &
        ,'HCOOH     '                       &
-       ,'Hg0       '                       &
-       ,'Hg2       '                       &
-       ,'HgP       '                       &
+       ,'HG0       '                       &
+       ,'HG2       '                       &
+       ,'HGP       '                       &
        ,'HI        '                       &
        ,'HMHP      '                       &
        ,'HMML      '                       &
        ,'GC_HNO3   '                       &
-       ,'HOBr      '                       &
-       ,'HOCl      '                       &
+       ,'HOBR      '                       &
+       ,'HOCL      '                       &
        ,'HOI       '                       &
        ,'HONIT     '                       &
        ,'HPALD1    '                       &
@@ -634,9 +634,9 @@ module seq_drydep_mod
        ,'I2O2      '                       &
        ,'I2O3      '                       &
        ,'I2O4      '                       &
-       ,'IBr       '                       &
+       ,'IBR       '                       &
        ,'ICHE      '                       &
-       ,'ICl       '                       &
+       ,'ICL       '                       &
        ,'ICN       '                       &
        ,'ICPDH     '                       &
        ,'IDC       '                       &
@@ -695,7 +695,7 @@ module seq_drydep_mod
        ,'GC_N2O5   '                       &
        ,'GC_NH3    '                       &
        ,'NIT       '                       &
-       ,'NITs      '                       &
+       ,'NITS      '                       &
        ,'GC_NO2    '                       &
        ,'NPRNO3    '                       &
        ,'O3        '                       &
@@ -706,15 +706,15 @@ module seq_drydep_mod
        ,'OPOG1     '                       &
        ,'OPOG2     '                       &
        ,'GC_PAN    '                       &
-       ,'Pb210     '                       &
-       ,'Pb210     '                       &
-       ,'Pb210Strat'                       &
-       ,'pFe       '                       &
+       ,'PB210     '                       &
+       ,'PB210     '                       &
+       ,'PB210STRAT'                       &
+       ,'PFE       '                       &
        ,'POA1      '                       &
        ,'POA2      '                       &
        ,'POG1      '                       &
        ,'POG2      '                       &
-       ,'POPG_BaP  '                       &
+       ,'POPG_BAP  '                       &
        ,'POPG_PHE  '                       &
        ,'POPG_PYR  '                       &
        ,'PP        '                       &
@@ -739,7 +739,7 @@ module seq_drydep_mod
        ,'SALCCL    '                       &
        ,'GC_SO2    '                       &
        ,'SO4       '                       &
-       ,'SO4s      '                       &
+       ,'SO4S      '                       &
        ,'SOAGX     '                       &
        ,'SOAIE     '                       &
        ,'SOAS      '                       &
@@ -994,7 +994,7 @@ module seq_drydep_mod
        ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALCAL
        ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SALCCL
        ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SO2
-       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SO4     
+       ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SO4
        ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SO4s
        ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SOAGX
        ,0.00e+00_r8,    0._r8,0._r8     ,    0._r8,0._r8     ,    0._r8  & !SOAIE
