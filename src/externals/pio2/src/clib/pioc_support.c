@@ -130,7 +130,7 @@ PIOc_strerror(int pioerr, char *errmsg)
         case PIO_EVARDIMMISMATCH:
             strcpy(errmsg, "Variable dim mismatch in multivar call");
             break;
-	case PIO_EBADREARR:
+        case PIO_EBADREARR:
             strcpy(errmsg, "Rearranger mismatch in async mode");
             break;
         default:
@@ -164,6 +164,8 @@ PIOc_set_log_level(int level)
 #if PIO_ENABLE_LOGGING
     /* Set the log level. */
     pio_log_level = level;
+    if(!LOG_FILE)
+        pio_init_logging();
     PLOG((0,"set loglevel to %d", level));
 #endif /* PIO_ENABLE_LOGGING */
 
@@ -360,7 +362,7 @@ pio_init_logging(void)
 #endif /* USE_MPE */
 
 #if PIO_ENABLE_LOGGING
-    if (!LOG_FILE)
+    if (!LOG_FILE && pio_log_level > 0)
     {
         char log_filename[PIO_MAX_NAME];
         int mpierr;
@@ -376,7 +378,7 @@ pio_init_logging(void)
 
         pio_log_ref_cnt = 1;
     }
-    else
+    else if(LOG_FILE)
     {
         pio_log_ref_cnt++;
     }
@@ -2714,6 +2716,8 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                                          &nvars, &rec_var, &pio_type,
                                          &pio_type_size, &mpi_type,
                                          &mpi_type_size, &ndims);
+                PLOG((2, "PIOc_openfile_retry:nc_open for 4C filename = %s mode = %d "
+                      "ierr = %d", filename, mode, ierr));
             }
             break;
 #endif /* _NETCDF4 */
@@ -2727,6 +2731,8 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                                          &nvars, &rec_var, &pio_type,
                                          &pio_type_size, &mpi_type,
                                          &mpi_type_size, &ndims);
+                PLOG((2, "PIOc_openfile_retry:nc_open for classic filename = %s mode = %d "
+                      "ierr = %d", filename, mode, ierr));
             }
             break;
 
@@ -3001,10 +3007,10 @@ pioc_change_def(int ncid, int is_enddef)
         {
             int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
             if (ios->compmaster == MPI_ROOT)
-	      {
-		PLOG((2, "pioc_change_def request sent"));
+              {
+                PLOG((2, "pioc_change_def request sent"));
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-	      }
+              }
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             PLOG((3, "pioc_change_def ncid = %d mpierr = %d", ncid, mpierr));

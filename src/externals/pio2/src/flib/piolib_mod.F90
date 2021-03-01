@@ -967,7 +967,8 @@ contains
   !! @param iosystem a derived type which can be used in subsequent
   !! pio operations (defined in PIO_types).
   !! @param base @em optional argument can be used to offset the first
-  !! io task - default base is task 1.
+  !! io task. Since this is an MPI task number, it is zero-based (the
+  !! first task is 0). The default base is task 0.
   !! @param rearr_opts the rearranger options.
   !! @author Jim Edwards
   !<
