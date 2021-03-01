@@ -228,6 +228,7 @@ def _save_prerun_timing_e3sm(case, lid):
     os.mkdir(case_docs)
     globs_to_copy = [
         "CaseDocs/*",
+        "run_script_provenance/*",
         "*.run",
         ".*.run",
         "*.xml",
