@@ -307,32 +307,32 @@ module seq_drydep_mod
        ,0.1e+00_r8      & !SVOCff
        ,1.0e+00_r8      & !ACET
        ,1.0e+00_r8      & !ACTA
-       ,0.0e+00_r8      & !AERI
+       ,1.0e-36_r8      & !AERI
        ,1.0e+00_r8      & !ALD2
-       ,0.0e+00_r8      & !ASOA
+       ,1.0e-36_r8      & !ASOA
        ,0.0e+00_r8      & !ASOG
        ,1.0e+00_r8      & !ATOOH
-       ,0.0e+00_r8      & !BCPI
-       ,0.0e+00_r8      & !BCPO
-       ,0.0e+00_r8      & !Be10
-       ,0.0e+00_r8      & !Be10Strat
-       ,0.0e+00_r8      & !Be7
-       ,0.0e+00_r8      & !Be7Strat
+       ,1.0e-36_r8      & !BCPI
+       ,1.0e-36_r8      & !BCPO
+       ,1.0e-36_r8      & !Be10
+       ,1.0e-36_r8      & !Be10Strat
+       ,1.0e-36_r8      & !Be7
+       ,1.0e-36_r8      & !Be7Strat
        ,0.0e+00_r8      & !Br2
        ,0.0e+00_r8      & !BrCl
-       ,0.0e+00_r8      & !BrNO3
-       ,0.0e+00_r8      & !BrSALA
-       ,0.0e+00_r8      & !BrSALC
+       ,1.0e-36_r8      & !BrNO3
+       ,1.0e-36_r8      & !BrSALA
+       ,1.0e-36_r8      & !BrSALC
        ,1.0e+00_r8      & !CH2O
        ,0.0e+00_r8      & !Cl2
-       ,0.0e+00_r8      & !ClNO2
+       ,1.0e-36_r8      & !ClNO2
        ,0.0e+00_r8      & !ClNO3
-       ,0.0e+00_r8      & !ClO
+       ,1.0e-36_r8      & !ClO
        ,0.0e+00_r8      & !ClOO
-       ,0.0e+00_r8      & !DST1
-       ,0.0e+00_r8      & !DST2
-       ,0.0e+00_r8      & !DST3
-       ,0.0e+00_r8      & !DST4
+       ,1.0e-36_r8      & !DST1
+       ,1.0e-36_r8      & !DST2
+       ,1.0e-36_r8      & !DST3
+       ,1.0e-36_r8      & !DST4
        ,0.0e+00_r8      & !EOH
        ,1.0e+00_r8      & !ETHLN
        ,1.0e-01_r8      & !ETNO3
@@ -347,7 +347,7 @@ module seq_drydep_mod
        ,1.0e+00_r8      & !HCOOH
        ,1.0e-05_r8      & !Hg0
        ,0.0e+00_r8      & !Hg2
-       ,0.0e+00_r8      & !HgP
+       ,1.0e-36_r8      & !HgP
        ,0.0e+00_r8      & !HI
        ,1.0e+00_r8      & !HMHP
        ,1.0e+00_r8      & !HMML
@@ -382,20 +382,20 @@ module seq_drydep_mod
        ,1.0e+00_r8      & !IHN2
        ,1.0e+00_r8      & !IHN3
        ,1.0e+00_r8      & !IHN4
-       ,0.0e+00_r8      & !INDIOL
+       ,1.0e-36_r8      & !INDIOL
        ,1.0e+00_r8      & !INPB
        ,1.0e+00_r8      & !INPD
-       ,0.0e+00_r8      & !IONITA
+       ,1.0e-36_r8      & !IONITA
        ,0.0e+00_r8      & !IONO
        ,0.0e+00_r8      & !IONO2
        ,1.0e-01_r8      & !IPRNO3
-       ,0.0e+00_r8      & !ISALA
-       ,0.0e+00_r8      & !ISALC
+       ,1.0e-36_r8      & !ISALA
+       ,1.0e-36_r8      & !ISALC
        ,1.0e+00_r8      & !ITCN
        ,1.0e+00_r8      & !ITHN
        ,0.0e+00_r8      & !LIMO
        ,1.0e+00_r8      & !LVOC
-       ,0.0e+00_r8      & !LVOCOA
+       ,1.0e-36_r8      & !LVOCOA
        ,1.0e+00_r8      & !MACR
        ,1.0e+00_r8      & !MACR1OOH
        ,1.0e+00_r8      & !MAP
@@ -407,13 +407,13 @@ module seq_drydep_mod
        ,1.0e-01_r8      & !MENO3
        ,1.0e+00_r8      & !MGLY
        ,1.0e+00_r8      & !MOH
-       ,0.0e+00_r8      & !MONITA
+       ,1.0e-36_r8      & !MONITA
        ,1.0e+00_r8      & !MONITS
        ,1.0e+00_r8      & !MONITU
-       ,0.0e+00_r8      & !MOPI
-       ,0.0e+00_r8      & !MOPO
+       ,1.0e-36_r8      & !MOPI
+       ,1.0e-36_r8      & !MOPO
        ,1.0e+00_r8      & !MPAN
-       ,0.0e+00_r8      & !MSA
+       ,1.0e-36_r8      & !MSA
        ,0.0e+00_r8      & !MTPA
        ,0.0e+00_r8      & !MTPO
        ,1.0e+00_r8      & !MVK
@@ -423,26 +423,26 @@ module seq_drydep_mod
        ,1.0e+00_r8      & !MVKHP
        ,1.0e+00_r8      & !MVKN
        ,1.0e+00_r8      & !MVKPC
-       ,0.0e+00_r8      & !N2O5
+       ,1.0e-36_r8      & !N2O5
        ,0.0e+00_r8      & !NH3
-       ,0.0e+00_r8      & !NIT
-       ,0.0e+00_r8      & !NITs
+       ,1.0e-36_r8      & !NIT
+       ,1.0e-36_r8      & !NITs
        ,1.0e-01_r8      & !NO2
        ,1.0e-01_r8      & !NPRNO3
        ,1.0e+00_r8      & !O3
-       ,0.0e+00_r8      & !OCPI
-       ,0.0e+00_r8      & !OCPO
-       ,0.0e+00_r8      & !OPOA1
-       ,0.0e+00_r8      & !OPOA2
+       ,1.0e-36_r8      & !OCPI
+       ,1.0e-36_r8      & !OCPO
+       ,1.0e-36_r8      & !OPOA1
+       ,1.0e-36_r8      & !OPOA2
        ,0.0e+00_r8      & !OPOG1
        ,0.0e+00_r8      & !OPOG2
        ,1.0e+00_r8      & !PAN
-       ,0.0e+00_r8      & !Pb210
-       ,0.0e+00_r8      & !Pb210
-       ,0.0e+00_r8      & !Pb210Strat
-       ,0.0e+00_r8      & !pFe
-       ,0.0e+00_r8      & !POA1
-       ,0.0e+00_r8      & !POA2
+       ,1.0e-36_r8      & !Pb210
+       ,1.0e-36_r8      & !Pb210
+       ,1.0e-36_r8      & !Pb210Strat
+       ,1.0e-36_r8      & !pFe
+       ,1.0e-36_r8      & !POA1
+       ,1.0e-36_r8      & !POA2
        ,0.0e+00_r8      & !POG1
        ,0.0e+00_r8      & !POG2
        ,0.0e+00_r8      & !POPG_BaP
@@ -462,19 +462,19 @@ module seq_drydep_mod
        ,1.0e+00_r8      & !RIPC
        ,1.0e+00_r8      & !RIPD
        ,1.0e+00_r8      & !RP
-       ,0.0e+00_r8      & !SALA
-       ,0.0e+00_r8      & !SALAAL
-       ,0.0e+00_r8      & !SALACL
-       ,0.0e+00_r8      & !SALC
-       ,0.0e+00_r8      & !SALCAL
-       ,0.0e+00_r8      & !SALCCL
-       ,0.0e+00_r8      & !SO2
-       ,0.0e+00_r8      & !SO4
-       ,0.0e+00_r8      & !SO4s
-       ,0.0e+00_r8      & !SOAGX
-       ,0.0e+00_r8      & !SOAIE
-       ,0.0e+00_r8      & !SOAS
-       ,0.0e+00_r8      & !TSOA
+       ,1.0e-36_r8      & !SALA
+       ,1.0e-36_r8      & !SALAAL
+       ,1.0e-36_r8      & !SALACL
+       ,1.0e-36_r8      & !SALC
+       ,1.0e-36_r8      & !SALCAL
+       ,1.0e-36_r8      & !SALCCL
+       ,1.0e-36_r8      & !SO2
+       ,1.0e-36_r8      & !SO4
+       ,1.0e-36_r8      & !SO4s
+       ,1.0e-36_r8      & !SOAGX
+       ,1.0e-36_r8      & !SOAIE
+       ,1.0e-36_r8      & !SOAS
+       ,1.0e-36_r8      & !TSOA
        ,0.0e+00_r8      & !TSOG
        ,0.0e+00_r8      & !MEK
        ,0.0e+00_r8      & !MP
