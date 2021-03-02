@@ -336,6 +336,13 @@ def _save_postrun_timing_e3sm(case, lid):
         shutil.move(atm_chunk_costs_src_path, atm_chunk_costs_dst_path)
         gzip_existing_file(atm_chunk_costs_dst_path)
 
+    # gzip memory profile log
+    glob_to_copy = "memory.[0-4].*.log"
+    for item in glob.glob(os.path.join(rundir, glob_to_copy)):
+        mprof_dst_path = os.path.join(os.path.dirname(item), (os.path.basename(item) + ".{}").format(lid))
+        shutil.move(item, mprof_dst_path)
+        gzip_existing_file(mprof_dst_path)
+
     gzip_existing_file(os.path.join(caseroot, "timing", "e3sm_timing_stats.%s" % lid))
 
     # JGF: not sure why we do this
@@ -393,6 +400,7 @@ def _save_postrun_timing_e3sm(case, lid):
     globs_to_copy.append(os.path.join(rundir, "e3sm.log.{}.gz".format(lid)))
     globs_to_copy.append(os.path.join(rundir, "cpl.log.{}.gz".format(lid)))
     globs_to_copy.append(os.path.join(rundir, "atm_chunk_costs.{}.gz".format(lid)))
+    globs_to_copy.append(os.path.join(rundir, "memory.[0-4].*.log.{}.gz".format(lid)))
     globs_to_copy.append("timing/*.{}*".format(lid))
     globs_to_copy.append("CaseStatus")
 
