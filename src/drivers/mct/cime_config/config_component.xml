@@ -1142,16 +1142,16 @@
     <desc>grid mask - DO NOT EDIT (for experts only)</desc>
   </entry>
 
-  <entry id="IOP_MODE">
+  <entry id="PTS_DOMAIN_MODE">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
     <default_value>FALSE</default_value>
     <group>run_domain</group>
     <file>env_run.xml</file>
-    <desc>Propogate a single point to the global grid  - DO NOT EDIT (for experts only)</desc>
+    <desc>Propogate a single point to the global grid/domain  - DO NOT EDIT (for experts only)</desc>
   </entry>
 
-  <entry id="IOP_NX">
+  <entry id="PTS_NX">
     <type>integer</type>
     <default_value>0</default_value>
     <group>run_domain</group>
@@ -1159,7 +1159,7 @@
     <desc>number of cells for doubly periodic iop mode in i direction</desc>
   </entry>
 
-  <entry id="IOP_NY">
+  <entry id="PTS_NY">
     <type>integer</type>
     <default_value>0</default_value>
     <group>run_domain</group>

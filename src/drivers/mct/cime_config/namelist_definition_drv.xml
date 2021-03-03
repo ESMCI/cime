@@ -1484,21 +1484,22 @@
     </values>
   </entry>
 
-  <entry id="iop_mode" modify_via_xml="IOP_MODE">
+  <entry id="scm_domain" modify_via_xml="PTS_DOMAIN_MODE">
     <type>logical</type>
     <category>seq_infodata_inparm</category>
     <group>seq_infodata_inparm</group>
     <desc>
+      Uses SCM functionality for multiple columns. Specifically,
       turns on Intensive Observation Period (IOP) mode, a planet covered
       with homogenous surface and forced identically with a forcing file,
-      set by IOP_MODE in env_case.xml, default: false
+      set by PTS_DOMAIN_MODE in env_case.xml, default: false
     </desc>
     <values>
-      <value>$IOP_MODE</value>
+      <value>$PTS_DOMAIN_MODE</value>
     </values>
   </entry>
 
-  <entry id="iop_nx" modify_via_xml="IOP_NX">
+  <entry id="scm_nx" modify_via_xml="PTS_NX">
     <type>integer</type>
     <category>seq_infodata_inparm</category>
     <group>seq_infodata_inparm</group>
@@ -1506,11 +1507,11 @@
       number of points in x direction for doubly periodic mode
     </desc>
     <values>
-      <value>$IOP_NX</value>
+      <value>$PTS_NX</value>
     </values>
   </entry>
 
-  <entry id="iop_ny" modify_via_xml="IOP_NY">
+  <entry id="scm_ny" modify_via_xml="PTS_NY">
     <type>integer</type>
     <category>seq_infodata_inparm</category>
     <group>seq_infodata_inparm</group>
@@ -1518,7 +1519,7 @@
       number of points in Y direction for doubly periodic mode
     </desc>
     <values>
-      <value>$IOP_NY</value>
+      <value>$PTS_NY</value>
     </values>
   </entry>
 

@@ -74,11 +74,11 @@ CONTAINS
     integer(IN)       :: shrloglev                 ! original log level
     integer(IN)       :: ierr                      ! error code
     logical           :: scmMode = .false.         ! single column mode
-    logical           :: iop_mode = .false.        ! IOP mode
+    logical           :: scm_domain = .false.      ! SCM mode for an entire domain
     real(R8)          :: scmLat  = shr_const_SPVAL ! single column lat
     real(R8)          :: scmLon  = shr_const_SPVAL ! single column lon
-    integer(IN)       :: iop_nx = -1               ! doubly periodic points (x)
-    integer(IN)       :: iop_ny = -1               ! doubly periodic points (y)
+    integer(IN)       :: scm_nx = -1               ! number of points in SCM domain mode (x-direction)
+    integer(IN)       :: scm_ny = -1               ! number of points in SCM domain mode (y-direction)
     character(*), parameter :: F00   = "('(docn_comp_init) ',8a)"
     character(*), parameter :: subName = "(ocn_init_mct) "
     !-------------------------------------------------------------------------------
@@ -94,9 +94,9 @@ CONTAINS
     ! Obtain infodata variables
     call seq_infodata_getData(infodata, &
          single_column=scmMode, &
-         iop_mode=iop_mode, &
+         scm_domain=scm_domain, &
          scmlat=scmlat, scmlon=scmLon, &
-         iop_nx=iop_nx,iop_ny=iop_ny, &
+         scm_nx=scm_nx,scm_ny=scm_ny, &
          read_restart=read_restart)
 
     ! Determine instance information
@@ -159,7 +159,7 @@ CONTAINS
          seq_flds_x2o_fields, seq_flds_o2x_fields, &
          SDOCN, gsmap, ggrid, mpicom, compid, my_task, master_task, &
          inst_suffix, inst_name, logunit, read_restart, &
-         scmMode, iop_mode, scmlat, scmlon, iop_nx, iop_ny)
+         scmMode, scm_domain, scmlat, scmlon, scm_nx, scm_ny)
 
     !----------------------------------------------------------------------------
     ! Fill infodata that needs to be returned from docn

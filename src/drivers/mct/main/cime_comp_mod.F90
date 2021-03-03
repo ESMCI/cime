@@ -450,14 +450,14 @@ module cime_comp_mod
 
   logical  :: areafact_samegrid      ! areafact samegrid flag
   logical  :: single_column          ! scm mode logical
-  logical  :: iop_mode               ! iop mode logical
+  logical  :: scm_domain             ! scm mode over entire domain logical
   real(r8) :: scmlon                 ! single column lon
   real(r8) :: scmlat                 ! single column lat
   logical  :: aqua_planet            ! aqua planet mode
   real(r8) :: nextsw_cday            ! radiation control
   logical  :: atm_aero               ! atm provides aerosol data
-  integer  :: iop_nx                 ! number of doubly periodic points x direction
-  integer  :: iop_ny                 ! number of doubly periodic points y direction
+  integer  :: scm_nx                 ! number of SCM domain points in x direction
+  integer  :: scm_ny                 ! number of SCM domain points in y direction
 
   character(CL) :: cpl_seq_option    ! coupler sequencing option
   logical  :: skip_ocean_run         ! skip the ocean model first pass
@@ -1115,9 +1115,9 @@ contains
          esp_present=esp_present                   , &
          iac_present=iac_present                   , &
          single_column=single_column               , &
-         iop_mode=iop_mode                         , &
-         iop_nx=iop_nx                             , &
-         iop_ny=iop_ny                             , &
+         scm_domain=scm_domain                     , &
+         scm_nx=scm_nx                             , &
+         scm_ny=scm_ny                             , &
          aqua_planet=aqua_planet                   , &
          cpl_seq_option=cpl_seq_option             , &
          drv_threading=drv_threading               , &
@@ -1333,7 +1333,7 @@ contains
        call seq_comm_getinfo(OCNID(ens1), mpicom=mpicom_OCNID)
 
        call shr_scam_checkSurface(scmlon, scmlat, &
-            iop_mode,iop_nx,iop_ny,               &
+            scm_domain,scm_nx,scm_ny,             &
             OCNID(ens1), mpicom_OCNID,            &
             lnd_present=lnd_present,              &
             ocn_present=ocn_present,              &

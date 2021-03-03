@@ -192,7 +192,7 @@ CONTAINS
 
   subroutine shr_dmodel_readgrid( gGrid, gsMap, nxgo, nygo, nzgo, filename, compid, mpicom, &
        decomp, lonname, latname, hgtname, maskname, areaname, fracname, readfrac, &
-       scmmode, iop_mode, scmlon, scmlat, iop_nx, iop_ny)
+       scmmode, scm_domain, scmlon, scmlat, scm_nx, scm_ny)
 
     use shr_file_mod  , only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
     use shr_string_mod, only : shr_string_lastindex
@@ -217,11 +217,12 @@ CONTAINS
     character(len=*) ,optional, intent(in)    :: fracname ! name of frac variable in file
     logical          ,optional, intent(in)    :: readfrac ! T <=> also read frac  in file
     logical          ,optional, intent(in)    :: scmmode  ! single column mode
-    logical          ,optional, intent(in)    :: iop_mode ! iop mode
+    logical          ,optional, intent(in)    :: scm_domain ! SCM mode over entire domain of
+                                                            ! multiple columns
     real(R8)         ,optional, intent(in)    :: scmlon   ! single column lon
     real(R8)         ,optional, intent(in)    :: scmlat   ! single column lat
-    integer(IN)      ,optional, intent(in)    :: iop_nx   ! number points in x direction
-    integer(IN)      ,optional, intent(in)    :: iop_ny   ! number points in y direction
+    integer(IN)      ,optional, intent(in)    :: scm_nx   ! number points for SCM domain x direction
+    integer(IN)      ,optional, intent(in)    :: scm_ny   ! number points for SCM domain y direction
 
     !----- local -----
     integer(IN)   :: n,k,j,i     ! indices
@@ -247,8 +248,8 @@ CONTAINS
     integer(IN)   :: ndims       ! number of dims
     integer(IN)   :: nlon,nlat,narea,nmask,nfrac,nhgt
     logical       :: lscmmode    ! local scm mode
-    logical       :: liopmode    ! local iop mode
-    logical       :: liopgrid    ! have iop grid information
+    logical       :: lscmdomain  ! local scm domain mode
+    logical       :: lscmgrid    ! have scm grid information
     real(R8)      :: dist,mind   ! scmmode point search
     integer(IN)   :: ni,nj       ! scmmode point search
     real(R8)      :: lscmlon     ! local copy of scmlon
@@ -285,12 +286,12 @@ CONTAINS
     master_task = 0
 
     lscmmode = .false.
-    liopmode = .false.
-    liopgrid = .false.
+    lscmdomain = .false.
+    lscmgrid = .false.
     if (present(scmmode)) then
        lscmmode = scmmode
-       liopmode = iop_mode
-       if (liopmode .and. .not. lscmmode) then
+       lscmdomain = scm_domain
+       if (lscmdomain .and. .not. lscmmode) then
          write(logunit,*) subname, ' ERROR: IOP mode must be run with SCM functionality'
          call shr_sys_abort(subname//' ERROR: IOP not in SCM mode')
        endif
@@ -299,14 +300,14 @@ CONTAINS
              write(logunit,*) subname,' ERROR: scmmode must supply scmlon and scmlat'
              call shr_sys_abort(subname//' ERROR: scmmode1 lon lat')
           endif
-          if (my_task > 0 .and. .not. liopmode) then
+          if (my_task > 0 .and. .not. lscmdomain) then
              write(logunit,*) subname,' ERROR: scmmode must be run on one pe'
              call shr_sys_abort(subname//' ERROR: scmmode2 tasks')
           endif
        endif
-       if (liopmode) then
-         if (present(iop_nx) .and. present(iop_ny)) then
-           liopgrid = .true.
+       if (lscmdomain) then
+         if (present(scm_nx) .and. present(scm_ny)) then
+           lscmgrid = .true.
          endif
        endif
     endif
@@ -371,17 +372,17 @@ CONTAINS
     call shr_mpi_bcast(nxg,mpicom)
     call shr_mpi_bcast(nyg,mpicom)
     call shr_mpi_bcast(nzg,mpicom)
-    if (lscmmode .and. .not. liopmode) then
+    if (lscmmode .and. .not. lscmdomain) then
        nxgo = 1
        nygo = 1
        nzgo = -1
        gsize = 1
     else
-       if (liopgrid) then
-         nxgo = iop_nx
-         nygo = iop_ny
+       if (lscmgrid) then
+         nxgo = scm_nx
+         nygo = scm_ny
          nzgo = -1
-         gsize = abs(iop_nx*iop_nx*nzgo)
+         gsize = abs(scm_nx*scm_nx*nzgo)
        else
          nxgo = nxg
          nygo = nyg
@@ -522,7 +523,7 @@ CONTAINS
 
           i_scm = ni
 
-          if (liopmode) then
+          if (lscmdomain) then
 
             ! If IOP mode, then we want the surface to be
             !   covered homogeneously, with the same lat and lon
