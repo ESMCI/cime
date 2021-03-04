@@ -74,11 +74,11 @@ CONTAINS
     integer(IN)       :: shrloglev                 ! original log level
     integer(IN)       :: ierr                      ! error code
     logical           :: scmMode = .false.         ! single column mode
-    logical           :: scm_domain = .false.      ! SCM mode for an entire domain
+    logical           :: scm_domain = .false.      ! SCM mode for a domain of multiple columns
     real(R8)          :: scmLat  = shr_const_SPVAL ! single column lat
     real(R8)          :: scmLon  = shr_const_SPVAL ! single column lon
-    integer(IN)       :: scm_nx = -1               ! number of points in SCM domain mode (x-direction)
-    integer(IN)       :: scm_ny = -1               ! number of points in SCM domain mode (y-direction)
+    integer(IN)       :: scm_nx = -1               ! number of points in SCM domain (x-direction)
+    integer(IN)       :: scm_ny = -1               ! number of points in SCM domain (y-direction)
     character(*), parameter :: F00   = "('(docn_comp_init) ',8a)"
     character(*), parameter :: subName = "(ocn_init_mct) "
     !-------------------------------------------------------------------------------

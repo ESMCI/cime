@@ -1156,7 +1156,7 @@
     <default_value>0</default_value>
     <group>run_domain</group>
     <file>env_run.xml</file>
-    <desc>number of cells for doubly periodic iop mode in i direction</desc>
+    <desc>number of cells for single point mode in i direction</desc>
   </entry>
 
   <entry id="PTS_NY">
@@ -1164,7 +1164,7 @@
     <default_value>0</default_value>
     <group>run_domain</group>
     <file>env_run.xml</file>
-    <desc>number of cells for doubly periodic iop mode in j directions</desc>
+    <desc>number of cells for single point iop mode in j directions</desc>
   </entry>
 
   <entry id="PTS_MODE">

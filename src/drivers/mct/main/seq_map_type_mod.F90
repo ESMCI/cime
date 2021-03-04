@@ -168,10 +168,10 @@ contains
 
     s1 = mct_gsMap_gsize(gsMap1)
     s2 = mct_gsMap_gsize(gsMap2)
-!    if (s1 /= s2) then
-!       write(logunit,*) trim(subname),'gsmap global sizes different ',s1,s2
-!       call shr_sys_abort(subName // "different gsmap size")
-!    endif
+    if (s1 /= s2) then
+       write(logunit,*) trim(subname),'gsmap global sizes different ',s1,s2
+       call shr_sys_abort(subName // "different gsmap size")
+    endif
 
   end subroutine seq_map_gsmapcheck
 

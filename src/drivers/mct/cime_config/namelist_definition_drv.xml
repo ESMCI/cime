@@ -1504,7 +1504,7 @@
     <category>seq_infodata_inparm</category>
     <group>seq_infodata_inparm</group>
     <desc>
-      number of points in x direction for doubly periodic mode
+      number of points in x direction for SCM mode
     </desc>
     <values>
       <value>$PTS_NX</value>
@@ -1516,7 +1516,7 @@
     <category>seq_infodata_inparm</category>
     <group>seq_infodata_inparm</group>
     <desc>
-      number of points in Y direction for doubly periodic mode
+      number of points in Y direction for SCM mode
     </desc>
     <values>
       <value>$PTS_NY</value>
