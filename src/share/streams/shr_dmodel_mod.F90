@@ -292,8 +292,8 @@ CONTAINS
        lscmmode = scmmode
        lscmdomain = scm_domain
        if (lscmdomain .and. .not. lscmmode) then
-         write(logunit,*) subname, ' ERROR: IOP mode must be run with SCM functionality'
-         call shr_sys_abort(subname//' ERROR: IOP not in SCM mode')
+         write(logunit,*) subname, ' ERROR: SCM mode for multiple columns must be run with SCM functionality'
+         call shr_sys_abort(subname//' ERROR: SCM domain mode in SCM mode')
        endif
        if (lscmmode) then
           if (.not.present(scmlon) .or. .not.present(scmlat)) then
@@ -525,7 +525,7 @@ CONTAINS
 
           if (lscmdomain) then
 
-            ! If IOP mode, then we want the surface to be
+            ! If SCM domain mode, then we want the surface to be
             !   covered homogeneously, with the same lat and lon
             !   as close to the lat/lon in IOP forcing file as possible
             i_scm = ni
