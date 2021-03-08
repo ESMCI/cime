@@ -1142,13 +1142,13 @@
     <desc>grid mask - DO NOT EDIT (for experts only)</desc>
   </entry>
 
-  <entry id="PTS_DOMAIN_MODE">
+  <entry id="PTS_MULTCOLS_MODE">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
     <default_value>FALSE</default_value>
     <group>run_domain</group>
     <file>env_run.xml</file>
-    <desc>Propogate a single point to the global grid/domain  - DO NOT EDIT (for experts only)</desc>
+    <desc>Use a single point of the global grid but propogate that point to multiple columns  - DO NOT EDIT (for experts only)</desc>
   </entry>
 
   <entry id="PTS_NX">
@@ -1156,7 +1156,7 @@
     <default_value>0</default_value>
     <group>run_domain</group>
     <file>env_run.xml</file>
-    <desc>number of cells for single point mode in i direction</desc>
+    <desc>number of cells for single point mode when operating on multiple columns in i direction</desc>
   </entry>
 
   <entry id="PTS_NY">
@@ -1164,7 +1164,7 @@
     <default_value>0</default_value>
     <group>run_domain</group>
     <file>env_run.xml</file>
-    <desc>number of cells for single point iop mode in j directions</desc>
+    <desc>number of cells for single point mode when operating on multiple columns in j directions</desc>
   </entry>
 
   <entry id="PTS_MODE">

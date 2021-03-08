@@ -154,7 +154,7 @@ contains
 !===============================================================================
 
   subroutine shr_strdata_init( &
-       SDAT,mpicom,compid,name,scmmode,scm_domain,scmlon,scmlat, &
+       SDAT,mpicom,compid,name,scmmode,scm_multcols,scmlon,scmlat, &
        scm_nx,scm_ny, &
        gsmap, ggrid, nxg, nyg, nzg, &
        calendar, reset_domain_mask, dmodel_domain_fracname_from_stream)
@@ -169,7 +169,7 @@ contains
     integer(IN)           ,intent(in)          :: compid
     character(len=*)      ,intent(in),optional :: name
     logical               ,intent(in),optional :: scmmode
-    logical               ,intent(in),optional :: scm_domain
+    logical               ,intent(in),optional :: scm_multcols
     real(R8)              ,intent(in),optional :: scmlon
     real(R8)              ,intent(in),optional :: scmlat
     integer(IN)           ,intent(in),optional :: scm_nx
@@ -216,7 +216,7 @@ contains
          gsmap=gsmap, ggrid=ggrid, nxg=nxg, nyg=nyg, nzg=nzg, &
          reset_domain_mask=reset_domain_mask, &
          dmodel_domain_fracname_from_stream=dmodel_domain_fracname_from_stream, &
-         scmmode=scmmode, scm_domain=scm_domain, scmlon=scmlon, scmlat=scmlat, &
+         scmmode=scmmode, scm_multcols=scm_multcols, scmlon=scmlon, scmlat=scmlat, &
          scm_nx=scm_nx,scm_ny=scm_ny)
 
     !------------------------------------------------------
@@ -236,7 +236,7 @@ contains
   !===============================================================================
 
   subroutine shr_strdata_init_model_domain(SDAT, mpicom, compid, my_task, &
-       gsmap, ggrid, nxg, nyg, nzg, scmmode, scm_domain, scmlon, scmlat, &
+       gsmap, ggrid, nxg, nyg, nzg, scmmode, scm_multcols, scmlon, scmlat, &
        scm_nx, scm_ny, reset_domain_mask, dmodel_domain_fracname_from_stream)
 
     ! input/output variables
@@ -250,7 +250,7 @@ contains
     integer(IN)           ,intent(in),optional :: nyg
     integer(IN)           ,intent(in),optional :: nzg
     logical               ,intent(in),optional :: scmmode
-    logical               ,intent(in),optional :: scm_domain
+    logical               ,intent(in),optional :: scm_multcols
     real(R8)              ,intent(in),optional :: scmlon
     real(R8)              ,intent(in),optional :: scmlat
     integer(IN)           ,intent(in),optional :: scm_nx
@@ -288,14 +288,14 @@ contains
     logical        :: readfrac     ! whether to read fraction from the first stream file
     integer        :: kmask, kfrac
     logical        :: lscmmode
-    logical        :: lscm_domain
+    logical        :: lscm_multcols
     integer(IN)      ,parameter :: master_task = 0
     character(*)     ,parameter :: F00 = "('(shr_strdata_init) ',8a)"
     character(len=*) ,parameter :: subname = "(shr_strdata_init) "
     !-------------------------------------------------------------------------------
 
     lscmmode = .false.
-    lscm_domain = .false.
+    lscm_multcols = .false.
     if (present(scmmode)) then
        lscmmode = scmmode
        if (lscmmode) then
@@ -306,8 +306,8 @@ contains
        endif
     endif
 
-    if (present(scm_domain)) then
-      lscm_domain=scm_domain
+    if (present(scm_multcols)) then
+      lscm_multcols=scm_multcols
     endif
 
     if (present(gsmap) .and. present(ggrid) .and. present(nxg) .and. present(nyg) .and. present(nzg)) then
@@ -361,7 +361,7 @@ contains
                      decomp=decomp, lonName=lonName, latName=latName, hgtName=hgtName, &
                      maskName=maskName, areaName=areaName, &
                      fracname=dmodel_domain_fracname_from_stream, readfrac=readfrac, &
-                     scmmode=lscmmode, scm_domain=lscm_domain, scmlon=scmlon, scmlat=scmlat)
+                     scmmode=lscmmode, scm_multcols=lscm_multcols, scmlon=scmlon, scmlat=scmlat)
              else
                 call shr_dmodel_readgrid(SDAT%grid,SDAT%gsmap, SDAT%nxg, SDAT%nyg, SDAT%nzg, &
                      fileName, compid, mpicom, &
@@ -386,7 +386,7 @@ contains
           if (lscmmode) then
              call shr_dmodel_readgrid(SDAT%grid,SDAT%gsmap,SDAT%nxg,SDAT%nyg,SDAT%nzg, &
                   SDAT%domainfile, compid, mpicom, &
-                  decomp=decomp, readfrac=.true., scmmode=lscmmode, scm_domain=lscm_domain, &
+                  decomp=decomp, readfrac=.true., scmmode=lscmmode, scm_multcols=lscm_multcols, &
                   scmlon=scmlon, scmlat=scmlat, scm_nx=scm_nx, scm_ny=scm_ny)
           else
              call shr_dmodel_readgrid(SDAT%grid, SDAT%gsmap, SDAT%nxg, SDAT%nyg, SDAT%nzg, &

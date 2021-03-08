@@ -95,7 +95,7 @@ CONTAINS
        seq_flds_x2o_fields, seq_flds_o2x_fields, &
        SDOCN, gsmap, ggrid, mpicom, compid, my_task, master_task, &
        inst_suffix, inst_name, logunit, read_restart, &
-       scmMode, scm_domain, scmlat, scmlon, scm_nx, scm_ny)
+       scmMode, scm_multcols, scmlat, scmlon, scm_nx, scm_ny)
 
     ! !DESCRIPTION: initialize docn model
     use pio        , only : iosystem_desc_t
@@ -119,9 +119,8 @@ CONTAINS
     integer(IN)            , intent(in)    :: logunit             ! logging unit number
     logical                , intent(in)    :: read_restart        ! start from restart
     logical                , intent(in)    :: scmMode             ! single column mode
-    logical                , intent(in)    :: scm_domain          ! single column mode but over a
-                                                                  ! domain with multiple columns and
-                                                                  ! with homogeneous surface
+    logical                , intent(in)    :: scm_multcols        ! single column functionality but
+                                                                  ! extrapolated over multiple columns
     real(R8)               , intent(in)    :: scmLat              ! single column lat
     real(R8)               , intent(in)    :: scmLon              ! single column lon
     integer(IN)            , intent(in)    :: scm_nx              ! number of points for
@@ -178,7 +177,7 @@ CONTAINS
        if (my_task == master_task) &
             write(logunit,F05) ' scm lon lat = ',scmlon,scmlat
        call shr_strdata_init(SDOCN,mpicom,compid,name='ocn', &
-            scmmode=scmmode,scm_domain=scm_domain,scmlon=scmlon,scmlat=scmlat, &
+            scmmode=scmmode,scm_multcols=scm_multcols,scmlon=scmlon,scmlat=scmlat, &
             scm_nx=scm_nx,scm_ny=scm_ny, &
             calendar=calendar, reset_domain_mask=.true.)
     else

@@ -74,7 +74,7 @@ CONTAINS
     integer(IN)       :: shrloglev                 ! original log level
     integer(IN)       :: ierr                      ! error code
     logical           :: scmMode = .false.         ! single column mode
-    logical           :: scm_domain = .false.      ! SCM mode for a domain of multiple columns
+    logical           :: scm_multcols = .false.    ! SCM functionality for multiple columns
     real(R8)          :: scmLat  = shr_const_SPVAL ! single column lat
     real(R8)          :: scmLon  = shr_const_SPVAL ! single column lon
     integer(IN)       :: scm_nx = -1               ! number of points in SCM domain (x-direction)
@@ -94,7 +94,7 @@ CONTAINS
     ! Obtain infodata variables
     call seq_infodata_getData(infodata, &
          single_column=scmMode, &
-         scm_domain=scm_domain, &
+         scm_multcols=scm_multcols, &
          scmlat=scmlat, scmlon=scmLon, &
          scm_nx=scm_nx,scm_ny=scm_ny, &
          read_restart=read_restart)
@@ -159,7 +159,7 @@ CONTAINS
          seq_flds_x2o_fields, seq_flds_o2x_fields, &
          SDOCN, gsmap, ggrid, mpicom, compid, my_task, master_task, &
          inst_suffix, inst_name, logunit, read_restart, &
-         scmMode, scm_domain, scmlat, scmlon, scm_nx, scm_ny)
+         scmMode, scm_multcols, scmlat, scmlon, scm_nx, scm_ny)
 
     !----------------------------------------------------------------------------
     ! Fill infodata that needs to be returned from docn

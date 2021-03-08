@@ -192,7 +192,7 @@ CONTAINS
 
   subroutine shr_dmodel_readgrid( gGrid, gsMap, nxgo, nygo, nzgo, filename, compid, mpicom, &
        decomp, lonname, latname, hgtname, maskname, areaname, fracname, readfrac, &
-       scmmode, scm_domain, scmlon, scmlat, scm_nx, scm_ny)
+       scmmode, scm_multcols, scmlon, scmlat, scm_nx, scm_ny)
 
     use shr_file_mod  , only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
     use shr_string_mod, only : shr_string_lastindex
@@ -217,8 +217,7 @@ CONTAINS
     character(len=*) ,optional, intent(in)    :: fracname ! name of frac variable in file
     logical          ,optional, intent(in)    :: readfrac ! T <=> also read frac  in file
     logical          ,optional, intent(in)    :: scmmode  ! single column mode
-    logical          ,optional, intent(in)    :: scm_domain ! SCM mode over entire domain of
-                                                            ! multiple columns
+    logical          ,optional, intent(in)    :: scm_multcols ! SCM mode for multiple columns
     real(R8)         ,optional, intent(in)    :: scmlon   ! single column lon
     real(R8)         ,optional, intent(in)    :: scmlat   ! single column lat
     integer(IN)      ,optional, intent(in)    :: scm_nx   ! number points for SCM domain x direction
@@ -248,7 +247,7 @@ CONTAINS
     integer(IN)   :: ndims       ! number of dims
     integer(IN)   :: nlon,nlat,narea,nmask,nfrac,nhgt
     logical       :: lscmmode    ! local scm mode
-    logical       :: lscmdomain  ! local scm domain mode
+    logical       :: lscm_multcols! local scm multiple column mode
     logical       :: lscmgrid    ! have scm grid information
     real(R8)      :: dist,mind   ! scmmode point search
     integer(IN)   :: ni,nj       ! scmmode point search
@@ -286,26 +285,26 @@ CONTAINS
     master_task = 0
 
     lscmmode = .false.
-    lscmdomain = .false.
+    lscm_multcols = .false.
     lscmgrid = .false.
     if (present(scmmode)) then
        lscmmode = scmmode
-       lscmdomain = scm_domain
-       if (lscmdomain .and. .not. lscmmode) then
+       lscm_multcols = scm_multcols
+       if (lscm_multcols .and. .not. lscmmode) then
          write(logunit,*) subname, ' ERROR: SCM mode for multiple columns must be run with SCM functionality'
-         call shr_sys_abort(subname//' ERROR: SCM domain mode in SCM mode')
+         call shr_sys_abort(subname//' ERROR: SCM multiple column mode must be in SCM mode')
        endif
        if (lscmmode) then
           if (.not.present(scmlon) .or. .not.present(scmlat)) then
              write(logunit,*) subname,' ERROR: scmmode must supply scmlon and scmlat'
              call shr_sys_abort(subname//' ERROR: scmmode1 lon lat')
           endif
-          if (my_task > 0 .and. .not. lscmdomain) then
+          if (my_task > 0 .and. .not. lscm_multcols) then
              write(logunit,*) subname,' ERROR: scmmode must be run on one pe'
              call shr_sys_abort(subname//' ERROR: scmmode2 tasks')
           endif
        endif
-       if (lscmdomain) then
+       if (lscm_multcols) then
          if (present(scm_nx) .and. present(scm_ny)) then
            lscmgrid = .true.
          endif
@@ -372,13 +371,15 @@ CONTAINS
     call shr_mpi_bcast(nxg,mpicom)
     call shr_mpi_bcast(nyg,mpicom)
     call shr_mpi_bcast(nzg,mpicom)
-    if (lscmmode .and. .not. lscmdomain) then
+    if (lscmmode .and. .not. lscm_multcols) then
+       ! Standard SCM mode
        nxgo = 1
        nygo = 1
        nzgo = -1
        gsize = 1
     else
        if (lscmgrid) then
+         ! Run on user defined grid with SCM functionality
          nxgo = scm_nx
          nygo = scm_ny
          nzgo = -1
@@ -523,11 +524,12 @@ CONTAINS
 
           i_scm = ni
 
-          if (lscmdomain) then
+          if (lscm_multcols) then
 
-            ! If SCM domain mode, then we want the surface to be
-            !   covered homogeneously, with the same lat and lon
-            !   as close to the lat/lon in IOP forcing file as possible
+            ! If using SCM functionality across multiple columns,
+            !   then we want the surface to be covered homogeneously, with
+            !   the same lat and lon as close to the lat/lon in IOP forcing
+            !   file as possible
             i_scm = ni
 
             n=0

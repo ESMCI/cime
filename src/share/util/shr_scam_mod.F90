@@ -587,7 +587,7 @@ end subroutine shr_scam_getCloseLatLonFile
 !
 ! !INTERFACE: ------------------------------------------------------------------
 
-subroutine shr_scam_checkSurface(scmlon, scmlat, scm_domain, scm_nx, scm_ny, &
+subroutine shr_scam_checkSurface(scmlon, scmlat, scm_multcols, scm_nx, scm_ny, &
      ocn_compid, ocn_mpicom, lnd_present, sno_present, ocn_present, ice_present, &
      rof_present, flood_present, rofice_present)
 
@@ -601,7 +601,7 @@ subroutine shr_scam_checkSurface(scmlon, scmlat, scm_domain, scm_nx, scm_ny, &
 ! !INPUT/OUTPUT PARAMETERS:
 
    real(R8),                     intent(in)  :: scmlon,scmlat ! single column lat lon
-   logical,                      intent(in)  :: scm_domain   ! SCM over domain logical
+   logical,                      intent(in)  :: scm_multcols ! SCM over domain logical
    integer(IN),                  intent(in)  :: scm_nx       ! number points in x direction
    integer(IN),                  intent(in)  :: scm_ny       ! number points in y direction
    integer(IN),                  intent(in)  :: ocn_compid   ! id for ocean model
@@ -715,7 +715,7 @@ subroutine shr_scam_checkSurface(scmlon, scmlat, scm_domain, scm_nx, scm_ny, &
       call shr_strdata_readnml(SCAMSDAT,'docn_in')
       call shr_dmodel_readgrid(SCAMSDAT%grid,SCAMSDAT%gsmap,SCAMSDAT%nxg,SCAMSDAT%nyg,SCAMSDAT%nzg, &
            SCAMSDAT%domainfile, ocn_compid, ocn_mpicom, '2d1d', readfrac=.true., &
-           scmmode=.true.,scm_domain=scm_domain,scmlon=scmlon,scmlat=scmlat, &
+           scmmode=.true.,scm_multcols=scm_multcols,scmlon=scmlon,scmlat=scmlat, &
            scm_nx=scm_nx,scm_ny=scm_ny)
       nfrac = mct_aVect_indexRA(SCAMSDAT%grid%data,'frac')
 

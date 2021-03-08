@@ -450,7 +450,7 @@ module cime_comp_mod
 
   logical  :: areafact_samegrid      ! areafact samegrid flag
   logical  :: single_column          ! scm mode logical
-  logical  :: scm_domain             ! scm mode over entire domain logical
+  logical  :: scm_multcols           ! scm mode over multiple columns logical
   real(r8) :: scmlon                 ! single column lon
   real(r8) :: scmlat                 ! single column lat
   logical  :: aqua_planet            ! aqua planet mode
@@ -1115,7 +1115,7 @@ contains
          esp_present=esp_present                   , &
          iac_present=iac_present                   , &
          single_column=single_column               , &
-         scm_domain=scm_domain                     , &
+         scm_multcols=scm_multcols                 , &
          scm_nx=scm_nx                             , &
          scm_ny=scm_ny                             , &
          aqua_planet=aqua_planet                   , &
@@ -1333,7 +1333,7 @@ contains
        call seq_comm_getinfo(OCNID(ens1), mpicom=mpicom_OCNID)
 
        call shr_scam_checkSurface(scmlon, scmlat, &
-            scm_domain,scm_nx,scm_ny,             &
+            scm_multcols,scm_nx,scm_ny,           &
             OCNID(ens1), mpicom_OCNID,            &
             lnd_present=lnd_present,              &
             ocn_present=ocn_present,              &
