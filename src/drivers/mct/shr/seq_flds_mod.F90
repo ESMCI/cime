@@ -638,6 +638,51 @@ contains
     attname  = 'Sa_v'
     call metadata_set(attname, longname, stdname, units)
 
+    ! first-order response of wind to surface stresses (m/s/Pa)
+    call seq_flds_add(a2x_states,"Sa_wsresp")
+    call seq_flds_add(x2l_states,"Sa_wsresp")
+    call seq_flds_add(x2i_states,"Sa_wsresp")
+    if (rof_heat) then
+       call seq_flds_add(x2r_states,"Sa_wsresp")
+       call seq_flds_add(a2x_states_to_rof,"Sa_wsresp")
+    endif
+    call seq_flds_add(x2w_states,"Sa_wsresp")
+    longname = 'Response of wind to surface stress'
+    stdname  = 'wsresp'
+    units    = 'm s-1 Pa-1'
+    attname  = 'Sa_wsresp'
+    call metadata_set(attname, longname, stdname, units)
+
+    ! approximate atmosphere change to lowest zonal wind (m/s)
+    call seq_flds_add(a2x_states,"Sa_u_diff")
+    call seq_flds_add(x2l_states,"Sa_u_diff")
+    call seq_flds_add(x2i_states,"Sa_u_diff")
+    if (rof_heat) then
+       call seq_flds_add(x2r_states,"Sa_u_diff")
+       call seq_flds_add(a2x_states_to_rof,"Sa_u_diff")
+    endif
+    call seq_flds_add(x2w_states,"Sa_u_diff")
+    longname = 'Approximate atmosphere change to lowest level zonal wind'
+    stdname  = 'u_diff'
+    units    = 'm s-1'
+    attname  = 'Sa_u_diff'
+    call metadata_set(attname, longname, stdname, units)
+
+    ! approximate atmosphere change to lowest meridional wind (m/s)
+    call seq_flds_add(a2x_states,"Sa_v_diff")
+    call seq_flds_add(x2l_states,"Sa_v_diff")
+    call seq_flds_add(x2i_states,"Sa_v_diff")
+    if (rof_heat) then
+       call seq_flds_add(x2r_states,"Sa_v_diff")
+       call seq_flds_add(a2x_states_to_rof,"Sa_v_diff")
+    endif
+    call seq_flds_add(x2w_states,"Sa_v_diff")
+    longname = 'Approximate atmosphere change to lowest level meridional wind'
+    stdname  = 'v_diff'
+    units    = 'm s-1'
+    attname  = 'Sa_v_diff'
+    call metadata_set(attname, longname, stdname, units)
+
     ! temperature at the lowest model level (K)
     call seq_flds_add(a2x_states,"Sa_tbot")
     call seq_flds_add(x2l_states,"Sa_tbot")
