@@ -123,8 +123,8 @@ CONTAINS
                                                                   ! extrapolated over multiple columns
     real(R8)               , intent(in)    :: scmLat              ! single column lat
     real(R8)               , intent(in)    :: scmLon              ! single column lon
-    integer(IN)            , intent(in)    :: scm_nx              ! number of points for
-                                                                  ! doubly periodic mode (x)
+    integer(IN)            , intent(in)    :: scm_nx              ! number of points for SCM
+                                                                  ! functionality (x direction)
     integer(IN)            , intent(in)    :: scm_ny              ! same but for y direction
 
     !--- local variables ---

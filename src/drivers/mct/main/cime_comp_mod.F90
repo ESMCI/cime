@@ -456,8 +456,8 @@ module cime_comp_mod
   logical  :: aqua_planet            ! aqua planet mode
   real(r8) :: nextsw_cday            ! radiation control
   logical  :: atm_aero               ! atm provides aerosol data
-  integer  :: scm_nx                 ! number of SCM domain points in x direction
-  integer  :: scm_ny                 ! number of SCM domain points in y direction
+  integer  :: scm_nx                 ! points in x direction for SCM functionality
+  integer  :: scm_ny                 ! points in y direction for SCM functionality
 
   character(CL) :: cpl_seq_option    ! coupler sequencing option
   logical  :: skip_ocean_run         ! skip the ocean model first pass

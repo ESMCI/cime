@@ -86,8 +86,8 @@ MODULE seq_infodata_mod
      logical                 :: scm_multcols    ! SCM mode extrapolated to multiple columns
      real (SHR_KIND_R8)      :: scmlat          ! single column lat
      real (SHR_KIND_R8)      :: scmlon          ! single column lon
-     integer(SHR_KIND_IN)    :: scm_nx          ! points in x direction for SCM domain mode
-     integer(SHR_KIND_IN)    :: scm_ny          ! points in y direction for SCM domain mode
+     integer(SHR_KIND_IN)    :: scm_nx          ! points in x direction for SCM functionality
+     integer(SHR_KIND_IN)    :: scm_ny          ! points in y direction for SCM functionality
      character(SHR_KIND_CS)  :: logFilePostFix  ! postfix for output log files
      character(SHR_KIND_CL)  :: outPathRoot     ! root for output log files
      logical                 :: perpetual       ! perpetual flag
@@ -337,8 +337,8 @@ CONTAINS
     logical                :: scm_multcols       ! SCM mode extrapolated to multiple columns
     real (SHR_KIND_R8)     :: scmlat             ! single column mode latitude
     real (SHR_KIND_R8)     :: scmlon             ! single column mode longitude
-    integer(SHR_KIND_IN)   :: scm_nx             ! points in x direction in SCM domain mode
-    integer(SHR_KIND_IN)   :: scm_ny             ! points in y direction in SCM domain mode
+    integer(SHR_KIND_IN)   :: scm_nx             ! points in x direction for SCM functionality
+    integer(SHR_KIND_IN)   :: scm_ny             ! points in y direction for SCM functionality
     character(SHR_KIND_CS) :: logFilePostFix     ! postfix for output log files
     character(SHR_KIND_CL) :: outPathRoot        ! root output files
     logical                :: perpetual          ! perpetual mode

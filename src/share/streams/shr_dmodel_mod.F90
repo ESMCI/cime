@@ -220,8 +220,8 @@ CONTAINS
     logical          ,optional, intent(in)    :: scm_multcols ! SCM mode for multiple columns
     real(R8)         ,optional, intent(in)    :: scmlon   ! single column lon
     real(R8)         ,optional, intent(in)    :: scmlat   ! single column lat
-    integer(IN)      ,optional, intent(in)    :: scm_nx   ! number points for SCM domain x direction
-    integer(IN)      ,optional, intent(in)    :: scm_ny   ! number points for SCM domain y direction
+    integer(IN)      ,optional, intent(in)    :: scm_nx   ! points in x direction for SCM functionality
+    integer(IN)      ,optional, intent(in)    :: scm_ny   ! points in y direction for SCM functionality
 
     !----- local -----
     integer(IN)   :: n,k,j,i     ! indices

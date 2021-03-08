@@ -77,8 +77,9 @@ CONTAINS
     logical           :: scm_multcols = .false.    ! SCM functionality for multiple columns
     real(R8)          :: scmLat  = shr_const_SPVAL ! single column lat
     real(R8)          :: scmLon  = shr_const_SPVAL ! single column lon
-    integer(IN)       :: scm_nx = -1               ! number of points in SCM domain (x-direction)
-    integer(IN)       :: scm_ny = -1               ! number of points in SCM domain (y-direction)
+    integer(IN)       :: scm_nx = -1               ! number of points to use SCM
+                                                   ! functionality (x-direction)
+    integer(IN)       :: scm_ny = -1               ! same but for y-direction
     character(*), parameter :: F00   = "('(docn_comp_init) ',8a)"
     character(*), parameter :: subName = "(ocn_init_mct) "
     !-------------------------------------------------------------------------------
