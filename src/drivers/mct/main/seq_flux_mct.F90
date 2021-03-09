@@ -45,6 +45,8 @@ module seq_flux_mct
   real(r8), allocatable ::  zbot (:)  ! atm level height
   real(r8), allocatable ::  ubot (:)  ! atm velocity, zonal
   real(r8), allocatable ::  vbot (:)  ! atm velocity, meridional
+  real(r8), allocatable ::  tresp(:)  ! atm response to sensible heat flux
+  real(r8), allocatable ::  qresp(:)  ! atm response to latent heat flux
   real(r8), allocatable ::  wsresp(:) ! atm response to surface stress
   real(r8), allocatable ::  u_diff(:) ! approximate atmosphere change to ubot
   real(r8), allocatable ::  v_diff(:) ! approximate atmosphere change to ubot
@@ -121,6 +123,8 @@ module seq_flux_mct
   integer :: index_a2x_Sa_z
   integer :: index_a2x_Sa_u
   integer :: index_a2x_Sa_v
+  integer :: index_a2x_Sa_tresp
+  integer :: index_a2x_Sa_qresp
   integer :: index_a2x_Sa_wsresp
   integer :: index_a2x_Sa_u_diff
   integer :: index_a2x_Sa_v_diff
@@ -241,6 +245,12 @@ contains
     allocate( vbot(nloc))
     if(ier/=0) call mct_die(subName,'allocate vbot',ier)
     vbot = 0.0_r8
+    allocate( tresp(nloc))
+    if(ier/=0) call mct_die(subName,'allocate tresp',ier)
+    tresp = 0.0_r8
+    allocate( qresp(nloc))
+    if(ier/=0) call mct_die(subName,'allocate qresp',ier)
+    qresp = 0.0_r8
     allocate( wsresp(nloc))
     if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
     wsresp = 0.0_r8
@@ -676,6 +686,10 @@ contains
     if(ier/=0) call mct_die(subName,'allocate ubot',ier)
     allocate( vbot(nloc_a2o))
     if(ier/=0) call mct_die(subName,'allocate vbot',ier)
+    allocate( tresp(nloc_a2o))
+    if(ier/=0) call mct_die(subName,'allocate tresp',ier)
+    allocate( qresp(nloc_a2o))
+    if(ier/=0) call mct_die(subName,'allocate qresp',ier)
     allocate( wsresp(nloc_a2o))
     if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
     allocate( u_diff(nloc_a2o))
@@ -1043,9 +1057,11 @@ contains
           zbot(n) =  55.0_r8 ! atm height of bottom layer ~ m
           ubot(n) =   0.0_r8 ! atm velocity, zonal        ~ m/s
           vbot(n) =   2.0_r8 ! atm velocity, meridional   ~ m/s
+          tresp(n) =  0.0_r8 ! response of temperature to surface flux ~ K m^2 / W
+          qresp(n) =  0.0_r8 ! response of humidity to surface flux ~ m^2 s / kg
           wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          u_diff(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          v_diff(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
+          u_diff(n) = 0.0_r8 ! zonal wind change in previous time step ~ m/s
+          v_diff(n) = 0.0_r8 ! meridional wind change in previous time step ~ m/s
           thbot(n)= 301.0_r8 ! atm potential temperature  ~ Kelvin
           shum(n) = 1.e-2_r8 ! atm specific humidity      ~ kg/kg
           shum_16O(n) = 1.e-2_r8 ! H216O specific humidity    ~ kg/kg
@@ -1082,6 +1098,8 @@ contains
           zbot(n) = a2x_e%rAttr(index_a2x_Sa_z   ,ia)
           ubot(n) = a2x_e%rAttr(index_a2x_Sa_u   ,ia)
           vbot(n) = a2x_e%rAttr(index_a2x_Sa_v   ,ia)
+          tresp(n) = a2x_e%rAttr(index_a2x_Sa_tresp,ia)
+          qresp(n) = a2x_e%rAttr(index_a2x_Sa_qresp,ia)
           wsresp(n) = a2x_e%rAttr(index_a2x_Sa_wsresp,ia)
           u_diff(n) = a2x_e%rAttr(index_a2x_Sa_u_diff,ia)
           v_diff(n) = a2x_e%rAttr(index_a2x_Sa_v_diff,ia)
@@ -1373,6 +1391,8 @@ contains
        index_a2x_Sa_z      = mct_aVect_indexRA(a2x,'Sa_z')
        index_a2x_Sa_u      = mct_aVect_indexRA(a2x,'Sa_u')
        index_a2x_Sa_v      = mct_aVect_indexRA(a2x,'Sa_v')
+       index_a2x_Sa_tresp  = mct_aVect_indexRA(a2x,'Sa_tresp')
+       index_a2x_Sa_qresp  = mct_aVect_indexRA(a2x,'Sa_qresp')
        index_a2x_Sa_wsresp = mct_aVect_indexRA(a2x,'Sa_wsresp')
        index_a2x_Sa_u_diff = mct_aVect_indexRA(a2x,'Sa_u_diff')
        index_a2x_Sa_v_diff = mct_aVect_indexRA(a2x,'Sa_v_diff')
@@ -1429,6 +1449,8 @@ contains
           zbot(n) =  55.0_r8 ! atm height of bottom layer ~ m
           ubot(n) =   0.0_r8 ! atm velocity, zonal        ~ m/s
           vbot(n) =   2.0_r8 ! atm velocity, meridional   ~ m/s
+          tresp(n) =  0.0_r8 ! response of temperature to surface flux ~ K m^2 / W
+          qresp(n) =  0.0_r8 ! response of humidity to surface flux ~ m^2 s / kg
           wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
           u_diff(n) = 0.0_r8 ! atm velocity change, zonal ~ m/s
           v_diff(n) = 0.0_r8 ! atm velocity change, meridional ~ m/s
@@ -1479,6 +1501,8 @@ contains
              zbot(n) = a2x%rAttr(index_a2x_Sa_z   ,n)
              ubot(n) = a2x%rAttr(index_a2x_Sa_u   ,n)
              vbot(n) = a2x%rAttr(index_a2x_Sa_v   ,n)
+             tresp(n) = a2x%rAttr(index_a2x_Sa_tresp,n)
+             qresp(n) = a2x%rAttr(index_a2x_Sa_qresp,n)
              wsresp(n) = a2x%rAttr(index_a2x_Sa_wsresp,n)
              u_diff(n) = a2x%rAttr(index_a2x_Sa_u_diff,n)
              v_diff(n) = a2x%rAttr(index_a2x_Sa_v_diff,n)

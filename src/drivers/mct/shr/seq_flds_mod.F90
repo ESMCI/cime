@@ -638,6 +638,36 @@ contains
     attname  = 'Sa_v'
     call metadata_set(attname, longname, stdname, units)
 
+    ! first-order response of tbot to surface fluxes (K m^2/W)
+    call seq_flds_add(a2x_states,"Sa_tresp")
+    call seq_flds_add(x2l_states,"Sa_tresp")
+    call seq_flds_add(x2i_states,"Sa_tresp")
+    if (rof_heat) then
+       call seq_flds_add(x2r_states,"Sa_tresp")
+       call seq_flds_add(a2x_states_to_rof,"Sa_tresp")
+    endif
+    call seq_flds_add(x2w_states,"Sa_tresp")
+    longname = 'Response of temperature to surface fluxes'
+    stdname  = 'tresp'
+    units    = 'K m2 W-1'
+    attname  = 'Sa_tresp'
+    call metadata_set(attname, longname, stdname, units)
+
+    ! first-order response of qbot to surface fluxes (m^2 s / kg)
+    call seq_flds_add(a2x_states,"Sa_qresp")
+    call seq_flds_add(x2l_states,"Sa_qresp")
+    call seq_flds_add(x2i_states,"Sa_qresp")
+    if (rof_heat) then
+       call seq_flds_add(x2r_states,"Sa_qresp")
+       call seq_flds_add(a2x_states_to_rof,"Sa_qresp")
+    endif
+    call seq_flds_add(x2w_states,"Sa_qresp")
+    longname = 'Response of specific humidity to surface fluxes'
+    stdname  = 'qresp'
+    units    = 'm2 s kg-1'
+    attname  = 'Sa_qresp'
+    call metadata_set(attname, longname, stdname, units)
+
     ! first-order response of wind to surface stresses (m/s/Pa)
     call seq_flds_add(a2x_states,"Sa_wsresp")
     call seq_flds_add(x2l_states,"Sa_wsresp")
