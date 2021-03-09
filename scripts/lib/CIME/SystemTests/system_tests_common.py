@@ -348,9 +348,10 @@ class SystemTestsCommon(object):
         if success_change:
             success = not success
 
+        append_testlog(comments, self._orig_caseroot)
+
         self._log_cprnc_output_tail()
 
-        append_testlog(comments, self._orig_caseroot)
         status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         with self._test_status:
             self._test_status.set_status("{}_{}_{}".format(COMPARE_PHASE, suffix1, suffix2), status)
@@ -563,9 +564,10 @@ class SystemTestsCommon(object):
             # compare baseline
             success, comments = compare_baseline(self._case)
 
+            append_testlog(comments, self._orig_caseroot)
+
             self._log_cprnc_output_tail()
 
-            append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
             ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
