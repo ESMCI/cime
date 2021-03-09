@@ -318,7 +318,7 @@ class SystemTestsCommon(object):
         comments = copy_histfiles(self._case, suffix)
         append_testlog(comments, self._orig_caseroot)
 
-    def _log_cprnc_output_tail(self):
+    def _log_cprnc_output_tail(self, prepend=None):
         rundir = self._case.get_value('RUNDIR')
 
         cprnc_logs = glob.glob("{}/*.cprnc.out".format(rundir))
@@ -328,6 +328,9 @@ class SystemTestsCommon(object):
                 cprnc_log_tail = fin.readlines()[-20:]
             
             cprnc_log_tail.insert(0, "tail -n20 {}\n\n".format(output))
+
+            if prepend is not None:
+                cprnc_log_tail.insert(0, "{}\n\n".format(prepend))
 
             append_testlog("".join(cprnc_log_tail), self._orig_caseroot)
 
@@ -350,7 +353,7 @@ class SystemTestsCommon(object):
 
         append_testlog(comments, self._orig_caseroot)
 
-        self._log_cprnc_output_tail()
+        self._log_cprnc_output_tail("compared suffixes suffix1 {!r} suffix2 {!r}".format(suffix1, suffix2))
 
         status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         with self._test_status:
