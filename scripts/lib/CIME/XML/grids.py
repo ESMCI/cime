@@ -296,7 +296,7 @@ class Grids(GenericXML):
                 driver_attrib = self.get(mesh_node, "driver")
                 if driver == driver_attrib:
                     domains["MASK_MESH"] = self.text(mesh_node)
-
+                domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["ATM_DOMAIN_FILE"])
 
         return domains
 
