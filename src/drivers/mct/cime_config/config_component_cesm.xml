@@ -119,6 +119,15 @@
     <desc>Logical  compress/convert  archive files to netcdf-4</desc>
   </entry>
 
+  <entry id="COPY_CASE_FOLDER">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>TRUE</default_value>
+    <group>run_data_archive</group>
+    <file>env_run.xml</file>
+    <desc>Logical  copy CASE folder to archive</desc>
+  </entry>
+
   <entry id="BFBFLAG">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
