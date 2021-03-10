@@ -602,21 +602,32 @@ sub update_auto_func_list_with_gen_templ
 # Returns the default test main code
 sub get_default_test_main
 {
+  my($test_type) = @_;
   my($out_line);
   $out_line = "\n\n";
   $out_line = $out_line . "  PROGRAM PIO_TF_Test_main_\n";
   $out_line = $out_line . "    USE pio_tutil\n";
   $out_line = $out_line . "    IMPLICIT NONE\n";
-  $out_line = $out_line . "    INTEGER, PARAMETER :: NREARRS = 2\n";
-  $out_line = $out_line . "    INTEGER :: rearrs(NREARRS) = (/pio_rearr_subset,pio_rearr_box/)\n";
-  $out_line = $out_line . "    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: rearrs_info(NREARRS) = (/\"PIO_REARR_SUBSET\",\"PIO_REARR_BOX   \"/)\n";
+  if($test_type eq "sync"){
+      $out_line = $out_line . "    INTEGER, PARAMETER :: NREARRS = 2\n";
+      $out_line = $out_line . "    INTEGER :: rearrs(NREARRS) = (/pio_rearr_subset,pio_rearr_box/)\n";
+      $out_line = $out_line . "    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: rearrs_info(NREARRS) = (/\"PIO_REARR_SUBSET\",\"PIO_REARR_BOX   \"/)\n";
+  }else{
+      $out_line = $out_line . "    INTEGER, PARAMETER :: NREARRS = 1\n";
+      $out_line = $out_line . "    INTEGER :: rearrs(NREARRS) = (/pio_rearr_box/)\n";
+      $out_line = $out_line . "    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: rearrs_info(NREARRS) = (/\"PIO_REARR_BOX   \"/)\n";
+  }
   $out_line = $out_line . "    INTEGER i, ierr\n";
   $out_line = $out_line . "\n";
   $out_line = $out_line . "    pio_tf_nerrs_total_=0\n";
   $out_line = $out_line . "    pio_tf_retval_utest_=0\n";
   $out_line = $out_line . "    CALL MPI_Init(ierr)\n";
   $out_line = $out_line . "    DO i=1,SIZE(rearrs)\n";
-  $out_line = $out_line . "      CALL PIO_TF_Init_(rearrs(i))\n";
+  if($test_type eq "async"){
+    $out_line = $out_line . "      CALL PIO_TF_Init_async_(rearrs(i))\n";
+  }else{
+    $out_line = $out_line . "      CALL PIO_TF_Init_(rearrs(i))\n";
+  }
   $out_line = $out_line . "      IF (pio_tf_world_rank_ == 0) THEN\n";
   $out_line = $out_line . "        WRITE(*,*) \"PIO_TF: Testing : \", trim(rearrs_info(i))\n";
   $out_line = $out_line . "      END IF\n";
@@ -704,20 +715,20 @@ sub get_header
 }
 
 # The footer always contains the default test main code
-# The footer can contain the default test driver code is none is specified
+# The footer can contain the default test driver code if none is specified
 # - The default test driver code will contain all the auto test subs
 # If a test driver code is specified the list of auto test funcs has already
 # been appended the driver
 sub get_footer
 {
-  my($ref_auto_funcs_list) = @_;
-  my($out_line);
+  my($test_type, $ref_auto_funcs_list) = @_;
+  my($out_line) = "";
   if($template_has_test_driver == 0){
     # Add default test driver
     $out_line = &get_default_test_driver($ref_auto_funcs_list);
   }
+  $out_line = $out_line . &get_default_test_main($test_type);
 
-  $out_line = $out_line . &get_default_test_main();
   return $out_line;
 }
 
@@ -860,8 +871,11 @@ sub process_template_file
     $orig_line = "";
     $ifline_num += 1;
   }
-
-  $footer = &get_footer(\@auto_funcs_list);
+  if(index($ifname, "async") >= 0){
+      $footer = &get_footer("async", \@auto_funcs_list);
+  }else{
+      $footer = &get_footer("sync", \@auto_funcs_list);
+  }
   print OUTPUT_FILE $footer;
 }
 

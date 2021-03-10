@@ -1,0 +1,5 @@
+sphinx
+sphinx_rtd_theme
+nbsphinx
+sphinx-reload
+pillow==7.1.2

@@ -3,7 +3,7 @@ Base class for CIME system tests
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
-from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect, get_current_commit
+from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect, get_current_commit, SharedArea
 from CIME.test_status import *
 from CIME.hist_utils import copy_histfiles, compare_test, generate_teststatus, \
     compare_baseline, get_ts_synopsis, generate_baseline
@@ -33,7 +33,7 @@ class SystemTestsCommon(object):
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
-        self._cpllog = "med" if self._case.get_value("COMP_INTERFACE")=="nuopc" else "cpl"
+        self._cpllog = "drv" if self._case.get_value("COMP_INTERFACE")=="nuopc" else "cpl"
         self._ninja     = False
         self._dry_run   = False
         self._user_separate_builds = False
@@ -67,7 +67,6 @@ class SystemTestsCommon(object):
 
             logging.warning("Resetting case due to detected re-run of phase {}".format(phase))
             self._case.set_initial_test_values()
-
             self._case.case_setup(reset=True, test_mode=True)
 
     def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False):
@@ -206,7 +205,7 @@ class SystemTestsCommon(object):
                     save_test_time(baseline_root, self._casebaseid, time_taken, get_current_commit(repo=srcroot))
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
-                overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
+                overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)[0]
                 if overall_status != TEST_PASS_STATUS:
                     srcroot = self._case.get_value("SRCROOT")
                     worked_before, last_pass, last_fail_transition = \
@@ -569,12 +568,13 @@ class SystemTestsCommon(object):
             # copy latest cpl log to baseline
             # drop the date so that the name is generic
             newestcpllogfiles = self._get_latest_cpl_logs()
-            for cpllog in newestcpllogfiles:
-                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog),cpllog)
-                if m is not None:
-                    baselog = os.path.join(basegen_dir, m.group(1))+".gz"
-                    safe_copy(cpllog,
-                              os.path.join(basegen_dir,baselog))
+            with SharedArea():
+                for cpllog in newestcpllogfiles:
+                    m = re.search(r"/({}.*.log).*.gz".format(self._cpllog),cpllog)
+                    if m is not None:
+                        baselog = os.path.join(basegen_dir, m.group(1))+".gz"
+                        safe_copy(cpllog,
+                                  os.path.join(basegen_dir,baselog), preserve_meta=False)
 
 class FakeTest(SystemTestsCommon):
     """
@@ -584,9 +584,20 @@ class FakeTest(SystemTestsCommon):
     have names beginnig with "TEST" this is so that the find_system_test
     in utils.py will work with these classes.
     """
+    def __init__(self, case, expected=None):
+        super(FakeTest, self).__init__(case,expected=expected)
+        self._script = None
+        self._requires_exe = False
+        self._original_exe = self._case.get_value("run_exe")
+
     def _set_script(self, script, requires_exe=False):
-        self._script = script # pylint: disable=attribute-defined-outside-init
-        self._requires_exe = requires_exe # pylint: disable=attribute-defined-outside-init
+        self._script = script
+        self._requires_exe = requires_exe
+
+    def _resetup_case(self, phase, reset=False):
+        run_exe = self._case.get_value("run_exe")
+        super(FakeTest, self)._resetup_case(phase, reset=reset)
+        self._case.set_value("run_exe", run_exe)
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         if self._requires_exe:
@@ -594,14 +605,8 @@ class FakeTest(SystemTestsCommon):
 
         if not sharedlib_only:
             exeroot = self._case.get_value("EXEROOT")
-            cime_model = self._case.get_value("MODEL")
-            modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
-            real_modelexe = modelexe + ".real"
-
-            if self._requires_exe and os.path.exists(modelexe):
-                logger.info("moving {} to {}".format(modelexe, real_modelexe))
-                os.rename(modelexe, real_modelexe)
-                expect(os.path.exists(real_modelexe),"Could not find expected file {}".format(real_modelexe))
+            modelexe = os.path.join(exeroot, "fake.exe")
+            self._case.set_value("run_exe",modelexe)
 
             with open(modelexe, 'w') as f:
                 f.write("#!/bin/bash\n")
@@ -743,24 +748,21 @@ class TESTBUILDFAILEXC(FakeTest):
 class TESTRUNUSERXMLCHANGE(FakeTest):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
-        exeroot = self._case.get_value("EXEROOT")
         caseroot = self._case.get_value("CASEROOT")
-        cime_model = self._case.get_value("MODEL")
-        modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
+        modelexe = self._case.get_value("run_exe")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
         script = \
 """
 cd {caseroot}
+./xmlchange --file env_test.xml STOP_N={stopn}
 ./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
-{modelexe}.real "$@"
-
-# Need to remove self in order to avoid infinite loop
-mv {modelexe} {modelexe}.old
-mv {modelexe}.real {modelexe}
+{originalexe} "$@"
+cd {caseroot}
+./xmlchange run_exe={modelexe}
 sleep 5
-""".format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
+""".format(originalexe=self._original_exe, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)
