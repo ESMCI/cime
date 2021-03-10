@@ -222,12 +222,13 @@ def parse_test_status(line):
     return test, status
 
 ###############################################################################
-def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, tester=None):
+def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, tester=None, machine=None):
 ###############################################################################
     # Kill all subprocesses
-    if self._machine == "ubuntu-latest":
-        # pgrep has a bug in ubuntu 20, used in github actions
+    if machine and machine == "ubuntu-latest" or tester and tester._machine == "ubuntu-latest":
+        # ubuntu has a bug in pgrep which causes github actions to fail
         return
+    
     proc_ids = CIME.utils.find_proc_id(proc_name=name, children_only=True)
     if (expected_num_killed is not None):
         tester.assertEqual(len(proc_ids), expected_num_killed,
@@ -971,8 +972,7 @@ class M_TestWaitForTests(unittest.TestCase):
         if do_teardown:
             for testdir in self._testdirs:
                 shutil.rmtree(testdir)
-
-        kill_subprocesses()
+        kill_subprocesses(machine=self._machine)
 
         if (self._unset_proxy):
             del os.environ["http_proxy"]
@@ -1205,7 +1205,7 @@ class TestCreateTestCommon(unittest.TestCase):
     ###########################################################################
     def tearDown(self):
     ###########################################################################
-        kill_subprocesses()
+        kill_subprocesses(machine=self._machine)
 
         os.chdir(self._root_dir)
 
@@ -1629,7 +1629,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
 
         time.sleep(120)
 
-        kill_subprocesses(sig=signal.SIGTERM)
+        kill_subprocesses(machine=self._machine, sig=signal.SIGTERM)
 
         run_thread.join(timeout=30)
 
