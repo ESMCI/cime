@@ -225,6 +225,9 @@ def parse_test_status(line):
 def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, tester=None):
 ###############################################################################
     # Kill all subprocesses
+    if self._machine == "ubuntu-latest":
+        # pgrep has a bug in ubuntu 20, used in github actions
+        return
     proc_ids = CIME.utils.find_proc_id(proc_name=name, children_only=True)
     if (expected_num_killed is not None):
         tester.assertEqual(len(proc_ids), expected_num_killed,
