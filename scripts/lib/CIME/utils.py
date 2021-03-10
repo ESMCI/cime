@@ -969,8 +969,8 @@ def find_proc_id(proc_name=None,
 
     pgrep_cmd = "pgrep {} {}".format(proc_name if proc_name is not None else "",
                                  "-P {:d}".format(parent if children_only else ""))
-    stat, output, errput = run_cmd(pgrep_cmd)
-    expect(stat in [0, 1], "pgrep failed with error: '{}'".format(errput))
+    stat, output, errput = run_cmd(pgrep_cmd, verbose=True)
+    expect(stat in [0, 1], "{} failed with output '{}' and error: '{}'".format(pgrep_cmd, output,errput))
 
     rv = set([int(item.strip()) for item in output.splitlines()])
     if (children_only):
