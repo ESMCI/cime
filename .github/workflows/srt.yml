@@ -43,7 +43,12 @@ jobs:
           sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
 
       - id: load-env2
-        run: sudo apt-get install procps-ng
+        run: |
+          apt-get -y source procps && cd procps-*
+          curl -fSsL -o debian/patches/sc_arg_max https://gitlab.com/procps-ng/procps/-/commit/bb96fc4295.patch
+          echo sc_arg_max >>debian/patches/series
+          dch --local myorg 'Apply patch: "pgrep: check sanity of SC_ARG_MAX"'
+          debuild -us -uc -G -i -tc
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
