@@ -227,7 +227,7 @@ def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, t
     # a bug in pgrep prevents this running in github actions.
     if MACHINE == "ubuntu-latest":
         return
-
+    print("HERE machine is {}".format(MACHINE))
     # Kill all subprocesses
     proc_ids = CIME.utils.find_proc_id(proc_name=name, children_only=True)
     if (expected_num_killed is not None):
