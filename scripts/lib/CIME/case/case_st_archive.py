@@ -657,11 +657,12 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
         logger.info("cmd={}".format(cmd))
         run_cmd_no_fail(cmd)
 
-    archiveroot = self.get_value('DOUT_S_ROOT')
-    sync='rsync -avh'
-    cmd="%s %s %s %s" %(sync,caseroot, archiveroot+'/case','>'+archiveroot+'/case.log') 
-    logger.info("cmd={}".format(cmd))
-    run_cmd_no_fail(cmd)
+    if self.get_value('COPY_CASE_FOLDER'):
+        archiveroot = self.get_value('DOUT_S_ROOT')
+        sync='rsync -avh'
+        cmd="%s %s %s %s" %(sync,caseroot, archiveroot+'/case','>'+archiveroot+'/case.log') 
+        logger.info("cmd={}".format(cmd))
+        run_cmd_no_fail(cmd)
 
     return True
 
