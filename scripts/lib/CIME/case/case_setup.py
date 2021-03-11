@@ -109,7 +109,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             case.flush()
             configure(Machines(machine=mach, extra_machines_dir=extra_machines_dir),
                       caseroot, ["Makefile"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
-                      threaded=case.get_build_threaded(),extra_machines_dir=extra_machines_dir)
+                      extra_machines_dir=extra_machines_dir)
             case.read_xml()
 
     if not clean:
@@ -191,9 +191,9 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             case.set_value("SMP_PRESENT", threaded)
             if threaded and case.total_tasks * case.thread_count > cost_per_node:
                 smt_factor = max(1.0,int(case.get_value("MAX_TASKS_PER_NODE") / cost_per_node))
-                case.set_value("TOTALPES", case.iotasks + int((case.total_tasks - case.iotasks) * max(1.0,float(case.thread_count) / smt_factor)))
+                case.set_value("TOTALPES", int(case.total_tasks * max(1.0,float(case.thread_count) / smt_factor)))
             else:
-                case.set_value("TOTALPES", (case.total_tasks - case.iotasks)*case.thread_count + case.iotasks)
+                case.set_value("TOTALPES", case.total_tasks*case.thread_count)
 
             # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
             env_batch = case.get_env("batch")

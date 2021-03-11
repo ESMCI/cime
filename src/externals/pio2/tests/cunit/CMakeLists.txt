@@ -1,7 +1,6 @@
 include (LibMPI)
 
 include_directories("${CMAKE_SOURCE_DIR}/tests/cunit")
-include_directories("${CMAKE_SOURCE_DIR}/src/clib")
 include_directories("${CMAKE_BINARY_DIR}")
 
 # Compiler-specific compiler options
@@ -96,7 +95,7 @@ if (NOT PIO_USE_MPISERIAL)
   add_executable (test_decomp_frame EXCLUDE_FROM_ALL test_decomp_frame.c test_common.c)
   target_link_libraries (test_decomp_frame pioc)
   add_executable (test_perf2 EXCLUDE_FROM_ALL test_perf2.c test_common.c)
-    target_link_libraries (test_perf2 pioc)
+    target_link_libraries (test_perf2)
     add_executable (test_darray_async_simple EXCLUDE_FROM_ALL test_darray_async_simple.c test_common.c)
     target_link_libraries (test_darray_async_simple pioc)
     add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c test_common.c)
@@ -115,8 +114,6 @@ if (NOT PIO_USE_MPISERIAL)
     target_link_libraries (test_async_1d pioc)
     add_executable (test_simple EXCLUDE_FROM_ALL test_simple.c test_common.c)
     target_link_libraries (test_simple pioc)
-    add_executable (test_async_perf EXCLUDE_FROM_ALL test_async_perf.c test_common.c)
-    target_link_libraries(test_async_perf pioc)
 endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
 target_link_libraries (test_spmd pioc)
@@ -149,13 +146,12 @@ add_dependencies (tests test_async_multi2)
 add_dependencies (tests test_async_manyproc)
 add_dependencies (tests test_async_1d)
 add_dependencies (tests test_simple)
-add_dependencies (tests test_async_perf)
 
 # Test Timeout in seconds.
 if (PIO_VALGRIND_CHECK)
-  set (DEFAULT_TEST_TIMEOUT 800)
+  set (DEFAULT_TEST_TIMEOUT 480)
 else ()
-  set (DEFAULT_TEST_TIMEOUT 600)
+  set (DEFAULT_TEST_TIMEOUT 480)
 endif ()
 
 # All tests need a certain number of tasks, but they should be able to
@@ -323,9 +319,5 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_simple
     NUMPROCS ${EXACTLY_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  # add_mpi_test(test_async_perf
-  #   EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_perf
-  #   NUMPROCS ${EXACTLY_FOUR_TASKS}
-  #   TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 MESSAGE("CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}")

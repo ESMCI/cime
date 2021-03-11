@@ -321,7 +321,7 @@ The case initialization type is set using the ``$RUN_TYPE`` variable in
   branch runs. To set up a branch run, locate the restart tar file or
   restart directory for ``$RUN_REFCASE`` and ``$RUN_REFDATE`` from a
   previous run, then place those files in the ``$RUNDIR``  directory.
-  See :ref:`Starting from a reference case<starting_from_a_refcase>`.
+  See :ref:`setting up a branch run<setting-up-a-branch-run>`.
 
 ``hybrid``
 
@@ -360,7 +360,7 @@ Starting from a reference case (REFCASE)
 ----------------------------------------
 
 There are several xml variables that control how either a branch or a hybrid case can start up from another case.
-The initial/restart files needed to start up a run from another case are required to be in ``$RUNDIR``.
+The initial/restart files needed to start up a run from another case are required to be in $EXEROOT.
 The xml variable ``$GET_REFCASE`` is a flag that if set will automatically prestaging the refcase restart data.
 
 - If ``$GET_REFCASE`` is ``TRUE``, then the the values set by ``$RUN_REFDIR``, ``$RUN_REFCASE``, ``$RUN_REFDATE`` and  ``$RUN_TOD`` are
@@ -375,7 +375,7 @@ The xml variable ``$GET_REFCASE`` is a flag that if set will automatically prest
   - If ``$RUN_REFDIR`` is a relative pathname AND is not available in ``$DIN_LOC_ROOT`` then CIME will attempt to download the data from the input data repositories.
 
 
-- If ``$GET_REFCASE`` is ``FALSE`` then the data is assumed to already exist in ``$RUNDIR``.
+- If ``$GET_REFCASE`` is ``FALSE`` then the data is assumed to already exist in ``$EXEROOT``.
 
 .. _controlling-output-data:
 
@@ -459,10 +459,10 @@ files as well as the time evolution of the model.
 
 Runs that are initialized as branch or hybrid runs require
 restart/initial files from previous model runs (as specified by the
-variables ``$RUN_REFCASE`` and ``$RUN_REFDATE``). Pre-stage these files
-to the case ``$RUNDIR`` (normally ``$EXEROOT/../run``) before the model
-run starts. Normally this is done by copying the contents of the
-relevant **$RUN_REFCASE/rest/$RUN_REFDATE.00000** directory.
+variables ``$RUN_REFCASE`` and ``$RUN_REFDATE``). Pre-stage these
+iles to the case ``$RUNDIR`` (normally ``$EXEROOT/run``)
+before the model run starts. Normally this is done by copying the contents
+of the relevant **$RUN_REFCASE/rest/$RUN_REFDATE.00000** directory.
 
 Whenever a component writes a restart file, it also writes a restart
 pointer file in the format **rpointer.$component**. Upon a restart, each
@@ -526,7 +526,7 @@ Short-term archiving
 
 If short-term archiving is enabled, component output files are moved
 to the short-term archiving area on local disk, as specified by
-``$DOUT_S_ROOT``. The directory normally is **$EXEROOT/../../archive/$CASE.**
+``$DOUT_S_ROOT``. The directory normally is **$EXEROOT/../archive/$CASE.**
 and has the following directory structure: ::
 
    rest/yyyy-mm-dd-sssss/

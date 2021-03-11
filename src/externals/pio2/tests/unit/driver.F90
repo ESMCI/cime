@@ -102,7 +102,7 @@ Program pio_unit_test_driver
   call MPI_Bcast(stride,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
   niotasks = ntasks/stride
 
-  ! Set up PIO. Use a base of 1 because task 0 is already busy.
+  ! Set up PIO
   call PIO_init(my_rank,        & ! MPI rank
        MPI_COMM_WORLD, & ! MPI communicator
        niotasks,       & ! Number of iotasks (ntasks/stride)

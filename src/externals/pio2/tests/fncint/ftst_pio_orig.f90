@@ -65,7 +65,7 @@ program ftst_pio
   call PIO_initdecomp(ioSystem, PIO_int, dims, compdof, iodesc)
 
   ! Create a file.
-  ierr = PIO_createfile(ioSystem, pioFileDesc, PIO_IOTYPE_NETCDF, FILE_NAME, PIO_clobber)
+  ierr = PIO_createfile(ioSystem, pioFileDesc, PIO_IOTYPE_PNETCDF, FILE_NAME, PIO_clobber)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define dimensions.

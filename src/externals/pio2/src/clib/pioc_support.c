@@ -114,8 +114,10 @@ PIOc_strerror(int pioerr, char *errmsg)
     }
     else if (pioerr == PIO_NOERR)
         strcpy(errmsg, "No error");
+#if defined(_NETCDF)
     else if (pioerr <= NC2_ERR && pioerr >= NC4_LAST_ERROR)     /* NetCDF error? */
         strncpy(errmsg, nc_strerror(pioerr), PIO_MAX_NAME);
+#endif /* endif defined(_NETCDF) */
 #if defined(_PNETCDF)
     else if (pioerr > PIO_FIRST_ERROR_CODE)     /* pNetCDF error? */
         strncpy(errmsg, ncmpi_strerror(pioerr), PIO_MAX_NAME);
@@ -129,9 +131,6 @@ PIOc_strerror(int pioerr, char *errmsg)
             break;
         case PIO_EVARDIMMISMATCH:
             strcpy(errmsg, "Variable dim mismatch in multivar call");
-            break;
-        case PIO_EBADREARR:
-            strcpy(errmsg, "Rearranger mismatch in async mode");
             break;
         default:
             strcpy(errmsg, "Unknown Error: Unrecognized error code");
@@ -164,70 +163,11 @@ PIOc_set_log_level(int level)
 #if PIO_ENABLE_LOGGING
     /* Set the log level. */
     pio_log_level = level;
-    if(!LOG_FILE)
-        pio_init_logging();
-    PLOG((0,"set loglevel to %d", level));
+
 #endif /* PIO_ENABLE_LOGGING */
 
     return PIO_NOERR;
 }
-/**
- * Set the logging level value from the root compute task on all tasks
- * if PIO was built with
- * PIO_ENABLE_LOGGING. Set to -1 for nothing, 0 for errors only, 1 for
- * important logging, and so on. Log levels below 1 are only printed
- * on the io/component root.
- *
- * A log file is also produced for each task. The file is called
- * pio_log_X.txt, where X is the (0-based) task number.
- *
- * If the library is not built with logging, this function does
- * nothing.
- *
- * @param iosysid the IO system ID
- * @param level the logging level, 0 for errors only, 5 for max
- * verbosity.
- * @returns 0 on success, error code otherwise.
- * @author Jim Edwards
- */
-int PIOc_set_global_log_level(int iosysid, int level)
-{
-#if PIO_ENABLE_LOGGING
-    iosystem_desc_t *ios;
-    int mpierr=0, mpierr2;
-
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-
-    if (ios->async)
-    {
-        if(!ios->ioproc)
-        {
-            int msg = PIO_MSG_SETLOGLEVEL;
-            if (ios->compmaster == MPI_ROOT)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-            if (!mpierr)
-                mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-        }
-
-    }
-    if (!mpierr)
-        mpierr = MPI_Bcast(&level, 1, MPI_INT, ios->comproot, ios->union_comm);
-
-    /* Handle MPI errors. */
-    if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-        check_mpi(ios, NULL, mpierr2, __FILE__, __LINE__);
-    if (mpierr)
-        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-
-
-    /* Set the log level on all tasks */
-    PIOc_set_log_level(level);
-    PLOG((level, "set_global_log_level, level = %d", level));
-#endif
-    return PIO_NOERR;
-}
-
 
 #ifdef USE_MPE
 
@@ -362,7 +302,7 @@ pio_init_logging(void)
 #endif /* USE_MPE */
 
 #if PIO_ENABLE_LOGGING
-    if (!LOG_FILE && pio_log_level > 0)
+    if (!LOG_FILE)
     {
         char log_filename[PIO_MAX_NAME];
         int mpierr;
@@ -378,7 +318,7 @@ pio_init_logging(void)
 
         pio_log_ref_cnt = 1;
     }
-    else if(LOG_FILE)
+    else
     {
         pio_log_ref_cnt++;
     }
@@ -688,7 +628,6 @@ check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
             MPI_Bcast(&status, 1, MPI_INT, ios->ioroot, ios->my_comm);
         else if (file)
             MPI_Bcast(&status, 1, MPI_INT, file->iosystem->ioroot, file->iosystem->my_comm);
-        PLOG((2, "check_netcdf2 status returned = %d", status));
     }
 
     /* For PIO_RETURN_ERROR, just return the error. */
@@ -2467,8 +2406,8 @@ inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars,
                 {
                     if (d == 0){
                         (*rec_var)[v] = 1;
-                        break;
-                    }
+			break;
+		    }
                     else
                         return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
 
@@ -2716,8 +2655,6 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                                          &nvars, &rec_var, &pio_type,
                                          &pio_type_size, &mpi_type,
                                          &mpi_type_size, &ndims);
-                PLOG((2, "PIOc_openfile_retry:nc_open for 4C filename = %s mode = %d "
-                      "ierr = %d", filename, mode, ierr));
             }
             break;
 #endif /* _NETCDF4 */
@@ -2731,8 +2668,6 @@ PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                                          &nvars, &rec_var, &pio_type,
                                          &pio_type_size, &mpi_type,
                                          &mpi_type_size, &ndims);
-                PLOG((2, "PIOc_openfile_retry:nc_open for classic filename = %s mode = %d "
-                      "ierr = %d", filename, mode, ierr));
             }
             break;
 
@@ -3007,17 +2942,15 @@ pioc_change_def(int ncid, int is_enddef)
         {
             int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
             if (ios->compmaster == MPI_ROOT)
-              {
-                PLOG((2, "pioc_change_def request sent"));
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-              }
+
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             PLOG((3, "pioc_change_def ncid = %d mpierr = %d", ncid, mpierr));
         }
 
         /* Handle MPI errors. */
-        PLOG((3, "pioc_change_def handling MPI errors my_comm=%d", ios->my_comm));
+        PLOG((3, "pioc_change_def handling MPI errors"));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
         if (mpierr)

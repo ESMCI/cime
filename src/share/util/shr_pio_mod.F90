@@ -5,11 +5,11 @@ module shr_pio_mod
   use shr_log_mod,  only : shr_log_unit
   use shr_mpi_mod,  only : shr_mpi_bcast, shr_mpi_chkerr
   use shr_sys_mod,  only : shr_sys_abort
-#ifndef NO_MPI2
-  use mpi, only : mpi_comm_null, mpi_comm_world, mpi_finalize
+#ifndef NO_MPIMOD
+  use mpi, only : mpi_comm_null, mpi_comm_world
 #endif
   implicit none
-#ifdef NO_MPI2
+#ifdef NO_MPIMOD
 #include <mpif.h>
 #endif
   private
@@ -96,9 +96,6 @@ contains
     character(*),parameter :: subName =   '(shr_pio_init1) '
     integer :: pelist(3,1)
 
-    integer, allocatable :: comp_comm(:)
-    type(iosystem_desc_t), allocatable :: iosystems(:)
-
     call shr_pio_read_default_namelist(nlfilename, Global_Comm, pio_stride, pio_root, pio_numiotasks, &
          pio_iotype, pio_async_interface, pio_rearranger)
 
@@ -115,13 +112,6 @@ contains
        pio_comp_settings(i)%pio_rearranger = pio_rearranger
        pio_comp_settings(i)%pio_netcdf_ioformat = pio_netcdf_ioformat
     end do
-
-    if(pio_debug_level>0) then
-       if(drank==0) then
-          write(shr_log_unit,*) 'Setting pio_debuglevel : ',pio_debug_level
-       end if
-       call pio_setdebuglevel(pio_debug_level)
-    endif
     if(pio_async_interface) then
 #ifdef NO_MPI2
        call shr_sys_abort(subname//':: async IO requires an MPI2 compliant MPI library')
@@ -141,17 +131,6 @@ contains
        call shr_mpi_chkerr(ierr,subname//' mpi_group_range_incl mpigrp')
        call mpi_comm_create(GLOBAL_COMM, mpigrp, mpicom, ierr)
        Global_COMM=mpicom
-       if(io_comm .ne. MPI_COMM_NULL) then
-          allocate(iosystems(ncomps), comp_comm(ncomps))
-          comp_comm = MPI_COMM_NULL
-          call pio_init(iosystems, MPI_COMM_WORLD, comp_comm, io_comm, PIO_REARR_BOX)
-          ! IO_COMM does not return until program ends
-          print *,__FILE__,__LINE__,'io tasks returned from pio'
-          deallocate(iosystems, comp_comm)
-          call mpi_finalize(ierr)
-          stop
-       endif
-
 #endif
     end if
     total_comps = ncomps
@@ -178,6 +157,12 @@ contains
     integer :: ret
     character(*), parameter :: subName = '(shr_pio_init2) '
 
+    if(pio_debug_level>0) then
+       if(comp_comm_iam(1)==0) then
+          write(shr_log_unit,*) 'Setting pio_debuglevel : ',pio_debug_level
+       end if
+       call pio_setdebuglevel(pio_debug_level)
+    endif
     ! 0 is a valid value of pio_buffer_size_limit
     if(pio_buffer_size_limit>=0) then
        if(comp_comm_iam(1)==0) then
@@ -193,12 +178,16 @@ contains
     endif
     ! Correct the total_comps value which may be lower in nuopc
     total_comps = size(comp_iamin)
+
+
+    allocate(io_compid(total_comps), io_compname(total_comps))
+
+    io_compid = comp_id
+    io_compname = comp_name
     allocate(iosystems(total_comps))
 
     if(pio_async_interface) then
-#ifdef PIO2
-       call pio_init(iosystems, MPI_COMM_WORLD, comp_comm, io_comm, PIO_REARR_BOX)
-#endif
+!       call pio_init(iosystems, MPI_COMM_WORLD, comp_comm, io_comm, PIO_REARR_BOX)
 !       do i=1,total_comps
 !         ret =  pio_set_rearr_opts(iosystems(i), pio_rearr_opt_comm_type,&
 !                  pio_rearr_opt_fcd,&
@@ -242,11 +231,6 @@ contains
           end if
        end do
     end if
-
-    allocate(io_compid(total_comps), io_compname(total_comps))
-
-    io_compid = comp_id
-    io_compname = comp_name
     do i=1,total_comps
        if(comp_iamin(i) .and. (comp_comm_iam(i) == 0)) then
           write(shr_log_unit,*) io_compname(i),' : pio_numiotasks = ',pio_comp_settings(i)%pio_numiotasks
@@ -450,7 +434,7 @@ contains
     logical :: iamroot
     namelist /pio_default_inparm/  &
           pio_async_interface, pio_debug_level, pio_blocksize, &
-          pio_buffer_size_limit, pio_root, pio_numiotasks, pio_stride, &
+          pio_buffer_size_limit, &
           pio_rearr_comm_type, pio_rearr_comm_fcd, &
           pio_rearr_comm_max_pend_req_comp2io, pio_rearr_comm_enable_hs_comp2io, &
           pio_rearr_comm_enable_isend_comp2io, &
@@ -514,14 +498,12 @@ contains
 
      call shr_pio_namelist_set(npes, Comm, pio_stride, pio_root, pio_numiotasks, pio_iotype, &
           iamroot, pio_rearranger, pio_netcdf_ioformat)
+
     call shr_mpi_bcast(pio_debug_level, Comm)
-    call shr_mpi_bcast(pio_root, Comm)
-    call shr_mpi_bcast(pio_numiotasks, Comm)
     call shr_mpi_bcast(pio_blocksize, Comm)
     call shr_mpi_bcast(pio_buffer_size_limit, Comm)
     call shr_mpi_bcast(pio_async_interface, Comm)
     call shr_mpi_bcast(pio_rearranger, Comm)
-    call shr_mpi_bcast(pio_stride, Comm)
     if (npes == 1) then
        pio_rearr_comm_max_pend_req_comp2io = 0
        pio_rearr_comm_max_pend_req_io2comp = 0
@@ -574,7 +556,7 @@ contains
     pio_default_numiotasks = pio_numiotasks
     pio_default_iotype = pio_iotype
     pio_default_rearranger = pio_rearranger
-    pio_default_netcdf_ioformat = PIO_64BIT_DATA
+    pio_default_netcdf_ioformat = PIO_64BIT_OFFSET
 
     !--------------------------------------------------------------------------
     ! read io nml parameters
@@ -645,8 +627,10 @@ contains
        pio_netcdf_ioformat = 0
     elseif ( pio_netcdf_format .eq. '64BIT_OFFSET' ) then
        pio_netcdf_ioformat = PIO_64BIT_OFFSET
+#ifdef _PNETCDF
     elseif ( pio_netcdf_format .eq. '64BIT_DATA' ) then
        pio_netcdf_ioformat = PIO_64BIT_DATA
+#endif
     else
        pio_netcdf_ioformat = pio_default_netcdf_ioformat
     endif
@@ -699,15 +683,14 @@ contains
     if (pio_root<0) then
        pio_root = 1
     endif
-    if(.not. pio_async_interface) then
-       pio_root = min(pio_root,npes-1)
+    pio_root = min(pio_root,npes-1)
+
 ! If you are asking for parallel IO then you should use at least two io pes
-       if(npes > 1 .and. pio_numiotasks == 1 .and. &
-            (pio_iotype .eq. PIO_IOTYPE_PNETCDF .or. &
-            pio_iotype .eq. PIO_IOTYPE_NETCDF4P)) then
-          pio_numiotasks = 2
-          pio_stride = min(pio_stride, npes/2)
-       endif
+    if(npes > 1 .and. pio_numiotasks == 1 .and. &
+         (pio_iotype .eq. PIO_IOTYPE_PNETCDF .or. &
+         pio_iotype .eq. PIO_IOTYPE_NETCDF4P)) then
+       pio_numiotasks = 2
+       pio_stride = min(pio_stride, npes/2)
     endif
 
     !--------------------------------------------------------------------------
@@ -721,7 +704,7 @@ contains
        pio_stride = max(1,npes/4)
        pio_numiotasks = max(1,npes/pio_stride)
     end if
-    if(pio_stride == 1 .and. .not. pio_async_interface) then
+    if(pio_stride == 1) then
        pio_root = 0
     endif
     if(pio_rearranger .ne. PIO_REARR_SUBSET .and. pio_rearranger .ne. PIO_REARR_BOX) then
@@ -732,10 +715,9 @@ contains
     endif
 
 
-    if (.not. pio_async_interface .and. &
-         pio_root + (pio_stride)*(pio_numiotasks-1) >= npes .or. &
+    if (pio_root + (pio_stride)*(pio_numiotasks-1) >= npes .or. &
          pio_stride<=0 .or. pio_numiotasks<=0 .or. pio_root < 0 .or. &
-         pio_root > npes-1 ) then
+         pio_root > npes-1) then
        if(npes<100) then
           pio_stride = max(1,npes/4)
        else if(npes<1000) then

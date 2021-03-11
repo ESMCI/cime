@@ -11,7 +11,7 @@
 
 /** The default target blocksize in bytes for each io task when the box
  * rearranger is used. */
-#define DEFAULT_BLOCKSIZE 1048576
+#define DEFAULT_BLOCKSIZE 1024
 
 /** The target blocksize in bytes for each io task when the box
  * rearranger is used. */

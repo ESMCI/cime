@@ -24,7 +24,7 @@ class NODEFAIL(ERS):
         exeroot = self._case.get_value("EXEROOT")
         driver = self._case.get_value("COMP_INTERFACE")
         if driver == "nuopc":
-            logname = "drv"
+            logname = "med"
         else:
             logname = "cpl"
         fake_exe = \

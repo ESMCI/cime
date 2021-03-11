@@ -102,5 +102,5 @@ def _overall_output(ts, format_str):
         contain place-holders for status and test_name
     """
     test_name = ts.get_name()
-    status = ts.get_overall_test_status()[0]
+    status = ts.get_overall_test_status()
     return format_str.format(status=status, test_name=test_name)

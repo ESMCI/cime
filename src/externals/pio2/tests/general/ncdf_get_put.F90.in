@@ -336,8 +336,10 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar_slice
     do j=1,MAX_ROW_dim_len
        ret = PIO_get_var(pio_file, pio_var_char, (/1,j/), gcval(j))
        PIO_TF_CHECK_ERR(ret, "Failed to get var:" // trim(filename))
+       print *,j,trim(gcval(j)),trim(pcval(j))
        PIO_TF_CHECK_VAL((gcval(j), pcval(j)), "Got wrong value")
     enddo
+
     call PIO_closefile(pio_file)
     call PIO_deletefile(pio_tf_iosystem_, filename);
   end do

@@ -9,17 +9,19 @@ module pioExample
     use pio, only : PIO_closefile, io_desc_t, PIO_initdecomp, PIO_write_darray
     use pio, only : PIO_freedecomp, PIO_clobber, PIO_read_darray, PIO_syncfile, PIO_OFFSET_KIND
     use pio, only : PIO_nowrite, PIO_openfile
-    use mpi
+
     implicit none
 
     private
+
+    include 'mpif.h'
 
     !> @brief Length of the data array we are using.  This is then
     !! divided among MPI processes.
     integer, parameter :: LEN = 16
 
     !> @brief Value used for array that will be written to netcdf file.
-    integer, parameter :: VAL = 42
+    integer, parameter :: VAL = 42  
 
     !> @brief Error code if anything goes wrong.
     integer, parameter :: ERR_CODE = 99
@@ -39,7 +41,7 @@ module pioExample
         integer :: niotasks
 
         !> @brief Stride in the mpi rank between io tasks.
-        integer :: stride
+        integer :: stride        
 
         !> @brief Number of aggregator.
         integer :: numAggregator
@@ -180,7 +182,7 @@ contains
             this%pioIoSystem,           & ! iosystem
             base=this%optBase)            ! base (optional argument)
 
-        !
+        ! 
         ! set up some data that we will write to a netcdf file
         !
 
@@ -314,11 +316,11 @@ contains
         class(pioExampleClass), intent(inout) :: this
         character(len=*),       intent(in)    :: errMsg
         integer,                intent(in)    :: retVal
-        integer :: lretval
+
         if (retVal .ne. PIO_NOERR) then
             write(*,*) retVal,errMsg
             call PIO_closefile(this%pioFileDesc)
-            call mpi_abort(MPI_COMM_WORLD,retVal, lretval)
+            call mpi_abort(MPI_COMM_WORLD,0,retVal)
         end if
 
     end subroutine errorHandle
@@ -352,23 +354,18 @@ end module pioExample
 !! - read the sample data with @ref PIO_read_darray.
 !!
 !! - close the netCDF file with @ref PIO_closefile.
-!!
+!! 
 !! - clean up local memory, ParallelIO library resources with @ref
 !!   PIO_freedecomp and @ref PIO_finalize, and MPI library resources.
 !!
 program main
 
     use pioExample, only : pioExampleClass
-#ifdef TIMING
-    use perf_mod, only : t_initf, t_finalizef, t_prf
-#endif
 
     implicit none
 
     type(pioExampleClass) :: pioExInst
-#ifdef TIMING
-    call t_initf('timing.nl')
-#endif
+
     call pioExInst%init()
     call pioExInst%createDecomp()
     call pioExInst%createFile()
@@ -377,9 +374,5 @@ program main
     call pioExInst%readVar()
     call pioExInst%closeFile()
     call pioExInst%cleanUp()
-#ifdef TIMING
-    call t_prf()
-    call t_finalizef()
-#endif
 
 end program main

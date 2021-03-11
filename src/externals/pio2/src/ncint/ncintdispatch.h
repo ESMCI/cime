@@ -153,9 +153,6 @@ extern "C" {
     PIO_NCINT_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp);
 
 
-    extern int
-    PIO_NCINT_filter_actions(int ncid, int varid, int action, struct NC_Filterobject* spec);
-
 #if defined(__cplusplus)
 }
 #endif

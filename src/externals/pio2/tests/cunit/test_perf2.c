@@ -1,8 +1,5 @@
 /*
- * This program tests performance in intracomm mode. It writes out
- * NUM_TIMESTEPS records of a single NC_INT variable. The number of
- * I/O tasks, IOTYPE, fill mode, and rearranger are varied and write
- * performance is measured.
+ * Tests for PIO distributed arrays.
  *
  * @author Ed Hartnett
  * @date 2/21/17
@@ -13,8 +10,17 @@
 #include <pio_tests.h>
 #include <sys/time.h>
 
+/* The number of tasks this test should run on. */
+#define TARGET_NTASKS 16
+
+/* The minimum number of tasks this test should run on. */
+#define MIN_NTASKS TARGET_NTASKS
+
 /* The name of this test. */
 #define TEST_NAME "test_perf2"
+
+/* Number of computational components to create. */
+#define COMPONENT_COUNT 1
 
 /* The number of dimensions in the example data. In this test, we
  * are using three-dimensional data. */
@@ -24,11 +30,11 @@
 #define NDIM3 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 512
-#define Y_DIM_LEN 512
+#define X_DIM_LEN 128
+#define Y_DIM_LEN 128
 #define Z_DIM_LEN 32
-#define X_DIM_LEN 1024
-#define Y_DIM_LEN 1024
+/* #define X_DIM_LEN 1024 */
+/* #define Y_DIM_LEN 1024 */
 /* #define Z_DIM_LEN 128 */
 
 /* The number of timesteps of data to write. */
@@ -39,7 +45,7 @@
 
 /* Test with and without specifying a fill value to
  * PIOc_write_darray(). */
-#define NUM_TEST_CASES_FILLVALUE 1
+#define NUM_TEST_CASES_FILLVALUE 2
 
 /* How many different number of IO tasks to check? */
 #define MAX_IO_TESTS 5
@@ -55,8 +61,6 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 
 /* Run test for each of the rearrangers. */
 #define NUM_REARRANGERS_TO_TEST 2
-
-#define MILLION 1000000
 
 #ifdef USE_MPE
 /* This array holds even numbers for MPE. */
@@ -146,34 +150,22 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-        char flavorname[PIO_MAX_NAME + 1];
         struct timeval starttime, endtime;
         long long startt, endt;
         long long delta;
         float num_megabytes = 0;
-        float delta_in_sec, read_sec;
-        float mb_per_sec, read_mb_per_sec;
+        float delta_in_sec;
+        float mb_per_sec;
 
 #ifdef USE_MPE
         test_start_mpe_log(TEST_CREATE);
 #endif /* USE_MPE */
 
-        /* How many megabytes will we write? */
-        num_megabytes = (NUM_TIMESTEPS * X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(MILLION);
-
-        sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt],
-                rearranger);
         /* Create the filename. Use the same filename for all, so we
          * don't waste disk space. */
-        /* sprintf(filename, "data_%s.nc", TEST_NAME); */
-
-        /* Get name of this IOTYPE. */
-        if ((ret = get_iotype_name(flavor[fmt], flavorname)))
-            ERR(ret);
-
-        /* Get name of this IOTYPE. */
-        if ((ret = get_iotype_name(flavor[fmt], flavorname)))
-            ERR(ret);
+        /* sprintf(filename, "data_%s_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[fmt], */
+        /*         rearranger); */
+        sprintf(filename, "data_%s.nc", TEST_NAME);
 
         /* Create the netCDF output file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
@@ -191,14 +183,6 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         /* Define a variable. */
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
             ERR(ret);
-
-        /* NetCDF/HDF5 files benefit from having chunksize set. */
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4P || flavor[fmt] == PIO_IOTYPE_NETCDF4C)
-        {
-            PIO_Offset chunksizes[NDIM] = {NUM_TIMESTEPS / 2, X_DIM_LEN / 4, Y_DIM_LEN / 4, Z_DIM_LEN};
-            if ((ret = PIOc_def_var_chunking(ncid, varid, NC_CHUNKED, chunksizes)))
-                ERR(ret);
-        }
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
@@ -241,6 +225,7 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             }
 #endif /* USE_MPE */
 
+            num_megabytes += (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * sizeof(int))/(1024*1024);
         }
 
 #ifdef USE_MPE
@@ -265,71 +250,12 @@ test_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         /* Compute the time delta */
         startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
         endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-        delta = (endt - startt);
+        delta = (endt - startt)/NUM_TIMESTEPS;
         delta_in_sec = (float)delta / 1000000;
         mb_per_sec = num_megabytes / delta_in_sec;
-
-        /* Now reopen the file and re-read the data. */
-        {
-            int *test_data_in;
-
-            if (!(test_data_in = malloc(sizeof(int) * arraylen)))
-                ERR(PIO_ENOMEM);
-
-            /* Re-open the file. */
-            if ((ret = PIOc_openfile2(iosysid, &ncid, &flavor[fmt], filename, PIO_NOWRITE)))
-                ERR(ret);
-
-            /* Start the clock. */
-            gettimeofday(&starttime, NULL);
-
-            for (int t = 0; t < NUM_TIMESTEPS; t++)
-            {
-#ifdef USE_MPE
-                test_start_mpe_log(TEST_DARRAY_READ);
-#endif /* USE_MPE */
-
-                /* Set the value of the record dimension. */
-                if ((ret = PIOc_setframe(ncid, varid, t)))
-                    ERR(ret);
-
-                /* Write the data. */
-                if ((ret = PIOc_read_darray(ncid, varid, ioid, arraylen, test_data_in)))
-                    ERR(ret);
-
-#ifdef USE_MPE
-                {
-                    char msg[MPE_MAX_MSG_LEN + 1];
-                    sprintf(msg, "read_darray timestep %d", t);
-                    test_stop_mpe_log(TEST_DARRAY_READ, msg);
-                }
-#endif /* USE_MPE */
-
-            } /* next timestep */
-
-            /* Stop the clock. */
-            gettimeofday(&endtime, NULL);
-
-            /* Compute the time delta */
-            startt = (1000000 * starttime.tv_sec) + starttime.tv_usec;
-            endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-            delta = (endt - startt);
-            read_sec = (float)delta / 1000000;
-            read_mb_per_sec = num_megabytes / read_sec;
-
-            /* Close file. */
-            if ((ret = PIOc_closefile(ncid)))
-                ERR(ret);
-
-            /* Free resources. */
-            free(test_data_in);
-
-        } /* re-reading file */
-
         if (!my_rank)
-            printf("%d,\t%d,\t%s,\t%s,\t%s,\t%8.3f,\t%8.3f,\t%8.1f,\t%8.3f,\t%8.3f\n", ntasks, num_io_procs,
-                   (rearranger == 1 ? "box" : "subset"), (provide_fill ? "fill" : "nofill"),
-                   flavorname, delta_in_sec, read_sec, num_megabytes, mb_per_sec, read_mb_per_sec);
+            printf("%d\t%d\t%d\t%d\t%d\t%8.3f\t%8.1f\t%8.3f\n", ntasks, num_io_procs,
+                   rearranger, provide_fill, fmt, delta_in_sec, num_megabytes, mb_per_sec);
     }
 
     free(test_data);
@@ -359,16 +285,16 @@ test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor,
 
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        int ioid2;             /* ID for decomposition we will create from file. */
-        char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-        char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
-        char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
-        int fortran_order_in; /* Indicates fortran vs. c order. */
-        int ret;              /* Return code. */
+	int ioid2;             /* ID for decomposition we will create from file. */
+	char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
+	char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
+	char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
+	int fortran_order_in; /* Indicates fortran vs. c order. */
+	int ret;              /* Return code. */
 
         /* Create the filename. */
         snprintf(filename, PIO_MAX_NAME, "decomp_%s_iotype_%d.nc", TEST_NAME,
-                 flavor[fmt]);
+		 flavor[fmt]);
 
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
             return ret;
@@ -468,7 +394,8 @@ test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 #endif /* USE_MPE */
 
     /* Test with/without providing a fill value to PIOc_write_darray(). */
-    for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
+    /* for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++) */
+    for (int provide_fill = 0; provide_fill < 1; provide_fill++)
     {
         /* Run a simple darray test. */
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank,
@@ -529,8 +456,8 @@ main(int argc, char **argv)
         ERR(ret);
 
     if (!my_rank)
-        printf("ntasks,\tnio,\trearr,\tfill,\tIOTYPE,\twrite time(s),\tread time(s),\tdata size(MB),\t"
-               "write(MB/s),\tread(MB/s)\n");
+        printf("ntasks\tnio\trearr\tfill\tformat\ttime(s)\tdata size (MB)\t"
+               "performance(MB/s)\n");
 
     /* How many processors for IO? */
     num_io_tests = 1;
@@ -539,20 +466,14 @@ main(int argc, char **argv)
     if (ntasks >= 64)
         num_io_tests = 3;
     if (ntasks >= 128)
-    {
         num_io_tests = 4;
-        ioproc_stride = 40;
-    }
     if (ntasks >= 512)
-    {
         num_io_tests = 5;
-        ioproc_stride = 40;
-    }
 
     for (i = 0; i < num_io_tests; i++)
     {
-        for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
-        /* for (r = 0; r < 1; r++) */
+        /* for (r = 0; r < NUM_REARRANGERS_TO_TEST; r++) */
+        for (r = 0; r < 1; r++)
         {
 #ifdef USE_MPE
             test_start_mpe_log(TEST_INIT);
@@ -583,7 +504,7 @@ main(int argc, char **argv)
         printf("finalizing io_test!\n");
 
     /* Finalize the MPI library. */
-    if ((ret = pio_test_finalize2(&test_comm, TEST_NAME)))
+    if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 
     /* printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME); */

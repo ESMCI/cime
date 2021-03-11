@@ -38,7 +38,6 @@ LT_INIT
 
 # Find and learn about the C compiler.
 AC_PROG_CC
-AC_PROG_CC_C99
 
 # Compiler with version information. This consists of the full path
 # name of the compiler and the reported version number.
@@ -156,15 +155,15 @@ AC_MSG_RESULT([$enable_mpe])
 if test "x$enable_mpe" = xyes; then
 
    AC_SEARCH_LIBS([pthread_setspecific], [pthread], [], [], [])
-   AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [])
-   AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [])
+   dnl AC_SEARCH_LIBS([MPE_Log_get_event_number], [mpe], [HAVE_LIBMPE=yes], [HAVE_LIBMPE=no], [])
+   dnl AC_SEARCH_LIBS([MPE_Init_mpi_core], [lmpe], [HAVE_LIBLMPE=yes], [HAVE_LIBLMPE=no], [])
    AC_CHECK_HEADERS([mpe.h], [HAVE_MPE=yes], [HAVE_MPE=no])
-   if test "x$HAVE_LIBMPE" != xyes; then
-      AC_MSG_ERROR([-lmpe not found but --enable-mpe used.])
-   fi
-   if test "x$HAVE_LIBLMPE" != xyes; then
-      AC_MSG_ERROR([-llmpe not found but --enable-mpe used.])
-   fi
+   dnl if test "x$HAVE_LIBMPE" != xyes; then
+   dnl    AC_MSG_ERROR([-lmpe not found but --enable-mpe used.])
+   dnl fi
+   dnl if test "x$HAVE_LIBLMPE" != xyes; then
+   dnl    AC_MSG_ERROR([-llmpe not found but --enable-mpe used.])
+   dnl fi
    if test $enable_fortran = yes; then
       AC_MSG_ERROR([MPE not implemented in Fortran tests and examples. Build without --enable-fortran])
    fi
@@ -388,20 +387,16 @@ fi
 if test "x$enable_netcdf_integration" = xyes -a "x$have_netcdf_par" = xno; then
    AC_MSG_ERROR([Cannot use netCDF integration unless netCDF library was built for parallel I/O.])
 fi
-
-# If netCDF integration is used, set this preprocessor symbol.
+# These are needed by ncdispatch.h. Only build with HDF5 parallel
+# versions of netCDF. */
 if test "x$enable_netcdf_integration" = xyes; then
+  AC_DEFINE([HDF5_PARALLEL],[1],[Does HDF5 library provide parallel access])
+  AC_DEFINE([USE_NETCDF4],[1],[Does HDF5 library provide parallel access])
   AC_DEFINE([NETCDF_INTEGRATION],[1],[Are we building with netCDF integration])
 fi
-AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
 
-# If we are building netCDF integration and also then PIO Fortran
-# library, then we also need netcdf-fortran.
-if test "x$enable_netcdf_integration" = xyes -a "x$enable_fortran" = xyes; then
-   AC_LANG_PUSH([Fortran])
-   AC_CHECK_LIB([netcdff], [nf_inq_libvers], [], [AC_MSG_ERROR([Can't find or link to the netcdf-fortran library, required because both --enable-fortran and --enable-netcdf-integration are specified.])])
-   AC_LANG_POP([Fortran])
-fi
+AM_CONDITIONAL(BUILD_NCINT, [test "x$enable_netcdf_integration" = xyes])
+AM_CONDITIONAL(NETCDF_INTEGRATION, [test "x$enable_netcdf_integration" = xyes])
 
 AC_CONFIG_FILES([tests/general/pio_tutil.F90:tests/general/util/pio_tutil.F90])
 

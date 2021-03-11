@@ -580,17 +580,15 @@ int main(int argc, char **argv)
             if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
-            /* printf("test Rearranger %d\n",rearranger[r]); */
+
             /* Run tests. */
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm,
                                        rearranger[r])))
                 return ret;
-            /* printf("test Rearranger %d complete\n",rearranger[r]); */
 
             /* Finalize PIO system. */
             if ((ret = PIOc_free_iosystem(iosysid)))
                 return ret;
-
         }
 
     } /* endif my_rank < TARGET_NTASKS */

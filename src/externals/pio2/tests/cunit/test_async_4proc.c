@@ -22,10 +22,6 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
-/* Number of rearrangers to test. */
-#define NUM_REARRANGERS 2
-int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-
 /* Run async tests. */
 int main(int argc, char **argv)
 {
@@ -56,58 +52,54 @@ int main(int argc, char **argv)
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
-        for(int rearr=0; rearr<NUM_REARRANGERS; rearr++)
+        for (int combo = 0; combo < NUM_COMBOS; combo++)
         {
+            /* Is the current process a computation task? */
+            int comp_task = my_rank < num_io_procs[combo] ? 0 : 1;
 
-            for (int combo = 0; combo < NUM_COMBOS; combo++)
+            /* Initialize the IO system. */
+            if ((ret = PIOc_init_async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
+                                       num_procs2[combo], NULL, NULL, NULL, PIO_REARR_BOX, iosysid)))
+                ERR(ERR_INIT);
+
+            /* All the netCDF calls are only executed on the computation
+             * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
+             * and when the do, they should go straight to finalize. */
+            if (comp_task)
             {
-                /* Is the current process a computation task? */
-                int comp_task = my_rank < num_io_procs[combo] ? 0 : 1;
-
-                /* Initialize the IO system. */
-                if ((ret = PIOc_init_async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
-                                           num_procs2[combo], NULL, NULL, NULL, rearranger[rearr], iosysid)))
-                    ERR(ERR_INIT);
-
-                /* All the netCDF calls are only executed on the computation
-                 * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
-                 * and when the do, they should go straight to finalize. */
-                if (comp_task)
+                for (int flv = 0; flv < num_flavors; flv++)
                 {
-                    for (int flv = 0; flv < num_flavors; flv++)
+                    char filename[PIO_MAX_NAME * 2 + 1]; /* Test filename. */
+                    int my_comp_idx = 0; /* Index in iosysid array. */
+
+                    for (int sample = 0; sample < NUM_SAMPLES; sample++)
                     {
-                        char filename[PIO_MAX_NAME * 2 + 1]; /* Test filename. */
-                        int my_comp_idx = 0; /* Index in iosysid array. */
+                        char iotype_name[PIO_MAX_NAME + 1];
 
-                        for (int sample = 0; sample < NUM_SAMPLES; sample++)
-                        {
-                            char iotype_name[PIO_MAX_NAME + 1];
+                        /* Create a filename. */
+                        if ((ret = get_iotype_name(flavor[flv], iotype_name)))
+                            return ret;
+                        sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx);
 
-                            /* Create a filename. */
-                            if ((ret = get_iotype_name(flavor[flv], iotype_name)))
-                                return ret;
-                            sprintf(filename, "%s_%s_%d_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx, rearranger[rearr]);
-
-                            /* Create sample file. */
-                            if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
-                                AERR2(ret, iosysid[my_comp_idx]);
-
-                            /* Check the file for correctness. */
-                            if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
-                                AERR2(ret, iosysid[my_comp_idx]);
-                        }
-                    } /* next netcdf flavor */
-
-                    /* Finalize the IO system. Only call this from the computation tasks. */
-                    for (int c = 0; c < COMPONENT_COUNT; c++)
-                        if ((ret = PIOc_free_iosystem(iosysid[c])))
+                        /* Create sample file. */
+                        if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
                             ERR(ret);
-                } /* endif comp_task */
 
-                /* Wait for everyone to catch up. */
-                MPI_Barrier(test_comm);
-            } /* next combo */
-        } /* next rearranger */
+                        /* Check the file for correctness. */
+                        if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
+                            ERR(ret);
+                    }
+                } /* next netcdf flavor */
+
+                /* Finalize the IO system. Only call this from the computation tasks. */
+                for (int c = 0; c < COMPONENT_COUNT; c++)
+                    if ((ret = PIOc_free_iosystem(iosysid[c])))
+                        ERR(ret);
+            } /* endif comp_task */
+
+            /* Wait for everyone to catch up. */
+            MPI_Barrier(test_comm);
+        } /* next combo */
     }/* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */

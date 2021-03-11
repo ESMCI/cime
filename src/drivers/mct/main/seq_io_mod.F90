@@ -383,7 +383,7 @@ contains
   ! !INTERFACE: ------------------------------------------------------------------
 
   subroutine seq_io_write_av(filename,gsmap,AV,dname,whead,wdata,nx,ny,nt,fillval,pre,tavg,&
-       use_float, file_ind, mask, scolumn)
+       use_float, file_ind, scolumn)
 
     ! !INPUT/OUTPUT PARAMETERS:
     implicit none
@@ -402,7 +402,7 @@ contains
     logical,optional,intent(in) :: use_float ! write output as float rather than double
     integer,optional,intent(in) :: file_ind
     logical,optional,intent(in) :: scolumn ! single column model flag
-    real(r8),optional,intent(in) :: mask(:)
+
     !EOP
 
     integer(in) :: rcode
@@ -556,26 +556,10 @@ contains
              rcode = pio_inq_varid(cpl_io_file(lfile_ind),trim(name1),varid)
              call pio_setframe(cpl_io_file(lfile_ind),varid,frame)
              if(luse_float) then
-                if(present(mask)) then
-                   where(mask .ne. 0)
-                      tmpr4data = real(av%rattr(k,:), kind=r4)
-                   elsewhere
-                      tmpr4data = real(lfillvalue, kind=r4)
-                   end where
-                else
-                   tmpr4data = real(av%rattr(k,:), kind=r4)
-                endif
+                tmpr4data = real(av%rattr(k,:), kind=r4)
                 call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, tmpr4data, rcode, fillval=real(lfillvalue, kind=r4))
              else
-                if(present(mask)) then
-                   where(mask .ne. 0)
-                      tmpdata = av%rattr(k,:)
-                   elsewhere
-                      tmpdata = lfillvalue
-                   end where
-                else
-                   tmpdata = av%rattr(k,:)
-                endif
+                tmpdata = av%rattr(k,:)
                 call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, tmpdata, rcode, fillval=lfillvalue)
              endif
              !-------tcraig
@@ -792,7 +776,7 @@ contains
           call mct_aVect_getRList(mstring,k,AVS(1))
           itemc = mct_string_toChar(mstring)
           call mct_string_clean(mstring)
-          !------- this is a temporary mod to NOT write hgt
+          !-------tcraig, this is a temporary mod to NOT write hgt
           if (trim(itemc) /= "hgt") then
              name1 = trim(lpre)//'_'//trim(itemc)
              rcode = pio_inq_varid(cpl_io_file(lfile_ind),trim(name1),varid)
@@ -803,10 +787,13 @@ contains
                 n = n + ns
              enddo
              call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, data, rcode, fillval=lfillvalue)
+             call pio_setdebuglevel(0)
+             !-------tcraig
           endif
        enddo
-       call pio_freedecomp(cpl_io_file(lfile_ind), iodesc)
+
        deallocate(data)
+       call pio_freedecomp(cpl_io_file(lfile_ind), iodesc)
 
     end if
   end subroutine seq_io_write_avs
@@ -825,7 +812,7 @@ contains
   ! !INTERFACE: ------------------------------------------------------------------
 
   subroutine seq_io_write_avscomp(filename, comp, flow, dname, &
-       whead, wdata, nx, ny, nt, fillval, pre, tavg, use_float, file_ind, scolumn, mask)
+       whead, wdata, nx, ny, nt, fillval, pre, tavg, use_float, file_ind, scolumn)
 
     ! !INPUT/OUTPUT PARAMETERS:
     implicit none
@@ -844,7 +831,7 @@ contains
     logical          ,optional,intent(in) :: use_float ! write output as float rather than double
     integer          ,optional,intent(in) :: file_ind
     logical          ,optional,intent(in) :: scolumn    ! single column model flag
-    real(r8)         ,optional,intent(in) :: mask(:)
+
     !EOP
 
     type(mct_gsMap), pointer :: gsmap     ! global seg map on coupler processes
@@ -1034,28 +1021,18 @@ contains
              do k1 = 1,ni
                 if (trim(flow) == 'x2c') avcomp => component_get_x2c_cx(comp(k1))
                 if (trim(flow) == 'c2x') avcomp => component_get_c2x_cx(comp(k1))
-                if (present(mask)) then
-                   do k2=1,ns
-                      n = n + 1
-                      if(mask(k2) /= 0) then
-                         data(n) = avcomp%rattr(k,k2)
-                      else
-                         data(n) = lfillvalue
-                      end if
-                   end do
-                else
-                  do k2 = 1,ns
-                      n = n + 1
-                      data(n) = avcomp%rAttr(k,k2)
-                   enddo
-                endif
+                do k2 = 1,ns
+                   n = n + 1
+                   data(n) = avcomp%rAttr(k,k2)
+                enddo
              enddo
              call pio_write_darray(cpl_io_file(lfile_ind), varid, iodesc, data, rcode, fillval=lfillvalue)
+             !-------tcraig
           endif
        enddo
 
-       call pio_freedecomp(cpl_io_file(lfile_ind), iodesc)
        deallocate(data)
+       call pio_freedecomp(cpl_io_file(lfile_ind), iodesc)
 
     end if
   end subroutine seq_io_write_avscomp

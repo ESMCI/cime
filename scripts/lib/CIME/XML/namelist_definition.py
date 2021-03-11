@@ -101,7 +101,7 @@ class NamelistDefinition(EntryID):
             per_stream_entry = self.get(node, "per_stream_entry") == "true"
             set_node_values = False
             if skip_groups:
-                group_name = self.get_group_name(node)
+                group_name = self._get_group_name(node)
                 if not group_name in skip_groups:
                     self._entry_nodes.append(node)
                     set_node_values = True
@@ -118,10 +118,10 @@ class NamelistDefinition(EntryID):
                 self._nodes[name] = node
                 self._entry_types[name] = self._get_type(node)
                 self._valid_values[name] = self._get_valid_values(node)
-                self._group_names[name] = self.get_group_name(node)
+                self._group_names[name] = self._get_group_name(node)
         return default_nodes
 
-    def get_group_name(self, node=None):
+    def _get_group_name(self, node=None):
         if self.get_version() == 1.0:
             group = self.get(node, 'group')
         elif self.get_version() >= 2.0:

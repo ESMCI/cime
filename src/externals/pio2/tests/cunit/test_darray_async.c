@@ -539,7 +539,7 @@ int main(int argc, char **argv)
                 /* Run the simple darray async test. */
                 if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, comp_comm[0], num_flavors,
                                                  flavor, test_type[t])))
-                    AERR(ret);
+                    return ret;
 
                 /* Finalize PIO system. */
                 if ((ret = PIOc_free_iosystem (iosysid)))

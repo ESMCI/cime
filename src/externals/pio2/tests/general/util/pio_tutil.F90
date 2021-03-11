@@ -120,7 +120,6 @@ MODULE pio_tutil
   END INTERFACE
 
 CONTAINS
-
   ! Initialize Testing framework - Internal (Not directly used by unit tests)
   SUBROUTINE  PIO_TF_Init_(rearr)
 #ifdef TIMING
@@ -188,53 +187,6 @@ CONTAINS
       PRINT *, "PIO_TF: Error setting PIO logging level"
     end if
   END SUBROUTINE PIO_TF_Init_
-
-  ! Initialize Testing framework - Internal (Not directly used by unit tests)
-  SUBROUTINE  PIO_TF_Init_async_(rearr)
-#ifdef TIMING
-   use perf_mod
-#endif
-#ifndef NO_MPIMOD
-    use mpi
-#else
-    include 'mpif.h'
-#endif
-    INTEGER, INTENT(IN) :: rearr
-    INTEGER ierr
-
-    CALL MPI_COMM_DUP(MPI_COMM_WORLD, pio_tf_comm_, ierr);
-    CALL MPI_COMM_RANK(pio_tf_comm_, pio_tf_world_rank_, ierr)
-    CALL MPI_COMM_SIZE(pio_tf_comm_, pio_tf_world_sz_, ierr)
-#ifdef TIMING
-    call t_initf('gptl.nl')
-#endif
-
-    pio_tf_log_level_ = 0
-    pio_tf_num_aggregators_ = 0
-    pio_tf_num_io_tasks_ = 0
-    pio_tf_stride_ = 1
-    ! Now read input args from rank 0 and bcast it
-    ! Args supported are --num-io-tasks, --num-aggregators,
-    !   --stride
-
-    CALL Read_input()
-    IF (pio_tf_world_sz_ < pio_tf_num_io_tasks_) THEN
-       pio_tf_num_io_tasks_ = pio_tf_world_sz_
-    END IF
-    IF (pio_tf_num_io_tasks_ <= 1 .AND. pio_tf_stride_ > 1) THEN
-       pio_tf_stride_ = 1
-    END IF
-    IF (pio_tf_num_io_tasks_ == 0) THEN
-      pio_tf_num_io_tasks_ = pio_tf_world_sz_ / pio_tf_stride_
-      IF (pio_tf_num_io_tasks_ < 1) pio_tf_num_io_tasks_ = 1
-    END IF
-
-    ! Set PIO logging level
-    ierr = PIO_set_log_level(pio_tf_log_level_)
-    if(ierr /= PIO_NOERR) then
-      PRINT *, "PIO_TF: Error setting PIO logging level"
-    end if
-  END SUBROUTINE PIO_TF_Init_async_
 
   ! Finalize Testing framework - Internal (Not directly used by unit tests)
   SUBROUTINE  PIO_TF_Finalize_

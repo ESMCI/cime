@@ -276,16 +276,6 @@ class Grids(GenericXML):
                         if driver == driver_attrib:
                             domains[mesh_name] = self.text(mesh_node)
 
-        if driver == "nuopc":
-            mask_domain_node = self.get_optional_child("domain", attributes={"name":domains["MASK_GRID"]},
-                                                       root=self.get_child("domains"))
-            mesh_nodes = self.get_children("mesh", root=mask_domain_node)
-            for mesh_node in mesh_nodes:
-                driver_attrib = self.get(mesh_node, "driver")
-                if driver == driver_attrib:
-                    domains["MASK_MESH"] = self.text(mesh_node)
-
-
         return domains
 
     def _get_gridmaps(self, component_grids, driver, compset):

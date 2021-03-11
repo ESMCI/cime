@@ -28,9 +28,9 @@ module ncint_mod
 #ifdef NO_MPIMOD
   include 'mpif.h'    ! _EXTERNAL
 #endif
-  integer, parameter :: NF_PIO=64
+
   public :: nf_def_iosystem, nf_free_iosystem, nf_def_decomp, nf_free_decomp, &
-       nf_put_vard_int, NF_PIO
+       nf_put_vard_int
 
 contains
 

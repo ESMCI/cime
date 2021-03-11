@@ -17,9 +17,11 @@ def _get_batch_job_id_for_syslog(case):
     """
     mach = case.get_value("MACH")
     try:
-        if mach in ['anvil', 'chrysalis', 'compy', 'cori-haswell', 'cori-knl']:
+        if mach in ['titan']:
+            return os.environ["PBS_JOBID"]
+        elif mach in ['anvil', 'compy', 'cori-haswell', 'cori-knl']:
             return os.environ["SLURM_JOB_ID"]
-        elif mach in ['theta']:
+        elif mach in ['mira', 'theta']:
             return os.environ["COBALT_JOBID"]
         elif mach in ['summit']:
             return os.environ["LSB_JOBID"]
@@ -185,7 +187,12 @@ def _save_prerun_timing_e3sm(case, lid):
     # For some batch machines save queue info
     job_id = _get_batch_job_id_for_syslog(case)
     if job_id is not None:
-        if mach == "theta":
+        if mach == "mira":
+            for cmd, filename in [("qstat -f", "qstatf"), ("qstat -lf %s" % job_id, "qstatf_jobid")]:
+                filename = "%s.%s" % (filename, lid)
+                run_cmd_no_fail(cmd, arg_stdout=filename, from_dir=full_timing_dir)
+                gzip_existing_file(os.path.join(full_timing_dir, filename))
+        elif mach == "theta":
             for cmd, filename in [("qstat -l --header JobID:JobName:User:Project:WallTime:QueuedTime:Score:RunTime:TimeRemaining:Nodes:State:Location:Mode:Command:Args:Procs:Queue:StartTime:attrs:Geometry", "qstatf"),
                                   ("qstat -lf %s" % job_id, "qstatf_jobid"),
                                   ("xtnodestat", "xtnodestat"),
@@ -201,7 +208,16 @@ def _save_prerun_timing_e3sm(case, lid):
                 filename = "%s.%s" % (filename, lid)
                 run_cmd_no_fail(cmd, arg_stdout=filename, from_dir=full_timing_dir)
                 gzip_existing_file(os.path.join(full_timing_dir, filename))
-        elif mach in ["anvil", "chrysalis", "compy"]:
+        elif mach == "titan":
+            for cmd, filename in [("qstat -f %s >" % job_id, "qstatf_jobid"),
+                                  ("xtnodestat >", "xtnodestat"),
+                                  # ("qstat -f >", "qstatf"),
+                                  # ("xtdb2proc -f", "xtdb2proc"),
+                                  ("showq >", "showq")]:
+                full_cmd = cmd + " " + filename
+                run_cmd_no_fail(full_cmd + "." + lid, from_dir=full_timing_dir)
+                gzip_existing_file(os.path.join(full_timing_dir, filename + "." + lid))
+        elif mach in ["anvil", "compy"]:
             for cmd, filename in [("sinfo -l", "sinfol"), 
                                   ("squeue -o '%all' --job {}".format(job_id), "squeueall_jobid"),
                                   ("squeue -o '%.10i %.10P %.15u %.20a %.2t %.6D %.8C %.12M %.12l %.20S %.20V %j'", "squeuef"),
@@ -228,7 +244,6 @@ def _save_prerun_timing_e3sm(case, lid):
     os.mkdir(case_docs)
     globs_to_copy = [
         "CaseDocs/*",
-        "run_script_provenance/*",
         "*.run",
         ".*.run",
         "*.xml",
@@ -336,13 +351,6 @@ def _save_postrun_timing_e3sm(case, lid):
         shutil.move(atm_chunk_costs_src_path, atm_chunk_costs_dst_path)
         gzip_existing_file(atm_chunk_costs_dst_path)
 
-    # gzip memory profile log
-    glob_to_copy = "memory.[0-4].*.log"
-    for item in glob.glob(os.path.join(rundir, glob_to_copy)):
-        mprof_dst_path = os.path.join(os.path.dirname(item), (os.path.basename(item) + ".{}").format(lid))
-        shutil.move(item, mprof_dst_path)
-        gzip_existing_file(mprof_dst_path)
-
     gzip_existing_file(os.path.join(caseroot, "timing", "e3sm_timing_stats.%s" % lid))
 
     # JGF: not sure why we do this
@@ -386,12 +394,19 @@ def _save_postrun_timing_e3sm(case, lid):
     #
     globs_to_copy = []
     if job_id is not None:
-        if mach in ["anvil", "chrysalis", "compy", "cori-haswell", "cori-knl"]:
-            globs_to_copy.append("run*%s*%s" % (case.get_value("CASE"), job_id))
-        elif mach == "theta":
+        if mach == "titan":
+            globs_to_copy.append("%s*OU" % job_id)
+        elif mach == "anvil":
+            globs_to_copy.append("%s*run*%s" % (case.get_value("CASE"), job_id))
+        elif mach == "compy":
+            globs_to_copy.append("slurm.err")
+            globs_to_copy.append("slurm.out")
+        elif mach in ["mira", "theta"]:
             globs_to_copy.append("%s*error" % job_id)
             globs_to_copy.append("%s*output" % job_id)
             globs_to_copy.append("%s*cobaltlog" % job_id)
+        elif mach in ["cori-haswell", "cori-knl"]:
+            globs_to_copy.append("%s*run*%s" % (case.get_value("CASE"), job_id))
         elif mach == "summit":
             globs_to_copy.append("e3sm.stderr.%s" % job_id)
             globs_to_copy.append("e3sm.stdout.%s" % job_id)
@@ -400,7 +415,6 @@ def _save_postrun_timing_e3sm(case, lid):
     globs_to_copy.append(os.path.join(rundir, "e3sm.log.{}.gz".format(lid)))
     globs_to_copy.append(os.path.join(rundir, "cpl.log.{}.gz".format(lid)))
     globs_to_copy.append(os.path.join(rundir, "atm_chunk_costs.{}.gz".format(lid)))
-    globs_to_copy.append(os.path.join(rundir, "memory.[0-4].*.log.{}.gz".format(lid)))
     globs_to_copy.append("timing/*.{}*".format(lid))
     globs_to_copy.append("CaseStatus")
 

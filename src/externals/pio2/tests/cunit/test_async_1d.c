@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     if ((ret = PIOc_init_async(MPI_COMM_WORLD, NUM_IO_TASKS, NULL, COMPONENT_COUNT,
                                num_procs_per_comp, NULL, NULL, NULL,
                                PIO_REARR_BOX, &iosysid)))
-        AERR(ret);
+        ERR(ret);
 
     /* Only computational processors run this code. */
     if (my_rank)
@@ -93,17 +93,17 @@ int main(int argc, char **argv)
 
         /* Create a file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, FILE_NAME, 0)))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_def_dim(ncid, DIM_NAME_0, PIO_UNLIMITED, &dimid[0])))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_def_dim(ncid, DIM_NAME_1, DIM_LEN_1, &dimid[1])))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM2, dimid, &varid)))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_def_var_fill(ncid, varid, PIO_NOFILL, NULL)))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_enddef(ncid)))
-            AERR(ret);
+            ERR(ret);
 
         /* Set up a decomposition. Each of the 3 computational procs
          * will write one value, to get the 3-values of each
@@ -111,37 +111,37 @@ int main(int argc, char **argv)
         compmap[0] = my_rank - 1;
         if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, gdimlen, MAPLEN,
                                     compmap, &ioid, PIO_REARR_BOX, NULL, NULL)))
-            AERR(ret);
+            ERR(ret);
 
         /* Write a record of data. */
         data = my_rank;
         if ((ret = PIOc_setframe(ncid, 0, 0)))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_write_darray(ncid, 0, ioid, MAPLEN, &data, NULL)))
-            AERR(ret);
+            ERR(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
-            AERR(ret);
+            ERR(ret);
 
         /* Reopen the file and check. */
         if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, FILE_NAME, 0)))
-            AERR(ret);
+            ERR(ret);
 
         /* Read the data. */
         if ((ret = PIOc_setframe(ncid, 0, 0)))
-            AERR(ret);
+            ERR(ret);
         if ((ret = PIOc_read_darray(ncid, 0, ioid, MAPLEN, &data_in)))
-            AERR(ret);
+            ERR(ret);
         if (data_in != data) ERR(ERR_WRONG);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
-            AERR(ret);
+            ERR(ret);
 
         /* Free the decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            AERR(ret);
+            ERR(ret);
 
         /* Shut down the IO system. */
         if ((ret = PIOc_finalize(iosysid)))
@@ -150,5 +150,6 @@ int main(int argc, char **argv)
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 #endif /* USE_NETCDF4 */
+
     return 0;
 }

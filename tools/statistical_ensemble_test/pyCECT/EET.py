@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from __future__ import print_function
+
 import re
 import argparse
 import itertools
@@ -17,7 +17,7 @@ class exhaustive_test(object):
                 key, failset = line.replace(' ', '').split(';', 1)
 
                 try:
-                    failset = list(map(int, failset.split(',')))
+                    failset = map(int, failset.split(','))
                     failset = set(failset)
 
                 except:
@@ -28,7 +28,7 @@ class exhaustive_test(object):
         return set_dict
 
     def test_combinations(self, dictionary, runsPerTest=3, nRunFails=2):
-        sims = list(dictionary.keys())
+        sims = dictionary.keys()
 
         passed = failed = 0
         for compset in itertools.combinations(sims, runsPerTest):
@@ -47,12 +47,12 @@ class exhaustive_test(object):
 
             if len(isect_tot) > nRunFails:
                 # print statements for debugging
-                # print("this set failed")
-                # print(compset)
+                # print "this set failed"
+                # print compset
                 failed += 1
             else:
-                # print("this set passed")
-                # print(compset)
+                # print "this set passed"
+                # print compset
                 passed +=1
 
         return passed, failed
@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
     eet = exhaustive_test()
     compare_dict = eet.file_to_sets(args.compfile)
-    print(("failure percent is %s" % eet.test_combinations(compare_dict)))
+    print "failure percent is %s" % eet.test_combinations(compare_dict)

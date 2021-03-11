@@ -98,8 +98,7 @@ def _main_func(description):
                                                      timeout=timeout,
                                                      force_log_upload=force_log_upload,
                                                      no_run=no_run,
-                                                     update_success=update_success,
-                                                     expect_test_complete=not no_wait)
+                                                     update_success=update_success)
              else CIME.utils.TESTS_FAILED_ERR_CODE)
 
 ###############################################################################
