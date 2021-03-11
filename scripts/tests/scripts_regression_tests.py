@@ -224,10 +224,6 @@ def parse_test_status(line):
 ###############################################################################
 def kill_subprocesses(name=None, sig=signal.SIGKILL, expected_num_killed=None, tester=None):
 ###############################################################################
-    # a bug in pgrep prevents this running in github actions.
-    #if MACHINE.get_machine_name() == "ubuntu-latest":
-    #    return
-    #print("HERE machine is {}".format(MACHINE.get_machine_name()))
     # Kill all subprocesses
     proc_ids = CIME.utils.find_proc_id(proc_name=name, children_only=True)
     if (expected_num_killed is not None):

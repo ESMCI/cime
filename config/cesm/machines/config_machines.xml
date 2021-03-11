@@ -1771,14 +1771,8 @@ This allows using a different mpirun command to launch unit tests
       <!-- The following is needed in order to run qsub from the compute nodes -->
       <env name="PATH">$ENV{PATH}:/cluster/torque/bin</env>
     </environment_variables>
-    <environment_variables compiler="intel" comp_interface="nuopc" mpilib="mpi-serial" DEBUG="FALSE">
-      <env name="ESMFMKFILE">/project/esmf/PROGS/esmf/8.1.0b47/mpiuni/intel/19.1.0.166/lib/libO/Linux.intel.64.mpiuni.default/esmf.mk</env>
-    </environment_variables>
-    <environment_variables compiler="intel" comp_interface="nuopc" mpilib="mpi-serial" DEBUG="TRUE">
-      <env name="ESMFMKFILE">/project/esmf/PROGS/esmf/8.1.0b47/mpiuni/intel/19.1.0.166/lib/libg/Linux.intel.64.mpiuni.default/esmf.mk</env>
-    </environment_variables>
     <resource_limits>
-      <resource name="RLIMIT_STACK">200000000</resource>
+      <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
   </machine>
 

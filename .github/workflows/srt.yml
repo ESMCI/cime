@@ -15,8 +15,6 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    # ubuntu-20.04 has several issues that cause failures, we should go back to ubuntu-latest
-    # when it moves beyond 20.04
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -116,9 +114,10 @@ jobs:
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
-          pgrep -V
           ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+#     the following can be used by developers to login to the github server in case of errors
+#     see https://github.com/marketplace/actions/debugging-with-tmate for further details
+#      - name: Setup tmate session
+#        if: ${{ failure() }}
+#        uses: mxschmitt/action-tmate@v3

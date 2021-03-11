@@ -522,8 +522,6 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
 
     if stat != 0:
         thread_bad_results.append("BUILD FAIL: {}.buildlib failed, cat {}".format(compname, file_build))
-        with open(file_build) as f:
-            print(f.readlines())
         
     analyze_build_log(compclass, file_build, compiler)
 
