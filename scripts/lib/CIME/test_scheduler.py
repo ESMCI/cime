@@ -1052,6 +1052,7 @@ class TestScheduler(object):
         GenericXML.DISABLE_CACHING = True
         self._producer()
         GenericXML.DISABLE_CACHING = False
+        sleep(30)
         active_threads = threading.active_count() 
         expect(active_threads == 1, "Leftover threads? (active_threads={})".format(active_threads))
 
