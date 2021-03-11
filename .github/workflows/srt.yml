@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
 
       - name: pnetcdf build
         if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
