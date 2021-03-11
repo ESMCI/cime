@@ -17,7 +17,7 @@ jobs:
     # The type of runner that the job will run on
     # ubuntu-20.04 has several issues that cause failures, we should go back to ubuntu-latest
     # when it moves beyond 20.04
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [2.7, 3.8]

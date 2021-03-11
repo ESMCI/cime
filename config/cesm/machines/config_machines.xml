@@ -2956,12 +2956,6 @@ This allows using a different mpirun command to launch unit tests
       </arguments>
     </mpirun>
     <module_system type="none" />
-    <environment_variables>
-      <env name="OMP_STACKSIZE">256M</env>
-    </environment_variables>
-    <resource_limits>
-      <resource name="RLIMIT_STACK">-1</resource>
-    </resource_limits>
   </machine>
 
 
