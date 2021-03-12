@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 _CMD_ARGS_FOR_BUILD = \
     ("CASEROOT", "CASETOOLS", "CIMEROOT", "COMP_INTERFACE",
-     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT",
+     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT", "LILAC_MODE",
      "MACH", "MPILIB", "NINST_VALUE", "OS", "PIO_VERSION",
      "SHAREDLIBROOT", "SMP_PRESENT", "USE_ESMF_LIB", "USE_MOAB",
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
@@ -401,7 +401,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         # this configuration and CDEPS relies on unreleased ESMF code. Eventually we will
         # require CDEPS (for its streams functionality), at which point CDEPS should only
         # require released ESMF code; then we should remove the 'lilac_mode' part of this
-        # conditional.
+        # conditional and the similar conditional in the Makefile (along with the addition
+        # of LILAC_MODE to _CMD_ARGS_FOR_BUILD).
         libs.append("CDEPS")
 
     ocn_model = case.get_value("COMP_OCN")
