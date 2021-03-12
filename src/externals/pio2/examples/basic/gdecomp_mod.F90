@@ -300,9 +300,7 @@ contains
 !==================================================================
    subroutine gdecomp_DOF(gdecomp,my_task,DOF,start,count,write_decomp,test)
 
-#ifdef _NETCDF
    use netcdf   ! _EXTERNAL
-#endif
 
    implicit none
 
@@ -712,7 +710,6 @@ contains
 
    ! --- write out arrays ---
 
-#ifdef _NETCDF
    if (wdecomp) then
    write(6,*) ' '
    write(6,*) trim(subname),' writing decomp info to file ',trim(ncname)
@@ -738,7 +735,6 @@ contains
    rcode = nf90_put_var(ncid,varid(2),tskid)
    rcode = nf90_close(ncid)
    endif
-#endif
 
    endif   ! testonly
 

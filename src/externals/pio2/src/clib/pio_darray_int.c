@@ -23,7 +23,7 @@
 extern PIO_Offset pio_buffer_size_limit;
 
 /** Initial size of compute buffer. */
-bufsize pio_cnbuffer_limit = 33554432;
+long pio_cnbuffer_limit = 33554432;
 
 /** Global buffer pool pointer. */
 extern void *CN_bpool;
@@ -44,40 +44,6 @@ bpool_free(void *p)
     if(p == CN_bpool){
         CN_bpool = NULL;
     }
-}
-
-/**
- * Initialize the compute buffer to size pio_cnbuffer_limit.
- *
- * This routine initializes the compute buffer pool if the bget memory
- * management is used. If malloc is used (that is, PIO_USE_MALLOC is
- * non zero), this function does nothing.
- *
- * @param ios pointer to the iosystem descriptor which will use the
- * new buffer.
- * @returns 0 for success, error code otherwise.
- * @author Jim Edwards
- */
-int
-compute_buffer_init(iosystem_desc_t *ios)
-{
-#if !PIO_USE_MALLOC
-
-    if (!CN_bpool)
-    {
-        if (!(CN_bpool = malloc(pio_cnbuffer_limit)))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        bpool(CN_bpool, pio_cnbuffer_limit);
-        if (!CN_bpool)
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        bectl(NULL, malloc, bpool_free, pio_cnbuffer_limit);
-    }
-#endif
-    PLOG((2, "compute_buffer_init complete"));
-
-    return PIO_NOERR;
 }
 
 #if USE_VARD
@@ -405,7 +371,9 @@ write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vari
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;    /* Pointer to var info struct. */
+#ifdef _PNETCDF
     int dsize;             /* Data size (for one region). */
+#endif
     int ierr = PIO_NOERR;
 #if USE_VARD_WRITE
     PIO_Offset gdim0;  /* global size of first dimension if no unlimited dimension and ndims<fndims */
@@ -1204,12 +1172,14 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
         io_region *region;
         size_t start[fndims];
         size_t count[fndims];
-        size_t tmp_bufsize = 1;
         void *bufptr;
+#ifdef _PNETCDF
+        size_t tmp_bufsize = 1;
         int rrlen = 0;
         PIO_Offset *startlist[iodesc->maxregions];
         PIO_Offset *countlist[iodesc->maxregions];
-
+#endif
+	
         /* buffer is incremented by byte and loffset is in terms of
            the iodessc->mpitype so we need to multiply by the size of
            the mpitype. */
@@ -1228,7 +1198,6 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
         /* For each regions, read the data. */
         for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {
-            tmp_bufsize = 1;
             if (region == NULL || iodesc->llen == 0)
             {
                 /* No data for this region. */
@@ -1339,8 +1308,8 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
 
                 if (tmp_bufsize > 0)
                 {
-                    startlist[rrlen] = bget(fndims * sizeof(PIO_Offset));
-                    countlist[rrlen] = bget(fndims * sizeof(PIO_Offset));
+                    startlist[rrlen] = malloc(fndims * sizeof(PIO_Offset));
+                    countlist[rrlen] = malloc(fndims * sizeof(PIO_Offset));
 
                     for (int j = 0; j < fndims; j++)
                     {
@@ -1380,8 +1349,8 @@ pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
                     /* Release the start and count arrays. */
                     for (int i = 0; i < rrlen; i++)
                     {
-                        brel(startlist[i]);
-                        brel(countlist[i]);
+                        free(startlist[i]);
+                        free(countlist[i]);
                     }
                 }
             }
@@ -1733,12 +1702,12 @@ pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 int
 flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 {
-    int mpierr;  /* Return code from MPI functions. */
     int ierr = PIO_NOERR;
 
 #ifdef _PNETCDF
     var_desc_t *vdesc;
     PIO_Offset usage = 0;
+    int mpierr;  /* Return code from MPI functions. */
 
     /* Check inputs. */
     pioassert(file, "invalid input", __FILE__, __LINE__);
@@ -1825,7 +1794,7 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         if (file->iobuf)
         {
             PLOG((3,"freeing variable buffer in flush_output_buffer"));
-            brel(file->iobuf);
+            free(file->iobuf);
             file->iobuf = NULL;
         }
 
@@ -1835,7 +1804,7 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);
             if (vdesc->fillbuf)
             {
-                brel(vdesc->fillbuf);
+                free(vdesc->fillbuf);
                 vdesc->fillbuf = NULL;
             }
         }
@@ -1843,82 +1812,6 @@ flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
 #endif /* _PNETCDF */
     return ierr;
-}
-
-/**
- * Print out info about the buffer for debug purposes. This should
- * only be called when logging is enabled.
- *
- * @param ios pointer to the IO system structure
- * @param collective true if collective report is desired
- * @ingroup PIO_write_darray_c
- * @author Jim Edwards
- */
-void
-cn_buffer_report(iosystem_desc_t *ios, bool collective)
-{
-    int mpierr;  /* Return code from MPI functions. */
-
-    PLOG((2, "cn_buffer_report ios->iossysid = %d collective = %d CN_bpool = %d",
-          ios->iosysid, collective, CN_bpool));
-    if (CN_bpool)
-    {
-        long bget_stats[5];
-        long bget_mins[5];
-        long bget_maxs[5];
-
-        bstats(bget_stats, bget_stats+1,bget_stats+2,bget_stats+3,bget_stats+4);
-        if (collective)
-        {
-            PLOG((3, "cn_buffer_report calling MPI_Reduce ios->comp_comm = %d", ios->comp_comm));
-            if ((mpierr = MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios->comp_comm)))
-                check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-            PLOG((3, "cn_buffer_report calling MPI_Reduce"));
-            if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios->comp_comm)))
-                check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-            if (ios->compmaster == MPI_ROOT)
-            {
-                PLOG((1, "Currently allocated buffer space %ld %ld", bget_mins[0], bget_maxs[0]));
-                PLOG((1, "Currently available buffer space %ld %ld", bget_mins[1], bget_maxs[1]));
-                PLOG((1, "Current largest free block %ld %ld", bget_mins[2], bget_maxs[2]));
-                PLOG((1, "Number of successful bget calls %ld %ld", bget_mins[3], bget_maxs[3]));
-                PLOG((1, "Number of successful brel calls  %ld %ld", bget_mins[4], bget_maxs[4]));
-            }
-        }
-        else
-        {
-            PLOG((1, "Currently allocated buffer space %ld", bget_stats[0]));
-            PLOG((1, "Currently available buffer space %ld", bget_stats[1]));
-            PLOG((1, "Current largest free block %ld", bget_stats[2]));
-            PLOG((1, "Number of successful bget calls %ld", bget_stats[3]));
-            PLOG((1, "Number of successful brel calls  %ld", bget_stats[4]));
-        }
-    }
-}
-
-/**
- * Free the buffer pool. If malloc is used (that is, PIO_USE_MALLOC is
- * non zero), this function does nothing.
- *
- * @param ios pointer to the IO system structure.
- * @ingroup PIO_write_darray_c
- * @author Jim Edwards
- */
-void
-free_cn_buffer_pool(iosystem_desc_t *ios)
-{
-#if !PIO_USE_MALLOC
-    PLOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
-    /* Note: it is possible that CN_bpool has been freed and set to NULL by bpool_free() */
-    if (CN_bpool)
-    {
-        cn_buffer_report(ios, false);
-        bpoolrelease(CN_bpool);
-        PLOG((2, "free_cn_buffer_pool done!"));
-        free(CN_bpool);
-        CN_bpool = NULL;
-    }
-#endif /* !PIO_USE_MALLOC */
 }
 
 /**
@@ -1958,21 +1851,21 @@ flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
         wmb->num_arrays = 0;
 
         /* Release the list of variable IDs. */
-        brel(wmb->vid);
+        free(wmb->vid);
         wmb->vid = NULL;
 
         /* Release the data memory. */
-        brel(wmb->data);
+        free(wmb->data);
         wmb->data = NULL;
 
         /* If there is a fill value, release it. */
         if (wmb->fillvalue)
-            brel(wmb->fillvalue);
+            free(wmb->fillvalue);
         wmb->fillvalue = NULL;
 
         /* Release the record number. */
         if (wmb->frame)
-            brel(wmb->frame);
+            free(wmb->frame);
         wmb->frame = NULL;
 
         if (ret)

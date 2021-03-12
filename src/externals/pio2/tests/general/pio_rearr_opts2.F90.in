@@ -1,3 +1,4 @@
+#include "config.h"
 MODULE pio_rearr_opts_tgv
   use pio_tutil
   character(len=PIO_TF_MAX_STR_LEN), parameter ::tgv_fname ="pio_rearr_opts2_test.nc"

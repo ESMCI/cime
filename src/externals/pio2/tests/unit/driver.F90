@@ -2,6 +2,7 @@
 !! @file
 !! @brief The driver for PIO unit tests
 !<
+#include "config.h"
 
 Program pio_unit_test_driver
   use pio
@@ -64,13 +65,6 @@ Program pio_unit_test_driver
      ! Ignore namelist values if PIO not built with correct options
      ! (i.e. don't test pnetcdf if not built with pnetcdf)
 
-#ifndef _NETCDF
-     if (ltest_netcdf) then
-        write(*,"(A,1x,A)") "WARNING: can not test netcdf files because PIO", &
-             "was not compiled with -D_NETCDF"
-        ltest_netcdf     = .false.
-     end if
-#endif
 #ifndef _NETCDF4
      if (ltest_netcdf4p) then
         write(*,"(A,1x,A)") "WARNING: can not test netcdf4p files because PIO", &
@@ -108,7 +102,7 @@ Program pio_unit_test_driver
   call MPI_Bcast(stride,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
   niotasks = ntasks/stride
 
-  ! Set up PIO
+  ! Set up PIO. Use a base of 1 because task 0 is already busy.
   call PIO_init(my_rank,        & ! MPI rank
        MPI_COMM_WORLD, & ! MPI communicator
        niotasks,       & ! Number of iotasks (ntasks/stride)

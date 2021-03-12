@@ -229,6 +229,7 @@ class EnvBatch(EnvBase):
             walltime_format = case.get_value("walltime_format", subgroup=job) if case.get_value("walltime_format", subgroup=job) else None
             logger.info("job is {} USER_REQUESTED_WALLTIME {} USER_REQUESTED_QUEUE {} WALLTIME_FORMAT {}".format(job, walltime, force_queue, walltime_format))
             task_count = int(jsect["task_count"]) if "task_count" in jsect else case.total_tasks
+
             walltime = jsect["walltime"] if ("walltime" in jsect and walltime is None) else walltime
             if "task_count" in jsect:
                 # job is using custom task_count, need to compute a node_count based on this
@@ -315,7 +316,7 @@ class EnvBatch(EnvBase):
         directive_prefix = None
 
         roots = self.get_children("batch_system")
-        queue = self.get_value("JOB_QUEUE", subgroup=job)
+        queue = case.get_value("JOB_QUEUE", subgroup=job)
         if self._batchtype != "none" and not queue in self._get_all_queue_names():
             unknown_queue = True
             qnode = self.get_default_queue()

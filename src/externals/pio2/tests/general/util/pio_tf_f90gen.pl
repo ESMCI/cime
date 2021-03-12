@@ -54,7 +54,7 @@ sub init_predef_types
   $template_predef_typename_types{"PIO_TF_DATA_TYPE"} = [];
   $template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"} = [];
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_int");
-  push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer");
+  push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer(kind=fc_int)");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_short");
   push(@{$template_predef_typename_types{"PIO_TF_FC_DATA_TYPE"}}, "integer(kind=fc_short)");
   push(@{$template_predef_typename_types{"PIO_TF_DATA_TYPE"}}, "PIO_real");
@@ -566,9 +566,9 @@ sub parse_and_store_gen_templ_funcs
   }
   if($annotate_source){
       if($out_line =~ /[^#]/){
-	  $out_line .= "\n";
+          $out_line .= "\n";
       }else{
-	  $out_line = $out_line . "   ! $base_file_name:$ifline_num" . "\n";
+          $out_line = $out_line . "   ! $base_file_name:$ifline_num" . "\n";
       }
   }
   if($verbose) { print "Adding \"$out_line\" to ${$ref_templ_funcname}\n"; }
@@ -602,21 +602,32 @@ sub update_auto_func_list_with_gen_templ
 # Returns the default test main code
 sub get_default_test_main
 {
+  my($test_type) = @_;
   my($out_line);
   $out_line = "\n\n";
   $out_line = $out_line . "  PROGRAM PIO_TF_Test_main_\n";
   $out_line = $out_line . "    USE pio_tutil\n";
   $out_line = $out_line . "    IMPLICIT NONE\n";
-  $out_line = $out_line . "    INTEGER, PARAMETER :: NREARRS = 2\n";
-  $out_line = $out_line . "    INTEGER :: rearrs(NREARRS) = (/pio_rearr_subset,pio_rearr_box/)\n";
-  $out_line = $out_line . "    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: rearrs_info(NREARRS) = (/\"PIO_REARR_SUBSET\",\"PIO_REARR_BOX   \"/)\n";
+  if($test_type eq "sync"){
+      $out_line = $out_line . "    INTEGER, PARAMETER :: NREARRS = 2\n";
+      $out_line = $out_line . "    INTEGER :: rearrs(NREARRS) = (/pio_rearr_subset,pio_rearr_box/)\n";
+      $out_line = $out_line . "    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: rearrs_info(NREARRS) = (/\"PIO_REARR_SUBSET\",\"PIO_REARR_BOX   \"/)\n";
+  }else{
+      $out_line = $out_line . "    INTEGER, PARAMETER :: NREARRS = 1\n";
+      $out_line = $out_line . "    INTEGER :: rearrs(NREARRS) = (/pio_rearr_box/)\n";
+      $out_line = $out_line . "    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: rearrs_info(NREARRS) = (/\"PIO_REARR_BOX   \"/)\n";
+  }
   $out_line = $out_line . "    INTEGER i, ierr\n";
   $out_line = $out_line . "\n";
   $out_line = $out_line . "    pio_tf_nerrs_total_=0\n";
   $out_line = $out_line . "    pio_tf_retval_utest_=0\n";
   $out_line = $out_line . "    CALL MPI_Init(ierr)\n";
   $out_line = $out_line . "    DO i=1,SIZE(rearrs)\n";
-  $out_line = $out_line . "      CALL PIO_TF_Init_(rearrs(i))\n";
+  if($test_type eq "async"){
+    $out_line = $out_line . "      CALL PIO_TF_Init_async_(rearrs(i))\n";
+  }else{
+    $out_line = $out_line . "      CALL PIO_TF_Init_(rearrs(i))\n";
+  }
   $out_line = $out_line . "      IF (pio_tf_world_rank_ == 0) THEN\n";
   $out_line = $out_line . "        WRITE(*,*) \"PIO_TF: Testing : \", trim(rearrs_info(i))\n";
   $out_line = $out_line . "      END IF\n";
@@ -657,7 +668,9 @@ sub get_default_test_driver
   $out_line = "\n\n";
   $out_line = $out_line . "  SUBROUTINE PIO_TF_Test_driver_\n";
   $out_line = $out_line . "    USE pio_tutil\n";
+  $out_line = $out_line . "    USE mpi, only : mpi_abort, mpi_comm_world\n";
   $out_line = $out_line . "    IMPLICIT NONE\n";
+  $out_line = $out_line . "    integer :: mpierr\n";
   if($template_auto_funcs_inserted == 1){
     print "Error parsing template file, auto tests can only be inserted (PIO_TF_AUTO_TESTS_RUN) in a test driver\n";
     exit;
@@ -678,6 +691,9 @@ sub get_default_test_driver
     $out_line = $out_line . "      ELSE\n";
     $out_line = $out_line . "        WRITE(*,PIO_TF_TEST_RES_FMT) \"PIO_TF:Test $cur_test_case_num:\",&\n";
     $out_line = $out_line . "          \"$_\",\"-----------\", \"FAILED\"\n";
+# The following line if uncommented will cause the framework to stop at the first failure
+
+#    $out_line = $out_line . "        call mpi_abort(MPI_COMM_WORLD, 0, mpierr)\n";
     $out_line = $out_line . "      END IF\n";
     $out_line = $out_line . "    END IF\n";
     $cur_test_case_num += 1;
@@ -699,20 +715,20 @@ sub get_header
 }
 
 # The footer always contains the default test main code
-# The footer can contain the default test driver code is none is specified
+# The footer can contain the default test driver code if none is specified
 # - The default test driver code will contain all the auto test subs
 # If a test driver code is specified the list of auto test funcs has already
 # been appended the driver
 sub get_footer
 {
-  my($ref_auto_funcs_list) = @_;
-  my($out_line);
+  my($test_type, $ref_auto_funcs_list) = @_;
+  my($out_line) = "";
   if($template_has_test_driver == 0){
     # Add default test driver
     $out_line = &get_default_test_driver($ref_auto_funcs_list);
   }
+  $out_line = $out_line . &get_default_test_main($test_type);
 
-  $out_line = $out_line . &get_default_test_main();
   return $out_line;
 }
 
@@ -855,8 +871,11 @@ sub process_template_file
     $orig_line = "";
     $ifline_num += 1;
   }
-
-  $footer = &get_footer(\@auto_funcs_list);
+  if(index($ifname, "async") >= 0){
+      $footer = &get_footer("async", \@auto_funcs_list);
+  }else{
+      $footer = &get_footer("sync", \@auto_funcs_list);
+  }
   print OUTPUT_FILE $footer;
 }
 

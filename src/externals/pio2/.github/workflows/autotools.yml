@@ -1,4 +1,4 @@
-name: autotools
+name: autotools_ubuntu_latest
 
 on:
   push:
@@ -14,24 +14,35 @@ jobs:
     env:
       CC: mpicc
       FC: mpifort
-      CPPFLAGS: "-I/usr/include -I/usr/local/include"
-#      CFLAGS: "-std=c99  -fsanitize=address -fno-omit-frame-pointer -Werror"
-#      FFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
-#      FCFLAGS: "-fsanitize=address -fno-omit-frame-pointer -Werror"
+      CPPFLAGS: "-I/usr/include -I/usr/local/include -I/home/runner/pnetcdf/include"
+      LDFLAGS: "-L/home/runner/pnetcdf/lib"
 
     steps:
     - uses: actions/checkout@v2
     - name: Installs
       run: |
+        set -x
+        sudo gem install apt-spy2
+        sudo apt-spy2 check
+        sudo apt-spy2 fix --commit
+        # after selecting a specific mirror, we need to run 'apt-get update'
+        sudo apt-get update
         sudo apt-get install netcdf-bin libnetcdf-dev doxygen graphviz wget gfortran libjpeg-dev libz-dev openmpi-bin libopenmpi-dev 
+    - name: cache-pnetcdf
+      id: cache-pnetcdf
+      uses: actions/cache@v2
+      with:
+        path: ~/pnetcdf
+        key: pnetcdf-${{ runner.os }}-1.11.0
 
-    - name: pnetcdf build
+    - name: build-pnetcdf
+      if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
       run: |
-        wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.0.tar.gz 
+        set -x
+        wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.0.tar.gz &> /dev/null
         tar -xzvf pnetcdf-1.11.0.tar.gz
-        ls -l
         pushd pnetcdf-1.11.0
-        ./configure --prefix=/usr --enable-shared
+        ./configure --prefix=/home/runner/pnetcdf --enable-shared --disable-cxx
         make
         sudo make install
         popd
@@ -39,6 +50,6 @@ jobs:
     - name: autoreconf
       run: autoreconf -i
     - name: configure
-      run: ./configure
-    - name: make distcheck
-      run: make distcheck
+      run: ./configure --enable-fortran --enable-docs
+    - name: make check
+      run: make -j check

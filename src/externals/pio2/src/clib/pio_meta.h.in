@@ -28,5 +28,7 @@
 #define PIO_HAS_PAR_FILTERS @PIO_HAS_PAR_FILTERS@ /*!< NetCDF supports parallel I/O with filters. */
 #define PIO_HAS_NETCDF4     @PIO_HAS_NETCDF4@     /*!< NetCDF-4 supported. */
 #define PIO_HAS_NETCDF4_PAR @PIO_HAS_NETCDF4_PAR@ /*!< NetCDF-4 parallel I/O supported. */
+#define PIO_HAS_NETCDF_INTEGRATION @PIO_HAS_NETCDF_INTEGRATION@ /*!< NetCDF integration supported. */
+#define PIO_HAS_LOGGING     @PIO_HAS_LOGGING@     /*!< PIO logging turned on. */
 
 #endif

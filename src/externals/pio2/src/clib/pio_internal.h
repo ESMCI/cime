@@ -13,7 +13,6 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_error.h>
-#include <bget.h>
 #include <limits.h>
 #include <math.h>
 #include <netcdf.h>
@@ -329,15 +328,6 @@ extern "C" {
     /* Print a trace statement, for debugging. */
     void print_trace (FILE *fp);
 
-    /* Print diagonstic info to stdout. */
-    void cn_buffer_report(iosystem_desc_t *ios, bool collective);
-
-    /* Initialize the compute buffer. */
-    int compute_buffer_init(iosystem_desc_t *ios);
-
-    /* Free the buffer pool. */
-    void free_cn_buffer_pool(iosystem_desc_t *ios);
-
     /* Flush PIO's data buffer. */
     int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
 
@@ -637,6 +627,7 @@ enum PIO_MSG
     PIO_MSG_ADVANCEFRAME,
     PIO_MSG_READDARRAY,
     PIO_MSG_SETERRORHANDLING,
+    PIO_MSG_SETLOGLEVEL,
     PIO_MSG_FREEDECOMP,
     PIO_MSG_CLOSE_FILE,
     PIO_MSG_DELETE_FILE,

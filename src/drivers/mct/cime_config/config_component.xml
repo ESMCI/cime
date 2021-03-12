@@ -169,6 +169,15 @@
     <desc>username of user who created case</desc>
   </entry>
 
+  <entry id="CASE_GROUP">
+    <type>char</type>
+    <group>case_desc</group>
+    <file>env_case.xml</file>
+    <desc>
+      Optional string denoting that this case is part of a case group
+    </desc>
+  </entry>
+
   <!-- ===================================================================== -->
   <!-- definitions runtimes -->
   <!-- ===================================================================== -->
@@ -899,9 +908,9 @@
     <file>env_run.xml</file>
     <desc>
       Determines what ESMF log files (if any) are generated when
-          USE_ESMF_LIB is TRUE.
+	  USE_ESMF_LIB is TRUE.
       ESMF_LOGKIND_SINGLE: Use a single log file, combining messages from
-          all of the PETs. Not supported on some platforms.
+	  all of the PETs. Not supported on some platforms.
       ESMF_LOGKIND_MULTI: Use multiple log files -- one per PET.
       ESMF_LOGKIND_NONE: Do not issue messages to a log file.
       By default, no ESMF log files are generated.
@@ -2364,7 +2373,7 @@
 
   <entry id="PIO_VERSION">
     <type>integer</type>
-    <default_value>1</default_value>
+    <default_value>2</default_value>
     <valid_values>1,2</valid_values>
     <group>build_macros</group>
     <file>env_build.xml</file>
