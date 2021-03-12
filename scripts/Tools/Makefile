@@ -109,10 +109,16 @@ endif
 
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
-   # FoX libraries are provided and built by CDEPS
-   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
-   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
-   SLIBS += $(FoX_LIBS)
+   ifneq ($(LILAC_MODE), on)
+      # CDEPS isn't required yet when building CTSM with LILAC; once it is needed, we
+      # should remove this conditional and the similar one in build.py (along with the
+      # addition of LILAC_MODE to _CMD_ARGS_FOR_BUILD)
+
+      # FoX libraries are provided and built by CDEPS
+      FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
+      ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+      SLIBS += $(FoX_LIBS)
+   endif
 else
    CPPDEFS += -DMCT_INTERFACE
 endif
