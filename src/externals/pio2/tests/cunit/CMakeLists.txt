@@ -96,7 +96,7 @@ if (NOT PIO_USE_MPISERIAL)
   add_executable (test_decomp_frame EXCLUDE_FROM_ALL test_decomp_frame.c test_common.c)
   target_link_libraries (test_decomp_frame pioc)
   add_executable (test_perf2 EXCLUDE_FROM_ALL test_perf2.c test_common.c)
-    target_link_libraries (test_perf2)
+    target_link_libraries (test_perf2 pioc)
     add_executable (test_darray_async_simple EXCLUDE_FROM_ALL test_darray_async_simple.c test_common.c)
     target_link_libraries (test_darray_async_simple pioc)
     add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c test_common.c)
@@ -153,9 +153,9 @@ add_dependencies (tests test_async_perf)
 
 # Test Timeout in seconds.
 if (PIO_VALGRIND_CHECK)
-  set (DEFAULT_TEST_TIMEOUT 480)
+  set (DEFAULT_TEST_TIMEOUT 800)
 else ()
-  set (DEFAULT_TEST_TIMEOUT 480)
+  set (DEFAULT_TEST_TIMEOUT 600)
 endif ()
 
 # All tests need a certain number of tasks, but they should be able to

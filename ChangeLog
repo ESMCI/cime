@@ -1,6 +1,158 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 3-12-2021
+Tag: cime5.8.38
+Answer Changes: bit-for-bit, climate-changing for trigrid 
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+
+User interface changes: 
+    - Disable kokkos tests when building for E3SM.
+    - Remove references to CISM1-only grid for CESM.
+    - NAG port for nuopc.
+    - Generalize the file pattern match for cism.config files.
+    - Add header row and perf-archiving to memory profiling logs.
+    - Add run scripts to provenance capture.
+    - Make 64bit data default netcdf format.
+    - PIO2 update.
+    - Enable 2010 SST climatology for all variants of F-2010 compsets.
+    - Improve check_input_data tool.
+    - Fixes case where a skipped test would result in logfile_name being undefined.
+    - SCORPIO needs _PNETCDF.
+    - nuopc result is in drv.log not med.log.
+    - Adds support of DATM_MODE=CLM1PT for ELM.
+    - Introduction of MASK_GRID for CMEPS.
+    - Fixes cleaning up only on success.
+    - bless/compare_test_results should not process build-only tests.
+    - Minor changes to Makefile needed for izumi nag build to link to ESMF lib.
+    - Update driver-mct support for trigrid configuration where lnd is not on the atm grid.
+    - Make update success more robust.
+    - env_mach_specific needs to process all mpirun nodes from machobj.
+    - Add a new env_run XML value for E3SM: CASE_GROUP.
+    - Turn PIO_USE_MALLOC back on.
+    - Add machine frontera and fix run_exe setting issue.
+    - Remove collapse directives for Cray compiler.
+    - Fix some documentation of EXEROOT.
+    - Fix i4 in shr_reposum_mod and add comments.
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+33f236c48 Merge pull request #3881 from ESMCI/jgfouca/disable_kokkos_tests
+3321317ff Merge pull request #3785 from billsacks/remove_cism1
+d67b18ec7 Merge pull request #3878 from jedwards4b/nag_port
+75e8f7af6 Merge pull request #3869 from billsacks/generalize_cism_config
+fd30d9c1f Merge pull request #3875 from ESMCI/azamat/mprof/add-header-archiving
+b164a7f5b Merge pull request #3873 from sarats/sarats/capture-runscripts-provenance
+56c121ed8 Merge pull request #3870 from jedwards4b/make_64bit_data_default
+162767bde Merge pull request #3859 from jedwards4b/pio2_update
+5253df01c Merge pull request #3867 from ESMCI/wlin/F2010_sstdata
+e76f2cef8 Merge pull request #3711 from ESMCI/wpcoomb/improve_check_input_data_tool
+2b49cf54f Merge pull request #3860 from jasonb5/fix_compare_test_results_undefined
+5382666a7 Merge pull request #3864 from ESMCI/jgfouca/fix_for_makefile
+9fd7ee81c Merge pull request #3863 from jedwards4b/nuopc_log_fix
+3f5a34720 Merge pull request #3845 from ESMCI/bishtgautam/user-defined-forcing-for-elm
+2604dd663 Merge pull request #3841 from ESMCI/mvertens/bugfixes_auxcam
+af03e9868 Merge pull request #3847 from jasonb5/fix_directory_removal
+f90d23a50 Merge pull request #3855 from ESMCI/jgfouca/fix_test_results_for_B
+dbf9f538a Merge pull request #3856 from fvitt/izumi_esmflib
+55704c82a Merge pull request #3853 from ESMCI/jonbob/update-trigrid-support
+78448a114 Merge pull request #3851 from ESMCI/jgfouca/update_success_robust
+6f2688798 Merge pull request #3848 from ESMCI/jgfouca/fix_mpirun_env_mach_specific
+743a2c967 Merge pull request #3844 from ESMCI/jgfouca/add_case_group
+d088f9826 Merge pull request #3843 from ESMCI/jgfouca/e3sm_cime_temp
+ef6b28c80 Merge pull request #3836 from jedwards4b/add_frontera_fix_run_exe_xml_issue
+6335dd8b8 Merge pull request #3830 from ESMCI/azamat/mct-cime/rm-collapse-for-cray
+664376d67 Merge pull request #3840 from billsacks/fix_doc_exeroot
+0940e6a6d Merge pull request #3839 from ESMCI/worleyph/reprosum_i4_fix
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt.yml
+M	config/cesm/config_grids.xml
+M	config/cesm/config_grids_common.xml
+M	config/cesm/config_grids_mct.xml
+M	config/cesm/machines/config_batch.xml
+M	config/cesm/machines/config_compilers.xml
+M	config/cesm/machines/config_machines.xml
+M	doc/source/users_guide/running-a-case.rst
+M	scripts/Tools/Makefile
+M	scripts/create_newcase
+M	scripts/lib/CIME/BuildTools/configure.py
+M	scripts/lib/CIME/SystemTests/nodefail.py
+M	scripts/lib/CIME/SystemTests/system_tests_common.py
+M	scripts/lib/CIME/XML/env_mach_specific.py
+M	scripts/lib/CIME/bless_test_results.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/case/case_run.py
+M	scripts/lib/CIME/case/case_setup.py
+M	scripts/lib/CIME/case/check_input_data.py
+M	scripts/lib/CIME/case/preview_namelists.py
+M	scripts/lib/CIME/compare_test_results.py
+M	scripts/lib/CIME/provenance.py
+A	scripts/lib/CIME/tests/test_compare_test_results.py
+M	scripts/lib/CIME/wait_for_tests.py
+M	scripts/tests/scripts_regression_tests.py
+M	src/build_scripts/buildlib.gptl
+M	src/build_scripts/buildlib.kokkos
+M	src/components/data_comps_mct/datm/cime_config/buildnml
+M	src/components/data_comps_mct/datm/cime_config/namelist_definition_datm.xml
+M	src/components/data_comps_mct/docn/cime_config/config_component.xml
+M	src/components/xcpl_comps_nuopc/xglc/src/glc_comp_nuopc.F90
+M	src/drivers/mct/cime_config/config_component.xml
+M	src/drivers/mct/main/cime_comp_mod.F90
+M	src/drivers/mct/main/prep_rof_mod.F90
+M	src/drivers/mct/main/seq_diag_mct.F90
+M	src/drivers/mct/main/seq_frac_mct.F90
+M	src/externals/mct/mct/m_AttrVect.F90
+M	src/externals/pio2/.github/workflows/cmake.yml
+A	src/externals/pio2/.github/workflows/cmake_netcdf-4.7.4_hdf5-1.10.7_pnetcdf-12.1_ncint_mpich-3.3_asan.yml
+A	src/externals/pio2/.github/workflows/netcdf-4.7.4_hdf5-1.10.7_pnetcdf-12.1_ncint_mpich-3.3_asan.yml
+A	src/externals/pio2/.github/workflows/netcdf-4.7.4_hdf5-1.12.0_no_pnetcdf_ncint_mpich-3.3.yml
+A	src/externals/pio2/.github/workflows/netcdf-4.7.4_hdf5-1.12.0_pnetcdf-12.2_ncint_mpich-3.3_asan.yml
+R100	src/externals/pio2/.github/workflows/a4.yml	src/externals/pio2/.github/workflows/netcdf-4.7.4_pnetcdf-12.1_ncint_mpich-3.3.yml
+R100	src/externals/pio2/.github/workflows/a3.yml	src/externals/pio2/.github/workflows/netcdf-4.7.4_pnetcdf-12.1_ncint_openmpi_4.0.4.yml
+R100	src/externals/pio2/.github/workflows/strict_autotools.yml	src/externals/pio2/.github/workflows/strict_autotools_ubuntu_latest.yml
+M	src/externals/pio2/README.md
+M	src/externals/pio2/configure.ac
+M	src/externals/pio2/ctest/CTestScript-Test.cmake
+A	src/externals/pio2/doc/images/I_O_on_many_async_small.png
+M	src/externals/pio2/src/clib/pio.h
+M	src/externals/pio2/src/clib/pio_darray.c
+M	src/externals/pio2/src/clib/pio_darray_int.c
+M	src/externals/pio2/src/clib/pio_msg.c
+M	src/externals/pio2/src/clib/pioc.c
+M	src/externals/pio2/src/clib/pioc_sc.c
+M	src/externals/pio2/src/clib/pioc_support.c
+M	src/externals/pio2/src/flib/Makefile.am
+M	src/externals/pio2/src/flib/piolib_mod.F90
+M	src/externals/pio2/src/ncint/ncintdispatch.c
+M	src/externals/pio2/src/ncint/ncintdispatch.h
+M	src/externals/pio2/tests/cunit/CMakeLists.txt
+M	src/externals/pio2/tests/cunit/pio_tests.h
+M	src/externals/pio2/tests/cunit/run_tests.sh.in
+M	src/externals/pio2/tests/cunit/test_async_1d.c
+M	src/externals/pio2/tests/cunit/test_async_perf.c
+M	src/externals/pio2/tests/cunit/test_darray_multivar.c
+M	src/externals/pio2/tests/cunit/test_darray_multivar3.c
+M	src/externals/pio2/tests/cunit/test_perf2.c
+M	src/externals/pio2/tests/cunit/test_simple.c
+M	src/externals/pio2/tests/fncint/ftst_pio_orig.f90
+M	src/externals/pio2/tests/ncint/pio_err_macros.h
+M	src/externals/pio2/tests/ncint/tst_var_compress.c
+M	src/externals/pio2/tests/unit/basic_tests.F90
+M	src/externals/pio2/tests/unit/driver.F90
+M	src/externals/pio2/tests/unit/ncdf_tests.F90
+M	src/share/unit_test_stubs/pio/pio.F90.in
+M	src/share/util/shr_pio_mod.F90
+M	src/share/util/shr_reprosum_mod.F90
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 1-27-2021
 Tag: cime5.8.37
 Answer Changes: Some fill_values and pgi on cheyenne

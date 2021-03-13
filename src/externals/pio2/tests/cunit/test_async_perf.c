@@ -197,6 +197,14 @@ run_darray_async_test(int iosysid, int fmt, int my_rank, int ntasks, int niotask
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM4, dimid, &varid)))
             PBAIL(ret);
 
+        /* NetCDF/HDF5 files benefit from having chunksize set. */
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4P || flavor[fmt] == PIO_IOTYPE_NETCDF4C)
+        {
+            PIO_Offset chunksizes[NDIM4] = {NUM_TIMESTEPS / 2, X_DIM_LEN / 4, Y_DIM_LEN / 4, Z_DIM_LEN};
+            if ((ret = PIOc_def_var_chunking(ncid, varid, NC_CHUNKED, chunksizes)))
+                ERR(ret);
+        }
+
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             PBAIL(ret);
@@ -381,10 +389,10 @@ int main(int argc, char **argv)
 
                     /* Compute the time delta */
                     endt = (1000000 * endtime.tv_sec) + endtime.tv_usec;
-                    delta = (endt - startt)/NUM_TIMESTEPS;
+                    delta = (endt - startt);
                     delta_in_sec = (float)delta / 1000000;
                     num_megabytes = (X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN * (long long int)  NUM_TIMESTEPS *
-                                     sizeof(int))/(1024*1024);
+                                     sizeof(int))/(MILLION);
                     mb_per_sec = num_megabytes / delta_in_sec;
                     printf("%d,       %d,\t%s,\t%s,\t%s,\t%8.3f,\t%8.1f,\t%8.3f\n", ntasks, num_io_procs[niotest],
                            (rearranger[r] == 1 ? "box" : "subset"), (0 ? "fill" : "nofill"),

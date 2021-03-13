@@ -115,6 +115,13 @@ contains
        pio_comp_settings(i)%pio_rearranger = pio_rearranger
        pio_comp_settings(i)%pio_netcdf_ioformat = pio_netcdf_ioformat
     end do
+
+    if(pio_debug_level>0) then
+       if(drank==0) then
+          write(shr_log_unit,*) 'Setting pio_debuglevel : ',pio_debug_level
+       end if
+       call pio_setdebuglevel(pio_debug_level)
+    endif
     if(pio_async_interface) then
 #ifdef NO_MPI2
        call shr_sys_abort(subname//':: async IO requires an MPI2 compliant MPI library')
@@ -134,12 +141,6 @@ contains
        call shr_mpi_chkerr(ierr,subname//' mpi_group_range_incl mpigrp')
        call mpi_comm_create(GLOBAL_COMM, mpigrp, mpicom, ierr)
        Global_COMM=mpicom
-       if(pio_debug_level>0) then
-          if(drank==0) then
-             write(shr_log_unit,*) 'Setting pio_debuglevel : ',pio_debug_level
-          end if
-          call pio_setdebuglevel(pio_debug_level)
-       endif
        if(io_comm .ne. MPI_COMM_NULL) then
           allocate(iosystems(ncomps), comp_comm(ncomps))
           comp_comm = MPI_COMM_NULL
@@ -195,8 +196,9 @@ contains
     allocate(iosystems(total_comps))
 
     if(pio_async_interface) then
+#ifdef PIO2
        call pio_init(iosystems, MPI_COMM_WORLD, comp_comm, io_comm, PIO_REARR_BOX)
-
+#endif
 !       do i=1,total_comps
 !         ret =  pio_set_rearr_opts(iosystems(i), pio_rearr_opt_comm_type,&
 !                  pio_rearr_opt_fcd,&
@@ -572,7 +574,7 @@ contains
     pio_default_numiotasks = pio_numiotasks
     pio_default_iotype = pio_iotype
     pio_default_rearranger = pio_rearranger
-    pio_default_netcdf_ioformat = PIO_64BIT_OFFSET
+    pio_default_netcdf_ioformat = PIO_64BIT_DATA
 
     !--------------------------------------------------------------------------
     ! read io nml parameters
@@ -643,10 +645,8 @@ contains
        pio_netcdf_ioformat = 0
     elseif ( pio_netcdf_format .eq. '64BIT_OFFSET' ) then
        pio_netcdf_ioformat = PIO_64BIT_OFFSET
-#ifdef _PNETCDF
     elseif ( pio_netcdf_format .eq. '64BIT_DATA' ) then
        pio_netcdf_ioformat = PIO_64BIT_DATA
-#endif
     else
        pio_netcdf_ioformat = pio_default_netcdf_ioformat
     endif

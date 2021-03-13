@@ -27,6 +27,17 @@ int ncint_initialized = 0;
 /** Version of dispatch table. */
 #define DISPATCH_VERSION 2
 
+/* Internal filter actions - copied from nc4internal.h */
+#define NCFILTER_DEF		1
+#define NCFILTER_REMOVE  	2
+#define NCFILTER_INQ	    	3
+#define NCFILTER_FILTERIDS      4
+#define NCFILTER_INFO		5
+#define NCFILTER_FREESPEC	6
+#define NCFILTER_CLIENT_REG	10
+#define NCFILTER_CLIENT_UNREG	11
+#define NCFILTER_CLIENT_INQ	12
+
 /* This is the dispatch object that holds pointers to all the
  * functions that make up the NCINT dispatch interface. */
 NC_Dispatch NCINT_dispatcher = {
@@ -116,7 +127,7 @@ NC_Dispatch NCINT_dispatcher = {
     NC_NOTNC4_def_var_filter,
     NC_NOTNC4_set_var_chunk_cache,
     NC_NOTNC4_get_var_chunk_cache,
-    NC_NOTNC4_filter_actions
+    PIO_NCINT_filter_actions
 };
 
 /**
@@ -1015,4 +1026,24 @@ int
 PIO_NCINT_def_var_chunking(int ncid, int varid, int storage, const size_t *chunksizesp)
 {
     return PIOc_def_var_chunking(ncid, varid, storage, (const PIO_Offset *)chunksizesp);
+}
+
+/**
+ * @internal Carry out one of several filter actions
+ *
+ * @param ncid Containing group id
+ * @param varid Containing variable id
+ * @param action Action to perform
+ *
+ * @return PIO_NOERR for success, otherwise an error code.
+ * @author Ed Hartnett
+ */
+int
+PIO_NCINT_filter_actions(int ncid, int varid, int action, struct NC_Filterobject* spec)
+{
+    if (action == NCFILTER_INFO)
+    {
+        
+    }
+    return PIO_NOERR;
 }

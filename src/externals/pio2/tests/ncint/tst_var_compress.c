@@ -69,18 +69,21 @@ run_var_compress_test(int my_rank, int ntasks, int iosysid)
     if (nc_close(ncid)) PERR;
 
     {
-	int shuffle_in, deflate_in, deflate_level_in, storage_in;
+	/* int shuffle_in, deflate_in, deflate_level_in; */
+	int storage_in;
 	int *data_in;
 	size_t chunksizes_in[NDIM3];
 	int endian_in;
 	int d;
+        /* int ret; */
 	
 	/* Open the file. */
 	if (nc_open(FILE_NAME, NC_PIO, &ncid)) PERR;
 	
 	/* Check the variable deflate. */
-	if (nc_inq_var_deflate(ncid, 0, &shuffle_in, &deflate_in, &deflate_level_in)) PERR;
-	printf("%d %d %d\n", shuffle_in, deflate_in, deflate_level_in);
+	/* if ((ret = nc_inq_var_deflate(ncid, 0, &shuffle_in, &deflate_in, &deflate_level_in))) */
+        /*     NCPERR(ret); */
+	/* printf("%d %d %d\n", shuffle_in, deflate_in, deflate_level_in); */
 	/* if (shuffle_in || !deflate_in || deflate_level_in != DEFLATE_LEVEL) PERR; */
 
 	/* Check the chunking. */

@@ -72,7 +72,7 @@ def buildlib(bldroot, installpath, case):
     gmake_cmd = case.get_value("GMAKE")
     gmake_j = case.get_value("GMAKE_J")
 
-    gen_makefile_cmd = "{kokkos_dir}/generate_makefile.bash {kokkos_options} --compiler={cxx} --prefix={installpath}"\
+    gen_makefile_cmd = "{kokkos_dir}/generate_makefile.bash {kokkos_options} --disable-tests --compiler={cxx} --prefix={installpath}"\
         .format(kokkos_dir=kokkos_dir, kokkos_options=kokkos_options, cxx=cxx, installpath=installpath)
 
     run_bld_cmd_ensure_logging(gen_makefile_cmd, logger, from_dir=bldroot)

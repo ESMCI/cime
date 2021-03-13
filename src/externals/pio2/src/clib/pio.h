@@ -451,12 +451,11 @@ typedef struct iosystem_desc_t
     int compmaster;
 
     /** Rank of IO root task (which is rank 0 in io_comm) in the union
-     * communicator. Will always be 0 for async situations. */
+     * communicator. */
     int ioroot;
 
     /** Rank of computation root task (which is rank 0 in
-     * comm_comms[cmp]) in the union communicator. Will always = number
-     * of IO tasks in async situations. */
+     * comm_comms[cmp]) in the union communicator. */
     int comproot;
 
     /** An array of the ranks of all IO tasks within the union

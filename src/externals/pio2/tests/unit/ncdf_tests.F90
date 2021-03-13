@@ -106,18 +106,6 @@ Contains
        return
     end if
 
-    ! Try to enter define mode again
-    if(master_task) write(*,"(6x,A,1x)") "trying to enter define mode in define mode, error expected ... "
-    call mpi_barrier(MPI_COMM_WORLD,ret_val)
-
-    ret_val = PIO_redef(pio_file)
-    if (ret_val .eq. PIO_NOERR) then
-       ! Error in PIO_redef
-       err_msg = "Entered define mode from define mode"
-       call PIO_closefile(pio_file)
-       return
-    end if
-
     ! Leave define mode
     ret_val = PIO_enddef(pio_file)
     if (ret_val .ne. PIO_NOERR) then
@@ -313,7 +301,7 @@ Contains
     print*, 'PIO_set_chunk_cache'
     ret_val = PIO_set_chunk_cache(pio_iosystem%iosysid, iotype, chunk_cache_size, &
          chunk_cache_nelems, chunk_cache_preemption)
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .and. ret_val .ne. PIO_NOERR) then
        err_msg = "Could not set chunk cache"
@@ -339,7 +327,7 @@ Contains
          chunk_cache_nelems_in, chunk_cache_preemption_in)
     print*, 'PIO_get_chunk_cache returned ', chunk_cache_size_in, &
          chunk_cache_nelems_in, chunk_cache_preemption_in
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .or. iotype .eq. PIO_iotype_netcdf4p) then
        if (ret_val .ne. PIO_NOERR) then
@@ -407,7 +395,7 @@ Contains
     print*, 'PIO_set_var_chunk_cache'
     ret_val = PIO_set_var_chunk_cache(pio_file, pio_var, chunk_cache_size, chunk_cache_nelems, &
          chunk_cache_preemption)
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .and. ret_val .ne. PIO_NOERR) then
        err_msg = "Could not set variable chunk cache"
@@ -432,7 +420,7 @@ Contains
     ret_val = PIO_get_var_chunk_cache(pio_file, pio_var, chunk_cache_size_in, &
          chunk_cache_nelems_in, chunk_cache_preemption_in)
     print*, 'PIO_get_var_chunk_cache ret_val=', ret_val
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .or. iotype .eq. PIO_iotype_netcdf4p) then
        if (ret_val .ne. PIO_NOERR) then
@@ -458,7 +446,7 @@ Contains
     end if
 
     ! Try to turn on compression for this variable.
-    print*, 'testing PIO_def_var_deflate' 
+    print*, 'testing PIO_def_var_deflate'
     shuffle = 0
     deflate = 1
 
@@ -627,10 +615,10 @@ Contains
     call PIO_closefile(pio_file)
 
     ! Free decomp
-    print*, 'testing  PIO_freedecomp'    
+    print*, 'testing  PIO_freedecomp'
     call PIO_freedecomp(pio_iosystem, iodesc_nCells)
     call mpi_barrier(MPI_COMM_WORLD,ret_val)
-    
+
     print*, 'after testing  err_msg = '    , err_msg
   End Subroutine test_nc4
 end module ncdf_tests
