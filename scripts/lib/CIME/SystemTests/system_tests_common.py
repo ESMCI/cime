@@ -318,10 +318,12 @@ class SystemTestsCommon(object):
         comments = copy_histfiles(self._case, suffix)
         append_testlog(comments, self._orig_caseroot)
 
-    def _log_cprnc_output_tail(self, prepend=None):
+    def _log_cprnc_output_tail(self, filename_pattern, prepend=None):
         rundir = self._case.get_value('RUNDIR')
 
-        cprnc_logs = glob.glob("{}/*.cprnc.out".format(rundir))
+        glob_pattern = "{}/{}".format(rundir, filename_pattern)
+
+        cprnc_logs = glob.glob(glob_pattern)
 
         for output in cprnc_logs:
             with open(output) as fin:
@@ -353,7 +355,10 @@ class SystemTestsCommon(object):
 
         append_testlog(comments, self._orig_caseroot)
 
-        self._log_cprnc_output_tail("compared suffixes suffix1 {!r} suffix2 {!r}".format(suffix1, suffix2))
+        pattern = "*.nc.{}.cprnc.out".format(suffix1)
+        message = "compared suffixes suffix1 {!r} suffix2 {!r}".format(suffix1, suffix2)
+
+        self._log_cprnc_output_tail(pattern, message)
 
         status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         with self._test_status:
@@ -569,7 +574,9 @@ class SystemTestsCommon(object):
 
             append_testlog(comments, self._orig_caseroot)
 
-            self._log_cprnc_output_tail()
+            pattern = "*.nc.cprnc.out"
+
+            self._log_cprnc_output_tail(pattern)
 
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
