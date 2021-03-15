@@ -220,13 +220,13 @@ contains
 
        ! Now advertise import and export fields fields
        do ns = 1,num_icesheets
-          if (mastertask) write(logunit,*)'Advertising To Xglc ',trim(fldsToGlc(n)%stdname)
+          if (mastertask) write(logunit,*)'Advertising To Xglc ',trim(fldsToGlc(ns)%stdname)
           do nf = 1,fldsToGlc_num
              call NUOPC_Advertise(NStateImp(ns), standardName=fldsToGlc(nf)%stdname, &
                   TransferOfferGeomObject='will provide', rc=rc)
              if (chkErr(rc,__LINE__,u_FILE_u)) return
           end do
-          if (mastertask) write(logunit,*)'Advertising From Xglc ',trim(fldsFrGlc(n)%stdname)
+          if (mastertask) write(logunit,*)'Advertising From Xglc ',trim(fldsFrGlc(ns)%stdname)
           do nf = 1,fldsFrGlc_num
              call NUOPC_Advertise(NStateExp(ns), standardName=fldsFrGlc(nf)%stdname, &
                   TransferOfferGeomObject='will provide', rc=rc)

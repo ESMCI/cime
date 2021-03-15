@@ -235,6 +235,8 @@ class Grids(GenericXML):
                 comp_name = grid[0].upper()
 
                 # determine xml variable name
+                domains["PTS_LAT"] = '-999.99'
+                domains["PTS_LON"] = '-999.99'
                 if not comp_name == "MASK":
                     if self.get_element_text("nx", root=domain_node):
                         domains[comp_name + "_NX"] = int(self.get_element_text("nx", root=domain_node))
@@ -296,7 +298,8 @@ class Grids(GenericXML):
                 driver_attrib = self.get(mesh_node, "driver")
                 if driver == driver_attrib:
                     domains["MASK_MESH"] = self.text(mesh_node)
-                domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["ATM_DOMAIN_FILE"])
+                if (domains["PTS_LAT"] != '-999.99' and domains["PTS_LON"] != '-999.99'):
+                    domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["ATM_DOMAIN_FILE"])
 
         return domains
 
