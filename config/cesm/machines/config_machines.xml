@@ -2340,7 +2340,7 @@ This allows using a different mpirun command to launch unit tests
       <executable></executable>
     </mpirun>
     <mpirun mpilib="default">
-      <executable>mpirun -bind-to core</executable>
+      <executable>srun</executable>
     </mpirun>
     <module_system type="module">
       <init_path lang="perl">/cluster/installations/lmod/lmod/init/perl</init_path>
@@ -2371,7 +2371,6 @@ This allows using a different mpirun command to launch unit tests
       <env name="OMPI_MCA_coll_hcoll_priority">95</env>
       <env name="OMPI_MCA_coll_hcoll_np">8</env>
       <env name="HCOLL_MAIN_IB">mlx5_0:1</env>
-      <env name="HCOLL_ENABLE_MCAST">1</env>
       <env name="HCOLL_ENABLE_MCAST_ALL">1</env>
     </environment_variables>
     <resource_limits>

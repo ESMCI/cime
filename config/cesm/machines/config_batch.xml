@@ -592,9 +592,9 @@
       <directive> --switches=1</directive>
     </directives>
     <queues>
-      <queue walltimemax="00:59:00" nodemin="8" nodemax="288" default="true">normal</queue>
+      <queue walltimemax="00:59:00" nodemin="4" nodemax="288" default="true">normal</queue>
       <queue walltimemax="00:59:00" nodemin="1" nodemax="1" >preproc</queue>
-      <queue walltimemax="00:30:00" nodemin="1" nodemax="4" >devel</queue>
+      <queue walltimemax="00:30:00" nodemin="1" nodemax="4" >normal</queue>
     </queues>
   </batch_system>
 
