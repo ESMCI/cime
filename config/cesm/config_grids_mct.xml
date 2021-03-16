@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
-  <gridmaps driver="mct">
 
     <!-- ======================================================== -->
     <!--- atm to ocean and ocean to atm mapping files -->
     <!-- ======================================================== -->
+  <gridmaps driver="mct">
 
     <gridmap atm_grid="C24" ocn_grid="gx1v6">
       <map name="ATM2OCN_FMAPNAME">cpl/gridmaps/C24/map_C24_TO_gx1v6_aave.181018.nc</map>

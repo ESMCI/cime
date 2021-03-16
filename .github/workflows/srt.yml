@@ -39,7 +39,7 @@ jobs:
 
       - id: load-env
         run: |
-          sudo apt-get update
+          #sudo apt-get update
           sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
 
       - name: Set up Python ${{ matrix.python-version }}

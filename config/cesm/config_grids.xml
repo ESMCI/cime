@@ -31,7 +31,7 @@
       <grid name="ocnice"    compset="SOCN"        >null</grid>
       <grid name="rof"       compset="SROF"        >null</grid>
       <grid name="rof"       compset="DWAV"        >rx1</grid>
-      <grid name="rof"       compset="RTM"	   >r05</grid>
+      <grid name="rof"       compset="RTM"         >r05</grid>
       <grid name="rof"       compset="MOSART"      >r05</grid>
       <grid name="rof"       compset="MIZUROUTE"   >HDMA</grid>
       <grid name="rof"       compset="DROF"        >rx1</grid>
@@ -40,9 +40,9 @@
       <grid name="glc"	     compset="SGLC"        >null</grid>
       <grid name="glc"	     compset="CISM2"       >gland4</grid>
       <grid name="glc"       compset="XGLC"        >gland4</grid>
-      <grid name="wav"	     compset="SWAV"        >null</grid>
-      <grid name="wav"	     compset="DWAV"        >ww3a</grid>
-      <grid name="wav"	     compset="WW3"	   >ww3a</grid>
+      <grid name="wav"       compset="SWAV"        >null</grid>
+      <grid name="wav"       compset="DWAV"        >ww3a</grid>
+      <grid name="wav"       compset="WW3"         >ww3a</grid>
       <grid name="wav"       compset="XWAV"        >ww3a</grid>
       <grid name="iac"       compset="SIAC"        >null</grid>
     </model_grid_defaults>
@@ -1201,64 +1201,6 @@
       <desc>null is no grid: </desc>
     </domain>
 
-    <!-- ======================================================== -->
-    <!-- ATM/LND domains for single column -->
-    <!-- ======================================================== -->
-
-    <domain name="01col">
-      <nx>1</nx> <ny>1</ny>
-      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
-      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
-      <desc>01col is a single-column grid for datm and POP:</desc>
-    </domain>
-    <domain name="CLM_USRDAT">
-      <nx>1</nx> <ny>1</ny>
-      <file>$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>user specified domain - only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_numaIA">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_brazil">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_smallvilleIA">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_camdenNJ">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_mexicocityMEX">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_vancouverCAN">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
-    </domain>
-    <domain name="1x1_urbanc_alpha">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
-    </domain>
 
     <!-- ======================================================== -->
     <!-- ATM/LND meshes regional and global -->
@@ -1357,7 +1299,7 @@
     <domain name="10x15">
       <nx>24</nx>   <ny>19</ny>
       <file grid="atm|lnd" mask="usgs">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.fv10x15_USGS.110713.nc</file>
-      <file grid="ocnice"  mask="usgs">$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.fv10x15_USGS_070807.nc</file>      
+      <file grid="ocnice"  mask="usgs">$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.fv10x15_USGS_070807.nc</file>
       <file grid="atm|lnd" mask="gx3v7">$DIN_LOC_ROOT/share/domains/domain.lnd.fv10x15_gx3v7.180321.nc</file>
       <file grid="ocnice"  mask="gx3v7">$DIN_LOC_ROOT/share/domains/domain.ocn.fv10x15_gx3v7.180321.nc</file>
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/10x15_nomask_c110308_ESMFmesh.nc</mesh>
@@ -1878,12 +1820,12 @@
 
     <domain name="JRA025v2">
       <nx>1440</nx> <ny>720</ny>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/JRA025m.170209_ESMFmesh.nc</mesh>
       <desc>JRA 0.25 degree runoff grid for use with JRA-55 runoff data</desc>
     </domain>
 
     <domain name="JRA025">
       <nx>1440</nx> <ny>720</ny>
-      <!-- TODO (mvertens, 2018-12-02): create a domain file for this  -->
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/JRA025m.170209_ESMFmesh.nc</mesh>
       <desc>JRA is 0.25 degree runoff grid for use with JRA-55 runoff data</desc>
     </domain>
@@ -1920,9 +1862,107 @@
   </domains>
 
   <!-- ======================================================== -->
-  <!-- Mapping -->
+  <!-- ATM/LND domains for single point mct driver -->
   <!-- ======================================================== -->
 
+  <domains driver="mct">
+    <domain name="01col">
+      <nx>1</nx> <ny>1</ny>
+      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
+      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
+      <desc>01col is a single-column grid for datm and POP:</desc>
+    </domain>
+    <domain name="1x1_numaIA">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc</file>
+      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_brazil">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc</file>
+      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_smallvilleIA">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc</file>
+      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_camdenNJ">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc</file>
+      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_mexicocityMEX">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc</file>
+      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_vancouverCAN">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc</file>
+      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_urbanc_alpha">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc</file>
+      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
+  </domains>
+
+  <!-- ======================================================== -->
+  <!-- ATM/LND domains for single point cmeps driver -->
+  <!-- ======================================================== -->
+
+  <domains driver="nuopc">
+    <domain name="01col">
+      <lat>83.144928</lat>
+      <lon>359.150902</lon>
+      <desc>01col is a single-column grid for datm and POP:</desc>
+    </domain>
+    <domain name="CLM_USRDAT">
+      <!-- User must specify lat and lon prior to building case-->
+      <desc>user specified domain - only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_numaIA">
+      <lat>40.6878</lat>
+      <lon>267.0228</lon>
+      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_brazil">
+      <lat>-7.0</lat>
+      <lon>305.0</lon>
+      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_smallvilleIA">
+      <lat>40.6878</lat>
+      <lon>267.0228</lon>
+      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_camdenNJ">
+      <lat>40.0</lat>
+      <lon>285.0</lon>
+      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_mexicocityMEX">
+      <lat>19.5</lat>
+      <lon>260.5</lon>
+      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_vancouverCAN">
+      <lat>49.5</lat>
+      <lon>236.5</lon>
+      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_urbanc_alpha">
+      <lat>-37.7308</lat>
+      <lon>0.0</lon>
+      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
+  </domains>
+
+  <!-- ======================================================== -->
+  <!-- Mapping -->
+  <!-- ======================================================== -->
   <!-- The following are the required grid maps that must not be idmap if the   -->
   <!-- attributes grid1 and grid2 are not equal -->
 
