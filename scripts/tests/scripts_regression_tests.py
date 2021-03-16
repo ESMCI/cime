@@ -3,6 +3,7 @@
 """
 Script containing CIME python regression test suite. This suite should be run
 to confirm overall CIME correctness.
+test comment 1
 """
 
 import glob, os, re, shutil, signal, sys, tempfile, \
