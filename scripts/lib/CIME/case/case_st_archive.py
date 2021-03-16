@@ -647,6 +647,10 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
             run_cmd("ssh cooleylogin1 ssh {} '{case}/case.submit {case} --resubmit' "\
                         .format(sshhost, case=caseroot), verbose=True)
         else:
+            if self.get_value("MACH") == "betzy":
+                logger.info("remove environment variable")
+                os.unsetenv('SLURM_MEM_PER_GPU')
+                os.unsetenv('SLURM_MEM_PER_CPU')
             self.submit(resubmit=True)
 
     if self.get_value('COMPRESS_ARCHIVE_FILES'):
