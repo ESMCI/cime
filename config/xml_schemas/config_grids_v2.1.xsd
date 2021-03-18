@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <!-- attributes -->
-  <xs:attribute name="version"     type="xs:decimal"/>
-  <xs:attribute name="alias"       type="xs:NMTOKEN"/>
-  <xs:attribute name="compset"     type="xs:token"/>
+  <xs:attribute name="version"	   type="xs:decimal"/>
+  <xs:attribute name="alias"	   type="xs:NMTOKEN"/>
+  <xs:attribute name="compset"	   type="xs:token"/>
   <xs:attribute name="not_compset" type="xs:token"/>
-  <xs:attribute name="name"        type="xs:NMTOKEN"/>
-  <xs:attribute name="grid"        type="xs:token"/>
-  <xs:attribute name="lnd_mask"    type="xs:NMTOKEN"/>
-  <xs:attribute name="mask"        type="xs:NMTOKEN"/>
-  <xs:attribute name="ocn_mask"    type="xs:NMTOKEN"/>
-  <xs:attribute name="grid1"       type="xs:NCName"/>
-  <xs:attribute name="grid2"       type="xs:NCName"/>
-  <xs:attribute name="atm_grid"    type="xs:NMTOKEN"/>
-  <xs:attribute name="glc_grid"    type="xs:NCName"/>
-  <xs:attribute name="lnd_grid"    type="xs:NMTOKEN"/>
-  <xs:attribute name="ocn_grid"    type="xs:NCName"/>
-  <xs:attribute name="rof_grid"    type="xs:NCName"/>
-  <xs:attribute name="wav_grid"    type="xs:NCName"/>
-  <xs:attribute name="driver"      type="xs:NCName"/>
+  <xs:attribute name="name"	   type="xs:NMTOKEN"/>
+  <xs:attribute name="grid"	   type="xs:token"/>
+  <xs:attribute name="lnd_mask"	   type="xs:NMTOKEN"/>
+  <xs:attribute name="mask"	   type="xs:NCName"/>
+  <xs:attribute name="ocn_mask"	   type="xs:NMTOKEN"/>
+  <xs:attribute name="grid1"	   type="xs:NCName"/>
+  <xs:attribute name="grid2"	   type="xs:NCName"/>
+  <xs:attribute name="atm_grid"	   type="xs:NMTOKEN"/>
+  <xs:attribute name="glc_grid"	   type="xs:NCName"/>
+  <xs:attribute name="lnd_grid"	   type="xs:NMTOKEN"/>
+  <xs:attribute name="ocn_grid"	   type="xs:NCName"/>
+  <xs:attribute name="rof_grid"	   type="xs:NCName"/>
+  <xs:attribute name="wav_grid"	   type="xs:NCName"/>
+  <xs:attribute name="driver"	   type="xs:NCName"/>
 
   <!-- simple elements -->
   <xs:element name="support" type="xs:string"/>
   <xs:element name="help" type="xs:string"/>
-  <xs:element name="mask" type="xs:string"/>
+  <xs:element name="mask" type="xs:NCName"/>
   <xs:element name="nx" type="xs:integer"/>
   <xs:element name="ny" type="xs:integer"/>
-  <xs:element name="lat" type="xs:decimal"/>
-  <xs:element name="lon" type="xs:decimal"/>
   <xs:element name="desc" type="xs:string"/>
 
   <!-- complex elements -->
@@ -37,7 +35,7 @@
       <xs:sequence>
         <xs:element ref="help"/>
         <xs:element ref="grids"/>
-        <xs:element ref="domains" maxOccurs="3"/>
+        <xs:element ref="domains"/>
         <xs:element ref="required_gridmaps"/>
         <xs:element ref="gridmaps" maxOccurs="3"/>
       </xs:sequence>
@@ -80,17 +78,14 @@
       <xs:sequence>
         <xs:element ref="domain" maxOccurs="unbounded" />
       </xs:sequence>
-      <xs:attribute ref="driver"/>
     </xs:complexType>
   </xs:element>
 
   <xs:element name="domain">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="nx" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="ny" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="lat" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="lon" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="nx"/>
+        <xs:element ref="ny"/>
         <xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="mesh" minOccurs="0" maxOccurs="1"/>
         <xs:element ref="desc"/>

@@ -24,6 +24,7 @@ class Grids(GenericXML):
             expect(False, "Could not initialize Grids")
 
         self._version = self.get_version()
+
         self._comp_gridnames = self._get_grid_names()
 
     def _get_grid_names(self):
@@ -228,28 +229,13 @@ class Grids(GenericXML):
             # Determine all domain information search for the grid name with no level suffix in config_grids.xml
             domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
                                                   root=self.get_child("domains"))
-            if not domain_node:
-                domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
-                                                      root=self.get_child("domains",{"driver":driver}))
-            if domain_node:
+            if domain_node is not None:
                 comp_name = grid[0].upper()
 
                 # determine xml variable name
-                domains["PTS_LAT"] = '-999.99'
-                domains["PTS_LON"] = '-999.99'
                 if not comp_name == "MASK":
-                    if self.get_element_text("nx", root=domain_node):
-                        domains[comp_name + "_NX"] = int(self.get_element_text("nx", root=domain_node))
-                        domains[comp_name + "_NY"] = int(self.get_element_text("ny", root=domain_node))
-                    elif self.get_element_text("lon", root=domain_node):
-                        domains[comp_name + "_NX"] = 1
-                        domains[comp_name + "_NY"] = 1
-                        domains["PTS_LAT"] = self.get_element_text("lat", root=domain_node)
-                        domains["PTS_LON"] = self.get_element_text("lon", root=domain_node)
-                    else:
-                        domains[comp_name + "_NX"] = 1
-                        domains[comp_name + "_NY"] = 1
-
+                    domains[comp_name + "_NX"] = int(self.get_element_text("nx", root=domain_node))
+                    domains[comp_name + "_NY"] = int(self.get_element_text("ny", root=domain_node))
                     file_name = comp_name + "_DOMAIN_FILE"
                     path_name = comp_name + "_DOMAIN_PATH"
                     mesh_name = comp_name + "_DOMAIN_MESH"
@@ -289,17 +275,6 @@ class Grids(GenericXML):
                         driver_attrib = self.get(mesh_node, "driver")
                         if driver == driver_attrib:
                             domains[mesh_name] = self.text(mesh_node)
-
-        if driver == "nuopc":
-            mask_domain_node = self.get_optional_child("domain", attributes={"name":domains["MASK_GRID"]},
-                                                       root=self.get_child("domains"))
-            mesh_nodes = self.get_children("mesh", root=mask_domain_node)
-            for mesh_node in mesh_nodes:
-                driver_attrib = self.get(mesh_node, "driver")
-                if driver == driver_attrib:
-                    domains["MASK_MESH"] = self.text(mesh_node)
-                if (domains["PTS_LAT"] != '-999.99' and domains["PTS_LON"] != '-999.99'):
-                    domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["ATM_DOMAIN_FILE"])
 
         return domains
 
