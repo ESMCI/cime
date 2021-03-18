@@ -868,8 +868,6 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     size_t rlen = 0;       /* the length of data in iobuf. */
     void *tmparray;        /* unsorted copy of array buf if required */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
-    void *fillvalue = NULL;
-    int pio_type;
     int ierr;              /* Return code. */
 
 #ifdef USE_MPE
@@ -922,7 +920,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     pioassert(iodesc->rearranger == PIO_REARR_BOX || iodesc->rearranger == PIO_REARR_SUBSET,
               "unknown rearranger", __FILE__, __LINE__);
 
-    /* ??? */
+    /* iomaster needs max of buflen, others need local len */
     if (ios->iomaster == MPI_ROOT)
         rlen = iodesc->maxiobuflen;
     else
@@ -953,6 +951,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     /* If the map is not monotonically increasing we will need to sort
      * it. */
     PLOG((3, "iodesc->needssort %d", iodesc->needssort));
+
     if (iodesc->needssort)
     {
         if (!(tmparray = malloc(iodesc->piotype_size * iodesc->maplen)))
@@ -965,23 +964,23 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     /*    switch(iodesc->piotype)
       {
       case PIO_SHORT:
-	for(int i=0; i<iodesc->maplen; i++)
-	  ((short *) array)[i] = (short) 0;
-	break;
+        for(int i=0; i<iodesc->maplen; i++)
+          ((short *) array)[i] = (short) 0;
+        break;
       case PIO_INT:
-	for(int i=0; i<iodesc->maplen; i++)
-	  ((int *) array)[i] = (int) 0;
-	break;
+        for(int i=0; i<iodesc->maplen; i++)
+          ((int *) array)[i] = (int) 0;
+        break;
       case PIO_FLOAT:
-	for(int i=0; i<iodesc->maplen; i++)
-	  ((float *) array)[i] = (float) 0;
-	break;
+        for(int i=0; i<iodesc->maplen; i++)
+          ((float *) array)[i] = (float) 0;
+        break;
       case PIO_DOUBLE:
-	for(int i=0; i<iodesc->maplen; i++)
-	  ((double *) array)[i] = (double) 0;
-	break;
+        for(int i=0; i<iodesc->maplen; i++)
+          ((double *) array)[i] = (double) 0;
+        break;
       default:
-	return PIO_EBADTYPE;
+        return PIO_EBADTYPE;
       }
     */
 
@@ -990,7 +989,7 @@ PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* If we need to sort the map, do it. */
-    if (iodesc->needssort)
+    if (iodesc->needssort && ios->compproc)
     {
         pio_sorted_copy(tmparray, array, iodesc, 1, 1);
         free(tmparray);

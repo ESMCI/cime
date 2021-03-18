@@ -316,8 +316,15 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
             if (line and not line.startswith("#")):
                 tokens = line.split('=')
                 description, full_path = tokens[0].strip(), tokens[1].strip()
-                if description.endswith('datapath') or description.endswith('data_path'):
+                if description.endswith('datapath') or description.endswith('data_path') or full_path.endswith('/dev/null'):
                     continue
+                if description.endswith('file') or description.endswith('filename'):
+                    # There are required input data with key, or 'description' entries
+                    # that specify in their names whether they are files or filenames
+                    # rather than 'datapath's or 'data_path's so we check to make sure
+                    # the input data list has correct non-path values for input files.
+                    # This check happens whether or not a file already exists locally. 
+                    expect((not full_path.endswith(os.sep)), "Unsupported directory path in input_data_list named {}. Line entry is '{} = {}'.".format(data_list_file, description, full_path))
                 if(full_path):
                     # expand xml variables
                     full_path = case.get_resolved_value(full_path)
@@ -333,7 +340,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         if ic_filepath:
                             rel_path  = full_path.replace(input_ic_root, ic_filepath)
                         use_ic_path = True
-
                     model = os.path.basename(data_list_file).split('.')[0]
 
                     if ("/" in rel_path and rel_path == full_path and not full_path.startswith('unknown')):

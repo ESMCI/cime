@@ -23,7 +23,7 @@ from CIME.XML.env_mach_specific import EnvMachSpecific
 logger = logging.getLogger(__name__)
 
 def configure(machobj, output_dir, macros_format, compiler, mpilib, debug,
-              comp_interface, sysos, unit_testing=False, noenv=False,
+              comp_interface, sysos, unit_testing=False, noenv=False, threaded=False,
               extra_machines_dir=None):
     """Add Macros, Depends, and env_mach_specific files to a directory.
 
@@ -50,7 +50,7 @@ def configure(machobj, output_dir, macros_format, compiler, mpilib, debug,
 
     _copy_depends_files(machobj.get_machine_name(), machobj.machines_dir, output_dir, compiler)
     _generate_env_mach_specific(output_dir, machobj, compiler, mpilib,
-                                debug, comp_interface, sysos, unit_testing, noenv=noenv)
+                                debug, comp_interface, sysos, unit_testing, threaded, noenv=noenv)
 
 def _copy_depends_files(machine_name, machines_dir, output_dir, compiler):
     """
@@ -88,7 +88,7 @@ class FakeCase(object):
         return self._vals[attrib]
 
 def _generate_env_mach_specific(output_dir, machobj, compiler, mpilib, debug,
-                                comp_interface, sysos, unit_testing, noenv=False):
+                                comp_interface, sysos, unit_testing, threaded, noenv=False):
     """
     env_mach_specific generation.
     """
@@ -98,7 +98,7 @@ def _generate_env_mach_specific(output_dir, machobj, compiler, mpilib, debug,
         return
 
     ems_file = EnvMachSpecific(output_dir, unit_testing=unit_testing, standalone_configure=True)
-    ems_file.populate(machobj)
+    ems_file.populate(machobj,attributes={"mpilib":mpilib,"compiler":compiler,"threaded":threaded})
     ems_file.write()
 
     if noenv:

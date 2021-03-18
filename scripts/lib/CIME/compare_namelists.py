@@ -303,13 +303,9 @@ def _normalize_string_value(name, value, case):
         case_re = re.compile(r'{}[.]([GC]+)[.]([^./\s]+)'.format(case))
         value = case_re.sub("{}.ACTION.TESTID".format(case), value)
 
-    if (name in ["runid", "model_version", "username"]):
+    if (name in ["runid", "model_version", "username", "logfile"]):
         # Don't even attempt to diff these, we don't care
         return name.upper()
-    elif (".log." in value):
-        # Remove the part that's prone to diff
-        components = value.split(".")
-        return os.path.basename(".".join(components[0:-1]))
     elif (":" in value):
         items = value.split(":")
         items = [_normalize_string_value(name, item, case) for item in items]

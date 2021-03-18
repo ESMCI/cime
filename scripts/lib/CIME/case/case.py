@@ -127,6 +127,8 @@ class Case(object):
         self.tasks_per_numa = None
         self.cores_per_task = None
         self.srun_binding = None
+        self.async_io = False
+        self.iotasks = 0
 
         # check if case has been configured and if so initialize derived
         if self.get_value("CASEROOT") is not None:
@@ -150,6 +152,9 @@ class Case(object):
         env_mach_spec = self.get_env('mach_specific')
         comp_classes  = self.get_values("COMP_CLASSES")
         max_mpitasks_per_node  = self.get_value("MAX_MPITASKS_PER_NODE")
+        self.async_io = self.get_value("PIO_ASYNC_INTERFACE")
+        if self.async_io:
+            self.iotasks = max(1,self.get_value("PIO_NUMTASKS_CPL"))
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
@@ -166,7 +171,7 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes)
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count)
 
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count)
@@ -183,7 +188,8 @@ class Case(object):
 
         os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
 
-        self.srun_binding = smt_factor*max_mpitasks_per_node / self.tasks_per_node
+        self.srun_binding = math.floor(smt_factor*max_mpitasks_per_node / self.tasks_per_node)
+        self.srun_binding = max(1,self.srun_binding)
 
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
@@ -892,9 +898,6 @@ class Case(object):
             mach_pes_obj.set_value(rootpe_str, rootpe)
             mach_pes_obj.set_value(pstrid_str, pstrid)
 
-        if multi_driver:
-            mach_pes_obj.set_value("MULTI_DRIVER", True)
-
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
         for compclass in self._component_classes:
@@ -909,6 +912,9 @@ class Case(object):
             key = "NTHRDS_{}".format(compclass)
             if compclass not in pes_nthrds:
                 mach_pes_obj.set_value(compclass,1)
+        if multi_driver:
+            mach_pes_obj.set_value("MULTI_DRIVER", True)
+
 
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
@@ -917,7 +923,7 @@ class Case(object):
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
                   input_dir=None, driver=None, workflowid="default",
-                  non_local=False, extra_machines_dir=None):
+                  non_local=False, extra_machines_dir=None, case_group=None):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
 
@@ -1018,7 +1024,7 @@ class Case(object):
 
         # Create env_mach_specific settings from machine info.
         env_mach_specific_obj = self.get_env("mach_specific")
-        env_mach_specific_obj.populate(machobj)
+        env_mach_specific_obj.populate(machobj, attributes={"mpilib":mpilib, "compiler":compiler,"threaded":self.get_build_threaded()})
 
         self._setup_mach_pes(pecount, multi_driver, ninst, machine_name, mpilib)
 
@@ -1094,6 +1100,9 @@ class Case(object):
         # miscellaneous settings
         if self.get_value("RUN_TYPE") == 'hybrid':
             self.set_value("GET_REFCASE", True)
+
+        if case_group:
+            self.set_value("CASE_GROUP", case_group)
 
         # Turn on short term archiving as cesm default setting
         model = get_model()
@@ -1497,6 +1506,8 @@ directory, NOT in this subdirectory."""
         Returns True if current settings require a threaded build/run.
         """
         force_threaded = self.get_value("FORCE_BUILD_SMP")
+        if not self.thread_count:
+            return False
         smp_present = force_threaded or self.thread_count > 1
         return smp_present
 
@@ -1627,7 +1638,7 @@ directory, NOT in this subdirectory."""
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
                input_dir=None, driver=None, workflowid="default", non_local=False,
-               extra_machines_dir=None):
+               extra_machines_dir=None, case_group=None):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
@@ -1655,7 +1666,7 @@ directory, NOT in this subdirectory."""
                            run_unsupported=run_unsupported, answer=answer,
                            input_dir=input_dir, driver=driver,
                            workflowid=workflowid, non_local=non_local,
-                           extra_machines_dir=extra_machines_dir)
+                           extra_machines_dir=extra_machines_dir, case_group=case_group)
 
             self.create_caseroot()
 

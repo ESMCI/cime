@@ -17,7 +17,7 @@ libpiof_la_LIBADD = libpio_nf.la libpio_kinds.la libpio_support.la	\
 libpiodarray.la libpionfatt.la libpionfget.la libpionfput.la		\
 libpiolib_mod.la
 
-if NETCDF_INTEGRATION
+if BUILD_NCINT
 libpiof_la_LIBADD += libncint_mod.la
 endif
 libpiof_la_LIBADD +=  libpio.la
@@ -28,7 +28,7 @@ libpiof_la_SOURCES = pio_types.F90
 noinst_LTLIBRARIES = libpio_kinds.la libpio_types.la		\
 libpio_support.la libpio_nf.la libpiodarray.la libpionfatt.la	\
 libpionfget.la libpionfput.la libpiolib_mod.la libpio.la
-if NETCDF_INTEGRATION
+if BUILD_NCINT
 noinst_LTLIBRARIES += libncint_mod.la
 endif
 
@@ -72,7 +72,7 @@ pio.mod: pio.lo
 # Some mod files depend on other mod files.
 DEPEND_FILES = pio_kinds.mod piolib_mod.mod pio_types.mod piodarray.mod \
 pio_nf.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod pio_support.mod
-if NETCDF_INTEGRATION
+if BUILD_NCINT
 DEPEND_FILES += ncint_mod.mod
 endif
 pio.lo: $(DEPEND_FILES)
@@ -81,7 +81,7 @@ pio.lo: $(DEPEND_FILES)
 MODFILES = pio_kinds.mod pio_types.mod pio_support.mod pio_nf.mod	\
 piodarray.mod pionfatt_mod.mod pionfget_mod.mod pionfput_mod.mod	\
 piolib_mod.mod pio.mod
-if NETCDF_INTEGRATION
+if BUILD_NCINT
 MODFILES += ncint_mod.mod
 endif
 BUILT_SOURCES = $(MODFILES)

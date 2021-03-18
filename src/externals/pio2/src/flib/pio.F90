@@ -26,7 +26,7 @@ module pio
 
 #ifdef NETCDF_INTEGRATION
   use ncint_mod, only: nf_def_iosystem, nf_free_iosystem, &
-       nf_def_decomp, nf_free_decomp, nf_put_vard_int
+       nf_def_decomp, nf_free_decomp, nf_put_vard_int, NF_PIO
 #endif
 
   use pio_types, only : io_desc_t, file_desc_t, var_desc_t, iosystem_desc_t, &
