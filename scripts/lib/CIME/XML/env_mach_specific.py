@@ -172,6 +172,16 @@ class EnvMachSpecific(EnvBase):
             f.write(self.list_modules())
         run_cmd_no_fail("echo -e '\n' && env", arg_stdout=filename)
 
+    def get_overrides_nodes(self, case):
+        overrides = {}
+        overrides["num_nodes"]   = case.num_nodes
+        fnm = "env_mach_specific.xml"
+        output_text = transform_vars(open(fnm,"r").read(), case=case, subgroup=None, overrides=overrides)
+        logger.info("Updating file {}".format(fnm))
+        with open(fnm, "w") as fd:
+            fd.write(output_text)
+        return overrides
+
     def make_env_mach_specific_file(self, shell, case, output_dir=''):
         """Writes .env_mach_specific.sh or .env_mach_specific.csh
 
