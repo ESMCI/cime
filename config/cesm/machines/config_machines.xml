@@ -358,7 +358,7 @@ This allows using a different mpirun command to launch unit tests
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>pgi</COMPILERS>
-    <MPILIBS compiler="pgi" >openmpi</MPILIBS>
+    <MPILIBS compiler="pgi" >openmpi,mpi-serial</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
@@ -406,6 +406,9 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
         <command name="load">cuda/11.0.3</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="pgi">
+        <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
