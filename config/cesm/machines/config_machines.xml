@@ -356,8 +356,6 @@ This allows using a different mpirun command to launch unit tests
    <machine MACH="casper">
     <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is slurm</DESC>
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
-    <!-- MPT sometimes timesout at model start time, the next two lines cause
-    case_run.py to detect the timeout and retry FORCE_SPARE_NODES times -->
     <OS>LINUX</OS>
     <COMPILERS>pgi</COMPILERS>
     <MPILIBS compiler="pgi" >openmpi</MPILIBS>
@@ -368,13 +366,13 @@ This allows using a different mpirun command to launch unit tests
     <BASELINE_ROOT>$ENV{CESMDATAROOT}/cesm_baselines</BASELINE_ROOT>
     <GMAKE_J>8</GMAKE_J>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
-    <SUPPORTED_BY>CISL-STP</SUPPORTED_BY>
+    <SUPPORTED_BY>CISL/NCAR</SUPPORTED_BY>
     <!-- have not seen any performance benefit in smt -->
     <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
     <mpirun mpilib="default">
-      <executable>mpirun</executable>
+      <executable>srun</executable>
       <arguments>
         <arg name="num_tasks"> -np {{ total_tasks }}</arg>
       </arguments>
@@ -391,7 +389,7 @@ This allows using a different mpirun command to launch unit tests
       <init_path lang="sh">/glade/u/apps/dav/opt/lmod/7.7.29/init/sh</init_path>
       <init_path lang="csh">/glade/u/apps/dav/opt/lmod/7.7.29/init/csh</init_path>
       <cmd_path lang="perl">/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod perl</cmd_path>
-      <cmd_path lang="python">/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path>
+      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/modulefiles/default/pgi/20.4:/glade/u/apps/dav/modulefiles/default/openmpi/4.0.5/pgi/20.4:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
@@ -404,9 +402,10 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">pgi/20.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="pgi">
-        <command name="load">openmpi/3.1.4</command>
+        <command name="load">openmpi/4.0.5</command>
         <command name="load">netcdf-mpi/4.7.4</command>
-        <command name="load">pnetcdf/1.12.1</command>
+        <command name="load">pnetcdf/1.12.2</command>
+        <command name="load">cuda/11.0.3</command>
       </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
