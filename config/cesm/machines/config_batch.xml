@@ -218,7 +218,6 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
       <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus=1 </directive>
       <directive> -l gpu_type=v100 </directive>
-      <directive> -l cpu_type=skylake </directive>
     </directives>
 
     <!-- Unknown queues use the batch directives for the regular queue -->
