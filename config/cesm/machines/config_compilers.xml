@@ -666,10 +666,11 @@ using a fortran linker.
   </LDFLAGS>
   <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
   <PIO_FILESYSTEM_HINTS>glade</PIO_FILESYSTEM_HINTS>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
     <append> -llapack -lblas </append>
     <append MPILIB="mpi-serial"> -ldl </append>
-    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff -lpmi </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf -lpmi </append>
   </SLIBS>
 </compiler>
 

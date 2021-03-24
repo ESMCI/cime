@@ -365,16 +365,16 @@ This allows using a different mpirun command to launch unit tests
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>$ENV{CESMDATAROOT}/cesm_baselines</BASELINE_ROOT>
     <GMAKE_J>8</GMAKE_J>
-    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
-    <SUPPORTED_BY>CISL/NCAR</SUPPORTED_BY>
+    <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
+    <SUPPORTED_BY>CISL</SUPPORTED_BY>
     <!-- have not seen any performance benefit in smt -->
     <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
     <mpirun mpilib="default">
-      <executable>srun</executable>
+      <executable>mpirun</executable>
       <arguments>
-        <arg name="num_tasks"> -np {{ total_tasks }}</arg>
+        <arg name="anum_tasks"> -np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
@@ -397,6 +397,7 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules>
         <command name="load">ncarenv/1.3</command>
+        <command name="load">ncarcompilers/0.5.0</command>
       </modules>
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
@@ -409,9 +410,6 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules mpilib="mpi-serial" compiler="pgi">
         <command name="load">netcdf/4.7.4</command>
-      </modules>
-      <modules>
-        <command name="load">ncarcompilers/0.5.0</command>
       </modules>
     </module_system>
     <environment_variables>
