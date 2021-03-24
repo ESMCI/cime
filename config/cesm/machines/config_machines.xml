@@ -420,7 +420,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
       </modules>
-      <modules mpilib="mpi-serial" compiler="pgi">
+      <modules mpilib="mpi-serial" compiler="intel">
         <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules>
