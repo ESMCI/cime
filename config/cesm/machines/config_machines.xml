@@ -354,11 +354,12 @@ This allows using a different mpirun command to launch unit tests
   </machine>
 
    <machine MACH="casper">
-    <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is slurm</DESC>
+    <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is pbs</DESC>
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>pgi</COMPILERS>
+    <COMPILERS>pgi,intel</COMPILERS>
     <MPILIBS compiler="pgi" >openmpi,mpi-serial</MPILIBS>
+    <MPILIBS compiler="intel" >openmpi,mpi-serial</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
@@ -389,7 +390,10 @@ This allows using a different mpirun command to launch unit tests
       <init_path lang="sh">/glade/u/apps/dav/opt/lmod/7.7.29/init/sh</init_path>
       <init_path lang="csh">/glade/u/apps/dav/opt/lmod/7.7.29/init/csh</init_path>
       <cmd_path lang="perl">/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod perl</cmd_path>
-      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/modulefiles/default/pgi/20.4:/glade/u/apps/dav/modulefiles/default/openmpi/4.0.5/pgi/20.4:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path>
+<!-- for PGI compiler -->
+<!--      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/modulefiles/default/pgi/20.4:/glade/u/apps/dav/modulefiles/default/openmpi/4.0.5/pgi/20.4:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path> -->
+<!-- for Intel compiler -->
+      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
@@ -399,11 +403,22 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
       </modules>
+      <modules compiler="intel">
+        <command name="load">intel/19.1.1</command>
+      </modules>
       <modules mpilib="openmpi" compiler="pgi">
-        <command name="load">openmpi/4.0.5</command>
+        <command name="load">openmpi/4.1.0</command>
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
         <command name="load">cuda/11.0.3</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="pgi">
+        <command name="load">netcdf/4.7.4</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="intel">
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.2</command>
       </modules>
       <modules mpilib="mpi-serial" compiler="pgi">
         <command name="load">netcdf/4.7.4</command>

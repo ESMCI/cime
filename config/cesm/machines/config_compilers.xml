@@ -653,6 +653,12 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="casper">
+  <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
+  <PIO_FILESYSTEM_HINTS>glade</PIO_FILESYSTEM_HINTS>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+</compiler>
+
 <compiler MACH="casper" COMPILER="pgi">
   <CFLAGS>
     <append DEBUG="FALSE"> -O -tp=skylake </append>
@@ -664,14 +670,26 @@ using a fortran linker.
   <LDFLAGS>
     <append DEBUG="FALSE"> -O -tp=skylake </append>
   </LDFLAGS>
-  <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
-  <PIO_FILESYSTEM_HINTS>glade</PIO_FILESYSTEM_HINTS>
-  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
   <SLIBS>
     <append> -llapack -lblas </append>
     <append MPILIB="mpi-serial"> -ldl </append>
     <append> -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf -lpmi </append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="intel">
+  <CFLAGS>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+  </FFLAGS>
+  <CMAKE_OPTS>
+    <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
+  </CMAKE_OPTS>
+  <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="FALSE">$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP</PFUNIT_PATH>
+  <!-- SET to FALSE for intel 17 and 18 TRUE otherwise -->
+  <HAS_F2008_CONTIGUOUS>TRUE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="cheyenne">
