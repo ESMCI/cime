@@ -235,8 +235,10 @@ class Grids(GenericXML):
                 comp_name = grid[0].upper()
 
                 # determine xml variable name
-                domains["PTS_LAT"] = '-999.99'
-                domains["PTS_LON"] = '-999.99'
+                if not "PTS_LAT" in domains:
+                    domains["PTS_LAT"] = '-999.99'
+                if not "PTS_LON" in domains:
+                    domains["PTS_LON"] = '-999.99'
                 if not comp_name == "MASK":
                     if self.get_element_text("nx", root=domain_node):
                         domains[comp_name + "_NX"] = int(self.get_element_text("nx", root=domain_node))
