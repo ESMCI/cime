@@ -405,7 +405,7 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules compiler="intel">
         <command name="load">intel/19.1.1</command>
-        <command name="load">mkl/2019.0.5</command>
+        <command name="load">mkl/2020.0.1</command>
       </modules>
       <modules mpilib="openmpi" compiler="pgi">
         <command name="load">openmpi/4.1.0</command>
