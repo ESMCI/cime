@@ -393,7 +393,7 @@ This allows using a different mpirun command to launch unit tests
 <!-- for PGI compiler -->
 <!--      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/modulefiles/default/pgi/20.4:/glade/u/apps/dav/modulefiles/default/openmpi/4.0.5/pgi/20.4:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path> -->
 <!-- for Intel compiler -->
-      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path>
+      <cmd_path lang="python">export PATH=$PATH:/usr/local/bin:/usr/bin;export MODULEPATH=$MODULEPATH:/glade/u/apps/dav/modulefiles/default/compilers:/glade/u/apps/dav/modulefiles/default/idep:/glade/u/apps/dav/modulefiles/default/intel/19.1.1:/glade/u/apps/dav/modulefiles/default/openmpi/4.1.0/intel/19.1.1:/glade/u/apps/dav/opt/lmod/7.7.29/modulefiles/Core;/glade/u/apps/dav/opt/lmod/7.7.29/libexec/lmod python</cmd_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
