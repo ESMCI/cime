@@ -555,7 +555,7 @@
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="f09_f09_g17_rHDMA" not_compset="_POP" compset="MIZUROUTE">
+    <model_grid alias="f09_f09_mg17_rHDMA" not_compset="_POP" compset="MIZUROUTE">
       <grid name="atm">0.9x1.25</grid>
       <grid name="lnd">0.9x1.25</grid>
       <grid name="ocnice">0.9x1.25</grid>
@@ -563,7 +563,7 @@
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="f09_f09_g17_rMERIT" not_compset="_POP" compset="MIZUROUTE">
+    <model_grid alias="f09_f09_mg17_rMERIT" not_compset="_POP" compset="MIZUROUTE">
       <grid name="atm">0.9x1.25</grid>
       <grid name="lnd">0.9x1.25</grid>
       <grid name="ocnice">0.9x1.25</grid>
