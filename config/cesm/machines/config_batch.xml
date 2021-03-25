@@ -216,7 +216,7 @@
     <batch_submit>qsub</batch_submit>
     <directives queue="casper">
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus=1 </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=300GB:ngpus=0 </directive>
       <directive> -l gpu_type=v100 </directive>
     </directives>
 
