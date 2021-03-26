@@ -1,6 +1,68 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 3-26-2021
+Tag: cime5.8.39
+Answer Changes: Round Off for nuopc/cmeps configurations.
+Tests: scripts_regression_tests, SMS_D_Ld6_Mmpi-serial_Vnuopc.1x1_smallvilleIA.IHistClm45BgcCropQianRs,
+       SMS_D_Ld6_Mmpi-serial_Vnuopc.1x1_smallvilleIA.IHistClm45BgcCropQianRs
+Dependencies:
+
+Brief Summary:
+    - Add ROF support in the primary component computation.
+    - Bug fix for single column mode for nuopc/cmeps.
+    - Fixes to nuopc single column PTS_LAT and PTS_LON.
+    - Switch e3sm config to COMP_ROOT_DIR.
+    - Fix format descriptor in mem-logging for IBM compiler.
+    - Bump pillow from 7.1.2 to 8.1.1 in /tools/statistical_ensemble_test/pyCECT/docs.
+    - Bug fix for specifying mesh for 0.25 degree runoff grid.
+    - Changes for zeus port.
+    - Avoid adding CDEPS things to inc & lib paths with LILAC.
+    - New nuopc/cmeps single/column single/point functionality.
+    - Logs tail of cprnc outputs to TestStatus.log.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+1e705ee39 Merge pull request #3895 from ESMCI/jgfouca/add_rof_support_to_primary_comp
+f00ba9e2c Merge pull request #3898 from ESMCI/mvertens/scol_bugfix
+4d16c5b91 Merge pull request #3894 from ESMCI/mvertens/scol_bugfix
+92e0ecfbe Merge pull request #3891 from ESMCI/rljacob/update-e3sm-config
+de4a1e282 Merge pull request #3879 from ESMCI/azamat/mprof/replace-indef-fmt-xlf
+cd997cab8 Merge pull request #3890 from ESMCI/dependabot/pip/tools/statistical_ensemble_test/pyCECT/docs/pillow-8.1.1
+0cd2268d5 Merge pull request #3889 from ESMCI/mvertens/drof_mesh_bugfix
+4822938a0 Merge pull request #3880 from ESMCI/peano/zeus_update_port
+929fd466e Merge pull request #3882 from billsacks/no_cdeps_libs_with_lilac
+17a980fbf Merge pull request #3884 from ESMCI/mvertens/scol
+47514026c Merge pull request #3861 from jasonb5/log_cprnc_tail
+
+
+Modified files: git diff --name-status [previous_tag]
+M       .github/workflows/srt.yml
+M       config/cesm/config_files.xml
+M       config/cesm/config_grids.xml
+M       config/cesm/config_grids_mct.xml
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       config/e3sm/config_files.xml
+R076    config/xml_schemas/config_grids_v2.1.xsd        config/xml_schemas/config_grids_v2.2.xsd
+M       scripts/Tools/Makefile
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/XML/env_mach_specific.py
+M       scripts/lib/CIME/XML/grids.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_setup.py
+M       src/drivers/mct/main/cime_comp_mod.F90
+M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 3-12-2021
 Tag: cime5.8.38
 Answer Changes: bit-for-bit, climate-changing for trigrid 
