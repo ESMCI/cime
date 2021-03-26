@@ -1,6 +1,43 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 3-26-2021
+Tag: cime5.6.35
+Answer Changes: None
+Tests: scripts_regression_tests, cam-uf ect, pop ect, github actions.
+Dependencies:
+
+Brief Summary:
+    - Archive pop.rh.ecosys.nyear1 files.
+    - SDSC comet port.
+    - Add grace port.
+    - Replace travis with github.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+7a2c36b18 Merge pull request #3897 from jedwards4b/pop_ecosys_archive_fix
+367289403 Merge pull request #3871 from jedwards4b/SDSCcomet_port
+65275576a Merge pull request #3842 from jedwards4b/add_grace_maint-5.6
+6271948e9 Merge pull request #3751 from jedwards4b/github_workflow_maint-5.6
+
+
+Modified files: git diff --name-status [previous_tag]
+A       .github/workflows/srt.yml
+D       .travis.yml
+M       config/cesm/config_archive.xml
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/lib/CIME/case/case.py
+M       scripts/tests/scripts_regression_tests.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 10-12-2020
 Tag: cime5.6.34
 Answer Changes: None
