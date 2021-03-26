@@ -463,7 +463,7 @@ class _TimingParser:
 
         self.write("\n")
         self.write("  total pes active           : {} \n".format(totalpes*smt_factor ))
-        self.write("  mpi tasks per node               : {} \n".format(max_mpitasks_per_node))
+        self.write("  mpi tasks per node         : {} \n".format(max_mpitasks_per_node))
         self.write("  pe count for cost estimate : {} \n".format(pecost))
         self.write("\n")
 

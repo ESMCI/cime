@@ -635,7 +635,6 @@ This allows using a different mpirun command to launch unit tests
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
       <env name="OMP_WAIT_POLICY">PASSIVE</env>
-<!--      <env name="OMP_PROC_BIND">true</env> -->
       <env name="MPI_DSM_VERBOSE">true</env>
     </environment_variables>
     <environment_variables unit_testing="true">
