@@ -673,7 +673,7 @@ using a fortran linker.
   <SLIBS>
     <append> -llapack -lblas </append>
     <append MPILIB="mpi-serial"> -ldl </append>
-    <append> -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf -lpmi </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff -lpmi </append>
   </SLIBS>
 </compiler>
 
