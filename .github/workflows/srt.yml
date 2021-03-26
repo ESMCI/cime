@@ -38,7 +38,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - id: load-env
-        run: sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
+        run: |
+          #sudo apt-get update
+          sudo apt-get install libxml2-utils pylint wget gfortran openmpi-bin netcdf-bin libopenmpi-dev cmake libnetcdf-dev
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -50,7 +52,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
 
       - name: pnetcdf build
         if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
@@ -69,7 +71,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/netcdf-fortran
-          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
+          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
 
       - name: netcdf fortran build
         if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
@@ -113,3 +115,9 @@ jobs:
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
           ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
+
+#     the following can be used by developers to login to the github server in case of errors
+#     see https://github.com/marketplace/actions/debugging-with-tmate for further details
+#      - name: Setup tmate session
+#        if: ${{ failure() }}
+#        uses: mxschmitt/action-tmate@v3
