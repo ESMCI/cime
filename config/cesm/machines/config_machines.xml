@@ -357,8 +357,9 @@ This allows using a different mpirun command to launch unit tests
     <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is pbs</DESC>
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>pgi,intel</COMPILERS>
+    <COMPILERS>pgi,intel,nvhpc</COMPILERS>
     <MPILIBS compiler="pgi" >openmpi,mpi-serial</MPILIBS>
+    <MPILIBS compiler="nvhpc" >openmpi,mpi-serial</MPILIBS>
     <MPILIBS compiler="intel" >openmpi,mpi-serial</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
@@ -399,6 +400,9 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
       </modules>
+      <modules compiler="nvhpc">
+        <command name="load">nvhpc/20.9</command>
+      </modules>
       <modules compiler="intel">
         <command name="load">intel/19.1.1</command>
         <command name="load">mkl/2020.0.1</command>
@@ -410,6 +414,15 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">cuda/11.0.3</command>
       </modules>
       <modules mpilib="mpi-serial" compiler="pgi">
+        <command name="load">netcdf/4.7.4</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="nvhpc">
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.2</command>
+        <command name="load">cuda/11.0.3</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="nvhpc">
         <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="intel">
