@@ -713,7 +713,7 @@ using a fortran linker.
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -ta=tesla:cc70,lineinfo </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
@@ -731,7 +731,7 @@ using a fortran linker.
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -ta=tesla:cc70,lineinfo </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
