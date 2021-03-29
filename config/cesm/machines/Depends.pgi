@@ -7,6 +7,7 @@ micro_pumas_utils.o \
 micro_mg_cam.o \
 wv_sat_methods.o \
 wv_saturation.o \
+macrop_driver.o \
 shr_spfn_mod.o
 
 ifeq ($(DEBUG),FALSE)
