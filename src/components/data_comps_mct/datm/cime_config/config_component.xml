@@ -235,6 +235,7 @@ data (see cime issue #3653 -- https://github.com/ESMCI/cime/issues/3653).
       <value compset="2003.*_DATM">$DATM_CLMNCEP_YR_START</value>
       <value compset="2010.*_DATM">$DATM_CLMNCEP_YR_START</value>
       <value compset="4804.*_DATM">$DATM_CLMNCEP_YR_START</value>
+      <value compset="2000.*_DATM%MOSARTTEST">1979</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
@@ -277,6 +278,7 @@ data (see cime issue #3653 -- https://github.com/ESMCI/cime/issues/3653).
       <value compset="2000.*_DATM%NLDAS2">1980</value>
       <value compset="2010.*_DATM%NLDAS2">2005</value>
       <value compset="2003.*_DATM%NLDAS2">2002</value>
+      <value compset="2000.*_DATM%MOSARTTEST">1979</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>
@@ -319,6 +321,7 @@ data (see cime issue #3653 -- https://github.com/ESMCI/cime/issues/3653).
       <value   compset="2000.*_DATM%NLDAS2">2018</value>
       <value   compset="2010.*_DATM%NLDAS2">2014</value>
       <value   compset="2003.*_DATM%NLDAS2">2003</value>
+      <value   compset="2000.*_DATM%MOSARTTEST">2019</value>
     </values>
     <group>run_component_datm</group>
     <file>env_run.xml</file>

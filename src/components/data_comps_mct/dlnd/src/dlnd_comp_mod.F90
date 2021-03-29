@@ -8,6 +8,7 @@ module dlnd_comp_mod
   use esmf
   use mct_mod
   use perf_mod
+  use shr_const_mod
   use shr_pcdf_mod
   use shr_sys_mod
   use shr_kind_mod      , only: IN=>SHR_KIND_IN, R8=>SHR_KIND_R8, CS=>SHR_KIND_CS, CL=>SHR_KIND_CL
@@ -53,23 +54,25 @@ module dlnd_comp_mod
   !--------------------------------------------------------------------------
   !--- names of fields ---
   integer(IN),parameter :: fld_len = 12       ! max character length of fields in avofld & avifld
-  integer(IN),parameter :: nflds_nosnow = 28
+  integer(IN),parameter :: nflds_nosnow = 30
 
   ! fields other than snow fields:
   character(fld_len),parameter  :: avofld_nosnow(1:nflds_nosnow) = &
-       (/ "Sl_t        ","Sl_tref     ","Sl_qref     ","Sl_avsdr    ","Sl_anidr    ", &
+    (/ "Sl_t        ","Sl_tref     ","Sl_qref     ","Sl_avsdr    ","Sl_anidr    ", &
        "Sl_avsdf    ","Sl_anidf    ","Sl_snowh    ","Fall_taux   ","Fall_tauy   ", &
        "Fall_lat    ","Fall_sen    ","Fall_lwup   ","Fall_evap   ","Fall_swnet  ", &
        "Sl_landfrac ","Sl_fv       ","Sl_ram1     ","Flrl_demand ",                &
-        "Flrl_rofsur ","Flrl_rofgwl ","Flrl_rofsub ","Flrl_rofdto ","Flrl_rofi   ", &
+       "Flrl_rofsur ","Flrl_rofgwl ","Flrl_rofsub ","Flrl_rofdto ","Flrl_rofi   ", &
+       "Flrl_Tqsur  ","Flrl_Tqsub  ",                                              &
        "Fall_flxdst1","Fall_flxdst2","Fall_flxdst3","Fall_flxdst4"                 /)
 
   character(fld_len),parameter  :: avifld_nosnow(1:nflds_nosnow) = &
-       (/ "t           ","tref        ","qref        ","avsdr       ","anidr       ", &
+    (/ "t           ","tref        ","qref        ","avsdr       ","anidr       ", &
        "avsdf       ","anidf       ","snowh       ","taux        ","tauy        ", &
        "lat         ","sen         ","lwup        ","evap        ","swnet       ", &
        "lfrac       ","fv          ","ram1        ","demand      ",                &
-        "rofsur      ","rofgwl      ","rofsub      ","rofdto      ","rofi        ", &
+       "rofsur      ","rofgwl      ","rofsub      ","rofdto      ","rofi        ", &
+       "tqsur       ","tqsub       ",                                              &
        "flddst1     ","flxdst2     ","flxdst3     ","flxdst4     "                 /)
 
   integer(IN), parameter :: nflds_snow  = 3   ! number of snow fields in each elevation class
@@ -81,11 +84,15 @@ module dlnd_comp_mod
        (/"Sl_tsrf  ", "Sl_topo  ", "Flgl_qice"/)
 
   character(fld_len-nec_len),parameter :: avifld_snow(nflds_snow) = &
-       (/"tsrf", "topo", "qice"/)
+       (/"tsrf     ", "topo     ", "qice     "/)
 
   ! all fields:
   character(fld_len),dimension(:),allocatable :: avofld
   character(fld_len),dimension(:),allocatable :: avifld
+
+  ! field indices
+  integer(IN) ::  ktqsur, ktqsub
+
   !--------------------------------------------------------------------------
 
   !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -270,6 +277,9 @@ CONTAINS
     call mct_aVect_init(x2l, rList=seq_flds_x2l_fields, lsize=lsize)
     call mct_aVect_zero(x2l)
 
+    ktqsur = mct_aVect_indexRA(l2x,'Flrl_Tqsur')
+    ktqsub = mct_aVect_indexRA(l2x,'Flrl_Tqsub')
+
     call t_stopf('dlnd_initmctavs')
 
     !----------------------------------------------------------------------------
@@ -401,6 +411,8 @@ CONTAINS
 
     call t_barrierf('dlnd_scatter_BARRIER',mpicom)
     call t_startf('dlnd_scatter')
+    l2x%rAttr(ktqsur,:) = SHR_CONST_TKFRZ
+    l2x%rAttr(ktqsub,:) = SHR_CONST_TKFRZ
     do n = 1,SDLND%nstreams
        call shr_dmodel_translateAV(SDLND%avs(n), l2x, avifld, avofld, rearr)
     enddo
