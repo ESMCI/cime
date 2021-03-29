@@ -2011,6 +2011,16 @@ contains
 
     endif
 
+    if (trim(cime_model) == 'e3sm') then
+       ! Ground heat flux
+       call seq_flds_add(l2x_fluxes,"Flxl_sgrnd")
+       longname = 'Soil ground heat flux'
+       stdname  = 'surface_upward_ground_heat_flux'
+       units    = 'W m-2'
+       attname  = 'Flxl_sgrnd'
+       call metadata_set(attname, longname, stdname, units)
+
+    end if
 
     !-----------------------------
     ! lnd->rof exchange
