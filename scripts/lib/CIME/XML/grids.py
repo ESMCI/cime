@@ -300,8 +300,9 @@ class Grids(GenericXML):
                 driver_attrib = self.get(mesh_node, "driver")
                 if driver == driver_attrib:
                     domains["MASK_MESH"] = self.text(mesh_node)
-                    if domains["LND_DOMAIN_FILE"] != 'UNSET':
-                        domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["LND_DOMAIN_FILE"])
+                    if "LND_DOMAIN_FILE" in domains:
+                        if domains["LND_DOMAIN_FILE"] != 'UNSET':
+                            domains["PTS_DOMAINFILE"] = os.path.join("$DIN_LOC_ROOT/share/domains",domains["LND_DOMAIN_FILE"])
 
         return domains
 
