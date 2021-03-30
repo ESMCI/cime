@@ -343,6 +343,16 @@ def _save_postrun_timing_e3sm(case, lid):
         shutil.move(item, mprof_dst_path)
         gzip_existing_file(mprof_dst_path)
 
+    # Copy Scorpio I/O performance stats to a separate dir + tar + compress
+    spio_stats_dir = os.path.join(rundir, "spio_stats." + lid)
+    os.mkdir(spio_stats_dir)
+    for item in glob.glob(os.path.join(rundir, "io_perf_summary*")):
+        safe_copy(item, spio_stats_dir)
+    with tarfile.open("%s.tar.gz" % spio_stats_dir, "w:gz") as tfd:
+        tfd.add(spio_stats_dir, arcname=os.path.basename(spio_stats_dir))
+
+    shutil.rmtree(spio_stats_dir)
+
     gzip_existing_file(os.path.join(caseroot, "timing", "e3sm_timing_stats.%s" % lid))
 
     # JGF: not sure why we do this
@@ -403,6 +413,7 @@ def _save_postrun_timing_e3sm(case, lid):
     globs_to_copy.append(os.path.join(rundir, "memory.[0-4].*.log.{}.gz".format(lid)))
     globs_to_copy.append("timing/*.{}*".format(lid))
     globs_to_copy.append("CaseStatus")
+    globs_to_copy.append(os.path.join(rundir, "spio_stats.{}.tar.gz".format(lid)))
 
     for glob_to_copy in globs_to_copy:
         for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
