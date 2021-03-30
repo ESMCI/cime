@@ -1,6 +1,29 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 3-30-2021
+Tag: cime5.8.40
+Answer Changes: 
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Bug fix for generating C/G nuopc compsets
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+a900c8ef6 Merge pull request #3900 from mvertens/feature/nuopc_grids_bugfix
+
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/XML/grids.py
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 3-26-2021
 Tag: cime5.8.39
 Answer Changes: Round Off for nuopc/cmeps configurations.
