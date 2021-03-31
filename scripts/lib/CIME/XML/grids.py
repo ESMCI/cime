@@ -229,8 +229,10 @@ class Grids(GenericXML):
             domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
                                                   root=self.get_child("domains"))
             if not domain_node:
-                domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
-                                                      root=self.get_child("domains",{"driver":driver}))
+                domain_root = self.get_optional_child("domains",{"driver":driver})
+                if domain_root:
+                    domain_node = self.get_optional_child("domain", attributes={"name":grid_name_nonlev},
+                                                          root=domain_root)
             if domain_node:
                 comp_name = grid[0].upper()
 
