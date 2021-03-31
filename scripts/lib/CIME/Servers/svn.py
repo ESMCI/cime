@@ -4,6 +4,7 @@ SVN Server class.  Interact with a server using SVN protocol
 # pylint: disable=super-init-not-called
 from CIME.XML.standard_module_setup import *
 from CIME.Servers.generic_server import GenericServer
+from CIME.utils import SHORT_OP_TIMEOUT, LONG_OP_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ class SVN(GenericServer):
 
         self._svn_loc = address
 
-        err = run_cmd("svn --non-interactive --trust-server-cert {} ls {}".format(self._args, address))[0]
+        err = run_cmd("svn --non-interactive --trust-server-cert {} ls {}".format(self._args, address), timeout=SHORT_OP_TIMEOUT)[0]
         if err != 0:
             logging.warning(
 """
@@ -28,7 +29,7 @@ To check connection and store your credential run 'svn ls {0}' and permanently s
 
     def fileexists(self, rel_path):
         full_url = os.path.join(self._svn_loc, rel_path)
-        stat, out, err = run_cmd("svn --non-interactive --trust-server-cert {} ls {}".format(self._args, full_url))
+        stat, out, err = run_cmd("svn --non-interactive --trust-server-cert {} ls {}".format(self._args, full_url), timeout=SHORT_OP_TIMEOUT)
         if (stat != 0):
             logging.warning("FAIL: SVN repo '{}' does not have file '{}'\nReason:{}\n{}\n".format(self._svn_loc, full_url, out, err))
             return False
@@ -39,7 +40,7 @@ To check connection and store your credential run 'svn ls {0}' and permanently s
             return False
         full_url = os.path.join(self._svn_loc, rel_path)
         stat, output, errput = \
-                               run_cmd("svn --non-interactive --trust-server-cert {} export {} {}".format(self._args, full_url, full_path))
+                               run_cmd("svn --non-interactive --trust-server-cert {} export {} {}".format(self._args, full_url, full_path), timeout=LONG_OP_TIMEOUT)
         if (stat != 0):
             logging.warning("svn export failed with output: {} and errput {}\n".format(output, errput))
             return False
@@ -50,7 +51,7 @@ To check connection and store your credential run 'svn ls {0}' and permanently s
     def getdirectory(self, rel_path, full_path):
         full_url = os.path.join(self._svn_loc, rel_path)
         stat, output, errput = \
-            run_cmd("svn --non-interactive --trust-server-cert {} export --force {} {}".format(self._args, full_url, full_path))
+            run_cmd("svn --non-interactive --trust-server-cert {} export --force {} {}".format(self._args, full_url, full_path), timeout=LONG_OP_TIMEOUT)
         if (stat != 0):
             logging.warning("svn export failed with output: {} and errput {}\n".format(output, errput))
             return False
