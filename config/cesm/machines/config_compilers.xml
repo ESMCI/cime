@@ -506,9 +506,9 @@ using a fortran linker.
   <MPICC> mpicc </MPICC>
   <MPICXX> mpicxx </MPICXX>
   <MPIFC> mpif90 </MPIFC>
-  <SCC> nvc </SCC>
-  <SCXX> nvc++ </SCXX>
-  <SFC> nvfortran </SFC>
+  <SCC> pgcc </SCC>
+  <SCXX> pgc++ </SCXX>
+  <SFC> pgf95 </SFC>
 </compiler>
 
 <compiler COMPILER="nvhpc">
