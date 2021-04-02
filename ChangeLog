@@ -1,6 +1,30 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 4-2-2021
+Tag: cime5.6.36
+Answer Changes: None
+Tests: Hand testing with SMS.f19_g17.B1850cmip6.cheyenne_intel 
+Dependencies:
+
+Brief Summary:
+    - Fix order of timers.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master 
+cdc5f5efd Merge pull request #3906 from jedwards4b/timer_ooo_fix
+
+Modified files: git diff --name-status [previous_tag]
+M       .github/workflows/srt.yml
+M       src/externals/pio1/pio/piodarray.F90.in
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 3-26-2021
 Tag: cime5.6.35
 Answer Changes: None
