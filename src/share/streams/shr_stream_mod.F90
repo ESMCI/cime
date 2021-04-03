@@ -971,6 +971,8 @@ contains
     integer  (SHR_KIND_IN) :: nYears        ! number of years in data loop
     integer  (SHR_KIND_IN) :: dYear         ! data year corresponding to model year
     integer  (SHR_KIND_IN) :: yy,mm,dd      ! year,month,day
+    integer  (SHR_KIND_IN) :: addyrs        ! approx number of total years to add for time axis cycling
+    integer  (SHR_KIND_IN) :: addnyrs       ! for time axis cycling
     real     (SHR_KIND_R8) :: rDateIn       ! model dDateIn + secs/(secs per day)
     real     (SHR_KIND_R8) :: rDate1        ! stream dDateIn + secs/(secs per day)
     real     (SHR_KIND_R8) :: rDate2        ! stream dDateIn + secs/(secs per day)
@@ -1030,7 +1032,9 @@ contains
     dDateL  = (yrLast+1)  * 10000 + 101 ! last date in valid range
 
     if (cycle) then
-       dYear  = yrFirst + modulo(mYear-yrAlign+(2*nYears),nYears)   ! current data year
+       addyrs  = 5000
+       addnyrs = addyrs/nYears  ! addnyrs * nYears =~ addyrs but divisible by nYears
+       dYear  = yrFirst + modulo(mYear-yrAlign+(addnyrs*nYears),nYears)   ! current data year
     else
        dYear  = yrFirst + mYear - yrAlign
     endif

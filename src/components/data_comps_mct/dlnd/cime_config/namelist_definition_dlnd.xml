@@ -70,7 +70,7 @@
       <value dlnd_mode="NULL">NULL</value>
       <value dlnd_mode="^CPLHIST$">lnd.cplhist</value>
       <value dlnd_mode="CLMNLDAS">clm.nldas</value>
-      <value dlnd_mode="MINGNLDAS">lnd.mingnldas</value>
+      <value dlnd_mode="MINGNLDAS">lnd.mingnldas,lnd.tqnldas</value>
       <value dlnd_mode="GLC_CPLHIST">sno.cplhist</value>
       <value dlnd_mode="QIAN">lnd.qian</value>
       <value dlnd_mode="GPCC">lnd.gpcc</value>
@@ -88,6 +88,7 @@
       <value stream="lnd.qian">$DLND_CPLHIST_DIR</value>
       <value stream="lnd.gpcc">$DLND_CPLHIST_DIR</value>
       <value stream="lnd.mingnldas">$DIN_LOC_ROOT/share/domains/domain.clm</value>
+      <value stream="lnd.tqnldas">$DIN_LOC_ROOT/share/domains/domain.clm</value>
     </values>
   </entry>
 
@@ -102,6 +103,7 @@
       <value stream="lnd.qian">QIAN.daily.1948-2004.nc</value>
       <value stream="lnd.gpcc">GPCC.daily.nc</value>
       <value stream="lnd.mingnldas">domain.lnd.nldas2_0224x0464_c110415.nc</value>
+      <value stream="lnd.tqnldas">domain.lnd.nldas2_0224x0464_c110415.nc</value>
     </values>
   </entry>
 
@@ -132,6 +134,13 @@
         area     area
         mask     mask
       </value>
+      <value stream="lnd.tqnldas">
+        time     time
+        xc       lon
+        yc       lat
+        area     area
+        mask     mask
+      </value>
       <value stream="lnd.qian">
         time     time
         lon      lon
@@ -153,6 +162,8 @@
     <values>
       <value>$DLND_CPLHIST_DIR</value>
       <value stream="sno.cplhist">$DLND_CPLHIST_DIR</value>
+      <value stream="lnd.mingnldas">/qfs/people/liho623/working/inputdata/Ming_Pan_runoff</value>
+      <value stream="lnd.tqnldas">/compyfs/liho623/e3sm_scratch/Tqsur_Tqsub_nldas_01/run</value>
     </values>
   </entry>
 
@@ -166,7 +177,8 @@
       <value stream="clm.nldas">mosart_nldas_hist_1975.clm2.h1.1975-01-01-00000.nc</value>
       <value stream="lnd.qian">QIAN.daily.1948-2004.nc</value>
       <value stream="lnd.gpcc">GPCC.daily.nc</value>
-      <value  stream="lnd.mingnldas">ming_NLDAS_%y.nc</value>
+      <value stream="lnd.mingnldas">ming_NLDAS_%y.nc</value>
+      <value stream="lnd.tqnldas">Tqsur_Tqsub_nldas_01.mosart.h1.%y-01-01-10800.nc</value>
     </values>
   </entry>
 
@@ -188,6 +200,10 @@
       <value     stream="lnd.mingnldas">
         QDRAI     rofsub
         QOVER     rofsur
+      </value>
+      <value     stream="lnd.tqnldas">
+        TEMP_QSUR     tqsur
+        TEMP_QSUB     tqsub
       </value>
       <value     stream="lnd.qian">
         QDRAI     rofsub
@@ -218,6 +234,8 @@
     <values>
       <value>$DLND_CPLHIST_YR_ALIGN</value>
       <value stream="sno.cplhist">$DLND_CPLHIST_YR_ALIGN</value>
+      <value stream="lnd.mingnldas">1979</value>
+      <value stream="lnd.tqnldas">1990</value>
     </values>
   </entry>
 
@@ -229,6 +247,8 @@
     <values>
       <value>$DLND_CPLHIST_YR_START</value>
       <value stream="sno.cplhist">$DLND_CPLHIST_YR_START</value>
+      <value stream="lnd.mingnldas">1979</value>
+      <value stream="lnd.tqnldas">1990</value>
     </values>
   </entry>
 
@@ -240,6 +260,8 @@
     <values>
       <value>$DLND_CPLHIST_YR_END</value>
       <value stream="sno.cplhist">$DLND_CPLHIST_YR_END</value>
+      <value stream="lnd.mingnldas">2008</value>
+      <value stream="lnd.tqnldas">2019</value>
     </values>
   </entry>
 
