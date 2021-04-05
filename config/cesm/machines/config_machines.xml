@@ -644,8 +644,6 @@ This allows using a different mpirun command to launch unit tests
       <env name="TMPDIR">/glade/scratch/$USER</env>
     </environment_variables>
     <resource_limits>
-      <!--      <resource name="RLIMIT_STACK"> 80000000</resource> -->
-      <!-- set to unlimited -->
       <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
   </machine>
