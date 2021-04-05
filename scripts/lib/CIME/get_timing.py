@@ -405,7 +405,7 @@ class _TimingParser:
                 comp_label = m.comp + inst_label
             else:
                 comp_label = m.comp
-            self.write("  {} = {:<8s}   {:<6d}      {:<6d}   {:<6d} x {:<6d}  {:<6d} ({:<6d}) \n".format(m.name.lower(), comp_label, (m.ntasks*m.nthrds *smt_factor), m.rootpe, m.ntasks, m.nthrds, m.ninst, m.pstrid))
+            self.write("  {} = {:<8s}   {:<6d}      {:<6d}   {:<6d} x {:<6d}  {:<6d} ({:<6d}) \n".format(m.name.lower(), comp_label, (m.ntasks*m.nthrds), m.rootpe, m.ntasks, m.nthrds, m.ninst, m.pstrid))
             if m.nthrds > maxthrds:
                 maxthrds = m.nthrds
         if self._driver == 'nuopc':
