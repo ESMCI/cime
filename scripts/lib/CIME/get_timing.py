@@ -90,7 +90,8 @@ class _TimingParser:
     def _gettime2_nuopc(self):
         self.nprocs = 0
         self.ncount = 0
-        expression = re.compile(r'\s*\MED:\s*\(med_phases_profile\)\s+(\d+)\s+(\d+)')
+#        expression = re.compile(r'\s*\MED:\s*\(med_phases_profile\)\s+(\d+)\s+(\d+)')
+        expression = re.compile(r'\s*\[ATM]\s*RunPhase1\s+(\d+)\s+(\d+)')
 
         for line in self.finlines:
             match = expression.match(line)
@@ -353,7 +354,6 @@ class _TimingParser:
             nprocs, nsteps = self.gettime2('')
 
         adays = nsteps*tlen/ncpl
-        print("adays = {} nsteps {} tlen {} ncpl {} nprocs {}".format(adays, nsteps, tlen, ncpl, nprocs))
         odays = nsteps*tlen/ncpl
         if ocn_ncpl and inittype == "TRUE":
             odays = odays - (tlen/ocn_ncpl)
@@ -405,7 +405,7 @@ class _TimingParser:
                 comp_label = m.comp + inst_label
             else:
                 comp_label = m.comp
-            self.write("  {} = {:<8s}   {:<6d}      {:<6d}   {:<6d} x {:<6d}  {:<6d} ({:<6d}) \n".format(m.name.lower(), comp_label, (m.ntasks*m.nthrds *smt_factor), m.rootpe, m.ntasks, m.nthrds, m.ninst, m.pstrid))
+            self.write("  {} = {:<8s}   {:<6d}      {:<6d}   {:<6d} x {:<6d}  {:<6d} ({:<6d}) \n".format(m.name.lower(), comp_label, (m.ntasks*m.nthrds), m.rootpe, m.ntasks, m.nthrds, m.ninst, m.pstrid))
             if m.nthrds > maxthrds:
                 maxthrds = m.nthrds
         if self._driver == 'nuopc':
@@ -459,12 +459,11 @@ class _TimingParser:
             xmaxr = adays*86400.0/(xmax*365.0)
         tmaxr = 0
         if tmax > 0:
-            print ("HERE adays {} tmax {}".format(adays, tmax))
             tmaxr = adays*86400.0/(tmax*365.0)
 
         self.write("\n")
-        self.write("  total pes active           : {} \n".format(totalpes*maxthrds*smt_factor ))
-        self.write("  mpi tasks per node               : {} \n".format(max_mpitasks_per_node))
+        self.write("  total pes active           : {} \n".format(totalpes*smt_factor ))
+        self.write("  mpi tasks per node         : {} \n".format(max_mpitasks_per_node))
         self.write("  pe count for cost estimate : {} \n".format(pecost))
         self.write("\n")
 

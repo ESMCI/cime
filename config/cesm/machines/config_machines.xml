@@ -472,6 +472,7 @@ This allows using a different mpirun command to launch unit tests
       <arguments>
         <arg name="labelstdout">-p "%g:"</arg>
         <arg name="num_tasks"> -np {{ total_tasks }}</arg>
+        <arg name="zthreadplacement"> omplace -tm open64 -vv</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="mpt" queue="share" comp_interface="nuopc">
@@ -633,16 +634,17 @@ This allows using a different mpirun command to launch unit tests
       <env name="UGCSINPUTPATH">/glade/work/turuncu/FV3GFS/benchmark-inputs/2012010100/gfs/fcst</env>
       <env name="UGCSFIXEDFILEPATH">/glade/work/turuncu/FV3GFS/fix_am</env>
       <env name="UGCSADDONPATH">/glade/work/turuncu/FV3GFS/addon</env>
+      <env name="OMP_WAIT_POLICY">PASSIVE</env>
+      <env name="MPI_DSM_VERBOSE">true</env>
     </environment_variables>
     <environment_variables unit_testing="true">
       <env name="MPI_USE_ARRAY">false</env>
     </environment_variables>
     <environment_variables queue="share">
       <env name="TMPDIR">/glade/scratch/$USER</env>
-<!--      <env name="MPI_USE_ARRAY">false</env> -->
     </environment_variables>
     <resource_limits>
-      <resource name="RLIMIT_STACK"> -1</resource>
+      <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
   </machine>
 
