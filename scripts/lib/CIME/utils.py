@@ -270,7 +270,7 @@ def get_src_root(case=None):
     if case is not None:
         case_srcroot = os.path.abspath(case.get_value("SRCROOT"))
         srcroot = os.path.abspath(srcroot)
-        expect(srcroot == case_srcroot, "Inconsistent CIMEROOT variable: case -> '{}', file location -> '{}'".format(case_cimeroot, cimeroot))
+        expect(srcroot == case_srcroot, "Inconsistent SRCROOT variable: case -> '{}', file location -> '{}'".format(case_srcroot, srcroot))
 
     logger.debug( "SRCROOT is " + srcroot)
     return srcroot
