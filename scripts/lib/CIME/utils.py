@@ -254,6 +254,27 @@ def get_cime_root(case=None):
     logger.debug( "CIMEROOT is " + cimeroot)
     return cimeroot
 
+def get_src_root(case=None):
+    """
+    Return the absolute path to the root of SRCROOT.
+
+    """
+    script_absdir = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+    assert script_absdir.endswith(get_python_libs_location_within_cime()), script_absdir
+    # This if statement will need to be updated when cesm brings in the new share repos.
+    if get_model() == "cesm":
+        srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+    else:
+        srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+
+    if case is not None:
+        case_srcroot = os.path.abspath(case.get_value("SRCROOT"))
+        srcroot = os.path.abspath(srcroot)
+        expect(srcroot == case_srcroot, "Inconsistent CIMEROOT variable: case -> '{}', file location -> '{}'".format(case_cimeroot, cimeroot))
+
+    logger.debug( "SRCROOT is " + srcroot)
+    return srcroot
+
 def get_cime_default_driver():
     driver = os.environ.get("CIME_DRIVER")
     if driver:

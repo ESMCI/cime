@@ -6,6 +6,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.case import Case
 from CIME.utils import parse_args_and_handle_standard_logging_options, setup_standard_logging_options, get_model, safe_copy
 from CIME.build import get_standard_makefile_args
+from CIME.XML.files             import Files
 
 import sys, os, argparse
 logger = logging.getLogger(__name__)
@@ -55,16 +56,16 @@ def build_cime_component_lib(case, compname, libroot, bldroot):
     with open(os.path.join(confdir, 'Filepath'), 'w') as out:
         out.write(os.path.join(case.get_value('CASEROOT'), "SourceMods",
                                "src.{}\n".format(compname)) + "\n")
+        files = Files(comp_interface=comp_interface)
+        compdir = files.get_value("COMP_ROOT_DIR_"+compclass.upper(),{"component":compname})
         if compname.startswith('d'):
-            if (comp_interface == 'nuopc'):
-                out.write(os.path.join(cimeroot, "src", "components", "data_comps_"+comp_interface, "dshr_nuopc") + "\n")
-            out.write(os.path.join(cimeroot, "src", "components", "data_comps_"+comp_interface, compname, "src") + "\n")
-            out.write(os.path.join(cimeroot, "src", "components", "data_comps_"+comp_interface, compname) + "\n")
+            out.write(os.path.join(compdir,"src") + "\n")
+            out.write(os.path.join(compdir) + "\n")
         elif compname.startswith('x'):
-            out.write(os.path.join(cimeroot, "src", "components", "xcpl_comps_"+comp_interface, "xshare") + "\n")
-            out.write(os.path.join(cimeroot, "src", "components", "xcpl_comps_"+comp_interface, compname, "src") + "\n")
+            out.write(os.path.join(compdir,"..","xshare") + "\n")
+            out.write(os.path.join(compdir,"src") + "\n")
         elif compname.startswith('s'):
-            out.write(os.path.join(cimeroot, "src", "components", "stub_comps_"+comp_interface, compname, "src") + "\n")
+            out.write(os.path.join(compdir,"src") + "\n")
 
     with open(os.path.join(confdir, "CIME_cppdefs"), "w") as out:
         out.write("")
