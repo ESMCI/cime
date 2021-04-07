@@ -189,6 +189,7 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     # regardless of requested build list
     cmp_cmake_args = ""
     all_models = []
+    files = Files(comp_interface=comp_interface)
     for model, _, _, _, config_dir in complist:
         # Create the Filepath and CIME_cppdefs files
         if model == "cpl":
