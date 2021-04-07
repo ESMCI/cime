@@ -46,8 +46,7 @@ module seq_flux_mct
   real(r8), allocatable ::  ubot (:)  ! atm velocity, zonal
   real(r8), allocatable ::  vbot (:)  ! atm velocity, meridional
   real(r8), allocatable ::  wsresp(:) ! atm response to surface stress
-  real(r8), allocatable ::  u_diff(:) ! approximate atmosphere change to ubot
-  real(r8), allocatable ::  v_diff(:) ! approximate atmosphere change to ubot
+  real(r8), allocatable ::  tau_est(:)! estimation of tau in equilibrium with wind
   real(r8), allocatable ::  thbot(:)  ! atm potential T
   real(r8), allocatable ::  shum (:)  ! atm specific humidity
   real(r8), allocatable ::  shum_16O (:)  ! atm H2O tracer
@@ -122,8 +121,7 @@ module seq_flux_mct
   integer :: index_a2x_Sa_u
   integer :: index_a2x_Sa_v
   integer :: index_a2x_Sa_wsresp
-  integer :: index_a2x_Sa_u_diff
-  integer :: index_a2x_Sa_v_diff
+  integer :: index_a2x_Sa_tau_est
   integer :: index_a2x_Sa_tbot
   integer :: index_a2x_Sa_ptem
   integer :: index_a2x_Sa_shum
@@ -244,12 +242,9 @@ contains
     allocate( wsresp(nloc))
     if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
     wsresp = 0.0_r8
-    allocate( u_diff(nloc))
-    if(ier/=0) call mct_die(subName,'allocate u_diff',ier)
-    u_diff = 0.0_r8
-    allocate( v_diff(nloc))
-    if(ier/=0) call mct_die(subName,'allocate v_diff',ier)
-    v_diff = 0.0_r8
+    allocate( tau_est(nloc))
+    if(ier/=0) call mct_die(subName,'allocate tau_est',ier)
+    tau_est = 0.0_r8
     allocate(thbot(nloc),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate thbot',ier)
     thbot = 0.0_r8
@@ -678,10 +673,8 @@ contains
     if(ier/=0) call mct_die(subName,'allocate vbot',ier)
     allocate( wsresp(nloc_a2o))
     if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
-    allocate( u_diff(nloc_a2o))
-    if(ier/=0) call mct_die(subName,'allocate u_diff',ier)
-    allocate( v_diff(nloc_a2o))
-    if(ier/=0) call mct_die(subName,'allocate v_diff',ier)
+    allocate( tau_est(nloc_a2o))
+    if(ier/=0) call mct_die(subName,'allocate tau_est',ier)
     allocate(thbot(nloc_a2o),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate thbot',ier)
     allocate(shum(nloc_a2o),stat=ier)
@@ -1044,8 +1037,7 @@ contains
           ubot(n) =   0.0_r8 ! atm velocity, zonal        ~ m/s
           vbot(n) =   2.0_r8 ! atm velocity, meridional   ~ m/s
           wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          u_diff(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          v_diff(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
+          tau_est(n) = 0.0_r8 ! estimation of stress in equilibrium with ubot/vbot ~ Pa
           thbot(n)= 301.0_r8 ! atm potential temperature  ~ Kelvin
           shum(n) = 1.e-2_r8 ! atm specific humidity      ~ kg/kg
           shum_16O(n) = 1.e-2_r8 ! H216O specific humidity    ~ kg/kg
@@ -1083,8 +1075,7 @@ contains
           ubot(n) = a2x_e%rAttr(index_a2x_Sa_u   ,ia)
           vbot(n) = a2x_e%rAttr(index_a2x_Sa_v   ,ia)
           wsresp(n) = a2x_e%rAttr(index_a2x_Sa_wsresp,ia)
-          u_diff(n) = a2x_e%rAttr(index_a2x_Sa_u_diff,ia)
-          v_diff(n) = a2x_e%rAttr(index_a2x_Sa_v_diff,ia)
+          tau_est(n) = a2x_e%rAttr(index_a2x_Sa_tau_est,ia)
           thbot(n)= a2x_e%rAttr(index_a2x_Sa_ptem,ia)
           shum(n) = a2x_e%rAttr(index_a2x_Sa_shum,ia)
           shum_16O(n) = a2x_e%rAttr(index_a2x_Sa_shum_16O,ia)
@@ -1374,8 +1365,7 @@ contains
        index_a2x_Sa_u      = mct_aVect_indexRA(a2x,'Sa_u')
        index_a2x_Sa_v      = mct_aVect_indexRA(a2x,'Sa_v')
        index_a2x_Sa_wsresp = mct_aVect_indexRA(a2x,'Sa_wsresp')
-       index_a2x_Sa_u_diff = mct_aVect_indexRA(a2x,'Sa_u_diff')
-       index_a2x_Sa_v_diff = mct_aVect_indexRA(a2x,'Sa_v_diff')
+       index_a2x_Sa_tau_est = mct_aVect_indexRA(a2x,'Sa_tau_est')
        index_a2x_Sa_tbot   = mct_aVect_indexRA(a2x,'Sa_tbot')
        index_a2x_Sa_pslv   = mct_aVect_indexRA(a2x,'Sa_pslv')
        index_a2x_Sa_ptem   = mct_aVect_indexRA(a2x,'Sa_ptem')
@@ -1430,8 +1420,7 @@ contains
           ubot(n) =   0.0_r8 ! atm velocity, zonal        ~ m/s
           vbot(n) =   2.0_r8 ! atm velocity, meridional   ~ m/s
           wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          u_diff(n) = 0.0_r8 ! atm velocity change, zonal ~ m/s
-          v_diff(n) = 0.0_r8 ! atm velocity change, meridional ~ m/s
+          tau_est(n) = 0.0_r8 ! stress consistent w/ u/v  ~ Pa
           thbot(n)= 301.0_r8 ! atm potential temperature  ~ Kelvin
           shum(n) = 1.e-2_r8 ! atm specific humidity      ~ kg/kg
           !wiso note: shum_* should be multiplied by Rstd_* here?
@@ -1480,8 +1469,7 @@ contains
              ubot(n) = a2x%rAttr(index_a2x_Sa_u   ,n)
              vbot(n) = a2x%rAttr(index_a2x_Sa_v   ,n)
              wsresp(n) = a2x%rAttr(index_a2x_Sa_wsresp,n)
-             u_diff(n) = a2x%rAttr(index_a2x_Sa_u_diff,n)
-             v_diff(n) = a2x%rAttr(index_a2x_Sa_v_diff,n)
+             tau_est(n) = a2x%rAttr(index_a2x_Sa_tau_est,n)
              thbot(n)= a2x%rAttr(index_a2x_Sa_ptem,n)
              shum(n) = a2x%rAttr(index_a2x_Sa_shum,n)
              if ( index_a2x_Sa_shum_16O /= 0 ) shum_16O(n) = a2x%rAttr(index_a2x_Sa_shum_16O,n)
