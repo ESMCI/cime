@@ -41,7 +41,7 @@ import argparse, math, glob
 logger = logging.getLogger(__name__)
 
 ###############################################################################
-def parse_command_line(args, cimeroot, description):
+def parse_command_line(args, description):
 ###############################################################################
 
     parser = argparse.ArgumentParser(description=description,
@@ -89,11 +89,6 @@ def parse_command_line(args, cimeroot, description):
                         default=default,
                         help="Use a single interactive allocation to run all the tests. This can "
                         "\ndrastically reduce queue waiting but only makes sense on batch machines.")
-
-    if config and config.has_option('main','SRCROOT'):
-        srcroot_default = cime_config.get('main', 'srcroot')
-    else:
-        srcroot_default = os.path.dirname(cimeroot)
 
     default = get_default_setting(config, "TEST_ROOT", None, check_main=False)
 
@@ -626,15 +621,13 @@ def create_test(test_names, test_data, compiler, machine_name, no_run, no_build,
 ###############################################################################
 def _main_func(description):
 ###############################################################################
-    cimeroot = os.path.abspath(CIME.utils.get_cime_root())
-
     test_names, test_data, compiler, machine_name, no_run, no_build, no_setup, no_batch, \
     test_root, baseline_root, clean, baseline_cmp_name, baseline_gen_name, namelists_only, \
     project, test_id, parallel_jobs, walltime, single_submit, proc_pool, use_existing, \
     save_timing, queue, allow_baseline_overwrite, output_root, wait, force_procs, force_threads, mpilib, input_dir, pesfile, \
     retry, mail_user, mail_type, check_throughput, check_memory, ignore_namelists, ignore_memleak, allow_pnl, \
     non_local, single_exe, workflow = \
-        parse_command_line(sys.argv, cimeroot, description)
+        parse_command_line(sys.argv, description)
 
     success = False
     run_count = 0
