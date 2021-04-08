@@ -8,6 +8,8 @@ components.
 import sys, os
 
 _CIMEROOT = os.environ.get("CIMEROOT")
+if _CIMEROOT == None:
+    raise ValueError("ERROR: CIMEROOT not defined in buildlib_cmake.internal_components.")
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
 
 from standard_script_setup import *
