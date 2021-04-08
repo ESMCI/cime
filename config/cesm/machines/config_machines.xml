@@ -358,11 +358,11 @@ This allows using a different mpirun command to launch unit tests
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>pgi,intel,nvhpc,pgi-gpu,nvhpc-gpu</COMPILERS>
-    <MPILIBS compiler="pgi" >openmpi,mpi-serial</MPILIBS>
-    <MPILIBS compiler="nvhpc" >openmpi,mpi-serial</MPILIBS>
-    <MPILIBS compiler="intel" >openmpi,mpi-serial</MPILIBS>
-    <MPILIBS compiler="pgi-gpu" >openmpi,mpi-serial</MPILIBS>
-    <MPILIBS compiler="nvhpc-gpu" >openmpi,mpi-serial</MPILIBS>
+    <MPILIBS compiler="pgi" >openmpi</MPILIBS>
+    <MPILIBS compiler="nvhpc" >openmpi</MPILIBS>
+    <MPILIBS compiler="intel" >openmpi</MPILIBS>
+    <MPILIBS compiler="pgi-gpu" >openmpi</MPILIBS>
+    <MPILIBS compiler="nvhpc-gpu" >openmpi</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
