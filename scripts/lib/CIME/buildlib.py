@@ -44,7 +44,6 @@ def parse_input(argv):
 def build_cime_component_lib(case, compname, libroot, bldroot):
 ###############################################################################
 
-    cimeroot  = case.get_value("CIMEROOT")
     casebuild = case.get_value("CASEBUILD")
     compclass = compname[1:] # This very hacky
     comp_interface = case.get_value("COMP_INTERFACE")
