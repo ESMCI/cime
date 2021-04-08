@@ -485,6 +485,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
         stdin = subprocess.PIPE
     else:
         stdin = None
+
     if timeout:
         with Timeout(timeout):
             proc = subprocess.Popen(cmd,

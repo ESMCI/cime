@@ -211,17 +211,20 @@
     </queues>
   </batch_system>
 
-  <batch_system type="slurm" MACH="casper">
-    <batch_submit>sbatch</batch_submit>
-    <submit_args>
-      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
-      <arg flag="-p" name="$JOB_QUEUE"/>
-      <arg flag="--gres=gpu:v100:4"/>
-      <arg flag="--account" name="$PROJECT"/>
-      <arg flag="--mem=0"/> 
-    </submit_args>
+  <!-- casper pbs -->
+  <batch_system MACH="casper" type="pbs">
+    <batch_submit>qsub</batch_submit>
+    <directives queue="casper">
+      <directive default="/bin/bash" > -S {{ shell }}  </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus=1 </directive>
+      <directive> -l gpu_type=v100 </directive>
+    </directives>
+
+    <!-- Unknown queues use the batch directives for the regular queue -->
+    <unknown_queue_directives>casper</unknown_queue_directives>
+
     <queues>
-      <queue nodemin="1" nodemax="96" default="true">dav</queue>
+      <queue walltimemax="12:00:00" nodemin="1" nodemax="10">casper</queue>
     </queues>
   </batch_system>
 

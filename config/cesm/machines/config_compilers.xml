@@ -466,6 +466,141 @@ using a fortran linker.
   <SFC> pgf95 </SFC>
 </compiler>
 
+<compiler COMPILER="pgi-gpu">
+  <CFLAGS>
+    <base> -gopt  -time </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI </append>
+  </CPPDEFS>
+  <CXX_LINKER>CXX</CXX_LINKER>
+  <FC_AUTO_R8>
+    <base> -r8 </base>
+  </FC_AUTO_R8>
+  <FFLAGS>
+    <base>  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  </base>
+    <append compile_threaded="TRUE"> -mp </append>
+    <append DEBUG="TRUE"> -O0 -g -Ktrap=fp -Mbounds -Kieee </append>
+    <append MODEL="datm"> -Mnovect </append>
+    <append MODEL="dlnd"> -Mnovect </append>
+    <append MODEL="drof"> -Mnovect </append>
+    <append MODEL="dwav"> -Mnovect </append>
+    <append MODEL="dice"> -Mnovect </append>
+    <append MODEL="docn"> -Mnovect </append>
+  </FFLAGS>
+  <FFLAGS_NOOPT>
+    <base> -O0 </base>
+  </FFLAGS_NOOPT>
+  <FIXEDFLAGS>
+    <base> -Mfixed </base>
+  </FIXEDFLAGS>
+  <FREEFLAGS>
+    <base> -Mfree </base>
+  </FREEFLAGS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <base> -time -Wl,--allow-multiple-definition </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </LDFLAGS>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicxx </MPICXX>
+  <MPIFC> mpif90 </MPIFC>
+  <SCC> pgcc </SCC>
+  <SCXX> pgc++ </SCXX>
+  <SFC> pgf95 </SFC>
+</compiler>
+
+<compiler COMPILER="nvhpc">
+  <CFLAGS>
+    <base> -gopt  -time </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI </append>
+  </CPPDEFS>
+  <CXX_LINKER>CXX</CXX_LINKER>
+  <FC_AUTO_R8>
+    <base> -r8 </base>
+  </FC_AUTO_R8>
+  <FFLAGS>
+    <base>  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  </base>
+    <append compile_threaded="TRUE"> -mp </append>
+    <append DEBUG="TRUE"> -O0 -g -Ktrap=fp -Mbounds -Kieee </append>
+    <append MODEL="datm"> -Mnovect </append>
+    <append MODEL="dlnd"> -Mnovect </append>
+    <append MODEL="drof"> -Mnovect </append>
+    <append MODEL="dwav"> -Mnovect </append>
+    <append MODEL="dice"> -Mnovect </append>
+    <append MODEL="docn"> -Mnovect </append>
+  </FFLAGS>
+  <FFLAGS_NOOPT>
+    <base> -O0 </base>
+  </FFLAGS_NOOPT>
+  <FIXEDFLAGS>
+    <base> -Mfixed </base>
+  </FIXEDFLAGS>
+  <FREEFLAGS>
+    <base> -Mfree </base>
+  </FREEFLAGS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <base> -time -Wl,--allow-multiple-definition </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </LDFLAGS>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicxx </MPICXX>
+  <MPIFC> mpif90 </MPIFC>
+  <SCC> nvc </SCC>
+  <SCXX> nvc++ </SCXX>
+  <SFC> nvfortran </SFC>
+</compiler>
+
+<compiler COMPILER="nvhpc-gpu">
+  <CFLAGS>
+    <base> -gopt  -time </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI </append>
+  </CPPDEFS>
+  <CXX_LINKER>CXX</CXX_LINKER>
+  <FC_AUTO_R8>
+    <base> -r8 </base>
+  </FC_AUTO_R8>
+  <FFLAGS>
+    <base>  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  </base>
+    <append compile_threaded="TRUE"> -mp </append>
+    <append DEBUG="TRUE"> -O0 -g -Ktrap=fp -Mbounds -Kieee </append>
+    <append MODEL="datm"> -Mnovect </append>
+    <append MODEL="dlnd"> -Mnovect </append>
+    <append MODEL="drof"> -Mnovect </append>
+    <append MODEL="dwav"> -Mnovect </append>
+    <append MODEL="dice"> -Mnovect </append>
+    <append MODEL="docn"> -Mnovect </append>
+  </FFLAGS>
+  <FFLAGS_NOOPT>
+    <base> -O0 </base>
+  </FFLAGS_NOOPT>
+  <FIXEDFLAGS>
+    <base> -Mfixed </base>
+  </FIXEDFLAGS>
+  <FREEFLAGS>
+    <base> -Mfree </base>
+  </FREEFLAGS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <base> -time -Wl,--allow-multiple-definition </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </LDFLAGS>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicxx </MPICXX>
+  <MPIFC> mpif90 </MPIFC>
+  <SCC> nvc </SCC>
+  <SCXX> nvc++ </SCXX>
+  <SFC> nvfortran </SFC>
+</compiler>
+
 <compiler OS="AIX" COMPILER="ibm">
   <CFLAGS>
     <append> -qarch=auto -qtune=auto -qcache=auto </append>
@@ -653,21 +788,97 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="casper">
+  <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
+  <PIO_FILESYSTEM_HINTS>glade</PIO_FILESYSTEM_HINTS>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+</compiler>
+
 <compiler MACH="casper" COMPILER="pgi">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
   <FFLAGS>
-    <append> -Mnofma -acc -ta=tesla:cc70 -Minfo=accel </append>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
-  <CFLAGS>
-    <append> -Mnofma -acc -ta=tesla:cc70 -Minfo=accel </append>
-  </CFLAGS>
   <LDFLAGS>
-    <append> -acc -ta=tesla:cc70 -Minfo=accel </append>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
   </LDFLAGS>
   <SLIBS>
-    <append> -llapack -lblas -ldl </append>
+    <append> -llapack -lblas </append>
     <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="pgi-gpu">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append> -I$(EXEROOT)/ocn/obj/FMS </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel -D__OPENACC__ </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -llapack -lblas </append>
+    <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="nvhpc">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append> -I$(EXEROOT)/ocn/obj/FMS </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -llapack -lblas </append>
+    <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="nvhpc-gpu">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append> -I$(EXEROOT)/ocn/obj/FMS </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel -D__OPENACC__ </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -llapack -lblas </append>
+    <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="intel">
+  <CFLAGS>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+  </FFLAGS>
+  <CMAKE_OPTS>
+    <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
+  </CMAKE_OPTS>
+  <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="FALSE">$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP</PFUNIT_PATH>
+  <!-- SET to FALSE for intel 17 and 18 TRUE otherwise -->
+  <HAS_F2008_CONTIGUOUS>TRUE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="cheyenne">

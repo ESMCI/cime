@@ -354,29 +354,26 @@ This allows using a different mpirun command to launch unit tests
   </machine>
 
    <machine MACH="casper">
-    <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is slurm</DESC>
+    <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is pbs</DESC>
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
-    <!-- MPT sometimes timesout at model start time, the next two lines cause
-    case_run.py to detect the timeout and retry FORCE_SPARE_NODES times -->
     <OS>LINUX</OS>
-    <COMPILERS>pgi</COMPILERS>
-    <MPILIBS compiler="pgi" >openmpi</MPILIBS>
+    <COMPILERS>pgi,intel,nvhpc,pgi-gpu,nvhpc-gpu</COMPILERS>
+    <MPILIBS>openmpi</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>$ENV{CESMDATAROOT}/cesm_baselines</BASELINE_ROOT>
     <GMAKE_J>8</GMAKE_J>
-    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
-    <SUPPORTED_BY>CISL-STP</SUPPORTED_BY>
-    <!-- have not seen any performance benefit in smt -->
+    <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
+    <SUPPORTED_BY>CISL</SUPPORTED_BY>
     <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
     <mpirun mpilib="default">
       <executable>mpirun</executable>
       <arguments>
-        <arg name="num_tasks"> -np {{ total_tasks }}</arg>
+        <arg name="anum_tasks"> -np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
@@ -396,17 +393,65 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <modules>
         <command name="purge"/>
-      </modules>
-      <modules>
         <command name="load">ncarenv/1.3</command>
       </modules>
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
       </modules>
+      <modules compiler="pgi-gpu">
+        <command name="load">pgi/20.4</command>
+      </modules>
+      <modules compiler="nvhpc">
+        <command name="load">nvhpc/20.9</command>
+      </modules>
+      <modules compiler="nvhpc-gpu">
+        <command name="load">nvhpc/20.9</command>
+      </modules>
+      <modules compiler="intel">
+        <command name="load">intel/19.1.1</command>
+        <command name="load">mkl/2020.0.1</command>
+      </modules>
       <modules mpilib="openmpi" compiler="pgi">
-        <command name="load">openmpi/3.1.4</command>
+        <command name="load">openmpi/4.1.0</command>
         <command name="load">netcdf-mpi/4.7.4</command>
-        <command name="load">pnetcdf/1.12.1</command>
+        <command name="load">pnetcdf/1.12.2</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="pgi">
+        <command name="load">netcdf/4.7.4</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="pgi-gpu">
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.2</command>
+        <command name="load">cuda/11.0.3</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="pgi-gpu">
+        <command name="load">netcdf/4.7.4</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="nvhpc">
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.2</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="nvhpc">
+        <command name="load">netcdf/4.7.4</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="nvhpc-gpu">
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.2</command>
+        <command name="load">cuda/11.0.3</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="nvhpc-gpu">
+        <command name="load">netcdf/4.7.4</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="intel">
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.2</command>
+      </modules>
+      <modules mpilib="mpi-serial" compiler="intel">
+        <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
