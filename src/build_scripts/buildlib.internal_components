@@ -7,7 +7,7 @@ components.
 
 import sys, os
 
-_CIMEROOT = os.environ.get("CIMEROT")
+_CIMEROOT = os.environ.get("CIMEROOT")
 if _CIMEROOT == None:
     raise ValueError("ERROR: CIMEROOT not defined in buildlib.internal_components.")
 sys.path.append(os.path.join(_CIMEROOT, "scripts", "Tools"))
