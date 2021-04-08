@@ -169,7 +169,7 @@ def _build_model(build_threaded, exeroot, incroot, complist,
     return logs
 
 ###############################################################################
-def _build_model_cmake(exeroot, complist, lid, buildlist,
+def _build_model_cmake(exeroot, complist, lid, buildlist, comp_interface,
                        sharedpath, separate_builds, ninja, dry_run, case):
 ###############################################################################
     cime_model = get_model()
@@ -727,7 +727,7 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
 
     if not sharedlib_only:
         if get_model() == "e3sm":
-            logs.extend(_build_model_cmake(exeroot, complist, lid, buildlist,
+            logs.extend(_build_model_cmake(exeroot, complist, lid, buildlist, comp_interface,
                                            sharedpath, separate_builds, ninja, dry_run, case))
         else:
             os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
