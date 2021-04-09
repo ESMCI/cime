@@ -254,7 +254,7 @@ def get_cime_root(case=None):
     logger.debug( "CIMEROOT is " + cimeroot)
     return cimeroot
 
-def get_src_root(case=None):
+def get_src_root():
     """
     Return the absolute path to the root of SRCROOT.
 
