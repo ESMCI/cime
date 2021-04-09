@@ -1,6 +1,68 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 4-8-2021
+Tag: cime5.8.42
+Answer Changes: None
+Tests: hand tested and scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - No need to test ESMF_AWARE_THREADING here.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+b655c9127 Merge pull request #3918 from jedwards4b/ninst_fix
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/XML/env_mach_pes.py
+
+======================================================================
+
+======================================================================
+
+Originator: Jim Edwards 
+Date: 4-6-2021
+Tag: cime5.8.41
+Answer Changes: Climate Changing just for T compsets.
+Tests: scripts_regression_tests 
+       SMS_Vnuopc_D_P1x1.f10_f10_mg37.I2000Clm50Sp.izumi_nag.clm-default
+Dependencies:
+
+Brief Summary:
+    - Save Scorpio I/O statistics.
+    - Support for threading in two different ways for esmf.
+    - Fix issue with build of nag mpiserial.
+    - Handle case when domain_root is not present.
+    - Point to new dlnd scpl forcing data.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+81d4f2033 Merge pull request #3904 from ESMCI/jayeshkrishna/spio_stats_provenance
+ada43e1c9 Merge pull request #3899 from jedwards4b/esmf_threading
+b86d2e1b5 Merge pull request #3908 from jedwards4b/izumi_nag_mpiserial_fix
+000b3c7d5 Merge pull request #3903 from jedwards4b/domain_root_fix
+af4d0ae47 Merge pull request #3901 from billsacks/dlnd_new_glc_forcings
+
+
+Modified files: git diff --name-status [previous_tag]
+M       .github/workflows/srt.yml
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/pelayout
+M       scripts/lib/CIME/XML/env_mach_pes.py
+M       scripts/lib/CIME/XML/grids.py
+M       scripts/lib/CIME/get_timing.py
+M       scripts/lib/CIME/provenance.py
+M       src/components/data_comps_mct/dlnd/cime_config/config_component.xml
+
+======================================================================
+
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 3-30-2021
 Tag: cime5.8.40
 Answer Changes: 
