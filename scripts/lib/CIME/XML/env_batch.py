@@ -361,9 +361,6 @@ class EnvBatch(EnvBase):
 
                             result.append("{}{}".format("" if not prefix else (prefix + " "), directive))
 
-                    if "fram" in case.get_value("MACH") and job == "case.st_archive":
-                        directive = "--qos=preproc"
-                        result.append("{} {}".format(directive_prefix, directive))
                     if "betzy" in case.get_value("MACH") and job == "case.st_archive":
                         directive = "--mem-per-cpu=16GB"
                         result.append("{} {}".format(directive_prefix, directive))
