@@ -217,8 +217,27 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         Runs both phases of the two-phase test and compares their results
         If success_change is True, success requires some files to be different
         """
+        is_first_run = self._case1.get_value("IS_FIRST_RUN")
+
+        compare_phase_name = "{}_{}_{}".format(
+            COMPARE_PHASE,
+            self._run_one_suffix,
+            self._run_two_suffix)
+
+        # On a batch system with a multisubmit test "RESUBMIT" is always 
+        # decremented before running the second phase. If the test is rerun it
+        # will always skip the first phase. To fix this "RESUBMIT" will be set
+        # back to 1 when the test is marked with "IS_FIRST_RUN", is multisubmit
+        # and "RESUBMIT" does not have the correct value.
+        if (is_first_run and
+                self._multisubmit and
+                self._case1.get_value("RESUBMIT") == 0):
+            self._resetup_case(compare_phase_name)
+
         first_phase = self._case1.get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
         run_type = self._case1.get_value("RUN_TYPE")
+
+        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, first_phase))
 
         # First run
         if not self._multisubmit or first_phase:
@@ -227,7 +246,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # Add a PENDing compare phase so that we'll notice if the second part of compare two
             # doesn't run.
             with self._test_status:
-                self._test_status.set_status("{}_{}_{}".format(COMPARE_PHASE, self._run_one_suffix, self._run_two_suffix), TEST_PEND_STATUS)
+                self._test_status.set_status(
+                    compare_phase_name,
+                    TEST_PEND_STATUS)
 
             self._activate_case1()
             self._case_one_custom_prerun_action()
@@ -235,7 +256,6 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             self._case_one_custom_postrun_action()
 
         # Second run
-        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, first_phase))
         if not self._multisubmit or not first_phase:
             # Subtle issue: case1 is already in a writeable state since it tends to be opened
             # with a with statement in all the API entrances in CIME. case2 was created via clone,
