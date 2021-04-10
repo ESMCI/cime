@@ -633,6 +633,7 @@ def _main_func(description):
     run_count = 0
     while not success and run_count <= retry:
         use_existing = use_existing if run_count == 0 else True
+        allow_baseline_overwrite = allow_baseline_overwrite if run_count == 0 else True
         success = create_test(test_names, test_data, compiler, machine_name, no_run, no_build, no_setup, no_batch, test_root,
                               baseline_root, clean, baseline_cmp_name, baseline_gen_name, namelists_only,
                               project, test_id, parallel_jobs, walltime, single_submit, proc_pool, use_existing, save_timing,
