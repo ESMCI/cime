@@ -490,7 +490,7 @@ class TestSystemTestsCompareTwo(unittest.TestCase):
     def test_internal_calls_multisubmit_failed_state(self):
         run_one_suffix = 'base'
         run_two_suffix = 'run2'
-        case1root, case2root = self.get_caseroots()
+        case1root, _ = self.get_caseroots()
         case1 = CaseFake(case1root)
 
         def _set_initial_test_values(x):
