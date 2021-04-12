@@ -20,3 +20,10 @@ scripts/Tools/JENKINS*
 
 #Ignore nuopc driver available seperatly
 src/drivers/nuopc
+
+#Ignore Externals
+components
+cpl7
+libraries
+share
+
