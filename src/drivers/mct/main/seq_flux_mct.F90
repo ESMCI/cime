@@ -239,12 +239,14 @@ contains
     allocate( vbot(nloc))
     if(ier/=0) call mct_die(subName,'allocate vbot',ier)
     vbot = 0.0_r8
-    allocate( wsresp(nloc))
-    if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
-    wsresp = 0.0_r8
-    allocate( tau_est(nloc))
-    if(ier/=0) call mct_die(subName,'allocate tau_est',ier)
-    tau_est = 0.0_r8
+    if (atm_flux_method == 'implicit_stress') then
+       allocate( wsresp(nloc))
+       if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
+       wsresp = 0.0_r8
+       allocate( tau_est(nloc))
+       if(ier/=0) call mct_die(subName,'allocate tau_est',ier)
+       tau_est = 0.0_r8
+    end if
     allocate(thbot(nloc),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate thbot',ier)
     thbot = 0.0_r8
@@ -669,12 +671,14 @@ contains
     if(ier/=0) call mct_die(subName,'allocate zbot',ier)
     allocate( ubot(nloc_a2o),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate ubot',ier)
-    allocate( vbot(nloc_a2o))
+    allocate( vbot(nloc_a2o),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate vbot',ier)
-    allocate( wsresp(nloc_a2o))
-    if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
-    allocate( tau_est(nloc_a2o))
-    if(ier/=0) call mct_die(subName,'allocate tau_est',ier)
+    if (atm_flux_method == 'implicit_stress') then
+       allocate( wsresp(nloc_a2o),stat=ier)
+       if(ier/=0) call mct_die(subName,'allocate wsresp',ier)
+       allocate( tau_est(nloc_a2o),stat=ier)
+       if(ier/=0) call mct_die(subName,'allocate tau_est',ier)
+    end if
     allocate(thbot(nloc_a2o),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate thbot',ier)
     allocate(shum(nloc_a2o),stat=ier)
@@ -1036,8 +1040,10 @@ contains
           zbot(n) =  55.0_r8 ! atm height of bottom layer ~ m
           ubot(n) =   0.0_r8 ! atm velocity, zonal        ~ m/s
           vbot(n) =   2.0_r8 ! atm velocity, meridional   ~ m/s
-          wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          tau_est(n) = 0.0_r8 ! estimation of stress in equilibrium with ubot/vbot ~ Pa
+          if (atm_flux_method == 'implicit_stress') then
+             wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
+             tau_est(n) = 0.0_r8 ! estimation of stress in equilibrium with ubot/vbot ~ Pa
+          end if
           thbot(n)= 301.0_r8 ! atm potential temperature  ~ Kelvin
           shum(n) = 1.e-2_r8 ! atm specific humidity      ~ kg/kg
           shum_16O(n) = 1.e-2_r8 ! H216O specific humidity    ~ kg/kg
@@ -1074,8 +1080,10 @@ contains
           zbot(n) = a2x_e%rAttr(index_a2x_Sa_z   ,ia)
           ubot(n) = a2x_e%rAttr(index_a2x_Sa_u   ,ia)
           vbot(n) = a2x_e%rAttr(index_a2x_Sa_v   ,ia)
-          wsresp(n) = a2x_e%rAttr(index_a2x_Sa_wsresp,ia)
-          tau_est(n) = a2x_e%rAttr(index_a2x_Sa_tau_est,ia)
+          if (atm_flux_method == 'implicit_stress') then
+             wsresp(n) = a2x_e%rAttr(index_a2x_Sa_wsresp,ia)
+             tau_est(n) = a2x_e%rAttr(index_a2x_Sa_tau_est,ia)
+          end if
           thbot(n)= a2x_e%rAttr(index_a2x_Sa_ptem,ia)
           shum(n) = a2x_e%rAttr(index_a2x_Sa_shum,ia)
           shum_16O(n) = a2x_e%rAttr(index_a2x_Sa_shum_16O,ia)
@@ -1323,6 +1331,17 @@ contains
          flux_convergence=flux_convergence, &
          flux_max_iteration=flux_max_iteration)
 
+       ! If flux_max_iteration is not set, choose a value based on
+       ! atm_flux_method.
+       if (flux_max_iteration == -1) then
+          select case(atm_flux_method)
+          case('implicit_stress')
+             flux_max_iteration = 30
+          case default
+             flux_max_iteration = 2
+          end select
+       end if
+
        if (.not.read_restart) cold_start = .true.
        index_xao_So_tref   = mct_aVect_indexRA(xao,'So_tref')
        index_xao_So_qref   = mct_aVect_indexRA(xao,'So_qref')
@@ -1366,8 +1385,10 @@ contains
        index_a2x_Sa_z      = mct_aVect_indexRA(a2x,'Sa_z')
        index_a2x_Sa_u      = mct_aVect_indexRA(a2x,'Sa_u')
        index_a2x_Sa_v      = mct_aVect_indexRA(a2x,'Sa_v')
-       index_a2x_Sa_wsresp = mct_aVect_indexRA(a2x,'Sa_wsresp')
-       index_a2x_Sa_tau_est = mct_aVect_indexRA(a2x,'Sa_tau_est')
+       if (atm_flux_method == 'implicit_stress') then
+          index_a2x_Sa_wsresp = mct_aVect_indexRA(a2x,'Sa_wsresp')
+          index_a2x_Sa_tau_est = mct_aVect_indexRA(a2x,'Sa_tau_est')
+       end if
        index_a2x_Sa_tbot   = mct_aVect_indexRA(a2x,'Sa_tbot')
        index_a2x_Sa_pslv   = mct_aVect_indexRA(a2x,'Sa_pslv')
        index_a2x_Sa_ptem   = mct_aVect_indexRA(a2x,'Sa_ptem')
@@ -1421,8 +1442,10 @@ contains
           zbot(n) =  55.0_r8 ! atm height of bottom layer ~ m
           ubot(n) =   0.0_r8 ! atm velocity, zonal        ~ m/s
           vbot(n) =   2.0_r8 ! atm velocity, meridional   ~ m/s
-          wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
-          tau_est(n) = 0.0_r8 ! stress consistent w/ u/v  ~ Pa
+          if (atm_flux_method == 'implicit_stress') then
+             wsresp(n) = 0.0_r8 ! response of wind to surface stress ~ m/s/Pa
+             tau_est(n) = 0.0_r8 ! stress consistent w/ u/v  ~ Pa
+          end if
           thbot(n)= 301.0_r8 ! atm potential temperature  ~ Kelvin
           shum(n) = 1.e-2_r8 ! atm specific humidity      ~ kg/kg
           !wiso note: shum_* should be multiplied by Rstd_* here?
@@ -1470,8 +1493,10 @@ contains
              zbot(n) = a2x%rAttr(index_a2x_Sa_z   ,n)
              ubot(n) = a2x%rAttr(index_a2x_Sa_u   ,n)
              vbot(n) = a2x%rAttr(index_a2x_Sa_v   ,n)
-             wsresp(n) = a2x%rAttr(index_a2x_Sa_wsresp,n)
-             tau_est(n) = a2x%rAttr(index_a2x_Sa_tau_est,n)
+             if (atm_flux_method == 'implicit_stress') then
+                wsresp(n) = a2x%rAttr(index_a2x_Sa_wsresp,n)
+                tau_est(n) = a2x%rAttr(index_a2x_Sa_tau_est,n)
+             end if
              thbot(n)= a2x%rAttr(index_a2x_Sa_ptem,n)
              shum(n) = a2x%rAttr(index_a2x_Sa_shum,n)
              if ( index_a2x_Sa_shum_16O /= 0 ) shum_16O(n) = a2x%rAttr(index_a2x_Sa_shum_16O,n)

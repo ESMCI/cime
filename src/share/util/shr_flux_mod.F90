@@ -511,7 +511,7 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,   &
 
         !--- compute some needed quantities ---
         wind0 = max(sqrt((ubot(n) - us(n))**2 + (vbot(n) - vs(n))**2), 0.01_r8)
-        vmag    = max(seq_flux_atmocn_minwind, wind0 )
+        vmag = max(seq_flux_atmocn_minwind, wind0 )
 
          if (use_coldair_outbreak_mod) then
             ! Cold Air Outbreak Modification:
@@ -541,8 +541,15 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,   &
         re=sqrt(re)
 
         !--- momentum flux ---
-        taux(n) = tau * (ubot(n)-us(n)) / wind0
-        tauy(n) = tau * (vbot(n)-vs(n)) / wind0
+        if (present(wsresp) .and. present(tau_est)) then
+           taux(n) = tau * (ubot(n)-us(n)) / wind0
+           tauy(n) = tau * (vbot(n)-vs(n)) / wind0
+        else
+           ! The above expression is arguably always more correct, but the
+           ! following preserves answers for the explicit code.
+           taux(n) = tau * (ubot(n)-us(n)) / vmag
+           tauy(n) = tau * (vbot(n)-vs(n)) / vmag
+        end if
 
         !--- heat flux ---
         sen (n) =  hsb
@@ -1793,20 +1800,21 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
             tstar = rh * delt
             qstar = re * delq
 
+            !--- momentum and heat fluxes ---
+
             if (present(wsresp) .and. present(tau_est)) then
                ! Update stress and magnitude of mean wind.
                tau = rbot(n) * ustar * rd * wind_adj
                call shr_flux_update_stress(wind0, wsresp(n), tau_est(n), &
                     tau, prev_tau, tau_diff, prev_tau_diff, wind_adj)
                vmag = max(seq_flux_atmocn_minwind, wind_adj) * vscl
+               sen (n) =               cp * tstar * rbot(n) * ustar
+               lat (n) = shr_const_latvap * qstar * rbot(n) * ustar
             else
                tau = rbot(n) * ustar * ustar
+               sen (n) =               cp * tau * tstar / ustar
+               lat (n) = shr_const_latvap * tau * qstar / ustar
             end if
-
-            !--- heat flux ---
-
-            sen (n) =                cp * tau * tstar / ustar
-            lat (n) = shr_const_latvap * tau * qstar / ustar
 
          else if (ocn_surface_flux_scheme .eq. 1) then! use COARE algorithm
 
