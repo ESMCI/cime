@@ -89,8 +89,8 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
         testcase     = case.get_value("TESTCASE")
 
         if not os.path.isdir(din_loc_root):
-          logger.info("Making inputdata directory: {}".format(din_loc_root))
-          os.mkdir(din_loc_root)
+            logger.info("Making inputdata directory: {}".format(din_loc_root))
+            os.mkdir(din_loc_root)
             
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
