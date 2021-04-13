@@ -83,10 +83,15 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
     extra_machines_dir = case.get_value("EXTRA_MACHDIR")
     expect(mach is not None, "xml variable MACH is not set")
 
-    # Check that $DIN_LOC_ROOT exists - and abort if not a namelist compare tests
+    # Check that $DIN_LOC_ROOT exists or can be created:
     if not non_local:
         din_loc_root = case.get_value("DIN_LOC_ROOT")
         testcase     = case.get_value("TESTCASE")
+
+        if not os.path.isdir(din_loc_root):
+          logger.info("Making inputdata directory: {}".format(din_loc_root))
+          os.mkdir(din_loc_root)
+            
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
 
