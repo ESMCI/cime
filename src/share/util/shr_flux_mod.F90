@@ -2431,14 +2431,20 @@ subroutine shr_flux_update_stress(wind0, wsresp, tau_est, tau, prev_tau, &
   ! Wind updated by iteration [m/s]
   real(r8), intent(out) :: wind_adj
 
+  real(r8) :: wsresp_applied
+
   ! maximum ratio between abs(tau_diff) and abs(prev_tau_diff)
   real(r8) :: tau_diff_fac
+
+  ! Using wsresp_applied = 0.5 * wsresp improves accuracy somewhat, similar to
+  ! using the trapezoidal method rather than backward Euler.
+  wsresp_applied = 0.5 * wsresp
 
   ! Forbid removing more than 99% of wind speed.
   ! This is applied before anything else to ensure that the applied stress is
   ! not so strong that it reverses the direction of the winds.
-  if ( (tau - tau_est) * wsresp > 0.99_r8 * wind0 ) then
-     tau = tau_est + 0.99_r8 * wind0 / wsresp
+  if ( (tau - tau_est) * wsresp_applied > 0.99_r8 * wind0 ) then
+     tau = tau_est + 0.99_r8 * wind0 / wsresp_applied
   end if
 
   prev_tau_diff = tau_diff
@@ -2459,7 +2465,7 @@ subroutine shr_flux_update_stress(wind0, wsresp, tau_est, tau, prev_tau, &
   end if
   prev_tau = tau
 
-  wind_adj = wind0 - (tau - tau_est) * wsresp
+  wind_adj = wind0 - (tau - tau_est) * wsresp_applied
 
 end subroutine shr_flux_update_stress
 
