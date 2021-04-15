@@ -260,8 +260,8 @@ def get_src_root():
 
     """
     # This if statement will need to be updated when cesm brings in the new share repos.
-    if get_model() == "cesm":
-        srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+    if os.path.isdir(os.path.join(get_cime_root(),"share")) and get_model() == "cesm":
+        srcroot = os.path.abspath(os.path.join(get_cime_root()))
     else:
         srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
 

@@ -97,9 +97,15 @@ def parse_command_line(args, cimeroot, description):
     parser.add_argument("--workflow",default=workflow_default,
                         help="A workflow from config_workflow.xml to apply to this case. ")
 
+    if cime_config:
+        model = get_model()
+    else:
+        model = None
 
     if cime_config and cime_config.has_option('main','SRCROOT'):
         srcroot_default = cime_config.get('main', 'srcroot')
+    elif os.path.isdir(os.path.join(cimeroot,"share")) and model == "cesm":
+        srcroot_default=cimeroot
     else:
         srcroot_default = os.path.dirname(cimeroot)
 
@@ -112,10 +118,6 @@ def parse_command_line(args, cimeroot, description):
 
     # The following is a deprecated option
     parser.add_argument("--script-root", dest="script_root", default=None, help=argparse.SUPPRESS)
-    if cime_config:
-        model = get_model()
-    else:
-        model = None
 
     if model == "cesm":
         parser.add_argument("--run-unsupported", action="store_true",

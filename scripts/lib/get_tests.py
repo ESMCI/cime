@@ -31,7 +31,7 @@ _CIME_TESTS = {
         "time"  : "0:10:00",
         "tests" : (
             "ERS.f19_g16_rx1.A",
-            "NCK.f19_g16_rx1.A",
+            "MCC.f19_g16_rx1.A",
             )
         },
 
@@ -118,12 +118,12 @@ _CIME_TESTS = {
     "cime_developer" : {
         "time"  : "0:15:00",
         "tests" : (
-            "NCK_Ld3.f45_g37_rx1.A",
+            "MCC_Ld3.f45_g37_rx1.A",
             "ERI_Ln9.f09_g16.X",
             "ERIO_Ln11.f09_g16.X",
             "SEQ_Ln9.f19_g16_rx1.A",
             "ERS.ne30_g16_rx1.A.drv-y100k",
-            "IRT_N2_Ln9.f19_g16_rx1.A",
+            "ERS_C2_Ln9.f19_g16_rx1.A",
             "ERR_Ln9.f45_g37_rx1.A",
             "ERP_Ln9.f45_g37_rx1.A",
             "SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A",
@@ -281,12 +281,12 @@ def get_build_groups(tests):
 def infer_machine_name_from_tests(testargs):
 ###############################################################################
     """
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_machine_name_from_tests(["MCC.f19_g16_rx1.A.melvin_gnu"])
     'melvin'
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A"])
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_machine_name_from_tests(["MCC.f19_g16_rx1.A"])
+    >>> infer_machine_name_from_tests(["MCC.f19_g16_rx1.A", "MCC.f19_g16_rx1.A.melvin_gnu"])
     'melvin'
-    >>> infer_machine_name_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_machine_name_from_tests(["MCC.f19_g16_rx1.A.melvin_gnu", "MCC.f19_g16_rx1.A.melvin_gnu"])
     'melvin'
     """
     e3sm_test_suites = get_test_suites()
@@ -318,15 +318,15 @@ def get_full_test_names(testargs, machine, compiler):
     Testargs can be categories or test names and support the NOT symbol '^'
 
     >>> get_full_test_names(["cime_tiny"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu']
+    ['ERS.f19_g16_rx1.A.melvin_gnu', 'MCC.f19_g16_rx1.A.melvin_gnu']
 
     >>> get_full_test_names(["cime_tiny", "PEA_P1_M.f45_g37_rx1.A"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
+    ['ERS.f19_g16_rx1.A.melvin_gnu', 'MCC.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
 
-    >>> get_full_test_names(['ERS.f19_g16_rx1.A', 'NCK.f19_g16_rx1.A', 'PEA_P1_M.f45_g37_rx1.A'], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
+    >>> get_full_test_names(['ERS.f19_g16_rx1.A', 'MCC.f19_g16_rx1.A', 'PEA_P1_M.f45_g37_rx1.A'], "melvin", "gnu")
+    ['ERS.f19_g16_rx1.A.melvin_gnu', 'MCC.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
 
-    >>> get_full_test_names(["cime_tiny", "^NCK.f19_g16_rx1.A"], "melvin", "gnu")
+    >>> get_full_test_names(["cime_tiny", "^MCC.f19_g16_rx1.A"], "melvin", "gnu")
     ['ERS.f19_g16_rx1.A.melvin_gnu']
 
     >>> get_full_test_names(["cime_test_multi_inherit"], "melvin", "gnu")
