@@ -612,17 +612,25 @@ endif
 # Drive configure scripts for support libraries (mct)
 #------------------------------------------------------------------------------
 
+ifeq ($(CIME_MODEL),cesm)
+    #This will be changed to EXTERN_PATH = $(SRCROOT)/libraries when the new
+    #share repos are used for cesm2.
+    EXTERN_PATH = $(CIMEROOT)/src/externals
+else
+    EXTERN_PATH = $(CIMEROOT)/src/externals
+endif
+
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct/mpi-serial
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct/mpi-serial
 
 ifndef IO_LIB_SRCROOT
   ifndef PIO_SRCROOT
-    PIO_SRCROOT = $(CIMEROOT)/src/externals
+    PIO_SRCROOT = $(EXTERN_PATH)
   endif
 
   ifeq ($(PIO_VERSION),2)
@@ -673,7 +681,7 @@ CMAKE_OPTS += -Wno-dev -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPD
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake"
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(EXTERN_PATH)/pio2/cmake"
 
 ifeq ($(DEBUG), TRUE)
   CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON

@@ -585,7 +585,14 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         cls._testdirs.append(testdir)
 
-        pesfile = os.path.join("..","src","drivers","mct","cime_config","config_pes.xml")
+        if CIME.utils.get_model() == "cesm":
+            # Will need to be updated when cesm brings in new share repo new line will be. 
+            # pesfile = os.path.join(get_src_root(),"cpl7","driver","cime_config","config_pes.xml")
+            # or
+            # pesfile = os.path.join(get_src_root(),"components","cmeps","cime_config","config_pes.xml")
+            pesfile = os.path.join("..","src","drivers",CIME.utils.get_cime_default_driver(),"cime_config","config_pes.xml")
+        else:
+            pesfile = os.path.join("..","src","drivers",CIME.utils.get_cime_default_driver(),"cime_config","config_pes.xml")
         args =  "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r" % (testdir, pesfile, cls._testroot)
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"

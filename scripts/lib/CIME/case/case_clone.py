@@ -3,7 +3,7 @@ create_clone is a member of the Case class from file case.py
 """
 import os, glob, shutil
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, check_name, safe_copy
+from CIME.utils import expect, check_name, safe_copy, get_model
 from CIME.simple_compare            import compare_files
 from CIME.locked_files         import lock_file
 from CIME.user_mod_support import apply_user_mods
@@ -39,7 +39,10 @@ def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
         logger.warning(" It is NOT recommended to clone cases from different versions of CIME.")
 
     # *** create case object as deepcopy of clone object ***
-    srcroot = os.path.join(newcase_cimeroot,"..")
+    if os.path.isdir(os.path.join(newcase_cimeroot,'share')) and get_model() == "cesm":
+        srcroot = newcase_cimeroot         
+    else:
+        srcroot = os.path.join(newcase_cimeroot,"..")
     newcase = self.copy(newcasename, newcaseroot, newsrcroot=srcroot)
     with newcase:
         newcase.set_value("CIMEROOT", newcase_cimeroot)

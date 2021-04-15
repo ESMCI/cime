@@ -102,7 +102,7 @@ class EnvMachPes(EnvBase):
             else:
                 nthrds = 1
 
-            if comp != "CPL" and (comp_interface!="nuopc" or not esmf_aware_threading):
+            if comp != "CPL" and comp_interface!="nuopc":
                 ninst = self.get_value("NINST", attribute={"compclass":comp})
                 maxinst = max(maxinst, ninst)
             tt = rootpe + nthrds*((ntasks - 1) * pstrid + 1)
