@@ -24,14 +24,17 @@ class Inputdata(GenericXML):
 
         self._servernode = None
 
-    def get_next_server(self):
+    def get_next_server(self, attributes=None):
         protocol = None
         address = None
         user = ''
         passwd = ''
         chksum_file = None
         ic_filepath = None
-        servernodes = self.get_children("server")
+        servernodes = self.get_children("server", attributes=attributes)
+        if not attributes:
+            servernodes = [x for x in servernodes if not self.attrib(x)]
+
         if self._servernode is None:
             self._servernode = servernodes[0]
         else:
