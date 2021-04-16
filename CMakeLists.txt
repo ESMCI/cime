@@ -9,8 +9,8 @@ project(cime_tests Fortran C)
 
 # We rely on pio for cmake utilities like findnetcdf.cmake, so that we don't
 # need to duplicate this cmake code
-if (EXISTS ${SRC_ROOT}/libraries/parallelio/cmake)
-  list(APPEND CMAKE_MODULE_PATH "${SRC_ROOT}/libraries/parallelio/cmake")
+if (EXISTS ${CIME_ROOT}/libraries/parallelio/cmake)
+  list(APPEND CMAKE_MODULE_PATH "${CIME_ROOT}/libraries/parallelio/cmake")
 else()
   list(APPEND CMAKE_MODULE_PATH "${CIME_ROOT}/src/externals/pio2/cmake")
 endif()
@@ -25,8 +25,8 @@ include_directories(${NetCDF_C_INCLUDE_DIRS} ${NetCDF_Fortran_INCLUDE_DIRS})
 # ------------------------------------------------------------------------
 # Build mct
 # ------------------------------------------------------------------------
-if (EXISTS ${SRC_ROOT}/libraries/mct)
-  set(MCT_ROOT "${SRC_ROOT}/libraries/mct")
+if (EXISTS ${CIME_ROOT}/libraries/mct)
+  set(MCT_ROOT "${CIME_ROOT}/libraries/mct")
 else()
   set(MCT_ROOT "${CIME_ROOT}/src/externals/mct")
 endif()
@@ -96,13 +96,15 @@ endif()
 set(SHARE_ROOT "${CIME_ROOT}/src/share")
 if (EXISTS ${SRC_ROOT}/share/src)
   add_subdirectory(${SRC_ROOT}/share/src)
-  add_subdirectory(${SRC_ROOT}/share/science/src)
   add_subdirectory(${SRC_ROOT}/cpl7/mct_shr)
+  add_subdirectory(${SRC_ROOT}/share/unit_test_stubs/util csm_share_stubs)
+  include_directories(${SRC_ROOT}/share/include)
 else()
+  set(SHARE_ROOT "${CIME_ROOT}/src/share")
   add_subdirectory(${SHARE_ROOT}/util csm_share)
+  add_subdirectory(${SHARE_ROOT}/unit_test_stubs/util csm_share_stubs)
+  include_directories(${SHARE_ROOT}/include)
 endif()
-add_subdirectory(${SHARE_ROOT}/unit_test_stubs/util csm_share_stubs)
-include_directories(${SHARE_ROOT}/include)
 
 # esmf_wrf_timemgr not built here because it depends on csm_share.
 if (EXISTS ${SRC_ROOT}/share/src/esmf_wrf_timemgr)
