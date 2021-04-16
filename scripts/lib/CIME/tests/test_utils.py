@@ -38,6 +38,9 @@ goodbye
 
 # TODO after dropping python 2.7 replace with tempfile.TemporaryDirectory
 class TemporaryDirectory(object):
+    def __init__(self):
+        self._tempdir = None
+
     def __enter__(self):
         self._tempdir = tempfile.mkdtemp()
         return self._tempdir
@@ -47,6 +50,9 @@ class TemporaryDirectory(object):
             shutil.rmtree(self._tempdir)
 
 class MockTime(object):
+    def __init__(self):
+        self._old = None
+
     def __enter__(self):
         self._old = getattr(sys.modules["time"], "strftime")
         setattr(sys.modules["time"], "strftime", lambda *args: "00:00:00 ")
