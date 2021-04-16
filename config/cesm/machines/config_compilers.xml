@@ -557,7 +557,7 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
   <SLIBS>
     <append> -L$ENV{NETCDFHOME}/lib -lnetcdff -lnetcdf </append>
-    <append MPILIB="mvapich"> -L/cw3e/mead/projects/csg100/cesm/tools/pnetcdf/intel/mvapich/lib -lpnetcdf</append>
+    <append MPILIB="mvapich"> -L$ENV{PNETCDF_PATH}/lib -lpnetcdf</append>
   </SLIBS>
 </compiler>
 

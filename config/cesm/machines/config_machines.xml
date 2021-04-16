@@ -510,7 +510,7 @@ This allows using a different mpirun command to launch unit tests
     <NODENAME_REGEX>comet.*.sdsc.edu</NODENAME_REGEX>
     <OS>LINUX</OS>
     <COMPILERS>intel</COMPILERS>
-    <MPILIBS>mvapich,impi</MPILIBS>
+    <MPILIBS>impi,mvapich</MPILIBS>
     <CIME_OUTPUT_ROOT>/cw3e/mead/projects/csg100/cesm/scratch</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/cw3e/mead/projects/csg100/cesm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/cw3e/mead/projects/csg100/cesm/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
@@ -530,13 +530,13 @@ This allows using a different mpirun command to launch unit tests
       </arguments>
     </mpirun>
     <mpirun mpilib="impi">
-      <executable>srun</executable>
+      <executable>srun </executable>
       <arguments>
 	<arg name="num_tasks">-n {{ total_tasks }}</arg>
-	<arg name="hint"> --hint compute_bound </arg>
-	<arg name="bindinfo"> --cpu-bind=verbose </arg>
+	<arg name="cpu_bind">--cpu_bind=sockets --cpu_bind=verbose</arg>
       </arguments>
     </mpirun>
+
     <module_system type="module">
       <init_path lang="perl">/usr/share/Modules/init/perl.pm</init_path>
       <init_path lang="python">/usr/share/Modules/init/python.py</init_path>
@@ -562,6 +562,7 @@ This allows using a different mpirun command to launch unit tests
 	<command name="load">netcdf/4.6.1</command>
       </modules>
       <modules mpilib="impi">
+	<command name="unload">mvapich2_ib/2.3.2</command>
 	<command name="load">intelmpi/2018.1.163</command>
 	<command name="load">netcdf/4.6.1</command>
       </modules>
@@ -571,9 +572,15 @@ This allows using a different mpirun command to launch unit tests
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">64M</env>
+      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/mvapich</env>
     </environment_variables>
     <environment_variables mpilib="impi">
+      <env name="TMI_CONFIG">$ENV{MPIHOME}/etc/tmi.conf</env>
       <env name="I_MPI_PMI_LIBRARY">/usr/lib64/libpmi.so</env>
+      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/impi</env>
+    </environment_variables>
+    <environment_variables mpilib="mvapich">
+      <env name="PNETCDF_PATH">/home/edwardsj/work/cesm/tools/pnetcdf/intel/mvapich</env>
     </environment_variables>
   </machine>
 
