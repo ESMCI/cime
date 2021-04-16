@@ -10,6 +10,7 @@ from CIME.BuildTools.configure import configure
 from CIME.utils             import get_cime_root, run_and_log_case_status, get_model, get_batch_script_for_job, safe_copy
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
+import errno
 
 logger = logging.getLogger(__name__)
 
@@ -88,9 +89,12 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
         din_loc_root = case.get_value("DIN_LOC_ROOT")
         testcase     = case.get_value("TESTCASE")
 
-        if not os.path.isdir(din_loc_root):
-            logger.info("Making inputdata directory: {}".format(din_loc_root))
-            os.mkdir(din_loc_root)
+        if not os.path.isfile(din_loc_root):
+            try:
+                os.makedirs(din_loc_root, exist_ok=True)
+            except OSError as e:
+                if e.errno == errno.EACCES:
+                    logger.info("Invalid permissions to create {}".format(din_loc_root)
             
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
