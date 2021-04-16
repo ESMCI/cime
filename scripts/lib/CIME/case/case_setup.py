@@ -94,7 +94,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
                 os.makedirs(din_loc_root, exist_ok=True)
             except OSError as e:
                 if e.errno == errno.EACCES:
-                    logger.info("Invalid permissions to create {}".format(din_loc_root)
+                    logger.info("Invalid permissions to create {}".format(din_loc_root))
             
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
