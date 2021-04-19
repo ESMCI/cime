@@ -125,10 +125,12 @@
   <entry id="COMP_ROOT_DIR_CPL">
     <type>char</type>
     <values>
-      <value comp_interface="nuopc" >$SRCROOT/components/cmeps</value> 
-      <value comp_interface="mct"   >$SRCROOT/cpl7/driver</value> 
-      <value comp_interface="mct" component="cpl"  >$SRCROOT/cpl7/driver</value> 
-      <value comp_interface="mct" component="drv"  >$SRCROOT/cpl7/driver</value> 
+      <value comp_interface="nuopc"                 >$SRCROOT/components/cmeps</value> 
+      <value comp_interface="nuopc" component="cpl" >$SRCROOT/components/cmeps</value> 
+      <value comp_interface="nuopc" component="drv" >$SRCROOT/components/cmeps</value> 
+      <value comp_interface="mct"                   >$SRCROOT/cpl7/driver</value> 
+      <value comp_interface="mct" component="cpl"   >$SRCROOT/cpl7/driver</value> 
+      <value comp_interface="mct" component="drv"   >$SRCROOT/cpl7/driver</value> 
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
