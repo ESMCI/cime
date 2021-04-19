@@ -111,7 +111,7 @@
       <value component="datm" comp_interface="mct"   >$SRCROOT/cpl7/components/data_comps_$COMP_INTERFACE/datm</value>
       <value component="satm" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm</value>
       <value component="satm" comp_interface="mct"   >$SRCROOT/cpl7/components/stub_comps_$COMP_INTERFACE/satm</value>
-      <value component="xatm" comp_interface="nuopc" >CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+      <value component="xatm" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
       <value component="xatm" comp_interface="mct"   >$SRCROOT/cpl7/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
       <value component="cam"                         >$SRCROOT/components/cam/</value>
       <value component="ufsatm"                      >$SRCROOT/components/fv3/</value>
@@ -147,7 +147,8 @@
       <value component="docn"  comp_interface="nuopc" >$SRCROOT/components/cdeps/docn</value>
       <value component="socn"  comp_interface="mct"   >$SRCROOT/cpl7/components/stub_comps_$COMP_INTERFACE/socn</value>
       <value component="socn"  comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/socn</value>
-      <value component="xocn"                         >$SRCROOT/cpl7/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
+      <value component="xocn"  comp_interface="mct"   >$SRCROOT/cpl7/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
+      <value component="xocn"  comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
