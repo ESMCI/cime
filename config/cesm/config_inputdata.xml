@@ -36,4 +36,10 @@
     <address>https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata</address>
   </server>
 
+  <server CLM_USRDAT_NAME="NEON">
+    <comment> NEON Tower data for datm </comment>
+    <protocol>wget</protocol>
+    <address>https://s3.data.neonscience.org/neon-ncar/NEON/</address>
+  </server>
+
 </inputdata>
