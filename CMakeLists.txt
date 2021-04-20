@@ -9,8 +9,8 @@ project(cime_tests Fortran C)
 
 # We rely on pio for cmake utilities like findnetcdf.cmake, so that we don't
 # need to duplicate this cmake code
-if (EXISTS ${CIME_ROOT}/libraries/parallelio/cmake)
-  list(APPEND CMAKE_MODULE_PATH "${CIME_ROOT}/libraries/parallelio/cmake")
+if (EXISTS ${SRC_ROOT}/libraries/parallelio/cmake)
+  list(APPEND CMAKE_MODULE_PATH "${SRC_ROOT}/libraries/parallelio/cmake")
 else()
   list(APPEND CMAKE_MODULE_PATH "${CIME_ROOT}/src/externals/pio2/cmake")
 endif()
@@ -25,8 +25,8 @@ include_directories(${NetCDF_C_INCLUDE_DIRS} ${NetCDF_Fortran_INCLUDE_DIRS})
 # ------------------------------------------------------------------------
 # Build mct
 # ------------------------------------------------------------------------
-if (EXISTS ${CIME_ROOT}/libraries/mct)
-  set(MCT_ROOT "${CIME_ROOT}/libraries/mct")
+if (EXISTS ${SRC_ROOT}/libraries/mct)
+  set(MCT_ROOT "${SRC_ROOT}/libraries/mct")
 else()
   set(MCT_ROOT "${CIME_ROOT}/src/externals/mct")
 endif()
