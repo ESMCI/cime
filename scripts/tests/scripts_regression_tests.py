@@ -589,7 +589,7 @@ class J_TestCreateNewcase(unittest.TestCase):
             if CIME.utils.get_cime_default_driver() == "nuopc":
                 pesfile = os.path.join(get_src_root(),"components","cmeps","cime_config","config_pes.xml")
             else:
-                pesfile = os.path.join(get_src_root(),"cpl7","driver","cime_config","config_pes.xml")
+                pesfile = os.path.join(get_src_root(),"components","cpl7","driver","cime_config","config_pes.xml")
         else:
             pesfile = os.path.join("..","src","drivers",CIME.utils.get_cime_default_driver(),"cime_config","config_pes.xml")
 

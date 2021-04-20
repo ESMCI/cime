@@ -23,7 +23,6 @@ src/drivers/nuopc
 
 #Ignore Externals
 components
-cpl7
 libraries
 share
 
