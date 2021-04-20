@@ -4,7 +4,7 @@ case_run is a member of Class Case
 from CIME.XML.standard_module_setup import *
 from CIME.utils                     import gzip_existing_file, new_lid, run_and_log_case_status
 from CIME.utils                     import run_sub_or_cmd, append_status, safe_copy, model_log, CIMEError
-from CIME.utils                     import get_model
+from CIME.utils                     import get_model, batch_jobid
 from CIME.get_timing                import get_timing
 from CIME.provenance                import save_prerun_provenance, save_postrun_provenance
 
@@ -101,6 +101,13 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
     if node_fail_re:
         node_fail_regex = re.compile(re.escape(node_fail_re))
 
+    is_batch = case.get_value("BATCH_SYSTEM") is not None
+    msg_func = None
+
+    if is_batch:
+        jobid = batch_jobid()
+        msg_func = lambda *args: jobid if jobid else ""
+
     loop = True
     while loop:
         loop = False
@@ -112,8 +119,13 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
         model_log("e3sm", logger, "{} MODEL EXECUTION BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         run_func = lambda: run_cmd_no_fail(cmd, from_dir=rundir)
         case.flush()
+
         try:
-            run_and_log_case_status(run_func, "model execution", caseroot=case.get_value("CASEROOT"))
+            run_and_log_case_status(run_func, "model execution", 
+                                    custom_starting_msg_functor=msg_func,
+                                    custom_success_msg_functor=msg_func,
+                                    caseroot=case.get_value("CASEROOT"),
+                                    is_batch=is_batch)
             cmd_success = True
         except CIMEError:
             cmd_success = False
@@ -179,7 +191,19 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
 def _run_model(case, lid, skip_pnl=False, da_cycle=0):
 ###############################################################################
     functor = lambda: _run_model_impl(case, lid, skip_pnl=skip_pnl, da_cycle=da_cycle)
-    return run_and_log_case_status(functor, "case.run", caseroot=case.get_value("CASEROOT"))
+
+    is_batch = case.get_value("BATCH_SYSTEM") is not None
+    msg_func = None
+    
+    if is_batch:
+        jobid = batch_jobid()
+        msg_func = lambda *args: jobid if jobid is not None else ""
+
+    return run_and_log_case_status(functor, "case.run",
+                                   custom_starting_msg_functor=msg_func,
+                                   custom_success_msg_functor=msg_func,
+                                   caseroot=case.get_value("CASEROOT"),
+                                   is_batch=is_batch)
 
 ###############################################################################
 def _post_run_check(case, lid):
