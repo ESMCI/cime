@@ -4,7 +4,6 @@ functions for building CIME models
 import glob, shutil, time, threading, subprocess, imp
 from CIME.XML.standard_module_setup  import *
 from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
-from CIME.utils                 import batch_jobid
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
 from CIME.XML.files             import Files
@@ -782,33 +781,10 @@ def case_build(caseroot, case, sharedlib_only=False, model_only=False, buildlist
         cb = cb + " (SHAREDLIB_BUILD)"
     if (model_only == True):
         cb = cb + " (MODEL_BUILD)"
-
-    is_batch = case.get_value("BATCH_SYSTEM") is not None
-    msg_func = None
-
-    if is_batch:
-        jobid = batch_jobid()
-        msg_func = lambda *args: jobid if jobid is not None else ""
-
-    return run_and_log_case_status(functor, cb, 
-                                   custom_starting_msg_functor=msg_func,
-                                   custom_success_msg_functor=msg_func,
-                                   caseroot=caseroot,
-                                   is_batch=is_batch)
+    return run_and_log_case_status(functor, cb, caseroot=caseroot)
 
 ###############################################################################
 def clean(case, cleanlist=None, clean_all=False, clean_depends=None):
 ###############################################################################
-    is_batch = case.get_value("BATCH_SYSTEM") is not None
-    msg_func = None
-
-    if is_batch:
-        jobid = batch_jobid()
-        msg_func = lambda *args: jobid if jobid is not None else ""
-
     functor = lambda: _clean_impl(case, cleanlist, clean_all, clean_depends)
-    return run_and_log_case_status(functor, "build.clean", 
-                                   custom_starting_msg_functor=msg_func,
-                                   custom_success_msg_functor=msg_func,
-                                   caseroot=case.get_value("CASEROOT"),
-                                   is_batch=is_batch)
+    return run_and_log_case_status(functor, "build.clean", caseroot=case.get_value("CASEROOT"))
