@@ -566,6 +566,9 @@ class Case(object):
         elif progcomps["ROF"]:
             # This is a "R" compset
             primary_component = spec["ROF"]
+        elif progcomps["WAV"]:
+            # This is a "V" compset
+            primary_component = spec["WAV"]
         else:
             # This is "A", "X" or "S"
             primary_component = "drv"
