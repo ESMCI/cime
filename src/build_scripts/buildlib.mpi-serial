@@ -45,7 +45,7 @@ def buildlib(bldroot, installpath, case):
 ###############################################################################
     caseroot = case.get_value("CASEROOT")
     cimeroot = case.get_value("CIMEROOT")
-    srcroot = case.get_value("CIMEROOT")
+    srcroot = case.get_value("SRCROOT")
 
     if get_model() == "cesm":
         mct_dir = os.path.join(srcroot,"libraries","mct")
