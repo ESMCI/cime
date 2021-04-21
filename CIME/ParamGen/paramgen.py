@@ -1,12 +1,15 @@
 
 from __future__ import print_function
 from collections import OrderedDict
-import os
-import re
+import os, re
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
-from paramgen_utils import eval_formula
+try:
+    from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
+    from paramgen_utils import eval_formula
+except ModuleNotFoundError:
+    from CIME.ParamGen.paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
+    from CIME.ParamGen.paramgen_utils import eval_formula
 
 class ParamGen(ABC):
     """
