@@ -274,7 +274,7 @@ class TestScheduler(object):
                             if status in [TEST_PEND_STATUS, TEST_FAIL_STATUS]:
                                 if status == TEST_FAIL_STATUS:
                                     # Import for potential subsequent waits
-                                    ts.set_status(phase, TEST_PEND_STATUS)
+                                    ts.set_status(phase, TEST_PEND_STATUS, TEST_RERUN_COMMENT)
 
                                 # We need to pick up here
                                 break

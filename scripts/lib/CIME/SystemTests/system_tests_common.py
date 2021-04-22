@@ -63,7 +63,10 @@ class SystemTestsCommon(object):
         """
         # We never want to re-setup if we're doing the resubmitted run
         phase_status = self._test_status.get_status(phase)
-        if reset or (self._case.get_value("IS_FIRST_RUN") and phase_status != TEST_PEND_STATUS):
+        phase_comment = self._test_status.get_comment(phase)
+        rerunning = (phase_status != TEST_PEND_STATUS or
+                     phase_comment == TEST_RERUN_COMMENT)
+        if reset or (self._case.get_value("IS_FIRST_RUN") and rerunning):
 
             logging.warning("Resetting case due to detected re-run of phase {}".format(phase))
             self._case.set_initial_test_values()
