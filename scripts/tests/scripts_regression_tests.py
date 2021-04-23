@@ -1541,7 +1541,7 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_d_retry(self):
     ###########################################################################
-        args = ["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAIL_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A", "--retry=1"]
+        args = ["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAILRESET_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A", "--retry=1"]
 
         self._create_test(args)
 
