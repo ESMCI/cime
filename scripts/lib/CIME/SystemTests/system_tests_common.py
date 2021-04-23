@@ -772,7 +772,9 @@ class TESTRUNFAILRESET(TESTRUNFAIL):
         # upon a rerun
         self._case.set_value("STOP_N", stop_n + 1)
 
-        super().run_indv(suffix=suffix, st_archive=st_archive, submit_resubmits=submit_resubmits)
+        super(TESTRUNFAILRESET, self).run_indv(suffix=suffix,
+                                               st_archive=st_archive,
+                                               submit_resubmits=submit_resubmits)
 
 class TESTRUNFAILEXC(TESTRUNPASS):
 
