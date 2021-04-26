@@ -636,8 +636,7 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules mpilib="mpt" compiler="intel">
         <command name="load">mpt/2.23</command>
-        <!-- known failure in parallel netcdf with mpt, use serial -->
-        <command name="load">netcdf/4.7.3</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
       </modules>
       <modules mpilib="mpt" compiler="pgi">
