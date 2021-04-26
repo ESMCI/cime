@@ -394,6 +394,7 @@ This allows using a different mpirun command to launch unit tests
       <modules>
         <command name="purge"/>
         <command name="load">ncarenv/1.3</command>
+        <command name="load">cmake/3.18.2</command>
       </modules>
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
