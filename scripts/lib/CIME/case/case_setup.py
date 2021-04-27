@@ -50,6 +50,8 @@ def _build_usernl_files(case, model, comp):
             ninst = case.get_value("NINST_{}".format(model))
         nlfile = "user_nl_{}".format(comp)
         model_nl = os.path.join(model_dir, nlfile)
+        print "DEBUG: nlfile= ",nlfile
+        print "DEBUG: model_nl= ",model_nl
         if ninst > 1:
             for inst_counter in range(1, ninst+1):
                 inst_nlfile = "{}_{:04d}".format(nlfile, inst_counter)
