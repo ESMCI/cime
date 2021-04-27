@@ -466,22 +466,6 @@
       <mask>tn0.25v3</mask>
     </model_grid>
 
-    <model_grid alias="f09_g16_gris4" compset="_CISM">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gris4</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-    <!-- Backwards compatibility with old use of _gl for Greenland grid -->
-    <model_grid alias="f09_g16_gl4" compset="_CISM">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gris4</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
     <model_grid alias="f09_g17_gris4" compset="_CISM">
       <grid name="atm">0.9x1.25</grid>
       <grid name="lnd">0.9x1.25</grid>
@@ -496,22 +480,6 @@
       <grid name="ocnice">gx1v7</grid>
       <grid name="glc">gris4</grid>
       <mask>gx1v7</mask>
-    </model_grid>
-
-    <model_grid alias="f09_g16_gris20" compset="_CISM">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gris20</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-    <!-- Backwards compatibility with old use of _gl for Greenland grid -->
-    <model_grid alias="f09_g16_gl20" compset="_CISM">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gris20</grid>
-      <mask>gx1v6</mask>
     </model_grid>
 
     <model_grid alias="f09_g17_gris20" compset="_CISM">
@@ -594,22 +562,6 @@
       <grid name="ocnice">gx1v7</grid>
       <grid name="rof">r05</grid>
       <mask>gx1v7</mask>
-    </model_grid>
-
-    <model_grid alias="f19_g16_gris4" compset="_CISM">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gris4</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-    <!-- Backwards compatibility with old use of _gl for Greenland grid -->
-    <model_grid alias="f19_g16_gl4" compset="_CISM">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gris4</grid>
-      <mask>gx1v6</mask>
     </model_grid>
 
     <model_grid alias="f19_g17_gris4" compset="_CISM">
