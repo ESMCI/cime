@@ -586,7 +586,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         cls._testdirs.append(testdir)
 
         if CIME.utils.get_model() == "cesm":
-            # Will need to be updated when cesm brings in new share repo new line will be. 
+            # Will need to be updated when cesm brings in new share repo new line will be.
             # pesfile = os.path.join(get_src_root(),"cpl7","driver","cime_config","config_pes.xml")
             # or
             # pesfile = os.path.join(get_src_root(),"components","cmeps","cime_config","config_pes.xml")
@@ -1043,14 +1043,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1063,14 +1063,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished2, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1084,13 +1084,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1106,7 +1106,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1124,13 +1124,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
         assert_dashboard_has_build(self, build_name)
@@ -1161,7 +1161,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         for core_phase in CORE_PHASES[1:]:
             with TestStatus(test_dir=os.path.join(self._testdir_teststatus1, "0")) as ts:
@@ -1170,10 +1170,10 @@ class M_TestWaitForTests(unittest.TestCase):
             time.sleep(5)
 
             if core_phase != last_phase:
-                self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited after passing phase {}".format(core_phase))
+                self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited after passing phase {}".format(core_phase))
             else:
                 run_thread.join(timeout=10)
-                self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished after phase {}".format(core_phase))
+                self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished after phase {}".format(core_phase))
                 break
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
@@ -1637,7 +1637,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
 
         run_thread.join(timeout=30)
 
-        self.assertFalse(run_thread.isAlive(), msg="jenkins_generic_job should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="jenkins_generic_job should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
         assert_dashboard_has_build(self, build_name)
 
