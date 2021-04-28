@@ -2338,8 +2338,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="purge"/>
         <command name="load">nas</command>
         <command name="load">pkgsrc</command>
-        <command name="load">comp-intel/2018.3.222</command>
-        <command name="load">mpi-sgi/mpt.2.15r20</command>
+        <command name="load">comp-intel/2020.4.304</command>
+        <command name="load">mpi-hpe/mpt.2.23</command>
         <command name="load">szip/2.1.1</command>
         <command name="load">hdf4/4.2.12</command>
         <command name="load">hdf5/1.8.18_mpt</command>
@@ -2390,8 +2390,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="purge"/>
         <command name="load">nas</command>
         <command name="load">pkgsrc</command>
-        <command name="load">comp-intel/2018.3.222</command>
-        <command name="load">mpi-sgi/mpt.2.15r20</command>
+        <command name="load">comp-intel/2020.4.304</command>
+        <command name="load">mpi-hpe/mpt.2.23</command>
         <command name="load">szip/2.1.1</command>
         <command name="load">hdf4/4.2.12</command>
         <command name="load">hdf5/1.8.18_mpt</command>
@@ -2442,8 +2442,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="purge"/>
         <command name="load">nas</command>
         <command name="load">pkgsrc</command>
-        <command name="load">comp-intel/2018.3.222</command>
-        <command name="load">mpi-sgi/mpt.2.15r20</command>
+        <command name="load">comp-intel/2020.4.304</command>
+        <command name="load">mpi-hpe/mpt.2.23</command>
         <command name="load">szip/2.1.1</command>
         <command name="load">hdf4/4.2.12</command>
         <command name="load">hdf5/1.8.18_mpt</command>
@@ -2494,8 +2494,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="purge"/>
         <command name="load">nas</command>
         <command name="load">pkgsrc</command>
-        <command name="load">comp-intel/2018.3.222</command>
-        <command name="load">mpi-sgi/mpt.2.15r20</command>
+        <command name="load">comp-intel/2020.4.304</command>
+        <command name="load">mpi-hpe/mpt.2.23</command>
         <command name="load">szip/2.1.1</command>
         <command name="load">hdf4/4.2.12</command>
         <command name="load">hdf5/1.8.18_mpt</command>
