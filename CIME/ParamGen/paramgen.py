@@ -116,7 +116,7 @@ class ParamGen(ABC):
             else:
                 word_expanded = str(word_expanded)
 
-            expr = expr.replace(word,word_expanded)
+            expr = re.sub(r'(\$\b'+word_stripped+r'\b|\${'+word_stripped+'\})',  word_expanded, expr)
 
         return expr
 
