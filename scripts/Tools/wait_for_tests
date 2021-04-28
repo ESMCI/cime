@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Wait for a queued set of E3SM tests to finish by watching the

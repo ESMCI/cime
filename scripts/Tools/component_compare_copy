@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Copy the most recent batch of hist files in a case, adding the given suffix.
