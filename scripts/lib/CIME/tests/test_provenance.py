@@ -2,6 +2,8 @@ import os
 import sys
 import unittest
 
+from CIME import provenance
+
 # TODO replace with actual mock once 2.7 is dropped
 class Mocker:
     calls = []
@@ -40,8 +42,6 @@ class Mocker:
 
 class TestProvenance(unittest.TestCase):
     def test_run_git_cmd_recursively(self):
-        from CIME import provenance
-
         with Mocker() as mock:
             Mocker.calls =[]
             mock.patch("CIME.provenance.run_cmd", (0, "data", None))
@@ -66,12 +66,13 @@ class TestProvenance(unittest.TestCase):
             self.assertTrue(x == y, "{} != {}".format(x, y))
 
     def test_run_git_cmd_recursively_error(self):
-        from CIME import provenance
-
         with Mocker() as mock:
             Mocker.calls =[]
             mock.patch("CIME.provenance.run_cmd", (1, "data", "error"))
-            mock.patch("builtins.open")
+            if sys.version_info.major > 2:
+                mock.patch("builtins.open")
+            else:
+                mock.patch("__builtin__.open")
 
             provenance._run_git_cmd_recursively('status', '/srcroot', '/output.txt') # pylint: disable=protected-access
         expected = [
@@ -89,12 +90,13 @@ class TestProvenance(unittest.TestCase):
             self.assertTrue(x == y, "{} != {}".format(x, y))
 
     def test_record_git_provenance(self):
-        from CIME import provenance
-
         with Mocker() as mock:
             Mocker.calls =[]
             mock.patch("CIME.provenance.run_cmd", (0, "data", None))
-            mock.patch("builtins.open")
+            if sys.version_info.major > 2:
+                mock.patch("builtins.open")
+            else:
+                mock.patch("__builtin__.open")
 
             provenance._record_git_provenance("/srcroot", "/output", "5") # pylint: disable=protected-access
 
