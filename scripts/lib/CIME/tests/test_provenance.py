@@ -45,7 +45,10 @@ class TestProvenance(unittest.TestCase):
         with Mocker() as mock:
             Mocker.calls =[]
             mock.patch("CIME.provenance.run_cmd", (0, "data", None))
-            mock.patch("builtins.open")
+            if sys.version_info.major > 2:
+                mock.patch("builtins.open")
+            else:
+                mock.patch("__builtin__.open")
 
             provenance._run_git_cmd_recursively('status', '/srcroot', '/output.txt') # pylint: disable=protected-access
         expected = [
