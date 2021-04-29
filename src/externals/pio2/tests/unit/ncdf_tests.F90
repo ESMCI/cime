@@ -2,6 +2,7 @@
 !! @file
 !! @brief Module containing netcdf-specific PIO unit tests
 !<
+#include "config.h"
 
 module ncdf_tests
 
@@ -101,18 +102,6 @@ Contains
     if (ret_val .ne. PIO_NOERR) then
        ! Error in PIO_put_att
        err_msg = "Could not define global attribute"
-       call PIO_closefile(pio_file)
-       return
-    end if
-
-    ! Try to enter define mode again
-    if(master_task) write(*,"(6x,A,1x)") "trying to enter define mode in define mode, error expected ... "
-    call mpi_barrier(MPI_COMM_WORLD,ret_val)
-
-    ret_val = PIO_redef(pio_file)
-    if (ret_val .eq. PIO_NOERR) then
-       ! Error in PIO_redef
-       err_msg = "Entered define mode from define mode"
        call PIO_closefile(pio_file)
        return
     end if
@@ -312,7 +301,7 @@ Contains
     print*, 'PIO_set_chunk_cache'
     ret_val = PIO_set_chunk_cache(pio_iosystem%iosysid, iotype, chunk_cache_size, &
          chunk_cache_nelems, chunk_cache_preemption)
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .and. ret_val .ne. PIO_NOERR) then
        err_msg = "Could not set chunk cache"
@@ -338,7 +327,7 @@ Contains
          chunk_cache_nelems_in, chunk_cache_preemption_in)
     print*, 'PIO_get_chunk_cache returned ', chunk_cache_size_in, &
          chunk_cache_nelems_in, chunk_cache_preemption_in
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .or. iotype .eq. PIO_iotype_netcdf4p) then
        if (ret_val .ne. PIO_NOERR) then
@@ -406,7 +395,7 @@ Contains
     print*, 'PIO_set_var_chunk_cache'
     ret_val = PIO_set_var_chunk_cache(pio_file, pio_var, chunk_cache_size, chunk_cache_nelems, &
          chunk_cache_preemption)
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .and. ret_val .ne. PIO_NOERR) then
        err_msg = "Could not set variable chunk cache"
@@ -431,7 +420,7 @@ Contains
     ret_val = PIO_get_var_chunk_cache(pio_file, pio_var, chunk_cache_size_in, &
          chunk_cache_nelems_in, chunk_cache_preemption_in)
     print*, 'PIO_get_var_chunk_cache ret_val=', ret_val
-    
+
     ! Should not have worked except for netCDF-4/HDF5 iotypes.
     if (iotype .eq. PIO_iotype_netcdf4c .or. iotype .eq. PIO_iotype_netcdf4p) then
        if (ret_val .ne. PIO_NOERR) then
@@ -457,7 +446,7 @@ Contains
     end if
 
     ! Try to turn on compression for this variable.
-    print*, 'testing PIO_def_var_deflate' 
+    print*, 'testing PIO_def_var_deflate'
     shuffle = 0
     deflate = 1
 
@@ -469,25 +458,28 @@ Contains
     ! deflate_level_2 = 4
     deflate_level = 1
     deflate_level_2 = 1
-    ret_val = PIO_set_log_level(3)
     ret_val = PIO_def_var_deflate(pio_file, pio_var, shuffle, deflate, &
          deflate_level)
 
-    ! Should not have worked except for netCDF-4/HDF5 serial.
+    ! Should not have worked except for netCDF-4/HDF5 sequential, and
+    ! perhaps parallel.
     if (iotype .eq. PIO_iotype_netcdf4c .and. ret_val .ne. PIO_NOERR) then
        err_msg = "Could not turn on compression for variable foo2222"
        call PIO_closefile(pio_file)
        return
+    else if (iotype .eq. PIO_iotype_netcdf4p) then
+       !err_msg = "Could not turn on compression for variable foo2222"
+       ! if (ret_val .ne. PIO_NOERR) then
+       !    call PIO_closefile(pio_file)
+       !    return
+       ! end if
+       ! return
     else if (iotype .eq. PIO_iotype_pnetcdf .and. ret_val .eq. PIO_NOERR) then
        err_msg = "Did not get expected error when trying to turn deflate on for pnetcdf file"
        call PIO_closefile(pio_file)
        return
     else if (iotype .eq. PIO_iotype_netcdf .and. ret_val .eq. PIO_NOERR) then
        err_msg = "Did not get expected error when trying to turn deflate on for netcdf classic file"
-       call PIO_closefile(pio_file)
-       return
-    else if (iotype .eq. PIO_iotype_netcdf4p .and. ret_val .eq. PIO_NOERR) then
-       err_msg = "Did not get expected error when trying to turn deflate on for parallel netcdf-4 file"
        call PIO_closefile(pio_file)
        return
     end if
@@ -514,7 +506,7 @@ Contains
     print*, 'testing PIO_inq_var_deflate'
     ret_val = PIO_inq_var_deflate(pio_file, pio_var, shuffle, deflate, my_deflate_level)
 
-    ! Should not have worked except for netCDF-4/HDF5 serial.
+    ! Should not have worked except for netCDF-4/HDF5 sequential, and maybe parallel.
     if (iotype .eq. PIO_iotype_netcdf4c) then
        if (ret_val .ne. PIO_NOERR) then
           err_msg = "Got error trying to inquire about deflate on for serial netcdf-4 file"
@@ -528,22 +520,19 @@ Contains
              return
           end if
        end if
+    else if (iotype .eq. PIO_iotype_netcdf4p) then
+       ! if (ret_val .eq. PIO_NOERR) then
+       !    print *,shuffle, deflate, deflate_level, my_deflate_level
+       !    if (shuffle .ne. 0 .or. deflate .ne. 1 .or. my_deflate_level .ne. deflate_level) then
+       !       err_msg = "Wrong values for deflate and shuffle for parallel netcdf-4 file"
+       !       call PIO_closefile(pio_file)
+       !       return
+       !    end if
+       ! end if
     else if ((iotype .eq. PIO_iotype_pnetcdf .or. iotype .eq. PIO_iotype_netcdf) .and. ret_val .eq. PIO_NOERR) then
        err_msg = "Did not get expected error when trying to check deflate for non-netcdf-4 file"
        call PIO_closefile(pio_file)
        return
-    else if (iotype .eq. PIO_iotype_netcdf4p) then
-       if (ret_val .ne. PIO_NOERR) then
-          err_msg = "Got error trying to inquire about deflate on for parallel netcdf-4 file"
-          call PIO_closefile(pio_file)
-          return
-       else
-          if (shuffle .ne. 0 .or. deflate .ne. 0) then
-             err_msg = "Wrong values for deflate and shuffle for parallel netcdf-4 file"
-             call PIO_closefile(pio_file)
-             return
-          end if
-       end if
     end if
 
     ! Try to turn on compression for this variable.
@@ -551,7 +540,7 @@ Contains
     ret_val = PIO_def_var_deflate(pio_file, pio_var%varid, shuffle, deflate, &
          deflate_level_2)
 
-    ! Should not have worked except for netCDF-4/HDF5 serial.
+    ! Should not have worked except for netCDF-4/HDF5.
     if (iotype .eq. PIO_iotype_netcdf4c .and. ret_val .ne. PIO_NOERR) then
        err_msg = "Could not turn on compression for variable foo2222 second time"
        call PIO_closefile(pio_file)
@@ -564,10 +553,10 @@ Contains
        err_msg = "Did not get expected error when trying to turn deflate on for netcdf classic file"
        call PIO_closefile(pio_file)
        return
-    else if (iotype .eq. PIO_iotype_netcdf4p .and. ret_val .eq. PIO_NOERR) then
-       err_msg = "Did not get expected error when trying to turn deflate on for parallel netcdf-4 file"
-       call PIO_closefile(pio_file)
-       return
+    else if (iotype .eq. PIO_iotype_netcdf4p) then
+!       err_msg = "Could not turn on compression for variable foo2222 second time"
+!       call PIO_closefile(pio_file)
+!       return
     end if
 
     ! Leave define mode
@@ -600,17 +589,17 @@ Contains
        call PIO_closefile(pio_file)
        return
     else if (iotype .eq. PIO_iotype_netcdf4p) then
-       if (ret_val .ne. PIO_NOERR) then
-          err_msg = "Got error trying to inquire about deflate on for parallel netcdf-4 file"
-          call PIO_closefile(pio_file)
-          return
-       else
-          if (shuffle .ne. 0 .or. deflate .ne. 0) then
-             err_msg = "Wrong values for deflate and shuffle for parallel netcdf-4 file"
-             call PIO_closefile(pio_file)
-             return
-          end if
-       end if
+       ! if (ret_val .ne. PIO_NOERR) then
+       !    err_msg = "Got error trying to inquire about deflate on for parallel netcdf-4 file"
+       !    call PIO_closefile(pio_file)
+       !    return
+       ! else
+       !    if (shuffle .ne. 0 .or. deflate .ne. 1 .or. my_deflate_level .ne. deflate_level_2) then
+       !       err_msg = "Wrong values for deflate and shuffle for parallel netcdf-4 file"
+       !       call PIO_closefile(pio_file)
+       !       return
+       !    end if
+       ! end if
     end if
 
     ! Write foo2
@@ -626,10 +615,10 @@ Contains
     call PIO_closefile(pio_file)
 
     ! Free decomp
-    print*, 'testing  PIO_freedecomp'    
+    print*, 'testing  PIO_freedecomp'
     call PIO_freedecomp(pio_iosystem, iodesc_nCells)
     call mpi_barrier(MPI_COMM_WORLD,ret_val)
-    
+
     print*, 'after testing  err_msg = '    , err_msg
   End Subroutine test_nc4
 end module ncdf_tests

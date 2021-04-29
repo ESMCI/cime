@@ -14,11 +14,12 @@
 #include <pio.h>
 
 /**
- * Handle non-MPI errors by printing error message and goto exit. This
- * is used in test code.
+ * Handle non-MPI errors by printing error message, setting error
+ * code, and goto exit. This is used in test code.
  */
-#define PBAIL(e) do {                                                    \
+#define PBAIL(e) do {                                                   \
         fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
+        ret = e;                                                        \
         goto exit;                                                      \
     } while (0)
 
@@ -26,9 +27,9 @@
  * Handle non-MPI errors by calling pio_err(), setting return code,
  * and goto exit. This is used in library code.
  */
-#define EXIT(ios, e) do {                                               \
-        ret = pio_err(NULL, NULL, e, __FILE__, __LINE__);        \
-        goto exit;                                                      \
+#define EXIT(ios, e) do {                                       \
+        ret = pio_err(NULL, NULL, e, __FILE__, __LINE__);       \
+        goto exit;                                              \
     } while (0)
 
 /**
@@ -43,6 +44,28 @@
 #define ERR(e) do {                                                     \
         fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
         MPI_Finalize();                                                 \
+        return e;                                                       \
+    } while (0)
+
+/**
+ * For async tests, handle non-MPI errors by finalizing the IOsystem
+ * and exiting with an exit code. This macro works for tests with one
+ * iosystemid.
+ */
+#define AERR(e) do {							\
+        fprintf(stderr, "%d Async Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
+        PIOc_free_iosystem(iosysid);                                    \
+        return e;                                                       \
+    } while (0)
+
+/**
+ * For async tests, handle non-MPI errors by finalizing the IOsystem
+ * and exiting with an exit code. This macro works for tests with more
+ * than one iosystemid.
+ */
+#define AERR2(e, i) do {                                                \
+        fprintf(stderr, "%d Async Error %d in iosysid %d, %s, line %d\n", my_rank, e, i, __FILE__, __LINE__); \
+        PIOc_free_iosystem(i);                                          \
         return e;                                                       \
     } while (0)
 
@@ -74,12 +97,12 @@
  * is used to store the error message that is associated with the MPI
  * error.
  */
-char err_buffer[MPI_MAX_ERROR_STRING];
+extern char err_buffer[MPI_MAX_ERROR_STRING];
 
 /**
  * This is the length of the most recent MPI error message, stored
  * int the global error string.
  */
-int resultlen;
+extern int resultlen;
 
 #endif /* __PIO_ERROR__ */

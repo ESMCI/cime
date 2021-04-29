@@ -31,7 +31,7 @@
 #ifdef _NETCDF4
 #define MAX_NUM_TYPES 11
 int test_type[MAX_NUM_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
-                                    PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+                                PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
 #else
 #define MAX_NUM_TYPES 6
 int test_type[MAX_NUM_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
@@ -72,7 +72,7 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
             long long default_fill_int64 = PIO_FILL_INT64;
             unsigned long long default_fill_uint64 = PIO_FILL_UINT64;
 #endif /* _NETCDF4 */
-            
+
             /* Some incorrect fill values. */
             signed char wrong_fill_byte = TEST_VAL_42;
             unsigned char wrong_fill_char = TEST_VAL_42;
@@ -179,23 +179,23 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 
             /* Create the test file. */
             if ((ret = PIOc_createfile(iosysid, &ncid, &iotype[iot], filename, PIO_CLOBBER)))
-                ERR(ret);
+                AERR(ret);
 
             /* Define a dimension. */
             if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
-                ERR(ret);
+                AERR(ret);
 
             /* Define a 1D var. */
             if ((ret = PIOc_def_var(ncid, VAR_NAME, test_type[t], NDIM1, &dimid, &varid)))
-                ERR(ret);
+                AERR(ret);
 
             /* Turn on fill mode for this var. */
             if ((ret = PIOc_def_var_fill(ncid, varid, 0, default_fillvalue)))
-                ERR(ret);
+                AERR(ret);
 
             /* End define mode. */
             if ((ret = PIOc_enddef(ncid)))
-                ERR(ret);
+                AERR(ret);
 
             /* Create the PIO decomposition for this test. */
             int elements_per_pe = LEN2;
@@ -218,30 +218,30 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
              * decomposition uses the fill value. */
             if ((ret = PIOc_init_decomp(iosysid, test_type[t], NDIM1, &gdimlen, elements_per_pe,
                                         compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
-                ERR(ret);
+                AERR(ret);
 
             /* Set the record number for the unlimited dimension. */
             if ((ret = PIOc_setframe(ncid, varid, 0)))
-                ERR(ret);
+                AERR(ret);
 
             /* This should not work, because fill value is
              * incorrect. (Test turned off until Fortran API/tests are
              * fixed.) */
             if (PIOc_write_darray(ncid, varid, ioid, LEN2, test_data, wrong_fillvalue) != PIO_EINVAL)
                 ERR(ERR_WRONG);
-            
+
             /* Write the data. There are 3 procs with data, each writes 2
              * values. */
             if ((ret = PIOc_write_darray(ncid, varid, ioid, LEN2, test_data, default_fillvalue)))
-                ERR(ret);
+                AERR(ret);
 
             /* Close the test file. */
             if ((ret = PIOc_closefile(ncid)))
-                ERR(ret);
+                AERR(ret);
 
             /* Free decomposition. */
             if ((ret = PIOc_freedecomp(iosysid, ioid)))
-                ERR(ret);
+                AERR(ret);
 
             /* Check the file. */
             {
@@ -249,7 +249,7 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 
                 /* Reopen the file. */
                 if ((ret = PIOc_openfile2(iosysid, &ncid2, &iotype[iot], filename, PIO_NOWRITE)))
-                    ERR(ret);
+                    AERR(ret);
 
                 /* Read the data. */
                 switch(test_type[t])
@@ -258,10 +258,10 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
                 {
                     signed char data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_schar(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_CHAR:
@@ -270,40 +270,40 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
                 {
                     short data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_short(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_INT:
                 {
                     int data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_int(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_FLOAT:
                 {
                     float data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_float(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_DOUBLE:
                 {
                     double data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_double(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
 #ifdef _NETCDF4
@@ -311,50 +311,50 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
                 {
                     unsigned char data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_uchar(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_USHORT:
                 {
                     unsigned short data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_ushort(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_UINT:
                 {
                     unsigned int data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_uint(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_INT64:
                 {
                     long long data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_longlong(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
                 case PIO_UINT64:
                 {
                     unsigned long long data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
                     if ((ret = PIOc_get_var_ulonglong(ncid2, 0, data_in)))
-                        ERR(ret);
+                        AERR(ret);
                     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                        ERR(ret);
+                        AERR(ERR_WRONG);
                 }
                 break;
 #endif /* _NETCDF4 */
@@ -362,7 +362,7 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 
                 /* Close the test file. */
                 if ((ret = PIOc_closefile(ncid2)))
-                    ERR(ret);
+                    AERR(ret);
             } /* finish checking file */
         } /* next type */
     } /* next iotype */
@@ -391,19 +391,19 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 
         /* Create the test file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &iotype[iot], filename, PIO_CLOBBER)))
-            ERR(ret);
+            AERR(ret);
 
         /* Define a dimension. */
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Define a 1D var. */
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM1, &dimid, &varid)))
-            ERR(ret);
+            AERR(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Create the PIO decomposition for this test. */
         int elements_per_pe = 2;
@@ -425,26 +425,26 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
         /* Initialize the decomposition. */
         if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, &gdimlen, elements_per_pe,
                                     compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
-            ERR(ret);
+            AERR(ret);
 
         /* Set the record number for the unlimited dimension. */
         if ((ret = PIOc_setframe(ncid, varid, 0)))
-            ERR(ret);
+            AERR(ret);
 
         /* Write the data. There are 3 procs with data, each writes 2
          * values. */
         int arraylen = 2;
         int test_data[2] = {my_rank, -my_rank};
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, NULL)))
-            ERR(ret);
+            AERR(ret);
 
         /* Close the test file. */
         if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Free decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
+            AERR(ret);
 
         /* Check the file. */
         {
@@ -453,18 +453,18 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 
             /* Reopen the file. */
             if ((ret = PIOc_openfile2(iosysid, &ncid2, &iotype[iot], filename, PIO_NOWRITE)))
-                ERR(ret);
+                AERR(ret);
 
             /* Read the data. */
             if ((ret = PIOc_get_var_int(ncid2, 0, data_in)))
-                ERR(ret);
+                AERR(ret);
             if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
                 data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                ERR(ret);
+                AERR(ret);
 
             /* Close the test file. */
             if ((ret = PIOc_closefile(ncid2)))
-                ERR(ret);
+                AERR(ret);
         }
     }
 
@@ -479,11 +479,11 @@ int run_darray_tests(int iosysid, int my_rank, int num_iotypes, int *iotype, int
 
     /* Run the simple darray test. */
     if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, async)))
-        ERR(ret);
+        return ret;
 
     /* Run the darray fill value tests. */
     if ((ret = darray_fill_test(iosysid, my_rank, num_iotypes, iotype, async)))
-        ERR(ret);
+        return ret;
 
     return PIO_NOERR;
 }
@@ -509,7 +509,7 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
     {
         /* Run the tests. */
         if ((ret = run_darray_tests(iosysid, my_rank, num_iotypes, iotype, 1)))
-            ERR(ret);
+            return ret;
 
         /* Finalize PIO system. */
         if ((ret = PIOc_free_iosystem(iosysid)))

@@ -4,6 +4,7 @@ module shr_dmodel_mod
 
   use shr_sys_mod
   use shr_kind_mod, only: IN=>SHR_KIND_IN, R8=>SHR_KIND_R8, &
+       R4=>SHR_KIND_R4, &
        CS=>SHR_KIND_CS, CL=>SHR_KIND_CL, &
        CX=>SHR_KIND_CX, CXX=>SHR_KIND_CXX
   use shr_log_mod, only: loglev  => shr_log_Level
@@ -191,7 +192,7 @@ CONTAINS
 
   subroutine shr_dmodel_readgrid( gGrid, gsMap, nxgo, nygo, nzgo, filename, compid, mpicom, &
        decomp, lonname, latname, hgtname, maskname, areaname, fracname, readfrac, &
-       scmmode, scmlon, scmlat)
+       scmmode, iop_mode, scmlon, scmlat)
 
     use shr_file_mod  , only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
     use shr_string_mod, only : shr_string_lastindex
@@ -216,6 +217,7 @@ CONTAINS
     character(len=*) ,optional, intent(in)    :: fracname ! name of frac variable in file
     logical          ,optional, intent(in)    :: readfrac ! T <=> also read frac  in file
     logical          ,optional, intent(in)    :: scmmode  ! single column mode
+    logical          ,optional, intent(in)    :: iop_mode ! iop mode
     real(R8)         ,optional, intent(in)    :: scmlon   ! single column lon
     real(R8)         ,optional, intent(in)    :: scmlat   ! single column lat
 
@@ -243,9 +245,11 @@ CONTAINS
     integer(IN)   :: ndims       ! number of dims
     integer(IN)   :: nlon,nlat,narea,nmask,nfrac,nhgt
     logical       :: lscmmode    ! local scm mode
+    logical       :: liopmode    ! local iop mode
     real(R8)      :: dist,mind   ! scmmode point search
     integer(IN)   :: ni,nj       ! scmmode point search
     real(R8)      :: lscmlon     ! local copy of scmlon
+    integer(IN)   :: i_scm, j_scm
 
     real   (R8),allocatable ::  lon(:,:) ! temp array for domain lon  info
     real   (R8),allocatable ::  lat(:,:) ! temp array for domain lat  info
@@ -278,14 +282,20 @@ CONTAINS
     master_task = 0
 
     lscmmode = .false.
+    liopmode = .false.
     if (present(scmmode)) then
        lscmmode = scmmode
+       liopmode = iop_mode
+       if (liopmode .and. .not. lscmmode) then
+         write(logunit,*) subname, ' ERROR: IOP mode must be run with SCM functionality'
+         call shr_sys_abort(subname//' ERROR: IOP not in SCM mode')
+       endif
        if (lscmmode) then
           if (.not.present(scmlon) .or. .not.present(scmlat)) then
              write(logunit,*) subname,' ERROR: scmmode must supply scmlon and scmlat'
              call shr_sys_abort(subname//' ERROR: scmmode1 lon lat')
           endif
-          if (my_task > 0) then
+          if (my_task > 0 .and. .not. liopmode) then
              write(logunit,*) subname,' ERROR: scmmode must be run on one pe'
              call shr_sys_abort(subname//' ERROR: scmmode2 tasks')
           endif
@@ -352,7 +362,7 @@ CONTAINS
     call shr_mpi_bcast(nxg,mpicom)
     call shr_mpi_bcast(nyg,mpicom)
     call shr_mpi_bcast(nzg,mpicom)
-    if (lscmmode) then
+    if (lscmmode .and. .not. liopmode) then
        nxgo = 1
        nygo = 1
        nzgo = -1
@@ -452,6 +462,7 @@ CONTAINS
 
           !--- determine whether dealing with 2D input files (typical of Eulerian
           !--- dynamical core) or 1D files (typical of Spectral Element)
+
           if (nyg .ne. 1) then
             ni = 1
             mind = abs(lscmlon - (lon(1,1)+360.0_r8))
@@ -474,6 +485,7 @@ CONTAINS
             enddo
 
             j = nj
+            j_scm = nj
 
           else ! lat and lon are on 1D arrays
 
@@ -488,18 +500,48 @@ CONTAINS
             enddo
 
             j = 1
+            j_scm = 1
 
           endif
 
-          n = 1
-          i = ni
+          i_scm = ni
 
-          gGridRoot%data%rAttr(nlat ,n) = lat(i,j)
-          gGridRoot%data%rAttr(nlon ,n) = lon(i,j)
-          gGridRoot%data%rAttr(narea,n) = area(i,j)
-          gGridRoot%data%rAttr(nmask,n) = real(mask(i,j),R8)
-          gGridRoot%data%rAttr(nfrac,n) = frac(i,j)
-          gGridRoot%data%rAttr(nhgt, n) = 1
+          if (liopmode) then
+
+            ! If IOP mode, then we want the surface to be
+            !   covered homogeneously, with the same lat and lon
+            !   as close to the lat/lon in IOP forcing file as possible
+            i_scm = ni
+
+            n=0
+            do k=1,abs(nzg)
+              do j=1,nyg
+                do i=1,nxg
+                  n=n+1
+                  gGridRoot%data%rAttr(nlat ,n) = lat(i_scm,j_scm)
+                  gGridRoot%data%rAttr(nlon ,n) = lon(i_scm,j_scm)
+                  gGridRoot%data%rAttr(narea,n) = area(i_scm,j_scm)
+                  gGridRoot%data%rAttr(nmask,n) = real(mask(i_scm,j_scm),R8)
+                  gGridRoot%data%rAttr(nfrac,n) = frac(i_scm,j_scm)
+                  gGridRoot%data%rAttr(nhgt ,n) = hgt(k)
+                enddo
+              enddo
+            enddo
+
+            else
+
+            i = ni
+            n = 1
+
+            gGridRoot%data%rAttr(nlat ,n) = lat(i,j)
+            gGridRoot%data%rAttr(nlon ,n) = lon(i,j)
+            gGridRoot%data%rAttr(narea,n) = area(i,j)
+            gGridRoot%data%rAttr(nmask,n) = real(mask(i,j),R8)
+            gGridRoot%data%rAttr(nfrac,n) = frac(i,j)
+            gGridRoot%data%rAttr(nhgt, n) = 1
+
+          endif
+
        else
           n=0
           do k=1,abs(nzg)
@@ -534,7 +576,8 @@ CONTAINS
 
   !===============================================================================
 
-  subroutine shr_dmodel_readLBUB(stream,pio_subsystem,pio_iotype,pio_iodesc,mDate,mSec,mpicom,gsMap, &
+  subroutine shr_dmodel_readLBUB(stream,pio_subsystem,pio_iotype,pio_iodesc_r8, pio_iodesc_r4, pio_iodesc_int, &
+       mDate,mSec,mpicom,gsMap, &
        avLB,mDateLB,mSecLB,avUB,mDateUB,mSecUB,avFile,readMode, &
        newData,rmOldFile,istr)
 
@@ -546,7 +589,7 @@ CONTAINS
     type(shr_stream_streamType),intent(inout) :: stream
     type(iosystem_desc_t)      ,intent(inout), target :: pio_subsystem
     integer(IN)                ,intent(in)    :: pio_iotype
-    type(io_desc_t)            ,intent(inout) :: pio_iodesc
+    type(io_desc_t)            ,intent(inout) :: pio_iodesc_r8, pio_iodesc_r4, pio_iodesc_int
     integer(IN)                ,intent(in)    :: mDate  ,mSec
     integer(IN)                ,intent(in)    :: mpicom
     type(mct_gsMap)            ,intent(in)    :: gsMap
@@ -651,7 +694,8 @@ CONTAINS
 
           select case(readMode)
           case ('single')
-             call shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc, gsMap, avLB, mpicom, &
+             call shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc_r8, pio_iodesc_r4, &
+                  pio_iodesc_int, gsMap, avLB, mpicom, &
                   path, fn_lb, n_lb,istr=trim(lstr)//'_LB', boundstr = 'lb')
           case ('full_file')
              call shr_dmodel_readstrm_fullfile(stream, pio_subsystem, pio_iotype, &
@@ -669,7 +713,8 @@ CONTAINS
 
        select case(readMode)
        case ('single')
-          call shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc, gsMap, avUB, mpicom, &
+          call shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc_r8, pio_iodesc_r4, &
+               pio_iodesc_int, gsMap, avUB, mpicom, &
                path, fn_ub, n_ub,istr=trim(lstr)//'_UB', boundstr = 'ub')
        case ('full_file')
           call shr_dmodel_readstrm_fullfile(stream, pio_subsystem, pio_iotype, &
@@ -718,8 +763,8 @@ CONTAINS
 
   !===============================================================================
 
-  subroutine shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc, gsMap, av, mpicom, &
-       path, fn, nt, istr, boundstr)
+  subroutine shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc_r8, pio_iodesc_r4, pio_iodesc_int, &
+       gsMap, av, mpicom, path, fn, nt, istr, boundstr)
 
     use shr_file_mod, only : shr_file_noprefix, shr_file_queryprefix, shr_file_get
     use shr_stream_mod
@@ -729,7 +774,7 @@ CONTAINS
     type(shr_stream_streamType),intent(inout) :: stream
     type(iosystem_desc_t),intent(inout), target  :: pio_subsystem
     integer(IN)     ,intent(in)    :: pio_iotype
-    type(io_desc_t)      ,intent(inout)  :: pio_iodesc
+    type(io_desc_t)      ,intent(inout)  :: pio_iodesc_r8, pio_iodesc_r4, pio_iodesc_int
     type(mct_gsMap) ,intent(in)    :: gsMap
     type(mct_aVect) ,intent(inout) :: av
     integer(IN)     ,intent(in)    :: mpicom
@@ -751,6 +796,8 @@ CONTAINS
     integer(IN) :: rCode      ! return code
     real(R8),allocatable :: data2d(:,:)
     real(R8),allocatable :: data3d(:,:,:)
+    real(r4), allocatable :: rdata(:)
+    integer, allocatable :: idata(:)
     logical     :: d3dflag
     character(CL) :: fileName
     character(CL) :: sfldName
@@ -759,7 +806,7 @@ CONTAINS
     character(len=32) :: bstr
     logical :: fileopen
     character(CL) :: currfile
-
+    integer :: vtype
     integer(in) :: ndims
     integer(in),pointer :: dimid(:)
     type(file_desc_t) :: pioid
@@ -908,9 +955,22 @@ CONTAINS
           endif
           call shr_mpi_bcast(sfldName,mpicom,'sfldName')
           rcode = pio_inq_varid(pioid,trim(sfldName),varid)
+          rcode = pio_inq_vartype(pioid, varid, vtype)
           frame = nt
           call pio_setframe(pioid,varid,frame)
-          call pio_read_darray(pioid,varid,pio_iodesc,av%rattr(k,:),rcode)
+          if(vtype == PIO_DOUBLE) then
+             call pio_read_darray(pioid,varid,pio_iodesc_r8,av%rattr(k,:),rcode)
+          else if(vtype == PIO_REAL) then
+             allocate(rdata(size(av%rattr(k,:))))
+             call pio_read_darray(pioid,varid,pio_iodesc_r4,rdata,rcode)
+             av%rattr(k,:) = real(rdata, kind=r8)
+             deallocate(rdata)
+          else
+             allocate(idata(size(av%rattr(k,:))))
+             call pio_read_darray(pioid,varid,pio_iodesc_int,idata,rcode)
+             av%rattr(k,:) = real(idata, kind=r8)
+             deallocate(idata)
+          endif
        enddo
 
        call t_stopf(trim(lstr)//'_readpio')
@@ -965,13 +1025,17 @@ CONTAINS
     type(file_desc_t)             :: pioid
     type(var_desc_t)              :: varid
     integer(kind=pio_offset_kind) :: frame
-    type(io_desc_t)               :: pio_iodesc_local
+    type(io_desc_t)               :: pio_iodesc_r8_local
+    type(io_desc_t)               :: pio_iodesc_r4_local
+    type(io_desc_t)               :: pio_iodesc_int_local
     integer(IN)                   :: avFile_beg, avFile_end
 
+    real(r4), allocatable         :: rdata(:)
+    integer, allocatable          :: idata(:)
     integer                       :: lsize, cnt,m,n
     integer, allocatable          :: count(:), compDOF(:)
     integer, pointer,dimension(:) :: gsmOP   ! gsmap ordered points
-
+    integer                       :: vtype ! variable type on stream file
     character(*), parameter :: subname = ' (shr_dmodel_readstrm_fullfile) '
     character(*), parameter :: F00   = "(' (shr_dmodel_readstrm_fullfile) ',8a)"
     character(*), parameter :: F01   = "(' (shr_dmodel_readstrm_fullfile) ',a,5i8)"
@@ -1104,7 +1168,9 @@ CONTAINS
           enddo
 
           ! Initialize the decomposition
-          call pio_initdecomp(pio_subsystem, pio_double, count, compDOF, pio_iodesc_local)
+          call pio_initdecomp(pio_subsystem, pio_double, count, compDOF, pio_iodesc_r8_local)
+          call pio_initdecomp(pio_subsystem, pio_real, count, compDOF, pio_iodesc_r4_local)
+          call pio_initdecomp(pio_subsystem, pio_int, count, compDOF, pio_iodesc_int_local)
 
           ! For each attribute, read all frames in one go
           frame = 1
@@ -1114,13 +1180,26 @@ CONTAINS
              endif
              call shr_mpi_bcast(sfldName,mpicom,'sfldName')
              rcode = pio_inq_varid(pioid,trim(sfldName),varid)
-
+             rcode = pio_inq_vartype(pioid, varid, vtype)
              call pio_setframe(pioid,varid,frame)
-
-             call pio_read_darray(pioid, varid, pio_iodesc_local, avFile%rattr(k,:), rcode)
+             if(vtype == PIO_DOUBLE) then
+                call pio_read_darray(pioid, varid, pio_iodesc_r8_local, avFile%rattr(k,:), rcode)
+             else if(vtype == PIO_REAL) then
+                allocate(rdata(size(avFile%rattr(k,:))))
+                call pio_read_darray(pioid, varid, pio_iodesc_r4_local, rdata, rcode)
+                avFile%rattr(k,:) = real(rdata, kind=r8)
+                deallocate(rdata)
+             else if(vtype == PIO_INT) then
+                allocate(idata(size(avFile%rattr(k,:))))
+                call pio_read_darray(pioid, varid, pio_iodesc_int_local, idata, rcode)
+                avFile%rattr(k,:) = real(idata, kind=r8)
+                deallocate(idata)
+             endif
           enddo
 
-          call pio_freedecomp(pio_subsystem, pio_iodesc_local)
+          call pio_freedecomp(pio_subsystem, pio_iodesc_r8_local)
+          call pio_freedecomp(pio_subsystem, pio_iodesc_r4_local)
+          call pio_freedecomp(pio_subsystem, pio_iodesc_int_local)
 
           deallocate(count)
           deallocate(compDOF)

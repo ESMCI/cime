@@ -147,7 +147,8 @@ class TestScheduler(object):
         self._machobj = Machines(machine=machine_name)
 
         if get_model() == "e3sm":
-            self._model_build_cost = int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
+            # Current build system is unlikely to be able to productively use more than 16 cores
+            self._model_build_cost = min(16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1)
         else:
             self._model_build_cost = 4
 
@@ -448,6 +449,7 @@ class TestScheduler(object):
         _, case_opts, grid, compset,\
             machine, compiler, test_mods = parse_test_name(test)
 
+        os.environ["FROM_CREATE_TEST"] = "True"
         create_newcase_cmd = "{} --case {} --res {} --compset {}"\
                              " --test".format(os.path.join(self._cime_root, "scripts", "create_newcase"),
                                               test_dir, grid, compset)
@@ -554,7 +556,7 @@ class TestScheduler(object):
     ###########################################################################
     def _xml_phase(self, test):
     ###########################################################################
-        test_case = parse_test_name(test)[0]
+        test_case,case_opts,_,_,_,compiler,_ = parse_test_name(test)
 
         # Create, fill and write an envtest object
         test_dir = self._get_test_dir(test)
@@ -563,8 +565,19 @@ class TestScheduler(object):
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
         files = Files(comp_interface=self._cime_driver)
-        drv_config_file = files.get_value("CONFIG_CPL_FILE")
+        ufs_driver = os.environ.get("UFS_DRIVER")
+        attribute = None
+        if ufs_driver:
+            attribute = {"component":ufs_driver}
+
+        drv_config_file = files.get_value("CONFIG_CPL_FILE", attribute=attribute)
+
+        if self._cime_driver == "nuopc" and not os.path.exists(drv_config_file):
+            drv_config_file = files.get_value("CONFIG_CPL_FILE", {"component":"cpl"})
+        expect(os.path.exists(drv_config_file),"File {} not found, cime driver {}".format(drv_config_file, self._cime_driver))
+
         drv_comp = Component(drv_config_file, "CPL")
+
         envtest.add_elements_by_group(files, {}, "env_test.xml")
         envtest.add_elements_by_group(drv_comp, {}, "env_test.xml")
         envtest.set_value("TESTCASE", test_case)
@@ -604,8 +617,9 @@ class TestScheduler(object):
         config_test = Tests()
         testnode = config_test.get_test_node(test_case)
         envtest.add_test(testnode)
-        # Determine the test_case from the test name
-        test_case, case_opts = parse_test_name(test)[:2]
+
+        if compiler == 'nag':
+            envtest.set_value("FORCE_BUILD_SMP","FALSE")
 
         # Determine case_opts from the test_case
         if case_opts is not None:
@@ -650,6 +664,17 @@ class TestScheduler(object):
                         envtest.set_test_parameter("NTHRDS_"+comp, "1")
                         envtest.set_test_parameter("ROOTPE_"+comp, "0")
                         envtest.set_test_parameter("PIO_TYPENAME", "netcdf")
+
+                elif opt.startswith('A'):
+                    # A option is for testing in ASYNC IO mode, only available with nuopc driver and pio2
+                    envtest.set_test_parameter("PIO_ASYNC_INTERFACE", "TRUE")
+                    envtest.set_test_parameter("CIME_DRIVER", "nuopc")
+                    envtest.set_test_parameter("PIO_VERSION", "2")
+                    match =  re.match('A([0-9]+)x?([0-9])*', opt)
+                    envtest.set_test_parameter("PIO_NUMTASKS_CPL",  match.group(1))
+                    if match.group(2):
+                        envtest.set_test_parameter("PIO_STRIDE_CPL",match.group(2))
+
 
                 elif (opt.startswith('I') or # Marker to distinguish tests with same name - ignored
                       opt.startswith('M') or # handled in create_newcase
@@ -1004,10 +1029,10 @@ class TestScheduler(object):
 
     ###########################################################################
     def run_tests(self, wait=False,
-                  wait_check_throughput=False,
-                  wait_check_memory=False,
-                  wait_ignore_namelists=False,
-                  wait_ignore_memleak=False):
+                  check_throughput=False,
+                  check_memory=False,
+                  ignore_namelists=False,
+                  ignore_memleak=False):
     ###########################################################################
         """
         Main API for this class.
@@ -1039,55 +1064,25 @@ class TestScheduler(object):
                     test_dir = self._get_test_dir(test)
                     generate_teststatus(test_dir, basegen_case_fullpath)
 
-        wait_handles_report = False
-        if not self._no_run and not self._no_batch:
-            if wait:
-                logger.info("Waiting for tests to finish")
-                rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*{}/TestStatus".format(self._test_id))),
-                                    check_throughput=wait_check_throughput,
-                                    check_memory=wait_check_memory,
-                                    ignore_namelists=wait_ignore_namelists,
-                                    ignore_memleak=wait_ignore_memleak)
-                wait_handles_report = True
-            else:
-                logger.info("Due to presence of batch system, create_test will exit before tests are complete.\n" \
-                            "To force create_test to wait for full completion, use --wait")
+        no_need_to_wait = self._no_run or self._no_batch
+        if no_need_to_wait:
+            wait = False
 
-        # Return True if all tests passed from our point of view
-        if not wait_handles_report:
-            logger.info( "At test-scheduler close, state is:")
-            rv = True
-            for test in self._tests:
-                phase, status = self._get_test_data(test)
+        expect_test_complete = not self._no_run and (self._no_batch or wait)
 
-                # Give highest priority to fails in test schduler
-                if status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
-                    logger.info( "{} {} (phase {})".format(status, test, phase))
-                    rv = False
+        logger.info("Waiting for tests to finish")
+        rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*{}/TestStatus".format(self._test_id))),
+                            no_wait=not wait,
+                            check_throughput=check_throughput,
+                            check_memory=check_memory,
+                            ignore_namelists=ignore_namelists,
+                            ignore_memleak=ignore_memleak,
+                            no_run=self._no_run,
+                            expect_test_complete=expect_test_complete)
 
-                else:
-                    # Be cautious about telling the user that the test passed. This
-                    # status should match what they would see on the dashboard. Our
-                    # self._test_states does not include comparison fail information,
-                    # so we need to parse test status.
-                    ts = TestStatus(self._get_test_dir(test))
-                    nlfail = ts.get_status(NAMELIST_PHASE) == TEST_FAIL_STATUS
-                    ts_status = ts.get_overall_test_status(ignore_namelists=True, check_memory=False, check_throughput=False)
-                    local_run = not self._no_run and self._no_batch
-
-                    if ts_status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
-                        logger.info( "{} {} (phase {})".format(ts_status, test, phase))
-                        rv = False
-                    elif ts_status == TEST_PEND_STATUS and local_run:
-                        logger.info( "{} {} (Some phases left in PEND)".format(TEST_FAIL_STATUS, test))
-                        rv = False
-                    elif nlfail:
-                        logger.info( "{} {} (but otherwise OK) {}".format(NAMELIST_FAIL_STATUS, test, phase))
-                        rv = False
-                    else:
-                        logger.info("{} {} {}".format(status, test, phase))
-
-                logger.info( "    Case dir: {}".format(self._get_test_dir(test)))
+        if not no_need_to_wait and not wait:
+            logger.info("Due to presence of batch system, create_test will exit before tests are complete.\n" \
+                        "To force create_test to wait for full completion, use --wait")
 
         logger.info( "test-scheduler took {} seconds".format(time.time() - start_time))
 

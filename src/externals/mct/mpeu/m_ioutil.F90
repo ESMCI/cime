@@ -410,6 +410,7 @@ end function luavail
 !       08Jul02 - E. Ong <eong@mcs.anl.gov> - added flush support for nag95
 !  2001-11-08  Jace A Mogill <mogill@cray.com>  - Flush is not part of
 !              the F90 standard.  Default is NO unit flush.
+!  2020-08-03 - J. Edwards - flush is now supported by all fortran compilers 
 !EOP
 !_______________________________________________________________________
   character(len=*),parameter :: myname_=myname//'::luflush'
@@ -423,15 +424,7 @@ end function luavail
   if(present(unit)) lu=unit
   if(lu < 0) return
 
-	! The following call may be system dependent.
-
-#if SYSIRIX64 || CPRNAG || SYSUNICOS
-  call flush(lu,ier)
-#elif  SYSAIX || CPRXLF
-  call flush_(lu)      ! Function defined in xlf reference document.
-#elif SYSLINUX || SYSOSF1 || SYSSUNOS || SYST3E || SYSUNIXSYSTEMV || SYSSUPERUX
-  call flush(lu)
-#endif
+  flush(lu)
 
 end subroutine luflush
 !-----------------------------------------------------------------------

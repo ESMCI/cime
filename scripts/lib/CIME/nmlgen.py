@@ -57,29 +57,6 @@ _stream_mct_file_template = """<?xml version="1.0"?>
 </file>
 """
 
-_stream_nuopc_file_template = """
-  <stream_info name="{streamname}">
-   <taxmode>{taxmode}</taxmode>
-   <tInterpAlgo>{tintalgo}</tInterpAlgo>
-   <readMode>{readmode}</readMode>
-   <mapalgo>{mapalgo}</mapalgo>
-   <dtlimit>{dtlimit}</dtlimit>
-   <yearFirst>{yearFirst}</yearFirst>
-   <yearLast>{yearLast}</yearLast>
-   <yearAlign>{yearAlign}</yearAlign>
-   <stream_vectors>{vectors}</stream_vectors>
-   <stream_mesh_file>{data_meshfile}</stream_mesh_file>
-   <stream_data_files>
-      {data_filenames}
-   </stream_data_files>
-   <stream_data_variables>
-      {data_varnames}
-   </stream_data_variables>
-   <stream_offset>{offset}</stream_offset>
- </stream_info>
-
-"""
-
 class NamelistGenerator(object):
 
     """Utility class for generating namelists for a given component."""
@@ -113,6 +90,10 @@ class NamelistGenerator(object):
         # Create namelist object.
         self._namelist = Namelist()
 
+        # entries for which we should potentially call add_default (variables that do not
+        # set skip_default_entry)
+        self._default_nodes = []
+
     # Define __enter__ and __exit__ so that we can use this as a context manager
     def __enter__(self):
         return self
@@ -120,16 +101,25 @@ class NamelistGenerator(object):
     def __exit__(self, *_):
         return False
 
-    def init_defaults(self, infiles, config, skip_groups=None, skip_entry_loop=False):
+    def init_defaults(self, infiles, config, skip_groups=None, skip_entry_loop=False,
+                      skip_default_for_groups=None):
         """Return array of names of all definition nodes
+
+        If skip_default_for_groups is provided, it should be a list of namelist group
+        names; the add_default call will not be done for any variables in these
+        groups. This is often paired with later conditional calls to
+        add_defaults_for_group.
         """
+        if skip_default_for_groups is None:
+            skip_default_for_groups = []
+
         # first clean out any settings left over from previous calls
         self.new_instance()
 
         self._definition.set_nodes(skip_groups=skip_groups)
 
         # Determine the array of entry nodes that will be acted upon
-        entry_nodes = self._definition.set_nodes(skip_groups=skip_groups)
+        self._default_nodes = self._definition.set_nodes(skip_groups=skip_groups)
 
         # Add attributes to definition object
         self._definition.add_attributes(config)
@@ -151,10 +141,47 @@ class NamelistGenerator(object):
             self._namelist.merge_nl(new_namelist)
 
         if not skip_entry_loop:
-            for entry in entry_nodes:
+            for entry in self._default_nodes:
+                group_name = self._definition.get_group_name(entry)
+                if not group_name in skip_default_for_groups:
+                    self.add_default(self._definition.get(entry, "id"))
+
+        return [self._definition.get(entry, "id") for entry in self._default_nodes]
+
+    def add_defaults_for_group(self, group):
+        """Call add_default for namelist variables in the given group
+
+        This still skips variables that have attributes of skip_default_entry or
+        per_stream_entry.
+
+        This must be called after init_defaults. It is often paired with use of
+        skip_default_for_groups in the init_defaults call.
+        """
+        for entry in self._default_nodes:
+            group_name = self._definition.get_group_name(entry)
+            if group_name == group:
                 self.add_default(self._definition.get(entry, "id"))
 
-        return [self._definition.get(entry, "id") for entry in entry_nodes]
+    def confirm_group_is_empty(self, group_name, errmsg):
+        """Confirms that no values have been added to the given group
+
+        If any values HAVE been added to this group, aborts with the given error message.
+
+        This is often paired with use of skip_default_for_groups in the init_defaults call
+        and add_defaults_for_group, as in:
+
+            if nmlgen.get_value("enable_frac_overrides") == ".true.":
+                nmlgen.add_defaults_for_group("glc_override_nml")
+            else:
+                nmlgen.confirm_empty("glc_override_nml", "some message")
+
+        Args:
+        group_name: string - name of namelist group
+        errmsg: string - error message to print if group is not empty
+        """
+        variables_in_group = self._namelist.get_variable_names(group_name)
+        fullmsg = "{}\nOffending variables: {}".format(errmsg, variables_in_group)
+        expect(len(variables_in_group) == 0, fullmsg)
 
     @staticmethod
     def quote_string(string):
@@ -170,7 +197,7 @@ class NamelistGenerator(object):
     def _to_python_value(self, name, literals):
         """Transform a literal list as needed for `get_value`."""
         var_type, _, var_size, = self._definition.split_type_string(name)
-        if len(literals) > 0:
+        if len(literals) > 0 and literals[0] is not None:
             values = expand_literal_list(literals)
         else:
             return ""
@@ -245,7 +272,8 @@ class NamelistGenerator(object):
         var_group = self._definition.get_group(name)
         literals = self._to_namelist_literals(name, value)
         _, _, var_size, = self._definition.split_type_string(name)
-        self._namelist.set_variable_value(var_group, name, literals, var_size)
+        if len(literals) > 0 and literals[0] is not None:
+            self._namelist.set_variable_value(var_group, name, literals, var_size)
 
     def get_default(self, name, config=None, allow_none=False):
         """Get the value of a variable from the namelist definition file.
@@ -292,11 +320,14 @@ class NamelistGenerator(object):
             match = _var_ref_re.search(scalar)
             while match:
                 env_val = self._case.get_value(match.group('name'))
-                expect(env_val is not None,
-                       "Namelist default for variable {} refers to unknown XML variable {}.".
+                if env_val is not None:
+                    scalar = scalar.replace(match.group(0), str(env_val), 1)
+                    match = _var_ref_re.search(scalar)
+                else:
+                    scalar = None
+                    logger.warning("Namelist default for variable {} refers to unknown XML variable {}.".
                        format(name, match.group('name')))
-                scalar = scalar.replace(match.group(0), str(env_val), 1)
-                match = _var_ref_re.search(scalar)
+                    match = None
             default[i] = scalar
 
         # Deal with missing quotes.
@@ -543,104 +574,6 @@ class NamelistGenerator(object):
                     input_data_list.write(string)
         self.update_shr_strdata_nml(config, stream, stream_path)
 
-    def create_nuopc_stream_files(self, config, caseroot, #pylint:disable=too-many-locals
-                                  streams, stream_path, data_list_path):
-        """Write the XML files for all component streams.
-
-        Arguments:
-        `config` - Used to look up namelist defaults. This is used *in addition*
-                   to the `config` used to construct the namelist generator. The
-                   main reason to supply additional configuration options here
-                   is to specify stream-specific settings.
-        `stream` - Name of the stream.
-        `stream_path` - Path to write the stream file to.
-        `data_list_path` - Path of file to append input data information to.
-        """
-
-        if os.path.exists(stream_path):
-            os.unlink(stream_path)
-        user_stream_path = os.path.join(caseroot, "user_"+os.path.basename(stream_path))
-
-        # Use the user's stream file, or create one if necessary.
-        config = config.copy()
-        # Stream-specific configuration.
-        if os.path.exists(user_stream_path):
-            # user stream file is specified - use an already created stream txt file
-            safe_copy(user_stream_path, stream_path)
-            strmobj = Stream(infile=stream_path)
-            stream_meshfile = strmobj.get_value("stream_info/stream_mesh_file")
-            stream_datafiles = strmobj.get_value("stream_info/stream_data_files")
-        else:
-            with open(stream_path, 'w') as stream_file:
-                stream_file.write('<?xml version="1.0"?>\n')
-                stream_file.write('<file id="stream" version="2.0">\n')
-
-            for stream in streams:
-                if stream is None:
-                    continue
-                config["stream"] = stream
-                stream_meshfile = self.get_default("strm_mesh", config)
-                stream_datafiles = self.get_default("strm_datfil", config)
-                stream_variables = self._sub_fields(self.get_default("strm_datvar", config))
-
-                # determine data_filenames - first set year_start, year_end and offset as input
-                # to creating data_filenames
-                year_start = int(self.get_default("strm_year_start", config))
-                year_end = int(self.get_default("strm_year_end", config))
-
-                # needed for input data list
-                stream_datafiles = self._sub_paths(stream_datafiles, year_start, year_end)
-
-                # determine stream time offset
-                taxmode = self.get_default("taxmode", config)[0]
-                tintalgo = self.get_default("tintalgo", config)[0]
-                dtlimit = self.get_default("dtlimit", config)[0]
-                mapalgo = self.get_default("mapalgo", config)[0]
-                readmode = self.get_default("readmode", config)[0]
-                vectors = self.get_default("vectors", config)
-                yearFirst = self.get_default("strm_year_start", config)
-                yearLast =  self.get_default("strm_year_end", config)
-                yearAlign = self.get_default("strm_year_align", config)
-                stream_offset = self.get_default("strm_offset", config)
-                stream_datafiles_delimited = self._add_xml_delimiter(stream_datafiles.split("\n"), "file")
-                stream_variables = self._add_xml_delimiter(stream_variables.split("\n"), "var")
-
-                # create stream txt file
-                stream_file_text = _stream_nuopc_file_template.format(
-                    streamname=stream,
-                    data_meshfile=stream_meshfile,
-                    data_filenames=stream_datafiles_delimited,
-                    data_varnames=stream_variables,
-                    offset=stream_offset,
-                    vectors=vectors,
-                    yearFirst=yearFirst,
-                    yearLast=yearLast,
-                    yearAlign=yearAlign,
-                    readmode=readmode,
-                    dtlimit=dtlimit,
-                    taxmode=taxmode,
-                    mapalgo=mapalgo,
-                    tintalgo=tintalgo)
-                with open(stream_path, 'a') as stream_file:
-                    stream_file.write(stream_file_text)
-
-            # add entries to input data list
-            lines_hash = self._get_input_file_hash(data_list_path)
-            with open(data_list_path, 'a') as input_data_list:
-                string = "mesh = {}\n".format(stream_meshfile)
-                hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
-                if hashValue not in lines_hash:
-                    input_data_list.write(string)
-                for i, filename in enumerate(stream_datafiles.split("\n")):
-                    if filename.strip() == '':
-                        continue
-                    string = "file{:d} = {}\n".format(i+1, filename)
-                    hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
-                    if hashValue not in lines_hash:
-                        input_data_list.write(string)
-        with open(stream_path, 'a') as stream_file:
-            stream_file.write("</file>\n")
-
     def update_shr_strdata_nml(self, config, stream, stream_path):
         """Updates values for the `shr_strdata_nml` namelist group.
 
@@ -845,13 +778,12 @@ class NamelistGenerator(object):
         """ Write nuopc component modelio files"""
         self._namelist.write(filename, groups=["pio_inparm"], format_="nml")
 
-    def write_nuopc_config_file(self, filename, data_list_path=None ):
+    def write_nuopc_config_file(self, filename, data_list_path=None, sorted_groups=False):
         """ Write the nuopc config file"""
         self._definition.validate(self._namelist)
         groups = self._namelist.get_group_names()
         # write the config file
-        self._namelist.write_nuopc(filename, groups=groups, sorted_groups=False)
-
+        self._namelist.write_nuopc(filename, groups=groups, sorted_groups=sorted_groups)
         # append to input_data_list file
         if data_list_path is not None:
             self._write_input_files(data_list_path)

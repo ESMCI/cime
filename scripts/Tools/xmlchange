@@ -129,9 +129,12 @@ def parse_command_line(args, description):
 
     return args.caseroot, listofsettings, args.file, args.id, args.val, args.subgroup, args.append, args.noecho, args.force , args.dryrun
 
-def xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun):
+def xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun, env_test):
     if xmlid in ["THREAD_COUNT", "TOTAL_TASKS", "TASKS_PER_NODE", "NUM_NODES", "SPARE_NODES", "TASKS_PER_NUMA", "CORES_PER_TASK"]:
         expect(False, "Cannot xmlchange derived attribute {}".format(xmlid))
+
+    if env_test and env_test.get_value(xmlid) != None:
+        logger.warning("The variable {} is set by env_test.xml and will be overwritten.  Use --file env_test.xml to change the value in the test.".format(xmlid))
 
     type_str = case.get_type_info(xmlid)
     if append:
@@ -182,8 +185,13 @@ def xmlchange(caseroot, listofsettings, xmlfile, xmlid, xmlval, subgroup,
 
     with Case(caseroot, read_only=False) as case:
         comp_classes = case.get_values("COMP_CLASSES")
+        env_test = None
+        if (case.get_value("TEST") and os.path.exists(os.path.join(caseroot,"env_test.xml"))) and not (xmlfile or xmlfile == "env_test.xml"):
+            env_test = case.get_env("test")
+
         if xmlfile:
             case.set_file(xmlfile)
+
         case.set_comp_classes(comp_classes)
 
         if len(listofsettings):
@@ -196,9 +204,9 @@ def xmlchange(caseroot, listofsettings, xmlfile, xmlid, xmlval, subgroup,
                 expect(len(pair) == 2 , "Expecting a key value pair in the form of key=value. Got %s" % (pair) )
                 (xmlid, xmlval) = pair
 
-                xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun)
+                xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun, env_test)
         else:
-            xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun)
+            xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun, env_test)
 
     if not noecho:
         argstr = ""

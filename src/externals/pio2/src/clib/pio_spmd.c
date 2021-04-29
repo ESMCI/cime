@@ -124,10 +124,12 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     if (fc->max_pend_req == 0)
     {
         /* Call the MPI alltoall without flow control. */
-        PLOG((3, "Calling MPI_Alltoallw without flow control."));
+        PLOG((3, "Calling MPI_Alltoallw without flow control. comm=%d my_rank=%d",comm,my_rank));
         if ((mpierr = MPI_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf,
-                                    recvcounts, rdispls, recvtypes, comm)))
+                                    recvcounts, rdispls, recvtypes, comm))){
+            PLOG((3, "Called MPI_Alltoallw without flow control. mpierr %d",mpierr));
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+        }
         return PIO_NOERR;
     }
 

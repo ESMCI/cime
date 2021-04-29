@@ -461,7 +461,6 @@ PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
             if (!mpierr)
                 mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
         }
-
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(NULL, file, mpierr2, __FILE__, __LINE__);
@@ -1231,6 +1230,8 @@ PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
                 mpierr = MPI_Bcast(&xtype_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&eh, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -1250,7 +1251,7 @@ PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
 
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
             ierr = nc_inq_att(file->fh, varid, name, xtypep, (size_t *)lenp);
-        PLOG((2, "PIOc_inq netcdf call returned %d", ierr));
+        PLOG((2, "PIOc_inq_att netcdf call %s returned %d", name,ierr));
     }
 
     /* Broadcast and check the return code. */
@@ -1283,7 +1284,6 @@ PIOc_inq_att_eh(int ncid, int varid, const char *name, int eh,
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
  * @param varid the variable ID or NC_GLOBAL.
  * @param name name of the attribute.
  * @param xtypep a pointer that will get the type of the attribute.
@@ -2278,12 +2278,6 @@ PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         PLOG((3, "defined var ierr %d file->iotype %d", ierr, file->iotype));
 
 #ifdef _NETCDF4
-        /* For netCDF-4 serial files, turn on compression for this
-         * variable, unless this file was opened through the netCDF
-         * integration feature (or is a scalar). */
-        if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4C && !file->ncint_file && ndims)
-            ierr = nc_def_var_deflate(file->fh, varid, 0, 1, 1);
-
         /* For netCDF-4 parallel files, set parallel access to collective. */
         if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4P)
             ierr = nc_var_par_access(file->fh, varid, NC_COLLECTIVE);

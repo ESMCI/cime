@@ -113,7 +113,9 @@ module shr_strdata_mod
      ! --- stream info, internal ---
      type(shr_stream_streamType)    :: stream(nStrMax)
      type(iosystem_desc_t), pointer :: pio_subsystem => null()
-     type(io_desc_t)                :: pio_iodesc(nStrMax)
+     type(io_desc_t)                :: pio_iodesc_r8(nStrMax)
+     type(io_desc_t)                :: pio_iodesc_r4(nStrMax)
+     type(io_desc_t)                :: pio_iodesc_int(nStrMax)
      integer(IN)                    :: nstreams          ! number of streams
      integer(IN)                    :: strnxg(nStrMax)
      integer(IN)                    :: strnyg(nStrMax)
@@ -152,7 +154,7 @@ contains
 !===============================================================================
 
   subroutine shr_strdata_init( &
-       SDAT,mpicom,compid,name,scmmode,scmlon,scmlat, &
+       SDAT,mpicom,compid,name,scmmode,iop_mode,scmlon,scmlat, &
        gsmap, ggrid, nxg, nyg, nzg, &
        calendar, reset_domain_mask, dmodel_domain_fracname_from_stream)
 
@@ -166,6 +168,7 @@ contains
     integer(IN)           ,intent(in)          :: compid
     character(len=*)      ,intent(in),optional :: name
     logical               ,intent(in),optional :: scmmode
+    logical               ,intent(in),optional :: iop_mode
     real(R8)              ,intent(in),optional :: scmlon
     real(R8)              ,intent(in),optional :: scmlat
     type(mct_gsmap)       ,intent(in),optional :: gsmap
@@ -210,7 +213,7 @@ contains
          gsmap=gsmap, ggrid=ggrid, nxg=nxg, nyg=nyg, nzg=nzg, &
          reset_domain_mask=reset_domain_mask, &
          dmodel_domain_fracname_from_stream=dmodel_domain_fracname_from_stream, &
-         scmmode=scmmode, scmlon=scmlon, scmlat=scmlat)
+         scmmode=scmmode, iop_mode=iop_mode, scmlon=scmlon, scmlat=scmlat)
 
     !------------------------------------------------------
     ! --- (2) initialize streams and stream domains ---
@@ -229,7 +232,7 @@ contains
   !===============================================================================
 
   subroutine shr_strdata_init_model_domain(SDAT, mpicom, compid, my_task, &
-       gsmap, ggrid, nxg, nyg, nzg, scmmode, scmlon, scmlat, &
+       gsmap, ggrid, nxg, nyg, nzg, scmmode, iop_mode, scmlon, scmlat, &
        reset_domain_mask, dmodel_domain_fracname_from_stream)
 
     ! input/output variables
@@ -243,6 +246,7 @@ contains
     integer(IN)           ,intent(in),optional :: nyg
     integer(IN)           ,intent(in),optional :: nzg
     logical               ,intent(in),optional :: scmmode
+    logical               ,intent(in),optional :: iop_mode
     real(R8)              ,intent(in),optional :: scmlon
     real(R8)              ,intent(in),optional :: scmlat
     logical               ,intent(in),optional :: reset_domain_mask
@@ -278,12 +282,14 @@ contains
     logical        :: readfrac     ! whether to read fraction from the first stream file
     integer        :: kmask, kfrac
     logical        :: lscmmode
+    logical        :: liop_mode
     integer(IN)      ,parameter :: master_task = 0
     character(*)     ,parameter :: F00 = "('(shr_strdata_init) ',8a)"
     character(len=*) ,parameter :: subname = "(shr_strdata_init) "
     !-------------------------------------------------------------------------------
 
     lscmmode = .false.
+    liop_mode = .false.
     if (present(scmmode)) then
        lscmmode = scmmode
        if (lscmmode) then
@@ -292,6 +298,10 @@ contains
              call shr_sys_abort(subname//' ERROR: scmmode1 lon lat')
           endif
        endif
+    endif
+
+    if (present(iop_mode)) then
+      liop_mode=iop_mode
     endif
 
     if (present(gsmap) .and. present(ggrid) .and. present(nxg) .and. present(nyg) .and. present(nzg)) then
@@ -345,7 +355,7 @@ contains
                      decomp=decomp, lonName=lonName, latName=latName, hgtName=hgtName, &
                      maskName=maskName, areaName=areaName, &
                      fracname=dmodel_domain_fracname_from_stream, readfrac=readfrac, &
-                     scmmode=lscmmode, scmlon=scmlon, scmlat=scmlat)
+                     scmmode=lscmmode, iop_mode=liop_mode, scmlon=scmlon, scmlat=scmlat)
              else
                 call shr_dmodel_readgrid(SDAT%grid,SDAT%gsmap, SDAT%nxg, SDAT%nyg, SDAT%nzg, &
                      fileName, compid, mpicom, &
@@ -370,7 +380,8 @@ contains
           if (lscmmode) then
              call shr_dmodel_readgrid(SDAT%grid,SDAT%gsmap,SDAT%nxg,SDAT%nyg,SDAT%nzg, &
                   SDAT%domainfile, compid, mpicom, &
-                  decomp=decomp, readfrac=.true., scmmode=lscmmode, scmlon=scmlon, scmlat=scmlat)
+                  decomp=decomp, readfrac=.true., scmmode=lscmmode, iop_mode=liop_mode, &
+                  scmlon=scmlon, scmlat=scmlat)
           else
              call shr_dmodel_readgrid(SDAT%grid, SDAT%gsmap, SDAT%nxg, SDAT%nyg, SDAT%nzg, &
                   SDAT%domainfile, compid, mpicom, &
@@ -486,10 +497,18 @@ contains
        call mct_gsmap_OrderedPoints(SDAT%gsmapR(n), my_task, dof)
        if (SDAT%strnzg(n) <= 0) then
           call pio_initdecomp(SDAT%pio_subsystem, pio_double, &
-               (/SDAT%strnxg(n),SDAT%strnyg(n)/), dof, SDAT%pio_iodesc(n))
+               (/SDAT%strnxg(n),SDAT%strnyg(n)/), dof, SDAT%pio_iodesc_r8(n))
+          call pio_initdecomp(SDAT%pio_subsystem, pio_real, &
+               (/SDAT%strnxg(n),SDAT%strnyg(n)/), dof, SDAT%pio_iodesc_r4(n))
+          call pio_initdecomp(SDAT%pio_subsystem, pio_int, &
+               (/SDAT%strnxg(n),SDAT%strnyg(n)/), dof, SDAT%pio_iodesc_int(n))
        else
           call pio_initdecomp(SDAT%pio_subsystem, pio_double, &
-               (/SDAT%strnxg(n),SDAT%strnyg(n),SDAT%strnzg(n)/), dof, SDAT%pio_iodesc(n))
+               (/SDAT%strnxg(n),SDAT%strnyg(n),SDAT%strnzg(n)/), dof, SDAT%pio_iodesc_r8(n))
+          call pio_initdecomp(SDAT%pio_subsystem, pio_real, &
+               (/SDAT%strnxg(n),SDAT%strnyg(n),SDAT%strnzg(n)/), dof, SDAT%pio_iodesc_r4(n))
+          call pio_initdecomp(SDAT%pio_subsystem, pio_int, &
+               (/SDAT%strnxg(n),SDAT%strnyg(n),SDAT%strnzg(n)/), dof, SDAT%pio_iodesc_int(n))
        endif
        deallocate(dof)
 
@@ -863,7 +882,8 @@ contains
           call t_barrierf(trim(lstr)//trim(timname)//'_readLBUB_BARRIER',mpicom)
           call t_startf(trim(lstr)//trim(timname)//'_readLBUB')
 
-          call shr_dmodel_readLBUB(SDAT%stream(n),SDAT%pio_subsystem,SDAT%io_type,SDAT%pio_iodesc(n), &
+          call shr_dmodel_readLBUB(SDAT%stream(n),SDAT%pio_subsystem,SDAT%io_type, &
+               SDAT%pio_iodesc_r8(n), SDAT%pio_iodesc_r4(n), SDAT%pio_iodesc_int(n), &
                ymdmod(n),todmod,mpicom,SDAT%gsmapR(n),&
                SDAT%avRLB(n),SDAT%ymdLB(n),SDAT%todLB(n), &
                SDAT%avRUB(n),SDAT%ymdUB(n),SDAT%todUB(n), &
@@ -1120,7 +1140,9 @@ contains
     call mct_gsmap_clean(SDAT%gsmap)
 
     do n = 1, SDAT%nstreams
-       call pio_freedecomp(SDAT%pio_subsystem, SDAT%pio_iodesc(n))
+       call pio_freedecomp(SDAT%pio_subsystem, SDAT%pio_iodesc_r8(n))
+       call pio_freedecomp(SDAT%pio_subsystem, SDAT%pio_iodesc_r4(n))
+       call pio_freedecomp(SDAT%pio_subsystem, SDAT%pio_iodesc_int(n))
        call mct_avect_clean(SDAT%avs(n))
        call mct_avect_clean(SDAT%avRLB(n))
        call mct_avect_clean(SDAT%avRUB(n))

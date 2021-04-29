@@ -10,6 +10,9 @@ if BUILD_DOCS
 DOC = doc
 endif
 
+# Build in each of these subdirs.
 SUBDIRS = src tests examples ${DOC} scripts cmake
 
-EXTRA_DIST = CMakeLists.txt set_flags.am COPYRIGHT cmake_config.h.in
+# Add these files to the distribution.
+EXTRA_DIST = CMakeLists.txt COPYRIGHT cmake_config.h.in	\
+libpio.settings.in

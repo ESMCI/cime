@@ -61,7 +61,7 @@ program ftst_pio
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Create a file.
-  ierr = nf_create(FILE_NAME, 64, ncid)
+  ierr = nf_create(FILE_NAME, NF_PIO, ncid)
   if (ierr .ne. nf_noerr) call handle_err(ierr)
 
   ! Define dimensions.

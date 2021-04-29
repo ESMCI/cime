@@ -8,6 +8,7 @@
   <!-- it will be searched for filename and chksum of each downloaded file.  -->
   <!-- see the file ftp://ftp.cgd.ucar.edu/cesm/inputdata_chksum.dat for proper format. -->
 
+  <!-- server for sample data and fixed files -->
   <server>
     <comment>ftp site for ufs release</comment>
     <protocol>ftp</protocol>
@@ -16,17 +17,4 @@
     <password>user@example.edu</password>
     <ic_filepath>/inputdata/</ic_filepath>
   </server>
-  <server>
-    <comment>NOMADS site for grib initial conditions (depricated)</comment>
-    <protocol>wget</protocol>
-    <address>https://nomads.ncdc.noaa.gov:</address>
-    <ic_filepath>data/gfs4/</ic_filepath>
-  </server>
-  <server>
-    <comment>NOMADS ftp site for grib initial conditions</comment>
-    <protocol>ftp</protocol>
-    <address>ftp://nomads.ncdc.noaa.gov</address>
-    <ic_filepath>GFS/Grid4</ic_filepath>
-  </server>
-
 </inputdata>

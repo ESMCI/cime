@@ -31,19 +31,18 @@
       <grid name="ocnice"    compset="SOCN"        >null</grid>
       <grid name="rof"       compset="SROF"        >null</grid>
       <grid name="rof"       compset="DWAV"        >rx1</grid>
-      <grid name="rof"       compset="RTM"	   >r05</grid>
+      <grid name="rof"       compset="RTM"         >r05</grid>
       <grid name="rof"       compset="MOSART"      >r05</grid>
       <grid name="rof"       compset="MIZUROUTE"   >r05mz</grid>
       <grid name="rof"       compset="DROF"        >rx1</grid>
       <grid name="rof"       compset="DROF%CPLHIST">r05</grid>
       <grid name="rof"       compset="XROF"        >r05</grid>
       <grid name="glc"	     compset="SGLC"        >null</grid>
-      <grid name="glc"	     compset="CISM1"       >gland5UM</grid>
       <grid name="glc"	     compset="CISM2"       >gland4</grid>
       <grid name="glc"       compset="XGLC"        >gland4</grid>
-      <grid name="wav"	     compset="SWAV"        >null</grid>
-      <grid name="wav"	     compset="DWAV"        >ww3a</grid>
-      <grid name="wav"	     compset="WW3"	   >ww3a</grid>
+      <grid name="wav"       compset="SWAV"        >null</grid>
+      <grid name="wav"       compset="DWAV"        >ww3a</grid>
+      <grid name="wav"       compset="WW3"         >ww3a</grid>
       <grid name="wav"       compset="XWAV"        >ww3a</grid>
       <grid name="iac"       compset="SIAC"        >null</grid>
     </model_grid_defaults>
@@ -120,18 +119,21 @@
       <grid name="atm">5x5_amazon</grid>
       <grid name="lnd">5x5_amazon</grid>
       <grid name="rof">null</grid>
+      <mask>5x5_amazon</mask>
     </model_grid>
 
     <model_grid alias="5x5_amazon_r05" compset="DATM.+CLM.+MIZUROUTE">
       <grid name="atm">5x5_amazon</grid>
       <grid name="lnd">5x5_amazon</grid>
       <grid name="rof">r05mz_amazon</grid>
+      <mask>5x5_amazon</mask>
     </model_grid>
 
     <model_grid alias="5x5_amazon_rHDMA" compset="DATM.+CLM.+MIZUROUTE">
       <grid name="atm">5x5_amazon</grid>
       <grid name="lnd">5x5_amazon</grid>
       <grid name="rof">HDMAmz_amazon</grid>
+      <mask>5x5_amazon</mask>
     </model_grid>
 
     <!-- Regional NLDAS-2 grid over the U.S. (0.125 degree resolution;
@@ -141,7 +143,7 @@
       <grid name="lnd">0.125nldas2</grid>
       <grid name="ocnice">0.125nldas2</grid>
       <grid name="rof">0.125nldas2</grid>
-      <mask>nldas2</mask>
+      <mask>0.125nldas2</mask>
     </model_grid>
 
     <model_grid alias="nldas2_rUSGS_mnldas2" compset="DATM.+CLM.+MIZUROUTE">
@@ -198,21 +200,6 @@
       <mask>gx3v7</mask>
     </model_grid>
 
-    <model_grid alias="T31_g37_gl5" compset="_CISM">
-      <grid name="atm">T31</grid>
-      <grid name="lnd">T31</grid>
-      <grid name="ocnice">gx3v7</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx3v7</mask>
-    </model_grid>
-
-    <model_grid alias="T42_T42_musgs" not_compset="_POP">
-      <grid name="atm">T42</grid>
-      <grid name="lnd">T42</grid>
-      <grid name="ocnice">T42</grid>
-      <mask>usgs</mask>
-    </model_grid>
-
     <model_grid alias="T42_T42" not_compset="_POP">
       <grid name="atm">T42</grid>
       <grid name="lnd">T42</grid>
@@ -253,13 +240,6 @@
       <grid name="lnd">T85</grid>
       <grid name="ocnice">T85</grid>
       <mask>gx1v7</mask>
-    </model_grid>
-
-    <model_grid alias="T85_T85_musgs" not_compset="_POP">
-      <grid name="atm">T85</grid>
-      <grid name="lnd">T85</grid>
-      <grid name="ocnice">T85</grid>
-      <mask>usgs</mask>
     </model_grid>
 
     <model_grid alias="T85_f09_t12">
@@ -360,6 +340,21 @@
       <grid name="lnd">TL319</grid>
       <grid name="ocnice">tx0.1v3</grid>
       <grid name="rof">JRA025</grid>
+    </model_grid>
+
+    <model_grid alias="TL639_g17" not_compset="_CAM">
+      <grid name="atm">TL639</grid>
+      <grid name="lnd">TL639</grid>
+      <grid name="ocnice">gx1v7</grid>
+      <!--<grid name="rof">JRA025</grid>-->
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="TL639_t061" not_compset="_CAM">
+      <grid name="atm">TL639</grid>
+      <grid name="lnd">TL639</grid>
+      <grid name="ocnice">tx0.66v1</grid>
+      <!--<grid name="rof">JRA025</grid>-->
     </model_grid>
 
     <model_grid alias="T62_t061" not_compset="_CAM">
@@ -518,22 +513,6 @@
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="f09_g16_gl5" compset="_CISM">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
-    <model_grid alias="f09_g17_gl5" compset="_CISM">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">gx1v7</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v7</mask>
-    </model_grid>
-
     <model_grid alias="f09_f09_mnull" compset="_DOCN%SAQUAP|DOCN%DAQUAP" >
       <grid name="atm">0.9x1.25</grid>
       <grid name="lnd">0.9x1.25</grid>
@@ -576,30 +555,6 @@
       <grid name="atm">0.47x0.63</grid>
       <grid name="lnd">0.47x0.63</grid>
       <grid name="ocnice">0.47x0.63</grid>
-      <mask>gx1v7</mask>
-    </model_grid>
-
-    <model_grid alias="f09_f09_gl5" compset="_CISM" not_compset="_POP">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">0.9x1.25</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
-    <model_grid alias="f09_f09_gl5_mg16" compset="_CISM" not_compset="_POP">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">0.9x1.25</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
-    <model_grid alias="f09_f09_gl5_mg17" compset="_CISM" not_compset="_POP">
-      <grid name="atm">0.9x1.25</grid>
-      <grid name="lnd">0.9x1.25</grid>
-      <grid name="ocnice">0.9x1.25</grid>
-      <grid name="glc">gland5UM</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
@@ -646,46 +601,6 @@
       <grid name="lnd">1.9x2.5</grid>
       <grid name="ocnice">gx1v7</grid>
       <grid name="glc">gland4</grid>
-      <mask>gx1v7</mask>
-    </model_grid>
-
-    <model_grid alias="f19_g16_gl5" compset="_CISM">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">gx1v6</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
-    <model_grid alias="f19_g17_gl5" compset="_CISM">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">gx1v7</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v7</mask>
-    </model_grid>
-
-    <model_grid alias="f19_f19_gl5" compset="_CISM" not_compset="_POP">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">1.9x2.5</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
-    <model_grid alias="f19_f19_gl5_mg16" compset="_CISM" not_compset="_POP">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">1.9x2.5</grid>
-      <grid name="glc">gland5UM</grid>
-      <mask>gx1v6</mask>
-    </model_grid>
-
-    <model_grid alias="f19_f19_gl5_mg17" compset="_CISM" not_compset="_POP">
-      <grid name="atm">1.9x2.5</grid>
-      <grid name="lnd">1.9x2.5</grid>
-      <grid name="ocnice">1.9x2.5</grid>
-      <grid name="glc">gland5UM</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
@@ -834,8 +749,8 @@
     </model_grid>
 
     <model_grid alias="ne30pg3_g17">
-      <grid name="atm">ne30pg3</grid>
-      <grid name="lnd">ne30pg3</grid>
+      <grid name="atm">ne30np4.pg3</grid>
+      <grid name="lnd">ne30np4.pg3</grid>
       <grid name="ocnice">gx1v7</grid>
       <mask>gx1v7</mask>
     </model_grid>
@@ -1002,7 +917,7 @@
       <mask>gx1v7</mask>
     </model_grid>
 
-    <model_grid alias="ne120pg2_ne120pg2_mg17" not_compset="_POP|_CLM">
+    <model_grid alias="ne120pg2_ne120pg2_mg17" not_compset="_POP">
       <grid name="atm">ne120np4.pg2</grid>
       <grid name="lnd">ne120np4.pg2</grid>
       <grid name="ocnice">ne120np4.pg2</grid>
@@ -1040,9 +955,9 @@
     </model_grid>
 
     <model_grid alias="ne30pg3_ne30pg3_mg17" not_compset="_POP">
-      <grid name="atm">ne30pg3</grid>
-      <grid name="lnd">ne30pg3</grid>
-      <grid name="ocnice">ne30pg3</grid>
+      <grid name="atm">ne30np4.pg3</grid>
+      <grid name="lnd">ne30np4.pg3</grid>
+      <grid name="ocnice">ne30np4.pg3</grid>
       <mask>gx1v7</mask>
     </model_grid>
 
@@ -1160,6 +1075,57 @@
       <grid name="lnd">ne0np4.ARCTICGRIS.ne30x8</grid>
       <grid name="ocnice">ne0np4.ARCTICGRIS.ne30x8</grid>
       <mask>tx0.1v2</mask>
+    </model_grid>
+
+    <!-- MPAS-A grids -->
+
+    <model_grid alias="mpasa480_mpasa480" not_compset="_POP">
+      <grid name="atm">mpasa480</grid>
+      <grid name="lnd">mpasa480</grid>
+      <grid name="ocnice">mpasa480</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa120_mpasa120" not_compset="_POP">
+      <grid name="atm">mpasa120</grid>
+      <grid name="lnd">mpasa120</grid>
+      <grid name="ocnice">mpasa120</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa60_mpasa60" not_compset="_POP">
+      <grid name="atm">mpasa60</grid>
+      <grid name="lnd">mpasa60</grid>
+      <grid name="ocnice">mpasa60</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa30_mpasa30" not_compset="_POP">
+      <grid name="atm">mpasa30</grid>
+      <grid name="lnd">mpasa30</grid>
+      <grid name="ocnice">mpasa30</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa15_mpasa15" not_compset="_POP">
+      <grid name="atm">mpasa15</grid>
+      <grid name="lnd">mpasa15</grid>
+      <grid name="ocnice">mpasa15</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa12_mpasa12" not_compset="_POP">
+      <grid name="atm">mpasa12</grid>
+      <grid name="lnd">mpasa12</grid>
+      <grid name="ocnice">mpasa12</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="mpasa15-3_mpasa15-3" not_compset="_POP">
+      <grid name="atm">mpasa15-3</grid>
+      <grid name="lnd">mpasa15-3</grid>
+      <grid name="ocnice">mpasa15-3</grid>
+      <mask>gx1v7</mask>
     </model_grid>
 
     <!-- new runoff grids for data runoff model DROF -->
@@ -1291,95 +1257,32 @@
       <desc>null is no grid: </desc>
     </domain>
 
-    <!-- LND domains for single column or regional -->
 
+    <!-- ======================================================== -->
+    <!-- ATM/LND meshes regional and global -->
+    <!-- ======================================================== -->
 
-    <domain name="01col">
-      <nx>1</nx> <ny>1</ny>
-      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
-      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
-      <desc>01col is a single-column grid for datm and POP:</desc>
-    </domain>
-
-    <domain name="CLM_USRDAT">
-      <nx>1</nx> <ny>1</ny>
-      <file>$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>user specified domain - only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_numaIA">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_brazil">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_smallvilleIA">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_camdenNJ">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_mexicocityMEX">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_vancouverCAN">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
-    </domain>
-
-    <domain name="1x1_urbanc_alpha">
-      <nx>1</nx> <ny>1</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
+    <!-- TODO: can this be deleted? -->
+    <domain name="360x720cru">
+      <nx>720</nx> <ny>360</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.360x720_cruncep.100429.nc</file>
+      <desc>Exact half-degree CRUNCEP datm forcing grid with CRUNCEP land-mask -- only valid for DATM/CLM compset</desc>
     </domain>
 
     <domain name="5x5_amazon">
       <nx>5</nx> <ny>5</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.5x5pt-amazon_navy.090715.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/5x5pt-amazon_navy_ESMFmesh_cd5_c20210107.nc</mesh>
       <desc>5x5 Amazon regional case -- only valid for DATM/CLM compset</desc>
     </domain>
 
-    <!-- This grid is also used by ROF -->
     <domain name="0.125nldas2">
       <nx>464</nx> <ny>224</ny>
-      <file grid="atm|lnd" mask="nldas2">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.0.125nldas2_0.125nldas2.190410.nc</file>
-      <file grid="ocnice"  mask="nldas2">$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.0.125nldas2.190410.nc</file>
-      <mesh               driver="nuopc">$DIN_LOC_ROOT/lnd/clm2/mappingdata/grids/0.125nldas2_nomask_ESMFmesh_c20201202.nc</mesh>
+      <!-- This grid is also used by ROF -->
+      <file grid="atm|lnd" mask="0.125nldas2">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.0.125nldas2_0.125nldas2.190410.nc</file>
+      <file grid="ocnice"  mask="0.125nldas2">$DIN_LOC_ROOT/share/domains/domain.clm/domain.ocn.0.125nldas2.190410.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/0.125nldas2_ESMFmesh_cd5_241220.nc</mesh>
       <desc>Regional NLDAS-2 grid over the U.S. (0.125 degree resolution; 25-53N, 235-293E)</desc>
-    </domain>
-
-    <!-- ATM/LND domains global -->
-
-    <domain name="360x720cru">
-      <nx>720</nx> <ny>360</ny>
-      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.360x720_cruncep.100429.nc</file>
-      <mesh driver="nuopc">create_mesh</mesh>
-      <desc>Exact half-degree CRUNCEP datm forcing grid with CRUNCEP land-mask -- only valid for DATM/CLM compset</desc>
     </domain>
 
     <domain name="0.23x0.31">
@@ -1515,10 +1418,9 @@
 
     <domain name="T42">
       <nx>128</nx> <ny>64</ny>
-      <file grid="atm|lnd" mask="usgs" >$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.T42_USGS.111004.nc</file>
-      <file grid="ocnice"  mask="usgs" >$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.64x128_USGS_070807.nc</file>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.T42_gx1v7.180727.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.T42_gx1v7.180727.nc</file>
+      <mesh driver="nuopc" mask="gx1v7">$DIN_LOC_ROOT/share/meshes/T42_ESMFmesh_c20200629.nc</mesh>
       <desc>T42 is Gaussian grid:</desc>
     </domain>
 
@@ -1567,6 +1469,7 @@
       <nx>13824</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne16pg3_gx1v7.171003.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne16pg3_gx1v7.171003.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne16pg3_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne16np4.pg3 is a Spectral Elem 2-deg grid with a 3x3 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1577,23 +1480,25 @@
       <file grid="ocnice"  mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4_gx1v6_110217.nc</file>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne30_gx1v7.171003.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne30_gx1v7.171003.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne30np4_091226_pentagons_ESMFmesh.nc</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne30np4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne30np4 is Spectral Elem 1-deg grid:</desc>
     </domain>
 
     <domain name="ne30np4.pg2">
       <nx>21600</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg2_gx1v7.170628.nc</file>
-      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg2_gx1v7.170628.nc</file>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg2_gx1v7.200626.nc</file>
+      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg2_gx1v7.200626.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne30pg2_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne30np4.pg2 is a Spectral Elem 1-deg grid with a 2x2 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
 
-    <domain name="ne30pg3">
+    <domain name="ne30np4.pg3">
       <nx>48600</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg3_gx1v7.170605.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg3_gx1v7_170605.nc</file>
-      <desc>ne30pg3 is a Spectral Elem ne30 grid with a 3x3 FVM physics grid:</desc>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne30pg3_ESMFmesh_cdf5_c20211018.nc</mesh>
+      <desc>ne30np4.pg3 is a Spectral Elem ne30 grid with a 3x3 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
 
@@ -1601,6 +1506,7 @@
       <nx>86400</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg4_gx1v7.170628.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg4_gx1v7.170628.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne30pg4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne30np4.pg4 is a Spectral Elem 1-deg grid with a 4x4 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1609,7 +1515,7 @@
       <nx>194402</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4_gx1v6.120406.nc</file>
       <file grid="ocnice"  mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4_gx1v6.121113.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne60np4_pentagons_100408_ESMFmesh.nc</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne60np4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne60np4 is Spectral Elem 1/2-deg grid:</desc>
     </domain>
 
@@ -1617,6 +1523,7 @@
       <nx>86400</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg2_gx1v7.170628.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg2_gx1v7.170628.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne60pg2_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne60np4.pg2 is a Spectral Elem 0.5-deg grid with a 2x2 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1625,6 +1532,7 @@
       <nx>194400</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg3_gx1v7.170628.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg3_gx1v7.170628.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne60pg3_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne60np4.pg3 is a Spectral Elem 0.5-deg grid with a 3x3 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1633,6 +1541,7 @@
       <nx>345600</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg4_gx1v7.170628.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg4_gx1v7.170628.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne60pg4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne60np4.pg4 is a Spectral Elem 0.5-deg grid with a 4x4 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1643,6 +1552,7 @@
       <file grid="ocnice"  mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4_gx1v6.121113.nc</file>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4_gx1v7.190718.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4_gx1v7.190718.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne120np4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne120np4 is Spectral Elem 1/4-deg grid:</desc>
     </domain>
 
@@ -1650,9 +1560,9 @@
       <nx>345600</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg2_gx1v7.170629.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg2_gx1v7.170629.nc</file>
-      <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg2_tx0.1v2.200108.nc</file>
-      <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg2_tx0.1v2.200108.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne120np4_pentagons_100310_ESMFmesh.nc</mesh>
+      <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg2_tx0.1v2.200626.nc</file>
+      <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg2_tx0.1v2.200626.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne120pg2_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne120np4.pg2 is a Spectral Elem 0.25-deg grid with a 2x2 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1663,6 +1573,7 @@
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg3_gx1v7.190718.nc</file>
       <file grid="atm|lnd" mask="tx0.1v3">$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg3_tx0.1v3.190820.nc</file>
       <file grid="ocnice"  mask="tx0.1v3">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg3_tx0.1v3.190820.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne120pg3_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne120np4.pg3 is a Spectral Elem 0.25-deg grid with a 3x3 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1671,6 +1582,7 @@
       <nx>1382400</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg4_gx1v7.170629.nc</file>
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg4_gx1v7.170629.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne120pg4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne120np4.pg4 is a Spectral Elem 0.25-deg grid with a 4x4 FVM physics grid:</desc>
       <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
@@ -1679,8 +1591,24 @@
       <nx>3110402</nx> <ny>1</ny>
       <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4_gx1v6.111226.nc</file>
       <file grid="ocnice"  mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4_gx1v6.111226.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne240np4_ESMFmesh_cdf5_c20211018.nc</mesh>
       <desc>ne240np4 is Spectral Elem 1/8-deg grid:</desc>
       <support>Experimental for very high resolution experiments</support>
+    </domain>
+    <domain name="ne240np4.pg2">
+      <nx>1382400</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg2_gx1v7.170629.nc</file>
+      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg2_gx1v7.170629.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne240pg2_ESMFmesh_cdf5_c20211018.nc</mesh>
+      <desc>ne240np4.pg2 is a Spectral Elem 0.125-deg grid with a 2x2 FVM physics grid:</desc>
+      <support>EXPERIMENTAL FVM physics grid</support>
+    </domain>
+    <domain name="ne240np4.pg3">
+      <nx>3110400</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg3_gx1v7.170629.nc</file>
+      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg3_gx1v7.170629.nc</file>
+      <desc>ne240np4.pg3 is a Spectral Elem 0.125-deg grid with a 3x3 FVM physics grid:</desc>
+      <support>EXPERIMENTAL FVM physics grid</support>
     </domain>
 
     <domain name="ne0np4TESTONLY.ne5x4">
@@ -1695,24 +1623,57 @@
       <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0CONUSne30x8_gx1v7.190322.nc</file>
       <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0CONUSne30x8_tx0.1v2.171010.nc</file>
       <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0CONUSne30x8_tx0.1v2.171010.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne0CONUSne30x8_ESMFmesh_c20200727.nc</mesh>
       <desc>ne0np4CONUS.ne30x8 is a Spectral Elem 1-deg grid with a 1/8 deg refined region over the continental United States:</desc>
       <support>Test support only</support>
     </domain>
 
     <domain name="ne0np4.ARCTIC.ne30x4">
       <nx>117398</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0np4.ARCTIC.ne30x4_tx0.1v2.191023.nc</file>
-      <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0np4.ARCTIC.ne30x4_tx0.1v2.191023.nc</file>
+      <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0np4.ARCTIC.ne30x4_tx0.1v2.200626.nc</file>
+      <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0np4.ARCTIC.ne30x4_tx0.1v2.200626.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne0ARCTICne30x4_ESMFmesh_c20200727.nc</mesh>
       <desc>ne0np4.ARCTIC.ne30x4 is a Spectral Elem 1-deg grid with a 1/4 deg refined region over Arctic:</desc>
       <support>Test support only</support>
     </domain>
 
     <domain name="ne0np4.ARCTICGRIS.ne30x8">
       <nx>152390</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0np4.ARCTICGRIS.ne30x8_tx0.1v2.191209.nc</file>
-      <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0np4.ARCTICGRIS.ne30x8_tx0.1v2.191209.nc</file>
+      <file grid="atm|lnd" mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.lnd.ne0np4.ARCTICGRIS.ne30x8_tx0.1v2.200626.nc</file>
+      <file grid="ocnice"  mask="tx0.1v2">$DIN_LOC_ROOT/share/domains/domain.ocn.ne0np4.ARCTICGRIS.ne30x8_tx0.1v2.200626.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/ne0ARCTICGRISne30x8_ESMFmesh_c20200730.nc</mesh>
       <desc>ne0np4.ARCTICGRIS.ne30x8 is a Spectral Elem 1-deg grid with a 1/8 deg refined region over Greenland:</desc>
       <support>Test support only</support>
+    </domain>
+
+    <domain name="mpasa480">
+      <nx>2562</nx> <ny>1</ny>
+      <desc>MPAS-A 480-km quasi-uniform mesh:</desc>
+    </domain>
+    <domain name="mpasa120">
+      <nx>40962</nx> <ny>1</ny>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/mpasa120z32_ESMFmesh_cdf5_c20210120.nc</mesh>
+      <desc>MPAS-A 120-km quasi-uniform mesh:</desc>
+    </domain>
+    <domain name="mpasa60">
+      <nx>163842</nx> <ny>1</ny>
+      <desc>MPAS-A 60-km quasi-uniform mesh:</desc>
+    </domain>
+    <domain name="mpasa30">
+      <nx>655362</nx> <ny>1</ny>
+      <desc>MPAS-A 30-km quasi-uniform mesh:</desc>
+    </domain>
+    <domain name="mpasa15">
+      <nx>2621442</nx> <ny>1</ny>
+      <desc>MPAS-A 15-km quasi-uniform mesh:</desc>
+    </domain>
+    <domain name="mpasa12">
+      <nx>4096002</nx> <ny>1</ny>
+      <desc>MPAS-A 12-km quasi-uniform mesh:</desc>
+    </domain>
+    <domain name="mpasa15-3">
+      <nx>6488066</nx> <ny>1</ny>
+      <desc>MPAS-A 15-3-km variable-uniform mesh:</desc>
     </domain>
 
     <domain name="TL319">
@@ -1729,20 +1690,73 @@
       <desc>TL319 grid for JRA55</desc>
     </domain>
 
-    <domain name="ne240np4.pg2">
-      <nx>1382400</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg2_gx1v7.170629.nc</file>
-      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg2_gx1v7.170629.nc</file>
-      <desc>ne240np4.pg2 is a Spectral Elem 0.125-deg grid with a 2x2 FVM physics grid:</desc>
-      <support>EXPERIMENTAL FVM physics grid</support>
+    <domain name="TL639">
+      <nx>1440</nx> <ny>721</ny>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.TL639_gx1v7.200619.nc</file>
+      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.TL639_gx1v7.200619.nc</file>
+      <file grid="atm|lnd" mask="tx0.66v1">$DIN_LOC_ROOT/share/domains/domain.lnd.TL639_tx0.66v1.200619.nc</file>
+      <file grid="ocnice"  mask="tx0.66v1">$DIN_LOC_ROOT/share/domains/domain.ocn.TL639_tx0.66v1.200619.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/TL639_200618_ESMFmesh.nc</mesh>
+      <desc>TL639 grid for ERA5</desc>
     </domain>
 
-    <domain name="ne240np4.pg3">
-      <nx>3110400</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg3_gx1v7.170629.nc</file>
-      <file grid="ocnice"  mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg3_gx1v7.170629.nc</file>
-      <desc>ne240np4.pg3 is a Spectral Elem 0.125-deg grid with a 3x3 FVM physics grid:</desc>
-      <support>EXPERIMENTAL FVM physics grid</support>
+    <!-- fvcubed domains-->
+
+    <domain name="C24">
+      <nx>3456</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C24_gx1v6.181018.nc</file>
+      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C24_gx1v6.181018.nc</file>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C24_gx1v7.181018.nc</file>
+      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C24_gx1v7.181018.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C24_181018_ESMFmesh.nc</mesh>
+      <desc>C24 is a fvcubed xx-deg grid:</desc>
+      <support>Experimental for fv3 dycore</support>
+    </domain>
+
+    <domain name="C48">
+      <nx>13824</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C48_gx1v6.181018.nc</file>
+      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C48_gx1v6.181018.nc</file>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C48_gx1v7.181018.nc</file>
+      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C48_gx1v7.181018.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C48_181018_ESMFmesh.nc</mesh>
+      <desc>C48 is a fvcubed xx-deg grid:</desc>
+      <support>Experimental for fv3 dycore</support>
+    </domain>
+
+    <domain name="C96">
+      <nx>55296</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C96_gx1v6.181018.nc</file>
+      <file grid="ocnice"  mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C96_gx1v6.181018.nc</file>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C96_gx1v7.181018.nc</file>
+      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C96_gx1v7.181018.nc</file>
+      <file grid="atm|lnd" mask="tx0.66v1">$DIN_LOC_ROOT/share/domains/domain.lnd.C96_tx0.66v1.181210.nc</file>
+      <file grid="ocnice"  mask="tx0.66v1">$DIN_LOC_ROOT/share/domains/domain.ocn.C96_tx0.66v1.181210.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C96_181018_ESMFmesh.nc</mesh>
+      <desc>C96 is a fvcubed xx-deg grid:</desc>
+      <support>Experimental for fv3 dycore</support>
+    </domain>
+
+    <domain name="C192">
+      <nx>221184</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C192_gx1v6.181018.nc</file>
+      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C192_gx1v6.181018.nc</file>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C192_gx1v7.181018.nc</file>
+      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C192_gx1v7.181018.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C192_181018_ESMFmesh.nc</mesh>
+      <desc>C192 is a fvcubed xx-deg grid:</desc>
+      <support>Experimental for fv3 dycore</support>
+    </domain>
+
+    <domain name="C384">
+      <nx>884736</nx> <ny>1</ny>
+      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C384_gx1v6.181018.nc</file>
+      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C384_gx1v6.181018.nc</file>
+      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C384_gx1v7.181018.nc</file>
+      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C384_gx1v7.181018.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C384_181018_ESMFmesh.nc</mesh>
+      <desc>C384 is a fvcubed xx-deg grid:</desc>
+      <support>Experimental for fv3 dycore</support>
     </domain>
 
     <!-- ======================================================== -->
@@ -1756,7 +1770,6 @@
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/gx1v6_090205_ESMFmesh.nc</mesh>
       <desc>gx1v6 is displaced Greenland pole v6 1-deg grid:</desc>
     </domain>
-
     <domain name="gx1v7">
       <nx>320</nx>  <ny>384</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.ocn.gx1v7.151008.nc</file>
@@ -1764,14 +1777,12 @@
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/gx1v7_151008_ESMFmesh.nc</mesh>
       <desc>gx1v7 is displaced Greenland pole 1-deg grid with Caspian as a land feature:</desc>
     </domain>
-
     <domain name="gx3v7">
       <nx>100</nx> <ny>116</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.gx3v7.120323.nc</file>
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/gx3v7_120309_ESMFmesh.nc</mesh>
       <desc>gx3v7 is displaced Greenland pole v7 3-deg grid:</desc>
     </domain>
-
     <domain name="tx0.66v1">
       <nx>540</nx> <ny>458</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.66v1.190425.nc</file>
@@ -1779,7 +1790,6 @@
       <desc>tx0.66v1 is tripole v1 0.66-deg MOM6 grid:</desc>
       <support>Experimental for MOM6 experiments</support>
     </domain>
-
     <domain name="tx0.25v1">
       <nx>1440</nx> <ny>1080</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.25v1.190207.nc</file>
@@ -1787,52 +1797,48 @@
       <desc>tx0.25v1 is tripole v1 0.25-deg MOM6 grid:</desc>
       <support>Experimental for MOM6 experiments</support>
     </domain>
-
     <domain name="tx0.1v2">
       <nx>3600</nx> <ny>2400</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v2.161014.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/tx0.1v2_ESMFmesh_cd5_c20210105.nc</mesh>
       <desc>tx0.1v2 is tripole v2 1/10-deg grid:</desc>
       <support>Experimental for high resolution experiments</support>
     </domain>
-
     <domain name="tx0.1v3">
       <nx>3600</nx> <ny>2400</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx0.1v3.170730.nc</file>
       <desc>tx0.1v3 is tripole v3 1/10-deg grid:</desc>
       <support>Experimental for high resolution experiments</support>
     </domain>
-
     <domain name="tx1v1">
       <nx>360</nx> <ny>240</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tx1v1.090122.nc</file>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/tx1v1_ESMFMesh_cd5_c20210105.nc</mesh>
       <desc>tripole v1 1-deg grid: testing proxy for high-res tripole ocean grids- do not use for scientific experiments</desc>
       <support>Experimental tripole ocean grid</support>
     </domain>
-
     <domain name="oQU120">
       <nx>28574</nx>  <ny>1</ny>
       <file mask="oQU120">$DIN_LOC_ROOT/share/domains/domain.ocn.oQU120.160325.nc</file>
       <desc>oQU120 is a MPAS ocean grid that is roughly 1 degree resolution:</desc>
       <support>Experimental, under development</support>
     </domain>
-
-    <!-- ======================================================== -->
-    <!-- ROF domains -->
-    <!-- ======================================================== -->
-
     <domain name="tn1v3">
       <nx>360</nx> <ny>291</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tn1v3.160414.nc</file>
       <desc>tn1v3 is NEMO ORCA1 tripole grid at 1 deg (reduced eORCA):</desc>
       <support>NEMO ORCA1 tripole ocean grid</support>
     </domain>
-
     <domain name="tn0.25v3">
       <nx>1440</nx> <ny>1050</ny>
       <file grid="ocnice">$DIN_LOC_ROOT/share/domains/domain.ocn.tn0.25v3.160721.nc</file>
       <desc>tn0.25v3 is NEMO ORCA1 tripole grid at 1/4 deg (reduced eORCA):</desc>
       <support>NEMO ORCA1 tripole ocean grid</support>
     </domain>
+
+    <!-- ======================================================== -->
+    <!-- ROF domains -->
+    <!-- ======================================================== -->
 
     <domain name="rx1">
       <nx>360</nx> <ny>180</ny>
@@ -1856,7 +1862,9 @@
     <domain name="r05mz_amazon">
       <nx>816</nx> <ny>1</ny>
       <mesh driver="nuopc">$DIN_LOC_ROOT/rof/mizuRoute/meshes/r05_amazon_c110308_ctrcrd_cdf5_ESMFmesh_c20200624.nc</mesh>
-      <desc>r05mz_amazon is the regular 1/2 degree river routing grid, but just over a region in the Amazon (corresponds to the 5x5_amazon region for CTSM):</desc>
+      <desc>
+        r05_amazon is the regular 1/2 degree river routing grid, but over a region in the Amazon (corresponds to the 5x5_amazon region for CTSM)
+      </desc>
     </domain>
 
     <domain name="HDMAmz">
@@ -1920,27 +1928,24 @@
 
     <domain name="JRA025v2">
       <nx>1440</nx> <ny>720</ny>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/lnd/dlnd7/JRA55/JRA.v1.4.runoff.1958_ESMFmesh_cdf5_20201020.nc</mesh>
       <desc>JRA 0.25 degree runoff grid for use with JRA-55 runoff data</desc>
     </domain>
 
     <domain name="JRA025">
       <nx>1440</nx> <ny>720</ny>
-      <!-- TODO (mvertens, 2018-12-02): create a domain file for this  -->
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/JRA025m.170209_ESMFmesh.nc</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/lnd/dlnd7/JRA55/JRA.v1.4.runoff.1958_ESMFmesh_cdf5_20201020.nc</mesh>
       <desc>JRA is 0.25 degree runoff grid for use with JRA-55 runoff data</desc>
     </domain>
 
+    <!-- ======================================================== -->
     <!-- GLC domains -->
+    <!-- ======================================================== -->
 
     <domain name="gland20">
       <nx>76</nx> <ny>141</ny>
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/gland_20km_c150511_ESMFmesh.nc</mesh>
       <desc>20-km Greenland grid</desc>
-    </domain>
-
-    <domain name="gland5UM">
-      <nx>301</nx> <ny>561</ny>
-      <desc>5-km Greenland grid (new version from U. Montana)</desc>
     </domain>
 
     <domain name="gland4">
@@ -1949,7 +1954,9 @@
       <desc>4-km Greenland grid, for use with the glissade dycore</desc>
     </domain>
 
+    <!-- ======================================================== -->
     <!-- WW3 domains-->
+    <!-- ======================================================== -->
 
     <domain name="ww3a">
       <nx>90</nx>  <ny>50</ny>
@@ -1960,71 +1967,110 @@
       <support>For testing of the WAV model</support>
     </domain>
 
-    <!-- fvcubed domains-->
+  </domains>
 
-    <domain name="C24">
-      <nx>3456</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C24_gx1v6.181018.nc</file>
-      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C24_gx1v6.181018.nc</file>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C24_gx1v7.181018.nc</file>
-      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C24_gx1v7.181018.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C24_181018_ESMFmesh.nc</mesh>
-      <desc>C24 is a fvcubed xx-deg grid:</desc>
-      <support>Experimental for fv3 dycore</support>
+  <!-- ======================================================== -->
+  <!-- ATM/LND domains for single point mct driver -->
+  <!-- ======================================================== -->
+
+  <domains driver="mct">
+    <domain name="01col">
+      <nx>1</nx> <ny>1</ny>
+      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
+      <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
+      <desc>01col is a single-column grid for datm and POP:</desc>
     </domain>
-
-    <domain name="C48">
-      <nx>13824</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C48_gx1v6.181018.nc</file>
-      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C48_gx1v6.181018.nc</file>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C48_gx1v7.181018.nc</file>
-      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C48_gx1v7.181018.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C48_181018_ESMFmesh.nc</mesh>
-      <desc>C48 is a fvcubed xx-deg grid:</desc>
-      <support>Experimental for fv3 dycore</support>
+    <domain name="1x1_numaIA">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc</file>
+      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
     </domain>
-
-    <domain name="C96">
-      <nx>55296</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C96_gx1v6.181018.nc</file>
-      <file grid="ocnice"  mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C96_gx1v6.181018.nc</file>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C96_gx1v7.181018.nc</file>
-      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C96_gx1v7.181018.nc</file>
-      <file grid="atm|lnd" mask="tx0.66v1">$DIN_LOC_ROOT/share/domains/domain.lnd.C96_tx0.66v1.181210.nc</file>
-      <file grid="ocnice"  mask="tx0.66v1">$DIN_LOC_ROOT/share/domains/domain.ocn.C96_tx0.66v1.181210.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C96_181018_ESMFmesh.nc</mesh>
-      <desc>C96 is a fvcubed xx-deg grid:</desc>
-      <support>Experimental for fv3 dycore</support>
+    <domain name="1x1_brazil">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-brazil_navy.090715.nc</file>
+      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
     </domain>
-
-    <domain name="C192">
-      <nx>221184</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C192_gx1v6.181018..nc</file>
-      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C192_gx1v6.181018.nc</file>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C192_gx1v7.181018..nc</file>
-      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C192_gx1v7.181018.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C192_181018_ESMFmesh.nc</mesh>
-      <desc>C192 is a fvcubed xx-deg grid:</desc>
-      <support>Experimental for fv3 dycore</support>
+    <domain name="1x1_smallvilleIA">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-smallvilleIA_test.110106.nc</file>
+      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
     </domain>
-
-    <domain name="C384">
-      <nx>884736</nx> <ny>1</ny>
-      <file grid="atm|lnd" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.lnd.C384_gx1v6.181018.nc</file>
-      <file grid="ocnice" mask="gx1v6">$DIN_LOC_ROOT/share/domains/domain.ocn.C384_gx1v6.181018.nc</file>
-      <file grid="atm|lnd" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.lnd.C384_gx1v7.181018.nc</file>
-      <file grid="ocnice" mask="gx1v7">$DIN_LOC_ROOT/share/domains/domain.ocn.C384_gx1v7.181018.nc</file>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/C384_181018_ESMFmesh.nc</mesh>
-      <desc>C384 is a fvcubed xx-deg grid:</desc>
-      <support>Experimental for fv3 dycore</support>
+    <domain name="1x1_camdenNJ">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-camdenNJ_navy.111004.nc</file>
+      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
     </domain>
+    <domain name="1x1_mexicocityMEX">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-mexicocityMEX_navy.090715.nc</file>
+      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_vancouverCAN">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-vancouverCAN_navy.090715.nc</file>
+      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_urbanc_alpha">
+      <nx>1</nx> <ny>1</ny>
+      <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-urbanc_alpha_test.110201.nc</file>
+      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
+  </domains>
 
+  <!-- ======================================================== -->
+  <!-- ATM/LND domains for single point cmeps driver -->
+  <!-- ======================================================== -->
+
+  <domains driver="nuopc">
+    <domain name="01col">
+      <lat>83.144928</lat>
+      <lon>359.150902</lon>
+      <desc>01col is a single-column grid for datm and POP:</desc>
+    </domain>
+    <domain name="CLM_USRDAT">
+      <!-- User must specify lat and lon prior to building case-->
+      <desc>user specified domain - only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_numaIA">
+      <lat>40.6878</lat>
+      <lon>267.0228</lon>
+      <desc>1x1 Numa Iowa -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_brazil">
+      <lat>-7.0</lat>
+      <lon>305.0</lon>
+      <desc>1x1 Brazil -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_smallvilleIA">
+      <lat>40.6878</lat>
+      <lon>267.0228</lon>
+      <desc>1x1 Smallville Iowa Crop Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_camdenNJ">
+      <lat>40.0</lat>
+      <lon>285.0</lon>
+      <desc>1x1 Camden New Jersey -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_mexicocityMEX">
+      <lat>19.5</lat>
+      <lon>260.5</lon>
+      <desc>1x1 Mexico City Mexico -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_vancouverCAN">
+      <lat>49.5</lat>
+      <lon>236.5</lon>
+      <desc>1x1 Vancouver Canada -- only valid for DATM/CLM compset</desc>
+    </domain>
+    <domain name="1x1_urbanc_alpha">
+      <lat>-37.7308</lat>
+      <lon>0.0</lon>
+      <desc>1x1 Urban C Alpha Test Case -- only valid for DATM/CLM compset</desc>
+    </domain>
   </domains>
 
   <!-- ======================================================== -->
   <!-- Mapping -->
   <!-- ======================================================== -->
-
   <!-- The following are the required grid maps that must not be idmap if the   -->
   <!-- attributes grid1 and grid2 are not equal -->
 
@@ -2041,11 +2087,16 @@
     <required_gridmap grid1="atm_grid" grid2="wav_grid">ATM2WAV_SMAPNAME</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="wav_grid">OCN2WAV_SMAPNAME</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="wav_grid">ICE2WAV_SMAPNAME</required_gridmap> <!-- ??? -->
-    <!-- <required_gridmap grid1="ocn_grid" grid2="rof_grid" not_compset="_POP">ROF2OCN_FMAPNAME</required_gridmap> ?? -->
     <required_gridmap grid1="ocn_grid" grid2="rof_grid">ROF2OCN_LIQ_RMAPNAME</required_gridmap>
     <required_gridmap grid1="ocn_grid" grid2="rof_grid">ROF2OCN_ICE_RMAPNAME</required_gridmap>
     <required_gridmap grid1="lnd_grid" grid2="rof_grid">LND2ROF_FMAPNAME</required_gridmap>
     <required_gridmap grid1="lnd_grid" grid2="rof_grid">ROF2LND_FMAPNAME</required_gridmap>
+    <required_gridmap grid1="lnd_grid" grid2="glc_grid">LND2GLC_SMAPNAME</required_gridmap>
+    <required_gridmap grid1="lnd_grid" grid2="glc_grid">LND2GLC_FMAPNAME</required_gridmap>
+    <required_gridmap grid1="glc_grid" grid2="lnd_grid">GLC2LND_SMAPNAME</required_gridmap>
+    <required_gridmap grid1="glc_grid" grid2="lnd_grid">GLC2LND_FMAPNAME</required_gridmap>
+    <required_gridmap grid1="rof_grid" grid2="ocn_grid">ROF2OCN_FMAPNAME</required_gridmap>
+    <required_gridmap grid1="wav_grid" grid2="ocn_grid">WAV2OCN_SMAPNAME</required_gridmap>
   </required_gridmaps>
 
   <xi:include href="config_grids_mct.xml"/>

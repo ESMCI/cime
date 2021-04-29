@@ -1484,6 +1484,20 @@
     </values>
   </entry>
 
+  <entry id="iop_mode" modify_via_xml="IOP_MODE">
+    <type>logical</type>
+    <category>seq_infodata_inparm</category>
+    <group>seq_infodata_inparm</group>
+    <desc>
+      turns on Intensive Observation Period (IOP) mode, a planet covered
+      with homogenous surface and forced identically with a forcing file,
+      set by IOP_MODE in env_case.xml, default: false
+    </desc>
+    <values>
+      <value>$IOP_MODE</value>
+    </values>
+  </entry>
+
   <entry id="single_column" modify_via_xml="PTS_MODE">
     <type>logical</type>
     <category>seq_infodata_inparm</category>
@@ -3070,6 +3084,36 @@
     </values>
   </entry>
 
+  <entry id="info_mprof">
+    <type>integer</type>
+    <category>cime_pes</category>
+    <group>cime_pes</group>
+    <desc>
+      Sets level of memory profile logging:
+      0: no output
+      1: log mem-usage from component ROOTPE tasks
+      2: log mem-usage from all tasks
+      3: aggregate logging to node-level mem-usage on ROOTPE nodes
+      4: aggregate logging to node-level mem-usage on all nodes
+      Aggregation requires info_taskmap_model>0.
+    </desc>
+    <values>
+      <value>$INFO_MPROF</value>
+    </values>
+  </entry>
+
+  <entry id="info_mprof_dt">
+    <type>integer</type>
+    <category>cime_pes</category>
+    <group>cime_pes</group>
+    <desc>
+      number of seconds between memory profiling logs
+    </desc>
+    <values>
+      <value>$INFO_MPROF_DT</value>
+    </values>
+  </entry>
+
   <!-- =========================== -->
   <!-- group prof_inparm           -->
   <!--  in perf_mod.F90            -->
@@ -4581,7 +4625,8 @@
       components that need to look at the same data.
     </desc>
     <values>
-      <value>Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in</value>
+      <value cime_model='cesm'>Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in</value>
+      <value cime_model='e3sm'>Buildconf/eamconf/drv_flds_in,Buildconf/elmconf/drv_flds_in</value>
     </values>
   </entry>
 

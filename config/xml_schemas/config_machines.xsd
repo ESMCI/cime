@@ -15,6 +15,7 @@
   <xs:attribute name="type" type="xs:NCName"/>
   <xs:attribute name="lang" type="xs:NCName"/>
   <xs:attribute name="name" type="xs:NCName"/>
+  <xs:attribute name="source" type="xs:NCName"/>
 
   <!-- simple elements -->
   <xs:simpleType name="upperBoolean">
@@ -200,6 +201,7 @@
       <xs:attribute ref="mpilib"/>
       <xs:attribute ref="threaded"/>
       <xs:attribute ref="unit_testing"/>
+      <xs:attribute ref="comp_interface"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="arguments">
@@ -270,7 +272,8 @@
 
   <xs:element name="env">
     <xs:complexType mixed="true">
-      <xs:attribute ref="name" use="required"/>
+      <xs:attribute ref="name" />
+      <xs:attribute ref="source"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="resource">

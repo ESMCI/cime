@@ -74,7 +74,7 @@ ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
        (2) ref2case
            do a hybrid for ${STOP_N}-${STOP_N}/6 running with ref1 restarts from ${STOP_N}/6
            and writing restarts at ( ${STOP_N} - ${STOP_N}/6 )/2 +1
-	   (by default will run for 18 days and write a restart after 10 days)
+           (by default will run for 18 days and write a restart after 10 days)
            ref2 case is a clone of the main case
            short term archiving is on
        (3) case
@@ -213,6 +213,8 @@ TESTTESTDIFF      Simulates internal test diff (non baseline). Used to check tha
 
 TESTRUNSLOWPASS   After 5 minutes of sleep, pass run step. Used to test timeouts
                   and kills.
+
+TESTRUNUSERXMLCHANGE Test concurrent user modifications via xmlchange while case is running
 
 NODEFAIL          Tests restart upon detected node failure. Generates fake failures,
                   the number of which is controlled by NODEFAIL_NUM_FAILS.
@@ -508,6 +510,19 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
+  <test NAME="TESTRUNUSERXMLCHANGE" INFRASTRUCTURE_TEST="TRUE">
+    <DESC>For testing infra only. Test simultaneous xmlchanges while first run is running.</DESC>
+    <INFO_DBUG>1</INFO_DBUG>
+    <STOP_OPTION>nsteps</STOP_OPTION>
+    <STOP_N>3</STOP_N>
+    <NTASKS>1</NTASKS>
+    <CHECK_TIMING>FALSE</CHECK_TIMING>
+    <REST_OPTION>none</REST_OPTION>
+    <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
+    <HIST_N>$STOP_N</HIST_N>
+    <DOUT_S>FALSE</DOUT_S>
+  </test>
+
   <test NAME="NODEFAIL" INFRASTRUCTURE_TEST="TRUE">
     <DESC>For testing infra only. Tests restart upon detected node failure</DESC>
     <INFO_DBUG>1</INFO_DBUG>
@@ -576,6 +591,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>none</REST_OPTION>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
+    <OCN_DIAG_MODE>none</OCN_DIAG_MODE>
   </test>
 
   <test NAME="MCC">

@@ -87,7 +87,6 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
     logger.info("run command is {} ".format(cmd))
 
     rundir = case.get_value("RUNDIR")
-    loop = True
 
     # MPIRUN_RETRY_REGEX allows the mpi command to be reattempted if the
     # failure described by that regular expression is matched in the model log
@@ -102,6 +101,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
     if node_fail_re:
         node_fail_regex = re.compile(re.escape(node_fail_re))
 
+    loop = True
     while loop:
         loop = False
 
@@ -111,11 +111,23 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
 
         model_log("e3sm", logger, "{} MODEL EXECUTION BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         run_func = lambda: run_cmd_no_fail(cmd, from_dir=rundir)
+        case.flush()
         try:
             run_and_log_case_status(run_func, "model execution", caseroot=case.get_value("CASEROOT"))
             cmd_success = True
         except CIMEError:
             cmd_success = False
+
+        # The run will potentially take a very long time. We need to
+        # allow the user to xmlchange things in their case.
+        #
+        # WARNING: All case variables are reloaded after this call to get the
+        # new values of any variables that may have been changed by
+        # the user during model execution. Thus, any local variables
+        # set from case variables before this point may be
+        # inconsistent with their latest values in the xml files, so
+        # should generally be reloaded (via case.get_value(XXX)) if they are still needed.
+        case.read_xml()
 
         model_log("e3sm", logger, "{} MODEL EXECUTION HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
@@ -143,6 +155,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                     logger.warning("Detected model run failed, restarting")
                     retry_count -= 1
                     loop = True
+
                 if loop:
                     # Archive the last consistent set of restart files and restore them
                     if case.get_value("DOUT_S"):
@@ -185,7 +198,7 @@ def _post_run_check(case, lid):
         if fv3_standalone:
             file_prefix = model
         else:
-            file_prefix = 'med'
+            file_prefix = 'drv'
     else:
         file_prefix = 'cpl'
 
@@ -234,10 +247,10 @@ def _save_logs(case, lid):
 ######################################################################################
 def _resubmit_check(case):
 ###############################################################################
-
-    # check to see if we need to do resubmission from this particular job,
-    # Note that Mira requires special logic
-
+    """
+    check to see if we need to do resubmission from this particular job,
+    Note that Mira requires special logic
+    """
     dout_s = case.get_value("DOUT_S")
     logger.warning("dout_s {} ".format(dout_s))
     mach = case.get_value("MACH")
@@ -285,19 +298,11 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
 ###############################################################################
     model_log("e3sm", logger, "{} CASE.RUN BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
     # Set up the run, run the model, do the postrun steps
-    prerun_script = self.get_value("PRERUN_SCRIPT")
-    postrun_script = self.get_value("POSTRUN_SCRIPT")
-
-    data_assimilation_cycles = self.get_value("DATA_ASSIMILATION_CYCLES")
-    data_assimilation_script = self.get_value("DATA_ASSIMILATION_SCRIPT")
-    data_assimilation = (data_assimilation_cycles > 0 and
-                         len(data_assimilation_script) > 0 and
-                         os.path.isfile(data_assimilation_script))
-
 
     # set up the LID
     lid = new_lid()
 
+    prerun_script = self.get_value("PRERUN_SCRIPT")
     if prerun_script:
         model_log("e3sm", logger, "{} PRERUN_SCRIPT BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         self.flush()
@@ -306,6 +311,13 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
         self.read_xml()
         model_log("e3sm", logger, "{} PRERUN_SCRIPT HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
+    # We might need to tweak these if we want to allow the user to change them
+    data_assimilation_cycles = self.get_value("DATA_ASSIMILATION_CYCLES")
+    data_assimilation_script = self.get_value("DATA_ASSIMILATION_SCRIPT")
+    data_assimilation = (data_assimilation_cycles > 0 and
+                         len(data_assimilation_script) > 0 and
+                         os.path.isfile(data_assimilation_script))
+
     for cycle in range(data_assimilation_cycles):
         # After the first DA cycle, runs are restart runs
         if cycle > 0:
@@ -313,9 +325,16 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
             self.set_value("CONTINUE_RUN",
                            self.get_value("RESUBMIT_SETS_CONTINUE_RUN"))
 
+        # WARNING: All case variables are reloaded during run_model to get
+        # new values of any variables that may have been changed by
+        # the user during model execution. Thus, any local variables
+        # set from case variables before this point may be
+        # inconsistent with their latest values in the xml files, so
+        # should generally be reloaded (via case.get_value(XXX)) if they are still needed.
         model_log("e3sm", logger, "{} RUN_MODEL BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         lid = _run_model(self, lid, skip_pnl, da_cycle=cycle)
         model_log("e3sm", logger, "{} RUN_MODEL HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+
         if self.get_value("CHECK_TIMING") or self.get_value("SAVE_TIMING"):
             model_log("e3sm", logger, "{} GET_TIMING BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
             get_timing(self, lid)     # Run the getTiming script
@@ -336,6 +355,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
         save_postrun_provenance(self)
         model_log("e3sm", logger, "{} SAVE_POSTRUN_PROVENANCE HAS FINISHED".format(time.strftime("%Y-%m-%d %H:%M:%S")))
 
+    postrun_script = self.get_value("POSTRUN_SCRIPT")
     if postrun_script:
         model_log("e3sm", logger, "{} POSTRUN_SCRIPT BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")))
         self.flush()

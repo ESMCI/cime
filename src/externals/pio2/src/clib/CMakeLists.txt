@@ -6,10 +6,15 @@ project (PIOC C)
 #  DEFINE THE TARGET
 #==============================================================================
 
-add_library (pioc topology.c pio_file.c pioc_support.c pio_lists.c
-  pioc.c pioc_sc.c pio_spmd.c pio_rearrange.c pio_nc4.c bget.c
+set (src topology.c pio_file.c pioc_support.c pio_lists.c
+  pioc.c pioc_sc.c pio_spmd.c pio_rearrange.c pio_nc4.c 
   pio_nc.c pio_put_nc.c pio_get_nc.c pio_getput_int.c pio_msg.c
-  pio_darray.c pio_darray_int.c pio_get_vard.c pio_put_vard.c)
+  pio_darray.c pio_darray_int.c pio_get_vard.c pio_put_vard.c pio_error.c)
+if (NETCDF_INTEGRATION)
+  set (src ${src} ../ncint/nc_get_vard.c ../ncint/ncintdispatch.c ../ncint/ncint_pio.c ../ncint/nc_put_vard.c)
+endif ()
+
+add_library (pioc ${src})
 
 # set up include-directories
 include_directories(
@@ -21,6 +26,10 @@ include_directories(
 target_include_directories (pioc
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Include the ncint source directory
+target_include_directories (pioc
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ncint)
+
 # System and compiler CPP directives
 target_compile_definitions (pioc
   PUBLIC ${CMAKE_SYSTEM_DIRECTIVE})
@@ -29,17 +38,13 @@ target_compile_definitions (pioc
 
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-  target_compile_options (pioc
-    PRIVATE -std=c99)
+  string(APPEND CMAKE_C_FLAGS  " -std=c99 " )
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "PGI")
-  target_compile_options (pioc
-    PRIVATE -c99)
+  string(APPEND CMAKE_C_FLAGS  " -c99 ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
-  target_compile_options (pioc
-    PRIVATE -std=c99 -debug minimal)
+  string(APPEND CMAKE_C_FLAGS  " -std=c99 -debug minimal ")
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-  target_compile_options (pioc
-    PRIVATE -std=c99)
+  string(APPEND CMAKE_C_FLAGS  " -std=c99 ")
 endif()
 
 #==============================================================================
@@ -70,7 +75,6 @@ endif ()
 
 #===== GPTL =====
 if (PIO_ENABLE_TIMING)
-  find_package (GPTL COMPONENTS C QUIET)
   if (GPTL_C_FOUND)
     message (STATUS "Found GPTL C: ${GPTL_C_LIBRARIES}")
     target_include_directories (pioc
@@ -87,53 +91,27 @@ if (PIO_ENABLE_TIMING)
 endif ()
 
 #===== NetCDF-C =====
-find_package (NetCDF "4.3.3" COMPONENTS C)
 if (NetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${NetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _NETCDF)
   target_link_libraries (pioc
     PUBLIC ${NetCDF_C_LIBRARIES})
-  if (${NetCDF_C_HAS_PARALLEL})
-    target_compile_definitions (pioc
-      PUBLIC _NETCDF4)
-  endif ()
   if (${NetCDF_C_LOGGING_ENABLED})
-    target_compile_definitions (pioc
-      PUBLIC NETCDF_C_LOGGING_ENABLED)
     # netcdf.h needs this to be defined to use netCDF logging.
     target_compile_definitions (pioc
       PUBLIC LOGGING)
   endif()
-else ()
-  target_compile_definitions (pioc
-    PUBLIC _NONETCDF)
 endif ()
 
 #===== PnetCDF-C =====
-if (WITH_PNETCDF)
-  find_package (PnetCDF "1.7.0" COMPONENTS C)
-endif ()
 if (PnetCDF_C_FOUND)
   target_include_directories (pioc
     PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
-  target_compile_definitions (pioc
-    PUBLIC _PNETCDF)
   target_link_libraries (pioc
     PUBLIC ${PnetCDF_C_LIBRARIES})
 
   # Check library for varn functions
   set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_C_LIBRARY})
-  check_function_exists (ncmpi_get_varn PnetCDF_C_HAS_VARN)
-  if (PnetCDF_C_HAS_VARN)
-    target_compile_definitions(pioc
-      PUBLIC USE_PNETCDF_VARN
-      PUBLIC USE_PNETCDF_VARN_ON_READ)
-  endif()
-else ()
-  target_compile_definitions (pioc
-    PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====
@@ -161,3 +139,16 @@ CHECK_TYPE_SIZE("long long" SIZEOF_LONG_LONG)
 if (NOT ${SIZEOF_SIZE_T} EQUAL ${SIZEOF_LONG_LONG})
   message (FATAL_ERROR "size_t and long long must be the same size!")
 endif ()
+
+set(CFLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}" PARENT_SCOPE)
+get_target_property(cppdefs pioc COMPILE_DEFINITIONS)
+get_target_property(includes pioc INCLUDE_DIRECTORIES)
+foreach(x IN LISTS cppdefs)
+  string(APPEND CPPFLAGS " -D${x}")
+endforeach()
+foreach(x IN LISTS includes)
+  if (x)
+    string(APPEND CPPFLAGS " -I${x}")
+  endif()
+endforeach()
+set(CPPFLAGS ${CPPFLAGS} PARENT_SCOPE)

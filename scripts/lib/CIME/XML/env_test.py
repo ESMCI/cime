@@ -35,8 +35,9 @@ class EnvTest(EnvBase):
                     case.set_value(self.name(child),self.text(child),ignore_type=True)
                 else:
                     item_type = case.get_type_info(self.name(child))
-                    value = convert_to_type(self.text(child),item_type,self.name(child))
-                    case.set_value(self.name(child),value)
+                    if item_type:
+                        value = convert_to_type(self.text(child),item_type,self.name(child))
+                        case.set_value(self.name(child),value)
         case.flush()
         return
 

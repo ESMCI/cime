@@ -336,7 +336,7 @@ def get_model():
             model = 'cesm'
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                 for line in fd:
-                    if re.search('fv3gfs', line):
+                    if re.search('ufs', line):
                         model = 'ufs'
         else:
             model = 'e3sm'
@@ -458,7 +458,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
 def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
             arg_stdout=_hack, arg_stderr=_hack, env=None,
-            combine_output=False, timeout=None):
+            combine_output=False, timeout=None, executable=None):
     """
     Wrapper around subprocess to make it much more convenient to run shell commands
 
@@ -493,6 +493,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
                                     stderr=arg_stderr,
                                     stdin=stdin,
                                     cwd=from_dir,
+                                    executable=executable,
                                     env=env)
 
             output, errput = proc.communicate(input_str)
@@ -503,6 +504,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
                                 stderr=arg_stderr,
                                 stdin=stdin,
                                 cwd=from_dir,
+                                executable=executable,
                                 env=env)
 
         output, errput = proc.communicate(input_str)
@@ -554,7 +556,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
 
 def run_cmd_no_fail(cmd, input_str=None, from_dir=None, verbose=None,
                     arg_stdout=_hack, arg_stderr=_hack, env=None,
-                    combine_output=False, timeout=None):
+                    combine_output=False, timeout=None, executable=None):
     """
     Wrapper around subprocess to make it much more convenient to run shell commands.
     Expects command to work. Just returns output string.
@@ -572,7 +574,8 @@ def run_cmd_no_fail(cmd, input_str=None, from_dir=None, verbose=None,
     True
     """
     stat, output, errput = run_cmd(cmd, input_str, from_dir, verbose, arg_stdout,
-                                   arg_stderr, env, combine_output, timeout=timeout)
+                                   arg_stderr, env, combine_output,
+                                   executable=executable, timeout=timeout)
     if stat != 0:
         # If command produced no errput, put output in the exception since we
         # have nothing else to go on.
@@ -861,6 +864,18 @@ def match_any(item, re_list):
             return True
 
     return False
+
+def get_current_submodule_status(recursive=False, repo=None):
+    """
+    Return the sha1s of the current currently checked out commit for each submodule,
+    along with the submodule path and the output of git describe for the SHA-1.
+
+    >>> get_current_submodule_status() is not None
+    True
+    """
+    rc, output, _ = run_cmd("git submodule status {}".format("--recursive" if recursive else ""), from_dir=repo)
+
+    return output if rc == 0 else "unknown"
 
 def safe_copy(src_path, tgt_path, preserve_meta=True):
     """

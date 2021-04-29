@@ -1,7 +1,5 @@
 /*
- * Tests for PIO distributed arrays. This test demonstrates problems
- * with the fill value that can arrise from mixing types in a
- * decomposition.
+ * Tests for PIO distributed arrays.
  *
  * @author Ed Hartnett
  */
@@ -61,14 +59,15 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  *
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition.
+ * @param ioid_float the ID of the decomposition for floats.
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
  * @param test_comm the communicator that is running this test.
  * @returns 0 for success, error code otherwise.
  */
-int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
-                         int my_rank, MPI_Comm test_comm)
+int test_multivar_darray(int iosysid, int ioid, int ioid_float, int num_flavors,
+                         int *flavor, int my_rank, MPI_Comm test_comm)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];     /* The dimension IDs. */
@@ -133,11 +132,11 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 ERR(ret);
 
             int *fvp_int = NULL;
-            /* float *fvp_float = NULL; */
+            float *fvp_float = NULL;
             if (use_fv)
             {
                 fvp_int = &custom_fillvalue_int;
-                /* fvp_float = &custom_fillvalue_float; */
+                fvp_float = &custom_fillvalue_float;
             }
 
             /* Write the data. */
@@ -147,84 +146,90 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             if ((ret = PIOc_write_darray(ncid, varid[1], ioid, arraylen, test_data_int,
                                          fvp_int)))
                 ERR(ret);
+            if ((ret = PIOc_write_darray(ncid, varid[2], ioid_float, arraylen, test_data_float,
+                                         fvp_float)))
+                ERR(ret);
 
             /* This should not work since we cannot mix record and not
              * record vars. */
-	    int frame[NUM_VAR] = {0, 0, 0};
+            int frame[NUM_VAR] = {0, 0, 0};
 
             if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
                                         frame, NULL, 0) != PIO_EVARDIMMISMATCH)
                 ERR(ERR_WRONG);
-
-	    /* This should work since int and float are the same size
-             * and both are record vars. */
-            if ((ret = PIOc_write_darray_multi(ncid, varid+1, ioid, NUM_VAR-1, arraylen * (NUM_VAR-1), test_data_float,
-					       frame, NULL, 0)))
-                ERR(ret);
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
                 ERR(ret);
 
             /* Check the file contents. */
-            /* { */
-            /*     int ncid2;            /\* The ncid of the re-opened netCDF file. *\/ */
-            /*     int test_data_int_in[arraylen]; */
-            /*     /\* float test_data_float_in[arraylen]; *\/ */
+            {
+                int ncid2;            /* The ncid of the re-opened netCDF file. */
+                int test_data_int_in[arraylen];
+                float test_data_float_in[arraylen];
+                PIO_Offset idx[NDIM] = {0, 0, 3};
+                int file_fv_int;
+                float file_fv_float;
 
-            /*     /\* Reopen the file. *\/ */
-            /*     if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
-            /*         ERR(ret); */
+                /* Reopen the file. */
+                if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+                    ERR(ret);
 
-            /*     /\* Read the var data with read_darray(). *\/ */
-            /*     for (int v = 0; v < NUM_VAR; v++) */
-            /*     { */
-            /*         if (v < NUM_VAR - 1) */
-            /*         { */
-            /*             if ((ret = PIOc_setframe(ncid2, varid[v], 0))) */
-            /*                 ERR(ret); */
+                /* Read the var data with read_darray(). */
+                if ((ret = PIOc_setframe(ncid2, varid[1], 0)))
+                    ERR(ret);
+                if ((ret = PIOc_setframe(ncid2, varid[2], 0)))
+                    ERR(ret);
 
-            /*             /\* Read the data. *\/ */
-            /*             if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
-            /*                 ERR(ret); */
+                /* Read the data. */
+                if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_int_in)))
+                    ERR(ret);
 
-            /*             /\* Check the results. *\/ */
-            /*             for (int f = 0; f < arraylen; f++) */
-            /*                 if (test_data_int_in[f] != test_data_int[f]) */
-            /*                     return ERR_WRONG; */
-            /*         } */
-            /*     } /\* next var *\/ */
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
+                    if (test_data_int_in[f] != test_data_int[f])
+                        return ERR_WRONG;
 
-            /*     /\* Now read the fill values. *\/ */
-            /*     PIO_Offset idx[NDIM] = {0, 0, 3}; */
-            /*     int file_fv_int; */
-            /*     float file_fv_float; */
+                if ((ret = PIOc_read_darray(ncid2, varid[1], ioid, arraylen, test_data_int_in)))
+                    ERR(ret);
 
-            /*     /\* Check an int fill value. *\/ */
-            /*     if ((ret = PIOc_get_var1_int(ncid2, 1, idx, &file_fv_int))) */
-            /*         return ret; */
-            /*     if (use_fv) */
-            /*     { */
-            /*         if (file_fv_int != custom_fillvalue_int) */
-            /*             return ERR_WRONG; */
-            /*     } */
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
+                    if (test_data_int_in[f] != test_data_int[f])
+                        return ERR_WRONG;
 
-            /*     /\* Check the float fill value. *\/ */
-            /*     if ((ret = PIOc_get_var1_float(ncid2, 2, idx, &file_fv_float))) */
-            /*         return ret; */
-            /*     /\* if (use_fv) *\/ */
-            /*     /\* { *\/ */
-            /*     /\*     if (file_fv_float != custom_fillvalue_float) *\/ */
-            /*     /\*         return ERR_WRONG; *\/ */
-            /*     /\* } *\/ */
+                if ((ret = PIOc_read_darray(ncid2, varid[2], ioid_float, arraylen, test_data_float_in)))
+                    ERR(ret);
 
-            /*     /\* Close the netCDF file. *\/ */
-            /*     if ((ret = PIOc_closefile(ncid2))) */
-            /*         ERR(ret); */
-            /* } */
-        }
-    }
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
+                    if (test_data_float_in[f] != test_data_float[f])
+                        return ERR_WRONG;
 
+                /* Check an int fill value. */
+                if ((ret = PIOc_get_var1_int(ncid2, varid[1], idx, &file_fv_int)))
+                    return ret;
+                if (use_fv)
+                {
+                    if (file_fv_int != custom_fillvalue_int)
+                        return ERR_WRONG;
+                }
+                
+                /* Check the float fill value. */
+                if ((ret = PIOc_get_var1_float(ncid2, varid[2], idx, &file_fv_float)))
+                    return ret;
+                if (use_fv)
+                {
+                    if (file_fv_float != custom_fillvalue_float)
+                        return ERR_WRONG;
+                }
+
+                /* Close the netCDF file. */
+                if ((ret = PIOc_closefile(ncid2)))
+                    ERR(ret);
+            }
+        } /* next fillvalue test */
+    } /* next iotype */
     return PIO_NOERR;
 }
 
@@ -277,7 +282,7 @@ int main(int argc, char **argv)
     int my_rank;
     int ntasks;
     MPI_Comm test_comm;      /* A communicator for this test. */
-    int ioid;
+    int ioid, ioid_float;
     int ret;                 /* Return code. */
 
     /* Initialize test. */
@@ -294,9 +299,9 @@ int main(int argc, char **argv)
         int iosysid;              /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-	int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
-	int num_flavors;         /* Number of PIO netCDF flavors in this build. */
-	int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+        int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
+        int num_flavors;         /* Number of PIO netCDF flavors in this build. */
+        int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
 
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
@@ -313,13 +318,22 @@ int main(int argc, char **argv)
                                      &ioid, PIO_INT)))
             return ret;
 
+        /* Decompose the data over the tasks for floats. */
+        if ((ret = create_dcomp_gaps(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
+                                     &ioid_float, PIO_FLOAT)))
+            return ret;
+
         /* Run the multivar darray tests. */
-        if ((ret = test_multivar_darray(iosysid, ioid, num_flavors, flavor, my_rank,
+        if ((ret = test_multivar_darray(iosysid, ioid, ioid_float, num_flavors, flavor, my_rank,
                                         test_comm)))
             return ret;
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
+
+        /* Free the PIO decomposition for floats. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid_float)))
             ERR(ret);
 
         /* Finalize PIO system. */

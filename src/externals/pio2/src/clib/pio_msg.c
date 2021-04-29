@@ -474,6 +474,7 @@ int inq_att_handler(iosystem_desc_t *ios)
     int varid;
     char name[PIO_MAX_NAME + 1];
     int namelen;
+    int eh;
     nc_type xtype, *xtypep = NULL;
     PIO_Offset len, *lenp = NULL;
     char xtype_present, len_present;
@@ -497,6 +498,8 @@ int inq_att_handler(iosystem_desc_t *ios)
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&eh, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Match NULLs in collective function call. */
     if (xtype_present)
@@ -505,7 +508,7 @@ int inq_att_handler(iosystem_desc_t *ios)
         lenp = &len;
 
     /* Call the function to learn about the attribute. */
-    PIOc_inq_att(ncid, varid, name, xtypep, lenp);
+    PIOc_inq_att_eh(ncid, varid, name, eh, xtypep, lenp);
 
     return PIO_NOERR;
 }
@@ -779,7 +782,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     if (start_present)
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
-    PLOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
+    /* PLOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims)); */
     if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
     if (count_present)
@@ -1499,7 +1502,7 @@ int def_var_handler(iosystem_desc_t *ios)
     PLOG((1, "def_var_handler comproot = %d", ios->comproot));
     assert(ios);
 
-    /* Get the parameters for this function that the he comp master
+    /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -2104,10 +2107,13 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler iosysid %d",iosysid));
     if ((mpierr = MPI_Bcast(&pio_type, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler pio_type %d", pio_type));
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler ndims %d", ndims));
 
     /* Now we know the size of these arrays. */
     int dims[ndims];
@@ -2116,8 +2122,11 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
 
     if ((mpierr = MPI_Bcast(dims, ndims, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    for(int i=0; i<ndims; i++)
+        PLOG((3, "initdecomp_dof_handler dims[%d] %d", i, dims[i]));
     if ((mpierr = MPI_Bcast(&maplen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+    PLOG((3, "initdecomp_dof_handler maplen %d", maplen));
 
     PIO_Offset *compmap;
     if (!(compmap = malloc(maplen * sizeof(PIO_Offset))))
@@ -2294,7 +2303,7 @@ int read_darray_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int ioid;
-    int arraylen;
+    PIO_Offset arraylen;
     void *data = NULL;
     int mpierr;
 
@@ -2317,6 +2326,7 @@ int read_darray_handler(iosystem_desc_t *ios)
     PIOc_read_darray(ncid, varid, ioid, arraylen, data);
 
     PLOG((1, "read_darray_handler succeeded!"));
+
     return PIO_NOERR;
 }
 
@@ -2574,6 +2584,34 @@ int finalize_handler(iosystem_desc_t *ios, int index)
 }
 
 /**
+ * Set the log level.
+ *
+ * @param ios pointer to iosystem info
+ * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
+ */
+int set_loglevel_handler(iosystem_desc_t *ios)
+{
+#if PIO_ENABLE_LOGGING
+    int iosysid;
+    int level;
+    int mpierr;
+#endif
+
+    PLOG((0, "set_loglevel_handler called"));
+    assert(ios);
+#if PIO_ENABLE_LOGGING
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    PIOc_set_global_log_level(iosysid, level);
+
+#endif
+    return PIO_NOERR;
+}
+
+
+/**
  * This function is called by the IO tasks.  This function will not
  * return, unless there is an error.
  *
@@ -2590,9 +2628,10 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
     iosystem_desc_t *my_iosys;
     int msg = PIO_MSG_NULL, messages[component_count];
     MPI_Request req[component_count];
-    MPI_Status status;
-    int index;
+    MPI_Status status[component_count];
+    int index[component_count];
     int open_components = component_count;
+    int outcount;
     int finalize = 0;
     int mpierr;
     int ret = PIO_NOERR;
@@ -2607,7 +2646,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         for (int cmp = 0; cmp < component_count; cmp++)
         {
             my_iosys = iosys[cmp];
-            PLOG((1, "about to call MPI_Irecv union_comm = %d", my_iosys->union_comm));
+            PLOG((1, "about to call MPI_Irecv union_comm = %d comproot %d", my_iosys->union_comm, my_iosys->comproot));
             if ((mpierr = MPI_Irecv(&(messages[cmp]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
                                     my_iosys->union_comm, &req[cmp])))
                 return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
@@ -2629,213 +2668,231 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
                   req[0], MPI_REQUEST_NULL));
             for (int c = 0; c < component_count; c++)
                 PLOG((3, "req[%d] = %d", c, req[c]));
-            if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
+            //            if ((mpierr = MPI_Waitany(component_count, req, &index, &status))){
+            if ((mpierr = MPI_Waitsome(component_count, req, &outcount, index, status))){
+                PLOG((0, "Error from mpi_waitsome %d",mpierr));
                 return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-            PLOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
-            msg = messages[index];
+            }
+            for(int c = 0; c < outcount; c++)
+              PLOG((3, "Waitsome returned index = %d req[%d] = %d", index[c], index[c], req[index[c]]));
+            //            msg = messages[index];
             for (int c = 0; c < component_count; c++)
                 PLOG((3, "req[%d] = %d", c, req[c]));
         }
-
-        /* Broadcast the index of the computational component that
-         * originated the request to the rest of the IO tasks. */
-        PLOG((3, "About to do Bcast of index = %d io_comm = %d", index, io_comm));
-        if ((mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, io_comm)))
+        if ((mpierr = MPI_Bcast(&outcount, 1, MPI_INT, 0, io_comm)))
             return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-        PLOG((3, "index MPI_Bcast complete index = %d", index));
+        PLOG((3, "outcount MPI_Bcast complete outcount = %d", outcount));
 
-        /* Set the correct iosys depending on the index. */
-        my_iosys = iosys[index];
-
-        /* Broadcast the msg value to the rest of the IO tasks. */
-        PLOG((3, "about to call msg MPI_Bcast io_comm = %d", io_comm));
-        if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, io_comm)))
-            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-        PLOG((1, "pio_msg_handler2 msg MPI_Bcast complete msg = %d", msg));
-
-        /* Handle the message. This code is run on all IO tasks. */
-        switch (msg)
+        for(int creq=0; creq < outcount; creq++)
         {
-        case PIO_MSG_INQ_TYPE:
-            ret = inq_type_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_FORMAT:
-            ret = inq_format_handler(my_iosys);
-            break;
-        case PIO_MSG_CREATE_FILE:
-            ret = create_file_handler(my_iosys);
-            break;
-        case PIO_MSG_SYNC:
-            ret = sync_file_handler(my_iosys);
-            break;
-        case PIO_MSG_ENDDEF:
-        case PIO_MSG_REDEF:
-            ret = change_def_file_handler(my_iosys, msg);
-            break;
-        case PIO_MSG_OPEN_FILE:
-            ret = open_file_handler(my_iosys);
-            break;
-        case PIO_MSG_CLOSE_FILE:
-            ret = close_file_handler(my_iosys);
-            break;
-        case PIO_MSG_DELETE_FILE:
-            ret = delete_file_handler(my_iosys);
-            break;
-        case PIO_MSG_RENAME_DIM:
-            ret = rename_dim_handler(my_iosys);
-            break;
-        case PIO_MSG_RENAME_VAR:
-            ret = rename_var_handler(my_iosys);
-            break;
-        case PIO_MSG_RENAME_ATT:
-            ret = rename_att_handler(my_iosys);
-            break;
-        case PIO_MSG_DEL_ATT:
-            ret = delete_att_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_DIM:
-            ret = def_dim_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_VAR:
-            ret = def_var_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_VAR_CHUNKING:
-            ret = def_var_chunking_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_VAR_FILL:
-            ret = def_var_fill_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_VAR_ENDIAN:
-            ret = def_var_endian_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_VAR_DEFLATE:
-            ret = def_var_deflate_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_ENDIAN:
-            ret = inq_var_endian_handler(my_iosys);
-            break;
-        case PIO_MSG_SET_VAR_CHUNK_CACHE:
-            ret = set_var_chunk_cache_handler(my_iosys);
-            break;
-        case PIO_MSG_GET_VAR_CHUNK_CACHE:
-            ret = get_var_chunk_cache_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ:
-            ret = inq_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_UNLIMDIMS:
-            ret = inq_unlimdims_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_DIM:
-            ret = inq_dim_handler(my_iosys, msg);
-            break;
-        case PIO_MSG_INQ_DIMID:
-            ret = inq_dimid_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR:
-            ret = inq_var_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_CHUNKING:
-            ret = inq_var_chunking_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_FILL:
-            ret = inq_var_fill_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_DEFLATE:
-            ret = inq_var_deflate_handler(my_iosys);
-            break;
-        case PIO_MSG_GET_ATT:
-            ret = att_get_handler(my_iosys);
-            break;
-        case PIO_MSG_PUT_ATT:
-            ret = att_put_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VARID:
-            ret = inq_varid_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_ATT:
-            ret = inq_att_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_ATTNAME:
-            ret = inq_attname_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_ATTID:
-            ret = inq_attid_handler(my_iosys);
-            break;
-        case PIO_MSG_GET_VARS:
-            ret = get_vars_handler(my_iosys);
-            break;
-        case PIO_MSG_PUT_VARS:
-            ret = put_vars_handler(my_iosys);
-            break;
-        case PIO_MSG_INITDECOMP_DOF:
-            ret = initdecomp_dof_handler(my_iosys);
-            break;
-        case PIO_MSG_WRITEDARRAYMULTI:
-            ret = write_darray_multi_handler(my_iosys);
-            break;
-        case PIO_MSG_SETFRAME:
-            ret = setframe_handler(my_iosys);
-            break;
-        case PIO_MSG_ADVANCEFRAME:
-            ret = advanceframe_handler(my_iosys);
-            break;
-        case PIO_MSG_READDARRAY:
-            ret = read_darray_handler(my_iosys);
-            break;
-        case PIO_MSG_SETERRORHANDLING:
-            ret = seterrorhandling_handler(my_iosys);
-            break;
-        case PIO_MSG_SET_CHUNK_CACHE:
-            ret = set_chunk_cache_handler(my_iosys);
-            break;
-        case PIO_MSG_GET_CHUNK_CACHE:
-            ret = get_chunk_cache_handler(my_iosys);
-            break;
-        case PIO_MSG_FREEDECOMP:
-            ret = freedecomp_handler(my_iosys);
-            break;
-        case PIO_MSG_SET_FILL:
-            ret = set_fill_handler(my_iosys);
-            break;
-        case PIO_MSG_EXIT:
-            finalize++;
-            ret = finalize_handler(my_iosys, index);
-            break;
-        default:
-            PLOG((0, "unknown message received %d", msg));
-            return PIO_EINVAL;
-        }
+          int idx = index[creq];
+          /* Broadcast the index of the computational component that
+           * originated the request to the rest of the IO tasks. */
+          PLOG((3, "About to do Bcast of index = %d io_comm = %d", index, io_comm));
+          if ((mpierr = MPI_Bcast(&idx, 1, MPI_INT, 0, io_comm)))
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+          PLOG((3, "index MPI_Bcast complete index = %d", idx));
+          msg = messages[idx];
 
-        /* If an error was returned by the handler, exit. */
-        PLOG((3, "pio_msg_handler2 ret %d msg %d index %d io_rank %d", ret, msg, index, io_rank));
-        if (ret)
+          /* Set the correct iosys depending on the index. */
+          my_iosys = iosys[idx];
+
+          /* Broadcast the msg value to the rest of the IO tasks. */
+          PLOG((3, "about to call msg MPI_Bcast io_comm = %d", io_comm));
+          if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, io_comm)))
+            return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
+          PLOG((1, "pio_msg_handler2 msg MPI_Bcast complete msg = %d", msg));
+
+          /* Handle the message. This code is run on all IO tasks. */
+          switch (msg)
+            {
+            case PIO_MSG_INQ_TYPE:
+              ret = inq_type_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_FORMAT:
+              ret = inq_format_handler(my_iosys);
+              break;
+            case PIO_MSG_CREATE_FILE:
+              ret = create_file_handler(my_iosys);
+              break;
+            case PIO_MSG_SYNC:
+              ret = sync_file_handler(my_iosys);
+              break;
+            case PIO_MSG_ENDDEF:
+            case PIO_MSG_REDEF:
+              PLOG((2, "pio_msg_handler calling change_def_file_handler"));
+              ret = change_def_file_handler(my_iosys, msg);
+              break;
+            case PIO_MSG_OPEN_FILE:
+              ret = open_file_handler(my_iosys);
+              break;
+            case PIO_MSG_CLOSE_FILE:
+              ret = close_file_handler(my_iosys);
+              break;
+            case PIO_MSG_DELETE_FILE:
+              ret = delete_file_handler(my_iosys);
+              break;
+            case PIO_MSG_RENAME_DIM:
+              ret = rename_dim_handler(my_iosys);
+              break;
+            case PIO_MSG_RENAME_VAR:
+              ret = rename_var_handler(my_iosys);
+              break;
+            case PIO_MSG_RENAME_ATT:
+              ret = rename_att_handler(my_iosys);
+              break;
+            case PIO_MSG_DEL_ATT:
+              ret = delete_att_handler(my_iosys);
+              break;
+            case PIO_MSG_DEF_DIM:
+              ret = def_dim_handler(my_iosys);
+              break;
+            case PIO_MSG_DEF_VAR:
+              ret = def_var_handler(my_iosys);
+              break;
+            case PIO_MSG_DEF_VAR_CHUNKING:
+              ret = def_var_chunking_handler(my_iosys);
+              break;
+            case PIO_MSG_DEF_VAR_FILL:
+              ret = def_var_fill_handler(my_iosys);
+              break;
+            case PIO_MSG_DEF_VAR_ENDIAN:
+              ret = def_var_endian_handler(my_iosys);
+              break;
+            case PIO_MSG_DEF_VAR_DEFLATE:
+              ret = def_var_deflate_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_VAR_ENDIAN:
+              ret = inq_var_endian_handler(my_iosys);
+              break;
+            case PIO_MSG_SET_VAR_CHUNK_CACHE:
+              ret = set_var_chunk_cache_handler(my_iosys);
+              break;
+            case PIO_MSG_GET_VAR_CHUNK_CACHE:
+              ret = get_var_chunk_cache_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ:
+              ret = inq_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_UNLIMDIMS:
+              ret = inq_unlimdims_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_DIM:
+              ret = inq_dim_handler(my_iosys, msg);
+              break;
+            case PIO_MSG_INQ_DIMID:
+              ret = inq_dimid_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_VAR:
+              ret = inq_var_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_VAR_CHUNKING:
+              ret = inq_var_chunking_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_VAR_FILL:
+              ret = inq_var_fill_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_VAR_DEFLATE:
+              ret = inq_var_deflate_handler(my_iosys);
+              break;
+            case PIO_MSG_GET_ATT:
+              ret = att_get_handler(my_iosys);
+              break;
+            case PIO_MSG_PUT_ATT:
+              ret = att_put_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_VARID:
+              ret = inq_varid_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_ATT:
+              ret = inq_att_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_ATTNAME:
+              ret = inq_attname_handler(my_iosys);
+              break;
+            case PIO_MSG_INQ_ATTID:
+              ret = inq_attid_handler(my_iosys);
+              break;
+            case PIO_MSG_GET_VARS:
+              ret = get_vars_handler(my_iosys);
+              break;
+            case PIO_MSG_PUT_VARS:
+              ret = put_vars_handler(my_iosys);
+              break;
+            case PIO_MSG_INITDECOMP_DOF:
+              ret = initdecomp_dof_handler(my_iosys);
+              break;
+            case PIO_MSG_WRITEDARRAYMULTI:
+              ret = write_darray_multi_handler(my_iosys);
+              break;
+            case PIO_MSG_SETFRAME:
+              ret = setframe_handler(my_iosys);
+              break;
+            case PIO_MSG_ADVANCEFRAME:
+              ret = advanceframe_handler(my_iosys);
+              break;
+            case PIO_MSG_READDARRAY:
+              ret = read_darray_handler(my_iosys);
+              break;
+            case PIO_MSG_SETERRORHANDLING:
+              ret = seterrorhandling_handler(my_iosys);
+              break;
+            case PIO_MSG_SET_CHUNK_CACHE:
+              ret = set_chunk_cache_handler(my_iosys);
+              break;
+            case PIO_MSG_GET_CHUNK_CACHE:
+              ret = get_chunk_cache_handler(my_iosys);
+              break;
+            case PIO_MSG_FREEDECOMP:
+              ret = freedecomp_handler(my_iosys);
+              break;
+            case PIO_MSG_SET_FILL:
+              ret = set_fill_handler(my_iosys);
+              break;
+            case PIO_MSG_SETLOGLEVEL:
+              ret = set_loglevel_handler(my_iosys);
+              break;
+            case PIO_MSG_EXIT:
+              finalize++;
+              ret = finalize_handler(my_iosys, idx);
+              break;
+            default:
+              PLOG((0, "unknown message received %d", msg));
+              return PIO_EINVAL;
+            }
+
+          /* If an error was returned by the handler, exit. */
+          PLOG((3, "pio_msg_handler2 ret %d msg %d index %d io_rank %d", ret, msg, idx, io_rank));
+          if (ret)
             return pio_err(my_iosys, NULL, ret, __FILE__, __LINE__);
 
-        /* Listen for another msg from the component whose message we
-         * just handled. */
-        if (!io_rank && !finalize)
-        {
-            my_iosys = iosys[index];
-            PLOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
-                  index, my_iosys->comproot, my_iosys->union_comm));
-            if ((mpierr = MPI_Irecv(&(messages[index]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
-                                    &req[index])))
+          /* Listen for another msg from the component whose message we
+           * just handled. */
+          if (!io_rank && !finalize)
+            {
+              my_iosys = iosys[idx];
+              PLOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
+                    idx, my_iosys->comproot, my_iosys->union_comm));
+              if ((mpierr = MPI_Irecv(&(messages[idx]), 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
+                                      &req[idx])))
                 return check_mpi(NULL, NULL, mpierr, __FILE__, __LINE__);
-            PLOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d", index, req[index]));
-        }
+              PLOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d", index, req[idx]));
+            }
 
-        PLOG((3, "pio_msg_handler2 done msg = %d open_components = %d",
-              msg, open_components));
-        msg = PIO_MSG_NULL;
-        /* If there are no more open components, exit. */
-        if (finalize)
-        {
-            if (--open_components)
+          PLOG((3, "pio_msg_handler2 done msg = %d open_components = %d",
+                msg, open_components));
+          msg = PIO_MSG_NULL;
+          /* If there are no more open components, exit. */
+          if (finalize)
+            {
+              if (--open_components)
                 finalize = 0;
-            else
+              else
                 break;
+            }
         }
+        if (finalize)
+          break;
     }
 
     PLOG((3, "returning from pio_msg_handler2"));

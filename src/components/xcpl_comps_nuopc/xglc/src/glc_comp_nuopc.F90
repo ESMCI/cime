@@ -6,27 +6,25 @@ module glc_comp_nuopc
 
   use ESMF
   use NUOPC            , only : NUOPC_CompDerive, NUOPC_CompSetEntryPoint, NUOPC_CompSpecialize
-  use NUOPC            , only : NUOPC_CompAttributeGet, NUOPC_Advertise
+  use NUOPC            , only : NUOPC_CompAttributeGet, NUOPC_Advertise, NUOPC_AddNestedState
   use NUOPC_Model      , only : model_routine_SS        => SetServices
   use NUOPC_Model      , only : model_label_Advance     => label_Advance
   use NUOPC_Model      , only : model_label_SetRunClock => label_SetRunClock
   use NUOPC_Model      , only : model_label_Finalize    => label_Finalize
-  use NUOPC_Model      , only : NUOPC_ModelGet
+  use NUOPC_Model      , only : NUOPC_ModelGet, SetVM
   use shr_sys_mod      , only : shr_sys_abort
   use shr_kind_mod     , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
   use shr_file_mod     , only : shr_file_getlogunit, shr_file_setlogunit
   use dead_methods_mod , only : chkerr, state_setscalar,  state_diagnose, alarmInit, memcheck
   use dead_methods_mod , only : set_component_logging, get_component_instance, log_clock_advance
-  use dead_nuopc_mod   , only : dead_grid_lat, dead_grid_lon, dead_grid_index
-  use dead_nuopc_mod   , only : dead_init_nuopc, dead_final_nuopc, dead_meshinit
+  use dead_nuopc_mod   , only : dead_read_inparms, ModelInitPhase, ModelSetRunClock
   use dead_nuopc_mod   , only : fld_list_add, fld_list_realize, fldsMax, fld_list_type
-  use dead_nuopc_mod   , only : ModelInitPhase, ModelSetRunClock
 
   implicit none
   private ! except
 
   public :: SetServices
-
+  public :: SetVM
   !--------------------------------------------------------------------------
   ! Private module data
   !--------------------------------------------------------------------------
@@ -42,10 +40,7 @@ module glc_comp_nuopc
   type (fld_list_type)   :: fldsFrGlc(fldsMax)
   integer, parameter     :: gridTofieldMap = 2 ! ungridded dimension is innermost
 
-  real(r8), pointer      :: gbuf(:,:)            ! model info
-  real(r8), pointer      :: lat(:)
-  real(r8), pointer      :: lon(:)
-  integer , allocatable  :: gindex(:)
+  type(ESMF_Mesh)        :: mesh
   integer                :: nxg                  ! global dim i-direction
   integer                :: nyg                  ! global dim j-direction
   integer                :: my_task              ! my task in mpi communicator mpicom
@@ -54,10 +49,16 @@ module glc_comp_nuopc
   integer                :: logunit              ! logging unit number
   integer    ,parameter  :: master_task=0        ! task number of master task
   logical                :: mastertask
-  integer                :: dbug = 1
+  integer                :: dbug = 0
   character(*),parameter :: modName =  "(xglc_comp_nuopc)"
   character(*),parameter :: u_FILE_u = &
        __FILE__
+
+  ! TODO: this must be generalized - but for now is just hard-wired
+  integer, parameter :: max_icesheets = 1
+  integer            :: num_icesheets = 1
+  type(ESMF_State)   :: NStateImp(max_icesheets)
+  type(ESMF_State)   :: NStateExp(max_icesheets)
 
 !===============================================================================
 contains
@@ -109,7 +110,6 @@ contains
   end subroutine SetServices
 
   !===============================================================================
-
   subroutine InitializeAdvertise(gcomp, importState, exportState, clock, rc)
 
     ! input/output variables
@@ -121,17 +121,17 @@ contains
     ! local variables
     type(ESMF_VM)     :: vm
     character(CS)     :: stdname
-    integer           :: n
+    integer           :: n, ns, nf
     integer           :: lsize       ! local array size
     integer           :: shrlogunit  ! original log unit
     character(CL)     :: cvalue
     character(len=CL) :: logmsg
+    character(len=CS) :: cnum
     logical           :: isPresent, isSet
     character(len=*),parameter :: subname=trim(modName)//':(InitializeAdvertise) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
     call ESMF_GridCompGet(gcomp, vm=vm, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -139,40 +139,20 @@ contains
     call ESMF_VMGet(vm, localpet=my_task, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    mastertask = my_task == master_task
+    mastertask = (my_task == master_task)
 
-    !----------------------------------------------------------------------------
     ! determine instance information
-    !----------------------------------------------------------------------------
-
     call get_component_instance(gcomp, inst_suffix, inst_index, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    !----------------------------------------------------------------------------
     ! set logunit and set shr logging to my log file
-    !----------------------------------------------------------------------------
-
     call set_component_logging(gcomp, my_task==master_task, logunit, shrlogunit, rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    !----------------------------------------------------------------------------
     ! Initialize xglc
-    !----------------------------------------------------------------------------
+    call dead_read_inparms('glc', inst_suffix, logunit, nxg, nyg)
 
-    call dead_init_nuopc('glc', inst_suffix, logunit, lsize, gbuf, nxg, nyg)
-
-    allocate(gindex(lsize))
-    allocate(lon(lsize))
-    allocate(lat(lsize))
-
-    gindex(:) = gbuf(:,dead_grid_index)
-    lat(:)    = gbuf(:,dead_grid_lat)
-    lon(:)    = gbuf(:,dead_grid_lon)
-
-    !--------------------------------
     ! advertise import and export fields
-    !--------------------------------
-
     call NUOPC_CompAttributeGet(gcomp, name="ScalarFieldName", value=cvalue, isPresent=isPresent, isSet=isSet, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
     if (isPresent .and. isSet) then
@@ -216,6 +196,15 @@ contains
        call shr_sys_abort(subname//'Need to set attribute ScalarFieldIdxGridNY')
     endif
 
+    ! Create nested state for each active ice sheet
+    do ns = 1,num_icesheets
+       write(cnum,'(i0)') ns
+       call NUOPC_AddNestedState(importState, CplSet="GLC"//trim(cnum), nestedState=NStateImp(ns), rc=rc)
+       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+       call NUOPC_AddNestedState(exportState, CplSet="GLC"//trim(cnum), nestedState=NStateExp(ns), rc=rc)
+       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    end do
+
     if (nxg /= 0 .and. nyg /= 0) then
 
        call fld_list_add(fldsFrGlc_num, fldsFrGlc, trim(flds_scalar_name))
@@ -229,28 +218,23 @@ contains
        call fld_list_add(fldsToGlc_num, fldsToGlc, 'Sl_tsrf')
        call fld_list_add(fldsToGlc_num, fldsToGlc, 'Flgl_qice')
 
-       do n = 1,fldsFrGlc_num
-          if (mastertask) write(logunit,*)'Advertising From Xglc ',trim(fldsFrGlc(n)%stdname)
-          call NUOPC_Advertise(exportState, standardName=fldsFrglc(n)%stdname, &
-               TransferOfferGeomObject='will provide', rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       ! Now advertise import and export fields fields
+       do ns = 1,num_icesheets
+          if (mastertask) write(logunit,*)'Advertising To Xglc ',trim(fldsToGlc(ns)%stdname)
+          do nf = 1,fldsToGlc_num
+             call NUOPC_Advertise(NStateImp(ns), standardName=fldsToGlc(nf)%stdname, &
+                  TransferOfferGeomObject='will provide', rc=rc)
+             if (chkErr(rc,__LINE__,u_FILE_u)) return
+          end do
+          if (mastertask) write(logunit,*)'Advertising From Xglc ',trim(fldsFrGlc(ns)%stdname)
+          do nf = 1,fldsFrGlc_num
+             call NUOPC_Advertise(NStateExp(ns), standardName=fldsFrGlc(nf)%stdname, &
+                  TransferOfferGeomObject='will provide', rc=rc)
+             if (chkErr(rc,__LINE__,u_FILE_u)) return
+          end do
        enddo
 
-       do n = 1,fldsToGlc_num
-          if (mastertask) write(logunit,*)'Advertising To Xglc ',trim(fldsToGlc(n)%stdname)
-          call NUOPC_Advertise(importState, standardName=fldsToglc(n)%stdname, &
-               TransferOfferGeomObject='will provide', rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-       enddo
     end if
-
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-
-    !----------------------------------------------------------------------------
-    ! Reset shr logging to original values
-    !----------------------------------------------------------------------------
-
-    call shr_file_setLogUnit (shrlogunit)
 
   end subroutine InitializeAdvertise
 
@@ -265,85 +249,55 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    type(ESMF_Mesh) :: Emesh
-    integer         :: shrlogunit                ! original log unit
-    integer         :: n
+    integer                :: n, ns
+    character(ESMF_MAXSTR) :: cvalue     ! config data
     character(len=*),parameter :: subname=trim(modName)//':(InitializeRealize) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
-    !----------------------------------------------------------------------------
-    ! Reset shr logging to my log file
-    !----------------------------------------------------------------------------
-
-    call shr_file_getLogUnit (shrlogunit)
-    call shr_file_setLogUnit (logunit)
-
-    !--------------------------------
     ! generate the mesh
-    ! grid_option specifies grid or mesh
-    !--------------------------------
+    call NUOPC_CompAttributeGet(gcomp, name='mesh_glc', value=cvalue, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
-    call dead_meshinit(gcomp, nxg, nyg, gindex, lon, lat, Emesh, rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    mesh = ESMF_MeshCreate(filename=trim(cvalue), fileformat=ESMF_FILEFORMAT_ESMFMESH, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
-    !--------------------------------
     ! realize the actively coupled fields, now that a mesh is established
     ! NUOPC_Realize "realizes" a previously advertised field in the importState and exportState
     ! by replacing the advertised fields with the newly created fields of the same name.
-    !--------------------------------
-
-    call fld_list_realize( &
-         state=ExportState, &
-         fldList=fldsFrGlc, &
-         numflds=fldsFrGlc_num, &
-         flds_scalar_name=flds_scalar_name, &
-         flds_scalar_num=flds_scalar_num, &
-         tag=subname//':dglcExport',&
-         mesh=Emesh, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call fld_list_realize( &
-         state=importState, &
-         fldList=fldsToGlc, &
-         numflds=fldsToGlc_num, &
-         flds_scalar_name=flds_scalar_name, &
-         flds_scalar_num=flds_scalar_num, &
-         tag=subname//':dglcImport',&
-         mesh=Emesh, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    !--------------------------------
-    ! Pack export state
-    ! Copy from d2x to exportState
-    ! Set the coupling scalars
-    !--------------------------------
-
-    call state_setexport(exportState, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call state_setscalar(dble(nxg),flds_scalar_index_nx, exportState, &
-         flds_scalar_name, flds_scalar_num, rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call state_setscalar(dble(nyg),flds_scalar_index_ny, exportState, &
-         flds_scalar_name, flds_scalar_num, rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    !--------------------------------
-    ! diagnostics
-    !--------------------------------
-
-    if (dbug > 1) then
-       call state_diagnose(exportState,subname//':ES',rc=rc)
+    do ns = 1,num_icesheets
+       call fld_list_realize( &
+            state=NStateExp(ns), &
+            fldList=fldsFrGlc, &
+            numflds=fldsFrGlc_num, &
+            flds_scalar_name=flds_scalar_name, &
+            flds_scalar_num=flds_scalar_num, &
+            tag=subname//':dglcExport',&
+            mesh=mesh, rc=rc)
        if (chkerr(rc,__LINE__,u_FILE_u)) return
-    endif
 
-    call shr_file_setLogUnit (shrlogunit)
+       call fld_list_realize( &
+            state=NStateImp(ns), &
+            fldList=fldsToGlc, &
+            numflds=fldsToGlc_num, &
+            flds_scalar_name=flds_scalar_name, &
+            flds_scalar_num=flds_scalar_num, &
+            tag=subname//':dglcImport',&
+            mesh=mesh, rc=rc)
+       if (chkerr(rc,__LINE__,u_FILE_u)) return
+    end do
 
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
+    ! Pack export state and set the coupling scalars
+    call state_setexport(rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    do ns = 1,num_icesheets
+       call state_setscalar(dble(nxg),flds_scalar_index_nx, NStateExp(ns), flds_scalar_name, flds_scalar_num, rc)
+       if (chkerr(rc,__LINE__,u_FILE_u)) return
+       call state_setscalar(dble(nyg),flds_scalar_index_ny, NStateExp(ns), flds_scalar_name, flds_scalar_num, rc)
+       if (chkerr(rc,__LINE__,u_FILE_u)) return
+    end do
 
   end subroutine InitializeRealize
 
@@ -356,77 +310,69 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
-    type(ESMF_Clock)  :: clock
-    type(ESMF_State)  :: exportState
-    integer           :: n
-    integer           :: shrlogunit     ! original log unit
-    real(r8), pointer :: dataptr(:)
     character(len=*),parameter  :: subname=trim(modName)//':(ModelAdvance) '
     !-------------------------------------------------------------------------------
 
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
     call memcheck(subname, 3, mastertask)
 
-    call shr_file_getLogUnit (shrlogunit)
-    call shr_file_setLogUnit (logunit)
-
-    !--------------------------------
-    ! Pack export state
-    !--------------------------------
-
-    call NUOPC_ModelGet(gcomp, modelClock=clock, exportState=exportState, rc=rc)
+    call state_setexport(rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call state_setexport(exportState, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    !--------------------------------
-    ! diagnostics
-    !--------------------------------
-
-    if (dbug > 1) then
-       call state_diagnose(exportState,subname//':ES',rc=rc)
-       if (chkerr(rc,__LINE__,u_FILE_u)) return
-       if (my_task == master_task) then
-          call log_clock_advance(clock, 'XGLC', logunit, rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-       endif
-    endif
-
-    call shr_file_setLogUnit (shrlogunit)
-
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
 
   end subroutine ModelAdvance
 
-  !===============================================================================
-
-  subroutine state_setexport(exportState, rc)
+    !===============================================================================
+  subroutine state_setexport(rc)
 
     ! input/output variables
-    type(ESMF_State)  , intent(inout) :: exportState
     integer, intent(out) :: rc
 
     ! local variables
-    integer :: nf, nind
+    integer           :: n, nf, nind, ns
+    real(r8), pointer :: lat(:)
+    real(r8), pointer :: lon(:)
+    integer           :: spatialDim
+    integer           :: numOwnedElements
+    real(R8), pointer :: ownedElemCoords(:)
+    character(len=*),parameter  :: subname=trim(modName)//':(state_setexport) '
     !--------------------------------------------------
-
     rc = ESMF_SUCCESS
 
-    ! Start from index 2 in order to skip the scalar field 
-    do nf = 2,fldsFrGlc_num
-       if (fldsFrGlc(nf)%ungridded_ubound == 0) then
-          call field_setexport(exportState, trim(fldsFrGlc(nf)%stdname), lon, lat, nf=nf, rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-       else
-          do nind = 1,fldsFrGlc(nf)%ungridded_ubound
-             call field_setexport(exportState, trim(fldsFrGlc(nf)%stdname), lon, lat, nf=nf+nind-1, &
-                  ungridded_index=nind, rc=rc)
-             if (chkerr(rc,__LINE__,u_FILE_u)) return
-          end do
-       end if
+    call ESMF_MeshGet(mesh, spatialDim=spatialDim, numOwnedElements=numOwnedElements, rc=rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    allocate(ownedElemCoords(spatialDim*numOwnedElements))
+    call ESMF_MeshGet(mesh, ownedElemCoords=ownedElemCoords)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+
+    allocate(lon(numownedElements))
+    allocate(lat(numownedElements))
+    do n = 1,numownedElements
+       lon(n) = ownedElemCoords(2*n-1)
+       lat(n) = ownedElemCoords(2*n)
     end do
+
+    ! Start from index 2 in order to skip the scalar field 
+    do ns = 1,num_icesheets
+       do nf = 2,fldsFrGlc_num
+          if (fldsFrGlc(nf)%ungridded_ubound == 0) then
+             call field_setexport(NStateExp(ns), trim(fldsFrGlc(nf)%stdname), lon, lat, nf=nf, rc=rc)
+             if (chkerr(rc,__LINE__,u_FILE_u)) return
+          else
+             do nind = 1,fldsFrGlc(nf)%ungridded_ubound
+                call field_setexport(NStateExp(ns), trim(fldsFrGlc(nf)%stdname), lon, lat, nf=nf+nind-1, &
+                     ungridded_index=nind, rc=rc)
+                if (chkerr(rc,__LINE__,u_FILE_u)) return
+             end do
+          end if
+       end do
+       if (dbug > 1) then
+          call State_diagnose(NStateExp(ns), trim(subname)//':ES',rc=rc)
+          if (chkerr(rc,__LINE__,u_FILE_u)) return
+       endif
+    end do
+
+    deallocate(lon)
+    deallocate(lat)
 
   end subroutine state_setexport
 
@@ -494,28 +440,18 @@ contains
   end subroutine field_setexport
 
   !===============================================================================
-
   subroutine ModelFinalize(gcomp, rc)
     type(ESMF_GridComp)  :: gcomp
     integer, intent(out) :: rc
-
-    ! local variables
-    character(len=*),parameter  :: subname=trim(modName)//':(ModelFinalize) '
     !-------------------------------------------------------------------------------
 
-    !--------------------------------
-    ! Finalize routine
-    !--------------------------------
-
     rc = ESMF_SUCCESS
-    if (dbug > 5) call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
 
-    call dead_final_nuopc('glc', logunit)
-
-    if (dbug > 5) call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
-
+    if (mastertask) then
+       write(logunit,*)
+       write(logunit,*) 'xglc: end of main integration loop'
+       write(logunit,*)
+    end if
   end subroutine ModelFinalize
-
-  !===============================================================================
 
 end module glc_comp_nuopc

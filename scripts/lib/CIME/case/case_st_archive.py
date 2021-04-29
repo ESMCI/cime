@@ -16,6 +16,11 @@ from os.path                        import isdir, join
 logger = logging.getLogger(__name__)
 
 ###############################################################################
+def _get_archive_fn_desc(archive_fn):
+###############################################################################
+    return "moving" if archive_fn is shutil.move else "copying"
+
+###############################################################################
 def _get_archive_file_fn(copy_only):
 ###############################################################################
     """
@@ -196,8 +201,8 @@ def _archive_log_files(dout_s_root, rundir, archive_incomplete, archive_file_fn)
     for logfile in logfiles:
         srcfile = join(rundir, os.path.basename(logfile))
         destfile = join(archive_logdir, os.path.basename(logfile))
+        logger.info("{} {} to {}".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
         archive_file_fn(srcfile, destfile)
-        logger.info("moving {} to {}".format(srcfile, destfile))
 
 ###############################################################################
 def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir,
@@ -234,7 +239,7 @@ def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir
             for rbldfile in rbldfiles:
                 srcfile = join(rundir, rbldfile)
                 destfile = join(archive_rblddir, rbldfile)
-                logger.info("moving {} to {} ".format(srcfile, destfile))
+                logger.info("{} {} to {} ".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                 archive_file_fn(srcfile, destfile)
 
         sfxhst = casename + r'_[0-9][mdy]_' + r'[0-9]*'
@@ -246,7 +251,7 @@ def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir
             for hstfile in hstfiles:
                 srcfile = join(rundir, hstfile)
                 destfile = join(archive_histdir, hstfile)
-                logger.info("moving {} to {} ".format(srcfile, destfile))
+                logger.info("{} {} to {} ".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                 archive_file_fn(srcfile, destfile)
 
     # determine ninst and ninst_string
@@ -267,7 +272,7 @@ def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir
                     logger.info("copying {} to {} ".format(srcfile, destfile))
                     safe_copy(srcfile, destfile)
                 else:
-                    logger.info("moving {} to {} ".format(srcfile, destfile))
+                    logger.info("{} {} to {} ".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                     archive_file_fn(srcfile, destfile)
 
 ###############################################################################
@@ -462,8 +467,8 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
                     destfile = os.path.join(archive_restdir, rfile)
                     expect(os.path.isfile(srcfile),
                            "restart file {} does not exist ".format(srcfile))
+                    logger.info("{} file {} to {}".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                     archive_file_fn(srcfile, destfile)
-                    logger.info("moving file {} to {}".format(srcfile, destfile))
 
                     # need to copy the history files needed for interim restarts - since
                     # have not archived all of the history files yet
@@ -736,10 +741,10 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
     logger.info("st_archive completed")
 
     # resubmit case if appropriate
-    if not self.get_value("EXTERNAL_WORKFLOW"):
+    if not self.get_value("EXTERNAL_WORKFLOW") and resubmit:
         resubmit_cnt = self.get_value("RESUBMIT")
         logger.debug("resubmit_cnt {} resubmit {}".format(resubmit_cnt, resubmit))
-        if resubmit_cnt > 0 and resubmit:
+        if resubmit_cnt > 0:
             logger.info("resubmitting from st_archive, resubmit={:d}".format(resubmit_cnt))
             if self.get_value("MACH") == "mira":
                 expect(os.path.isfile(".original_host"), "ERROR alcf host file not found")

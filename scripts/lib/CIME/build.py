@@ -6,12 +6,13 @@ from CIME.XML.standard_module_setup  import *
 from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
+from CIME.XML.files             import Files
 
 logger = logging.getLogger(__name__)
 
 _CMD_ARGS_FOR_BUILD = \
     ("CASEROOT", "CASETOOLS", "CIMEROOT", "COMP_INTERFACE",
-     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT",
+     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT", "LILAC_MODE",
      "MACH", "MPILIB", "NINST_VALUE", "OS", "PIO_VERSION",
      "SHAREDLIBROOT", "SMP_PRESENT", "USE_ESMF_LIB", "USE_MOAB",
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
@@ -19,9 +20,8 @@ _CMD_ARGS_FOR_BUILD = \
 
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
-    make_args += " compile_threaded={} ".format(stringify_bool(case.get_build_threaded()))
-    if not shared_lib:
-        make_args += " USE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
+    make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
+    expect(not (uses_kokkos(case) and not shared_lib), "Kokkos is not supported for classic Makefile build system")
     for var in _CMD_ARGS_FOR_BUILD:
         make_args += xml_to_make_variable(case, var)
 
@@ -46,6 +46,9 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     for var in _CMD_ARGS_FOR_BUILD:
         cmake_args += xml_to_make_variable(case, var, cmake=True)
 
+    if atm_model == "scream":
+        cmake_args += xml_to_make_variable(case, "HOMME_TARGET", cmake=True)
+
     # Disable compiler checks
     cmake_args += " -DCMAKE_C_COMPILER_WORKS=1 -DCMAKE_CXX_COMPILER_WORKS=1 -DCMAKE_Fortran_COMPILER_WORKS=1"
 
@@ -63,6 +66,8 @@ def xml_to_make_variable(case, varname, cmake=False):
 def uses_kokkos(case):
 ###############################################################################
     cam_target = case.get_value("CAM_TARGET")
+    # atm_comp   = case.get_value("COMP_ATM") # scream does not use the shared kokkoslib for now
+
     return get_model() == "e3sm" and cam_target in ("preqx_kokkos", "theta-l")
 
 ###############################################################################
@@ -130,15 +135,22 @@ def _build_model(build_threaded, exeroot, incroot, complist,
         cime_model = get_model()
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
 
-        config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
-        if not os.path.isdir(config_dir):
-            config_dir = os.path.join(cimeroot,"..","src","model","NEMS","cime","cime_config")
+        ufs_driver = os.environ.get("UFS_DRIVER")
+        if cime_model == 'ufs' and ufs_driver == 'nems':
+            config_dir = os.path.join(cimeroot,os.pardir,"src","model","NEMS","cime","cime_config")
+        else:
+            files = Files(comp_interface=comp_interface)
+            if comp_interface == "nuopc":
+                config_dir = os.path.join(os.path.dirname(files.get_value("BUILD_LIB_FILE",{"lib":"CMEPS"})))
+            else:
+                config_dir = os.path.join(cimeroot,"src","drivers","mct","cime_config")
+
         expect(os.path.exists(config_dir), "Config directory not found {}".format(config_dir))
         if "cpl" in complist:
             bldroot = os.path.join(exeroot, "cpl", "obj")
             if not os.path.isdir(bldroot):
                 os.makedirs(bldroot)
-        logger.info("Building {} with output to {} ".format(cime_model, file_build))
+        logger.info("Building {} from {}/buildexe with output to {} ".format(cime_model, config_dir, file_build))
 
         with open(file_build, "w") as fd:
             stat = run_cmd("{}/buildexe {} {} {} "
@@ -158,7 +170,7 @@ def _build_model(build_threaded, exeroot, incroot, complist,
 
 ###############################################################################
 def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
-                       comp_interface, sharedpath, ninja, dry_run, case):
+                       comp_interface, sharedpath, separate_builds, ninja, dry_run, case):
 ###############################################################################
     cime_model = get_model()
     bldroot    = os.path.join(exeroot, "cmake-bld")
@@ -173,17 +185,17 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
 
-    # Components-specific cmake args
+    # Components-specific cmake args. Cmake requires all component inputs to be available
+    # regardless of requested build list
     cmp_cmake_args = ""
+    all_models = []
     for model, _, _, _, config_dir in complist:
-        if buildlist is not None and model.lower() not in buildlist:
-            continue
-
-        # Create the Filepath and CCSM_cppde3fs files
+        # Create the Filepath and CIME_cppdefs files
         if model == "cpl":
             config_dir = os.path.join(cimeroot, "src", "drivers", comp_interface, "cime_config")
 
         cmp_cmake_args += _create_build_metadata_for_component(config_dir, libroot, bldroot, case)
+        all_models.append(model)
 
     # Call CMake
     cmake_args = get_standard_cmake_args(case, sharedpath)
@@ -198,38 +210,73 @@ def _build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
     #  - common (i.e. project-wide) cmake args
     #  - component-specific cmake args
     #  - path to src folder
-    cmake_cmd = "{}cmake {} {} {}/components".format(cmake_env, cmake_args, cmp_cmake_args, srcroot)
+    do_timing = "/usr/bin/time -p " if os.path.exists("/usr/bin/time") else ""
+    cmake_cmd = "{} {}cmake {} {} {}/components".format(cmake_env, do_timing, cmake_args, cmp_cmake_args, srcroot)
     stat = 0
     if dry_run:
         logger.info("CMake cmd:\ncd {} && {}\n\n".format(bldroot, cmake_cmd))
     else:
+        logger.info("Configuring full {} model with output to file {}".format(cime_model, bldlog))
+        logger.info("   Calling cmake directly, see top of log file for specific call")
         with open(bldlog, "w") as fd:
             fd.write("Configuring with cmake cmd:\n{}\n\n".format(cmake_cmd))
 
         # Add logging before running
-        cmake_cmd = "{} >> {} 2>&1".format(cmake_cmd, bldlog)
+        cmake_cmd = "({}) >> {} 2>&1".format(cmake_cmd, bldlog)
         stat = run_cmd(cmake_cmd, from_dir=bldroot)[0]
+        expect(stat == 0, "BUILD FAIL: cmake config {} failed, cat {}".format(cime_model, bldlog))
+
+    # Set up buildlist
+    if not buildlist:
+        if separate_builds:
+            buildlist = all_models
+        else:
+            buildlist = ["cpl"]
+
+    if "cpl" in buildlist:
+        buildlist.remove("cpl")
+        buildlist.append("cpl") # must come at end
 
     # Call Make
-    if stat == 0:
-        make_cmd = "{} -j {}".format(gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), gmake_j)
+    logs = []
+    for model in buildlist:
+        t1 = time.time()
+
+        make_cmd = "{}{} -j {}".format(do_timing, gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")), gmake_j)
+        if model != "cpl":
+            make_cmd += " {}".format(model)
+            curr_log = os.path.join(exeroot, "{}.bldlog.{}".format(model, lid))
+            model_name = model
+        else:
+            curr_log = bldlog
+            model_name = cime_model if buildlist == ["cpl"] else model
+
         if dry_run:
             logger.info("Build cmd:\ncd {} && {}\n\n".format(bldroot, make_cmd))
-            expect(False, "User requested dry-run only, terminating build")
         else:
-            with open(bldlog, "a") as fd:
+            logger.info("Building {} model with output to file {}".format(model_name, curr_log))
+            logger.info("   Calling make, see top of log file for specific call")
+            with open(curr_log, "a") as fd:
                 fd.write("\n\nBuilding with cmd:\n{}\n\n".format(make_cmd))
 
             # Add logging before running
-            make_cmd = "{} >> {} 2>&1".format(make_cmd, bldlog)
+            make_cmd = "({}) >> {} 2>&1".format(make_cmd, curr_log)
             stat = run_cmd(make_cmd, from_dir=bldroot)[0]
+            expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(model_name, curr_log))
 
-    expect(stat == 0, "BUILD FAIL: build {} failed, cat {}".format(cime_model, bldlog))
+            t2 = time.time()
+            if separate_builds:
+                logger.info("   {} built in {:f} seconds".format(model_name, (t2 - t1)))
+
+        logs.append(curr_log)
+
+    expect(not dry_run, "User requested dry-run only, terminating build")
 
     # Copy the just-built ${MODEL}.exe to ${MODEL}.exe.$LID
-    safe_copy("{}/{}.exe".format(exeroot, cime_model), "{}/{}.exe.{}".format(exeroot, cime_model, lid))
+    if "cpl" in buildlist:
+        safe_copy("{}/{}.exe".format(exeroot, cime_model), "{}/{}.exe.{}".format(exeroot, cime_model, lid))
 
-    return [bldlog]
+    return logs
 
 ###############################################################################
 def _build_checks(case, build_threaded, comp_interface,
@@ -317,7 +364,7 @@ ERROR env_build HAS CHANGED
     return sharedpath
 
 ###############################################################################
-def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid, compiler, buildlist, comp_interface):
+def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid, compiler, buildlist, comp_interface, complist):
 ###############################################################################
 
     shared_lib = os.path.join(exeroot, sharedpath, "lib")
@@ -327,27 +374,46 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    if 'CPL' in case.get_values("COMP_CLASSES"):
-        libs = ["gptl", "mct", "pio", "csm_share"]
-    else:
+    lilac_mode = case.get_value("LILAC_MODE")
+    ufs_driver = os.environ.get("UFS_DRIVER")
+    cpl_in_complist = False
+    for l in complist:
+        if "cpl" in l:
+            cpl_in_complist = True
+    if ufs_driver:
+        logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
+    if ufs_driver and ufs_driver == 'nems' and not cpl_in_complist:
         libs = []
+    else:
+        libs = ["gptl", "mct", "pio", "csm_share"]
 
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
-
-    if comp_interface == "nuopc":
-        libs.insert(0, "fox")
 
     if uses_kokkos(case):
         libs.append("kokkos")
 
     # Build shared code of CDEPS nuopc data models
-    cdeps_build_script = None
-    if comp_interface == "nuopc":
-        compset = case.get_value("COMPSET")
-        if "_D" in compset:
-            libs.append("CDEPS")
-            cdeps_build_script = os.path.join(cimeroot, "src", "components", "cdeps", "cime_config", "buildlib")
+    build_script = {}
+    if (comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems')
+        and lilac_mode != 'on'):
+        # For now, we avoid building CDEPS with CTSM's LILAC because it's not needed in
+        # this configuration and CDEPS relies on unreleased ESMF code. Eventually we will
+        # require CDEPS (for its streams functionality), at which point CDEPS should only
+        # require released ESMF code; then we should remove the 'lilac_mode' part of this
+        # conditional and the similar conditional in the Makefile (along with the addition
+        # of LILAC_MODE to _CMD_ARGS_FOR_BUILD).
+        libs.append("CDEPS")
+
+    ocn_model = case.get_value("COMP_OCN")
+    atm_model = case.get_value("COMP_ATM")
+    if ocn_model == 'mom' or atm_model == "fv3gfs":
+        libs.append("FMS")
+
+    files = Files(comp_interface=comp_interface)
+    for lib in libs:
+        build_script[lib] = files.get_value("BUILD_LIB_FILE",{"lib":lib})
+
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
@@ -381,10 +447,11 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(full_lib_path)
 
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
-        if lib == "CDEPS":
-            my_file = cdeps_build_script
+        if lib in build_script.keys():
+            my_file = build_script[lib]
         else:
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
+        expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
 
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
@@ -469,7 +536,7 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
 def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 ###############################################################################
     """
-    Ensure that crucial Filepath and CCSM_CPPDEFS files exist for this component.
+    Ensure that crucial Filepath and CIME_CPPDEFS files exist for this component.
     In many cases, the bld/configure script will have already created these.
     """
     bc_path = os.path.join(config_dir, "buildlib_cmake")
@@ -482,46 +549,47 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 def _clean_impl(case, cleanlist, clean_all, clean_depends):
 ###############################################################################
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
+    case.load_env()
     if clean_all:
         # If cleanlist is empty just remove the bld directory
         expect(exeroot is not None,"No EXEROOT defined in case")
         if os.path.isdir(exeroot):
             logging.info("cleaning directory {}".format(exeroot))
             shutil.rmtree(exeroot)
+
         # if clean_all is True also remove the sharedlibpath
         sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
         expect(sharedlibroot is not None,"No SHAREDLIBROOT defined in case")
         if sharedlibroot != exeroot and os.path.isdir(sharedlibroot):
             logging.warning("cleaning directory {}".format(sharedlibroot))
             shutil.rmtree(sharedlibroot)
+
     else:
         expect((cleanlist is not None and len(cleanlist) > 0) or
                (clean_depends is not None and len(clean_depends)),"Empty cleanlist not expected")
         gmake = case.get_value("GMAKE")
 
-        if os.path.exists(os.path.join(exeroot, "cmake-bld")):
-            # Cmake build system
-            for thing_to_clean in [cleanlist, clean_depends]:
-                if thing_to_clean is not None:
-                    for item in thing_to_clean:
-                        logging.info("Cleaning {}".format(item))
-                        cmd = "{} clean".format(gmake)
-                        run_cmd_no_fail(cmd, from_dir=os.path.join(exeroot, "cmake-bld", "cmake", item))
-        else:
-            # legacy build system
-            casetools = case.get_value("CASETOOLS")
-            cmd = gmake + " -f " + os.path.join(casetools, "Makefile")
-            cmd += " {}".format(get_standard_makefile_args(case))
-            if cleanlist is not None:
-                for item in cleanlist:
-                    tcmd = cmd + " clean" + item
-                    logger.info("calling {} ".format(tcmd))
-                    run_cmd_no_fail(tcmd)
+        cleanlist = [] if cleanlist is None else cleanlist
+        clean_depends = [] if clean_depends is None else clean_depends
+        things_to_clean = cleanlist + clean_depends
+
+        cmake_comp_root = os.path.join(exeroot, "cmake-bld", "cmake")
+        casetools = case.get_value("CASETOOLS")
+        classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"),
+                                           get_standard_makefile_args(case, shared_lib=True))
+
+        for clean_item in things_to_clean:
+            logging.info("Cleaning {}".format(clean_item))
+            cmake_path = os.path.join(cmake_comp_root, clean_item)
+            if os.path.exists(cmake_path):
+                # Item was created by cmake build system
+                clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
             else:
-                for item in clean_depends:
-                    tcmd = cmd + " clean_depends" + item
-                    logger.info("calling {} ".format(tcmd))
-                    run_cmd_no_fail(tcmd)
+                # Item was created by classic build system
+                clean_cmd = "{} {}{}".format(classic_cmd, "clean" if clean_item in cleanlist else "clean_depends", clean_item)
+
+            logger.info("calling {}".format(clean_cmd))
+            run_cmd_no_fail(clean_cmd)
 
     # unlink Locked files directory
     unlock_file("env_build.xml")
@@ -535,7 +603,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
 
 ###############################################################################
 def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
-                     save_build_provenance, use_old, ninja, dry_run):
+                     save_build_provenance, separate_builds, ninja, dry_run):
 ###############################################################################
 
     t1 = time.time()
@@ -650,17 +718,16 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
                                debug, compiler, mpilib, complist, ninst_build, smp_value,
                                model_only, buildlist)
 
-    t2 = time.time()
     logs = []
 
     if not model_only:
         logs = _build_libraries(case, exeroot, sharedpath, caseroot,
-                                cimeroot, libroot, lid, compiler, buildlist, comp_interface)
+                                cimeroot, libroot, lid, compiler, buildlist, comp_interface, complist)
 
     if not sharedlib_only:
-        if get_model() == "e3sm" and not use_old:
+        if get_model() == "e3sm":
             logs.extend(_build_model_cmake(exeroot, complist, lid, cimeroot, buildlist,
-                                           comp_interface, sharedpath, ninja, dry_run, case))
+                                           comp_interface, sharedpath, separate_builds, ninja, dry_run, case))
         else:
             os.environ["INSTALL_SHAREDPATH"] = os.path.join(exeroot, sharedpath) # for MPAS makefile generators
             logs.extend(_build_model(build_threaded, exeroot, incroot, complist,
@@ -674,11 +741,10 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
     post_build(case, logs, build_complete=not (buildlist or sharedlib_only),
                save_build_provenance=save_build_provenance)
 
-    t3 = time.time()
+    t2 = time.time()
 
     if not sharedlib_only:
-        logger.info("Time spent not building: {:f} sec".format(t2 - t1))
-        logger.info("Time spent building: {:f} sec".format(t3 - t2))
+        logger.info("Total build time: {:f} seconds".format(t2 - t1))
         logger.info("MODEL BUILD HAS FINISHED SUCCESSFULLY")
 
     return True
@@ -705,10 +771,10 @@ def post_build(case, logs, build_complete=False, save_build_provenance=True):
         lock_file("env_build.xml", caseroot=case.get_value("CASEROOT"))
 
 ###############################################################################
-def case_build(caseroot, case, sharedlib_only=False, model_only=False, buildlist=None, save_build_provenance=True, use_old=False, ninja=False, dry_run=False):
+def case_build(caseroot, case, sharedlib_only=False, model_only=False, buildlist=None, save_build_provenance=True, separate_builds=False, ninja=False, dry_run=False):
 ###############################################################################
     functor = lambda: _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist,
-                                       save_build_provenance, use_old, ninja, dry_run)
+                                       save_build_provenance, separate_builds, ninja, dry_run)
     cb = "case.build"
     if (sharedlib_only == True):
         cb = cb + " (SHAREDLIB_BUILD)"

@@ -3,7 +3,7 @@ html/
 *~
 \#*\#
 *.o
-*.in
+Makefile.in
 *.lo
 *.la
 Makefile

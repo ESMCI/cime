@@ -1,12 +1,13 @@
 import CIME.utils
-from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root, get_model
+from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root
 from CIME.XML.machines import Machines
 import six, sys, os
 
 # Expect that, if a model wants to use python-based test lists, they will have a file
-# config/$model/tests.py , containing a test dictionary called _TESTS
+# $model/cime_config/tests.py , containing a test dictionary called _TESTS. Currently,
+# only E3SM is using this feature.
 
-sys.path.insert(0, os.path.join(get_cime_root(), "config", get_model()))
+sys.path.insert(0, os.path.join(get_cime_root(), "../cime_config"))
 _ALL_TESTS = {}
 try:
     from tests import _TESTS # pylint: disable=import-error
@@ -181,7 +182,7 @@ def get_test_suites():
     return list(_ALL_TESTS.keys())
 
 ###############################################################################
-def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False):
+def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False, skip_tests=None):
 ###############################################################################
     """
     Return a list of FULL test names for a suite.
@@ -208,8 +209,8 @@ def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False):
             test_mod = test_components[-1]
         else:
             test_name = item
-
-        tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmod=test_mod))
+        if not skip_tests or not test_name in skip_tests:
+            tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmod=test_mod))
 
     if not skip_inherit:
         for inherits in inherits_from:
