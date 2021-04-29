@@ -78,6 +78,15 @@ def _record_git_provenance(srcroot, exeroot, lid):
     cmd = "log --first-parent --pretty=oneline -n 5"
     _run_git_cmd_recursively(cmd, srcroot, log_prov)
 
+    # Git remote
+    remote_prov = os.path.join(exeroot, "GIT_REMOTE.{}".format(lid))
+    _run_git_cmd_recursively("remote -v", srcroot, remote_prov)
+
+    # Git config
+    config_src = os.path.join(srcroot, ".git", "config")
+    config_prov = os.path.join(exeroot, "GIT_CONFIG.{}".format(lid))
+    safe_copy(config_src, config_prov, preserve_meta=False)
+
 def _save_build_provenance_e3sm(case, lid):
     srcroot = case.get_value("SRCROOT")
     exeroot = case.get_value("EXEROOT")
@@ -133,8 +142,9 @@ def _save_build_provenance_e3sm(case, lid):
     # For all the just-created post-build provenance files, symlink a generic name
     # to them to indicate that these are the most recent or active.
     for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "GIT_SUBMODULE_STATUS",
-            "GIT_STATUS", "GIT_DIFF", "GIT_LOG", "SourceMods", "build_environment",
-            "build_times"]:
+                 "GIT_STATUS", "GIT_DIFF", "GIT_LOG", "GIT_CONFIG",
+                 "GIT_REMOTE", "SourceMods", "build_environment",
+                 "build_times"]:
         globstr = "{}/{}.{}*".format(exeroot, item, lid)
         matches = glob.glob(globstr)
         expect(len(matches) < 2, "Multiple matches for glob {} should not have happened".format(globstr))

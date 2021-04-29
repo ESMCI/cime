@@ -92,6 +92,7 @@ class TestProvenance(unittest.TestCase):
     def test_record_git_provenance(self):
         with Mocker() as mock:
             Mocker.calls =[]
+            mock.patch("CIME.provenance.safe_copy")
             mock.patch("CIME.provenance.run_cmd", (0, "data", None))
             if sys.version_info.major > 2:
                 mock.patch("builtins.open")
@@ -119,9 +120,18 @@ class TestProvenance(unittest.TestCase):
             "open /output/GIT_LOG.5 w",
             "write data\n\n",
             "write data\n",
+            "run_cmd git remote -v from_dir=/srcroot",
+            ("run_cmd git submodule foreach --recursive \"git remote"
+             " -v; echo\" from_dir=/srcroot"),
+            "open /output/GIT_REMOTE.5 w",
+            "write data\n\n",
+            "write data\n",
+            ("safe_copy /srcroot/.git/config /output/GIT_CONFIG.5"
+             " preserve_meta=False")
         ]
 
-        self.assertTrue(len(expected) == len(mock.calls))
+        self.assertTrue(len(expected) == len(mock.calls),
+                        mock.calls)
 
         for x, y in zip(expected, mock.calls):
             self.assertTrue(x == y, "{} != {}".format(x, y))
