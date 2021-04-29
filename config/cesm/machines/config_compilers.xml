@@ -1413,10 +1413,10 @@ using a fortran linker.
     <base> --host=Linux </base>
   </CONFIG_ARGS>
   <CFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1434,10 +1434,10 @@ using a fortran linker.
     <base> --host=Linux </base>
   </CONFIG_ARGS>
   <CFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1455,10 +1455,10 @@ using a fortran linker.
     <base> --host=Linux </base>
   </CONFIG_ARGS>
   <CFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1476,10 +1476,10 @@ using a fortran linker.
     <base> --host=Linux </base>
   </CONFIG_ARGS>
   <CFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
-    <append> -axCORE-AVX2 -xSSE4.2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
