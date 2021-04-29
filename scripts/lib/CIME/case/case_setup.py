@@ -8,6 +8,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.machines      import Machines
 from CIME.BuildTools.configure import configure
 from CIME.utils             import get_cime_root, run_and_log_case_status, get_model, get_batch_script_for_job, safe_copy
+from CIME.utils             import batch_jobid
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
 
@@ -256,11 +257,22 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
     phase = "setup.clean" if clean else "case.setup"
     functor = lambda: _case_setup_impl(self, caseroot, clean=clean, test_mode=test_mode, reset=reset, keep=keep)
 
+    is_batch = self.get_value("BATCH_SYSTEM") is not None
+    msg_func = None
+
+    if is_batch:
+        jobid = batch_jobid()
+        msg_func = lambda *args: jobid if jobid is not None else ""
+
     if self.get_value("TEST") and not test_mode:
         test_name = casebaseid if casebaseid is not None else self.get_value("CASE")
         with TestStatus(test_dir=caseroot, test_name=test_name) as ts:
             try:
-                run_and_log_case_status(functor, phase, caseroot=caseroot)
+                run_and_log_case_status(functor, phase, 
+                                        custom_starting_msg_functor=msg_func,
+                                        custom_success_msg_functor=msg_func,
+                                        caseroot=caseroot,
+                                        is_batch=is_batch)
             except BaseException: # Want to catch KeyboardInterrupt too
                 ts.set_status(SETUP_PHASE, TEST_FAIL_STATUS)
                 raise
@@ -270,4 +282,8 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
                 else:
                     ts.set_status(SETUP_PHASE, TEST_PASS_STATUS)
     else:
-        run_and_log_case_status(functor, phase, caseroot=caseroot)
+        run_and_log_case_status(functor, phase, 
+                                custom_starting_msg_functor=msg_func,
+                                custom_success_msg_functor=msg_func,
+                                caseroot=caseroot,
+                                is_batch=is_batch)

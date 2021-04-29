@@ -1,5 +1,81 @@
 ======================================================================
 
+Originator: Chris Fiscehr 
+Date: 4-26-2021
+Tag: cime5.8.43
+Answer Changes: None
+Tests: scripts_regression_tests, aux_cime_baselines
+Dependencies:
+
+Brief Summary:
+    - Update intel compiler and esmf on cheyenne.
+    - Fix issue to build a testcase on Casper through an interactive node.
+    - Fix py3 error in srun syntax.
+    - Remove "Code review" line from PR template.
+    - Add support for WAV as primary component.
+    - Update case status to include jobid on batch system.
+    - Allow E3SM to use its versions of coupler and data,stub,x models.
+    - Add neon server to inputdata.
+    - Fix create_test --retry when generating baselines.
+    - Generalize build directory paths, and prep for CESM share repository.
+    - Fix ChangeLog.
+    - Update configuration xml for Casper and add openacc directives to enable GPU simulation.
+    - Fix query_config for py3 output format.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+40be61f38 Merge pull request #3941 from ESMCI/fischer/cheyenne_intel
+2b2a18dd0 Merge pull request #3942 from sjsprecious/master
+83ddb3e4e fix py3 error in srun syntax
+8b48a2e2d Merge pull request #3938 from billsacks/pr_template_cleanup
+6407bc297 Merge pull request #3935 from sbrus89/wav_primary_fix
+44b241d26 Merge pull request #3926 from jasonb5/update_case_status
+ebdb29719 Merge pull request #3930 from ESMCI/rljacob/move-for-e3sm
+e256ea7ad Merge pull request #3927 from jedwards4b/add_neon_to_inputdata
+f5433921b Merge pull request #3914 from billsacks/retry_baseline_overwrite
+599e0bdd5 Merge pull request #3917 from ESMCI/fischer/cime_sep
+25d85e50c Update for cime5.8.41 and cime5.8.42
+86f0fc800 Merge pull request #3922 from sjsprecious/master
+7aa6b0c26 Merge pull request #3921 from jedwards4b/query_config_py3_update
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/PULL_REQUEST_TEMPLATE
+M	ChangeLog
+M	config/cesm/config_inputdata.xml
+A	config/cesm/machines/Depends.nvhpc-gpu
+A	config/cesm/machines/Depends.pgi-gpu
+M	config/cesm/machines/config_batch.xml
+M	config/cesm/machines/config_compilers.xml
+M	config/cesm/machines/config_machines.xml
+M	config/e3sm/config_files.xml
+M	scripts/Tools/Makefile
+M	scripts/create_test
+M	scripts/lib/CIME/XML/generic_xml.py
+M	scripts/lib/CIME/XML/inputdata.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/buildlib.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/case/case_clone.py
+M	scripts/lib/CIME/case/case_run.py
+M	scripts/lib/CIME/case/case_setup.py
+M	scripts/lib/CIME/case/case_st_archive.py
+M	scripts/lib/CIME/case/case_submit.py
+M	scripts/lib/CIME/case/check_input_data.py
+M	scripts/lib/CIME/tests/test_utils.py
+M	scripts/lib/CIME/utils.py
+M	scripts/query_config
+M	scripts/tests/scripts_regression_tests.py
+M	src/build_scripts/buildlib.csm_share
+M	src/build_scripts/buildlib.internal_components
+M	src/build_scripts/buildlib_cmake.internal_components
+M	src/share/util/shr_spfn_mod.F90
+
+======================================================================
+
+======================================================================
+
 Originator: Chris Fischer 
 Date: 4-8-2021
 Tag: cime5.8.42
