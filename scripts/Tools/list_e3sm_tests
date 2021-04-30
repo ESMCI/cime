@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 List e3sm test suites. Can be used to show what's being tested. Can just
