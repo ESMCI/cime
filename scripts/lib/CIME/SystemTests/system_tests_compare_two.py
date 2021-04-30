@@ -2,6 +2,16 @@
 Base class for CIME system tests that involve doing two runs and comparing their
 output.
 
+NOTE: Below is the flow of a multisubmit test.
+Non-batch:
+case_submit -> case_run     # PHASE 1
+            -> case_run     # PHASE 2
+
+batch:
+case_submit -> case_run     # PHASE 1
+case_run    -> case_submit
+case_submit -> case_run     # PHASE 2
+
 In the __init__ method for your test, you MUST call
     SystemTestsCompareTwo.__init__
 See the documentation of that method for details.
@@ -224,15 +234,17 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             self._run_one_suffix,
             self._run_two_suffix)
 
-        # On a batch system with a multisubmit test "RESUBMIT" is always 
-        # decremented before running the second phase. If the test is rerun it
-        # will always skip the first phase. To fix this "RESUBMIT" will be set
-        # back to 1 when the test is marked with "IS_FIRST_RUN", is multisubmit
-        # and "RESUBMIT" does not have the correct value.
+        # On a batch system with a multisubmit test "RESUBMIT" is used to track
+        # which phase is being ran. By the end of the test it equals 0. If the
+        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT" 
+        # does not get reset to 1 on a rerun and the first phase is skiped 
+        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will 
+        # get reset if the test state is not correct for a rerun.
+        # NOTE: "IS_FIRST_RUN" is reset in "case_submit.py"
         if (is_first_run and
                 self._multisubmit and
                 self._case1.get_value("RESUBMIT") == 0):
-            self._resetup_case(compare_phase_name)
+            self._resetup_case(RUN_PHASE, reset=True)
 
         first_phase = self._case1.get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
         run_type = self._case1.get_value("RUN_TYPE")
