@@ -210,28 +210,6 @@ M       src/components/data_comps_mct/dlnd/cime_config/config_component.xml
 ======================================================================
 
 Originator: Chris Fischer 
-Date: 4-8-2021
-Tag: cime5.8.42
-Answer Changes: None
-Tests: hand tested and scripts_regression_tests
-Dependencies:
-
-Brief Summary:
-    - No need to test ESMF_AWARE_THREADING here.
-
-User interface changes: 
-
-PR summary: git log --oneline --first-parent [previous_tag]..master
-b655c9127 Merge pull request #3918 from jedwards4b/ninst_fix
-
-Modified files: git diff --name-status [previous_tag]
-M       scripts/lib/CIME/XML/env_mach_pes.py
-
-======================================================================
-
-======================================================================
-
-Originator: Chris Fischer 
 Date: 3-30-2021
 Tag: cime5.8.40
 Answer Changes: 
