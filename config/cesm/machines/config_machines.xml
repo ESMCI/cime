@@ -636,7 +636,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">pnetcdf/1.12.1</command>
       </modules>
       <modules mpilib="mpt" compiler="intel">
-        <command name="load">mpt/2.23</command>
+        <command name="load">mpt/2.22</command>
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
       </modules>
