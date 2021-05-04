@@ -89,9 +89,9 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
         din_loc_root = case.get_value("DIN_LOC_ROOT")
         testcase     = case.get_value("TESTCASE")
 
-        if not os.path.isfile(din_loc_root):
+        if not os.path.isdir(din_loc_root):
             try:
-                os.makedirs(din_loc_root, exist_ok=True)
+                os.makedirs(din_loc_root)
             except OSError as e:
                 if e.errno == errno.EACCES:
                     logger.info("Invalid permissions to create {}".format(din_loc_root))
