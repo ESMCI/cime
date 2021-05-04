@@ -53,6 +53,18 @@ jobs:
           repository: ESCOMP/CESM_CPL7andDataComps
           path: components/cpl7
 
+      - name: cmeps checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/CMEPS
+          path: components/cmeps
+
+      - name: cdeps checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/CDEPS
+          path: components/cdeps
+
       - id: load-env
         run: |
           sudo apt-get update
