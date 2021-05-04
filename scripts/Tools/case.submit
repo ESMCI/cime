@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Submits the case to the queuing system, or runs it if there is no queueing system.

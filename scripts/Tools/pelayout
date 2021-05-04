@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 This utility allows the CIME user to view and modify a case's PE layout.

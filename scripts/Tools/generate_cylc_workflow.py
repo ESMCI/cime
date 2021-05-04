@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Generates a cylc workflow file for the case.  See https://cylc.github.io for details about cylc

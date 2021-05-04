@@ -1,5 +1,76 @@
 ======================================================================
 
+Originator: Chris Fischer 
+Date: 5-3-2021
+Tag: cime5.8.44
+Answer Changes: None
+Tests: ERS_Ld3.f19_f19_mg17.FXHIST.cheyenne_intel.cam-waccmx_weimer
+       scrtips_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Revert cheyenne intel mpt to 2.22.
+    - Change shebang to explict python3.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+6cbfdd632 Merge pull request #3951 from ESMCI/fischer/mpt_cheyenne
+296aeaf4a Merge pull request #3948 from jedwards4b/move_to_py3
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt.yml
+M	config/cesm/machines/config_machines.xml
+M	scripts/Tools/archive_metadata
+M	scripts/Tools/bless_test_results
+M	scripts/Tools/case.build
+M	scripts/Tools/case.cmpgen_namelists
+M	scripts/Tools/case.qstatus
+M	scripts/Tools/case.setup
+M	scripts/Tools/case.submit
+M	scripts/Tools/check_case
+M	scripts/Tools/check_input_data
+M	scripts/Tools/check_lockedfiles
+M	scripts/Tools/cime_bisect
+M	scripts/Tools/code_checker
+M	scripts/Tools/compare_namelists
+M	scripts/Tools/compare_test_results
+M	scripts/Tools/component_compare_baseline
+M	scripts/Tools/component_compare_copy
+M	scripts/Tools/component_compare_test
+M	scripts/Tools/component_generate_baseline
+M	scripts/Tools/cs.status
+M	scripts/Tools/e3sm_check_env
+M	scripts/Tools/generate_cylc_workflow.py
+M	scripts/Tools/getTiming
+M	scripts/Tools/get_case_env
+M	scripts/Tools/get_standard_makefile_args
+M	scripts/Tools/jenkins_generic_job
+M	scripts/Tools/list_e3sm_tests
+M	scripts/Tools/mvsource
+M	scripts/Tools/normalize_cases
+M	scripts/Tools/pelayout
+M	scripts/Tools/preview_namelists
+M	scripts/Tools/preview_run
+M	scripts/Tools/save_provenance
+M	scripts/Tools/simple_compare
+M	scripts/Tools/testreporter.py
+M	scripts/Tools/wait_for_tests
+M	scripts/Tools/xmlchange
+M	scripts/Tools/xmlquery
+M	scripts/create_clone
+M	scripts/create_newcase
+M	scripts/create_test
+M	scripts/query_config
+M	scripts/query_testlists
+M	scripts/tests/list_tests
+M	scripts/tests/scripts_regression_tests.py
+
+======================================================================
+
+======================================================================
+
 Originator: Chris Fiscehr 
 Date: 4-26-2021
 Tag: cime5.8.43
