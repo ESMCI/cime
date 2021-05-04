@@ -44,6 +44,49 @@ def _extract_times(zipfiles, target_file):
     with open(target_file, "w") as fd:
         fd.write(contents)
 
+def _run_git_cmd_recursively(cmd, srcroot, output):
+    """ Runs a git command recursively
+
+    Runs the git command in srcroot then runs it on each submodule.
+    Then output from both commands is written to the output file.
+    """
+    rc1, output1, err1 = run_cmd("git {}".format(cmd), from_dir=srcroot)
+
+    rc2, output2, err2 = run_cmd(
+        "git submodule foreach --recursive \"git {}; echo\"".format(cmd),
+        from_dir=srcroot)
+
+    with open(output, "w") as fd:
+        fd.write((output1 if rc1 == 0 else err1) + "\n\n")
+        fd.write((output2 if rc2 == 0 else err2) + "\n")
+
+def _record_git_provenance(srcroot, exeroot, lid):
+    """ Records git provenance
+
+    Records git status, diff and logs for main repo and all submodules.
+    """
+    # Git Status
+    status_prov = os.path.join(exeroot, "GIT_STATUS.{}".format(lid))
+    _run_git_cmd_recursively("status", srcroot, status_prov)
+
+    # Git Diff
+    diff_prov = os.path.join(exeroot, "GIT_DIFF.{}".format(lid))
+    _run_git_cmd_recursively("diff", srcroot, diff_prov)
+
+    # Git Log
+    log_prov = os.path.join(exeroot, "GIT_LOG.{}".format(lid))
+    cmd = "log --first-parent --pretty=oneline -n 5"
+    _run_git_cmd_recursively(cmd, srcroot, log_prov)
+
+    # Git remote
+    remote_prov = os.path.join(exeroot, "GIT_REMOTE.{}".format(lid))
+    _run_git_cmd_recursively("remote -v", srcroot, remote_prov)
+
+    # Git config
+    config_src = os.path.join(srcroot, ".git", "config")
+    config_prov = os.path.join(exeroot, "GIT_CONFIG.{}".format(lid))
+    safe_copy(config_src, config_prov, preserve_meta=False)
+
 def _save_build_provenance_e3sm(case, lid):
     srcroot = case.get_value("SRCROOT")
     exeroot = case.get_value("EXEROOT")
@@ -68,6 +111,8 @@ def _save_build_provenance_e3sm(case, lid):
     subm_status = get_current_submodule_status(recursive=True, repo=srcroot)
     with open(submodule_prov, "w") as fd:
         fd.write(subm_status)
+
+    _record_git_provenance(srcroot, exeroot, lid)
 
     # Save SourceMods
     sourcemods = os.path.join(caseroot, "SourceMods")
@@ -96,7 +141,10 @@ def _save_build_provenance_e3sm(case, lid):
 
     # For all the just-created post-build provenance files, symlink a generic name
     # to them to indicate that these are the most recent or active.
-    for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "GIT_SUBMODULE_STATUS", "SourceMods", "build_environment", "build_times"]:
+    for item in ["GIT_DESCRIBE", "GIT_LOGS_HEAD", "GIT_SUBMODULE_STATUS",
+                 "GIT_STATUS", "GIT_DIFF", "GIT_LOG", "GIT_CONFIG",
+                 "GIT_REMOTE", "SourceMods", "build_environment",
+                 "build_times"]:
         globstr = "{}/{}.{}*".format(exeroot, item, lid)
         matches = glob.glob(globstr)
         expect(len(matches) < 2, "Multiple matches for glob {} should not have happened".format(globstr))
