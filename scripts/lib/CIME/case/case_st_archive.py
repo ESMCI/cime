@@ -403,6 +403,8 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
     # the compname is drv but the files are named cpl
     if compname == 'drv':
         compname = 'cpl'
+    if compname == "cice6":
+        compname = 'cice'
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):
