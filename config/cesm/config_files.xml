@@ -622,7 +622,7 @@
   <entry id="BUILD_LIB_FILE">
     <type>char</type>
     <values>
-      <value lib="FMS">$SRCROOT/libraries/FMS/buildlib</value>
+      <value lib="FMS">$SRCROOT/libraries/fms/buildlib</value>
       <value lib="CDEPS">$SRCROOT/components/cdeps/cime_config/buildlib</value>
       <value lib="CMEPS">$SRCROOT/components/cmeps/cime_config/buildlib</value>
       <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
