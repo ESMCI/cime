@@ -27,6 +27,8 @@ jobs:
       # Versions of all dependencies can be updated here
       PNETCDF_VERSION: pnetcdf-1.12.2
       NETCDF_FORTRAN_VERSION: v4.5.2
+      MCT_VERSION: MCT_2.11.0
+      PARALLELIO_VERSION: pio2_5_4
       NETCDF_C_PATH: /usr
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
       PNETCDF_PATH: ${HOME}/pnetcdf
@@ -35,7 +37,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - uses: actions/checkout@v2
+        with:
+          path: share
+
+      - name: share checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/CESM_share
+          path: share
+
+      - name: cpl7 checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/CESM_CPL7andDataComps
+          path: components/cpl7
 
       - id: load-env
         run: |
@@ -46,6 +63,32 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: cache mct
+        id: cache-mct
+        uses: actions/cache@v2
+        with:
+          path: $HOME/work/cime/cime/libraries/mct
+          key: ${{ runner.os }}-${{ env.MCT_VERSION}}-mct-redo
+
+      - name: mct install
+        if: steps.cache-mct.outputs.cache-hit != 'true'
+        run: |
+          git clone -b ${{ env.MCT_VERSION  }} https://github.com/MCSclimate/MCT libraries/mct
+          ls -l libraries/mct
+
+      - name: cache parallelio
+        id: cache-parallelio
+        uses: actions/cache@v2
+        with:
+          path: $HOME/work/cime/cime/libraries/parallelio
+          key: ${{ runner.os }}-${{ env.PARALLELIO_VERSION}}-parallelio-redo
+
+      - name: parallelio install
+        if: steps.cache-parallelio.outputs.cache-hit != 'true'
+        run: |
+          git clone -b ${{ env.PARALLELIO_VERSION  }} https://github.com/NCAR/ParallelIO libraries/parallelio
+          ls -l libraries/parallelio
 
       - name: cache pnetcdf
         id: cache-pnetcdf
