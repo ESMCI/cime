@@ -2,6 +2,16 @@
 Base class for CIME system tests that involve doing two runs and comparing their
 output.
 
+NOTE: Below is the flow of a multisubmit test.
+Non-batch:
+case_submit -> case_run     # PHASE 1
+            -> case_run     # PHASE 2
+
+batch:
+case_submit -> case_run     # PHASE 1
+case_run    -> case_submit
+case_submit -> case_run     # PHASE 2
+
 In the __init__ method for your test, you MUST call
     SystemTestsCompareTwo.__init__
 See the documentation of that method for details.
@@ -217,8 +227,29 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         Runs both phases of the two-phase test and compares their results
         If success_change is True, success requires some files to be different
         """
+        is_first_run = self._case1.get_value("IS_FIRST_RUN")
+
+        compare_phase_name = "{}_{}_{}".format(
+            COMPARE_PHASE,
+            self._run_one_suffix,
+            self._run_two_suffix)
+
+        # On a batch system with a multisubmit test "RESUBMIT" is used to track
+        # which phase is being ran. By the end of the test it equals 0. If the
+        # the test fails in a way where the RUN_PHASE is PEND then "RESUBMIT" 
+        # does not get reset to 1 on a rerun and the first phase is skiped 
+        # causing the COMPARE_PHASE to fail. This ensures that "RESUBMIT" will 
+        # get reset if the test state is not correct for a rerun.
+        # NOTE: "IS_FIRST_RUN" is reset in "case_submit.py"
+        if (is_first_run and
+                self._multisubmit and
+                self._case1.get_value("RESUBMIT") == 0):
+            self._resetup_case(RUN_PHASE, reset=True)
+
         first_phase = self._case1.get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
         run_type = self._case1.get_value("RUN_TYPE")
+
+        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, first_phase))
 
         # First run
         if not self._multisubmit or first_phase:
@@ -227,7 +258,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # Add a PENDing compare phase so that we'll notice if the second part of compare two
             # doesn't run.
             with self._test_status:
-                self._test_status.set_status("{}_{}_{}".format(COMPARE_PHASE, self._run_one_suffix, self._run_two_suffix), TEST_PEND_STATUS)
+                self._test_status.set_status(
+                    compare_phase_name,
+                    TEST_PEND_STATUS)
 
             self._activate_case1()
             self._case_one_custom_prerun_action()
@@ -235,7 +268,6 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             self._case_one_custom_postrun_action()
 
         # Second run
-        logger.info("_multisubmit {} first phase {}".format(self._multisubmit, first_phase))
         if not self._multisubmit or not first_phase:
             # Subtle issue: case1 is already in a writeable state since it tends to be opened
             # with a with statement in all the API entrances in CIME. case2 was created via clone,

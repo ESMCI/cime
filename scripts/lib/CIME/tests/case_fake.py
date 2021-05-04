@@ -32,6 +32,9 @@ class CaseFake(object):
         self.set_exeroot()
         self.set_rundir()
 
+    def set_initial_test_values(self):
+        pass
+
     def get_value(self, item):
         """
         Get the value of the given item
