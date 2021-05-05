@@ -70,7 +70,7 @@ jobs:
           key: ${{ runner.os }}-${{ env.MCT_VERSION}}-mct
 
       - name: mct install
-        if: steps.cache-mct.outputs.cache-hit != 'true'
+#        if: steps.cache-mct.outputs.cache-hit != 'true'
         run: |
           git clone -b ${{ env.MCT_VERSION  }} https://github.com/MCSclimate/MCT libraries/mct
           ls -l libraries/mct
