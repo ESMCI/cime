@@ -67,10 +67,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/work/cime/cime/libraries/mct
-          key: ${{ runner.os }}-${{ env.MCT_VERSION}}-mct
+          key: ${{ runner.os }}-foo-v2-${{ env.MCT_VERSION}}-mct-redo
 
       - name: mct install
-#        if: steps.cache-mct.outputs.cache-hit != 'true'
+        if: steps.cache-mct.outputs.cache-hit != 'true'
         run: |
           git clone -b ${{ env.MCT_VERSION  }} https://github.com/MCSclimate/MCT libraries/mct
           ls -l libraries/mct
@@ -80,7 +80,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/work/cime/cime/libraries/parallelio
-          key: ${{ runner.os }}-${{ env.PARALLELIO_VERSION}}-parallelio
+          key: ${{ runner.os }}-foo-v2-${{ env.PARALLELIO_VERSION}}-parallelio-redo
 
       - name: parallelio install
         if: steps.cache-parallelio.outputs.cache-hit != 'true'
@@ -93,7 +93,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+          key: ${{ runner.os }}-foo-v2-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
 
       - name: pnetcdf build
         if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
@@ -112,7 +112,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/netcdf-fortran
-          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
+          key: ${{ runner.os }}-foo-v2-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
 
       - name: netcdf fortran build
         if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
@@ -140,7 +140,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/cesm/inputdata
-          key: inputdata_mct
+          key: inputdata-foo-v2
 #
 #      The following can be used to ssh to the testnode for debugging
 #      see https://github.com/mxschmitt/action-tmate for details
