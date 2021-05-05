@@ -1426,7 +1426,7 @@ using a fortran linker.
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
   <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
-  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_0/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-has">
@@ -1447,7 +1447,7 @@ using a fortran linker.
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
   <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
-  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_0/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-ivy">
@@ -1468,7 +1468,7 @@ using a fortran linker.
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
   <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
-  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_0/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-san">
@@ -1489,7 +1489,7 @@ using a fortran linker.
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
   <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
-  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_0/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="sandiatoss3" COMPILER="intel">
