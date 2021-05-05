@@ -67,10 +67,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/work/cime/cime/libraries/mct
-          key: ${{ runner.os }}-${{ env.MCT_VERSION}}-mct-redo
+          key: ${{ runner.os }}-${{ env.MCT_VERSION}}-mct
 
       - name: mct install
-#CAF        if: steps.cache-mct.outputs.cache-hit != 'true'
+        if: steps.cache-mct.outputs.cache-hit != 'true'
         run: |
           git clone -b ${{ env.MCT_VERSION  }} https://github.com/MCSclimate/MCT libraries/mct
           ls -l libraries/mct
@@ -80,10 +80,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/work/cime/cime/libraries/parallelio
-          key: ${{ runner.os }}-${{ env.PARALLELIO_VERSION}}-parallelio-redo
+          key: ${{ runner.os }}-${{ env.PARALLELIO_VERSION}}-parallelio
 
       - name: parallelio install
-#CAF        if: steps.cache-parallelio.outputs.cache-hit != 'true'
+        if: steps.cache-parallelio.outputs.cache-hit != 'true'
         run: |
           git clone -b ${{ env.PARALLELIO_VERSION  }} https://github.com/NCAR/ParallelIO libraries/parallelio
           ls -l libraries/parallelio
@@ -93,10 +93,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
-          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
 
       - name: pnetcdf build
-#CAF        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
         run: |
           wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
           tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
@@ -112,10 +112,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/netcdf-fortran
-          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
+          key: ${{ runner.os }}-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran
 
       - name: netcdf fortran build
-#CAF        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
         run: |
           sudo apt-get install libnetcdf-dev
           wget https://github.com/Unidata/netcdf-fortran/archive/${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
