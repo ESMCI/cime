@@ -140,7 +140,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $HOME/cesm/inputdata
-          key: inputdata
+          key: inputdata_mct
 #
 #      The following can be used to ssh to the testnode for debugging
 #      see https://github.com/mxschmitt/action-tmate for details
