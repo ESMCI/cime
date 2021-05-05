@@ -198,9 +198,6 @@ class EnvBatch(EnvBase):
         if ext.startswith('.'):
             ext = ext[1:]
         overrides["job_id"] = ext + '.' + case.get_value("CASE")
-        if "pleiades" in case.get_value("MACH"):
-            # pleiades jobname needs to be limited to 15 chars
-            overrides["job_id"] = overrides["job_id"][:15]
         overrides["batchdirectives"] = self.get_batch_directives(case, job, overrides=overrides)
         output_text = transform_vars(open(input_template,"r").read(), case=case, subgroup=job, overrides=overrides)
         output_name = get_batch_script_for_job(job) if outfile is None else outfile
