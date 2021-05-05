@@ -47,11 +47,22 @@ def buildlib(bldroot, installpath, case):
 ###############################################################################
     gmake_args = get_standard_makefile_args(case, shared_lib=True)
     comp_interface = case.get_value("COMP_INTERFACE")
+    cime_model = case.get_value("MODEL")
     cimeroot = case.get_value("CIMEROOT")
+    srcroot = case.get_value("SRCROOT")
     caseroot = case.get_value("CASEROOT")
     libroot = case.get_value("LIBROOT")
 
-    filepath = [os.path.join(caseroot,"SourceMods","src.share"),
+    if cime_model == "e3sm":
+      filepath = [os.path.join(caseroot,"SourceMods","src.share"),
+                os.path.join(srcroot,"share","streams"),
+                os.path.join(srcroot,"share","util"),
+                os.path.join(srcroot,"share","RandNum","src"),
+                os.path.join(srcroot,"share","RandNum","src","dsfmt_f03"),
+                os.path.join(srcroot,"share","RandNum","src","kissvec"),
+                os.path.join(srcroot,"share","RandNum","src","mt19937")]
+    else:
+      filepath = [os.path.join(caseroot,"SourceMods","src.share"),
                 os.path.join(cimeroot,"src","share","streams"),
                 os.path.join(cimeroot,"src","share","util"),
                 os.path.join(cimeroot,"src","share","RandNum","src"),
@@ -76,7 +87,11 @@ def buildlib(bldroot, installpath, case):
         use_esmf = "esmf"
     else:
         use_esmf = "noesmf"
-        filepath.append(os.path.join(cimeroot, "src", "share", "esmf_wrf_timemgr"))
+        if cime_model == "e3sm":
+          filepath.append(os.path.join(srcroot, "share", "esmf_wrf_timemgr"))
+        else:
+          filepath.append(os.path.join(cimeroot, "src", "share", "esmf_wrf_timemgr"))
+
 
     comp_interface = case.get_value("COMP_INTERFACE")
     ninst_value = case.get_value("NINST_VALUE")
@@ -116,9 +131,15 @@ def buildlib(bldroot, installpath, case):
         if not os.path.isdir(os.path.join(installdir,ndir)):
             os.makedirs(os.path.join(installdir,ndir))
     # copy some header files
-    for _file in glob.iglob(os.path.join(cimeroot,"src","share","include","*")):
+    if cime_model == "e3sm":
+      for _file in glob.iglob(os.path.join(srcroot,"share","include","*")):
         copyifnewer(_file, os.path.join(installdir, "include", os.path.basename(_file)))
-    for _file in glob.iglob(os.path.join(cimeroot,"src","share","RandNum","include","*")):
+      for _file in glob.iglob(os.path.join(srcroot,"share","RandNum","include","*")):
+        copyifnewer(_file, os.path.join(installdir, "include", os.path.basename(_file)))
+    else:
+      for _file in glob.iglob(os.path.join(cimeroot,"src","share","include","*")):
+        copyifnewer(_file, os.path.join(installdir, "include", os.path.basename(_file)))
+      for _file in glob.iglob(os.path.join(cimeroot,"src","share","RandNum","include","*")):
         copyifnewer(_file, os.path.join(installdir, "include", os.path.basename(_file)))
 
     # This runs the make command
