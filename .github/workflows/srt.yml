@@ -149,6 +149,7 @@ jobs:
 
       - name: scripts regression tests
         run: |
+          rm -rf $HOME
           mkdir -p $HOME/cesm/scratch
           mkdir -p $HOME/cesm/inputdata
           cd $HOME/work/cime/cime/scripts/tests
