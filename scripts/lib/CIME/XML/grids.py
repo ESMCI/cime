@@ -196,11 +196,6 @@ class Grids(GenericXML):
         component_grids["o%"] = component_grids["oi%"]
         return component_grids
 
-    def _get_component_grids(self, name):
-        gridRE = re.compile(r"[_]{0,1}[a-z]{1,2}%")
-        component_grids = gridRE.split(name)[1:]
-        return component_grids
-
     def _get_domains(self, component_grids, atmlevregex, lndlevregex, driver):
         """ determine domains dictionary for config_grids.xml v2 schema"""
         # use component_grids to create grids dictionary
