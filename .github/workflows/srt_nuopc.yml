@@ -176,6 +176,10 @@ jobs:
           ./scripts_regression_tests.py G_TestBuildSystem --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
           cat /home/runner/cesm/scratch/*/SMS.f19_g16.rx1.A*/bld/gptl.bldlog*
 
+      - name: dump build logs
+        run: |
+          cat /home/runner/cesm/scratch/*/SMS.f19_g16.rx1.A*/bld/gptl.bldlog*
+
 #     the following can be used by developers to login to the github server in case of errors
 #     see https://github.com/marketplace/actions/debugging-with-tmate for further details
 #      - name: Setup tmate session
