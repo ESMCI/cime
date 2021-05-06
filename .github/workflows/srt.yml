@@ -57,14 +57,14 @@ jobs:
         with:
           repository: MCSclimate/MCT
           path: libraries/mct
-          ref: ${{ MCT_VERSION }}
+          ref: ${{ env.MCT_VERSION }}
 
       - name: parallellio checkout
         uses: actions/checkout@v2
         with:
           repository: ESCOMP/ParallelIO
           path: libraries/parallelio
-          ref: ${{ PARALLELIO_VERSION }}
+          ref: ${{ env.PARALLELIO_VERSION }}
 
 
       - id: load-env
