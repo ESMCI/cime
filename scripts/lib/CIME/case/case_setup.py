@@ -11,6 +11,7 @@ from CIME.utils             import get_cime_root, run_and_log_case_status, get_m
 from CIME.utils             import batch_jobid
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
+import errno
 
 logger = logging.getLogger(__name__)
 
@@ -84,10 +85,18 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
     extra_machines_dir = case.get_value("EXTRA_MACHDIR")
     expect(mach is not None, "xml variable MACH is not set")
 
-    # Check that $DIN_LOC_ROOT exists - and abort if not a namelist compare tests
+    # Check that $DIN_LOC_ROOT exists or can be created:
     if not non_local:
         din_loc_root = case.get_value("DIN_LOC_ROOT")
         testcase     = case.get_value("TESTCASE")
+
+        if not os.path.isdir(din_loc_root):
+            try:
+                os.makedirs(din_loc_root)
+            except OSError as e:
+                if e.errno == errno.EACCES:
+                    logger.info("Invalid permissions to create {}".format(din_loc_root))
+            
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
 
