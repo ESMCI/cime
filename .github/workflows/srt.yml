@@ -52,6 +52,21 @@ jobs:
           repository: ESCOMP/CESM_CPL7andDataComps
           path: components/cpl7
 
+      - name: mct checkout
+        uses: actions/checkout@v2
+        with:
+          repository: MCSclimate/MCT
+          path: libraries/mct
+          ref: ${{ MCT_VERSION }}
+
+      - name: parallellio checkout
+        uses: actions/checkout@v2
+        with:
+          repository: ESCOMP/ParallelIO
+          path: libraries/parallelio
+          ref: ${{ PARALLELIO_VERSION }}
+
+
       - id: load-env
         run: |
           sudo apt-get update
@@ -61,32 +76,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: cache mct
-        id: cache-mct
-        uses: actions/cache@v2
-        with:
-          path: $HOME/work/cime/cime/libraries/mct
-          key: ${{ runner.os }}-foo-v2-${{ env.MCT_VERSION}}-mct-redo
-
-      - name: mct install
-        if: steps.cache-mct.outputs.cache-hit != 'true'
-        run: |
-          git clone -b ${{ env.MCT_VERSION  }} https://github.com/MCSclimate/MCT libraries/mct
-          ls -l libraries/mct
-
-      - name: cache parallelio
-        id: cache-parallelio
-        uses: actions/cache@v2
-        with:
-          path: $HOME/work/cime/cime/libraries/parallelio
-          key: ${{ runner.os }}-foo-v3-${{ env.PARALLELIO_VERSION}}-parallelio-redo
-
-      - name: parallelio install
-        if: steps.cache-parallelio.outputs.cache-hit != 'true'
-        run: |
-          git clone -b ${{ env.PARALLELIO_VERSION  }} https://github.com/NCAR/ParallelIO libraries/parallelio
-          ls -l libraries/parallelio
 
       - name: cache pnetcdf
         id: cache-pnetcdf
