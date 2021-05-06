@@ -736,11 +736,11 @@ CMAKE_ENV_VARS += CC=$(CC) \
 		  LDFLAGS="$(LDFLAGS)"
 
 
-# We declare $(GLC_DIR)/Makefile to be a phony target so that cmake is
-# always rerun whenever invoking 'make $(GLC_DIR)/Makefile'; this is
+# We declare GLCMakefile to be a phony target so that cmake is
+# always rerun whenever invoking 'make GLCMakefile'; this is
 # desirable to pick up any new source files that may have been added
-.PHONY: $(GLC_DIR)/Makefile
-$(GLC_DIR)/Makefile:
+.PHONY: GLCMakefile
+GLCMakefile:
 	cd $(GLC_DIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(GLCROOT)/source_cism
 
