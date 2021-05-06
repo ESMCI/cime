@@ -37,8 +37,8 @@
       <grid name="rof"       compset="DROF"        >rx1</grid>
       <grid name="rof"       compset="DROF%CPLHIST">r05</grid>
       <grid name="rof"       compset="XROF"        >r05</grid>
-      <grid name="glc"	     compset="SGLC"        >null</grid>
-      <grid name="glc"	     compset="CISM2"       >gris4</grid>
+      <grid name="glc"       compset="SGLC"        >null</grid>
+      <grid name="glc"       compset="CISM2"       >gris4</grid>
       <grid name="glc"       compset="XGLC"        >gris4</grid>
       <grid name="wav"       compset="SWAV"        >null</grid>
       <grid name="wav"       compset="DWAV"        >ww3a</grid>
