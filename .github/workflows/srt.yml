@@ -144,7 +144,7 @@ jobs:
           echo "-----"
           ls $HOME/work/cime/cime
           echo "-----"
-          ls $HOME/work/cime/components
+          ls $HOME/work/cime/cime/components
           echo "-----"
           mkdir -p $HOME/cesm/scratch
           mkdir -p $HOME/cesm/inputdata
