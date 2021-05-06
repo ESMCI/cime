@@ -4,7 +4,7 @@ Libraries for checking python code with pylint
 
 from CIME.XML.standard_module_setup import *
 
-from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, is_python_executable, get_cime_default_driver
+from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, get_src_root, is_python_executable, get_cime_default_driver
 
 from multiprocessing.dummy import Pool as ThreadPool
 #pylint: disable=import-error
