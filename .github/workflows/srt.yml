@@ -62,7 +62,7 @@ jobs:
       - name: parallellio checkout
         uses: actions/checkout@v2
         with:
-          repository: ESCOMP/ParallelIO
+          repository: NCAR/ParallelIO
           path: libraries/parallelio
           ref: ${{ env.PARALLELIO_VERSION }}
 
