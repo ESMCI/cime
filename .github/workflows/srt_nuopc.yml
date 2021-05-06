@@ -1,6 +1,6 @@
 # CIME scripts regression tests
 
-name: scripts regression tests
+name: nuopc scripts regression tests
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -52,6 +52,13 @@ jobs:
         with:
           repository: ESCOMP/CESM_CPL7andDataComps
           path: components/cpl7
+
+      - name: mct checkout
+        uses: actions/checkout@v2
+        with:
+          repository: MCSclimate/MCT
+          path: libraries/mct
+          ref: ${{ env.MCT_VERSION }}
 
       - name: cmeps checkout
         uses: actions/checkout@v2
