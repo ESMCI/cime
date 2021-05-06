@@ -713,7 +713,12 @@ class J_TestCreateNewcase(unittest.TestCase):
         if os.path.exists(testdir1):
             shutil.rmtree(testdir1)
         cls._testdirs.append(testdir1)
-        args = ' --case CreateNewcaseTest --script-root {} --compset 2000_DATM%NYF_SLND_SICE_DOCN%SOMAQP_SROF_SGLC_SWAV --res f19_g16 --output-root {} --handle-preexisting-dirs u' .format(testdir1, cls._testroot)
+
+        args = ' --case CreateNewcaseTest --script-root {} --compset 2000_DATM%NYF_SLND_SICE_DOCN%SOMAQP_SROF_SGLC_SWAV --output-root {} --handle-preexisting-dirs u' .format(testdir1, cls._testroot)
+        if CIME.utils.get_cime_default_driver() == "nuopc":
+            args += " --res f19_g17 "
+        else:
+            args += " --res f19_g16 "
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"
         if TEST_COMPILER is not None:
@@ -743,7 +748,11 @@ class J_TestCreateNewcase(unittest.TestCase):
         if os.path.exists(testdir2):
             shutil.rmtree(testdir2)
         cls._testdirs.append(testdir2)
-        args = ' --case CreateNewcaseTest --script-root {} --compset ADSOMAQP --res f19_g16 --output-root {} --handle-preexisting-dirs u'.format(testdir2, cls._testroot)
+        args = ' --case CreateNewcaseTest --script-root {} --compset ADSOMAQP --output-root {} --handle-preexisting-dirs u'.format(testdir2, cls._testroot)
+        if CIME.utils.get_cime_default_driver() == "nuopc":
+            args += " --res f19_g17 "
+        else:
+            args += " --res f19_g16 "
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"
         if TEST_COMPILER is not None:
