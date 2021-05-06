@@ -45,44 +45,44 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: ESCOMP/CESM_share
-          path: cime/share
+          path:  $HOME/work/cime/cime/share
 
       - name: cpl7 checkout
         uses: actions/checkout@v2
         with:
           repository: ESCOMP/CESM_CPL7andDataComps
-          path: cime/components/cpl7
+          path:  $HOME/work/cime/cime/components/cpl7
 
       - name: mct checkout
         uses: actions/checkout@v2
         with:
           repository: MCSclimate/MCT
-          path: cime/libraries/mct
+          path:  $HOME/work/cime/cime/libraries/mct
           ref: ${{ env.MCT_VERSION }}
 
       - name: cmeps checkout
         uses: actions/checkout@v2
         with:
           repository: ESCOMP/CMEPS
-          path: cime/components/cmeps
+          path:  $HOME/work/cime/cime/components/cmeps
 
       - name: cdeps checkout
         uses: actions/checkout@v2
         with:
           repository: ESCOMP/CDEPS
-          path: cime/components/cdeps
+          path:  $HOME/work/cime/cime/components/cdeps
 
       - name: fox checkout
         uses: actions/checkout@v2
         with:
           repository: ESMCI/fox
-          path: cime/components/cdeps/fox
+          path:  $HOME/work/cime/cime/components/cdeps/fox
 
       - name: parallelio checkout
         uses: actions/checkout@v2
         with:
           repository: NCAR/ParallelIO
-          path: cime/libraries/parallelio
+          path:  $HOME/work/cime/cime/libraries/parallelio
           ref: ${{ env.PARALLELIO_VERSION }}
 
       - id: load-env
