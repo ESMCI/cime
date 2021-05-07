@@ -103,7 +103,7 @@ jobs:
           key: ${{ runner.os }}-nuopc-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
 
       - name: pnetcdf build
-#CAF        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
         run: |
           wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
           tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
@@ -122,7 +122,7 @@ jobs:
           key: ${{ runner.os }}-nuopc-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
 
       - name: netcdf fortran build
-#CAF        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
         run: |
           sudo apt-get install libnetcdf-dev
           wget https://github.com/Unidata/netcdf-fortran/archive/${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
@@ -174,12 +174,12 @@ jobs:
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
           cd ..
-          ./create_test SMS.f19_g16_rx1.A.ubuntu-latest
-#CAF          ./scripts_regression_tests.py G_TestBuildSystem --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
+#CAF          ./create_test SMS.f19_g16_rx1.A.ubuntu-latest
+          ./scripts_regression_tests.py G_TestBuildSystem --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 
 #     the following can be used by developers to login to the github server in case of errors
 #     see https://github.com/marketplace/actions/debugging-with-tmate for further details
-#      - name: Setup tmate session
-#        if: ${{ failure() }}
-#        uses: mxschmitt/action-tmate@v3
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3

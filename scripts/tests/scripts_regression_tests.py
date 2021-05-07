@@ -2579,7 +2579,7 @@ class G_TestBuildSystem(TestCreateTestCommon):
     ###########################################################################
     def test_clean_rebuild(self):
     ###########################################################################
-        casedir = self._create_test(["--no-run", "SMS.f19_g16_rx1.A"], test_id=self._baseline_name)
+        casedir = self._create_test(["--no-run", "SMS.f19_g17_rx1.A"], test_id=self._baseline_name)
 
         # Clean a component and a sharedlib
         run_cmd_assert_result(self, "./case.build --clean atm", from_dir=casedir)
