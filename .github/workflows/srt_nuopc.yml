@@ -33,7 +33,7 @@ jobs:
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
       PNETCDF_PATH: ${HOME}/pnetcdf
       CIME_MODEL: cesm
-      CIME_DRIVER: nuopc
+#CAF      CIME_DRIVER: nuopc
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -173,7 +173,7 @@ jobs:
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
-          ./scripts_regression_tests.py --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
+          ./scripts_regression_tests.py G_TestBuildSystem --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
           cat /home/runner/cesm/scratch/*/SMS.f19_g16.rx1.A*/bld/gptl.bldlog*
 
       - name: dump build logs
