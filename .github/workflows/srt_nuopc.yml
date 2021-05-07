@@ -103,7 +103,7 @@ jobs:
           key: ${{ runner.os }}-nuopc-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
 
       - name: pnetcdf build
-        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
+#CAF        if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
         run: |
           wget https://parallel-netcdf.github.io/Release/${{ env.PNETCDF_VERSION }}.tar.gz
           tar -xzvf ${{ env.PNETCDF_VERSION }}.tar.gz
@@ -122,7 +122,7 @@ jobs:
           key: ${{ runner.os }}-nuopc-${{ env.NETCDF_FORTRAN_VERSION }}-netcdf-fortran-redo
 
       - name: netcdf fortran build
-        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
+#CAF        if: steps.cache-netcdf-fortran.outputs.cache-hit != 'true'
         run: |
           sudo apt-get install libnetcdf-dev
           wget https://github.com/Unidata/netcdf-fortran/archive/${{ env.NETCDF_FORTRAN_VERSION }}.tar.gz
