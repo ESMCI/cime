@@ -185,7 +185,7 @@ jobs:
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
           export ESMFMKFILE=$HOME/ESMF/lib/libg/Linux.gfortran.64.openmpi.default/esmf.mk
-          ./scripts_regression_tests.py G_TestBuildSystem --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
+          ./scripts_regression_tests.py J_TestCreateNewcase --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 
 #     the following can be used by developers to login to the github server in case of errors
