@@ -41,6 +41,9 @@ class TestCase_RecordCmd(unittest.TestCase):
 
                 case.record_cmd(init=True)
 
+        self.assertTrue(open_mock.calls[0]["args"] ==
+                        ("{}/replay.sh".format(tempdir), "a"))
+
         expected = [
             "#!/bin/bash\n\n",
             "set -e\n\n",
@@ -50,7 +53,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock.method_calls["writelines"][0]["args"][0]
+        calls = open_mock._ret.method_calls["writelines"][0]["args"][0]
 
         self.assert_calls_match(calls, expected)
 
@@ -81,7 +84,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock.method_calls["writelines"][0]["args"][0]
+        calls = open_mock._ret.method_calls["writelines"][0]["args"][0]
 
         self.assert_calls_match(calls, expected)
 
@@ -105,7 +108,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "/some/custom/command arg1\n\n",
         ]
 
-        calls = open_mock.method_calls["writelines"][0]["args"][0]
+        calls = open_mock._ret.method_calls["writelines"][0]["args"][0]
 
         self.assert_calls_match(calls, expected)
 
