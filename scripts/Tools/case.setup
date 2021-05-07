@@ -61,6 +61,8 @@ def _main_func(description):
 ###############################################################################
     caseroot, clean, test_mode, reset, keep = parse_command_line(sys.argv, description)
     with Case(caseroot, read_only=False) as case:
+        case.record_cmd()
+
         case.case_setup(clean=clean, test_mode=test_mode, reset=reset, keep=keep)
 
 if __name__ == "__main__":

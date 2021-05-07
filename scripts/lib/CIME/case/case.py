@@ -5,7 +5,7 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, six
+import glob, os, shutil, math, six, time
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
 from six.moves import input
@@ -1635,6 +1635,39 @@ directory, NOT in this subdirectory."""
             return cpllog
         else:
             return None
+
+    def record_cmd(self, cmd=None, init=False):
+        lines = []
+        caseroot = self.get_value("CASEROOT")
+        cimeroot = self.get_value("CIMEROOT")
+
+        if cmd is None:
+            cmd = list(sys.argv)
+
+        if init:
+            ctime = time.strftime("%Y-%m-%d %H:%M:%S")
+
+            lines.append("#!/bin/bash\n\n")
+            # stop script on error, prevents `create_newcase` from failing
+            # and continuing to execute commands
+            lines.append("set -e\n\n")
+            lines.append("# Created {}\n\n".format(ctime))
+            lines.append("CASEDIR=\"{}\"\n\n".format(caseroot))
+            lines.append("cd \"${CASEDIR}\"\n\n")
+
+            # Ensure program path is absolute
+            cmd[0] = re.sub("^./", "{}/scripts/".format(cimeroot), cmd[0])
+
+        cmd = " ".join(cmd)
+
+        # Replace instances of caseroot with variable
+        cmd = re.sub(caseroot, "\"${CASEDIR}\"", cmd)
+
+        lines_len = len(lines)
+        lines.insert(lines_len-1 if init else lines_len, "{}\n\n".format(cmd))
+
+        with open(os.path.join(caseroot, "replay.sh"), "a") as fd:
+            fd.writelines(lines)
 
     def create(self, casename, srcroot, compset_name, grid_name,
                user_mods_dir=None, machine_name=None,

@@ -132,6 +132,8 @@ def _main_func(description):
 
     success = True
     with Case(caseroot, read_only=False) as case:
+        case.record_cmd()
+
         testname = case.get_value('TESTCASE')
 
         if cleanlist is not None or clean_all or clean_depends is not None:
