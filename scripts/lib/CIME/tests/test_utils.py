@@ -7,6 +7,8 @@ import unittest
 import tempfile
 from CIME.utils import indent_string, run_and_log_case_status
 
+from . import utils
+
 class TestIndentStr(unittest.TestCase):
     """Test the indent_string function.
 
@@ -35,19 +37,6 @@ goodbye
   goodbye
 """
         self.assertEqual(expected, result)
-
-# TODO after dropping python 2.7 replace with tempfile.TemporaryDirectory
-class TemporaryDirectory(object):
-    def __init__(self):
-        self._tempdir = None
-
-    def __enter__(self):
-        self._tempdir = tempfile.mkdtemp()
-        return self._tempdir
-
-    def __exit__(self, *args, **kwargs):
-        if os.path.exists(self._tempdir):
-            shutil.rmtree(self._tempdir)
 
 class MockTime(object):
     def __init__(self):
@@ -104,7 +93,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 default success \n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "default",
                                     caseroot=tempdir)
 
@@ -116,7 +105,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "case.submit",
                                     caseroot=tempdir, is_batch=True)
 
@@ -128,7 +117,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "case.submit",
                                     caseroot=tempdir, is_batch=False)
 
@@ -141,7 +130,7 @@ class TestUtils(unittest.TestCase):
             "Something went wrong\n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
                 run_and_log_case_status(self.error_func, "case.submit",
                                         caseroot=tempdir, is_batch=True)
@@ -157,7 +146,7 @@ class TestUtils(unittest.TestCase):
         starting_func = lambda *args: "starting extra"
         success_func = lambda *args: "success extra"
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "default", 
                                     custom_starting_msg_functor=starting_func,
                                     custom_success_msg_functor=success_func,
@@ -172,7 +161,7 @@ class TestUtils(unittest.TestCase):
             "Something went wrong\n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
                 run_and_log_case_status(self.error_func, "default",
                                         caseroot=tempdir)
