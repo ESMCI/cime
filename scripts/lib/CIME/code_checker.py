@@ -21,6 +21,7 @@ def _run_pylint(on_file, interactive):
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
     cmd_options += ",logging-format-interpolation,no-name-in-module"
     cimeroot = get_cime_root()
+    srcroot = get_src_root()
 
     if "scripts/Tools" in on_file:
         cmd_options +=",relative-import"
@@ -30,7 +31,7 @@ def _run_pylint(on_file, interactive):
         (os.path.join(cimeroot,"scripts","lib"),
          os.path.join(cimeroot,"scripts","Tools"),
          os.path.join(cimeroot,"scripts","fortran_unit_testing","python"),
-         os.path.join(cimeroot,"src","drivers","nuopc","cime_config","runseq"))
+         os.path.join(srcroot,"components","cmeps","cime_config","runseq"))
 
     cmd = "%s %s %s" % (pylint, cmd_options, on_file)
     logger.debug("pylint command is %s"%cmd)
