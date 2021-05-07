@@ -32,6 +32,7 @@ jobs:
       NETCDF_C_PATH: /usr
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
       PNETCDF_PATH: ${HOME}/pnetcdf
+      ESMF_VERSION: ESMF_8_1_1
       CIME_MODEL: cesm
       CIME_DRIVER: nuopc
 
@@ -142,6 +143,27 @@ jobs:
           clibdir=`nc-config --libdir`
           ln -fs $clibdir/lib* .
 
+      - id: cache-esmf
+        uses: actions/cache@v2
+        with:
+          path: ~/ESMF
+          key: ${{ runner.os }}-${{ env.ESMF_VERSION }}-ESMF
+
+      - id: build-ESMF
+        if: steps.cache-esmf.outputs.cache-hit != 'true'
+        run: |
+          wget https://github.com/esmf-org/esmf/archive/${{ env.ESMF_VERSION }}.tar.gz
+          tar -xzvf ${{ env.ESMF_VERSION }}.tar.gz
+          pushd esmf-${{ env.ESMF_VERSION }}
+          export ESMF_DIR=`pwd`
+          export ESMF_COMM=openmpi
+          export ESMF_YAMLCPP="internal"
+          export ESMF_INSTALL_PREFIX=$HOME/ESMF
+          export ESMF_BOPT=g
+          make
+          make install
+          popd
+
       - name: Cache inputdata
         id: cache-inputdata
         uses: actions/cache@v2
@@ -158,21 +180,11 @@ jobs:
         run: |
           mkdir -p $HOME/cesm/scratch
           mkdir -p $HOME/cesm/inputdata
-          pwd
-          echo "-----"
-          ls $HOME/work/cime
-          echo "-----"
-          ls $HOME/work/cime/cime
-          echo "-----"
-          ls $HOME/work/cime/cime/components
-          echo "-----"
-          ls $HOME/work/cime/cime/components/cdeps
-          echo "-----"
-
           cd $HOME/work/cime/cime/scripts/tests
           export NETCDF=$HOME/netcdf-fortran
           export PATH=$NETCDF/bin:$PATH
           export LD_LIBRARY_PATH=$NETCDF/lib:$HOME/pnetcdf/lib:$LD_LIBRARY_PATH
+          export ESMFMKFILE=$HOME/ESMF/lib/libg/Linux.gfortran.64.openmpi.default/esmf.mk
           ./scripts_regression_tests.py G_TestBuildSystem --no-fortran-run --compiler gnu --mpilib openmpi --machine ubuntu-latest
 
 
