@@ -2,9 +2,7 @@
 
 import sys
 import os
-import shutil
 import unittest
-import tempfile
 from CIME.utils import indent_string, run_and_log_case_status
 
 from . import utils
@@ -45,7 +43,7 @@ class MockTime(object):
     def __enter__(self):
         self._old = getattr(sys.modules["time"], "strftime")
         setattr(sys.modules["time"], "strftime", lambda *args: "00:00:00 ")
-        
+
     def __exit__(self, *args, **kwargs):
         setattr(sys.modules["time"], "strftime", self._old)
 

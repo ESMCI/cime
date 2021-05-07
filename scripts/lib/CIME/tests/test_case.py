@@ -15,7 +15,7 @@ class TestCase_RecordCmd(unittest.TestCase):
 
         Case.__init__ = utils.Mocker()
         Case.flush = utils.Mocker()
-        Case._force_read_only = False
+        Case._force_read_only = False # pylint: disable=protected-access
 
     def assert_calls_match(self, calls, expected):
         self.assertTrue(len(calls) == len(expected), calls)
@@ -32,7 +32,7 @@ class TestCase_RecordCmd(unittest.TestCase):
                 ret=utils.Mocker()
             )
             mock.patch("time.strftime", ret="00:00:00")
-            mock.patch("sys.argv", ret=["/src/create_newcase"], property=True)
+            mock.patch("sys.argv", ret=["/src/create_newcase"], is_property=True)
 
             with Case(tempdir) as case:
                 case.get_value = utils.Mocker(
@@ -53,7 +53,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock._ret.method_calls["writelines"][0]["args"][0]
+        calls = open_mock.ret.method_calls["writelines"][0]["args"][0]
 
         self.assert_calls_match(calls, expected)
 
@@ -66,7 +66,7 @@ class TestCase_RecordCmd(unittest.TestCase):
                 ret=utils.Mocker()
             )
             mock.patch("time.strftime", ret="00:00:00")
-            mock.patch("sys.argv", ret=["./create_newcase"], property=True)
+            mock.patch("sys.argv", ret=["./create_newcase"], is_property=True)
 
             with Case(tempdir) as case:
                 case.get_value = utils.Mocker(
@@ -84,7 +84,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock._ret.method_calls["writelines"][0]["args"][0]
+        calls = open_mock.ret.method_calls["writelines"][0]["args"][0]
 
         self.assert_calls_match(calls, expected)
 
@@ -108,7 +108,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "/some/custom/command arg1\n\n",
         ]
 
-        calls = open_mock._ret.method_calls["writelines"][0]["args"][0]
+        calls = open_mock.ret.method_calls["writelines"][0]["args"][0]
 
         self.assert_calls_match(calls, expected)
 

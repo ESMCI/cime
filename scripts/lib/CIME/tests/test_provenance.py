@@ -22,7 +22,7 @@ class TestProvenance(unittest.TestCase):
             open_mock.calls
         )
 
-        write = open_mock._ret.method_calls["write"]
+        write = open_mock.ret.method_calls["write"]
 
         self.assertTrue(write[0]["args"][0] == "data\n\n", write)
         self.assertTrue(write[1]["args"][0] == "data\n", write)
@@ -46,7 +46,7 @@ class TestProvenance(unittest.TestCase):
             provenance.run_cmd = utils.Mocker(return_value=(1, "data", "error"))
             provenance._run_git_cmd_recursively('status', '/srcroot', '/output.txt') # pylint: disable=protected-access
 
-        write = open_mock._ret.method_calls["write"]
+        write = open_mock.ret.method_calls["write"]
 
         self.assertTrue(write[0]["args"][0] == "error\n\n", write)
         self.assertTrue(write[1]["args"][0] == "error\n", write)
@@ -80,10 +80,12 @@ class TestProvenance(unittest.TestCase):
         ]
 
         for i in range(4):
-             self.assertTrue(
-                 open_mock.calls[i]["args"] == expected[i], open_mock.calls)
+            self.assertTrue(
+                open_mock.calls[i]["args"] == expected[i],
+                open_mock.calls
+            )
 
-        write = open_mock._ret.method_calls["write"]
+        write = open_mock.ret.method_calls["write"]
 
         expected = [
             "data\n\n",

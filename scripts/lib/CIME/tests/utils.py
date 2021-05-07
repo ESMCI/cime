@@ -41,6 +41,10 @@ class Mocker:
     def method_calls(self):
         return dict((x, y.calls) for x, y in self._method_calls.items())
 
+    @property
+    def ret(self):
+        return self._ret
+
     def __getattr__(self, name):
         if name in self._method_calls:
             new_method = self._method_calls[name]
@@ -77,13 +81,13 @@ class Mocker:
             else:
                 setattr(module, method, m)
 
-    def patch(self, module, method=None, ret=None, property=False):
+    def patch(self, module, method=None, ret=None, is_property=False):
         rv = None
         if isinstance(module, str):
             x = module.split('.')
             main = '.'.join(x[:-1])
             self._orig.append((getattr(sys.modules[main], x[-1]), main, x[-1]))
-            if property:
+            if is_property:
                 setattr(sys.modules[main], x[-1], ret)
             else:
                 rv = Mocker(ret, cmd=x[-1])
