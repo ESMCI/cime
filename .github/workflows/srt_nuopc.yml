@@ -33,7 +33,7 @@ jobs:
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
       PNETCDF_PATH: ${HOME}/pnetcdf
       CIME_MODEL: cesm
-#CAF      CIME_DRIVER: nuopc
+      CIME_DRIVER: nuopc
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
