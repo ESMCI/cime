@@ -1,6 +1,56 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 5-7-2021
+Tag: cime5.8.45
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Update this so that paths with % in them do not break cism build.
+    - Fix res for nuopc.
+    - Add cice6 as an new CESM component.
+    - Change behavior of check on DIN_LOC_ROOT in case_setup.py.
+    - Reset a test that is rerun after a run failure.
+    - Adds git submodule info to provenance.
+    - Fixes phase 1 of multisubmit not executing during rerun.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+1e72b5db7 Merge pull request #3956 from jedwards4b/GLCMakefile
+5c15fb06e Merge pull request #3945 from jedwards4b/srt_fix_for_nuopc
+b325c7109 Merge pull request #3952 from mvertens/features/add_cice6
+7c99238d7 Merge pull request #3925 from briandobbins/container_inputdata
+b95a28b41 Merge pull request #3939 from billsacks/fix_retry
+56a2ca18e Merge pull request #3949 from jasonb5/update_git_provenance
+205c5dd48 Merge pull request #3924 from jasonb5/fix_pet_multisubmit
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_files.xml
+M       config/config_tests.xml
+M       scripts/Tools/Makefile
+M       scripts/lib/CIME/SystemTests/system_tests_common.py
+M       scripts/lib/CIME/SystemTests/system_tests_compare_two.py
+M       scripts/lib/CIME/XML/archive_base.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_setup.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/provenance.py
+M       scripts/lib/CIME/test_scheduler.py
+M       scripts/lib/CIME/test_status.py
+M       scripts/lib/CIME/tests/SystemTests/test_system_tests_compare_two.py
+M       scripts/lib/CIME/tests/case_fake.py
+A       scripts/lib/CIME/tests/test_provenance.py
+M       scripts/tests/scripts_regression_tests.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 5-3-2021
 Tag: cime5.8.44
 Answer Changes: None
