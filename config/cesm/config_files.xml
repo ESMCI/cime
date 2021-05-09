@@ -153,7 +153,8 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="ww3"                         >$SRCROOT/components/ww3/</value>
+      <value component="ww3"                         >$SRCROOT/components/ww3</value>
+      <value component="ww3dev"                      >$SRCROOT/components/ww3dev</value>
       <value component="dwav" comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dwav</value>
       <value component="dwav" comp_interface="nuopc" >$SRCROOT/components/cdeps/dwav</value>
       <value component="swav"                        >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/swav</value>
