@@ -1,6 +1,31 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 5-10-2021
+Tag: cime5.8.46
+Answer Changes: None
+Tests: subset of aux_glc
+Dependencies:
+
+Brief Summary:
+    - Rename GLC Greenland grid from "gland" to "gris"
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+a52e7faf6 Merge pull request #3943 from billsacks/rename_gland
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+M       config/cesm/config_grids_common.xml
+M       config/cesm/config_grids_mct.xml
+M       src/drivers/mct/cime_config/config_component.xml
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 5-7-2021
 Tag: cime5.8.45
 Answer Changes: None
