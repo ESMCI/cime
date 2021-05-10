@@ -32,7 +32,8 @@ class TestCase_RecordCmd(unittest.TestCase):
             open_mock = mock.patch(
                 "builtins.open" if sys.version_info.major > 2 else
                     "__builtin__.open",
-                ret=utils.Mocker()) mock.patch("time.strftime", ret="00:00:00")
+                ret=utils.Mocker())
+            mock.patch("time.strftime", ret="00:00:00")
             mock.patch("sys.argv", ret=["/src/create_newcase"], is_property=True)
 
             with Case(tempdir) as case:
