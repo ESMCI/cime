@@ -1252,7 +1252,7 @@ contains
     end if
 
     ip = p_inst
-    ic = c_glc_gs  ! THIS IS WRONG!!!!! you are sending from the mediator to glc
+    ic = c_glc_gs
     kArea = mct_aVect_indexRA(dom_g%data,afldname)
     lSize = mct_avect_lSize(g2x_g)
     do n=1,lSize
@@ -1904,26 +1904,20 @@ contains
                 write(logunit,FAH) subname,trim(str)//' AREA BUDGET (m2/m2): period = ',trim(pname(ip)),': date = ',cdate,sec
                 write(logunit,FA0) cname(ica),cname(icl),cname(icn),cname(ics),cname(ico),' *SUM*  '
                 do nf = f_a, f_a_end
-                   write(logunit,FA1)    fname(nf),&
-                        dataGpr(nf,ica,ip),&
-                        dataGpr(nf,icl,ip),&
-                        dataGpr(nf,icn,ip),&
-                        dataGpr(nf,ics,ip),&
-                        dataGpr(nf,ico,ip), &
-                        dataGpr(nf,ica,ip)+dataGpr(nf,icl,ip)+dataGpr(nf,icn,ip)+dataGpr(nf,ics,ip)+dataGpr(nf,ico,ip)
+                   write(logunit,FA1)    fname(nf),dataGpr(nf,ica,ip),dataGpr(nf,icl,ip), &
+                        dataGpr(nf,icn,ip),dataGpr(nf,ics,ip),dataGpr(nf,ico,ip), &
+                        dataGpr(nf,ica,ip)+dataGpr(nf,icl,ip)+ &
+                        dataGpr(nf,icn,ip)+dataGpr(nf,ics,ip)+dataGpr(nf,ico,ip)
                 enddo
 
                 write(logunit,*) ' '
                 write(logunit,FAH) subname,trim(str)//' HEAT BUDGET (W/m2): period = ',trim(pname(ip)),': date = ',cdate,sec
                 write(logunit,FA0) cname(ica),cname(icl),cname(icn),cname(ics),cname(ico),' *SUM*  '
                 do nf = f_h, f_h_end
-                   write(logunit,FA1)    fname(nf),&
-                        dataGpr(nf,ica,ip),&
-                        dataGpr(nf,icl,ip),&
-                        dataGpr(nf,icn,ip),&
-                        dataGpr(nf,ics,ip),&
-                        dataGpr(nf,ico,ip),&
-                        dataGpr(nf,ica,ip)+dataGpr(nf,icl,ip)+dataGpr(nf,icn,ip)+dataGpr(nf,ics,ip)+dataGpr(nf,ico,ip)
+                   write(logunit,FA1)    fname(nf),dataGpr(nf,ica,ip),dataGpr(nf,icl,ip), &
+                        dataGpr(nf,icn,ip),dataGpr(nf,ics,ip),dataGpr(nf,ico,ip), &
+                        dataGpr(nf,ica,ip)+dataGpr(nf,icl,ip)+ &
+                        dataGpr(nf,icn,ip)+dataGpr(nf,ics,ip)+dataGpr(nf,ico,ip)
                 enddo
                 write(logunit,FA1)    '   *SUM*'   ,sum(dataGpr(f_h:f_h_end,ica,ip)),sum(dataGpr(f_h:f_h_end,icl,ip)), &
                      sum(dataGpr(f_h:f_h_end,icn,ip)),sum(dataGpr(f_h:f_h_end,ics,ip)),sum(dataGpr(f_h:f_h_end,ico,ip)), &
