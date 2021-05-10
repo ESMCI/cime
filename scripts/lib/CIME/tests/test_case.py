@@ -13,8 +13,11 @@ class TestCase_RecordCmd(unittest.TestCase):
         self.srcroot = os.path.abspath(cime_utils.get_cime_root())
         self.tempdir = utils.TemporaryDirectory()
 
-        Case.__init__ = utils.Mocker()
-        Case.flush = utils.Mocker()
+        self.mock = utils.Mocker()
+        self.mock.patch(Case, "__init__", ret=None)
+        self.mock.patch(Case, "flush", ret=utils.Mocker())
+        # Case.__init__ = utils.Mocker()
+        # Case.flush = utils.Mocker()
         Case._force_read_only = False # pylint: disable=protected-access
 
     def assert_calls_match(self, calls, expected):
@@ -29,9 +32,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             open_mock = mock.patch(
                 "builtins.open" if sys.version_info.major > 2 else
                     "__builtin__.open",
-                ret=utils.Mocker()
-            )
-            mock.patch("time.strftime", ret="00:00:00")
+                ret=utils.Mocker()) mock.patch("time.strftime", ret="00:00:00")
             mock.patch("sys.argv", ret=["/src/create_newcase"], is_property=True)
 
             with Case(tempdir) as case:

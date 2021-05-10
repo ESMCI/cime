@@ -92,9 +92,12 @@ class Mocker:
             else:
                 rv = Mocker(ret, cmd=x[-1])
                 setattr(sys.modules[main], x[-1], rv)
-        else:
+        elif method != None:
+            self._orig.append((getattr(module, method), module, method))
             rv = Mocker(ret)
             setattr(module, method, rv)
+        else:
+            raise Exception("Could not patch")
 
         return rv
 
