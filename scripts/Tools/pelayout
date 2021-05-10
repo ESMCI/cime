@@ -227,9 +227,7 @@ def _main_func(description):
     arg_format, set_ntasks, set_nthrds, header, caseroot = parse_command_line(sys.argv, description)
 
     # Initialize case ; read in all xml files from caseroot
-    with Case(caseroot) as case:
-        case.record_cmd()
-
+    with Case(caseroot, record=True) as case:
         if (set_nthrds is not None):
             set_nthreads(case, set_nthrds)
         # End if

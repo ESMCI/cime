@@ -131,9 +131,7 @@ def _main_func(description):
         parse_command_line(sys.argv, description)
 
     success = True
-    with Case(caseroot, read_only=False) as case:
-        case.record_cmd()
-
+    with Case(caseroot, read_only=False, record=True) as case:
         testname = case.get_value('TESTCASE')
 
         if cleanlist is not None or clean_all or clean_depends is not None:

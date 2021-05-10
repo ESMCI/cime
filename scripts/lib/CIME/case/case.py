@@ -80,7 +80,7 @@ class Case(object):
     from CIME.case.preview_namelists import create_dirs, create_namelists
     from CIME.case.check_input_data import check_all_input_data, stage_refcase, check_input_data
 
-    def __init__(self, case_root=None, read_only=True):
+    def __init__(self, case_root=None, read_only=True, record=False):
 
         if case_root is None:
             case_root = os.getcwd()
@@ -96,6 +96,9 @@ class Case(object):
         self._comp_interface = None
 
         self.read_xml()
+
+        if record:
+            self.record_cmd()
 
         # Hold arbitary values. In create_newcase we may set values
         # for xml files that haven't been created yet. We need a place

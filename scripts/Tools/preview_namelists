@@ -50,9 +50,7 @@ def _main_func(description):
 
     expect(os.path.isfile(os.path.join(args.caseroot, "CaseStatus")),
            "case.setup must be run prior to running preview_namelists")
-    with Case(args.caseroot, read_only=False) as case:
-        case.record_cmd()
-
+    with Case(args.caseroot, read_only=False, record=True) as case:
         case.create_namelists(component=args.component)
 
 if (__name__ == "__main__"):
