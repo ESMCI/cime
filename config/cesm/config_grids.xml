@@ -1888,6 +1888,13 @@
       <file>domain.ocn.01col.ArcticOcean.20150824.nc</file>
       <desc>01col is a single-column grid for datm and POP:</desc>
     </domain>
+
+    <domain name="CLM_USRDAT">
+      <nx>1</nx> <ny>1</ny>
+      <file>$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.${CLM_USRDAT_NAME}_navy.nc</file>
+      <desc>user specified domain - only valid for DATM/CLM compset</desc>
+    </domain>
+
     <domain name="1x1_numaIA">
       <nx>1</nx> <ny>1</ny>
       <file grid="atm|lnd">$DIN_LOC_ROOT/share/domains/domain.clm/domain.lnd.1x1pt-numaIA_navy.110106.nc</file>
