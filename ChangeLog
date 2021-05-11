@@ -1,6 +1,28 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 5-11-2021
+Tag: cime5.8.47
+Answer Changes: None
+Tests: SMS_D_Lm1_Mmpi-serial.CLM_USRDAT.I1PtClm50SpRs.cheyenne_intel.clm-USUMB
+Dependencies:
+
+Brief Summary:
+    - Add back domain for CLM_USRDAT for mct driver.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+f01e48081 Merge pull request #3954 from jedwards4b/fix_clm_usrdata_mct
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/config_grids.xml
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 5-10-2021
 Tag: cime5.8.46
 Answer Changes: None
