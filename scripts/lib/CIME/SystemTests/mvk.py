@@ -24,8 +24,7 @@ from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
 evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
 logger = logging.getLogger(__name__)
-
-NINST = 20
+NINST = 30
 
 
 class MVK(SystemTestsCommon):
@@ -60,13 +59,14 @@ class MVK(SystemTestsCommon):
 
             case_setup(self._case, test_mode=False, reset=True)
 
-        self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
-
         for iinst in range(1, NINST + 1):
-            with open('user_nl_cam_{:04d}'.format(iinst), 'w') as nl_atm_file:
+            with open('user_nl_eam_{:04d}'.format(iinst), 'w') as nl_atm_file:
                 nl_atm_file.write('new_random = .true.\n')
                 nl_atm_file.write('pertlim = 1.0e-10\n')
                 nl_atm_file.write('seed_custom = {}\n'.format(iinst))
+                nl_atm_file.write('seed_clock = .true.\n')
+
+        self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
     def _generate_baseline(self):
         """
@@ -81,9 +81,9 @@ class MVK(SystemTestsCommon):
             rundir = self._case.get_value("RUNDIR")
             ref_case = self._case.get_value("RUN_REFCASE")
 
-            model = 'cam'
+            model = 'eam'
             env_archive = self._case.get_env("archive")
-            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, [r'h\d*.*\.nc'], ref_case=ref_case)
+            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, ref_case=ref_case)
             logger.debug("MVK additional baseline files: {}".format(hists))
             hists = [os.path.join(rundir,hist) for hist in hists]
             for hist in hists:

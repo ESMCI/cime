@@ -44,8 +44,7 @@ PERTURBATIONS = OrderedDict([('woprt', 0.0),
 FCLD_NC = 'cam.h0.cloud.nc'
 INIT_COND_FILE_TEMPLATE = \
     "SMS_Ly5.ne4_ne4.FC5AV1C-04P2.eos_intel.ne45y.{}.{}.0002-{:02d}-01-00000.nc"
-# FIXME: should 'cam' be 'atm' now?
-INSTANCE_FILE_TEMPLATE = '{}cam_{:04d}.h0.0001-01-01-00000{}.nc'
+INSTANCE_FILE_TEMPLATE = '{}eam_{:04d}.h0.0001-01-01-00000{}.nc'
 
 
 class PGN(SystemTestsCommon):
@@ -94,8 +93,8 @@ class PGN(SystemTestsCommon):
             fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format('cam', 'i', icond))
             flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format('clm2', 'r', icond))
             for iprt in PERTURBATIONS.values():
-                with open('user_nl_cam_{:04d}'.format(iinst), 'w') as atmnlfile, \
-                        open('user_nl_clm_{:04d}'.format(iinst), 'w') as lndnlfile:
+                with open('user_nl_eam_{:04d}'.format(iinst), 'w') as atmnlfile, \
+                        open('user_nl_elm_{:04d}'.format(iinst), 'w') as lndnlfile:
 
                     atmnlfile.write("ncdata  = '{}' \n".format(fatm_in))
                     lndnlfile.write("finidat = '{}' \n".format(flnd_in))
@@ -133,7 +132,7 @@ class PGN(SystemTestsCommon):
     def _compare_baseline(self):
         """
         Compare baselines in the pergro test sense. That is,
-        compare PGE from the test simulation with the baseline 
+        compare PGE from the test simulation with the baseline
         cloud
         """
         with self._test_status:

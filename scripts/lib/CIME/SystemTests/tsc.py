@@ -85,8 +85,8 @@ class TSC(SystemTestsCommon):
 
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST+1):
-            with open('user_nl_cam_'+str(iinst).zfill(4), 'w') as atmnlfile, \
-                 open('user_nl_clm_'+str(iinst).zfill(4), 'w') as lndnlfile:
+            with open('user_nl_eam_'+str(iinst).zfill(4), 'w') as atmnlfile, \
+                 open('user_nl_elm_'+str(iinst).zfill(4), 'w') as lndnlfile:
 
                 fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format('cam', 'i', iinst))
                 flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format('clm2', 'r', iinst))
@@ -203,9 +203,9 @@ class TSC(SystemTestsCommon):
             rundir = self._case.get_value("RUNDIR")
             ref_case = self._case.get_value("RUN_REFCASE")
 
-            model = 'cam'
+            model = 'eam'
             env_archive = self._case.get_env("archive")
-            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, [r'h\d*.*\.nc\.DT\d*'], ref_case=ref_case)
+            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, r'DT\d*', ref_case=ref_case)
             hists = [os.path.join(rundir,hist) for hist in hists]
             logger.debug("TSC additional baseline files: {}".format(hists))
             for hist in hists:
