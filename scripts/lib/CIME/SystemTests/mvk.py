@@ -56,8 +56,6 @@ class MVK(SystemTestsCommon):
                 if comp != 'CPL':
                     self._case.set_value('NINST_{}'.format(comp), NINST)
 
-            self._case.set_value('ATM_NCPL', 18)
-
             self._case.flush()
 
             case_setup(self._case, test_mode=False, reset=True)

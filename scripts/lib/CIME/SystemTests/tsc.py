@@ -71,7 +71,9 @@ class TSC(SystemTestsCommon):
         :param dtime (int): Specified time step size in seconds
         """
         coupling_frequency = 86400 // dtime
+
         self._case.set_value("ATM_NCPL", str(coupling_frequency))
+        se_tstep = dtime / 12
 
         nsteps = SIM_LENGTH // dtime
         self._case.set_value("STOP_N", str(nsteps))
@@ -94,6 +96,7 @@ class TSC(SystemTestsCommon):
                 lndnlfile.write("dtime = {} \n".format(dtime))
 
                 atmnlfile.write("dtime = {} \n".format(dtime))
+                atmnlfile.write("se_tstep = {} \n".format(se_tstep))
                 atmnlfile.write("iradsw = 2 \n")
                 atmnlfile.write("iradlw = 2 \n")
 
