@@ -4,137 +4,122 @@ import unittest
 
 from CIME import provenance
 
-# TODO replace with actual mock once 2.7 is dropped
-class Mocker:
-    calls = []
-
-    def __init__(self, ret=None, cmd=None):
-        self._orig = []
-        self._ret = ret
-        self._cmd = cmd
-
-    def __getattr__(self, name):
-        return Mocker(self._ret, name)
-
-    def __call__(self, *args, **kwargs):
-        args = list(args)
-        if self._cmd is not None:
-            args.insert(0, self._cmd)
-
-        call_sig = " ".join([
-            x for x in args + [
-                "{}={}".format(y, z) for y, z in kwargs.items()]])
-        self.calls.append(call_sig)
-        return self._ret if self._ret is not None else self
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        for m, module, method in self._orig:
-            setattr(sys.modules[module], method, m)
-
-    def patch(self, method, ret=None):
-        x = method.split('.')
-        main = '.'.join(x[:-1])
-        self._orig.append((getattr(sys.modules[main], x[-1]), main, x[-1]))
-        setattr(sys.modules[main], x[-1], Mocker(ret, x[-1]))
+from . import utils
 
 class TestProvenance(unittest.TestCase):
     def test_run_git_cmd_recursively(self):
-        with Mocker() as mock:
-            Mocker.calls =[]
-            mock.patch("CIME.provenance.run_cmd", (0, "data", None))
-            if sys.version_info.major > 2:
-                mock.patch("builtins.open")
-            else:
-                mock.patch("__builtin__.open")
-
+        with utils.Mocker() as mock:
+            open_mock = mock.patch(
+                "builtins.open" if sys.version_info.major > 2 else
+                    "__builtin__.open",
+                ret=utils.Mocker()
+            )
+            provenance.run_cmd = utils.Mocker(return_value=(0, "data", None))
             provenance._run_git_cmd_recursively('status', '/srcroot', '/output.txt') # pylint: disable=protected-access
-        expected = [
-            "run_cmd git status from_dir=/srcroot",
-            ("run_cmd git submodule foreach --recursive \"git status; echo\""
-             " from_dir=/srcroot"),
-            "open /output.txt w",
-            "write data\n\n",
-            "write data\n",
-        ]
 
-        self.assertTrue(len(expected) == len(mock.calls))
+        self.assertTrue(
+            open_mock.calls[0]["args"] == ("/output.txt", "w"),
+            open_mock.calls
+        )
 
-        for x, y in zip(expected, mock.calls):
-            self.assertTrue(x == y, "{} != {}".format(x, y))
+        write = open_mock.ret.method_calls["write"]
+
+        self.assertTrue(write[0]["args"][0] == "data\n\n", write)
+        self.assertTrue(write[1]["args"][0] == "data\n", write)
+
+        run_cmd = provenance.run_cmd.calls
+
+        self.assertTrue(run_cmd[0]["args"][0] == "git status")
+        self.assertTrue(run_cmd[0]["kwargs"]["from_dir"] == "/srcroot")
+
+        self.assertTrue(run_cmd[1]["args"][0] == "git submodule foreach"
+                        " --recursive \"git status; echo\"", run_cmd)
+        self.assertTrue(run_cmd[1]["kwargs"]["from_dir"] == "/srcroot")
 
     def test_run_git_cmd_recursively_error(self):
-        with Mocker() as mock:
-            Mocker.calls =[]
-            mock.patch("CIME.provenance.run_cmd", (1, "data", "error"))
-            if sys.version_info.major > 2:
-                mock.patch("builtins.open")
-            else:
-                mock.patch("__builtin__.open")
-
+        with utils.Mocker() as mock:
+            open_mock = mock.patch(
+                "builtins.open" if sys.version_info.major > 2 else
+                    "__builtin__.open",
+                ret=utils.Mocker()
+            )
+            provenance.run_cmd = utils.Mocker(return_value=(1, "data", "error"))
             provenance._run_git_cmd_recursively('status', '/srcroot', '/output.txt') # pylint: disable=protected-access
-        expected = [
-            "run_cmd git status from_dir=/srcroot",
-            ("run_cmd git submodule foreach --recursive \"git status; echo\""
-             " from_dir=/srcroot"),
-            "open /output.txt w",
-            "write error\n\n",
-            "write error\n",
-        ]
 
-        self.assertTrue(len(expected) == len(mock.calls))
+        write = open_mock.ret.method_calls["write"]
 
-        for x, y in zip(expected, mock.calls):
-            self.assertTrue(x == y, "{} != {}".format(x, y))
+        self.assertTrue(write[0]["args"][0] == "error\n\n", write)
+        self.assertTrue(write[1]["args"][0] == "error\n", write)
+
+        run_cmd = provenance.run_cmd.calls
+
+        self.assertTrue(run_cmd[0]["args"][0] == "git status")
+        self.assertTrue(run_cmd[0]["kwargs"]["from_dir"] == "/srcroot")
+
+        self.assertTrue(run_cmd[1]["args"][0] == "git submodule foreach"
+                        " --recursive \"git status; echo\"", run_cmd)
+        self.assertTrue(run_cmd[1]["kwargs"]["from_dir"] == "/srcroot")
 
     def test_record_git_provenance(self):
-        with Mocker() as mock:
-            Mocker.calls =[]
-            mock.patch("CIME.provenance.safe_copy")
-            mock.patch("CIME.provenance.run_cmd", (0, "data", None))
-            if sys.version_info.major > 2:
-                mock.patch("builtins.open")
-            else:
-                mock.patch("__builtin__.open")
+        with utils.Mocker() as mock:
+            open_mock = mock.patch(
+                "builtins.open" if sys.version_info.major > 2 else
+                    "__builtin__.open",
+                ret=utils.Mocker()
+            )
 
+            provenance.safe_copy = utils.Mocker()
+            provenance.run_cmd = utils.Mocker(return_value=(0, "data", None))
             provenance._record_git_provenance("/srcroot", "/output", "5") # pylint: disable=protected-access
 
         expected = [
-            "run_cmd git status from_dir=/srcroot",
-            ("run_cmd git submodule foreach --recursive \"git status; echo\""
-             " from_dir=/srcroot"),
-            "open /output/GIT_STATUS.5 w",
-            "write data\n\n",
-            "write data\n",
-            "run_cmd git diff from_dir=/srcroot",
-            ("run_cmd git submodule foreach --recursive \"git diff; echo\""
-             " from_dir=/srcroot"),
-            "open /output/GIT_DIFF.5 w",
-            "write data\n\n",
-            "write data\n",
-            "run_cmd git log --first-parent --pretty=oneline -n 5 from_dir=/srcroot",
-            ("run_cmd git submodule foreach --recursive \"git log"
-             " --first-parent --pretty=oneline -n 5; echo\" from_dir=/srcroot"),
-            "open /output/GIT_LOG.5 w",
-            "write data\n\n",
-            "write data\n",
-            "run_cmd git remote -v from_dir=/srcroot",
-            ("run_cmd git submodule foreach --recursive \"git remote"
-             " -v; echo\" from_dir=/srcroot"),
-            "open /output/GIT_REMOTE.5 w",
-            "write data\n\n",
-            "write data\n",
-            ("safe_copy /srcroot/.git/config /output/GIT_CONFIG.5"
-             " preserve_meta=False")
+            ("/output/GIT_STATUS.5", "w"),
+            ("/output/GIT_DIFF.5", "w"),
+            ("/output/GIT_LOG.5", "w"),
+            ("/output/GIT_REMOTE.5", "w")
         ]
 
-        self.assertTrue(len(expected) == len(mock.calls),
-                        mock.calls)
+        for i in range(4):
+            self.assertTrue(
+                open_mock.calls[i]["args"] == expected[i],
+                open_mock.calls
+            )
 
-        for x, y in zip(expected, mock.calls):
-            self.assertTrue(x == y, "{} != {}".format(x, y))
+        write = open_mock.ret.method_calls["write"]
+
+        expected = [
+            "data\n\n",
+            "data\n",
+        ]
+
+        for x in range(8):
+            self.assertTrue(write[x]["args"][0] == expected[x%2], write)
+
+        run_cmd = provenance.run_cmd.calls
+
+        expected = [
+            "git status",
+            "git submodule foreach --recursive \"git status; echo\"",
+            "git diff",
+            "git submodule foreach --recursive \"git diff; echo\"",
+            "git log --first-parent --pretty=oneline -n 5",
+            "git submodule foreach --recursive \"git log --first-parent"
+                " --pretty=oneline -n 5; echo\"",
+            "git remote -v",
+            "git submodule foreach --recursive \"git remote -v; echo\"",
+        ]
+
+        for x in range(len(run_cmd)):
+            self.assertTrue(run_cmd[x]["args"][0] == expected[x], run_cmd[x])
+
+        self.assertTrue(
+            provenance.safe_copy.calls[0]["args"][0] == "/srcroot/.git/config",
+            provenance.safe_copy.calls
+        )
+        self.assertTrue(
+            provenance.safe_copy.calls[0]["args"][1] == "/output/GIT_CONFIG.5",
+            provenance.safe_copy.calls
+        )
 
 if __name__ == '__main__':
     sys.path.insert(0, os.path.abspath(os.path.join('.', '..', '..', 'lib')))

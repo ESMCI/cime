@@ -238,6 +238,9 @@ def _main_func(description):
                     input_dir=input_dir, driver=driver, workflowid=workflow, non_local=non_local,
                     extra_machines_dir=extra_machines_dir, case_group=case_group)
 
+        # Called after create since casedir does not exist yet
+        case.record_cmd(init=True)
+
 ###############################################################################
 
 if __name__ == "__main__":

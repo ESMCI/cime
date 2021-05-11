@@ -117,7 +117,7 @@ def _main_func(description, test_args=False):
         os.remove(config_file)
 
     if not test_args:
-        with Case(caseroot, read_only=False) as case:
+        with Case(caseroot, read_only=False, record=True) as case:
             case.submit(job=job, no_batch=no_batch, prereq=prereq, allow_fail=allow_fail,
                         resubmit=resubmit, resubmit_immediate=resubmit_immediate, skip_pnl=skip_pnl,
                         mail_user=mail_user, mail_type=mail_type, batch_args=batch_args, workflow=workflow)
