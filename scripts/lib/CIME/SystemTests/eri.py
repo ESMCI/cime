@@ -112,11 +112,13 @@ class ERI(SystemTestsCommon):
 
         dout_sr1 = clone1.get_value("DOUT_S_ROOT")
 
-        # force cam namelist to write out initial file at end of run
-        if os.path.exists("user_nl_cam"):
-            if "inithist" not in open("user_nl_cam", "r").read():
-                with open("user_nl_cam", "a") as fd:
-                    fd.write("inithist = 'ENDOFRUN'\n")
+        # force cam/eam namelist to write out initial file at end of run
+        for model in ["cam", "eam"]:
+          user_nl = "user_nl_{}".format(model)
+          if os.path.exists(user_nl):
+            if "inithist" not in open(user_nl, "r").read():
+              with open(user_nl, "a") as fd:
+                fd.write("inithist = 'ENDOFRUN'\n")
 
         with clone1:
             clone1.case_setup(test_mode=True, reset=True)
