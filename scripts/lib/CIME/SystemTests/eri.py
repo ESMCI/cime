@@ -114,11 +114,11 @@ class ERI(SystemTestsCommon):
 
         # force cam/eam namelist to write out initial file at end of run
         for model in ["cam", "eam"]:
-          user_nl = "user_nl_{}".format(model)
-          if os.path.exists(user_nl):
-            if "inithist" not in open(user_nl, "r").read():
-              with open(user_nl, "a") as fd:
-                fd.write("inithist = 'ENDOFRUN'\n")
+            user_nl = "user_nl_{}".format(model)
+            if os.path.exists(user_nl):
+                if "inithist" not in open(user_nl, "r").read():
+                    with open(user_nl, "a") as fd:
+                        fd.write("inithist = 'ENDOFRUN'\n")
 
         with clone1:
             clone1.case_setup(test_mode=True, reset=True)
