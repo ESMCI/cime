@@ -45,6 +45,59 @@ class TestCase(unittest.TestCase):
                 self.assertTrue(value == expected,
                                 "{} != {}".format(value, expected))
 
+    def test_copy(self):
+        expected_first_hash = "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a"
+        expected_second_hash = "3561339a49daab999e3c4ea2f03a9c6acc33296a5bc35f1bfb82e7b5e10bdf38"
+
+        with self.tempdir as tempdir:
+            caseroot = os.path.join(tempdir, "test1")
+            with Case(caseroot, read_only=False) as case:
+                os.environ["USER"] = "root"
+                os.environ["HOSTNAME"] = "host1"
+                os.environ["CIME_MODEL"] = "cesm"
+
+                # Need to mock all of these to prevent errors with xml files
+                # just want to ensure `create` calls `set_lookup_value`
+                # correctly.
+                _configure = self.mock.patch(case, "configure")
+                _create_caseroot = self.mock.patch(case, "create_caseroot")
+                _apply_user_mods = self.mock.patch(case, "apply_user_mods")
+                _lock_file = self.mock.patch("CIME.case.case.lock_file")
+                _set_lookup_value = self.mock.patch(case, "set_lookup_value")
+
+                srcroot = os.path.abspath(os.path.join(
+                    os.path.dirname(__file__), "../../../../../"))
+                case.create("test1", srcroot, "A", "f19_g16_rx1",
+                            machine_name="ubuntu-latest")
+
+                # Check that they're all called
+                _configure.assert_called_with(args=["A", "f19_g16_rx1"])
+                _create_caseroot.assert_called()
+                _apply_user_mods.assert_called()
+                _lock_file.assert_called()
+
+                self.assertTrue(_set_lookup_value.calls[-1]['args'][0] ==
+                                "CASE_HASH")
+                self.assertTrue(_set_lookup_value.calls[-1]['args'][1] ==
+                                expected_first_hash)
+
+                _set_value = self.mock.patch(case, "set_value",
+                                             ret=utils.Mocker())
+
+                # simulate change
+                self.mock.patch('time.strftime', ret='10:00:00')
+                self.mock.patch("sys.argv",
+                                ret=["/src/create_clone"], is_property=True)
+
+                case.copy("test2", "{}_2".format(tempdir))
+
+                print(_set_value.calls)
+                self.assertTrue(_set_value.calls[-1]['args'][0] ==
+                                "CASE_HASH")
+                self.assertTrue(_set_value.calls[-1]['args'][1] ==
+                                expected_second_hash)
+
+
     def test_create(self):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")

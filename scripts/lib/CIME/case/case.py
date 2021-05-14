@@ -268,6 +268,7 @@ class Case(object):
         newcase.set_value("CASEROOT",newcaseroot)
         newcase.set_value("CONTINUE_RUN","FALSE")
         newcase.set_value("RESUBMIT",0)
+        newcase.set_value("CASE_HASH", newcase.new_hash())
 
         # Important, and subtle: Writability should NOT be copied because
         # this allows the copy to be modified without needing a "with" statement
