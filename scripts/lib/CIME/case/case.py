@@ -5,7 +5,7 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, six, time
+import glob, os, shutil, math, six, time, hashlib
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
 from six.moves import input
@@ -1686,6 +1686,7 @@ directory, NOT in this subdirectory."""
             self.set_lookup_value("CASE", os.path.basename(casename))
             self.set_lookup_value("CASEROOT", self._caseroot)
             self.set_lookup_value("SRCROOT", srcroot)
+            self.set_lookup_value("CASE_HASH", self.new_hash())
             # if the top level user_mods_dir contains a config_grids.xml file and
             # gridfile was not set on the command line, use it.
             if user_mods_dir:
@@ -1727,6 +1728,18 @@ directory, NOT in this subdirectory."""
                     logger.warning("Leaving broken case dir {}".format(self._caseroot))
 
             raise
+
+    def new_hash(self):
+        """ Creates a hash
+        """
+        args = "".join(sys.argv)
+        ctime = time.strftime("%Y-%m-%d %H:%M:%S")
+        hostname = os.environ["HOSTNAME"]
+        user = os.environ["USER"]
+
+        data = "{}{}{}{}".format(args, ctime, hostname, user)
+
+        return hashlib.sha256(data.encode()).hexdigest()
 
     def is_save_timing_dir_project(self,project):
         """

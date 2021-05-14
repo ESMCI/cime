@@ -45,6 +45,27 @@ class Mocker:
     def ret(self):
         return self._ret
 
+    def assert_called(self):
+        assert len(self.calls) > 0
+
+    def assert_called_with(self, i=None, args=None, kwargs=None):
+        if i is None:
+            i = 0
+
+        call = self.calls[i]
+
+        if args is not None:
+            _call_args = set(call['args'])
+            _exp_args = set(args)
+            assert _exp_args <= _call_args, "Got {} missing {}".format(
+                _call_args, _exp_args-_call_args)
+
+        if kwargs is not None:
+            call_kwargs = call['kwargs']
+
+            for x, y in kwargs.items():
+                assert call_kwargs[x] == y, "Missing {}".format(x)
+
     def __getattr__(self, name):
         if name in self._method_calls:
             new_method = self._method_calls[name]
