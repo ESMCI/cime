@@ -16,10 +16,13 @@ class TestCase(unittest.TestCase):
         self.mock = utils.Mocker()
         self.mock.patch(Case, "read_xml")
         Case._force_read_only = False # pylint: disable=protected-access
-        self.mock.patch('time.strftime', ret='00:00:00')
-        self.mock.patch("sys.argv", ret=["/src/create_newcase",
-                                            "--machine",
-                                            "docker"], is_property=True)
+        self._time_strftime = self.mock.patch('time.strftime', ret='00:00:00')
+        self.mock.patch("sys.argv",
+                        ret=[
+                            "/src/create_newcase",
+                            "--machine",
+                            "docker"
+                        ], is_property=True)
 
     def test_new_hash(self):
         with self.tempdir as tempdir:
@@ -85,13 +88,14 @@ class TestCase(unittest.TestCase):
                                              ret=utils.Mocker())
 
                 # simulate change
-                self.mock.patch('time.strftime', ret='10:00:00')
+                self._time_strftime.ret = "10:00:00"
                 self.mock.patch("sys.argv",
-                                ret=["/src/create_clone"], is_property=True)
+                                ret=[
+                                    "/src/create_clone"
+                                ], is_property=True, update_value_only=True)
 
                 case.copy("test2", "{}_2".format(tempdir))
 
-                print(_set_value.calls)
                 self.assertTrue(_set_value.calls[-1]['args'][0] ==
                                 "CASE_HASH")
                 self.assertTrue(_set_value.calls[-1]['args'][1] ==
@@ -179,7 +183,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock.ret.method_calls["writelines"][0]["args"][0]
+        calls = open_mock.ret.method_calls["writelines"][0]["args"][0] # pylint: disable=no-member
 
         self.assert_calls_match(calls, expected)
 
@@ -210,7 +214,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock.ret.method_calls["writelines"][0]["args"][0]
+        calls = open_mock.ret.method_calls["writelines"][0]["args"][0] # pylint: disable=no-member
 
         self.assert_calls_match(calls, expected)
 
@@ -234,7 +238,7 @@ class TestCase_RecordCmd(unittest.TestCase):
             "/some/custom/command arg1\n\n",
         ]
 
-        calls = open_mock.ret.method_calls["writelines"][0]["args"][0]
+        calls = open_mock.ret.method_calls["writelines"][0]["args"][0] # pylint: disable=no-member
 
         self.assert_calls_match(calls, expected)
 

@@ -45,6 +45,10 @@ class Mocker:
     def ret(self):
         return self._ret
 
+    @ret.setter
+    def ret(self, value):
+        self._ret = value
+
     def assert_called(self):
         assert len(self.calls) > 0
 
@@ -102,19 +106,22 @@ class Mocker:
             else:
                 setattr(module, method, m)
 
-    def patch(self, module, method=None, ret=None, is_property=False):
+    def patch(self, module, method=None, ret=None, is_property=False,
+              update_value_only=False):
         rv = None
         if isinstance(module, str):
             x = module.split('.')
             main = '.'.join(x[:-1])
-            self._orig.append((getattr(sys.modules[main], x[-1]), main, x[-1]))
+            if not update_value_only:
+                self._orig.append((getattr(sys.modules[main], x[-1]), main, x[-1]))
             if is_property:
                 setattr(sys.modules[main], x[-1], ret)
             else:
                 rv = Mocker(ret, cmd=x[-1])
                 setattr(sys.modules[main], x[-1], rv)
         elif method != None:
-            self._orig.append((getattr(module, method), module, method))
+            if not update_value_only:
+                self._orig.append((getattr(module, method), module, method))
             rv = Mocker(ret)
             setattr(module, method, rv)
         else:
