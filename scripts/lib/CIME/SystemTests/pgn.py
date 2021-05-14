@@ -44,7 +44,7 @@ PERTURBATIONS = OrderedDict([('woprt', 0.0),
 FCLD_NC = 'cam.h0.cloud.nc'
 INIT_COND_FILE_TEMPLATE = \
     "SMS_Ly5.ne4_ne4.FC5AV1C-04P2.eos_intel.ne45y.{}.{}.0002-{:02d}-01-00000.nc"
-INSTANCE_FILE_TEMPLATE = '{}eam_{:04d}.h0.0001-01-01-00000{}.nc'
+INSTANCE_FILE_TEMPLATE = '{}{}_{:04d}.h0.0001-01-01-00000{}.nc'
 
 
 class PGN(SystemTestsCommon):
@@ -54,6 +54,12 @@ class PGN(SystemTestsCommon):
         initialize an object interface to the PGN test
         """
         super(PGN, self).__init__(case)
+        if self._case.get_value("MODEL") == "e3sm":
+            self.atmmod = "eam"
+            self.lndmod = "elm"
+        else:
+            self.atmmod = "cam"
+            self.lndmod = "clm"
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         ninst = NUMBER_INITIAL_CONDITIONS * len(PERTURBATIONS)
@@ -93,8 +99,8 @@ class PGN(SystemTestsCommon):
             fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format('cam', 'i', icond))
             flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format('clm2', 'r', icond))
             for iprt in PERTURBATIONS.values():
-                with open('user_nl_eam_{:04d}'.format(iinst), 'w') as atmnlfile, \
-                        open('user_nl_elm_{:04d}'.format(iinst), 'w') as lndnlfile:
+                with open('user_nl_{}_{:04d}'.format(self.atmmod, iinst), 'w') as atmnlfile, \
+                        open('user_nl_{}_{:04d}'.format(self.lndmod, iinst), 'w') as lndnlfile:
 
                     atmnlfile.write("ncdata  = '{}' \n".format(fatm_in))
                     lndnlfile.write("finidat = '{}' \n".format(flnd_in))
@@ -163,6 +169,8 @@ class PGN(SystemTestsCommon):
                     "ninit": NUMBER_INITIAL_CONDITIONS,
                     "init-file-template": INIT_COND_FILE_TEMPLATE,
                     "instance-file-template": INSTANCE_FILE_TEMPLATE,
+                    "init-model": "cam",
+                    "component": self.atmmod,
                 }
             }
 
@@ -226,7 +234,7 @@ class PGN(SystemTestsCommon):
         for icond in range(NUMBER_INITIAL_CONDITIONS):
             for iprt, (prt_name, prt_value) in enumerate(PERTURBATIONS.items()):
                 iinst = pg._sub2instance(icond, iprt, len(PERTURBATIONS))
-                fname = os.path.join(rundir, INSTANCE_FILE_TEMPLATE.format(casename + '.', iinst, ''))
+                fname = os.path.join(rundir, INSTANCE_FILE_TEMPLATE.format(casename + '.', self.atmmod, iinst, ''))
                 renamed_fname = re.sub(r'\.nc$', '_{}.nc'.format(prt_name), fname)
 
                 logger.debug("PGN_INFO: fname to rename:{}".format(fname))
@@ -261,11 +269,11 @@ class PGN(SystemTestsCommon):
                     continue
                 iinst_ctrl = pg._sub2instance(icond, 0, nprt)
                 ifile_ctrl = os.path.join(rundir,
-                                          INSTANCE_FILE_TEMPLATE.format(casename + '.', iinst_ctrl, '_woprt'))
+                                          INSTANCE_FILE_TEMPLATE.format(casename + '.', self.atmmod, iinst_ctrl, '_woprt'))
 
                 iinst_test = pg._sub2instance(icond, iprt, nprt)
                 ifile_test = os.path.join(rundir,
-                                          INSTANCE_FILE_TEMPLATE.format(casename + '.', iinst_test, '_' + prt_name))
+                                          INSTANCE_FILE_TEMPLATE.format(casename + '.', self.atmmod, iinst_test, '_' + prt_name))
 
                 prt_rmse[prt_name] = pg.variables_rmse(ifile_test, ifile_ctrl, var_list, 't_')
             rmse_prototype[icond] = pd.concat(prt_rmse)

@@ -44,6 +44,12 @@ class TSC(SystemTestsCommon):
         initialize an object interface to the TSC test
         """
         super(TSC, self).__init__(case)
+        if self._case.get_value("MODEL") == "e3sm":
+            self.atmmod = "eam"
+            self.lndmod = "elm"
+        else:
+            self.atmmod = "cam"
+            self.lndmod = "clm"
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         # Only want this to happen once. It will impact the sharedlib build
@@ -85,8 +91,8 @@ class TSC(SystemTestsCommon):
 
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST+1):
-            with open('user_nl_eam_'+str(iinst).zfill(4), 'w') as atmnlfile, \
-                 open('user_nl_elm_'+str(iinst).zfill(4), 'w') as lndnlfile:
+            with open(f'user_nl_{self.atmmod}_'+str(iinst).zfill(4), 'w') as atmnlfile, \
+                 open(f'user_nl_{self.lndmod}_'+str(iinst).zfill(4), 'w') as lndnlfile:
 
                 fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format('cam', 'i', iinst))
                 flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format('clm2', 'r', iinst))
@@ -144,6 +150,7 @@ class TSC(SystemTestsCommon):
                     "inspect-times": INSPECT_AT,
                     "variables": VAR_LIST,
                     "p-threshold": P_THRESHOLD,
+                    "component": self.atmmod,
                 }
             }
 
@@ -203,13 +210,12 @@ class TSC(SystemTestsCommon):
             rundir = self._case.get_value("RUNDIR")
             ref_case = self._case.get_value("RUN_REFCASE")
 
-            model = 'eam'
             env_archive = self._case.get_env("archive")
-            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, r'DT\d*', ref_case=ref_case)
+            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), self.atmmod, rundir, r'DT\d*', ref_case=ref_case)
             hists = [os.path.join(rundir,hist) for hist in hists]
             logger.debug("TSC additional baseline files: {}".format(hists))
             for hist in hists:
-                basename = hist[hist.rfind(model):]
+                basename = hist[hist.rfind(self.atmmod):]
                 baseline = os.path.join(basegen_dir, basename)
                 if os.path.exists(baseline):
                     os.remove(baseline)

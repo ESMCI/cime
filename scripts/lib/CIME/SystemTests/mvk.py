@@ -35,6 +35,11 @@ class MVK(SystemTestsCommon):
         """
         SystemTestsCommon.__init__(self, case)
 
+        if self._case.get_value("MODEL") == "e3sm":
+            self.component = "eam"
+        else:
+            self.component = "cam"
+
         if self._case.get_value("RESUBMIT") == 0 \
                 and self._case.get_value("GENERATE_BASELINE") is False:
             self._case.set_value("COMPARE_BASELINE", True)
@@ -60,7 +65,7 @@ class MVK(SystemTestsCommon):
             case_setup(self._case, test_mode=False, reset=True)
 
         for iinst in range(1, NINST + 1):
-            with open('user_nl_eam_{:04d}'.format(iinst), 'w') as nl_atm_file:
+            with open('user_nl_{}_{:04d}'.format(self.component, iinst), 'w') as nl_atm_file:
                 nl_atm_file.write('new_random = .true.\n')
                 nl_atm_file.write('pertlim = 1.0e-10\n')
                 nl_atm_file.write('seed_custom = {}\n'.format(iinst))
@@ -81,13 +86,12 @@ class MVK(SystemTestsCommon):
             rundir = self._case.get_value("RUNDIR")
             ref_case = self._case.get_value("RUN_REFCASE")
 
-            model = 'eam'
             env_archive = self._case.get_env("archive")
-            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, ref_case=ref_case)
+            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), self.component, rundir, ref_case=ref_case)
             logger.debug("MVK additional baseline files: {}".format(hists))
             hists = [os.path.join(rundir,hist) for hist in hists]
             for hist in hists:
-                basename = hist[hist.rfind(model):]
+                basename = hist[hist.rfind(self.component):]
                 baseline = os.path.join(basegen_dir, basename)
                 if os.path.exists(baseline):
                     os.remove(baseline)
@@ -122,7 +126,8 @@ class MVK(SystemTestsCommon):
                     "ref-dir": base_dir,
                     "var-set": "default",
                     "ninst": NINST,
-                    "critical": 13
+                    "critical": 13,
+                    "component": self.component,
                 }
             }
 
