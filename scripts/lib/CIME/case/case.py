@@ -125,6 +125,7 @@ class Case(object):
         self.thread_count = None
         self.total_tasks = None
         self.tasks_per_node = None
+        self.ngpus_per_node = None
         self.num_nodes = None
         self.spare_nodes = None
         self.tasks_per_numa = None
@@ -176,6 +177,7 @@ class Case(object):
         else:
             self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count)
+            self.ngpus_per_node = env_mach_pes.get_ngpus_per_node(self.ngpus_per_node)
 
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count)
             self.num_nodes += self.spare_nodes
@@ -932,7 +934,8 @@ class Case(object):
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
                   input_dir=None, driver=None, workflowid="default",
-                  non_local=False, extra_machines_dir=None, case_group=None):
+                  non_local=False, extra_machines_dir=None, case_group=None,
+                  ngpus_per_node=ngpus_per_node):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
 
@@ -1022,7 +1025,7 @@ class Case(object):
             expect(machobj.is_valid_MPIlib(mpilib, {"compiler":compiler}),
                    "MPIlib {} is not supported on machine {}".format(mpilib, machine_name))
         self.set_value("MPILIB",mpilib)
-        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE"):
+        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE","MAX_GPUS_PER_NODE"):
             dmax = machobj.get_value(name,{'compiler':compiler})
             if not dmax:
                 dmax = machobj.get_value(name)
@@ -1122,6 +1125,11 @@ class Case(object):
 
         if test:
             self.set_value("TEST",True)
+
+        # update the ngpus_per_node based on the command line argument
+        if ngpus_per_node:
+            self.set_value("NGPUS_PER_NODE", ngpus_per_node) 
+        self.ngpus_per_node = ngpus_per_node
 
         self.initialize_derived_attributes()
 
@@ -1680,7 +1688,7 @@ directory, NOT in this subdirectory."""
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
                input_dir=None, driver=None, workflowid="default", non_local=False,
-               extra_machines_dir=None, case_group=None):
+               extra_machines_dir=None, case_group=None, ngpus_per_node=0):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
@@ -1708,7 +1716,8 @@ directory, NOT in this subdirectory."""
                            run_unsupported=run_unsupported, answer=answer,
                            input_dir=input_dir, driver=driver,
                            workflowid=workflowid, non_local=non_local,
-                           extra_machines_dir=extra_machines_dir, case_group=case_group)
+                           extra_machines_dir=extra_machines_dir, case_group=case_group,
+                           ngpus_per_node=ngpus_per_node)
 
             self.create_caseroot()
 

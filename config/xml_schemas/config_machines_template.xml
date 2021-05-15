@@ -94,6 +94,10 @@
 	 this machine, in practice the MPI tasks per node will not exceed this value -->
     <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
 
+    <!-- MAX_GPUS_PER_NODE: maximum number of GPUs per node on this machine,
+         should always be >= 0 -->
+    <MAX_GPUS_PER_NODE>8</MAX_GPUS_PER_NODE>
+
     <!-- PROJECT_REQUIRED: Does this machine require a project to be specified to
 	 the batch system?  See PROJECT above -->
     <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>

@@ -171,13 +171,14 @@ class EnvBatch(EnvBase):
 
     def get_job_overrides(self, job, case):
         env_workflow = case.get_env('workflow')
-        total_tasks, num_nodes, tasks_per_node, thread_count = env_workflow.get_job_specs(case, job)
+        total_tasks, num_nodes, tasks_per_node, thread_count, ngpus_per_node = env_workflow.get_job_specs(case, job)
         overrides = {}
 
         if total_tasks:
             overrides["total_tasks"] = total_tasks
             overrides["num_nodes"]   = num_nodes
             overrides["tasks_per_node"] =  tasks_per_node
+            overrides["ngpus_per_node"] =  ngpus_per_node
             if thread_count:
                 overrides["thread_count"] = thread_count
         else:

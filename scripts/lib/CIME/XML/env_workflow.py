@@ -82,6 +82,7 @@ class EnvWorkflow(EnvBase):
         task_count = case.get_resolved_value(self.get_value("task_count", subgroup=job))
         tasks_per_node = case.get_resolved_value(self.get_value("tasks_per_node", subgroup=job))
         thread_count = case.get_resolved_value(self.get_value("thread_count", subgroup=job))
+        ngpus_per_node = case.get_resolved_value(self.get_value("ngpus_per_node", subgroup=job))
         num_nodes = None
         if task_count is not None and tasks_per_node is not None:
             task_count = int(task_count)
@@ -89,8 +90,10 @@ class EnvWorkflow(EnvBase):
             tasks_per_node =  task_count//num_nodes
         if not thread_count:
             thread_count = 1
+        if not ngpus_per_node:
+            ngpus_per_node = 0
 
-        return task_count, num_nodes, tasks_per_node, thread_count
+        return task_count, num_nodes, tasks_per_node, thread_count, ngpus_per_node
 
     # pylint: disable=arguments-differ
     def get_value(self, item, attribute=None, resolved=True, subgroup="PRIMARY"):

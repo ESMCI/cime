@@ -341,6 +341,7 @@ class Machines(GenericXML):
             compilers = self.get_child("COMPILERS", root=machine)
             max_tasks_per_node = self.get_child("MAX_TASKS_PER_NODE", root=machine)
             max_mpitasks_per_node = self.get_child("MAX_MPITASKS_PER_NODE", root=machine)
+            max_gpus_per_node = self.get_child("MAX_GPUS_PER_NODE", root=machine)
 
             print( "  {} : {} ".format(name , self.text(desc)))
             print( "      os             ", self.text(os_))
@@ -349,6 +350,8 @@ class Machines(GenericXML):
                 print("      pes/node       ",self.text(max_mpitasks_per_node))
             if max_tasks_per_node is not None:
                 print("      max_tasks/node ",self.text(max_tasks_per_node))
+            if max_gpus_per_node is not None:
+                print("      max_gpus/node ",self.text(max_gpus_per_node))
 
     def return_values(self):
         """ return a dictionary of machine info
@@ -369,5 +372,7 @@ class Machines(GenericXML):
             mach_dict[(name,"max_tasks_per_node")] = self.text(max_tasks_per_node)
             max_mpitasks_per_node = self.get_child("MAX_MPITASKS_PER_NODE", root=machine)
             mach_dict[(name,"max_mpitasks_per_node")] = self.text(max_mpitasks_per_node)
+            max_gpus_per_node = self.get_child("MAX_GPUS_PER_NODE", root=machine)
+            mach_dict[(name,"max_gpus_per_node")] = self.text(max_gpus_per_node)
 
         return mach_dict
