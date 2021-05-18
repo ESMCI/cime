@@ -205,7 +205,7 @@ def _main_func(description):
         gridfile, srcroot, test, multi_driver, ninst, walltime, \
         queue, output_root, script_root, run_unsupported, \
         answer, input_dir, driver, \
-        workflow, non_local, extra_machines_dir, case_group ngpus_per_node = parse_command_line(sys.argv, cimeroot, description)
+        workflow, non_local, extra_machines_dir, case_group, ngpus_per_node = parse_command_line(sys.argv, cimeroot, description)
 
     if script_root is None:
         caseroot = os.path.abspath(casename)
