@@ -3007,7 +3007,7 @@
    <type>integer</type>
    <valid_values></valid_values>
    <default_value>0</default_value>
-   <group>config_batch</group>
+   <group>mach_pes_last</group>
    <file>env_mach_pes.xml</file>
    <desc> Number of GPUs per node used for simulation </desc>
  </entry>
