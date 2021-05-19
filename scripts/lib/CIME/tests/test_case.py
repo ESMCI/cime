@@ -27,8 +27,8 @@ class TestCase(unittest.TestCase):
     def test_new_hash(self):
         with self.tempdir as tempdir:
             with Case(tempdir) as case:
-                os.environ["USER"] = "root"
-                os.environ["HOSTNAME"] = "host1"
+                getuser = self.mock.patch("getpass.getuser", ret="root")
+                self.mock.patch("socket.getfqdn", ret="host1")
 
                 expected = "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a"
 
@@ -39,7 +39,7 @@ class TestCase(unittest.TestCase):
                     self.assertTrue(value == expected,
                                     "{} != {}".format(value, expected))
 
-                os.environ["USER"] = "johndoe"
+                getuser.ret = "johndoe"
 
                 expected = "bb59f1c473ac07e9dd30bfab153c0530a777f89280b716cf42e6fe2f49811a6e"
 
@@ -55,8 +55,8 @@ class TestCase(unittest.TestCase):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["USER"] = "root"
-                os.environ["HOSTNAME"] = "host1"
+                self.mock.patch("getpass.getuser", ret="root")
+                self.mock.patch("socket.getfqdn", ret="host1")
                 os.environ["CIME_MODEL"] = "cesm"
 
                 # Need to mock all of these to prevent errors with xml files
@@ -106,8 +106,8 @@ class TestCase(unittest.TestCase):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["USER"] = "root"
-                os.environ["HOSTNAME"] = "host1"
+                self.mock.patch("getpass.getuser", ret="root")
+                self.mock.patch("socket.getfqdn", ret="host1")
                 os.environ["CIME_MODEL"] = "cesm"
 
                 # Need to mock all of these to prevent errors with xml files
