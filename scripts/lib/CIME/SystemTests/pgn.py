@@ -281,7 +281,7 @@ class PGN(SystemTestsCommon):
         cld_rmse = np.reshape(rmse.RMSE.values, (NUMBER_INITIAL_CONDITIONS, nprt - 1, nvar))
 
         pg.rmse_writer(os.path.join(rundir, FCLD_NC),
-                       cld_rmse, list(PERTURBATIONS.keys()), var_list, INIT_COND_FILE_TEMPLATE)
+                       cld_rmse, list(PERTURBATIONS.keys()), var_list, INIT_COND_FILE_TEMPLATE, "cam")
 
         logger.debug("PGN_INFO:copy:{} to {}".format(FCLD_NC, basegen_dir))
         shutil.copy(os.path.join(rundir, FCLD_NC), basegen_dir)
