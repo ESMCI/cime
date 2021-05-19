@@ -125,7 +125,7 @@ class Case(object):
         self.thread_count = None
         self.total_tasks = None
         self.tasks_per_node = None
-        self.ngpus_per_node = None
+        self.ngpus_per_node = 0
         self.num_nodes = None
         self.spare_nodes = None
         self.tasks_per_numa = None
