@@ -177,7 +177,6 @@ class Case(object):
         else:
             self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(self.total_tasks, self.thread_count)
-            self.ngpus_per_node = env_mach_pes.get_ngpus_per_node(self.ngpus_per_node)
 
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(self.total_tasks, self.thread_count)
             self.num_nodes += self.spare_nodes
@@ -935,7 +934,7 @@ class Case(object):
                   run_unsupported=False, answer=None,
                   input_dir=None, driver=None, workflowid="default",
                   non_local=False, extra_machines_dir=None, case_group=None,
-                  ngpus_per_node=ngpus_per_node):
+                  ngpus_per_node=0):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
 
@@ -1001,7 +1000,7 @@ class Case(object):
         nodenames = [x for x in nodenames if
                      '_system' not in x and '_variables' not in x and 'mpirun' not in x and\
                      'COMPILER' not in x and 'MPILIB' not in x and 'MAX_MPITASKS_PER_NODE' not in x and\
-                     'MAX_TASKS_PER_NODE' not in x]
+                     'MAX_TASKS_PER_NODE' not in x and 'MAX_GPUS_PER_NODE' not in x]
 
         for nodename in nodenames:
             value = machobj.get_value(nodename, resolved=False)
@@ -1010,7 +1009,7 @@ class Case(object):
                 if type_str is not None:
                     logger.debug("machine nodename {} value {}".format(nodename, value))
                     self.set_value(nodename, convert_to_type(value, type_str, nodename))
-
+        
         if compiler is None:
             compiler = machobj.get_default_compiler()
         else:
@@ -1028,7 +1027,10 @@ class Case(object):
         for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE","MAX_GPUS_PER_NODE"):
             dmax = machobj.get_value(name,{'compiler':compiler})
             if not dmax:
-                dmax = machobj.get_value(name)
+                if name != "MAX_GPUS_PER_NODE":
+                    dmax = machobj.get_value(name)
+                else:
+                    dmax = 0
             self.set_value(name, dmax)
 
         machdir = machobj.get_machines_dir()

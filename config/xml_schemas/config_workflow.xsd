@@ -15,7 +15,6 @@
   <xs:element name="template" type="xs:anyURI"/>
   <xs:element name="task_count" type="xs:string"/>
   <xs:element name="tasks_per_node" type="xs:string"/>
-  <xs:element name="ngpus_per_node" type="xs:string"/>
   <xs:element name="walltime" type="xs:string"/>
   <xs:element name="dependency" type="xs:string"/>
   <xs:element name="prereq" type="xs:string"/>
@@ -47,7 +46,6 @@
       <xs:sequence>
         <xs:element minOccurs="0" ref="task_count"/>
         <xs:element minOccurs="0" ref="tasks_per_node"/>
-        <xs:element minOccurs="0" ref="ngpus_per_node"/>
         <xs:element minOccurs="0" ref="walltime"/>
       </xs:sequence>
       <xs:attribute ref="MACH" />

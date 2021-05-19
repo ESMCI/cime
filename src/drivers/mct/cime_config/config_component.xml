@@ -3012,7 +3012,7 @@
    <desc> Number of GPUs per node used for simulation </desc>
  </entry>
 
- <entry id="MAX_TASKS_PER_NODE">
+ <entry id="MAX_GPUS_PER_NODE">
    <type>integer</type>
    <default_value>0</default_value>
    <group>mach_pes_last</group>

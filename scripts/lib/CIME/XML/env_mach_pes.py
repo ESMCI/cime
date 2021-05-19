@@ -120,11 +120,6 @@ class EnvMachPes(EnvBase):
                                  self.get_value("MAX_MPITASKS_PER_NODE"), total_tasks)
         return tasks_per_node if tasks_per_node > 0 else 1
 
-    def get_ngpus_per_node(self, total_gpus):
-        expect(total_gpus >= 0,"totalgpus >= 0 expected, totalgpus = {}".format(total_gpus))
-        ngpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        return total_gpus if total_gpus < ngpus_per_node else ngpus_per_node
-
     def get_total_nodes(self, total_tasks, max_thread_count):
         """
         Return (num_active_nodes, num_spare_nodes)
