@@ -1009,7 +1009,7 @@ class Case(object):
                 if type_str is not None:
                     logger.debug("machine nodename {} value {}".format(nodename, value))
                     self.set_value(nodename, convert_to_type(value, type_str, nodename))
-        
+
         if compiler is None:
             compiler = machobj.get_default_compiler()
         else:
