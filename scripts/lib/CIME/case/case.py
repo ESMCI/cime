@@ -195,6 +195,8 @@ class Case(object):
         self.srun_binding = math.floor(smt_factor*max_mpitasks_per_node / self.tasks_per_node)
         self.srun_binding = max(1,int(self.srun_binding))
 
+        self.ngpus_per_node = env_mach_pes.get_gpus_per_node(self.ngpus_per_node)
+
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
     def __enter__(self):
@@ -1128,11 +1130,6 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # update the ngpus_per_node based on the command line argument
-        if ngpus_per_node:
-            self.set_value("NGPUS_PER_NODE", ngpus_per_node) 
-        self.ngpus_per_node = ngpus_per_node
-
         self.initialize_derived_attributes()
 
         #--------------------------------------------
@@ -1153,6 +1150,16 @@ class Case(object):
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)
         env_workflow = self.get_env("workflow")
         env_workflow.create_job_groups(bjobs, test)
+
+        # update the ngpus_per_node
+        #    - reset to 0 if the command line argument is negative
+        #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+        if ngpus_per_node >= 0:
+            self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
+        else:
+            self.set_value("NGPUS_PER_NODE", 0)
+        self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         if walltime:
             self.set_value("USER_REQUESTED_WALLTIME", walltime, subgroup=self.get_primary_job())
