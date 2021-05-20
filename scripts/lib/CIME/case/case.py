@@ -1029,10 +1029,10 @@ class Case(object):
         for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE","MAX_GPUS_PER_NODE"):
             dmax = machobj.get_value(name,{'compiler':compiler})
             if not dmax:
-                if name != "MAX_GPUS_PER_NODE":
-                    dmax = machobj.get_value(name)
-                else:
-                    dmax = 0
+                dmax = machobj.get_value(name)
+            # set MAX_GPUS_PER_NODE to 0 for machine that does not have GPUs
+            if name == "MAX_GPUS_PER_NODE" and not dmax:
+                dmax = 0 
             self.set_value(name, dmax)
 
         machdir = machobj.get_machines_dir()
