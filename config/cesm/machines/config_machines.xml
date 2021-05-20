@@ -357,7 +357,7 @@ This allows using a different mpirun command to launch unit tests
     <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is pbs</DESC>
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>pgi,intel,nvhpc,pgi_gpu,nvhpc_gpu</COMPILERS>
+    <COMPILERS>pgi,intel,nvhpc,pgi-gpu,nvhpc-gpu</COMPILERS>
     <MPILIBS>openmpi</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
@@ -400,7 +400,7 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
       </modules>
-      <modules compiler="pgi_gpu">
+      <modules compiler="pgi-gpu">
         <command name="load">pgi/20.4</command>
       </modules>
       <modules compiler="nvhpc">
@@ -421,13 +421,13 @@ This allows using a different mpirun command to launch unit tests
       <modules mpilib="mpi-serial" compiler="pgi">
         <command name="load">netcdf/4.7.4</command>
       </modules>
-      <modules mpilib="openmpi" compiler="pgi_gpu">
+      <modules mpilib="openmpi" compiler="pgi-gpu">
         <command name="load">openmpi/4.1.0</command>
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
         <command name="load">cuda/11.0.3</command>
       </modules>
-      <modules mpilib="mpi-serial" compiler="pgi_gpu">
+      <modules mpilib="mpi-serial" compiler="pgi-gpu">
         <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="nvhpc">
@@ -438,13 +438,13 @@ This allows using a different mpirun command to launch unit tests
       <modules mpilib="mpi-serial" compiler="nvhpc">
         <command name="load">netcdf/4.7.4</command>
       </modules>
-      <modules mpilib="openmpi" compiler="nvhpc_gpu">
+      <modules mpilib="openmpi" compiler="nvhpc-gpu">
         <command name="load">openmpi/4.1.0</command>
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">pnetcdf/1.12.2</command>
         <command name="load">cuda/11.0.3</command>
       </modules>
-      <modules mpilib="mpi-serial" compiler="nvhpc_gpu">
+      <modules mpilib="mpi-serial" compiler="nvhpc-gpu">
         <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="intel">

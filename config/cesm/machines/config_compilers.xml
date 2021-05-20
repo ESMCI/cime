@@ -466,7 +466,7 @@ using a fortran linker.
   <SFC> pgf95 </SFC>
 </compiler>
 
-<compiler COMPILER="pgi_gpu">
+<compiler COMPILER="pgi-gpu">
   <CFLAGS>
     <base> -gopt  -time </base>
     <append compile_threaded="TRUE"> -mp </append>
@@ -556,7 +556,7 @@ using a fortran linker.
   <SFC> nvfortran </SFC>
 </compiler>
 
-<compiler COMPILER="nvhpc_gpu">
+<compiler COMPILER="nvhpc-gpu">
   <CFLAGS>
     <base> -gopt  -time </base>
     <append compile_threaded="TRUE"> -mp </append>
@@ -812,7 +812,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="casper" COMPILER="pgi_gpu">
+<compiler MACH="casper" COMPILER="pgi-gpu">
   <CFLAGS>
     <append DEBUG="FALSE"> -O -tp=skylake </append>
   </CFLAGS>
@@ -848,7 +848,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="casper" COMPILER="nvhpc_gpu">
+<compiler MACH="casper" COMPILER="nvhpc-gpu">
   <CFLAGS>
     <append DEBUG="FALSE"> -O -tp=skylake </append>
   </CFLAGS>
