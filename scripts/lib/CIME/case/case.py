@@ -1146,7 +1146,7 @@ class Case(object):
         else:
             self.set_value("NGPUS_PER_NODE", 0)
         self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-
+ 
         self.initialize_derived_attributes()
 
         #--------------------------------------------
