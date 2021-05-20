@@ -1130,6 +1130,16 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
+        # update the ngpus_per_node
+        #    - reset to 0 if the command line argument is negative
+        #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+        if ngpus_per_node >= 0:
+            self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
+        else:
+            self.set_value("NGPUS_PER_NODE", 0)
+        self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+
         self.initialize_derived_attributes()
 
         #--------------------------------------------
@@ -1150,16 +1160,6 @@ class Case(object):
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)
         env_workflow = self.get_env("workflow")
         env_workflow.create_job_groups(bjobs, test)
-
-        # update the ngpus_per_node
-        #    - reset to 0 if the command line argument is negative
-        #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
-        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if ngpus_per_node >= 0:
-            self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
-        else:
-            self.set_value("NGPUS_PER_NODE", 0)
-        self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         if walltime:
             self.set_value("USER_REQUESTED_WALLTIME", walltime, subgroup=self.get_primary_job())
@@ -1471,7 +1471,20 @@ directory, NOT in this subdirectory."""
 
         mpirun_cmd_override = self.get_value("MPI_RUN_COMMAND")
         if mpirun_cmd_override not in ["", None, "UNSET"]:
-            return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
+            if self.ngpus_per_node > 0:
+                # generate a wrapper script under the rundir to set the device id for each MPI rank
+                rundir = self.get_value("RUNDIR")
+                with open (rundir+'/set_device_rank.sh', 'a') as f:
+                    f.write('#!/bin/bash')
+                    f.write('unset CUDA_VISIBLE_DEVICES')
+                    f.write('let dev_id=$OMPI_COMM_WORLD_LOCAL_RANK%'+str(self.ngpus_per_node))
+                    f.write('export ACC_DEVICE_NUM=$dev_id')
+                    f.write('export CUDA_VISIBLE_DEVICES=$dev_id')
+                    f.write('exec $*')
+                os.system("chmod +x "+rundir+'/set_device_rank.sh')
+                return self.get_resolved_value(mpirun_cmd_override + " " + rundir + '/set_device_rank.sh' + " " + run_exe + " " + run_misc_suffix)
+            else:
+                return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
 
         # Things that will have to be matched against mpirun element attributes
         mpi_attribs = {
