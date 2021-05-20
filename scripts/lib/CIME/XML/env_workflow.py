@@ -82,7 +82,7 @@ class EnvWorkflow(EnvBase):
         task_count = case.get_resolved_value(self.get_value("task_count", subgroup=job))
         tasks_per_node = case.get_resolved_value(self.get_value("tasks_per_node", subgroup=job))
         thread_count = case.get_resolved_value(self.get_value("thread_count", subgroup=job))
-        ngpus_per_node = case.get_resolved_value(self.get_value("ngpus_per_node", subgroup=job))
+        ngpus_per_node = case.get_resolved_value(self.get_value("NGPUS_PER_NODE", subgroup=job))
         max_gpus_per_node = case.get_resolved_value(self.get_value("MAX_GPUS_PER_NODE",subgroup=job))
         num_nodes = None
         if task_count is not None and tasks_per_node is not None:
