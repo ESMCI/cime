@@ -1130,10 +1130,9 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # sanity check: when use pgi-gpu and nvhpc-gpu compiler, we must have 
+        # sanity check: when use pgi_gpu and nvhpc_gpu compiler, we must have 
         #               at least one gpu per node available 
-        compiler = self.get_value("COMPILER")
-        if compiler in ["pgi-gpu", "nvhpc-gpu"]:
+        if compiler in ["pgi_gpu", "nvhpc_gpu"]:
             expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
         else:
             expect(ngpus_per_node >= 0," ngpus_per_node is expected >= 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))

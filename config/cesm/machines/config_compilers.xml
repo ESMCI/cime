@@ -466,7 +466,7 @@ using a fortran linker.
   <SFC> pgf95 </SFC>
 </compiler>
 
-<compiler COMPILER="pgi-gpu">
+<compiler COMPILER="pgi_gpu">
   <CFLAGS>
     <base> -gopt  -time </base>
     <append compile_threaded="TRUE"> -mp </append>
@@ -556,7 +556,7 @@ using a fortran linker.
   <SFC> nvfortran </SFC>
 </compiler>
 
-<compiler COMPILER="nvhpc-gpu">
+<compiler COMPILER="nvhpc_gpu">
   <CFLAGS>
     <base> -gopt  -time </base>
     <append compile_threaded="TRUE"> -mp </append>
@@ -812,7 +812,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="casper" COMPILER="pgi-gpu">
+<compiler MACH="casper" COMPILER="pgi_gpu">
   <CFLAGS>
     <append DEBUG="FALSE"> -O -tp=skylake </append>
   </CFLAGS>
@@ -821,7 +821,7 @@ using a fortran linker.
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel -D__OPENACC__ </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
@@ -848,7 +848,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="casper" COMPILER="nvhpc-gpu">
+<compiler MACH="casper" COMPILER="nvhpc_gpu">
   <CFLAGS>
     <append DEBUG="FALSE"> -O -tp=skylake </append>
   </CFLAGS>
