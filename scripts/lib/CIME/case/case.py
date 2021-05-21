@@ -1733,7 +1733,6 @@ directory, NOT in this subdirectory."""
     def new_hash(self):
         """ Creates a hash
         """
-        print(sys.argv)
         args = "".join(sys.argv)
         ctime = time.strftime("%Y-%m-%d %H:%M:%S")
         hostname = socket.getfqdn()
