@@ -178,7 +178,6 @@ class EnvBatch(EnvBase):
             overrides["total_tasks"] = total_tasks
             overrides["num_nodes"]   = num_nodes
             overrides["tasks_per_node"] =  tasks_per_node
-            overrides["ngpus_per_node"] =  ngpus_per_node
             if thread_count:
                 overrides["thread_count"] = thread_count
         else:
@@ -187,6 +186,7 @@ class EnvBatch(EnvBase):
         if int(total_tasks)*int(thread_count) < case.get_value("MAX_TASKS_PER_NODE"):
             overrides["max_tasks_per_node"] = int(total_tasks)
 
+        overrides["ngpus_per_node"] = ngpus_per_node
         overrides["mpirun"] = case.get_mpirun_cmd(job=job, overrides=overrides)
         return overrides
 

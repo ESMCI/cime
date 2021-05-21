@@ -195,8 +195,6 @@ class Case(object):
         self.srun_binding = math.floor(smt_factor*max_mpitasks_per_node / self.tasks_per_node)
         self.srun_binding = max(1,int(self.srun_binding))
 
-        self.ngpus_per_node = env_mach_pes.get_gpus_per_node(self.ngpus_per_node)
-
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
     def __enter__(self):
@@ -1478,20 +1476,7 @@ directory, NOT in this subdirectory."""
 
         mpirun_cmd_override = self.get_value("MPI_RUN_COMMAND")
         if mpirun_cmd_override not in ["", None, "UNSET"]:
-            if self.ngpus_per_node > 0:
-                # generate a wrapper script under the rundir to set the device id for each MPI rank
-                rundir = self.get_value("RUNDIR")
-                with open (rundir+'/set_device_rank.sh', 'a') as f:
-                    f.write('#!/bin/bash')
-                    f.write('unset CUDA_VISIBLE_DEVICES')
-                    f.write('let dev_id=$OMPI_COMM_WORLD_LOCAL_RANK%'+str(self.ngpus_per_node))
-                    f.write('export ACC_DEVICE_NUM=$dev_id')
-                    f.write('export CUDA_VISIBLE_DEVICES=$dev_id')
-                    f.write('exec $*')
-                os.system("chmod +x "+rundir+'/set_device_rank.sh')
-                return self.get_resolved_value(mpirun_cmd_override + " " + rundir + '/set_device_rank.sh' + " " + run_exe + " " + run_misc_suffix)
-            else:
-                return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
+            return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
 
         # Things that will have to be matched against mpirun element attributes
         mpi_attribs = {
@@ -1523,6 +1508,20 @@ directory, NOT in this subdirectory."""
 
         if self.get_value("BATCH_SYSTEM") == "cobalt":
             mpi_arg_string += " : "
+
+        ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+        if ngpus_per_node > 0:
+            # generate a wrapper script under the case dir to set the device id for each MPI rank
+            casedir = self.get_value("CASEROOT")
+            with open (casedir+'/set_device_rank.sh', 'w+') as f:
+                f.write('#!/bin/bash\n')
+                f.write('unset CUDA_VISIBLE_DEVICES\n')
+                f.write('let dev_id=$OMPI_COMM_WORLD_LOCAL_RANK%'+str(ngpus_per_node)+'\n')
+                f.write('export ACC_DEVICE_NUM=$dev_id\n')
+                f.write('export CUDA_VISIBLE_DEVICES=$dev_id\n')
+                f.write('exec $*')
+            os.system("chmod +x "+casedir+'/set_device_rank.sh')
+            mpi_arg_string = mpi_arg_string + " " + casedir + '/set_device_rank.sh '
 
         return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)
 
