@@ -1133,7 +1133,7 @@ class Case(object):
         if compiler in ["pgi-gpu", "nvhpc-gpu"]:
             expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
         else:
-            expect(ngpus_per_node >= 0," ngpus_per_node is expected >= 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+            expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
 
         # update the ngpus_per_node
         #    - reset to 0 if the command line argument is negative
