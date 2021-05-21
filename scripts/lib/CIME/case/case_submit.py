@@ -148,8 +148,6 @@ manual edits to these file will be lost!
                                allow_fail=allow_fail, mail_user=mail_user,
                                mail_type=mail_type, batch_args=batch_args, workflow=workflow)
 
-    print(job_ids)
-
     xml_jobids = []
     for jobname, jobid in job_ids.items():
         logger.info("Submitted job {} with id {}".format(jobname, jobid))
