@@ -1738,8 +1738,6 @@ directory, NOT in this subdirectory."""
         hostname = socket.getfqdn()
         user = getpass.getuser()
 
-        print(args, ctime, hostname, user)
-
         data = "{}{}{}{}".format(args, ctime, hostname, user)
 
         return hashlib.sha256(data.encode()).hexdigest()
