@@ -130,7 +130,7 @@ def parse_command_line(args, description):
     return args.caseroot, listofsettings, args.file, args.id, args.val, args.subgroup, args.append, args.noecho, args.force , args.dryrun
 
 def xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun, env_test):
-    if xmlid in ["THREAD_COUNT", "TOTAL_TASKS", "TASKS_PER_NODE", "NUM_NODES", "SPARE_NODES", "TASKS_PER_NUMA", "CORES_PER_TASK", "NGPUS_PER_NODE"]:
+    if xmlid in ["THREAD_COUNT", "TOTAL_TASKS", "TASKS_PER_NODE", "NUM_NODES", "SPARE_NODES", "TASKS_PER_NUMA", "CORES_PER_TASK"]:
         expect(False, "Cannot xmlchange derived attribute {}".format(xmlid))
 
     if env_test and env_test.get_value(xmlid) != None:
