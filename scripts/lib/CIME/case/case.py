@@ -5,7 +5,7 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, six, time, hashlib
+import glob, os, shutil, math, six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
 from six.moves import input
@@ -1735,8 +1735,8 @@ directory, NOT in this subdirectory."""
         """
         args = "".join(sys.argv)
         ctime = time.strftime("%Y-%m-%d %H:%M:%S")
-        hostname = os.environ["HOSTNAME"]
-        user = os.environ["USER"]
+        hostname = socket.getfqdn()
+        user = getpass.getuser()
 
         data = "{}{}{}{}".format(args, ctime, hostname, user)
 
