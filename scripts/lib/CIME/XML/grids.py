@@ -11,8 +11,10 @@ from CIME.XML.generic_xml import GenericXML
 logger = logging.getLogger(__name__)
 
 # Separator character for multiple grids within a single component (currently just used
-# for GLC when there are multiple ice sheet grids)
-_GRID_SEP = ':'
+# for GLC when there are multiple ice sheet grids). It is important that this character
+# NOT appear in any file names - or anywhere in the path of directories holding input
+# data.
+GRID_SEP = ':'
 
 class Grids(GenericXML):
 
@@ -596,12 +598,12 @@ class _ComponentGrids(object):
 
         Usually this list has only a single grid (so the return value will be a
         single-element list like ["0.9x1.25"]). However, the glc component (glc) can have
-        multiple grids, separated by _GRID_SEP. In this situation, the return value for
+        multiple grids, separated by GRID_SEP. In this situation, the return value for
         GLC will have multiple elements.
 
         """
         gridname = self.get_comp_gridname(compname)
-        return gridname.split(_GRID_SEP)
+        return gridname.split(GRID_SEP)
 
     def get_comp_numgrids(self, compname):
         """Return the number of grids for the given component name
@@ -660,7 +662,7 @@ class _ComponentGrids(object):
                         # It's okay for there to be a single "unset" value even for a
                         # component with multiple grids
                         continue
-                    num_elements = len(value.split(_GRID_SEP))
+                    num_elements = len(value.split(GRID_SEP))
                     expect(num_elements == expected_num_elements,
                            "Unexpected number of colon-delimited elements in {}: {} (expected {} elements)".format(
                                name, value, expected_num_elements))
@@ -697,7 +699,7 @@ def _add_grid_info(info_dict, key, value,
         info_dict[key] = value
 
     However, if the given key is already present, then instead of overriding the old
-    value, we instead concatenate, separated by _GRID_SEP. This is used in case there are
+    value, we instead concatenate, separated by GRID_SEP. This is used in case there are
     multiple grids for a given component. An exception to this behavior is: If
     value_for_multiple is specified (not None) then, if we find an existing value, then we
     instead replace the value with the value given by value_for_multiple.
@@ -712,7 +714,7 @@ def _add_grid_info(info_dict, key, value,
         if value_for_multiple is not None:
             info_dict[key] = value_for_multiple
         else:
-            info_dict[key] += _GRID_SEP + value
+            info_dict[key] += GRID_SEP + value
     else:
         info_dict[key] = value
 
