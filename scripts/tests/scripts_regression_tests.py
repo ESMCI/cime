@@ -2019,7 +2019,6 @@ class K_TestCimeCase(TestCreateTestCommon):
         casedir = self._create_test(["--no-build", "TESTRUNPASS_P1.f19_g16_rx1.A"], test_id=self._baseline_name)
 
         self.assertEqual(type(MACHINE.get_value("MAX_TASKS_PER_NODE")), int)
-        self.assertEqual(type(MACHINE.get_value("MAX_GPUS_PER_NODE")), int)
         self.assertTrue(type(MACHINE.get_value("PROJECT_REQUIRED")) in [type(None) , bool])
 
         with Case(casedir, read_only=False) as case:
