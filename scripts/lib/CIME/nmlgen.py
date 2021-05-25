@@ -674,6 +674,9 @@ class NamelistGenerator(object):
 
         """
         abs_file_paths = []
+        # In most cases, the list created by the following split will only contain a
+        # single element, but this split is needed to handle grid-related files for
+        # components with multiple grids (e.g., GLC).
         for one_file_path in file_path.split(GRID_SEP):
             # NOTE - these are hard-coded here and a better way is to make these extensible
             if one_file_path == 'UNSET' or one_file_path == 'idmap' or one_file_path == 'idmap_ignore' or one_file_path == 'unset':
@@ -726,22 +729,19 @@ class NamelistGenerator(object):
                         literals = self._namelist.get_variable_value(group_name, variable_name)
                         for literal in literals:
                             file_path = character_literal_to_string(literal)
-                            # It's possible that file_path actually contains multiple
-                            # files delimited by GRID_SEP. (This is the case when a
-                            # component has multiple grids, and so has a file for each
-                            # grid.) So, split it on GRID_SEP and handle each separated
-                            # portion as a separate file. (In most cases, the list created
-                            # by this split will contain only a single element, because
-                            # file_path won't have any occurrences of GRID_SEP.)
-                            for one_file_path in file_path.split(GRID_SEP):
-                                self._add_file_to_input_data_list(input_data_list=input_data_list,
-                                                                  variable_name=variable_name,
-                                                                  file_path=one_file_path,
-                                                                  input_pathname=input_pathname,
-                                                                  lines_hash=lines_hash)
+                            self._add_file_to_input_data_list(input_data_list=input_data_list,
+                                                              variable_name=variable_name,
+                                                              file_path=file_path,
+                                                              input_pathname=input_pathname,
+                                                              lines_hash=lines_hash)
 
     def _add_file_to_input_data_list(self, input_data_list, variable_name, file_path, input_pathname, lines_hash):
         """Add one file to the input data list, if needed
+
+        It's possible that file_path actually contains multiple files delimited by
+        GRID_SEP. (This is the case when a component has multiple grids, and so has a file
+        for each grid.) In this case, we split it on GRID_SEP and handle each separated portion as a
+        separate file.
 
         Args:
         - input_data_list: file handle
@@ -749,34 +749,36 @@ class NamelistGenerator(object):
         - file_path (string): path to file
         - input_pathname (string): whether this is an absolute or relative path
         - lines_hash (set): set of hashes of lines already in the given input data list
+
         """
-        # NOTE - these are hard-coded here and a better way is to make these extensible
-        if file_path == 'UNSET' or file_path == 'idmap' or file_path == 'idmap_ignore':
-            return
-        if input_pathname == 'abs':
-            # No further mangling needed for absolute paths.
-            # At this point, there are overwrites that should be ignored
-            if not os.path.isabs(file_path):
+        for one_file_path in file_path.split(GRID_SEP):
+            # NOTE - these are hard-coded here and a better way is to make these extensible
+            if one_file_path == 'UNSET' or one_file_path == 'idmap' or one_file_path == 'idmap_ignore':
                 return
+            if input_pathname == 'abs':
+                # No further mangling needed for absolute paths.
+                # At this point, there are overwrites that should be ignored
+                if not os.path.isabs(one_file_path):
+                    return
+                else:
+                    pass
+            elif input_pathname.startswith('rel:'):
+                # The part past "rel" is the name of a variable that
+                # this variable specifies its path relative to.
+                root_var = input_pathname[4:]
+                root_dir = self.get_value(root_var)
+                one_file_path = os.path.join(root_dir, one_file_path)
             else:
-                pass
-        elif input_pathname.startswith('rel:'):
-            # The part past "rel" is the name of a variable that
-            # this variable specifies its path relative to.
-            root_var = input_pathname[4:]
-            root_dir = self.get_value(root_var)
-            file_path = os.path.join(root_dir, file_path)
-        else:
-            expect(False,
-                   "Bad input_pathname value: {}.".format(input_pathname))
-        # Write to the input data list.
-        string = "{} = {}".format(variable_name, file_path)
-        hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
-        if hashValue not in lines_hash:
-            logger.debug("Adding line {} with hash {}".format(string,hashValue))
-            input_data_list.write(string+"\n")
-        else:
-            logger.debug("Line already in file {}".format(string))
+                expect(False,
+                       "Bad input_pathname value: {}.".format(input_pathname))
+            # Write to the input data list.
+            string = "{} = {}".format(variable_name, one_file_path)
+            hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
+            if hashValue not in lines_hash:
+                logger.debug("Adding line {} with hash {}".format(string,hashValue))
+                input_data_list.write(string+"\n")
+            else:
+                logger.debug("Line already in file {}".format(string))
 
     def write_output_file(self, namelist_file, data_list_path=None, groups=None, sorted_groups=True):
         """Write out the namelists and input data files.
