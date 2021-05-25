@@ -740,8 +740,8 @@ class NamelistGenerator(object):
 
         It's possible that file_path actually contains multiple files delimited by
         GRID_SEP. (This is the case when a component has multiple grids, and so has a file
-        for each grid.) In this case, we split it on GRID_SEP and handle each separated portion as a
-        separate file.
+        for each grid.) In this case, we split it on GRID_SEP and handle each separated
+        portion as a separate file.
 
         Args:
         - input_data_list: file handle
@@ -771,7 +771,12 @@ class NamelistGenerator(object):
             else:
                 expect(False,
                        "Bad input_pathname value: {}.".format(input_pathname))
+
             # Write to the input data list.
+            #
+            # Note that the same variable name is repeated for each file. This currently
+            # seems okay for check_input_data, but if it becomes a problem, we could
+            # change this, e.g., appending an index to the end of variable_name.
             string = "{} = {}".format(variable_name, one_file_path)
             hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
             if hashValue not in lines_hash:
