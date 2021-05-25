@@ -1,5 +1,4 @@
 import os
-import sys
 import unittest
 from unittest import mock
 import tempfile
@@ -65,25 +64,20 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         self.srcroot = os.path.abspath(cime_utils.get_cime_root())
-        self.tempdir = utils.TemporaryDirectory()
+        self.tempdir = tempfile.TemporaryDirectory()
 
-        self.mock = utils.Mocker()
-        self.mock.patch(Case, "read_xml")
-        Case._force_read_only = False # pylint: disable=protected-access
-        self._time_strftime = self.mock.patch('time.strftime', ret='00:00:00')
-        self.mock.patch("sys.argv",
-                        ret=[
-                            "/src/create_newcase",
-                            "--machine",
-                            "docker"
-                        ], is_property=True)
-
-    def test_new_hash(self):
+    @mock.patch("CIME.case.case.Case.read_xml")
+    @mock.patch("sys.argv", [
+        "/src/create_newcase",
+        "--machine",
+        "docker"
+    ])
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("socket.getfqdn", return_value="host1")
+    @mock.patch("getpass.getuser", side_effect=["root", "root", "johndoe"])
+    def test_new_hash(self, getuser, getfqdn, strftime, read_xml): # pylint: disable=unused-argument
         with self.tempdir as tempdir:
             with Case(tempdir) as case:
-                os.environ["USER"] = "root"
-                os.environ["HOSTNAME"] = "host1"
-
                 expected = "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a"
 
                 # Check idempotency
@@ -93,8 +87,6 @@ class TestCase(unittest.TestCase):
                     self.assertTrue(value == expected,
                                     "{} != {}".format(value, expected))
 
-                os.environ["USER"] = "johndoe"
-
                 expected = "bb59f1c473ac07e9dd30bfab153c0530a777f89280b716cf42e6fe2f49811a6e"
 
                 value = case.new_hash()
@@ -102,25 +94,30 @@ class TestCase(unittest.TestCase):
                 self.assertTrue(value == expected,
                                 "{} != {}".format(value, expected))
 
-    def test_copy(self):
+    @mock.patch("CIME.case.case.Case.read_xml")
+    @mock.patch("sys.argv", [
+        "/src/create_newcase",
+        "--machine",
+        "docker"
+    ])
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("CIME.case.case.lock_file")
+    @mock.patch("CIME.case.case.Case.set_lookup_value")
+    @mock.patch("CIME.case.case.Case.apply_user_mods")
+    @mock.patch("CIME.case.case.Case.create_caseroot")
+    @mock.patch("CIME.case.case.Case.configure")
+    @mock.patch("socket.getfqdn", return_value="host1")
+    @mock.patch("getpass.getuser", return_value="root")
+    def test_copy(self, getuser, getfqdn, configure, create_caseroot, # pylint: disable=unused-argument
+                  apply_user_mods, set_lookup_value, lock_file, strftime, # pylint: disable=unused-argument
+                  read_xml): # pylint: disable=unused-argument
         expected_first_hash = "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a"
         expected_second_hash = "3561339a49daab999e3c4ea2f03a9c6acc33296a5bc35f1bfb82e7b5e10bdf38"
 
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["USER"] = "root"
-                os.environ["HOSTNAME"] = "host1"
                 os.environ["CIME_MODEL"] = "cesm"
-
-                # Need to mock all of these to prevent errors with xml files
-                # just want to ensure `create` calls `set_lookup_value`
-                # correctly.
-                _configure = self.mock.patch(case, "configure")
-                _create_caseroot = self.mock.patch(case, "create_caseroot")
-                _apply_user_mods = self.mock.patch(case, "apply_user_mods")
-                _lock_file = self.mock.patch("CIME.case.case.lock_file")
-                _set_lookup_value = self.mock.patch(case, "set_lookup_value")
 
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
@@ -128,50 +125,56 @@ class TestCase(unittest.TestCase):
                             machine_name="ubuntu-latest")
 
                 # Check that they're all called
-                _configure.assert_called_with(args=["A", "f19_g16_rx1"])
-                _create_caseroot.assert_called()
-                _apply_user_mods.assert_called()
-                _lock_file.assert_called()
+                configure.assert_called_with("A", "f19_g16_rx1",
+                                             machine_name="ubuntu-latest",
+                                             project=None, pecount=None,
+                                             compiler=None, mpilib=None,
+                                             pesfile=None, gridfile=None,
+                                             multi_driver=False, ninst=1,
+                                             test=False, walltime=None,
+                                             queue=None, output_root=None,
+                                             run_unsupported=False, answer=None,
+                                             input_dir=None, driver=None,
+                                             workflowid="default",
+                                             non_local=False,
+                                             extra_machines_dir=None,
+                                             case_group=None)
+                create_caseroot.assert_called()
+                apply_user_mods.assert_called()
+                lock_file.assert_called()
 
-                self.assertTrue(_set_lookup_value.calls[-1]['args'][0] ==
-                                "CASE_HASH")
-                self.assertTrue(_set_lookup_value.calls[-1]['args'][1] ==
-                                expected_first_hash)
+                set_lookup_value.assert_called_with("CASE_HASH",
+                                                    expected_first_hash)
 
-                _set_value = self.mock.patch(case, "set_value",
-                                             ret=utils.Mocker())
+                strftime.return_value = "10:00:00"
+                with mock.patch("CIME.case.case.Case.set_value") as set_value, \
+                        mock.patch("sys.argv", ["/src/create_clone"]):
+                    case.copy("test2", "{}_2".format(tempdir))
 
-                # simulate change
-                self._time_strftime.ret = "10:00:00"
-                self.mock.patch("sys.argv",
-                                ret=[
-                                    "/src/create_clone"
-                                ], is_property=True, update_value_only=True)
+                    set_value.assert_called_with("CASE_HASH",
+                                                expected_second_hash)
 
-                case.copy("test2", "{}_2".format(tempdir))
-
-                self.assertTrue(_set_value.calls[-1]['args'][0] ==
-                                "CASE_HASH")
-                self.assertTrue(_set_value.calls[-1]['args'][1] ==
-                                expected_second_hash)
-
-
-    def test_create(self):
+    @mock.patch("CIME.case.case.Case.read_xml")
+    @mock.patch("sys.argv", [
+        "/src/create_newcase",
+        "--machine",
+        "docker"
+    ])
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("CIME.case.case.lock_file")
+    @mock.patch("CIME.case.case.Case.set_lookup_value")
+    @mock.patch("CIME.case.case.Case.apply_user_mods")
+    @mock.patch("CIME.case.case.Case.create_caseroot")
+    @mock.patch("CIME.case.case.Case.configure")
+    @mock.patch("socket.getfqdn", return_value="host1")
+    @mock.patch("getpass.getuser", return_value="root")
+    def test_create(self, get_user, getfqdn, configure, create_caseroot, # pylint: disable=unused-argument
+                    apply_user_mods, set_lookup_value, lock_file, strftime, # pylint: disable=unused-argument
+                    read_xml): # pylint: disable=unused-argument
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["USER"] = "root"
-                os.environ["HOSTNAME"] = "host1"
                 os.environ["CIME_MODEL"] = "cesm"
-
-                # Need to mock all of these to prevent errors with xml files
-                # just want to ensure `create` calls `set_lookup_value`
-                # correctly.
-                _configure = self.mock.patch(case, 'configure')
-                _create_caseroot = self.mock.patch(case, 'create_caseroot')
-                _apply_user_mods = self.mock.patch(case, 'apply_user_mods')
-                _lock_file = self.mock.patch('CIME.case.case.lock_file')
-                _set_lookup_value = self.mock.patch(case, "set_lookup_value")
 
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
@@ -179,28 +182,32 @@ class TestCase(unittest.TestCase):
                             machine_name="ubuntu-latest")
 
                 # Check that they're all called
-                _configure.assert_called_with(args=["A", "f19_g16_rx1"])
-                _create_caseroot.assert_called()
-                _apply_user_mods.assert_called()
-                _lock_file.assert_called()
+                configure.assert_called_with("A", "f19_g16_rx1",
+                                             machine_name="ubuntu-latest",
+                                             project=None, pecount=None,
+                                             compiler=None, mpilib=None,
+                                             pesfile=None, gridfile=None,
+                                             multi_driver=False, ninst=1,
+                                             test=False, walltime=None,
+                                             queue=None, output_root=None,
+                                             run_unsupported=False, answer=None,
+                                             input_dir=None, driver=None,
+                                             workflowid="default",
+                                             non_local=False,
+                                             extra_machines_dir=None,
+                                             case_group=None)
+                create_caseroot.assert_called()
+                apply_user_mods.assert_called()
+                lock_file.assert_called()
 
-                self.assertTrue(_set_lookup_value.calls[-1]['args'][0] ==
-                                "CASE_HASH")
-                self.assertTrue(_set_lookup_value.calls[-1]['args'][1] ==
-                                "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a")
+                set_lookup_value.assert_called_with("CASE_HASH",
+                                                    "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a")
 
 class TestCase_RecordCmd(unittest.TestCase):
 
     def setUp(self):
         self.srcroot = os.path.abspath(cime_utils.get_cime_root())
-        self.tempdir = utils.TemporaryDirectory()
-
-        self.mock = utils.Mocker()
-        self.mock.patch(Case, "__init__", ret=None)
-        self.mock.patch(Case, "flush", ret=utils.Mocker())
-        # Case.__init__ = utils.Mocker()
-        # Case.flush = utils.Mocker()
-        Case._force_read_only = False # pylint: disable=protected-access
+        self.tempdir = tempfile.TemporaryDirectory()
 
     def assert_calls_match(self, calls, expected):
         self.assertTrue(len(calls) == len(expected), calls)
@@ -208,54 +215,58 @@ class TestCase_RecordCmd(unittest.TestCase):
         for x, y in zip(calls, expected):
             self.assertTrue(x == y, calls)
 
-    def test_init(self):
-        with self.tempdir as tempdir:
-            mock = utils.Mocker() # pylint: disable=redefined-outer-name
-            open_mock = mock.patch(
-                "builtins.open" if sys.version_info.major > 2 else
-                    "__builtin__.open",
-                ret=utils.Mocker())
-            mock.patch("time.strftime", ret="00:00:00")
-            mock.patch("sys.argv", ret=["/src/create_newcase"], is_property=True)
+    @mock.patch("CIME.case.case.Case.__init__", return_value=None)
+    @mock.patch("CIME.case.case.Case.flush")
+    @mock.patch("CIME.case.case.Case.get_value")
+    @mock.patch("CIME.case.case.open", mock.mock_open())
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("sys.argv", ["/src/create_newcase"])
+    def test_init(self, strftime, get_value, flush, init): # pylint: disable=unused-argument
+        Case._force_read_only = False # pylint: disable=protected-access
 
+        mocked_open = mock.mock_open()
+
+        with self.tempdir as tempdir, mock.patch("CIME.case.case.open",
+                                                 mocked_open):
             with Case(tempdir) as case:
-                case.get_value = utils.Mocker(
-                    side_effect=[tempdir, "/src"]
-                )
+                get_value.side_effect = [
+                    tempdir,
+                    "/src"
+                ]
 
                 case.record_cmd(init=True)
 
-        self.assertTrue(open_mock.calls[0]["args"] ==
-                        ("{}/replay.sh".format(tempdir), "a"))
+        mocked_open.assert_called_with(f"{tempdir}/replay.sh", "a")
 
-        expected = [
+        handle = mocked_open()
+
+        handle.writelines.assert_called_with([
             "#!/bin/bash\n\n",
             "set -e\n\n",
             "# Created 00:00:00\n\n",
             "CASEDIR=\"{}\"\n\n".format(tempdir),
             "/src/create_newcase\n\n",
             "cd \"${CASEDIR}\"\n\n",
-        ]
+        ])
 
-        calls = open_mock.ret.method_calls["writelines"][0]["args"][0] # pylint: disable=no-member
+    @mock.patch("CIME.case.case.Case.__init__", return_value=None)
+    @mock.patch("CIME.case.case.Case.flush")
+    @mock.patch("CIME.case.case.Case.get_value")
+    @mock.patch("CIME.case.case.open", mock.mock_open())
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("sys.argv", ["/src/scripts/create_newcase"])
+    def test_sub_relative(self, strftime, get_value, flush, init): # pylint: disable=unused-argument
+        Case._force_read_only = False # pylint: disable=protected-access
+        
+        mocked_open = mock.mock_open()
 
-        self.assert_calls_match(calls, expected)
-
-    def test_sub_relative(self):
-        with self.tempdir as tempdir:
-            mock = utils.Mocker() # pylint: disable=redefined-outer-name
-            open_mock = mock.patch(
-                "builtins.open" if sys.version_info.major > 2 else
-                    "__builtin__.open",
-                ret=utils.Mocker()
-            )
-            mock.patch("time.strftime", ret="00:00:00")
-            mock.patch("sys.argv", ret=["./create_newcase"], is_property=True)
-
+        with self.tempdir as tempdir, mock.patch("CIME.case.case.open",
+                                                 mocked_open):
             with Case(tempdir) as case:
-                case.get_value = utils.Mocker(
-                    side_effect=[tempdir, "/src"]
-                )
+                get_value.side_effect = [
+                    tempdir,
+                    "/src"
+                ]
 
                 case.record_cmd(init=True)
 
@@ -268,23 +279,24 @@ class TestCase_RecordCmd(unittest.TestCase):
             "cd \"${CASEDIR}\"\n\n",
         ]
 
-        calls = open_mock.ret.method_calls["writelines"][0]["args"][0] # pylint: disable=no-member
+        handle = mocked_open()
+        handle.writelines.assert_called_with(expected)
 
-        self.assert_calls_match(calls, expected)
+    @mock.patch("CIME.case.case.Case.__init__", return_value=None)
+    @mock.patch("CIME.case.case.Case.flush")
+    @mock.patch("CIME.case.case.Case.get_value")
+    def test_cmd_arg(self, get_value, flush, init): # pylint: disable=unused-argument
+        Case._force_read_only = False # pylint: disable=protected-access
 
-    def test_cmd_arg(self):
-        with self.tempdir as tempdir:
-            mock = utils.Mocker() # pylint: disable=redefined-outer-name
-            open_mock = mock.patch(
-                "builtins.open" if sys.version_info.major > 2 else
-                    "__builtin__.open",
-                ret=utils.Mocker()
-            )
+        mocked_open = mock.mock_open()
 
+        with self.tempdir as tempdir, mock.patch("CIME.case.case.open",
+                                                 mocked_open):
             with Case(tempdir) as case:
-                case.get_value = utils.Mocker(
-                    side_effect=[tempdir, "/src"]
-                )
+                get_value.side_effect = [
+                    tempdir,
+                    "/src",
+                ]
 
                 case.record_cmd(["/some/custom/command", "arg1"])
 
@@ -292,9 +304,8 @@ class TestCase_RecordCmd(unittest.TestCase):
             "/some/custom/command arg1\n\n",
         ]
 
-        calls = open_mock.ret.method_calls["writelines"][0]["args"][0] # pylint: disable=no-member
-
-        self.assert_calls_match(calls, expected)
+        handle = mocked_open()
+        handle.writelines.assert_called_with(expected)
 
 if __name__ == '__main__':
     unittest.main()
