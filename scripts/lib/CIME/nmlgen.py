@@ -754,12 +754,12 @@ class NamelistGenerator(object):
         for one_file_path in file_path.split(GRID_SEP):
             # NOTE - these are hard-coded here and a better way is to make these extensible
             if one_file_path == 'UNSET' or one_file_path == 'idmap' or one_file_path == 'idmap_ignore':
-                return
+                continue
             if input_pathname == 'abs':
                 # No further mangling needed for absolute paths.
                 # At this point, there are overwrites that should be ignored
                 if not os.path.isabs(one_file_path):
-                    return
+                    continue
                 else:
                     pass
             elif input_pathname.startswith('rel:'):
