@@ -7,8 +7,6 @@ from CIME.case import case_submit
 from CIME.case import Case
 from CIME import utils as cime_utils
 
-from . import utils
-
 class TestCaseSubmit(unittest.TestCase):
 
     def test_check_case(self):
