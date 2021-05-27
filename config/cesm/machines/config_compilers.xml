@@ -1410,8 +1410,14 @@ using a fortran linker.
 </compiler>
 
 <compiler MACH="pleiades-bro">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xCORE-AVX2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1420,12 +1426,19 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-has">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xCORE-AVX2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1434,12 +1447,19 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-ivy">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1448,12 +1468,19 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-san">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1462,7 +1489,8 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="sandiatoss3" COMPILER="intel">

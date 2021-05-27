@@ -5,7 +5,7 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, six
+import glob, os, shutil, math, six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
 from six.moves import input
@@ -80,7 +80,7 @@ class Case(object):
     from CIME.case.preview_namelists import create_dirs, create_namelists
     from CIME.case.check_input_data import check_all_input_data, stage_refcase, check_input_data
 
-    def __init__(self, case_root=None, read_only=True):
+    def __init__(self, case_root=None, read_only=True, record=False):
 
         if case_root is None:
             case_root = os.getcwd()
@@ -96,6 +96,9 @@ class Case(object):
         self._comp_interface = None
 
         self.read_xml()
+
+        if record:
+            self.record_cmd()
 
         # Hold arbitary values. In create_newcase we may set values
         # for xml files that haven't been created yet. We need a place
@@ -265,6 +268,7 @@ class Case(object):
         newcase.set_value("CASEROOT",newcaseroot)
         newcase.set_value("CONTINUE_RUN","FALSE")
         newcase.set_value("RESUBMIT",0)
+        newcase.set_value("CASE_HASH", newcase.new_hash())
 
         # Important, and subtle: Writability should NOT be copied because
         # this allows the copy to be modified without needing a "with" statement
@@ -1636,6 +1640,39 @@ directory, NOT in this subdirectory."""
         else:
             return None
 
+    def record_cmd(self, cmd=None, init=False):
+        lines = []
+        caseroot = self.get_value("CASEROOT")
+        cimeroot = self.get_value("CIMEROOT")
+
+        if cmd is None:
+            cmd = list(sys.argv)
+
+        if init:
+            ctime = time.strftime("%Y-%m-%d %H:%M:%S")
+
+            lines.append("#!/bin/bash\n\n")
+            # stop script on error, prevents `create_newcase` from failing
+            # and continuing to execute commands
+            lines.append("set -e\n\n")
+            lines.append("# Created {}\n\n".format(ctime))
+            lines.append("CASEDIR=\"{}\"\n\n".format(caseroot))
+            lines.append("cd \"${CASEDIR}\"\n\n")
+
+            # Ensure program path is absolute
+            cmd[0] = re.sub("^./", "{}/scripts/".format(cimeroot), cmd[0])
+
+        cmd = " ".join(cmd)
+
+        # Replace instances of caseroot with variable
+        cmd = re.sub(caseroot, "\"${CASEDIR}\"", cmd)
+
+        lines_len = len(lines)
+        lines.insert(lines_len-1 if init else lines_len, "{}\n\n".format(cmd))
+
+        with open(os.path.join(caseroot, "replay.sh"), "a") as fd:
+            fd.writelines(lines)
+
     def create(self, casename, srcroot, compset_name, grid_name,
                user_mods_dir=None, machine_name=None,
                project=None, pecount=None, compiler=None, mpilib=None,
@@ -1650,6 +1687,7 @@ directory, NOT in this subdirectory."""
             self.set_lookup_value("CASE", os.path.basename(casename))
             self.set_lookup_value("CASEROOT", self._caseroot)
             self.set_lookup_value("SRCROOT", srcroot)
+            self.set_lookup_value("CASE_HASH", self.new_hash())
             # if the top level user_mods_dir contains a config_grids.xml file and
             # gridfile was not set on the command line, use it.
             if user_mods_dir:
@@ -1691,6 +1729,18 @@ directory, NOT in this subdirectory."""
                     logger.warning("Leaving broken case dir {}".format(self._caseroot))
 
             raise
+
+    def new_hash(self):
+        """ Creates a hash
+        """
+        args = "".join(sys.argv)
+        ctime = time.strftime("%Y-%m-%d %H:%M:%S")
+        hostname = socket.getfqdn()
+        user = getpass.getuser()
+
+        data = "{}{}{}{}".format(args, ctime, hostname, user)
+
+        return hashlib.sha256(data.encode()).hexdigest()
 
     def is_save_timing_dir_project(self,project):
         """

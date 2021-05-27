@@ -523,10 +523,10 @@
     <type>char</type>
     <values>
       <value lib="kokkos">$CIMEROOT/src/build_scripts/buildlib.kokkos</value>
-      <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
+      <value lib="gptl">$SRCROOT/share/build/buildlib.gptl</value>
       <value lib="pio">$CIMEROOT/src/build_scripts/buildlib.pio</value>
       <value lib="mct">$CIMEROOT/src/build_scripts/buildlib.mct</value>
-      <value lib="csm_share">$CIMEROOT/src/build_scripts/buildlib.csm_share</value>
+      <value lib="csm_share">$SRCROOT/share/build/buildlib.csm_share</value>
       <value lib="mpi-serial">$CIMEROOT/src/build_scripts/buildlib.mpi-serial</value>
       <value lib="cprnc">$CIMEROOT/src/build_scripts/buildlib.cprnc</value>
     </values>
