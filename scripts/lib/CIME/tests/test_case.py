@@ -255,7 +255,7 @@ class TestCase_RecordCmd(unittest.TestCase):
     @mock.patch("sys.argv", ["/src/scripts/create_newcase"])
     def test_sub_relative(self, strftime, get_value, flush, init): # pylint: disable=unused-argument
         Case._force_read_only = False # pylint: disable=protected-access
-        
+
         mocked_open = mock.mock_open()
 
         with self.tempdir as tempdir, mock.patch("CIME.case.case.open",
