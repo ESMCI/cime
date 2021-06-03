@@ -1,10 +1,62 @@
 import os
 import unittest
-import tempfile
 from unittest import mock
+import tempfile
 
+from CIME.case import case_submit
 from CIME.case import Case
 from CIME import utils as cime_utils
+
+class TestCaseSubmit(unittest.TestCase):
+
+    def test_check_case(self):
+        case = mock.MagicMock()
+
+        case_submit.check_case(case, chksum=True)
+
+        case.check_all_input_data.assert_called_with(chksum=True)
+
+    @mock.patch("CIME.case.case_submit.lock_file")
+    def test__submit(self, lock_file): # pylint: disable=unused-argument
+        case = mock.MagicMock()
+
+        case_submit._submit(case, chksum=True) # pylint: disable=protected-access
+
+        case.check_case.assert_called_with(skip_pnl=False, chksum=True)
+
+    @mock.patch("CIME.case.case_submit._submit")
+    @mock.patch("CIME.case.case.Case.initialize_derived_attributes")
+    @mock.patch("CIME.case.case.Case.get_value")
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_submit(self, read_xml, get_value, init, _submit): # pylint: disable=unused-argument
+        with tempfile.TemporaryDirectory() as tempdir:
+            get_value.side_effect = [
+                tempdir,
+                tempdir,
+                True,
+                "baseid",
+                None,
+                True,
+            ]
+
+            with Case(tempdir) as case:
+                case.submit(chksum=True)
+
+            _submit.assert_called_with(
+                case,
+                job=None,
+                no_batch=False,
+                prereq=None,
+                allow_fail=False,
+                resubmit=False,
+                resubmit_immediate=False,
+                skip_pnl=False,
+                mail_user=None,
+                mail_type=None,
+                batch_args=None,
+                workflow=True,
+                chksum=True
+            )
 
 class TestCase(unittest.TestCase):
 
