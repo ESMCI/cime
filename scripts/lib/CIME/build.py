@@ -60,7 +60,11 @@ def xml_to_make_variable(case, varname, cmake=False):
         return ""
     if type(varvalue) == type(True):
         varvalue = stringify_bool(varvalue)
-    return "{}{}=\"{}\" ".format("-D" if cmake else "", varname, varvalue)
+
+    if cmake or type(varvalue) == type(str):
+        return "{}{}=\"{}\" ".format("-D" if cmake else "", varname, varvalue)
+    else:
+        return "{}={} ".format(varname, varvalue)
 
 ###############################################################################
 def uses_kokkos(case):

@@ -200,7 +200,7 @@ using a fortran linker.
   <FFLAGS>
     <!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
        so that these are passed to cmake builds (cmake builds don't use FIXEDFLAGS and FREEFLAGS). -->
-    <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
+    <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none -fallow-argument-mismatch -fallow-invalid-boz </base>
     <append compile_threaded="TRUE"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
          least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
