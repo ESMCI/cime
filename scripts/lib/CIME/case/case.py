@@ -117,6 +117,7 @@ class Case(object):
         self._component_classes = []
         self._component_description = {}
         self._is_env_loaded = False
+        self._loaded_envs = None
 
         # these are user_mods as defined in the compset
         # Command Line user_mods are handled seperately
@@ -1508,8 +1509,12 @@ directory, NOT in this subdirectory."""
                 job = self.get_primary_job()
             os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
             env_module = self.get_env("mach_specific")
-            env_module.load_env(self, job=job, verbose=verbose)
+            self._loaded_envs = env_module.load_env(self, job=job, verbose=verbose)
+            self._loaded_envs.append(("OMP_NUM_THREADS",
+                                      os.environ["OMP_NUM_THREADS"]))
             self._is_env_loaded = True
+
+        return self._loaded_envs
 
     def get_build_threaded(self):
         """
@@ -1784,16 +1789,10 @@ directory, NOT in this subdirectory."""
         for job_id, cmd in job_id_to_cmd:
             write("  FOR JOB: {}".format(job_id))
             write("    ENV:")
-            old_env = set(os.environ.keys())
-            self.load_env(job=job_id, reset=True, verbose=False)
-            new_env = set(os.environ.keys())
+            loaded_envs = self.load_env(job=job_id, reset=True, verbose=False)
 
-            if "OMP_NUM_THREADS" in os.environ:
-                old_env = old_env - {"OMP_NUM_THREADS"}
-                new_env = new_env | {"OMP_NUM_THREADS"}
-
-            for x in sorted(new_env-old_env):
-                write("      Setting Environment {}={}".format(x, os.environ[x]))
+            for name, value in iter(sorted(loaded_envs, key=lambda x: x[0])):
+                write("      Setting Environment {}={}".format(name, value))
 
             write("")
             write("    SUBMIT CMD:")

@@ -115,6 +115,8 @@ class EnvMachSpecific(EnvBase):
 
         self._get_resources_for_case(case)
 
+        return [] if envs_to_set is None else envs_to_set
+
     def _get_resources_for_case(self, case):
         resource_nodes = self.get_children("resource_limits")
         if resource_nodes is not None:
