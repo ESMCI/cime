@@ -1766,3 +1766,43 @@ directory, NOT in this subdirectory."""
         env_workflow = self.get_env("workflow")
         jobs = env_workflow.get_jobs()
         return jobs[0]
+
+    def preview_run(self, write, job):
+        write("CASE INFO:")
+        write("  nodes: {}".format(self.num_nodes))
+        write("  total tasks: {}".format(self.total_tasks))
+        write("  tasks per node: {}".format(self.tasks_per_node))
+        write("  thread count: {}".format(self.thread_count))
+        write("")
+
+        write("BATCH INFO:")
+        if not job:
+            job = self.get_first_job()
+
+        job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+        env_batch = self.get_env('batch')
+        for job_id, cmd in job_id_to_cmd:
+            write("  FOR JOB: {}".format(job_id))
+            write("    ENV:")
+            old_env = set(os.environ.keys())
+            self.load_env(job=job_id, reset=True, verbose=False)
+            new_env = set(os.environ.keys())
+
+            if "OMP_NUM_THREADS" in os.environ:
+                old_env = old_env - {"OMP_NUM_THREADS"}
+                new_env = new_env | {"OMP_NUM_THREADS"}
+
+            for x in sorted(new_env-old_env):
+                write("      Setting Environment {}={}".format(x, os.environ[x]))
+
+            write("")
+            write("    SUBMIT CMD:")
+            write("      {}".format(self.get_resolved_value(cmd)))
+            write("")
+            if job_id in ("case.run", "case.test"):
+                # get_job_overrides must come after the case.load_env since the cmd may use
+                # env vars.
+                overrides = env_batch.get_job_overrides(job_id, self)
+                write("    MPIRUN (job={}):".format(job_id))
+                write ("      {}".format(self.get_resolved_value(overrides["mpirun"])))
+                write("")

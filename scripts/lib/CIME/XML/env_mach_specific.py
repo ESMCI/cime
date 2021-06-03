@@ -254,7 +254,8 @@ class EnvMachSpecific(EnvBase):
                     shell, cmd = env_value.split(" ",1)
                     self._source_shell_file("source "+cmd, shell, verbose=verbose)
                 else:
-                    print("Setting Environment {}={}".format(env_name, env_value))
+                    if verbose:
+                        print("Setting Environment {}={}".format(env_name, env_value))
                     logger_func("Setting Environment {}={}".format(env_name, env_value))
                     os.environ[env_name] = env_value
 
