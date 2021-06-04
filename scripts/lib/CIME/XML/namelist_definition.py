@@ -156,6 +156,10 @@ class NamelistDefinition(EntryID):
     def add_attributes(self, attributes):
         self._attributes = attributes
 
+    def get_attributes(self):
+        """Return this object's attributes dictionary"""
+        return self._attributes
+
     def get_entry_nodes(self):
         return self._entry_nodes
 
