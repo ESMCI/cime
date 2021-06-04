@@ -955,7 +955,7 @@ class Namelist(object):
             if vn:
                 # Make a copy of the list so that any modifications done by the caller
                 # don't modify the internal values.
-                return self._groups[gn][vn].copy()
+                return self._groups[gn][vn][:]
         return ['']
 
     def get_value(self, variable_name):
