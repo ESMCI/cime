@@ -155,7 +155,6 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,   &
 ! !USES:
 
    use water_isotopes, only: wiso_flxoce !subroutine used to calculate water isotope fluxes.
-
    implicit none
 
 ! !INPUT/OUTPUT PARAMETERS:
@@ -406,7 +405,7 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,   &
            psixh  = -5.0_R8*hol*stable + (1.0_R8-stable)*psixhu(xqq)
 
            !--- shift wind speed using old coefficient ---
-           rd   = rdn / (1.0_R8 + rdn/loc_karman*(alz-psimh))
+           rd   = rdn / max(1.0_R8 + rdn/loc_karman*(alz-psimh), 1.e-3_r8)
            u10n = vmag * rd / rdn
 
            !--- update transfer coeffs at 10m and neutral stability ---
@@ -416,7 +415,7 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,   &
                  !(1.0_R8-stable) * chxcdu + stable * chxcds
 
            !--- shift all coeffs to measurement height and stability ---
-           rd = rdn / (1.0_R8 + rdn/loc_karman*(alz-psimh))
+           rd = rdn / max(1.0_R8 + rdn/loc_karman*(alz-psimh), 1.e-3_r8)
            rh = rhn / (1.0_R8 + rhn/loc_karman*(alz-psixh))
            re = ren / (1.0_R8 + ren/loc_karman*(alz-psixh))
 
