@@ -629,6 +629,8 @@ class NamelistGenerator(object):
         have_value = False
         # Check for existing value.
         current_literals = self._namelist.get_variable_value(group, name)
+        if current_literals != [""]:
+            have_value = True
 
         # Check for input argument.
         if value is not None:
