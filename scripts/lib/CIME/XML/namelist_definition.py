@@ -191,10 +191,9 @@ class NamelistDefinition(EntryID):
         if entry_node is None:
             entry_node = self._nodes[vid]
         value = super(NamelistDefinition, self).get_value_match(vid.lower(),attributes=all_attributes, exact_match=exact_match,
-                                                                entry_node=entry_node)
-        if value is None:
-            value = ''
-        else:
+                                                                entry_node=entry_node,
+                                                                replacement_for_none='')
+        if value is not None:
             value =  self._split_defaults_text(value)
 
         return value
@@ -445,4 +444,4 @@ class NamelistDefinition(EntryID):
             all_attributes.update(attribute)
 
         value = self.get_value_match(item.lower(), all_attributes, True)
-        return self._split_defaults_text(value)
+        return value
