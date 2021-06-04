@@ -174,6 +174,9 @@ class NamelistDefinition(EntryID):
         """This function is not implemented."""
         raise TypeError("NamelistDefinition does not support `set_value`.")
 
+    # In contrast to the entry_id version of this method, this version doesn't support the
+    # replacement_for_none argument, because it is hard-coded to ''.
+    # pylint: disable=arguments-differ
     def get_value_match(self, vid, attributes=None, exact_match=True, entry_node=None):
         """Return the default value for the variable named `vid`.
 
@@ -190,6 +193,8 @@ class NamelistDefinition(EntryID):
 
         if entry_node is None:
             entry_node = self._nodes[vid]
+        # NOTE(wjs, 2021-06-04) In the following call, replacement_for_none='' may not
+        # actually be needed, but I'm setting it to maintain some old logic, to be safe.
         value = super(NamelistDefinition, self).get_value_match(vid.lower(),attributes=all_attributes, exact_match=exact_match,
                                                                 entry_node=entry_node,
                                                                 replacement_for_none='')
