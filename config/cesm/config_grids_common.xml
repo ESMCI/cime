@@ -135,6 +135,11 @@
       <map name="GLC2OCN_ICE_RMAPNAME">cpl/gridmaps/gland20km/map_gland20km_to_gx3v7_nnsm_e1000r500_180502.nc</map>
     </gridmap>
 
+    <gridmap ocn_grid="gx1v7" glc_grid="ais8" >
+      <map name="GLC2OCN_LIQ_RMAPNAME">cpl/gridmaps/ais8/map_ais8_to_gx1v7_nn_open_ocean_nnsm_e1000r300_marginal_sea_TOBECREATED.nc</map>
+      <map name="GLC2OCN_ICE_RMAPNAME">cpl/gridmaps/ais8/map_ais8_to_gx1v7_nnsm_e1000r300_TOBECREATED.nc</map>
+    </gridmap>
+
     <!-- ======================================================== -->
     <!-- wav->ocn, ocn->wav, ice->wav -->
     <!-- ======================================================== -->
