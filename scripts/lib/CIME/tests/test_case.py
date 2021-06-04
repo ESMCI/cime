@@ -17,7 +17,9 @@ class TestCaseSubmit(unittest.TestCase):
         case.check_all_input_data.assert_called_with(chksum=True)
 
     @mock.patch("CIME.case.case_submit.lock_file")
-    def test__submit(self, lock_file): # pylint: disable=unused-argument
+    @mock.patch("CIME.case.case_submit.unlock_file")
+    @mock.patch("os.path.basename")
+    def test__submit(self, lock_file, unlock_file, basename): # pylint: disable=unused-argument
         case = mock.MagicMock()
 
         case_submit._submit(case, chksum=True) # pylint: disable=protected-access
