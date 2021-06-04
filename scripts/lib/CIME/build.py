@@ -58,10 +58,10 @@ def xml_to_make_variable(case, varname, cmake=False):
     varvalue = case.get_value(varname)
     if varvalue is None:
         return ""
-    if type(varvalue) == type(True):
+    if isinstance(varvalue, bool):
         varvalue = stringify_bool(varvalue)
 
-    if cmake or type(varvalue) == type(str):
+    if cmake or isinstance(varvalue, str):
         return "{}{}=\"{}\" ".format("-D" if cmake else "", varname, varvalue)
     else:
         return "{}={} ".format(varname, varvalue)
