@@ -25,7 +25,7 @@ def _build_prereq_str(case, prev_job_ids):
 
 def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resubmit=False,
             resubmit_immediate=False, skip_pnl=False, mail_user=None, mail_type=None,
-            batch_args=None, workflow=True):
+            batch_args=None, workflow=True, chksum=False):
     if job is None:
         job = case.get_first_job()
 
@@ -130,7 +130,7 @@ manual edits to these file will be lost!
         unlock_file(os.path.basename(env_batch.filename))
         lock_file(os.path.basename(env_batch.filename))
 
-        case.check_case(skip_pnl=skip_pnl)
+        case.check_case(skip_pnl=skip_pnl, chksum=chksum)
         if job == case.get_primary_job():
             case.check_DA_settings()
             if case.get_value("MACH") == "mira":
@@ -162,7 +162,7 @@ manual edits to these file will be lost!
 
 def submit(self, job=None, no_batch=False, prereq=None, allow_fail=False, resubmit=False,
            resubmit_immediate=False, skip_pnl=False, mail_user=None, mail_type=None,
-           batch_args=None, workflow=True):
+           batch_args=None, workflow=True, chksum=False):
     if resubmit_immediate and self.get_value("MACH") in ['mira', 'cetus']:
         logger.warning("resubmit_immediate does not work on Mira/Cetus, submitting normally")
         resubmit_immediate = False
@@ -202,7 +202,8 @@ def submit(self, job=None, no_batch=False, prereq=None, allow_fail=False, resubm
                                   allow_fail=allow_fail, resubmit=resubmit,
                                   resubmit_immediate=resubmit_immediate, skip_pnl=skip_pnl,
                                   mail_user=mail_user, mail_type=mail_type,
-                                  batch_args=batch_args, workflow=workflow)
+                                  batch_args=batch_args, workflow=workflow,
+                                  chksum=chksum)
         run_and_log_case_status(functor, "case.submit", caseroot=caseroot,
                                 custom_success_msg_functor=lambda x: x.split(":")[-1],
                                 is_batch=is_batch)
@@ -215,12 +216,12 @@ def submit(self, job=None, no_batch=False, prereq=None, allow_fail=False, resubm
 
         raise
 
-def check_case(self, skip_pnl=False):
+def check_case(self, skip_pnl=False, chksum=False):
     self.check_lockedfiles()
     if not skip_pnl:
         self.create_namelists() # Must be called before check_all_input_data
     logger.info("Checking that inputdata is available as part of case submission")
-    self.check_all_input_data()
+    self.check_all_input_data(chksum=chksum)
 
     if self.get_value('COMP_WAV') == 'ww':
         # the ww3 buildnml has dependencies on inputdata so we must run it again
