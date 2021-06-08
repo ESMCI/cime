@@ -1511,7 +1511,10 @@ directory, NOT in this subdirectory."""
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
         if ngpus_per_node > 0:
-            # generate a wrapper script under the case dir to set the device id for each MPI rank
+            # JS added on 06/08.2021:
+            #    1. generate a wrapper script under the case dir to set the device id for each MPI rank
+            #    2. this setting is tested on Casper only and may not work properly on other machines
+            #    4. need to be revisited in the future for a more adaptable implementation
             casedir = self.get_value("CASEROOT")
             with open (casedir+'/set_device_rank.sh', 'w+') as f:
                 f.write('#!/bin/bash\n')
