@@ -3015,7 +3015,7 @@
  <entry id="MAX_GPUS_PER_NODE">
    <type>integer</type>
    <default_value>0</default_value>
-   <group>mach_pes_last</group>
+   <group>mach_pes</group>
    <file>env_mach_pes.xml</file>
    <desc>maximum number of GPUs allowed per node </desc>
  </entry>
