@@ -109,7 +109,6 @@
     <values>
       <value component="datm" comp_interface="nuopc" >$SRCROOT/components/cdeps/datm</value>
       <value component="datm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/datm</value>
-      <value component="satm" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm</value>
       <value component="satm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/satm</value>
       <value component="xatm" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
       <value component="xatm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
@@ -148,7 +147,6 @@
       <value component="docn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/docn</value>
       <value component="docn"  comp_interface="nuopc" >$SRCROOT/components/cdeps/docn</value>
       <value component="socn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/socn</value>
-      <value component="socn"  comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/socn</value>
       <value component="xocn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
       <value component="xocn"  comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
     </values>
@@ -166,7 +164,6 @@
       <value component="dwav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dwav</value>
       <value component="dwav" comp_interface="nuopc" >$SRCROOT/components/cdeps/dwav</value>
       <value component="swav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/swav</value>
-      <value component="swav" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/swav</value>
       <value component="xwav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
       <value component="xwav" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
     </values>
@@ -183,7 +180,6 @@
       <value component="cism"                        >$SRCROOT/components/cism/</value>
       <value component="dglc"                        >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dglc</value>
       <value component="sglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sglc</value>
-      <value component="sglc" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
       <value component="xglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
       <value component="xglc" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
     </values>
@@ -202,7 +198,6 @@
       <value component="dice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dice</value>
       <value component="dice" comp_interface="nuopc" >$SRCROOT/components/cdeps/dice</value>
       <value component="sice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sice</value>
-      <value component="sice" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sice</value>
       <value component="xice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xice</value>
       <value component="xice" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
     </values>
@@ -222,7 +217,6 @@
       <value component="drof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/drof</value>
       <value component="drof" comp_interface="nuopc" >$SRCROOT/components/cdeps/drof</value>
       <value component="srof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/srof</value>
-      <value component="srof" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/srof</value>
       <value component="xrof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
       <value component="xrof" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
     </values>
@@ -240,7 +234,6 @@
       <value component="dlnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dlnd</value>
       <value component="dlnd" comp_interface="nuopc" >$SRCROOT/components/cdeps/dlnd</value>
       <value component="slnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/slnd</value>
-      <value component="slnd" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/slnd</value>
       <value component="xlnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
       <value component="xlnd" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
     </values>
@@ -255,7 +248,6 @@
     <default_value>unset</default_value>
     <values>
       <value component="siac" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/siac</value>
-      <value component="siac" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/siac</value>
       <value component="xiac" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
       <value component="xiac" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
     </values>
@@ -272,7 +264,6 @@
       <value component="desp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/desp</value>
       <value component="desp" comp_interface="nuopc" >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/desp</value>
       <value component="sesp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sesp</value>
-      <value component="sesp" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sesp</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
