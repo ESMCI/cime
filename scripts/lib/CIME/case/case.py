@@ -1028,10 +1028,10 @@ class Case(object):
             dmax = machobj.get_value(name,{'compiler':compiler})
             if not dmax:
                 dmax = machobj.get_value(name)
-            # set MAX_GPUS_PER_NODE to 0 for machine that does not have GPUs
-            if name == "MAX_GPUS_PER_NODE" and not dmax:
-                dmax = 0 
-            self.set_value(name, dmax)
+            if dmax:
+                self.set_value(name, dmax)
+            else:
+                logger.warning("Variable {} not defined for machine {}".format(name, machine_name))
 
         machdir = machobj.get_machines_dir()
         self.set_value("MACHDIR", machdir)
@@ -1128,8 +1128,8 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # sanity check: when use pgi-gpu and nvhpc-gpu compiler, we must have 
-        #               at least one gpu per node available 
+        # sanity check: when use pgi-gpu and nvhpc-gpu compiler, we must have
+        #               at least one gpu per node available
         if compiler in ["pgi-gpu", "nvhpc-gpu"]:
             expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
         else:
@@ -1139,12 +1139,12 @@ class Case(object):
         #    - reset to 0 if the command line argument is negative
         #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if ngpus_per_node >= 0:
-            self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
-        else:
+        if max_gpus_per_node:
+            if ngpus_per_node >= 0:
+                self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
             self.set_value("NGPUS_PER_NODE", 0)
-        self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
- 
+            self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+
         self.initialize_derived_attributes()
 
         #--------------------------------------------
