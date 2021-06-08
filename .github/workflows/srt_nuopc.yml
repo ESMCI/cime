@@ -6,9 +6,9 @@ name: nuopc scripts regression tests
 # events but only for the master branch
 on:
   push:
-    branches: [ master, maint-5.6 ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, maint-5.6 ]
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -101,7 +101,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/pnetcdf
-          key: ${{ runner.os }}-nuopc-${{ env.PNETCDF_VERSION}}-pnetcdf-redo
+          key: ${{ runner.os }}-${{ env.PNETCDF_VERSION}}-pnetcdf
+
 
       - name: pnetcdf build
         if: steps.cache-pnetcdf.outputs.cache-hit != 'true'
