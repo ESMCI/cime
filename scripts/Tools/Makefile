@@ -653,7 +653,10 @@ else
   PIOLIB = $(PIO_LIBDIR)/libpio.a
   PIOLIBNAME = -lpio
 endif
-#endif
+
+MCTLIBS = $(MCT_LIBDIR)/libmct.a $(MCT_LIBDIR)/libmpeu.a
+
+GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
 ifneq ("$(SRCROOT)/components/cpl7",)
   ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib -lcsm_share_cpl7 -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
