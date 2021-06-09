@@ -74,6 +74,9 @@ def parse_command_line(args, description):
     parser.add_argument("-a", "--batch-args",
                         help="Used to pass additional arguments to batch system.")
 
+    parser.add_argument("--chksum", action="store_true",
+                        help="Verifies input data checksums.")
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     CIME.utils.resolve_mail_type_args(args)
@@ -90,13 +93,13 @@ def parse_command_line(args, description):
 
     return (args.caseroot, job, args.no_batch, args.prereq, args.prereq_allow_failure,
             args.resubmit, args.resubmit_immediate, args.skip_preview_namelist, args.mail_user,
-            args.mail_type, args.batch_args, workflow)
+            args.mail_type, args.batch_args, workflow, args.chksum)
 
 ###############################################################################
 def _main_func(description, test_args=False):
 ###############################################################################
     caseroot, job, no_batch, prereq, allow_fail, resubmit, resubmit_immediate, skip_pnl, \
-        mail_user, mail_type, batch_args, workflow = parse_command_line(sys.argv, description)
+        mail_user, mail_type, batch_args, workflow, chksum = parse_command_line(sys.argv, description)
 
     # save these options to a hidden file for use during resubmit
     config_file = os.path.join(caseroot,".submit_options")
@@ -120,7 +123,8 @@ def _main_func(description, test_args=False):
         with Case(caseroot, read_only=False, record=True) as case:
             case.submit(job=job, no_batch=no_batch, prereq=prereq, allow_fail=allow_fail,
                         resubmit=resubmit, resubmit_immediate=resubmit_immediate, skip_pnl=skip_pnl,
-                        mail_user=mail_user, mail_type=mail_type, batch_args=batch_args, workflow=workflow)
+                        mail_user=mail_user, mail_type=mail_type,
+                        batch_args=batch_args, workflow=workflow, chksum=chksum)
 
 if __name__ == "__main__":
     _main_func(__doc__)

@@ -45,6 +45,31 @@ class Mocker:
     def ret(self):
         return self._ret
 
+    @ret.setter
+    def ret(self, value):
+        self._ret = value
+
+    def assert_called(self):
+        assert len(self.calls) > 0
+
+    def assert_called_with(self, i=None, args=None, kwargs=None):
+        if i is None:
+            i = 0
+
+        call = self.calls[i]
+
+        if args is not None:
+            _call_args = set(call['args'])
+            _exp_args = set(args)
+            assert _exp_args <= _call_args, "Got {} missing {}".format(
+                _call_args, _exp_args-_call_args)
+
+        if kwargs is not None:
+            call_kwargs = call['kwargs']
+
+            for x, y in kwargs.items():
+                assert call_kwargs[x] == y, "Missing {}".format(x)
+
     def __getattr__(self, name):
         if name in self._method_calls:
             new_method = self._method_calls[name]
@@ -81,19 +106,22 @@ class Mocker:
             else:
                 setattr(module, method, m)
 
-    def patch(self, module, method=None, ret=None, is_property=False):
+    def patch(self, module, method=None, ret=None, is_property=False,
+              update_value_only=False):
         rv = None
         if isinstance(module, str):
             x = module.split('.')
             main = '.'.join(x[:-1])
-            self._orig.append((getattr(sys.modules[main], x[-1]), main, x[-1]))
+            if not update_value_only:
+                self._orig.append((getattr(sys.modules[main], x[-1]), main, x[-1]))
             if is_property:
                 setattr(sys.modules[main], x[-1], ret)
             else:
                 rv = Mocker(ret, cmd=x[-1])
                 setattr(sys.modules[main], x[-1], rv)
         elif method != None:
-            self._orig.append((getattr(module, method), module, method))
+            if not update_value_only:
+                self._orig.append((getattr(module, method), module, method))
             rv = Mocker(ret)
             setattr(module, method, rv)
         else:

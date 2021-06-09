@@ -482,6 +482,22 @@
       <mask>gx1v7</mask>
     </model_grid>
 
+    <model_grid alias="f09_g17_ais8" compset="_CISM">
+      <grid name="atm">0.9x1.25</grid>
+      <grid name="lnd">0.9x1.25</grid>
+      <grid name="ocnice">gx1v7</grid>
+      <grid name="glc">ais8</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
+    <model_grid alias="f09_g17_ais8gris4" compset="_CISM">
+      <grid name="atm">0.9x1.25</grid>
+      <grid name="lnd">0.9x1.25</grid>
+      <grid name="ocnice">gx1v7</grid>
+      <grid name="glc">ais8:gris4</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
     <model_grid alias="f09_g17_gris20" compset="_CISM">
       <grid name="atm">0.9x1.25</grid>
       <grid name="lnd">0.9x1.25</grid>
@@ -1860,6 +1876,12 @@
       <nx>416</nx> <ny>704</ny>
       <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/greenland_4km_epsg3413_c170414_ESMFmesh_c20190729.nc</mesh>
       <desc>4-km Greenland grid, for use with the glissade dycore</desc>
+    </domain>
+
+    <domain name="ais8">
+      <nx>704</nx> <ny>576</ny>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/antarctica_8km_epsg3031_ESMFmesh_c201222.nc</mesh>
+      <desc>8-km Antarctica grid</desc>
     </domain>
 
     <!-- ======================================================== -->
