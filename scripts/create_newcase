@@ -156,7 +156,7 @@ def parse_command_line(args, cimeroot, description):
 
     parser.add_argument("--case-group", help="Add this case to a case group")
 
-    parser.add_argument("--ngpus_per_node", default=0, type=int,
+    parser.add_argument("--ngpus-per-node", default=0, type=int,
                         help="Specify number of GPUs used for simulation. ")
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
