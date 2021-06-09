@@ -13,6 +13,7 @@ from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, set_model
 from CIME.utils                     import get_project, get_charge_account, check_name
 from CIME.utils                     import get_current_commit, safe_copy, get_cime_default_driver
+from CIME.utils                     import transform_vars
 from CIME.locked_files              import LOCKED_DIR, lock_file
 from CIME.XML.machines              import Machines
 from CIME.XML.pes                   import Pes
@@ -1514,20 +1515,14 @@ directory, NOT in this subdirectory."""
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
         if ngpus_per_node > 0:
-            # JS added on 06/08.2021:
-            #    1. generate a wrapper script under the case dir to set the device id for each MPI rank
-            #    2. this setting is tested on Casper only and may not work properly on other machines
-            #    4. need to be revisited in the future for a more adaptable implementation
-            casedir = self.get_value("CASEROOT")
-            with open (casedir+'/set_device_rank.sh', 'w+') as f:
-                f.write('#!/bin/bash\n')
-                f.write('unset CUDA_VISIBLE_DEVICES\n')
-                f.write('let dev_id=$OMPI_COMM_WORLD_LOCAL_RANK%'+str(ngpus_per_node)+'\n')
-                f.write('export ACC_DEVICE_NUM=$dev_id\n')
-                f.write('export CUDA_VISIBLE_DEVICES=$dev_id\n')
-                f.write('exec $*')
-            os.system("chmod +x "+casedir+'/set_device_rank.sh')
-            mpi_arg_string = mpi_arg_string + " " + casedir + '/set_device_rank.sh '
+            # JS added on 06/09/2021:
+            #    1. make the wrapper script that sets the device id for each MPI rank executable
+            #    2. this setting is tested on Casper only and may not work on other machines
+            #    3. need to be revisited in the future for a more adaptable implementation
+            rundir = self.get_value("RUNDIR")
+            output_name = rundir+'/set_device_rank.sh'
+            os.system("chmod +x "+output_name)
+            mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
         return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)
 
