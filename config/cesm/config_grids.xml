@@ -275,6 +275,15 @@
       <mask>gx1v7</mask>
     </model_grid>
 
+    <model_grid alias="TL319_g17_wg17" compset="DROF%JRA">
+      <grid name="atm">TL319</grid>
+      <grid name="lnd">TL319</grid>
+      <grid name="ocnice">gx1v7</grid>
+      <grid name="rof">JRA025v2</grid>
+      <grid name="wav">gx1v7</grid>
+      <mask>gx1v7</mask>
+    </model_grid>
+
     <model_grid alias="TL319_g17" not_compset="_CAM">
       <grid name="atm">TL319</grid>
       <grid name="lnd">TL319</grid>
