@@ -125,10 +125,10 @@ using a fortran linker.
     <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
     <append compile_threaded="true"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
-         least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
-         7.1.0), gfortran's isnan (which is called in cime via the
-         CPRGNU-specific shr_infnan_isnan) causes a floating point exception
-         when called on a signaling NaN. -->
+	 least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
+	 7.1.0), gfortran's isnan (which is called in cime via the
+	 CPRGNU-specific shr_infnan_isnan) causes a floating point exception
+	 when called on a signaling NaN. -->
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </FFLAGS>
@@ -460,6 +460,65 @@ using a fortran linker.
   </FFLAGS>
 </compiler>
 
+<compiler MACH="aleph" COMPILER="intel">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -xCORE-AVX2 </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -xCORE-AVX2 </append>
+  </FFLAGS>
+  <SLIBS>
+    <append> -L$(NETCDF_DIR) -lnetcdff -Wl,--as-needed,-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf </append>
+  </SLIBS>
+  <CPPDEFS>
+    <append MODEL="gptl"> -DHAVE_PAPI -DHAVE_SLASHPROC </append>
+  </CPPDEFS>
+  <LDFLAGS>
+    <append>-mkl </append>
+  </LDFLAGS>
+</compiler>
+
+<compiler MACH="athena">
+  <CPPDEFS>
+    <!-- these flags enable nano timers -->
+    <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+  <AR>xiar</AR>
+  <ARFLAGS>
+    <base>cru</base>
+  </ARFLAGS>
+</compiler>
+
+<compiler MACH="athena" COMPILER="intel">
+  <CFLAGS>
+    <append>  -xHost </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DINTEL_MKL -DHAVE_SSE2 </append>
+  </CPPDEFS>
+  <FFLAGS>
+    <append>  -xHost </append>
+  </FFLAGS>
+  <FFLAGS>
+    <append MODEL="nemo"> $(FC_AUTO_R8) -O3 -assume norealloc_lhs </append>
+  </FFLAGS>
+  <SLIBS>
+    <append> $SHELL{${NETCDF_PATH}/bin/nc-config --flibs}</append>
+  </SLIBS>
+  <MPICXX MPILIB="mpich2">mpiicpc</MPICXX>
+  <MPICC MPILIB="mpich2">mpiicc</MPICC>
+  <MPIFC MPILIB="mpich2">mpiifort</MPIFC>
+  <SCC>icc</SCC>
+  <SFC>ifort</SFC>
+  <TRILINOS_PATH MPILIB="mpich2">$ENV{TRILINOS_PATH}</TRILINOS_PATH>
+</compiler>
+
 <compiler MACH="bluewaters">
   <CPPDEFS>
     <append MODEL="gptl"> -DHAVE_PAPI </append>
@@ -490,6 +549,16 @@ using a fortran linker.
     <append> -nofma </append>
   </FFLAGS>
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+</compiler>
+
+
+<compiler MACH="comet" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NETCDFHOME}</NETCDF_PATH>
+  <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
+  <SLIBS>
+    <append> -L$ENV{NETCDFHOME}/lib -lnetcdff -lnetcdf </append>
+    <append MPILIB="mvapich"> -L$ENV{PNETCDF_PATH}/lib -lpnetcdf</append>
+  </SLIBS>
 </compiler>
 
 <compiler MACH="daint" COMPILER="pgi">
@@ -610,7 +679,7 @@ using a fortran linker.
     <append> -L$(NETCDF_DIR) -lnetcdff -Wl,--as-needed,-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf </append>
   </SLIBS>
     <CPPDEFS>
-    <append MODEL="gptl"> -DHAVE_PAPI -DHAVE_SLASHPROC </append>
+    <append MODEL="gptl"> -DHAVE_SLASHPROC </append>
   </CPPDEFS>
   <LDFLAGS>
     <append>-mkl </append>
@@ -804,6 +873,28 @@ using a fortran linker.
   </FFLAGS>
 </compiler>
 
+<compiler MACH="grace" COMPILER="intel">
+  <CPPDEFS>
+    <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <MPIFC>mpiifort</MPIFC>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <SFC>ifort</SFC>
+  <SCC>icc</SCC>
+  <SCXX>icpc</SCXX>
+  <NETCDF_PATH>/scratch/group/ihesp/software/share/netcdf-c-4.7.4/install2019b</NETCDF_PATH>
+  <NETCDF_C_PATH>/scratch/group/ihesp/software/share/netcdf-c-4.7.4/install2019b</NETCDF_C_PATH>
+  <NETCDF_FORTRAN_PATH>/scratch/group/ihesp/software/share/netcdf-fortran-4.5.3/install2019b</NETCDF_FORTRAN_PATH>
+  <PNETCDF_PATH>/scratch/group/ihesp/software/share/pnetcdf-1.12.1/install2019b</PNETCDF_PATH>
+  <SLIBS>
+    <append>-L$(NETCDF_C_PATH)/lib -Wl,-rpath,$(NETCDF_PATH)/lib -lnetcdf</append>
+    <append>-L$(NETCDF_FORTRAN_PATH)/lib -Wl,-rpath,$(NETCDF_FORTRAN_PATH)/lib -lnetcdff</append>
+    <append>-L$(PNETCDF_PATH)/lib -Wl,-rpath,$(PNETCDF_PATH)/lib -lpnetcdf</append>
+  </SLIBS>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+</compiler>
+
 <compiler MACH="hobart">
   <CPPDEFS>
     <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
@@ -826,6 +917,10 @@ using a fortran linker.
   <SLIBS>
     <append>-L$NETCDF_PATH/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="izumi" COMPILER="intel">
+  <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="false">/fs/cgd/csm/tools/pFUnit/pFUnit3.3.3_izumi_Intel19.0.1_noMPI_noOpenMP</PFUNIT_PATH>
 </compiler>
 
 <compiler MACH="hobart" COMPILER="intel">
@@ -890,7 +985,7 @@ using a fortran linker.
 <compiler MACH="homebrew" COMPILER="gnu">
   <LDFLAGS>
     <!-- These LDFLAGS provide lapack and blas support on a Mac. This
-         may require installation of the Apple Developer Tools. -->
+	 may require installation of the Apple Developer Tools. -->
     <append> -framework Accelerate </append>
   </LDFLAGS>
 </compiler>
@@ -1191,6 +1286,55 @@ using a fortran linker.
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -L$(NETCDF_DIR)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF_DIR)/lib </append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="ubuntu-latest">
+  <SLIBS>
+    <append>-L$(NETCDF)/lib -lnetcdff -L$(NETCDF)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF)/lib</append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="zeus">
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <NETCDF_PATH>$ENV{NETCDF}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+  <CPPDEFS>
+    <!-- these flags enable nano timers -->
+    <append> -DNO_R16 -DHAVE_NANOTIME </append>
+  </CPPDEFS>
+  <FFLAGS>
+    <append MODEL="nemo"> $(FC_AUTO_R8) -O3 -assume norealloc_lhs </append>
+  </FFLAGS>
+  <SLIBS>
+    <append> $SHELL{${NETCDF_PATH}/bin/nc-config --flibs}</append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="zeus" COMPILER="intel">
+  <AR>xiar</AR>
+  <ARFLAGS>
+    <base>cru</base>
+  </ARFLAGS>
+  <FFLAGS>
+    <append MPILIB="impi">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="mpi-serial"> -mcmodel medium </append>
+    <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+  </FFLAGS>
+  <CFLAGS>
+    <append MPILIB="impi">  -mkl=cluster -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+    <append MPILIB="mpi-serial">  -mkl -xSKYLAKE-AVX512 -qopt-zmm-usage=high -no-fma </append>
+  </CFLAGS>
+  <LDFLAGS>
+    <append MPILIB="impi">  -mkl=cluster </append>
+    <append MPILIB="mpi-serial">  -mkl -lstdc++ </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append MPILIB="impi">  -lstdc++ </append>
+    <append MPILIB="mpi-serial">  -lstdc++ </append>
+  </SLIBS>
+  <MPICC>mpiicc</MPICC>
+  <MPICXX>mpiicpc</MPICXX>
+  <MPIFC>mpiifort</MPIFC>
 </compiler>
 
 <compiler MACH="userdefined">

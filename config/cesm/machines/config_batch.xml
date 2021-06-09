@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<config_batch version="2.0">
+<config_batch version="2.1">
   <!--
      File:    config_batch.xml
      Purpose: abstract out the parts of run scripts that are different, and use this configuration to
@@ -101,6 +101,7 @@
     <batch_submit>bsub</batch_submit>
     <batch_cancel>bkill</batch_cancel>
     <batch_redirect>&lt;</batch_redirect>
+    <batch_env> </batch_env>
     <batch_directive>#BSUB</batch_directive>
     <jobid_pattern>&lt;(\d+)&gt;</jobid_pattern>
     <depend_string> -w 'done(jobid)'</depend_string>
@@ -139,7 +140,7 @@
       <arg flag="-A" name="$PROJECT"/>
     </submit_args>
     <directives>
-      <directive> -N {{ job_id }}</directive>
+      <directive>-N {{ job_id }}</directive>
       <directive default="n"> -r {{ rerunnable }} </directive>
       <!-- <directive> -j oe {{ job_id }} </directive> -->
       <directive> -j oe </directive>
@@ -164,8 +165,37 @@
       <directive> --nodes={{ num_nodes }}</directive>
       <directive> --ntasks-per-node={{ tasks_per_node }}</directive>
       <directive> --output={{ job_id }}   </directive>
-      <directive> --exclusive                        </directive>
     </directives>
+  </batch_system>
+
+  <batch_system MACH="aleph" type="pbs" >
+    <directives>
+      <directive>-l nodes={{ num_nodes }}</directive>
+      <directive>-q iccp</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="24:00:00" default="true" >iccp</queue>
+    </queues>
+  </batch_system>
+
+  <!-- athena is lsf -->
+  <batch_system MACH="athena" type="lsf">
+    <batch_env>none</batch_env>
+    <submit_args>
+      <arg flag="-q" name="$JOB_QUEUE"/>
+      <arg flag="-W" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-P" name="$PROJECT"/>
+    </submit_args>
+    <directives>
+      <directive                       > -R "span[ptile={{ tasks_per_node }}]"</directive>
+      <directive                       > -N  </directive>
+      <directive default="poe"         > -a {{ poe }} </directive>
+    </directives>
+    <queues>
+      <queue walltimemin="00:00" walltimemax="02:00">poe_short</queue>
+      <queue walltimemin="02:00" walltimemax="04:00" default="true">poe_medium</queue>
+      <queue walltimemin="04:00" walltimemax="08:00">poe_long</queue>
+    </queues>
   </batch_system>
 
   <!-- bluewaters is PBS -->
@@ -206,10 +236,23 @@
     <unknown_queue_directives>regular</unknown_queue_directives>
 
     <queues>
-      <queue walltimemax="12:00" nodemin="1" nodemax="4032">regular</queue>
-      <queue walltimemax="12:00" nodemin="1" nodemax="4032">premium</queue>
-      <queue default="true" walltimemax="06:00" jobmin="1" jobmax="18">share</queue>
-      <queue walltimemax="12:00" nodemin="1" nodemax="4032">economy</queue>
+      <queue walltimemax="12:00:00" nodemin="1" nodemax="4032">regular</queue>
+      <queue walltimemax="12:00:00" nodemin="1" nodemax="4032">premium</queue>
+      <queue default="true" walltimemax="06:00:00" jobmin="1" jobmax="18">share</queue>
+      <queue walltimemax="12:00:00" nodemin="1" nodemax="4032">economy</queue>
+    </queues>
+  </batch_system>
+
+  <batch_system type="slurm" MACH="comet">
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <queues>
+      <queue walltimemax="48:00:00" nodemin="1" nodemax="72">compute</queue>
+      <queue default="true" walltimemax="48:00:00" jobmin="1" jobmax="1">shared</queue>
+      <queue walltimemax="00:30:00" nodemin="1" nodemax="2">debug</queue>
     </queues>
   </batch_system>
 
@@ -338,6 +381,23 @@
     <queues>
       <queue walltimemax="01:00:00" nodemin="1" nodemax="35">debug</queue>
       <queue walltimemax="24:00:00" nodemin="861" nodemax="4166" default="true">batch</queue>
+    </queues>
+  </batch_system>
+
+  <batch_system MACH="grace" type="slurm" >
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <directives>
+      <directive> --mem=360GB </directive>
+    </directives>
+    <queues>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="32" default="true">short</queue>
+      <queue walltimemax="24:00:00" nodemin="1" nodemax="128">medium</queue>
+      <queue walltimemax="168:00:00" nodemin="1" nodemax="64" >long</queue>
+      <queue walltimemax="504:00:00" nodemin="1" nodemax="32" >xlong</queue>
     </queues>
   </batch_system>
 
@@ -542,24 +602,20 @@
     </queues>
   </batch_system>
 
-  <batch_jobs>
-    <!-- order matters, with no-batch jobs will be run in the order listed here -->
-    <job name="case.run">
-      <template>template.case.run</template>
-      <prereq>$BUILD_COMPLETE and not $TEST</prereq>
-    </job>
-    <job name="case.test">
-      <template>template.case.test</template>
-      <prereq>$BUILD_COMPLETE and $TEST</prereq>
-    </job>
-    <job name="case.st_archive">
-      <template>template.st_archive</template>
-      <task_count>1</task_count>
-      <walltime>0:20:00</walltime>
-      <!-- If DOUT_S is true and case.run (or case.test) exits successfully then run st_archive-->
-      <dependency>case.run or case.test</dependency>
-      <prereq>$DOUT_S</prereq>
-    </job>
-  </batch_jobs>
-
+  <batch_system MACH="zeus" type="lsf">
+    <batch_env>-env</batch_env>
+    <submit_args>
+      <arg flag="-q" name="$JOB_QUEUE"/>
+      <arg flag="-W" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-P" name="$PROJECT"/>
+    </submit_args>
+    <directives>
+      <directive                       > -R "span[ptile={{ tasks_per_node }}]"</directive>
+    </directives>
+    <queues>
+      <queue walltimemin="00:00" walltimemax="02:00" default="true">p_short</queue>
+      <queue walltimemin="02:00" walltimemax="04:00">p_medium</queue>
+      <queue walltimemin="04:00" walltimemax="08:00">p_long</queue>
+    </queues>
+  </batch_system>
 </config_batch>
