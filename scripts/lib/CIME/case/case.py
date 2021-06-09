@@ -1514,7 +1514,7 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if ngpus_per_node > 0:
+        if ngpus_per_node > 0 and self._cime_model != "e3sm":
             # JS added on 06/09/2021:
             #    1. make the wrapper script that sets the device id for each MPI rank executable
             #    2. this setting is tested on Casper only and may not work on other machines
