@@ -123,7 +123,7 @@ class TestScheduler(object):
                  allow_baseline_overwrite=False, output_root=None,
                  force_procs=None, force_threads=None, mpilib=None,
                  input_dir=None, pesfile=None, mail_user=None, mail_type=None, allow_pnl=False,
-                 non_local=False, single_exe=False, workflow=None):
+                 non_local=False, single_exe=False, workflow=None, chksum=False):
     ###########################################################################
         self._cime_root       = get_cime_root()
         self._cime_model      = get_model()
@@ -317,6 +317,7 @@ class TestScheduler(object):
             for test_name in build_group:
                 logger.debug("{}{}".format("  " if test_name == build_group[0] else "    ", test_name))
 
+        self._chksum = chksum
         # By the end of this constructor, this program should never hard abort,
         # instead, errors will be placed in the TestStatus files for the various
         # tests cases
@@ -798,6 +799,8 @@ class TestScheduler(object):
                 cmd += " --mail-user={}".format(self._mail_user)
             if self._mail_type:
                 cmd += " -M={}".format(",".join(self._mail_type))
+            if self._chksum:
+                cmd += " --chksum"
 
             return self._shell_cmd_for_phase(test, cmd, RUN_PHASE, from_dir=test_dir)
 
