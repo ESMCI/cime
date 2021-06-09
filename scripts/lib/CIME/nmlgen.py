@@ -286,8 +286,12 @@ class NamelistGenerator(object):
         return default
 
     def get_streams(self):
-        """Get a list of all streams used for the current data model  mode."""
-        return self.get_value("streams")
+        """Get a list of all streams used for the current data model mode, possibly modified in user_nl_dxxx."""
+        streams = self.get_value("streams")
+        if not streams[0]:
+            streams = self.get_default("streamslist")
+
+        return streams
 
     def clean_streams(self):
         for variable in self._streams_variables:
