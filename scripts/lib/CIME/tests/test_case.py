@@ -138,7 +138,8 @@ class TestCase(unittest.TestCase):
                                              workflowid="default",
                                              non_local=False,
                                              extra_machines_dir=None,
-                                             case_group=None)
+                                             case_group=None
+                                             ngpus_per_node=0)
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()
                 lock_file.assert_called()
@@ -195,7 +196,8 @@ class TestCase(unittest.TestCase):
                                              workflowid="default",
                                              non_local=False,
                                              extra_machines_dir=None,
-                                             case_group=None)
+                                             case_group=None,
+                                             ngpus_per_node=0)
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()
                 lock_file.assert_called()
