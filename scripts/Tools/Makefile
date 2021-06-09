@@ -901,13 +901,19 @@ $(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 
 ifneq ($(findstring csm_share,$(MODEL)),csm_share)
   $(OBJS):  $(CSMSHARELIB)
+else ifeq ($(MODEL),csm_share_cpl7)
+  complib: install_lib_cpl7
 else
   complib: install_lib
 endif
 
 install_lib: $(COMPLIB)
 	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
-	$(CP) -p *.$(MOD_SUFFIX)  $(INCLUDE_DIR)
+	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
+
+install_lib_cpl7: $(COMPLIB)
+	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
+	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
