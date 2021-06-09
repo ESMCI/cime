@@ -13,7 +13,6 @@ from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, set_model
 from CIME.utils                     import get_project, get_charge_account, check_name
 from CIME.utils                     import get_current_commit, safe_copy, get_cime_default_driver
-from CIME.utils                     import transform_vars
 from CIME.locked_files              import LOCKED_DIR, lock_file
 from CIME.XML.machines              import Machines
 from CIME.XML.pes                   import Pes
@@ -1130,7 +1129,7 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # sanity check: 
+        # sanity check:
         #     1. when use compiler with GPU enabled, we must have at least one gpu per node available
         #     2. when use compiler without GPU enabled, we force the ngpus_per_node to zero to avoid confusion
         #     3. we assume that there is always a string "gpu" in the compiler name if we want to enable GPU

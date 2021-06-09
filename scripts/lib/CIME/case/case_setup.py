@@ -97,7 +97,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             except OSError as e:
                 if e.errno == errno.EACCES:
                     logger.info("Invalid permissions to create {}".format(din_loc_root))
-            
+
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
 
@@ -225,12 +225,12 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
 
         # update the wrapper script that sets the device id for each MPI rank
         machdir = case.get_value("MACHDIR")
-        input_template = os.path.join(machdir,"mpi_run_gpu.{}".format(machine_name))
+        input_template = os.path.join(machdir,"mpi_run_gpu.{}".format(mach))
         output_text = transform_vars(open(input_template,"r").read(), case=case)
         # write it out to the run dir
         rundir = case.get_value("RUNDIR")
         output_name = rundir+'/set_device_rank.sh'
-        logger.info("Creating file {}".format(output_name)
+        logger.info("Creating file {}".format(output_name))
         with open(output_name, "w") as f:
             f.write(output_text)
 
@@ -289,7 +289,7 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
         test_name = casebaseid if casebaseid is not None else self.get_value("CASE")
         with TestStatus(test_dir=caseroot, test_name=test_name) as ts:
             try:
-                run_and_log_case_status(functor, phase, 
+                run_and_log_case_status(functor, phase,
                                         custom_starting_msg_functor=msg_func,
                                         custom_success_msg_functor=msg_func,
                                         caseroot=caseroot,
@@ -303,7 +303,7 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
                 else:
                     ts.set_status(SETUP_PHASE, TEST_PASS_STATUS)
     else:
-        run_and_log_case_status(functor, phase, 
+        run_and_log_case_status(functor, phase,
                                 custom_starting_msg_functor=msg_func,
                                 custom_success_msg_functor=msg_func,
                                 caseroot=caseroot,
