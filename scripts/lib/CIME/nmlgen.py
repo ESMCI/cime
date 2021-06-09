@@ -290,6 +290,7 @@ class NamelistGenerator(object):
         streams = self.get_value("streams")
         if streams[0]:
             streams[:] = [text.split(" ",1)[0] for text in streams]
+            streams[:] = [text.split("txt.",1)[1] for text in streams]
         else:
             streams = self.get_default("streamslist")
 
