@@ -1128,9 +1128,11 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # sanity check: when use pgi-gpu and nvhpc-gpu compiler, we must have
-        #               at least one gpu per node available
-        if compiler in ["pgi-gpu", "nvhpc-gpu"]:
+        # sanity check: 
+        #     1. when use compiler with GPU enabled, we must have at least one gpu per node available
+        #     2. when use compiler without GPU enabled, we force the ngpus_per_node to zero to avoid confusion
+        #     3. we assume that there is always a string "gpu" in the compiler name if we want to enable GPU
+        if  "gpu" in compiler:
             expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
         else:
             expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
@@ -1142,7 +1144,8 @@ class Case(object):
         if max_gpus_per_node:
             if ngpus_per_node >= 0:
                 self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
-            self.set_value("NGPUS_PER_NODE", 0)
+            else:
+                self.set_value("NGPUS_PER_NODE", 0)
             self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         self.initialize_derived_attributes()
