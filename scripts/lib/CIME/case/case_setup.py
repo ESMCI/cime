@@ -223,16 +223,17 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             lock_file("env_mach_pes.xml")
             lock_file("env_batch.xml")
 
-        # update the wrapper script that sets the device id for each MPI rank
         machdir = case.get_value("MACHDIR")
         input_template = os.path.join(machdir,"mpi_run_gpu.{}".format(mach))
-        output_text = transform_vars(open(input_template,"r").read(), case=case)
-        # write it out to the run dir
-        rundir = case.get_value("RUNDIR")
-        output_name = rundir+'/set_device_rank.sh'
-        logger.info("Creating file {}".format(output_name))
-        with open(output_name, "w") as f:
-            f.write(output_text)
+        if os.path.isfile(input_template):
+            # update the wrapper script that sets the device id for each MPI rank
+            output_text = transform_vars(open(input_template,"r").read(), case=case)
+            # write it out to the run dir
+            rundir = case.get_value("RUNDIR")
+            output_name = os.path.join(rundir,"set_device_rank.sh")
+            logger.info("Creating file {}".format(output_name))
+            with open(output_name, "w") as f:
+                f.write(output_text)
 
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):
