@@ -338,7 +338,7 @@ def _normalize_string_value(name, value, case):
         return ":".join(items)
     elif ("/" in value):
         # Handle special format scale*path, normalize the path and reconstruct
-        parsed = re.match("^([^*]+\*)(/[^/]+)*", value)
+        parsed = re.match(r"^([^*]+\*)(/[^/]+)*", value)
         if parsed is not None and len(parsed.groups()) == 2:
             items = list(parsed.groups())
             items[1] = os.path.basename(items[1])
