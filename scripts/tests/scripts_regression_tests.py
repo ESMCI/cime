@@ -2530,8 +2530,10 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
-        if "gpu" in TEST_COMPILER or NO_FORTRAN_RUN:
+        if NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
+        if TEST_COMPILER and "gpu" in TEST_COMPILER:
+            self.skipTest("Skipping cprnc test for gpu compiler")
 
         testname = "ERS_Ln7.f19_g16_rx1.A"
         casedir = self._create_test([testname, "--no-build"], test_id=self._baseline_name)
