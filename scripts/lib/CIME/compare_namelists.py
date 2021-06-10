@@ -30,7 +30,7 @@ def _normalize_lists(value_str):
     '1.0*value.nc'
     """
     # Handle special case "value * value" which should not be treated as list
-    parsed = re.match("^([^*=->\s]*)\s*(\*)\s*(.*)$", value_str)
+    parsed = re.match(r"^([^*=->\s]*)\s*(\*)\s*(.*)$", value_str)
     if parsed is not None:
         value_str = "".join(parsed.groups())
     result = ""
