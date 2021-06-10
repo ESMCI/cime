@@ -337,6 +337,13 @@ def _normalize_string_value(name, value, case):
         items = [_normalize_string_value(name, item, case) for item in items]
         return ":".join(items)
     elif ("/" in value):
+        # Handle special format scale*path, normalize the path and reconstruct
+        parsed = re.match("^([^*]+\*)(/[^/]+)*", value)
+        if parsed is not None and len(parsed.groups()) == 2:
+            items = list(parsed.groups())
+            items[1] = os.path.basename(items[1])
+            return "".join(items)
+
         # File path, just return the basename unless its a seq_maps.rc mapping
         # mapname or maptype
         if "mapname" not in name and "maptype" not in name:
