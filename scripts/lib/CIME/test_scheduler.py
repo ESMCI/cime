@@ -680,7 +680,8 @@ class TestScheduler(object):
                     match =  re.match('G([0-9]*)', opt)
                     opt = match.group(1)
                     max_gpus_per_node = self._machobj.get_value("MAX_GPUS_PER_NODE")
-                    opt = opt if opt <= max_gpus_per_node else max_gpus_per_node
+                    if  opt > max_gpus_per_node:
+                        expect(False, " Request {} GPUs per node, maximum {} GPUs per node allowed".format(opt, max_gpus_per_node)) 
                     envtest.set_test_parameter("NGPUS_PER_NODE",opt)
                     logger.debug (" NGPUS_PER_NODES set to {}".format(opt))
 
