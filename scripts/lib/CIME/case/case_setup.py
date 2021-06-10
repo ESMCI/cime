@@ -223,18 +223,6 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             lock_file("env_mach_pes.xml")
             lock_file("env_batch.xml")
 
-        machdir = case.get_value("MACHDIR")
-        input_template = os.path.join(machdir,"mpi_run_gpu.{}".format(mach))
-        if os.path.isfile(input_template):
-            # update the wrapper script that sets the device id for each MPI rank
-            output_text = transform_vars(open(input_template,"r").read(), case=case)
-            # write it out to the run dir
-            rundir = case.get_value("RUNDIR")
-            output_name = os.path.join(rundir,"set_device_rank.sh")
-            logger.info("Creating file {}".format(output_name))
-            with open(output_name, "w") as f:
-                f.write(output_text)
-
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):
             logger.info("Creating user_nl_xxx files for components and cpl")
@@ -309,3 +297,18 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
                                 custom_success_msg_functor=msg_func,
                                 caseroot=caseroot,
                                 is_batch=is_batch)
+ 
+    # put the following section here to make sure the rundir is generated first
+    machdir = self.get_value("MACHDIR")
+    mach = self.get_value("MACH")
+    input_template = os.path.join(machdir,"mpi_run_gpu.{}".format(mach))
+    if os.path.isfile(input_template):
+        # update the wrapper script that sets the device id for each MPI rank
+        output_text = transform_vars(open(input_template,"r").read(), case=self)
+
+        # write it out to the run dir
+        rundir = self.get_value("RUNDIR")
+        output_name = os.path.join(rundir,"set_device_rank.sh")
+        logger.info("Creating file {}".format(output_name))
+        with open(output_name, "w") as f:
+            f.write(output_text)
