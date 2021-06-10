@@ -375,7 +375,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         self.assertTrue(os.path.exists(testdir))
         self.assertTrue(os.path.exists(os.path.join(testdir, "case.setup")))
 
-        run_cmd_assert_result(self, "./case.setup", from_dir=testdir)
+        run_cmd_assert_result(self, "./case.setup --debug", from_dir=testdir)
         run_cmd_assert_result(self, "./case.build", from_dir=testdir)
 
         with Case(testdir, read_only=False) as case:
@@ -842,7 +842,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         cls._do_teardown.append(testdir)
 
         # Run case.setup
-        run_cmd_assert_result(self, "./case.setup",
+        run_cmd_assert_result(self, "./case.setup ",
                               from_dir=testdir)
 
         # Make sure Macros file contains expected text
@@ -2530,7 +2530,7 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
-        if (NO_FORTRAN_RUN):
+        if "gpu" in TEST_COMPILER or NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
 
         testname = "ERS_Ln7.f19_g16_rx1.A"

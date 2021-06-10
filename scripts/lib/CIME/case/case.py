@@ -182,6 +182,13 @@ class Case(object):
             self.num_nodes += self.spare_nodes
 
         logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
+        # update the ngpus_per_node
+        #    - reset to 0 if the command line argument is negative
+        #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+
+        if max_gpus_per_node:
+            self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
         smt_factor = max(1,int(self.get_value("MAX_TASKS_PER_NODE") / max_mpitasks_per_node))
@@ -1133,21 +1140,17 @@ class Case(object):
         #     1. when use compiler with GPU enabled, we must have at least one gpu per node available
         #     2. when use compiler without GPU enabled, we force the ngpus_per_node to zero to avoid confusion
         #     3. we assume that there is always a string "gpu" in the compiler name if we want to enable GPU
-        if  "gpu" in compiler:
-            expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
-        else:
-            expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
-
-        # update the ngpus_per_node
-        #    - reset to 0 if the command line argument is negative
-        #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
         if max_gpus_per_node:
+            if  "gpu" in compiler:
+                if not ngpus_per_node:
+                    ngpus_per_node = 1
+                    logger.warning("Setting ngpus_per_node to 1 for compiler {}".format(compiler))
+                expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+            else:
+                expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
             if ngpus_per_node >= 0:
                 self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
-            else:
-                self.set_value("NGPUS_PER_NODE", 0)
-            self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         self.initialize_derived_attributes()
 
@@ -1481,14 +1484,15 @@ directory, NOT in this subdirectory."""
         mpirun_cmd_override = self.get_value("MPI_RUN_COMMAND")
         if mpirun_cmd_override not in ["", None, "UNSET"]:
             return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
+        queue = self.get_value("JOB_QUEUE", subgroup=job)
 
         # Things that will have to be matched against mpirun element attributes
         mpi_attribs = {
-            "compiler" : self.get_value("COMPILER"),
-            "mpilib"   : self.get_value("MPILIB"),
-            "threaded" : self.get_build_threaded(),
-            "queue" : self.get_value("JOB_QUEUE", subgroup=job),
-            "unit_testing" : False,
+            "compiler"       : self.get_value("COMPILER"),
+            "mpilib"         : self.get_value("MPILIB"),
+            "threaded"       : self.get_build_threaded(),
+            "queue"          : queue,
+            "unit_testing"   : False,
             "comp_interface" : self._comp_interface
             }
 
@@ -1514,7 +1518,7 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if ngpus_per_node > 0 and self._cime_model != "e3sm":
+        if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
             # JS added on 06/09/2021:
             #    1. make the wrapper script that sets the device id for each MPI rank executable
             #    2. this setting is tested on Casper only and may not work on other machines

@@ -611,7 +611,7 @@
     <group>build_def</group>
     <file>env_build.xml</file>
     <desc>Output root directory for each machine.
-		Base directory for build and run directories.
+                Base directory for build and run directories.
     </desc>
   </entry>
 
@@ -915,9 +915,9 @@
     <file>env_run.xml</file>
     <desc>
       Determines what ESMF log files (if any) are generated when
-	  USE_ESMF_LIB is TRUE.
+          USE_ESMF_LIB is TRUE.
       ESMF_LOGKIND_SINGLE: Use a single log file, combining messages from
-	  all of the PETs. Not supported on some platforms.
+          all of the PETs. Not supported on some platforms.
       ESMF_LOGKIND_MULTI: Use multiple log files -- one per PET.
       ESMF_LOGKIND_NONE: Do not issue messages to a log file.
       By default, no ESMF log files are generated.
@@ -931,8 +931,8 @@
     <group>run_flags</group>
     <file>env_run.xml</file>
     <desc>Turns on component barriers for component timing.
-	  This variable is for testing and debugging only and should never
-	  be set for a production run.
+          This variable is for testing and debugging only and should never
+          be set for a production run.
     </desc>
   </entry>
 
@@ -2366,6 +2366,26 @@
     <desc>pes or cores per node for mpitasks </desc>
   </entry>
 
+  <entry id="NGPUS_PER_NODE">
+    <type>integer</type>
+    <default_value>0</default_value>
+    <values>
+      <value compiler="pgi-gpu">1</value>
+      <value compiler="nvhpc-gpu">1</value>
+    </values>
+    <group>mach_pes</group>
+    <file>env_mach_pes.xml</file>
+    <desc> Number of GPUs per node used for simulation </desc>
+  </entry>
+
+  <entry id="MAX_GPUS_PER_NODE">
+    <type>integer</type>
+    <default_value>0</default_value>
+    <group>mach_pes_last</group>
+    <file>env_mach_pes.xml</file>
+    <desc>maximum number of GPUs allowed per node </desc>
+  </entry>
+
   <entry id="COSTPES_PER_NODE">
     <type>integer</type>
     <default_value>$MAX_MPITASKS_PER_NODE</default_value>
@@ -3008,23 +3028,6 @@
    <group>comparison_to_nuopc</group>
    <file>env_build.xml</file>
    <desc>TRUE=>turn on CPP variable COMPARE_TO_NUOPC</desc>
- </entry>
-
- <entry id="NGPUS_PER_NODE">
-   <type>integer</type>
-   <valid_values></valid_values>
-   <default_value>0</default_value>
-   <group>mach_pes</group>
-   <file>env_mach_pes.xml</file>
-   <desc> Number of GPUs per node used for simulation </desc>
- </entry>
-
- <entry id="MAX_GPUS_PER_NODE">
-   <type>integer</type>
-   <default_value>0</default_value>
-   <group>mach_pes_last</group>
-   <file>env_mach_pes.xml</file>
-   <desc>maximum number of GPUs allowed per node </desc>
  </entry>
 
  <help>
