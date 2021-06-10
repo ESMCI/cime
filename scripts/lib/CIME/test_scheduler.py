@@ -676,6 +676,13 @@ class TestScheduler(object):
                     if match.group(2):
                         envtest.set_test_parameter("PIO_STRIDE_CPL",match.group(2))
 
+                elif opt.startswith('G'):
+                    match =  re.match('G([0-9]*)', opt)
+                    opt = match.group(1)
+                    max_gpus_per_node = self._machobj.get_value("MAX_GPUS_PER_NODE")
+                    opt = opt if opt <= max_gpus_per_node else max_gpus_per_node
+                    envtest.set_test_parameter("NGPUS_PER_NODE",opt)
+                    logger.debug (" NGPUS_PER_NODES set to {}".format(opt))
 
                 elif (opt.startswith('I') or # Marker to distinguish tests with same name - ignored
                       opt.startswith('M') or # handled in create_newcase
