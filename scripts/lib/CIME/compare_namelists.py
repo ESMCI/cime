@@ -20,7 +20,19 @@ def _normalize_lists(value_str):
     "'one two'"
     >>> _normalize_lists("1 2  3, 4 ,  5")
     '1,2,3,4,5'
+    >>> _normalize_lists("2, 2*13")
+    '2,2*13'
+    >>> _normalize_lists("'DMS -> 1.0 * value.nc'")
+    "'DMS -> 1.0 * value.nc'"
+    >>> _normalize_lists("1.0* value.nc")
+    '1.0*value.nc'
+    >>> _normalize_lists("1.0*value.nc")
+    '1.0*value.nc'
     """
+    # Handle special case "value * value" which should not be treated as list
+    parsed = re.match(r"^([^*=->\s]*)\s*(\*)\s*(.*)$", value_str)
+    if parsed is not None:
+        value_str = "".join(parsed.groups())
     result = ""
     inside_quotes = False
     idx = 0
@@ -51,8 +63,22 @@ def _normalize_lists(value_str):
 ###############################################################################
 def _interpret_value(value_str, filename):
 ###############################################################################
+    """
+    >>> _interpret_value("one", "foo")
+    'one'
+    >>> _interpret_value("one, two", "foo")
+    ['one', 'two']
+    >>> _interpret_value("3*1.0", "foo")
+    ['1.0', '1.0', '1.0']
+    >>> _interpret_value("'DMS -> value.nc'", "foo")
+    OrderedDict([('DMS', 'value.nc')])
+    >>> _interpret_value("'DMS -> 1.0 * value.nc'", "foo")
+    OrderedDict([('DMS', '1.0*value.nc')])
+    >>> _interpret_value("'DMS -> 1.0* value.nc'", "foo")
+    OrderedDict([('DMS', '1.0*value.nc')])
+    """
     comma_re = re.compile(r'\s*,\s*')
-    dict_re = re.compile(r"^'(\S+)\s*->\s*(\S+)\s*'")
+    dict_re = re.compile(r"^'(\S+)\s*->\s*(\S+|(?:\S+\s*\*\s*\S+))\s*'")
 
     value_str = _normalize_lists(value_str)
 
@@ -311,6 +337,13 @@ def _normalize_string_value(name, value, case):
         items = [_normalize_string_value(name, item, case) for item in items]
         return ":".join(items)
     elif ("/" in value):
+        # Handle special format scale*path, normalize the path and reconstruct
+        parsed = re.match(r"^([^*]+\*)(/[^/]+)*", value)
+        if parsed is not None and len(parsed.groups()) == 2:
+            items = list(parsed.groups())
+            items[1] = os.path.basename(items[1])
+            return "".join(items)
+
         # File path, just return the basename unless its a seq_maps.rc mapping
         # mapname or maptype
         if "mapname" not in name and "maptype" not in name:
@@ -487,6 +520,30 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
     ... /'''
     >>> _compare_namelists(_parse_namelists(teststr1.splitlines(), 'foo'), _parse_namelists(teststr2.splitlines(), 'bar'), 'ERB.f19_g16.B1850C5.sandiatoss3_intel')
     ''
+    >>> teststr1 = '''&nml
+    ... csw_specifier = 'DMS -> 1.0 * value.nc'
+    ... /'''
+    >>> _compare_namelists(_parse_namelists(teststr1.splitlines(), 'foo'),\
+    _parse_namelists(teststr1.splitlines(), 'foo'), "case")
+    ''
+    >>> teststr2 = '''&nml
+    ... csw_specifier = 'DMS -> 2.0 * value.nc'
+    ... /'''
+    >>> comments = _compare_namelists(_parse_namelists(teststr1.splitlines(), 'foo'),\
+    _parse_namelists(teststr2.splitlines(), 'foo'), "case")
+    >>> print(comments)
+      BASE: csw_specifier dict item DMS = 1.0*value.nc
+      COMP: csw_specifier dict item DMS = 2.0*value.nc
+    <BLANKLINE>
+    >>> teststr2 = '''&nml
+    ... csw_specifier = 'DMS -> 1.0 * other.nc'
+    ... /'''
+    >>> comments = _compare_namelists(_parse_namelists(teststr1.splitlines(), 'foo'),\
+    _parse_namelists(teststr2.splitlines(), 'foo'), "case")
+    >>> print(comments)
+      BASE: csw_specifier dict item DMS = 1.0*value.nc
+      COMP: csw_specifier dict item DMS = 1.0*other.nc
+    <BLANKLINE>
     """
     different_namelists = OrderedDict()
     for namelist, gold_names in gold_namelists.items():
