@@ -182,9 +182,7 @@ class Case(object):
             self.num_nodes += self.spare_nodes
 
         logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
-        # update the ngpus_per_node
-        #    - reset to 0 if the command line argument is negative
-        #    - reset to max_gpus_per_node if the command line argument is larger than max_gpus_per_node
+
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
 
         if max_gpus_per_node:
@@ -1136,10 +1134,18 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # sanity check:
-        #     1. when use compiler with GPU enabled, we must have at least one gpu per node available
-        #     2. when use compiler without GPU enabled, we force the ngpus_per_node to zero to avoid confusion
-        #     3. we assume that there is always a string "gpu" in the compiler name if we want to enable GPU
+        # Sanity check:
+        #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
+        #     2. For compilers without the string "gpu" in the name:
+        #        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as 
+        #             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
+        #        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument 
+        #             must be set to 0. Otherwise, an error will be triggered.
+        #     3. For compilers with the string "gpu" in the name:
+        #        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered. 
+        #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE XML variable 
+        #             in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically;
+        #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
         if max_gpus_per_node:
             if  "gpu" in compiler:
@@ -1519,13 +1525,15 @@ directory, NOT in this subdirectory."""
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
         if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
-            # JS added on 06/09/2021:
-            #    1. make the wrapper script that sets the device id for each MPI rank executable
-            #    2. this setting is tested on Casper only and may not work on other machines
-            #    3. need to be revisited in the future for a more adaptable implementation
+            # 1. make the wrapper script that sets the device id for each MPI rank executable
+            # 2. this setting is tested on Casper only and may not work on other machines
+            # 3. need to be revisited in the future for a more adaptable implementation
             rundir = self.get_value("RUNDIR")
             output_name = rundir+'/set_device_rank.sh'
-            os.system("chmod +x "+output_name)
+            if os.path.isfile(output_name):
+                os.system("chmod +x "+output_name)
+            else:
+                expect(False, "The file {} is not written out correctly.".format(output_name))
             mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
         return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)
