@@ -469,6 +469,16 @@ class TestScheduler(object):
         if self._workflow:
             create_newcase_cmd += " --workflow {}".format(self._workflow)
 
+        for opt in case_opts: 
+            if opt.startswith('G'):
+                match = re.match('G([0-9]*)', opt)
+                opt = match.group(1)
+                max_gpus_per_node = self._machobj.get_value("MAX_GPUS_PER_NODE")
+                if  int(opt) > max_gpus_per_node:
+                    expect(False, " Request {} GPUs per node, maximum {} GPUs per node allowed".format(opt, max_gpus_per_node))
+                else:
+                    create_newcase_cmd += " --ngpus-per-node {}".format(opt)  
+
         if self._pesfile is not None:
             create_newcase_cmd += " --pesfile {} ".format(self._pesfile)
 
@@ -676,21 +686,13 @@ class TestScheduler(object):
                     if match.group(2):
                         envtest.set_test_parameter("PIO_STRIDE_CPL",match.group(2))
 
-                elif opt.startswith('G'):
-                    match =  re.match('G([0-9]*)', opt)
-                    opt = match.group(1)
-                    max_gpus_per_node = self._machobj.get_value("MAX_GPUS_PER_NODE")
-                    if  opt > max_gpus_per_node:
-                        expect(False, " Request {} GPUs per node, maximum {} GPUs per node allowed".format(opt, max_gpus_per_node)) 
-                    envtest.set_test_parameter("NGPUS_PER_NODE",opt)
-                    logger.debug (" NGPUS_PER_NODES set to {}".format(opt))
-
                 elif (opt.startswith('I') or # Marker to distinguish tests with same name - ignored
                       opt.startswith('M') or # handled in create_newcase
                       opt.startswith('P') or # handled in create_newcase
                       opt.startswith('N') or # handled in create_newcase
                       opt.startswith('C') or # handled in create_newcase
                       opt.startswith('V') or # handled in create_newcase
+                      opt.startswith('G') or # handled in create_newcase
                       opt == 'B'):           # handled in run_phase
                     pass
 
