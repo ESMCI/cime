@@ -469,16 +469,6 @@ class TestScheduler(object):
         if self._workflow:
             create_newcase_cmd += " --workflow {}".format(self._workflow)
 
-        for opt in case_opts: 
-            if opt.startswith('G'):
-                match = re.match('G([0-9]*)', opt)
-                opt = match.group(1)
-                max_gpus_per_node = self._machobj.get_value("MAX_GPUS_PER_NODE")
-                if  int(opt) > max_gpus_per_node:
-                    expect(False, " Request {} GPUs per node, maximum {} GPUs per node allowed".format(opt, max_gpus_per_node))
-                else:
-                    create_newcase_cmd += " --ngpus-per-node {}".format(opt)  
-
         if self._pesfile is not None:
             create_newcase_cmd += " --pesfile {} ".format(self._pesfile)
 
@@ -523,6 +513,9 @@ class TestScheduler(object):
                 elif case_opt.startswith('P'):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
+                elif case_opt.startswith('G'):
+                    ngpus_per_node = case_opt[1:]
+                    create_newcase_cmd += " --ngpus-per-node {}".format(ngpus_per_node)
                 elif case_opt.startswith('V'):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)

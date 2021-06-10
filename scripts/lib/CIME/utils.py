@@ -659,6 +659,8 @@ def parse_test_name(test_name):
     ['ERS', ['D'], 'fe12_123', 'JGF', None, None, None]
     >>> parse_test_name('ERS_D_P1.fe12_123.JGF')
     ['ERS', ['D', 'P1'], 'fe12_123', 'JGF', None, None, None]
+    >>> parse_test_name('ERS_D_G2.fe12_123.JGF')
+    ['ERS', ['D', 'G2'], 'fe12_123', 'JGF', None, None, None]
     >>> parse_test_name('SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A')
     ['SMS', ['D', 'Ln9', 'Mmpi-serial'], 'f19_g16_rx1', 'A', None, None, None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler')
@@ -1793,7 +1795,7 @@ CASE_SUCCESS = "success"
 CASE_FAILURE = "error"
 def run_and_log_case_status(func, phase, caseroot='.',
                             custom_starting_msg_functor=None,
-                            custom_success_msg_functor=None, 
+                            custom_success_msg_functor=None,
                             is_batch=False):
     starting_msg = None
 
@@ -1821,7 +1823,7 @@ def run_and_log_case_status(func, phase, caseroot='.',
         if phase == "case.submit" and is_batch:
             append_case_status(phase, "starting", msg=custom_success_msg,
                             caseroot=caseroot)
-        append_case_status(phase, CASE_SUCCESS, msg=custom_success_msg, 
+        append_case_status(phase, CASE_SUCCESS, msg=custom_success_msg,
                            caseroot=caseroot)
 
     return rv
