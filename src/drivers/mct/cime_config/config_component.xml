@@ -3014,18 +3014,6 @@
    <type>integer</type>
    <valid_values></valid_values>
    <default_value>0</default_value>
-    <values>
-      <value compclass="ATM"> $NGPUS_PER_NODE</value>
-      <value compclass="CPL"> $NGPUS_PER_NODE</value>
-      <value compclass="OCN"> $NGPUS_PER_NODE</value>
-      <value compclass="WAV"> $NGPUS_PER_NODE</value>
-      <value compclass="GLC"> $NGPUS_PER_NODE</value>
-      <value compclass="ICE"> $NGPUS_PER_NODE</value>
-      <value compclass="ROF"> $NGPUS_PER_NODE</value>
-      <value compclass="LND"> $NGPUS_PER_NODE</value>
-      <value compclass="ESP"> $NGPUS_PER_NODE</value>
-      <value compclass="IAC"> $NGPUS_PER_NODE</value>
-    </values>
    <group>mach_pes</group>
    <file>env_mach_pes.xml</file>
    <desc> Number of GPUs per node used for simulation </desc>
