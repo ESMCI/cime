@@ -19,7 +19,6 @@ Example:
 from standard_script_setup import *
 
 from CIME.case import Case
-from CIME.utils import set_logger_indent
 
 logger = logging.getLogger(__name__)
 
