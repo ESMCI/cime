@@ -1528,15 +1528,10 @@ directory, NOT in this subdirectory."""
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
         if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
-            # 1. make the wrapper script that sets the device id for each MPI rank executable
-            # 2. this setting is tested on Casper only and may not work on other machines
-            # 3. need to be revisited in the future for a more adaptable implementation
+            # 1. this setting is tested on Casper only and may not work on other machines
+            # 2. need to be revisited in the future for a more adaptable implementation
             rundir = self.get_value("RUNDIR")
             output_name = rundir+'/set_device_rank.sh'
-            if os.path.isfile(output_name):
-                os.system("chmod +x "+output_name)
-            else:
-                expect(False, "The file {} is not written out correctly.".format(output_name))
             mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
         return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)

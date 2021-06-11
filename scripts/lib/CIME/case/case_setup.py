@@ -315,3 +315,9 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
         logger.info("Creating file {}".format(output_name))
         with open(output_name, "w") as f:
             f.write(output_text)
+
+        # make the wrapper script executable
+        if os.path.isfile(output_name):
+            os.system("chmod +x "+output_name)
+        else:
+            expect(False, "The file {} is not written out correctly.".format(output_name))
