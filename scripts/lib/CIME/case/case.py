@@ -1134,18 +1134,20 @@ class Case(object):
         if test:
             self.set_value("TEST",True)
 
-        # Sanity check:
-        #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
-        #     2. For compilers without the string "gpu" in the name:
-        #        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as 
-        #             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
-        #        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument 
-        #             must be set to 0. Otherwise, an error will be triggered.
-        #     3. For compilers with the string "gpu" in the name:
-        #        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered. 
-        #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE XML variable 
-        #             in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically;
-        #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
+        '''
+        Sanity check:
+            1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
+            2. For compilers without the string "gpu" in the name:
+               2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as 
+                    the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
+               2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument 
+                    must be set to 0. Otherwise, an error will be triggered.
+            3. For compilers with the string "gpu" in the name:
+               3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered. 
+               3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE XML variable 
+                    in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically;
+               3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
+        '''
         max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
         if max_gpus_per_node:
             if  "gpu" in compiler:
