@@ -342,6 +342,16 @@ def _save_prerun_provenance_e3sm(case, lid):
 def _save_prerun_provenance_cesm(case, lid): # pylint: disable=unused-argument
     pass
 
+def _save_prerun_provenance_common(case, lid):
+    """ Saves common prerun provenance.
+    """
+    run_dir = case.get_value("RUNDIR")
+
+    preview_log = os.path.join(run_dir, "preview_run.log.{}".format(lid))
+
+    with open(preview_log, "w") as fd:
+        case.preview_run(lambda x: fd.write("{}\n".format(x)), None)
+
 def save_prerun_provenance(case, lid=None):
     with SharedArea():
         # Always save env
@@ -351,6 +361,8 @@ def save_prerun_provenance(case, lid=None):
         if not os.path.isdir(logdir):
             os.makedirs(logdir)
         env_module.save_all_env_info(os.path.join(logdir, "run_environment.txt.{}".format(lid)))
+
+        _save_prerun_provenance_common(case, lid)
 
         model = case.get_value("MODEL")
         if model == "e3sm":
