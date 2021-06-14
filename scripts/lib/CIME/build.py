@@ -390,6 +390,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
     if ufs_driver and ufs_driver == 'nems' and not cpl_in_complist:
         libs = []
+    elif case.get_value("MODEL") == "cesm" and comp_interface == "nuopc":
+        libs = ["gptl", "mct", "pio", "csm_share"]
     elif case.get_value("MODEL") == "cesm":
         libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
     else:
