@@ -1825,6 +1825,7 @@ directory, NOT in this subdirectory."""
         write("  total tasks: {}".format(self.total_tasks))
         write("  tasks per node: {}".format(self.tasks_per_node))
         write("  thread count: {}".format(self.thread_count))
+        write("  ngpus per node: {}".format(self.ngpus_per_node))
         write("")
 
         write("BATCH INFO:")
