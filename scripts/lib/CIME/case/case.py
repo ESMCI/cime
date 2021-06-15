@@ -118,6 +118,7 @@ class Case(object):
         self._component_classes = []
         self._component_description = {}
         self._is_env_loaded = False
+        self._loaded_envs = None
 
         # these are user_mods as defined in the compset
         # Command Line user_mods are handled seperately
@@ -1554,8 +1555,12 @@ directory, NOT in this subdirectory."""
                 job = self.get_primary_job()
             os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
             env_module = self.get_env("mach_specific")
-            env_module.load_env(self, job=job, verbose=verbose)
+            self._loaded_envs = env_module.load_env(self, job=job, verbose=verbose)
+            self._loaded_envs.append(("OMP_NUM_THREADS",
+                                      os.environ["OMP_NUM_THREADS"]))
             self._is_env_loaded = True
+
+        return self._loaded_envs
 
     def get_build_threaded(self):
         """
@@ -1813,3 +1818,37 @@ directory, NOT in this subdirectory."""
         env_workflow = self.get_env("workflow")
         jobs = env_workflow.get_jobs()
         return jobs[0]
+
+    def preview_run(self, write, job):
+        write("CASE INFO:")
+        write("  nodes: {}".format(self.num_nodes))
+        write("  total tasks: {}".format(self.total_tasks))
+        write("  tasks per node: {}".format(self.tasks_per_node))
+        write("  thread count: {}".format(self.thread_count))
+        write("")
+
+        write("BATCH INFO:")
+        if not job:
+            job = self.get_first_job()
+
+        job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+        env_batch = self.get_env('batch')
+        for job_id, cmd in job_id_to_cmd:
+            write("  FOR JOB: {}".format(job_id))
+            write("    ENV:")
+            loaded_envs = self.load_env(job=job_id, reset=True, verbose=False)
+
+            for name, value in iter(sorted(loaded_envs, key=lambda x: x[0])):
+                write("      Setting Environment {}={}".format(name, value))
+
+            write("")
+            write("    SUBMIT CMD:")
+            write("      {}".format(self.get_resolved_value(cmd)))
+            write("")
+            if job_id in ("case.run", "case.test"):
+                # get_job_overrides must come after the case.load_env since the cmd may use
+                # env vars.
+                overrides = env_batch.get_job_overrides(job_id, self)
+                write("    MPIRUN (job={}):".format(job_id))
+                write ("      {}".format(self.get_resolved_value(overrides["mpirun"])))
+                write("")
