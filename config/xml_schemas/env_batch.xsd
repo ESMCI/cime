@@ -5,7 +5,7 @@
 
   <!-- attributes -->
   <xs:attribute name="id" type="xs:NCName"/>
-  <xs:attribute name="default" type="xs:string"/>
+  <xs:attribute name="default" type="xs:NCName"/>
   <xs:attribute name="nodemax" type="xs:integer"/>
   <xs:attribute name="nodemin"  type="xs:integer"/>
   <xs:attribute name="jobmax" type="xs:integer"/>
