@@ -1793,7 +1793,7 @@ CASE_SUCCESS = "success"
 CASE_FAILURE = "error"
 def run_and_log_case_status(func, phase, caseroot='.',
                             custom_starting_msg_functor=None,
-                            custom_success_msg_functor=None, 
+                            custom_success_msg_functor=None,
                             is_batch=False):
     starting_msg = None
 
@@ -1808,7 +1808,8 @@ def run_and_log_case_status(func, phase, caseroot='.',
     try:
         rv = func()
     except BaseException:
-        custom_success_msg = custom_success_msg_functor(rv) if custom_success_msg_functor else None
+        custom_success_msg = custom_success_msg_functor(rv) \
+            if custom_success_msg_functor and rv is not None else None
         if phase == "case.submit" and is_batch:
             append_case_status(phase, "starting", msg=custom_success_msg,
                             caseroot=caseroot)
@@ -1817,11 +1818,12 @@ def run_and_log_case_status(func, phase, caseroot='.',
                            caseroot=caseroot)
         raise
     else:
-        custom_success_msg = custom_success_msg_functor(rv) if custom_success_msg_functor else None
+        custom_success_msg = custom_success_msg_functor(rv) \
+            if custom_success_msg_functor else None
         if phase == "case.submit" and is_batch:
             append_case_status(phase, "starting", msg=custom_success_msg,
                             caseroot=caseroot)
-        append_case_status(phase, CASE_SUCCESS, msg=custom_success_msg, 
+        append_case_status(phase, CASE_SUCCESS, msg=custom_success_msg,
                            caseroot=caseroot)
 
     return rv
