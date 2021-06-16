@@ -198,6 +198,16 @@
     </directives>
   </batch_system>
 
+  <batch_system MACH="arc4" type="sge" >
+    <directives>
+      <directive>-l nodes={{ num_nodes }}</directive>
+      <directive>-l node_type=40core-192G</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="24:00:00" default="true" >40core-192G</queue>
+    </queues>
+  </batch_system>
+
   <batch_system MACH="aleph" type="pbs" >
     <directives>
       <directive>-l nodes={{ num_nodes }}</directive>
