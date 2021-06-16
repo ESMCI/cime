@@ -878,8 +878,11 @@ endif
 
 # libcsm_share.a is in ULIBDEP, but -lcsm_share is in ULIBS rather than CLIBS,
 # so this needs to be added after creating CLIBS above
+ifneq ($(COMP_INTERFACE), nuopc)
+  CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
+endif
 ifeq ($(MODEL),csm_share_cpl7)
-  CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
+  CSMSHARELIB = $(CSMSHARELIB_CPL7)
 else
   CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
 endif
@@ -908,7 +911,7 @@ $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 $(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 
 ifneq ($(findstring csm_share,$(MODEL)),csm_share)
-  $(OBJS):  $(CSMSHARELIB)
+  $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
 else ifeq ($(MODEL),csm_share_cpl7)
   complib: install_lib_cpl7
 else
