@@ -518,7 +518,6 @@ This allows using a different mpirun command to launch unit tests
       <arguments>
         <arg name="labelstdout">-p "%g:"</arg>
         <arg name="num_tasks"> -np {{ total_tasks }}</arg>
-        <arg name="zthreadplacement"> omplace -tm open64 -vv</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="mpt" queue="share" comp_interface="nuopc">
