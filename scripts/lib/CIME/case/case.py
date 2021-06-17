@@ -1670,7 +1670,7 @@ directory, NOT in this subdirectory."""
             # Ensure program path is absolute
             cmd[0] = re.sub("^./", "{}/scripts/".format(cimeroot), cmd[0])
         else:
-            expect(caseroot and os.path.isdir(caseroot) and os.path.isfile(os.path.join(case_root,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(caseroot))
+            expect(caseroot and os.path.isdir(caseroot) and os.path.isfile(os.path.join(caseroot,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(caseroot))
 
         cmd = " ".join(cmd)
 
