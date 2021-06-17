@@ -1321,6 +1321,8 @@ def convert_to_babylonian_time(seconds):
 
     >>> convert_to_babylonian_time(3661)
     '01:01:01'
+    >>> convert_to_babylonian_time(360000)
+    '100:00:00'
     """
     hours = int(seconds / 3600)
     seconds %= 3600
