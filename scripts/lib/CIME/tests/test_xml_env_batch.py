@@ -1,9 +1,5 @@
-import os
-import sys
 import unittest
 from unittest import mock
-
-sys.path.insert(0, os.path.abspath("../"))
 
 from CIME.XML.env_batch import EnvBatch
 
@@ -152,6 +148,46 @@ class TestXMLEnvBatch(unittest.TestCase):
                                                subgroup="case.run",
                                                ignore_type=False)
         env_workflow.set_value.assert_any_call("JOB_WALLCLOCK_TIME", "10:00:00",
+                                               subgroup="case.run")
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemax, jobmin, jobmax, strict
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_queue_specs", return_value=[
+        1, 1, "case.run", "05:00:00", None, 1, 1, False,
+    ])
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_walltimemax_none(self, get_default_queue, select_best_queue,
+                              get_queue_specs, text):
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            ("case.run", {
+                "template": "template.case.run",
+                "prereq": "$BUILD_COMPLETE and not $TEST"
+            })
+        ]
+
+        def get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "08:00:00"
+
+            return mock.MagicMock()
+
+        case.get_value = get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+
+        batch.set_job_defaults(batch_jobs, case)
+
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call("JOB_QUEUE", "default",
+                                               subgroup="case.run",
+                                               ignore_type=False)
+        env_workflow.set_value.assert_any_call("JOB_WALLCLOCK_TIME", "08:00:00",
                                                subgroup="case.run")
 
     @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")

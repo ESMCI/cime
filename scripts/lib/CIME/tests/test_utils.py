@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-import sys
-import os
 
-sys.path.insert(0, "/data/E3SM/cime/scripts/lib")
+import os
+import sys
 
 import unittest
 from unittest import mock
