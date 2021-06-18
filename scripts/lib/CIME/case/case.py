@@ -85,7 +85,6 @@ class Case(object):
         if case_root is None:
             case_root = os.getcwd()
         if not (in_doctest() or in_unit_test()):
-            print("i am {}".format(isinstance(case,'Mock')))
             expect(not os.path.isdir(case_root) or os.path.isfile(os.path.join(case_root,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(case_root))
 
         self._caseroot = case_root
@@ -1830,9 +1829,9 @@ def in_doctest():
 import inspect
 
 def in_unit_test():
-  current_stack = inspect.stack()
-  for stack_frame in current_stack:
-    for program_line in stack_frame[4]:    # This element of the stack frame contains
-      if "unittest" in program_line:       # some contextual program lines
-        return True
-  return False
+    current_stack = inspect.stack()
+    for stack_frame in current_stack:
+        for program_line in stack_frame[4]:    # This element of the stack frame contains
+            if "unittest" in program_line:       # some contextual program lines
+                return True
+    return False
