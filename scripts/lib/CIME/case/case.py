@@ -84,8 +84,7 @@ class Case(object):
 
         if case_root is None:
             case_root = os.getcwd()
-        if not (in_doctest() or in_unit_test()):
-            expect(not os.path.isdir(case_root) or os.path.isfile(os.path.join(case_root,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(case_root))
+        expect(not os.path.isdir(case_root) or os.path.isfile(os.path.join(case_root,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(case_root))
 
         self._caseroot = case_root
         logger.debug("Initializing Case.")
@@ -589,24 +588,28 @@ class Case(object):
         <comp_hash> is a dictionary where each key is a supported component
         (e.g., datm) and the associated value is the index in <comp_classes> of
         that component's class (e.g., 1 for atm).
-        >>> Case(read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        >>> import os, shutil, tempfile
+        >>> workdir = tempfile.mkdtemp()
+        >>> caseroot = os.path.join(workdir, 'caseroot')  # use non-existent caseroot to avoid error about not being a valid case directory in Case __init__ method
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
-        >>> Case(read_only=False)._valid_compset_impl('2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DATM%NYF_DICE%SSMI_DOCN%DOM_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
-        >>> Case(read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
-        >>> Case(read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF_TEST', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('2000_DICE%SSMI_DOCN%DOM_DATM%NYF_DROF%NYF_TEST', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1,'dlnd':2,'slnd':2,'dice':3,'sice':3,'docn':4,'socn':4,'drof':5,'srof':5,'sglc':6,'swav':7,'ww3':7,'sesp':8})
         ('2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_SESP_TEST', ['2000', 'DATM%NYF', 'SLND', 'DICE%SSMI', 'DOCN%DOM', 'DROF%NYF', 'SGLC', 'SWAV', 'SESP'])
-        >>> Case(read_only=False)._valid_compset_impl('1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8})
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8})
         ('1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_SESP_BGC%BDRD', ['1850', 'CAM60', 'CLM50%BGC-CROP', 'CICE', 'POP2%ECO%ABIO-DIC', 'MOSART', 'CISM2%NOEVOLVE', 'WW3', 'SESP'])
-        >>> Case(read_only=False)._valid_compset_impl('1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD_TEST', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8})
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD_TEST', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8})
         ('1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO%ABIO-DIC_MOSART_CISM2%NOEVOLVE_WW3_SIAC_SESP_BGC%BDRD_TEST', ['1850', 'CAM60', 'CLM50%BGC-CROP', 'CICE', 'POP2%ECO%ABIO-DIC', 'MOSART', 'CISM2%NOEVOLVE', 'WW3', 'SIAC', 'SESP'])
-        >>> Case(read_only=False)._valid_compset_impl('1850_SATM_SLND_SICE_SOCN_SGLC_SWAV', 'S', ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8})
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('1850_SATM_SLND_SICE_SOCN_SGLC_SWAV', 'S', ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8})
         ('1850_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SIAC_SESP', ['1850', 'SATM', 'SLND', 'SICE', 'SOCN', 'SROF', 'SGLC', 'SWAV', 'SIAC', 'SESP'])
 
-        >>> Case(read_only=False)._valid_compset_impl('1850_SATM_SLND_SICE_SOCN_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8}) #doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> Case(caseroot, read_only=False)._valid_compset_impl('1850_SATM_SLND_SICE_SOCN_SGLC_SWAV', None, ['CPL', 'ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP'], {'datm':1,'satm':1, 'cam':1,'dlnd':2,'clm':2,'slnd':2,'cice':3,'dice':3,'sice':3,'pop':4,'docn':4,'socn':4,'mosart':5,'drof':5,'srof':5,'cism':6,'sglc':6,'ww':7,'swav':7,'ww3':7,'sesp':8}) #doctest: +IGNORE_EXCEPTION_DETAIL
         Traceback (most recent call last):
         CIMEError: ERROR: Invalid compset name, 1850_SATM_SLND_SICE_SOCN_SGLC_SWAV, all stub components generated
+        >>> shutil.rmtree(workdir, ignore_errors=True)
         """
         # Find the models declared in the compset
         model_set = [None]*len(comp_classes)
@@ -1669,7 +1672,7 @@ directory, NOT in this subdirectory."""
 
             # Ensure program path is absolute
             cmd[0] = re.sub("^./", "{}/scripts/".format(cimeroot), cmd[0])
-        elif not (in_doctest()  or in_unit_test()):
+        else:
             expect(caseroot and os.path.isdir(caseroot) and os.path.isfile(os.path.join(caseroot,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(caseroot))
 
         cmd = " ".join(cmd)
@@ -1810,28 +1813,3 @@ directory, NOT in this subdirectory."""
                 write("    MPIRUN (job={}):".format(job_id))
                 write ("      {}".format(self.get_resolved_value(overrides["mpirun"])))
                 write("")
-
-def in_doctest():
-    """
-    Determined by observation
-    """
-    if '_pytest.doctest' in sys.modules:
-        return True
-    ##
-    if hasattr(sys.modules['__main__'], '_SpoofOut'):
-        return True
-    ##
-    if sys.modules['__main__'].__dict__.get('__file__', '').endswith('/pytest'):
-        return True
-    ##
-    return False
-
-import inspect
-
-def in_unit_test():
-    current_stack = inspect.stack()
-    for stack_frame in current_stack:
-        for program_line in stack_frame[4]:    # This element of the stack frame contains
-            if "unittest" in program_line:       # some contextual program lines
-                return True
-    return False
