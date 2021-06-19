@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import unittest
 import os
@@ -114,3 +114,6 @@ class TestUserNLCopier(unittest.TestCase):
                                 caseroot = self._caseroot,
                                 component = component_for_append,
                                 contents = 'irrelevant contents to append')
+
+if __name__ == '__main__':
+    unittest.main()

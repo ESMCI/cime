@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 This module contains unit tests for compare_test_results
@@ -96,3 +96,6 @@ class TestCaseFake(unittest.TestCase):
         ]
 
         self._compare_test_results("test1", "test-baseline", phases)
+
+if __name__ == '__main__':
+    unittest.main()
