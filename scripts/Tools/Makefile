@@ -883,11 +883,7 @@ ifeq ($(CIME_MODEL),cesm)
     CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
   endif
 endif
-ifeq ($(MODEL),csm_share_cpl7)
-  CSMSHARELIB = $(CSMSHARELIB_CPL7)
-else
-  CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
-endif
+CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
 #-------------------------------------------------------------------------------
@@ -925,7 +921,7 @@ install_lib: $(COMPLIB)
 	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
 
 install_lib_cpl7: $(COMPLIB)
-	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
+	$(CP) -p $(COMPLIB) $(CSMSHARELIB_CPL7)
 	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
