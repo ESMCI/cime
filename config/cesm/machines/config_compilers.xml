@@ -25,7 +25,8 @@ CC = $SCC
 FC = $SFC
 MPICC = $SCC
 MPIFC = $SFC
-INC_MPI = $(CIMEROOT)/src/externals/mct/mpi-serial
+INC_MPI = $(CIMEROOT)/../libraries/mct/mpi-serial
+
 
 ========================================================================
 Options for including C++ code in the build

@@ -29,6 +29,7 @@ def get_standard_makefile_args(case, shared_lib=False):
 
 def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     cmake_args = "-DCIME_MODEL={} ".format(case.get_value("MODEL"))
+    cmake_args += "-DSRC_ROOT={} ".format(case.get_value("SRCROOT"))
     cmake_args += " -Dcompile_threaded={} ".format(stringify_bool(case.get_build_threaded()))
 
     ocn_model = case.get_value("COMP_OCN")
@@ -389,6 +390,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
     if ufs_driver and ufs_driver == 'nems' and not cpl_in_complist:
         libs = []
+    elif case.get_value("MODEL") == "cesm" and comp_interface == "nuopc":
+        libs = ["gptl", "mct", "pio", "csm_share"]
+    elif case.get_value("MODEL") == "cesm":
+        libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
 
@@ -437,7 +442,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         if buildlist is not None and lib not in buildlist:
             continue
 
-        if lib == "csm_share":
+        if lib == "csm_share" or lib == "csm_share_cpl7":
             # csm_share adds its own dir name
             full_lib_path = os.path.join(sharedlibroot, sharedpath)
         elif lib == "mpi-serial":
