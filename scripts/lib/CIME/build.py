@@ -3,7 +3,7 @@ functions for building CIME models
 """
 import glob, shutil, time, threading, subprocess, imp
 from CIME.XML.standard_module_setup  import *
-from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
+from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, is_python_executable, get_logging_options
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
 from CIME.XML.files             import Files
@@ -516,7 +516,7 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
     if get_model() != "ufs":
         compile_cmd = "SMP={} {}".format(stringify_bool(smp), compile_cmd)
 
-    if check_for_python(cmd):
+    if is_python_executable(cmd):
         logging_options = get_logging_options()
         if logging_options != "":
             compile_cmd = compile_cmd + logging_options

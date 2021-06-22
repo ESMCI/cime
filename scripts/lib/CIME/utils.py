@@ -382,18 +382,31 @@ def _convert_to_fd(filearg, from_dir, mode="a"):
 
 _hack=object()
 
-def check_for_python(filepath, funcname=None):
-    is_python = is_python_executable(filepath)
-    has_function = True
-    if funcname is not None:
-        has_function = False
-        with open(filepath, 'r') as fd:
-            for line in fd.readlines():
-                if re.search(r"^def\s+{}\(".format(funcname), line) or re.search(r"^from.+import.+\s{}".format(funcname), line):
-                    has_function = True
-                    break
+def _line_defines_python_function(line, funcname):
+    """Returns True if the given line defines the function 'funcname' as a top-level definition
 
-    return is_python and has_function
+    ("top-level definition" means: not something like a class method; i.e., the def should
+    be at the start of the line, not indented)
+
+    """
+    if (re.search(r"^def\s+{}\s*\(".format(funcname), line) or
+        re.search(r"^from\s.+\simport.*\s{}(?:,|\s|$)".format(funcname), line)):
+        return True
+    return False
+
+def file_contains_python_function(filepath, funcname):
+    """Checks whether the given file contains a top-level definition of the function 'funcname'
+
+    Returns a boolean value (True if the file contains this function definition, False otherwise)
+    """
+    has_function = False
+    with open(filepath, 'r') as fd:
+        for line in fd.readlines():
+            if (_line_defines_python_function(line, funcname)):
+                has_function = True
+                break
+
+    return has_function
 
 def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
                    from_dir=None, timeout=None):
@@ -403,15 +416,10 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
     Raises exception on failure.
     """
-    do_run_cmd = True
-
-    # Before attempting to load the script make sure it contains the subroutine
-    # we are expecting
-    with open(cmd, 'r') as fd:
-        for line in fd.readlines():
-            if re.search(r"^def {}\(".format(subname), line):
-                do_run_cmd = False
-                break
+    if file_contains_python_function(cmd, subname):
+        do_run_cmd = False
+    else:
+        do_run_cmd = True
 
     if not do_run_cmd:
         try:
