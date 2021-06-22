@@ -123,7 +123,7 @@ class A_RunUnitTests(unittest.TestCase):
         # (i.e., tests defined using python's unittest module).
         #
         # This is analogous to running:
-        #     python -m unittest discover -s CIME/tests -t .
+        #     python3 -m unittest discover -s CIME/tests -t .
         # from cime/scripts/lib
         #
         # Yes, that means we have a bunch of unit tests run from this one unit
@@ -158,7 +158,7 @@ class A_RunUnitTests(unittest.TestCase):
                         content = fd.read()
                     if '>>>' in content:
                         print("Running doctests for {}".format(filepath))
-                        run_cmd_assert_result(self, 'PYTHONPATH={}:$PYTHONPATH python -m doctest {} 2>&1'.format(LIB_DIR, filepath), from_dir=LIB_DIR)
+                        run_cmd_assert_result(self, 'PYTHONPATH={}:$PYTHONPATH python3 -m doctest {} 2>&1'.format(LIB_DIR, filepath), from_dir=LIB_DIR)
                     else:
                         print("{} has no doctests".format(filepath))
 

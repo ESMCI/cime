@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import print_function
 import os, sys
 _CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../..")

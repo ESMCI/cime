@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 config_pes_converter.py -- convert (or verify) config_pes elements from CIME2
 format to CIME5. This tool will compare the two versions and suggest updates to
