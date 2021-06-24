@@ -484,9 +484,12 @@ class TestScheduler(object):
             testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
             test_mod_file = os.path.join(testmods_dir, component, modspath)
             if not os.path.exists(test_mod_file):
-                error = "Missing testmod file '{}'".format(test_mod_file)
-                self._log_output(test, error)
-                return False, error
+                usermods_dir = files.get_value("USER_MODS_DIR", {"component": component})
+                test_mod_file = os.path.join(usermods_dir, modspath)
+                if not os.path.exists(test_mod_file):
+                    error = "Missing testmod file '{}', checked {} and {}".format(modspath, testmods_dir, usermods_dir)
+                    self._log_output(test, error)
+                    return False, error
 
             create_newcase_cmd += " --user-mods-dir {}".format(test_mod_file)
 

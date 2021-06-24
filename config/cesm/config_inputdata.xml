@@ -40,6 +40,7 @@
     <comment> NEON Tower data for datm </comment>
     <protocol>wget</protocol>
     <address>https://s3.data.neonscience.org/neon-ncar/NEON/</address>
+    <inventory>../listing.csv</inventory>
   </server>
 
 </inputdata>
