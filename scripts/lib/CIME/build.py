@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 _CMD_ARGS_FOR_BUILD = \
     ("CASEROOT", "CASETOOLS", "CIMEROOT", "SRCROOT", "COMP_INTERFACE",
-     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT", "LILAC_MODE",
+     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT",
      "MACH", "MPILIB", "NINST_VALUE", "OS", "PIO_VERSION",
      "SHAREDLIBROOT", "SMP_PRESENT", "USE_ESMF_LIB", "USE_MOAB",
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
@@ -375,7 +375,6 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    lilac_mode = case.get_value("LILAC_MODE")
     ufs_driver = os.environ.get("UFS_DRIVER")
     cpl_in_complist = False
     for l in complist:
