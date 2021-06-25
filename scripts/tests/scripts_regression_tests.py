@@ -7,7 +7,7 @@ to confirm overall CIME correctness.
 
 import glob, os, re, shutil, signal, sys, tempfile, \
     threading, time, logging, unittest, getpass, \
-    filecmp, time, atexit
+    filecmp, time, atexit, importlib
 
 from xml.etree.ElementTree import ParseError
 
@@ -2431,19 +2431,21 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_case_submit_interface(self):
     ###########################################################################
-        try:
-            import imp
-        except ImportError:
-            print("imp not found, skipping case.submit interface test")
-            return
         # the current directory may not exist, so make sure we are in a real directory
         os.chdir(os.getenv("HOME"))
         sys.path.append(TOOLS_DIR)
         case_submit_path = os.path.join(TOOLS_DIR, "case.submit")
-        submit_interface = imp.load_source("case_submit_interface", case_submit_path)
+
+        loader = importlib.machinery.SourceFileLoader("case.submit",
+                                                      case_submit_path)
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["case.submit"] = module
+        spec.loader.exec_module(module)
+
         sys.argv = ["case.submit", "--batch-args", "'random_arguments_here.%j'",
                     "--mail-type", "fail", "--mail-user", "'random_arguments_here.%j'"]
-        submit_interface._main_func(None, True)
+        module._main_func(None, True)
 
     ###########################################################################
     def test_xml_caching(self):
