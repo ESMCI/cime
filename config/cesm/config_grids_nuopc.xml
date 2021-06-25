@@ -34,12 +34,10 @@
       <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_HDMAmz_CONUS_aave.201104.nc</map>
       <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_CONUS_TO_0.125nldas2_aave.201104.nc</map>
     </gridmap>
-   <!-- do not have the files yet 
     <gridmap lnd_grid="0.125nldas2" rof_grid="MERIT_CONUSmz">
-      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_MERITmz_CONUS_aave.210113.nc</map>
-      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_MERITmz_CONUS_TO_0.125nldas2_aave.210113.nc</map>
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_MERITmz_CONUS_aave.210609.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_MERITmz_CONUS_TO_0.125nldas2_aave.210609.nc</map>
     </gridmap>
-    -->
     <gridmap lnd_grid="0.125nldas2" rof_grid="USGS_GFmz">
       <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_USGS_GFmz_aave.201028.nc</map>
       <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_USGS_GFmz_TO_0.125nldas2_aave.201028.nc</map>
