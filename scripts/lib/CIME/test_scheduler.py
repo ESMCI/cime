@@ -483,6 +483,8 @@ class TestScheduler(object):
 
             testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
             test_mod_file = os.path.join(testmods_dir, component, modspath)
+            # if no testmod is found check if a usermod of the same name exists and
+            # use it if it does.
             if not os.path.exists(test_mod_file):
                 usermods_dir = files.get_value("USER_MODS_DIR", {"component": component})
                 test_mod_file = os.path.join(usermods_dir, modspath)

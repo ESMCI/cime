@@ -352,6 +352,8 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # proceed
                         if not os.path.exists(full_path):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
+                            # Data download path must be DIN_LOC_ROOT, DIN_LOC_IC or RUNDIR
+
                             rundir = case.get_value("RUNDIR")
                             if download:
                                 if full_path.startswith(rundir):

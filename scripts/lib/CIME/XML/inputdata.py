@@ -32,6 +32,10 @@ class Inputdata(GenericXML):
         chksum_file = None
         ic_filepath = None
         servernodes = self.get_children("server", attributes=attributes)
+
+        # inventory is a CSV list of available data files and the valid date for each
+        # expected format is pathtofile,YYYY-MM-DD HH:MM:SS
+        # currently only used for NEON tower data
         inventory = None
         if not attributes:
             servernodes = [x for x in servernodes if not self.attrib(x)]
