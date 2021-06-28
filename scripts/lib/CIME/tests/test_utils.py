@@ -1,11 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import sys
 import os
-import shutil
+import sys
+
 import unittest
-import tempfile
+from unittest import mock
 from CIME.utils import indent_string, run_and_log_case_status
+
+from . import utils
 
 class TestIndentStr(unittest.TestCase):
     """Test the indent_string function.
@@ -36,19 +38,6 @@ goodbye
 """
         self.assertEqual(expected, result)
 
-# TODO after dropping python 2.7 replace with tempfile.TemporaryDirectory
-class TemporaryDirectory(object):
-    def __init__(self):
-        self._tempdir = None
-
-    def __enter__(self):
-        self._tempdir = tempfile.mkdtemp()
-        return self._tempdir
-
-    def __exit__(self, *args, **kwargs):
-        if os.path.exists(self._tempdir):
-            shutil.rmtree(self._tempdir)
-
 class MockTime(object):
     def __init__(self):
         self._old = None
@@ -56,7 +45,7 @@ class MockTime(object):
     def __enter__(self):
         self._old = getattr(sys.modules["time"], "strftime")
         setattr(sys.modules["time"], "strftime", lambda *args: "00:00:00 ")
-        
+
     def __exit__(self, *args, **kwargs):
         setattr(sys.modules["time"], "strftime", self._old)
 
@@ -95,16 +84,16 @@ class TestUtils(unittest.TestCase):
             error.extend([x.rstrip("\n") for x in missing])
             error.extend(["", "Tempfile contents", ""])
             error.extend([x.rstrip("\n") for x in data])
-            
+
         self.assertTrue(result, msg="\n".join(error))
-    
+
     def test_run_and_log_case_status(self):
         test_lines = [
             "00:00:00 default starting \n",
             "00:00:00 default success \n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "default",
                                     caseroot=tempdir)
 
@@ -116,7 +105,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "case.submit",
                                     caseroot=tempdir, is_batch=True)
 
@@ -128,7 +117,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "case.submit",
                                     caseroot=tempdir, is_batch=False)
 
@@ -141,7 +130,7 @@ class TestUtils(unittest.TestCase):
             "Something went wrong\n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
                 run_and_log_case_status(self.error_func, "case.submit",
                                         caseroot=tempdir, is_batch=True)
@@ -154,16 +143,46 @@ class TestUtils(unittest.TestCase):
             "00:00:00 default success success extra\n",
         ]
 
-        starting_func = lambda *args: "starting extra"
-        success_func = lambda *args: "success extra"
+        starting_func = mock.MagicMock(return_value="starting extra")
+        success_func = mock.MagicMock(return_value="success extra")
 
-        with TemporaryDirectory() as tempdir, MockTime():
-            run_and_log_case_status(self.base_func, "default", 
+        def normal_func():
+            return "data"
+
+        with utils.TemporaryDirectory() as tempdir, MockTime():
+            run_and_log_case_status(normal_func, "default",
                                     custom_starting_msg_functor=starting_func,
                                     custom_success_msg_functor=success_func,
                                     caseroot=tempdir)
 
             self.assertMatchAllLines(tempdir, test_lines)
+
+        starting_func.assert_called_with()
+        success_func.assert_called_with("data")
+
+    def test_run_and_log_case_status_custom_msg_error_on_batch(self):
+        test_lines = [
+            "00:00:00 default starting starting extra\n",
+            "00:00:00 default success success extra\n",
+        ]
+
+        starting_func = mock.MagicMock(return_value="starting extra")
+        success_func = mock.MagicMock(return_value="success extra")
+
+        def error_func():
+            raise Exception("Error")
+
+        with utils.TemporaryDirectory() as tempdir, MockTime(), \
+                self.assertRaises(Exception):
+            run_and_log_case_status(error_func, "default",
+                                    custom_starting_msg_functor=starting_func,
+                                    custom_success_msg_functor=success_func,
+                                    caseroot=tempdir)
+
+            self.assertMatchAllLines(tempdir, test_lines)
+
+        starting_func.assert_called_with()
+        success_func.assert_not_called()
 
     def test_run_and_log_case_status_error(self):
         test_lines = [
@@ -172,7 +191,7 @@ class TestUtils(unittest.TestCase):
             "Something went wrong\n",
         ]
 
-        with TemporaryDirectory() as tempdir, MockTime():
+        with utils.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
                 run_and_log_case_status(self.error_func, "default",
                                         caseroot=tempdir)

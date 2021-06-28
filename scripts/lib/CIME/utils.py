@@ -259,9 +259,8 @@ def get_src_root():
     Return the absolute path to the root of SRCROOT.
 
     """
-    # This if statement will need to be updated when cesm brings in the new share repos.
-    if get_model() == "cesm":
-        srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+    if os.path.isdir(os.path.join(get_cime_root(),"share")) and get_model() == "cesm":
+        srcroot = os.path.abspath(os.path.join(get_cime_root()))
     else:
         srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
 
@@ -659,6 +658,8 @@ def parse_test_name(test_name):
     ['ERS', ['D'], 'fe12_123', 'JGF', None, None, None]
     >>> parse_test_name('ERS_D_P1.fe12_123.JGF')
     ['ERS', ['D', 'P1'], 'fe12_123', 'JGF', None, None, None]
+    >>> parse_test_name('ERS_D_G2.fe12_123.JGF')
+    ['ERS', ['D', 'G2'], 'fe12_123', 'JGF', None, None, None]
     >>> parse_test_name('SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A')
     ['SMS', ['D', 'Ln9', 'Mmpi-serial'], 'f19_g16_rx1', 'A', None, None, None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler')
@@ -1321,6 +1322,8 @@ def convert_to_babylonian_time(seconds):
 
     >>> convert_to_babylonian_time(3661)
     '01:01:01'
+    >>> convert_to_babylonian_time(360000)
+    '100:00:00'
     """
     hours = int(seconds / 3600)
     seconds %= 3600
@@ -1793,7 +1796,7 @@ CASE_SUCCESS = "success"
 CASE_FAILURE = "error"
 def run_and_log_case_status(func, phase, caseroot='.',
                             custom_starting_msg_functor=None,
-                            custom_success_msg_functor=None, 
+                            custom_success_msg_functor=None,
                             is_batch=False):
     starting_msg = None
 
@@ -1808,7 +1811,8 @@ def run_and_log_case_status(func, phase, caseroot='.',
     try:
         rv = func()
     except BaseException:
-        custom_success_msg = custom_success_msg_functor(rv) if custom_success_msg_functor else None
+        custom_success_msg = custom_success_msg_functor(rv) \
+            if custom_success_msg_functor and rv is not None else None
         if phase == "case.submit" and is_batch:
             append_case_status(phase, "starting", msg=custom_success_msg,
                             caseroot=caseroot)
@@ -1817,11 +1821,12 @@ def run_and_log_case_status(func, phase, caseroot='.',
                            caseroot=caseroot)
         raise
     else:
-        custom_success_msg = custom_success_msg_functor(rv) if custom_success_msg_functor else None
+        custom_success_msg = custom_success_msg_functor(rv) \
+            if custom_success_msg_functor else None
         if phase == "case.submit" and is_batch:
             append_case_status(phase, "starting", msg=custom_success_msg,
                             caseroot=caseroot)
-        append_case_status(phase, CASE_SUCCESS, msg=custom_success_msg, 
+        append_case_status(phase, CASE_SUCCESS, msg=custom_success_msg,
                            caseroot=caseroot)
 
     return rv

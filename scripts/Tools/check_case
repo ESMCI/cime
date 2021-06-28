@@ -43,7 +43,7 @@ def _main_func(description):
 ###############################################################################
     parse_command_line(sys.argv, description)
 
-    with Case(read_only=False) as case:
+    with Case(read_only=False, record=True) as case:
         case.check_lockedfiles()
         case.create_namelists()
         build_complete = case.get_value("BUILD_COMPLETE")

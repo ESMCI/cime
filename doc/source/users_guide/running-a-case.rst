@@ -604,7 +604,7 @@ as an external shell script.
 
 ::
 
-   #!/usr/bin/env python
+   #!/usr/bin/env python3
    import sys
    from CIME.case import Case
 

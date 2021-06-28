@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Wrapper around all env XML for a case.
 
@@ -5,7 +6,7 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, six
+import glob, os, shutil, math, six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
 from six.moves import input
@@ -80,10 +81,13 @@ class Case(object):
     from CIME.case.preview_namelists import create_dirs, create_namelists
     from CIME.case.check_input_data import check_all_input_data, stage_refcase, check_input_data
 
-    def __init__(self, case_root=None, read_only=True):
+    def __init__(self, case_root=None, read_only=True, record=False):
 
         if case_root is None:
             case_root = os.getcwd()
+        if not (in_doctest() or in_unit_test()):
+            expect(not os.path.isdir(case_root) or os.path.isfile(os.path.join(case_root,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(case_root))
+
         self._caseroot = case_root
         logger.debug("Initializing Case.")
         self._read_only_mode = True
@@ -96,6 +100,9 @@ class Case(object):
         self._comp_interface = None
 
         self.read_xml()
+
+        if record:
+            self.record_cmd()
 
         # Hold arbitary values. In create_newcase we may set values
         # for xml files that haven't been created yet. We need a place
@@ -114,6 +121,7 @@ class Case(object):
         self._component_classes = []
         self._component_description = {}
         self._is_env_loaded = False
+        self._loaded_envs = None
 
         # these are user_mods as defined in the compset
         # Command Line user_mods are handled seperately
@@ -122,6 +130,7 @@ class Case(object):
         self.thread_count = None
         self.total_tasks = None
         self.tasks_per_node = None
+        self.ngpus_per_node = 0
         self.num_nodes = None
         self.spare_nodes = None
         self.tasks_per_numa = None
@@ -178,6 +187,11 @@ class Case(object):
             self.num_nodes += self.spare_nodes
 
         logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
+
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+
+        if max_gpus_per_node:
+            self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
         smt_factor = max(1,int(self.get_value("MAX_TASKS_PER_NODE") / max_mpitasks_per_node))
@@ -265,6 +279,7 @@ class Case(object):
         newcase.set_value("CASEROOT",newcaseroot)
         newcase.set_value("CONTINUE_RUN","FALSE")
         newcase.set_value("RESUBMIT",0)
+        newcase.set_value("CASE_HASH", newcase.new_hash())
 
         # Important, and subtle: Writability should NOT be copied because
         # this allows the copy to be modified without needing a "with" statement
@@ -929,7 +944,8 @@ class Case(object):
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
                   input_dir=None, driver=None, workflowid="default",
-                  non_local=False, extra_machines_dir=None, case_group=None):
+                  non_local=False, extra_machines_dir=None, case_group=None,
+                  ngpus_per_node=0):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
 
@@ -995,7 +1011,7 @@ class Case(object):
         nodenames = [x for x in nodenames if
                      '_system' not in x and '_variables' not in x and 'mpirun' not in x and\
                      'COMPILER' not in x and 'MPILIB' not in x and 'MAX_MPITASKS_PER_NODE' not in x and\
-                     'MAX_TASKS_PER_NODE' not in x]
+                     'MAX_TASKS_PER_NODE' not in x and 'MAX_GPUS_PER_NODE' not in x]
 
         for nodename in nodenames:
             value = machobj.get_value(nodename, resolved=False)
@@ -1019,11 +1035,14 @@ class Case(object):
             expect(machobj.is_valid_MPIlib(mpilib, {"compiler":compiler}),
                    "MPIlib {} is not supported on machine {}".format(mpilib, machine_name))
         self.set_value("MPILIB",mpilib)
-        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE"):
+        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE","MAX_GPUS_PER_NODE"):
             dmax = machobj.get_value(name,{'compiler':compiler})
             if not dmax:
                 dmax = machobj.get_value(name)
-            self.set_value(name, dmax)
+            if dmax:
+                self.set_value(name, dmax)
+            else:
+                logger.warning("Variable {} not defined for machine {}".format(name, machine_name))
 
         machdir = machobj.get_machines_dir()
         self.set_value("MACHDIR", machdir)
@@ -1119,6 +1138,32 @@ class Case(object):
 
         if test:
             self.set_value("TEST",True)
+
+        #----------------------------------------------------------------------------------------------------------
+        # Sanity check:
+        #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
+        #     2. For compilers without the string "gpu" in the name:
+        #        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as
+        #             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
+        #        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument
+        #             must be set to 0. Otherwise, an error will be triggered.
+        #     3. For compilers with the string "gpu" in the name:
+        #        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered.
+        #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
+        #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
+        #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
+        #----------------------------------------------------------------------------------------------------------
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+        if max_gpus_per_node:
+            if  "gpu" in compiler:
+                if not ngpus_per_node:
+                    ngpus_per_node = 1
+                    logger.warning("Setting ngpus_per_node to 1 for compiler {}".format(compiler))
+                expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+            else:
+                expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+            if ngpus_per_node >= 0:
+                self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
 
         self.initialize_derived_attributes()
 
@@ -1452,14 +1497,15 @@ directory, NOT in this subdirectory."""
         mpirun_cmd_override = self.get_value("MPI_RUN_COMMAND")
         if mpirun_cmd_override not in ["", None, "UNSET"]:
             return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
+        queue = self.get_value("JOB_QUEUE", subgroup=job)
 
         # Things that will have to be matched against mpirun element attributes
         mpi_attribs = {
-            "compiler" : self.get_value("COMPILER"),
-            "mpilib"   : self.get_value("MPILIB"),
-            "threaded" : self.get_build_threaded(),
-            "queue" : self.get_value("JOB_QUEUE", subgroup=job),
-            "unit_testing" : False,
+            "compiler"       : self.get_value("COMPILER"),
+            "mpilib"         : self.get_value("MPILIB"),
+            "threaded"       : self.get_build_threaded(),
+            "queue"          : queue,
+            "unit_testing"   : False,
             "comp_interface" : self._comp_interface
             }
 
@@ -1484,6 +1530,14 @@ directory, NOT in this subdirectory."""
         if self.get_value("BATCH_SYSTEM") == "cobalt":
             mpi_arg_string += " : "
 
+        ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+        if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
+            # 1. this setting is tested on Casper only and may not work on other machines
+            # 2. need to be revisited in the future for a more adaptable implementation
+            rundir = self.get_value("RUNDIR")
+            output_name = rundir+'/set_device_rank.sh'
+            mpi_arg_string = mpi_arg_string + " " + output_name + " "
+
         return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)
 
     def set_model_version(self, model):
@@ -1504,8 +1558,12 @@ directory, NOT in this subdirectory."""
                 job = self.get_primary_job()
             os.environ["OMP_NUM_THREADS"] = str(self.thread_count)
             env_module = self.get_env("mach_specific")
-            env_module.load_env(self, job=job, verbose=verbose)
+            self._loaded_envs = env_module.load_env(self, job=job, verbose=verbose)
+            self._loaded_envs.append(("OMP_NUM_THREADS",
+                                      os.environ["OMP_NUM_THREADS"]))
             self._is_env_loaded = True
+
+        return self._loaded_envs
 
     def get_build_threaded(self):
         """
@@ -1636,6 +1694,41 @@ directory, NOT in this subdirectory."""
         else:
             return None
 
+    def record_cmd(self, cmd=None, init=False):
+        lines = []
+        caseroot = self.get_value("CASEROOT")
+        cimeroot = self.get_value("CIMEROOT")
+
+        if cmd is None:
+            cmd = list(sys.argv)
+
+        if init:
+            ctime = time.strftime("%Y-%m-%d %H:%M:%S")
+
+            lines.append("#!/bin/bash\n\n")
+            # stop script on error, prevents `create_newcase` from failing
+            # and continuing to execute commands
+            lines.append("set -e\n\n")
+            lines.append("# Created {}\n\n".format(ctime))
+            lines.append("CASEDIR=\"{}\"\n\n".format(caseroot))
+            lines.append("cd \"${CASEDIR}\"\n\n")
+
+            # Ensure program path is absolute
+            cmd[0] = re.sub("^./", "{}/scripts/".format(cimeroot), cmd[0])
+        elif not (in_doctest()  or in_unit_test()):
+            expect(caseroot and os.path.isdir(caseroot) and os.path.isfile(os.path.join(caseroot,"env_case.xml")), "Directory {} does not appear to be a valid case directory".format(caseroot))
+
+        cmd = " ".join(cmd)
+
+        # Replace instances of caseroot with variable
+        cmd = re.sub(caseroot, "\"${CASEDIR}\"", cmd)
+
+        lines_len = len(lines)
+        lines.insert(lines_len-1 if init else lines_len, "{}\n\n".format(cmd))
+
+        with open(os.path.join(caseroot, "replay.sh"), "a") as fd:
+            fd.writelines(lines)
+
     def create(self, casename, srcroot, compset_name, grid_name,
                user_mods_dir=None, machine_name=None,
                project=None, pecount=None, compiler=None, mpilib=None,
@@ -1644,12 +1737,13 @@ directory, NOT in this subdirectory."""
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
                input_dir=None, driver=None, workflowid="default", non_local=False,
-               extra_machines_dir=None, case_group=None):
+               extra_machines_dir=None, case_group=None, ngpus_per_node=0):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
             self.set_lookup_value("CASEROOT", self._caseroot)
             self.set_lookup_value("SRCROOT", srcroot)
+            self.set_lookup_value("CASE_HASH", self.new_hash())
             # if the top level user_mods_dir contains a config_grids.xml file and
             # gridfile was not set on the command line, use it.
             if user_mods_dir:
@@ -1672,7 +1766,8 @@ directory, NOT in this subdirectory."""
                            run_unsupported=run_unsupported, answer=answer,
                            input_dir=input_dir, driver=driver,
                            workflowid=workflowid, non_local=non_local,
-                           extra_machines_dir=extra_machines_dir, case_group=case_group)
+                           extra_machines_dir=extra_machines_dir, case_group=case_group,
+                           ngpus_per_node=ngpus_per_node)
 
             self.create_caseroot()
 
@@ -1691,6 +1786,18 @@ directory, NOT in this subdirectory."""
                     logger.warning("Leaving broken case dir {}".format(self._caseroot))
 
             raise
+
+    def new_hash(self):
+        """ Creates a hash
+        """
+        args = "".join(sys.argv)
+        ctime = time.strftime("%Y-%m-%d %H:%M:%S")
+        hostname = socket.getfqdn()
+        user = getpass.getuser()
+
+        data = "{}{}{}{}".format(args, ctime, hostname, user)
+
+        return hashlib.sha256(data.encode()).hexdigest()
 
     def is_save_timing_dir_project(self,project):
         """
@@ -1716,3 +1823,63 @@ directory, NOT in this subdirectory."""
         env_workflow = self.get_env("workflow")
         jobs = env_workflow.get_jobs()
         return jobs[0]
+
+    def preview_run(self, write, job):
+        write("CASE INFO:")
+        write("  nodes: {}".format(self.num_nodes))
+        write("  total tasks: {}".format(self.total_tasks))
+        write("  tasks per node: {}".format(self.tasks_per_node))
+        write("  thread count: {}".format(self.thread_count))
+        write("  ngpus per node: {}".format(self.ngpus_per_node))
+        write("")
+
+        write("BATCH INFO:")
+        if not job:
+            job = self.get_first_job()
+
+        job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+        env_batch = self.get_env('batch')
+        for job_id, cmd in job_id_to_cmd:
+            write("  FOR JOB: {}".format(job_id))
+            write("    ENV:")
+            loaded_envs = self.load_env(job=job_id, reset=True, verbose=False)
+
+            for name, value in iter(sorted(loaded_envs, key=lambda x: x[0])):
+                write("      Setting Environment {}={}".format(name, value))
+
+            write("")
+            write("    SUBMIT CMD:")
+            write("      {}".format(self.get_resolved_value(cmd)))
+            write("")
+            if job_id in ("case.run", "case.test"):
+                # get_job_overrides must come after the case.load_env since the cmd may use
+                # env vars.
+                overrides = env_batch.get_job_overrides(job_id, self)
+                write("    MPIRUN (job={}):".format(job_id))
+                write ("      {}".format(self.get_resolved_value(overrides["mpirun"])))
+                write("")
+
+def in_doctest():
+    """
+    Determined by observation
+    """
+    if '_pytest.doctest' in sys.modules:
+        return True
+    ##
+    if hasattr(sys.modules['__main__'], '_SpoofOut'):
+        return True
+    ##
+    if sys.modules['__main__'].__dict__.get('__file__', '').endswith('/pytest'):
+        return True
+    ##
+    return False
+
+import inspect
+
+def in_unit_test():
+    current_stack = inspect.stack()
+    for stack_frame in current_stack:
+        for program_line in stack_frame[4]:    # This element of the stack frame contains
+            if "unittest" in program_line:       # some contextual program lines
+                return True
+    return False

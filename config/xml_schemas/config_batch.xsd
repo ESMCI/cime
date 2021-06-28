@@ -181,6 +181,7 @@
           <xs:attribute name="jobname" type="xs:NCName"/>
           <xs:attribute name="walltimemax"/>
           <xs:attribute name="walltimemin"/>
+          <xs:attribute name="walltimedef"/>
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>

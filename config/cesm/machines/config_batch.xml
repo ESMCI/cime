@@ -214,10 +214,36 @@
   <!-- casper pbs -->
   <batch_system MACH="casper" type="pbs">
     <batch_submit>qsub</batch_submit>
-    <directives queue="casper">
-      <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus=1 </directive>
+
+    <directives queue="casper" compiler="pgi-gpu">
+      <!-- Turn on MPS server manually -->
+      <!-- This is a temporary solution and should be removed once MPS is integrated into PBS on Casper -->
+      <directive default="/bin/bash" > -S /glade/u/apps/dav/opt/nvidia-mps/mps_bash </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
       <directive> -l gpu_type=v100 </directive>
+    </directives>
+
+    <directives queue="casper" compiler="nvhpc-gpu">
+      <!-- Turn on MPS server manually -->
+      <!-- This is a temporary solution and should be removed once MPS is integrated into PBS on Casper -->
+      <directive default="/bin/bash" > -S /glade/u/apps/dav/opt/nvidia-mps/mps_bash </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+      <directive> -l gpu_type=v100 </directive>
+    </directives>
+
+    <directives queue="casper" compiler="nvhpc">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+    </directives>
+
+    <directives queue="casper" compiler="pgi">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+    </directives>
+
+    <directives queue="casper" compiler="intel">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
     </directives>
 
     <!-- Unknown queues use the batch directives for the regular queue -->
@@ -556,7 +582,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="357" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 
@@ -570,7 +597,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="357" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 
@@ -584,7 +612,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="500" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 
@@ -598,7 +627,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="624" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Unit tests for the xml_test_list module.
 
 Public classes:

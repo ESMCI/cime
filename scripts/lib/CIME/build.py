@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 _CMD_ARGS_FOR_BUILD = \
     ("CASEROOT", "CASETOOLS", "CIMEROOT", "SRCROOT", "COMP_INTERFACE",
-     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT", "LILAC_MODE",
+     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT",
      "MACH", "MPILIB", "NINST_VALUE", "OS", "PIO_VERSION",
      "SHAREDLIBROOT", "SMP_PRESENT", "USE_ESMF_LIB", "USE_MOAB",
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
@@ -29,6 +29,7 @@ def get_standard_makefile_args(case, shared_lib=False):
 
 def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     cmake_args = "-DCIME_MODEL={} ".format(case.get_value("MODEL"))
+    cmake_args += "-DSRC_ROOT={} ".format(case.get_value("SRCROOT"))
     cmake_args += " -Dcompile_threaded={} ".format(stringify_bool(case.get_build_threaded()))
 
     ocn_model = case.get_value("COMP_OCN")
@@ -58,9 +59,13 @@ def xml_to_make_variable(case, varname, cmake=False):
     varvalue = case.get_value(varname)
     if varvalue is None:
         return ""
-    if type(varvalue) == type(True):
+    if isinstance(varvalue, bool):
         varvalue = stringify_bool(varvalue)
-    return "{}{}=\"{}\" ".format("-D" if cmake else "", varname, varvalue)
+
+    if cmake or isinstance(varvalue, str):
+        return "{}{}=\"{}\" ".format("-D" if cmake else "", varname, varvalue)
+    else:
+        return "{}={} ".format(varname, varvalue)
 
 ###############################################################################
 def uses_kokkos(case):
@@ -375,7 +380,6 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    lilac_mode = case.get_value("LILAC_MODE")
     ufs_driver = os.environ.get("UFS_DRIVER")
     cpl_in_complist = False
     for l in complist:
@@ -385,6 +389,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
     if ufs_driver and ufs_driver == 'nems' and not cpl_in_complist:
         libs = []
+    elif case.get_value("MODEL") == "cesm" and comp_interface == "nuopc":
+        libs = ["gptl", "mct", "pio", "csm_share"]
+    elif case.get_value("MODEL") == "cesm":
+        libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
 
@@ -396,14 +404,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     build_script = {}
-    if (comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems')
-        and lilac_mode != 'on'):
-        # For now, we avoid building CDEPS with CTSM's LILAC because it's not needed in
-        # this configuration and CDEPS relies on unreleased ESMF code. Eventually we will
-        # require CDEPS (for its streams functionality), at which point CDEPS should only
-        # require released ESMF code; then we should remove the 'lilac_mode' part of this
-        # conditional and the similar conditional in the Makefile (along with the addition
-        # of LILAC_MODE to _CMD_ARGS_FOR_BUILD).
+    if (comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems')):
         libs.append("CDEPS")
 
     ocn_model = case.get_value("COMP_OCN")
@@ -433,7 +434,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         if buildlist is not None and lib not in buildlist:
             continue
 
-        if lib == "csm_share":
+        if lib == "csm_share" or lib == "csm_share_cpl7":
             # csm_share adds its own dir name
             full_lib_path = os.path.join(sharedlibroot, sharedpath)
         elif lib == "mpi-serial":
