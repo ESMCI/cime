@@ -9,7 +9,7 @@ include(CTest)
 if (DEFINED ENV{PYTHON})
   set(PYTHON $ENV{PYTHON})
 else()
-  set(PYTHON "python")
+  set(PYTHON "python3")
 endif()
 
 execute_process(COMMAND ${PYTHON} "--version" OUTPUT_VARIABLE PY_VER
