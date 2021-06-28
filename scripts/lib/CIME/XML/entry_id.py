@@ -43,29 +43,45 @@ class EntryID(GenericXML):
 
         return val
 
-    def get_value_match(self, vid, attributes=None, exact_match=False, entry_node=None):
-        # Handle this case:
-        # <entry id ...>
-        #  <values>
-        #   <value A="a1">X</value>
-        #   <value A="a2">Y</value>
-        #   <value A="a3" B="b1">Z</value>
-        #  </values>
-        # </entry>
+    def get_value_match(self, vid, attributes=None, exact_match=False, entry_node=None,
+                        replacement_for_none=None):
+        """Handle this case:
+        <entry id ...>
+         <values>
+          <value A="a1">X</value>
+          <value A="a2">Y</value>
+          <value A="a3" B="b1">Z</value>
+         </values>
+        </entry>
+
+        If replacement_for_none is provided, then: if the found text value would give a
+        None value, instead replace it with the value given by the replacement_for_none
+        argument. (However, still return None if no match is found.) This may or may not
+        be needed, but is in place to maintain some old logic.
+
+        """
 
         if entry_node is not None:
-            value = self._get_value_match(entry_node, attributes, exact_match)
+            value = self._get_value_match(entry_node, attributes, exact_match,
+                                          replacement_for_none=replacement_for_none)
         else:
             node = self.get_optional_child("entry", {"id":vid})
             value = None
             if node is not None:
-                value = self._get_value_match(node, attributes, exact_match)
+                value = self._get_value_match(node, attributes, exact_match,
+                                              replacement_for_none=replacement_for_none)
         logger.debug("(get_value_match) vid {} value {}".format(vid, value))
         return value
 
-    def _get_value_match(self, node, attributes=None, exact_match=False):
+    def _get_value_match(self, node, attributes=None, exact_match=False,
+                         replacement_for_none=None):
         '''
         Note that the component class has a specific version of this function
+
+        If replacement_for_none is provided, then: if the found text value would give a
+        None value, instead replace it with the value given by the replacement_for_none
+        argument. (However, still return None if no match is found.) This may or may not
+        be needed, but is in place to maintain some old logic.
         '''
         # if there is a <values> element - check to see if there is a match attribute
         # if there is NOT a match attribute, then set the default to "first"
@@ -125,7 +141,12 @@ class EntryID(GenericXML):
                 expect(False,
                        "match attribute can only have a value of 'last' or 'first', value is %s" %match_type)
 
-        return self.text(mnode)
+        text = self.text(mnode)
+        if text is None:
+            # NOTE(wjs, 2021-06-03) I'm not sure when (if ever) this can happen, but I'm
+            # putting this logic here to maintain some old logic, to be safe.
+            text = replacement_for_none
+        return text
 
     def get_node_element_info(self, vid, element_name):
         node = self.get_optional_child("entry", {"id":vid})

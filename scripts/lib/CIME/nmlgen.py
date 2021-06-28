@@ -630,6 +630,8 @@ class NamelistGenerator(object):
         have_value = False
         # Check for existing value.
         current_literals = self._namelist.get_variable_value(group, name)
+        if current_literals != [""]:
+            have_value = True
 
         # Check for input argument.
         if value is not None:
@@ -644,7 +646,8 @@ class NamelistGenerator(object):
             have_value = True
             default_literals = self._to_namelist_literals(name, default)
             current_literals = merge_literal_lists(default_literals, current_literals)
-        expect(have_value, "No default value found for {}.".format(name))
+        expect(have_value, "No default value found for {} with attributes {}.".format(
+            name, self._definition.get_attributes()))
 
         # Go through file names and prepend input data root directory for
         # absolute pathnames.
