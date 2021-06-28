@@ -153,6 +153,8 @@ class Cime2PesNode(PesNode):
                         resolvetag = val[1:]
                         if resolvetag == "MAX_TASKS_PER_NODE":
                             val = '-1'
+                        elif resolvetag == "MAX_GPUS_PER_NODE":
+                            val = '-1'
                         else:
                             refnode = xmlnode.find(resolvetag)
                             if refnode is None:

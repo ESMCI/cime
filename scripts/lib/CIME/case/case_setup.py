@@ -9,6 +9,7 @@ from CIME.XML.machines      import Machines
 from CIME.BuildTools.configure import configure
 from CIME.utils             import get_cime_root, run_and_log_case_status, get_model, get_batch_script_for_job, safe_copy
 from CIME.utils             import batch_jobid
+from CIME.utils             import transform_vars
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
 import errno
@@ -96,7 +97,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             except OSError as e:
                 if e.errno == errno.EACCES:
                     logger.info("Invalid permissions to create {}".format(din_loc_root))
-            
+
         expect(not (not os.path.isdir(din_loc_root) and testcase != "SBN"),
                "inputdata root is not a directory or is not readable: {}".format(din_loc_root))
 
@@ -277,7 +278,7 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
         test_name = casebaseid if casebaseid is not None else self.get_value("CASE")
         with TestStatus(test_dir=caseroot, test_name=test_name) as ts:
             try:
-                run_and_log_case_status(functor, phase, 
+                run_and_log_case_status(functor, phase,
                                         custom_starting_msg_functor=msg_func,
                                         custom_success_msg_functor=msg_func,
                                         caseroot=caseroot,
@@ -291,8 +292,32 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
                 else:
                     ts.set_status(SETUP_PHASE, TEST_PASS_STATUS)
     else:
-        run_and_log_case_status(functor, phase, 
+        run_and_log_case_status(functor, phase,
                                 custom_starting_msg_functor=msg_func,
                                 custom_success_msg_functor=msg_func,
                                 caseroot=caseroot,
                                 is_batch=is_batch)
+
+    # put the following section here to make sure the rundir is generated first
+    machdir = self.get_value("MACHDIR")
+    mach = self.get_value("MACH")
+    ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+    overrides = {}
+    overrides["ngpus_per_node"] = ngpus_per_node
+    input_template = os.path.join(machdir,"mpi_run_gpu.{}".format(mach))
+    if os.path.isfile(input_template):
+        # update the wrapper script that sets the device id for each MPI rank
+        output_text = transform_vars(open(input_template,"r").read(), case=self, overrides=overrides)
+
+        # write it out to the run dir
+        rundir = self.get_value("RUNDIR")
+        output_name = os.path.join(rundir,"set_device_rank.sh")
+        logger.info("Creating file {}".format(output_name))
+        with open(output_name, "w") as f:
+            f.write(output_text)
+
+        # make the wrapper script executable
+        if os.path.isfile(output_name):
+            os.system("chmod +x "+output_name)
+        else:
+            expect(False, "The file {} is not written out correctly.".format(output_name))

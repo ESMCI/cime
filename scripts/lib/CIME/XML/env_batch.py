@@ -171,7 +171,7 @@ class EnvBatch(EnvBase):
 
     def get_job_overrides(self, job, case):
         env_workflow = case.get_env('workflow')
-        total_tasks, num_nodes, tasks_per_node, thread_count = env_workflow.get_job_specs(case, job)
+        total_tasks, num_nodes, tasks_per_node, thread_count, ngpus_per_node = env_workflow.get_job_specs(case, job)
         overrides = {}
 
         if total_tasks:
@@ -186,6 +186,7 @@ class EnvBatch(EnvBase):
         if int(total_tasks)*int(thread_count) < case.get_value("MAX_TASKS_PER_NODE"):
             overrides["max_tasks_per_node"] = int(total_tasks)
 
+        overrides["ngpus_per_node"] = ngpus_per_node
         overrides["mpirun"] = case.get_mpirun_cmd(job=job, overrides=overrides)
         return overrides
 
@@ -353,7 +354,7 @@ class EnvBatch(EnvBase):
             if my_value: result = xml_value == "TRUE"
             else: result = xml_value == "FALSE"
         else:
-            result = re.match(xml_value,str(my_value)) is not None
+            result = re.match(xml_value+'$',str(my_value)) is not None
 
         logger.debug("(env_mach_specific) _match {} {} {}".format(my_value, xml_value, result))
         return result

@@ -513,6 +513,9 @@ class TestScheduler(object):
                 elif case_opt.startswith('P'):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
+                elif case_opt.startswith('G'):
+                    ngpus_per_node = case_opt[1:]
+                    create_newcase_cmd += " --ngpus-per-node {}".format(ngpus_per_node)
                 elif case_opt.startswith('V'):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)
@@ -676,13 +679,13 @@ class TestScheduler(object):
                     if match.group(2):
                         envtest.set_test_parameter("PIO_STRIDE_CPL",match.group(2))
 
-
                 elif (opt.startswith('I') or # Marker to distinguish tests with same name - ignored
                       opt.startswith('M') or # handled in create_newcase
                       opt.startswith('P') or # handled in create_newcase
                       opt.startswith('N') or # handled in create_newcase
                       opt.startswith('C') or # handled in create_newcase
                       opt.startswith('V') or # handled in create_newcase
+                      opt.startswith('G') or # handled in create_newcase
                       opt == 'B'):           # handled in run_phase
                     pass
 
