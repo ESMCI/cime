@@ -1,6 +1,80 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 6-29-2021 
+Tag: cime6.0.1
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Allow multiple copys of this variable.
+    - Updates from imp to importlib.
+    - Set default python to 'python3' for scripts tests CMake file.
+    - Add a new version of WW3 as an optional component.
+    - Multi gpus casper.
+    - cime smartsim.
+    - Refactor lilac build - only relevant to CESM.
+    - Adds default walltime for queues. 
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+ccdf7376e Merge pull request #4019 from jedwards4b/fix_max_tasks_per_node
+792be93f1 Merge pull request #4015 from jasonb5/update_importlib
+f919e5809 Merge pull request #4016 from ESMCI/jgfouca/fix_mappy_py_ctest
+7989160f2 Merge pull request #3976 from ESMCI/feature/add_ww3
+1ca7db61f merge multi_gpus_casper
+915ab904c Merge branch 'cime_smartsim'
+b42da1b94 Merge pull request #4014 from ESMCI/feature/refactor_lilac_build
+523e9afc5 Merge pull request #4011 from jasonb5/add_default_walltime
+
+Modified files: git diff --name-status [previous_tag]
+M	config/cesm/config_files.xml
+M	config/cesm/config_grids.xml
+M	config/cesm/config_inputdata.xml
+M	config/cesm/machines/Depends.nvhpc-gpu
+M	config/cesm/machines/Depends.pgi-gpu
+M	config/cesm/machines/config_batch.xml
+M	config/cesm/machines/config_compilers.xml
+M	config/cesm/machines/config_machines.xml
+M	config/cesm/machines/config_workflow.xml
+A	config/cesm/machines/mpi_run_gpu.casper
+M	config/xml_schemas/config_batch.xsd
+M	config/xml_schemas/config_inputdata.xsd
+M	config/xml_schemas/config_machines.xsd
+M	scripts/Tools/Makefile
+M	scripts/Tools/xmlconvertors/config_pes_converter.py
+M	scripts/Tools/xmlquery
+M	scripts/create_newcase
+M	scripts/lib/CIME/XML/archive_base.py
+M	scripts/lib/CIME/XML/entry_id.py
+M	scripts/lib/CIME/XML/env_batch.py
+M	scripts/lib/CIME/XML/env_workflow.py
+M	scripts/lib/CIME/XML/inputdata.py
+M	scripts/lib/CIME/XML/machines.py
+M	scripts/lib/CIME/XML/namelist_definition.py
+M	scripts/lib/CIME/build.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/case/case_setup.py
+M	scripts/lib/CIME/case/case_st_archive.py
+M	scripts/lib/CIME/case/check_input_data.py
+M	scripts/lib/CIME/namelist.py
+M	scripts/lib/CIME/nmlgen.py
+M	scripts/lib/CIME/test_scheduler.py
+M	scripts/lib/CIME/tests/test_case.py
+M	scripts/lib/CIME/tests/test_utils.py
+M	scripts/lib/CIME/tests/test_xml_env_batch.py
+M	scripts/lib/CIME/utils.py
+M	scripts/query_config
+M	scripts/tests/CMakeLists.txt
+M	scripts/tests/scripts_regression_tests.py
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 6-23-2021
 Tag: cime6.0.0
 Answer Changes: None
