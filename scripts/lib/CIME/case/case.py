@@ -1416,7 +1416,8 @@ directory, NOT in this subdirectory."""
         if self.get_value("TEST"):
             test_mods_path = self.get_value("TESTS_MODS_DIR")
             test_mods_dir = os.path.join(test_mods_path,self._primary_component,"default")
-            if test_mods_path in all_user_mods or not os.path.exists(test_mods_dir):
+            # if the user_mod is already a test_mod do not apply this test_mods_dir
+            if any(um.find(test_mods_dir) for um in all_user_mods) or not os.path.exists(test_mods_dir):
                 test_mods_dir = None
             else:
                 # needs to be a list
