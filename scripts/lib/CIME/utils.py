@@ -4,6 +4,7 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 """
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, \
     importlib, fnmatch
+import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
 import six
