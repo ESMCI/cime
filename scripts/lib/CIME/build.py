@@ -1,9 +1,12 @@
 """
 functions for building CIME models
 """
-import glob, shutil, time, threading, subprocess, imp
+import glob, shutil, time, threading, subprocess
 from CIME.XML.standard_module_setup  import *
-from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
+from CIME.utils                 import get_model, analyze_build_log, \
+    stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, \
+    run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, \
+    check_for_python, get_logging_options, import_from_file
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
 from CIME.XML.files             import Files
@@ -543,7 +546,8 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
     """
     bc_path = os.path.join(config_dir, "buildlib_cmake")
     expect(os.path.exists(bc_path), "Missing: {}".format(bc_path))
-    buildlib = imp.load_source("buildlib_cmake", os.path.join(config_dir, "buildlib_cmake"))
+    buildlib = import_from_file("buildlib_cmake", os.path.join(config_dir,
+                                                               "buildlib_cmake"))
     cmake_args = buildlib.buildlib(bldroot, libroot, case)
     return "" if cmake_args is None else cmake_args
 

@@ -7,7 +7,7 @@ to confirm overall CIME correctness.
 
 import glob, os, re, shutil, signal, sys, tempfile, \
     threading, time, logging, unittest, getpass, \
-    filecmp, time, atexit, importlib
+    filecmp, time, atexit
 
 from xml.etree.ElementTree import ParseError
 
@@ -22,7 +22,9 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, get_src_root, Timeout
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, \
+    safe_copy, CIMEError, get_cime_root, get_src_root, Timeout, \
+    import_from_file
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -2436,12 +2438,7 @@ class K_TestCimeCase(TestCreateTestCommon):
         sys.path.append(TOOLS_DIR)
         case_submit_path = os.path.join(TOOLS_DIR, "case.submit")
 
-        loader = importlib.machinery.SourceFileLoader("case.submit",
-                                                      case_submit_path)
-        spec = importlib.util.spec_from_loader(loader.name, loader)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules["case.submit"] = module
-        spec.loader.exec_module(module)
+        module = import_from_file("case.submit", case_submit_path)
 
         sys.argv = ["case.submit", "--batch-args", "'random_arguments_here.%j'",
                     "--mail-type", "fail", "--mail-user", "'random_arguments_here.%j'"]

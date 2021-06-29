@@ -2,7 +2,8 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, fnmatch
+import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, \
+    importlib, fnmatch
 import errno, signal, warnings, filecmp
 import stat as statlib
 import six
@@ -14,6 +15,19 @@ from distutils import file_util
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
 logger = logging.getLogger(__name__)
+
+def import_from_file(name, file_path):
+    loader = importlib.machinery.SourceFileLoader(name, file_path)
+
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+
+    module = importlib.util.module_from_spec(spec)
+
+    sys.modules[name] = module
+
+    spec.loader.exec_module(module)
+
+    return module
 
 @contextmanager
 def redirect_stdout(new_target):
@@ -414,7 +428,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
     if not do_run_cmd:
         try:
-            mod = imp.load_source(subname, cmd)
+            mod = import_from_file(subname, cmd)
             logger.info("   Calling {}".format(cmd))
             # Careful: logfile code is not thread safe!
             if logfile:
