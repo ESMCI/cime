@@ -1418,6 +1418,9 @@ directory, NOT in this subdirectory."""
             test_mods_dir = os.path.join(test_mods_path,self._primary_component,"default")
             if test_mods_path in all_user_mods or not os.path.exists(test_mods_dir):
                 test_mods_dir = None
+            else:
+                # needs to be a list
+                test_mods_dir = [test_mods_dir]
         # This looping order will lead to the specified user_mods_dir taking
         # precedence over self._user_mods, if there are any conflicts.
         for user_mods in all_user_mods:
@@ -1426,7 +1429,7 @@ directory, NOT in this subdirectory."""
             else:
                 user_mods_path = self.get_value('USER_MODS_DIR')
                 user_mods_path = os.path.join(user_mods_path, user_mods)
-            apply_user_mods(self._caseroot, user_mods_path, include_dirs=[test_mods_dir])
+            apply_user_mods(self._caseroot, user_mods_path, include_dirs=test_mods_dir)
 
         # User mods may have modified underlying XML files
         if all_user_mods:
