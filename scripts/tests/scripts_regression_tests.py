@@ -22,7 +22,9 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, get_src_root, Timeout
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, \
+    safe_copy, CIMEError, get_cime_root, get_src_root, Timeout, \
+    import_from_file
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -2431,19 +2433,16 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_case_submit_interface(self):
     ###########################################################################
-        try:
-            import imp
-        except ImportError:
-            print("imp not found, skipping case.submit interface test")
-            return
         # the current directory may not exist, so make sure we are in a real directory
         os.chdir(os.getenv("HOME"))
         sys.path.append(TOOLS_DIR)
         case_submit_path = os.path.join(TOOLS_DIR, "case.submit")
-        submit_interface = imp.load_source("case_submit_interface", case_submit_path)
+
+        module = import_from_file("case.submit", case_submit_path)
+
         sys.argv = ["case.submit", "--batch-args", "'random_arguments_here.%j'",
                     "--mail-type", "fail", "--mail-user", "'random_arguments_here.%j'"]
-        submit_interface._main_func(None, True)
+        module._main_func(None, True)
 
     ###########################################################################
     def test_xml_caching(self):

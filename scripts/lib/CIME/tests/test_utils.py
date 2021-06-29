@@ -2,10 +2,12 @@
 
 import os
 import sys
+import tempfile
 
 import unittest
 from unittest import mock
-from CIME.utils import indent_string, run_and_log_case_status
+from CIME.utils import indent_string, run_and_log_case_status, \
+    import_from_file
 
 from . import utils
 
@@ -86,6 +88,19 @@ class TestUtils(unittest.TestCase):
             error.extend([x.rstrip("\n") for x in data])
 
         self.assertTrue(result, msg="\n".join(error))
+
+    def test_import_from_file(self):
+        with tempfile.NamedTemporaryFile() as fd:
+            fd.writelines([
+                b"def test():\n",
+                b"  return 'value'",
+            ])
+
+            fd.flush()
+
+            module = import_from_file("test.py", fd.name)
+
+            assert module.test() == "value"
 
     def test_run_and_log_case_status(self):
         test_lines = [
