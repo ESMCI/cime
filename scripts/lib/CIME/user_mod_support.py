@@ -8,7 +8,7 @@ import glob
 
 logger = logging.getLogger(__name__)
 
-def apply_user_mods(caseroot, user_mods_path, keepexe=None):
+def apply_user_mods(caseroot, user_mods_path, keepexe=None, include_dirs=None):
     '''
     Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx,
     updating SourceMods and creating case shell_commands and xmlchange_cmds files
@@ -27,7 +27,7 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
         if os.path.isfile(shell_command_file):
             os.remove(shell_command_file)
 
-    include_dirs = build_include_dirs_list(user_mods_path)
+    include_dirs = build_include_dirs_list(user_mods_path, include_dirs=include_dirs)
     # If a user_mods dir 'foo' includes 'bar', the include_dirs list returned
     # from build_include_dirs has 'foo' before 'bar'. But with the below code,
     # directories that occur later in the list take precedence over the earlier
