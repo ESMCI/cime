@@ -1414,15 +1414,12 @@ directory, NOT in this subdirectory."""
 
         test_mods_dir = None
         if self.get_value("TEST"):
-            test_mods_path = self.get_value("TESTS_MODS_DIR")
+            test_mods_path = os.path.abspath(self.get_value("TESTS_MODS_DIR"))
             test_mods_dir = os.path.join(test_mods_path,self._primary_component,"default")
-            print("test_mods_path {} all_user_mods {} {}".format(test_mods_path, all_user_mods, any(um.find(test_mods_path) for um in all_user_mods)))
-            # if the user_mod is already a test_mod do not apply this test_mods_dir
-            if any(um.startswith(test_mods_path) for um in all_user_mods) or not os.path.exists(test_mods_dir):
-                test_mods_dir = None
-            else:
-                # needs to be a list
-                test_mods_dir = [test_mods_dir]
+            user_mods_dir = os.path.abspath(user_mods_dir)
+            if test_mods_path not in user_mods_dir and os.path.exists(test_mods_dir):
+                all_user_mods.insert(0,test_mods_dir)
+
         # This looping order will lead to the specified user_mods_dir taking
         # precedence over self._user_mods, if there are any conflicts.
         for user_mods in all_user_mods:
@@ -1431,7 +1428,7 @@ directory, NOT in this subdirectory."""
             else:
                 user_mods_path = self.get_value('USER_MODS_DIR')
                 user_mods_path = os.path.join(user_mods_path, user_mods)
-            apply_user_mods(self._caseroot, user_mods_path, include_dirs=test_mods_dir)
+            apply_user_mods(self._caseroot, user_mods_path)
 
         # User mods may have modified underlying XML files
         if all_user_mods:
