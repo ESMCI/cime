@@ -1411,14 +1411,12 @@ directory, NOT in this subdirectory."""
             all_user_mods.append(comp_user_mods)
         if user_mods_dir is not None:
             all_user_mods.append(user_mods_dir)
-
-        test_mods_dir = None
-        if self.get_value("TEST"):
-            test_mods_path = os.path.abspath(self.get_value("TESTS_MODS_DIR"))
-            test_mods_dir = os.path.join(test_mods_path,self._primary_component,"default")
-            user_mods_dir = os.path.abspath(user_mods_dir)
-            if test_mods_path not in user_mods_dir and os.path.exists(test_mods_dir):
-                all_user_mods.insert(0,test_mods_dir)
+            if self.get_value("TEST"):
+                test_mods_path = os.path.abspath(self.get_value("TESTS_MODS_DIR"))
+                test_mods_dir = os.path.join(test_mods_path,self._primary_component,"default")
+                user_mods_dir = os.path.abspath(user_mods_dir)
+                if test_mods_path not in user_mods_dir and os.path.exists(test_mods_dir):
+                    all_user_mods.insert(0,test_mods_dir)
 
         # This looping order will lead to the specified user_mods_dir taking
         # precedence over self._user_mods, if there are any conflicts.
