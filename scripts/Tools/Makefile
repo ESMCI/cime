@@ -59,17 +59,6 @@ else
    ESMFDIR = noesmf
 endif
 
-# Determine whether any C++ code will be included in the build;
-# currently, C++ code is included if and only if we're linking to the
-# trilinos library or the Albany library.
-USE_CXX = FALSE
-ifeq ($(strip $(USE_TRILINOS)), TRUE)
-   USE_CXX = TRUE
-endif
-ifeq ($(strip $(USE_ALBANY)), TRUE)
-   USE_CXX = TRUE
-endif
-
 SLIBS ?= $(USER_SLIBS)
 
 ifeq ($(strip $(USE_FMS)), TRUE)
@@ -118,31 +107,29 @@ ifeq (,$(SHAREDPATH))
   INSTALL_SHAREDPATH = $(EXEROOT)/$(SHAREDPATH)
 endif
 
+#===============================================================================
+# User-specified INCLDIR
+#===============================================================================
+INCLDIR := -I.
+ifdef USER_INCLDIR
+  INCLDIR += $(USER_INCLDIR)
+endif
+
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
-   ifneq ($(realpath $(INSTALL_SHAREDPATH)/lib/libstreams.a),)
-     # FoX libraries are provided and built by CDEPS
-     FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
-     ULIBS += -ldshr -lstreams
-     SLIBS += $(FoX_LIBS)
-   endif
+   INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
+   # FoX libraries are provided and built by CDEPS
+   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
+   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+   SLIBS += $(FoX_LIBS)
 else
    CPPDEFS += -DMCT_INTERFACE
 endif
 
 ifeq ($(PIO_VERSION),2)
-  ifneq ($(COMPILER),nag)
-    # Needed by SCORPIO not default PIO, does not work with NAG compiler
-    USE_CXX := TRUE
-  endif
+  CPPDEFS += -DPIO2
 else
   CPPDEFS += -DPIO1
-endif
-
-ifeq ($(USE_CXX), TRUE)
-  ifeq ($(SUPPORTS_CXX), FALSE)
-    $(error Fatal attempt to include C++ code on a compiler/machine combo that has not been set up to support C++)
-  endif
 endif
 
 # Not clear how to escape commas for libraries with their own configure
@@ -179,9 +166,9 @@ ifdef NETCDF_C_PATH
   ifndef LIB_NETCDF_FORTRAN
     LIB_NETCDF_FORTRAN:=$(NETCDF_FORTRAN_PATH)/lib
   endif
- else ifdef NETCDF_FORTRAN_PATH
+else ifdef NETCDF_FORTRAN_PATH
   $(error "NETCDF_FORTRAN_PATH specified without NETCDF_C_PATH")
- else ifdef NETCDF_PATH
+else ifdef NETCDF_PATH
   NETCDF_SEPARATE:=FALSE
   ifndef INC_NETCDF
     INC_NETCDF:=$(NETCDF_PATH)/include
@@ -200,7 +187,6 @@ else
   endif
 endif
 
-
 ifeq ($(MPILIB),mpi-serial)
   ifdef PNETCDF_PATH
     undefine PNETCDF_PATH
@@ -215,6 +201,7 @@ else
     endif
   endif
 endif
+
 # Set PETSc info if it is being used
 ifeq ($(strip $(USE_PETSC)), TRUE)
   ifdef PETSC_PATH
@@ -230,42 +217,6 @@ ifeq ($(strip $(USE_PETSC)), TRUE)
 
   # Get the "PETSC_LIB" list an env var
   include $(PETSC_PATH)/lib/petsc/conf/variables
-
-endif
-
-# Set Trilinos info if it is being used
-ifeq ($(strip $(USE_TRILINOS)), TRUE)
-  ifdef TRILINOS_PATH
-    ifndef INC_TRILINOS
-      INC_TRILINOS:=$(TRILINOS_PATH)/include
-    endif
-    ifndef LIB_TRILINOS
-      LIB_TRILINOS:=$(TRILINOS_PATH)/lib
-    endif
-  else
-    $(error TRILINOS_PATH must be defined when USE_TRILINOS is TRUE)
-  endif
-
-  # get a bunch of variables related to this trilinos installation;
-  # these variables begin with "Trilinos_"
-  include $(INC_TRILINOS)/Makefile.export.Trilinos
-endif
-
-# Set Albany info if it is being used
-ifeq ($(strip $(USE_ALBANY)), TRUE)
-  ifdef ALBANY_PATH
-    ifndef INC_ALBANY
-      INC_ALBANY:=$(ALBANY_PATH)/include
-    endif
-    ifndef LIB_ALBANY
-      LIB_ALBANY:=$(ALBANY_PATH)/lib
-    endif
-  else
-    $(error ALBANY_PATH must be defined when USE_ALBANY is TRUE)
-  endif
-
-  # get the "ALBANY_LINK_LIBS" list as an env var
-  include $(ALBANY_PATH)/export_albany.in
 endif
 
 # Set MOAB info if it is being used
@@ -316,11 +267,12 @@ endif
 # ESMF_F90ESMFLINKPATHS
 # ESMF_F90LINKRPATHS
 # ESMF_F90ESMFLINKLIBS
+# ESMF_F90LINKPATHS
 ifeq ($(USE_ESMF_LIB), TRUE)
   -include $(CIME_ESMFMKFILE)
   CPPDEFS += -DESMF_VERSION_MAJOR=$(ESMF_VERSION_MAJOR) -DESMF_VERSION_MINOR=$(ESMF_VERSION_MINOR)
   FFLAGS += $(ESMF_F90COMPILEPATHS)
-  SLIBS  += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS)
+  SLIBS += $(ESMF_F90ESMFLINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS) $(ESMF_F90LINKPATHS)
 endif
 
 # Stub libraries do not need to be built for nuopc driver
@@ -378,6 +330,8 @@ ifeq ($(ULIBDEP),$(null))
   endif
 endif
 
+CPPDEFS += -DPIO$(PIO_VERSION)
+
 ifdef CPRE
   FPPDEFS := $(subst $(comma),\\$(comma),$(CPPDEFS))
   FPPDEFS := $(patsubst -D%,$(CPRE)%,$(FPPDEFS))
@@ -402,23 +356,15 @@ ifeq  ($(findstring pio,$(MODEL)),pio)
 endif
 
 #===============================================================================
-# User-specified INCLDIR
-#===============================================================================
-INCLDIR := -I.
-ifdef USER_INCLDIR
-  INCLDIR += $(USER_INCLDIR)
-endif
-
-#===============================================================================
 # MPI-serial library (part of MCT)
 #===============================================================================
 
 ifeq ($(strip $(MPILIB)), mpi-serial)
-  CC      := $(SCC)
-  FC      := $(SFC)
-  CXX     := $(SCXX)
-  MPIFC   := $(SFC)
-  MPICC   := $(SCC)
+  CC	  := $(SCC)
+  FC	  := $(SFC)
+  CXX	  := $(SCXX)
+  MPIFC	  := $(SFC)
+  MPICC	  := $(SCC)
   MPICXX  := $(SCXX)
   CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
 else
@@ -431,18 +377,6 @@ else
   endif
 endif
 LD := $(MPIFC)
-# Decide whether to use a C++ or Fortran linker, based on whether we
-# are using any C++ code and the compiler-dependent CXX_LINKER variable
-ifeq ($(USE_CXX), TRUE)
-  # The following is essentially an "if... elseif... else", but gmake
-  # 3.80 and earlier doesn't support elseif
-  ifeq ($(CXX_LINKER), CXX)
-    LD := $(MPICXX)
-  endif
-  ifeq ($(CXX_LINKER), FORTRAN)
-    LD := $(MPIFC)
-  endif
-endif
 
 CSM_SHR_INCLUDE:=$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include
 # This is needed so that dependancies are found
@@ -469,12 +403,6 @@ ifdef INC_PNETCDF
 endif
 ifdef INC_PETSC
   INCLDIR += -I$(INC_PETSC)
-endif
-ifdef INC_TRILINOS
-  INCLDIR += -I$(INC_TRILINOS)
-endif
-ifdef INC_ALBANY
-  INCLDIR += -I$(INC_ALBANY)
 endif
 ifdef INC_MOAB
   INCLDIR += -I$(INC_MOAB)
@@ -544,7 +472,7 @@ INCLDIR +=	-I$(INSTALL_SHAREDPATH)/include
 #
 CFLAGS+=$(CPPDEFS)
 CXXFLAGS+=$(CPPDEFS)
-CONFIG_ARGS +=  CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
+CONFIG_ARGS +=	CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
 		MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
 		CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
 		LDFLAGS="$(LDFLAGS)"
@@ -574,8 +502,16 @@ ifeq ($(strip $(COMP_ATM)),cam)
     FV3CORE_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/atmos_cubed_sphere)
     INCLDIR+=-I$(FV3CORE_LIBDIR) -I$(FV3CORE_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE) -I$(abspath $(EXEROOT)/FMS) -I$(CIMEROOT)/../libraries/FMS/src/include
   endif
-endif
 
+  ifeq ($(CAM_DYCORE),mpas)
+    # For building CAM with the MPAS dycore
+    MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
+    ifeq ($(MODEL),driver)
+      # This is needed by some compilers when building the driver.
+      INCLDIR+=-I$(MPAS_LIBDIR)
+    endif
+  endif
+endif
 
 ifeq ($(MODEL),cam)
   # These RRTMG files take an extraordinarily long time to compile with optimization.
@@ -586,7 +522,6 @@ rrtmg_lw_k_g.o: rrtmg_lw_k_g.f90
 
 rrtmg_sw_k_g.o: rrtmg_sw_k_g.f90
 	$(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FFLAGS_NOOPT) $<
-
 
 ifdef COSP_LIBDIR
 INCLDIR+=-I$(COSP_LIBDIR) -I$(COSP_LIBDIR)/../ -I../$(INSTALL_SHAREDPATH)/include -I../$(CSM_SHR_INCLUDE)
@@ -604,11 +539,34 @@ $(FV3CORE_LIBDIR)/libfv3core.a: $(EXEROOT)/FMS/libfms.a
 
 dyn_grid.o: $(FV3CORE_LIBDIR)/libfv3core.a
 endif
+
+ifdef MPAS_LIBDIR
+  ABS_INSTALL_SHAREDPATH = $(abspath $(INSTALL_SHAREDPATH))
+  ABS_ESMF_PATH = $(abspath $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE))
+  ifeq ($(PIO_VERSION),2)
+    PIODEF := -DUSE_PIO2
+  endif
+  INCLDIR+=-I$(MPAS_LIBDIR)
+  INCLDIR+=-I$(abspath $(EXEROOT)/atm/obj)
+
+# To ensure that the MPAS-A dycore library is always updated whenever dycore source
+# files are changed, the libmpas target here is declared as PHONY; under ideal circumstances
+# this isn't necessary, since libmpas should never be an actual file (the library that is created
+# is named libmpas.a), but adding the PHONY declaration provides an extra bit of safety
+.PHONY: libmpas
+libmpas: cam_abortutils.o physconst.o
+	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" FFLAGS='$(FREEFLAGS) $(FFLAGS)' \
+	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
+
+dyn_comp.o: libmpas
+dyn_grid.o: libmpas
+endif
+
 endif
 
 
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
-ifeq (,$(findstring netcdf,$(SLIBS)))
+ifeq (,$(findstring lnetcdf,$(SLIBS)))
   ifeq ($(NETCDF_SEPARATE), FALSE)
     SLIBS += -L$(LIB_NETCDF) -lnetcdff -lnetcdf
   else ifeq ($(NETCDF_SEPARATE), TRUE)
@@ -632,33 +590,9 @@ ifeq ($(strip $(USE_PETSC)), TRUE)
   SLIBS += ${PETSC_LIB}
 endif
 
-# Add trilinos libraries; too be safe, we include all libraries included in the trilinos build,
-# as well as all necessary third-party libraries
-ifeq ($(strip $(USE_TRILINOS)), TRUE)
-  SLIBS += -L$(LIB_TRILINOS) $(Trilinos_LIBRARIES) $(Trilinos_TPL_LIBRARY_DIRS) $(Trilinos_TPL_LIBRARIES)
-endif
-
-# Add Albany libraries.  These are defined in the ALBANY_LINK_LIBS env var that was included above
-ifeq ($(strip $(USE_ALBANY)), TRUE)
-  SLIBS += $(ALBANY_LINK_LIBS)
-endif
-
 # Add MOAB libraries.  These are defined in the MOAB_LINK_LIBS env var that was included above
 ifeq ($(strip $(USE_MOAB)), TRUE)
   SLIBS += $(IMESH_LIBS)
-endif
-
-# Add libraries and flags that we need on the link line when C++ code is included
-# We need to do these additions after CONFIG_ARGS is set, because they can sometimes break configure for mct, etc.,
-# if they are added to LDFLAGS in CONFIG_ARGS.
-ifeq ($(USE_CXX), TRUE)
-  ifdef CXX_LIBS
-    SLIBS += $(CXX_LIBS)
-  endif
-
-  ifdef CXX_LDFLAGS
-    LDFLAGS += $(CXX_LDFLAGS)
-  endif
 endif
 
 # Remove arch flag if it exists
@@ -673,21 +607,27 @@ endif
 # Drive configure scripts for support libraries (mct)
 #------------------------------------------------------------------------------
 
+ifneq ("$(wildcard $(SRCROOT)/libraries)","")
+    EXTERN_PATH = $(SRCROOT)/libraries
+else
+    EXTERN_PATH = $(CIMEROOT)/src/externals
+endif
+
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct/mpi-serial
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct/mpi-serial
 
 ifndef IO_LIB_SRCROOT
   ifndef PIO_SRCROOT
-    PIO_SRCROOT = $(CIMEROOT)/src/externals
+    PIO_SRCROOT = $(EXTERN_PATH)
   endif
 
   ifeq ($(PIO_VERSION),2)
-    PIO_SRC_DIR = $(PIO_SRCROOT)/pio2
+    PIO_SRC_DIR = $(PIO_SRCROOT)/parallelio
   else
     ifneq ("$(wildcard $(PIO_SRCROOT)/pio1/pio)", "")
       PIO_SRC_DIR = $(PIO_SRCROOT)/pio1
@@ -699,7 +639,6 @@ else
   PIO_SRC_DIR = $(IO_LIB_SRCROOT)/$(IO_LIB_v$(PIO_VERSION)_SRCDIR)
 endif
 
-
 ifeq ($(PIO_VERSION),2)
 # This is a pio2 library
   PIOLIB = $(PIO_LIBDIR)/libpiof.a $(PIO_LIBDIR)/libpioc.a
@@ -709,13 +648,20 @@ else
   PIOLIB = $(PIO_LIBDIR)/libpio.a
   PIOLIBNAME = -lpio
 endif
-#endif
 
 MCTLIBS = $(MCT_LIBDIR)/libmct.a $(MCT_LIBDIR)/libmpeu.a
 
 GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
-ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
+ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib
+
+ifneq ($(COMP_INTERFACE), nuopc)
+  ifneq ("$(wildcard $(SRCROOT)/components/cpl7)","")
+    ULIBS += -lcsm_share_cpl7
+  endif
+endif
+
+ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
@@ -728,14 +674,18 @@ endif
 # FIXEDFLAGS, so that both free & fixed code can be built (cmake
 # doesn't seem to be able to differentiate between free & fixed
 # fortran flags)
-CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(INCLDIR)" \
+CMAKE_OPTS += -Wno-dev -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPDEFS) $(INCLDIR)" \
 	      -D CMAKE_C_FLAGS:STRING="$(CFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
 	      -D CMAKE_CXX_FLAGS:STRING="$(CXXFLAGS) $(EXTRA_PIO_CPPDEFS) $(INCLDIR)" \
 	      -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake" \
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(EXTERN_PATH)/parallelio/cmake"
+
+ifeq ($(DEBUG), TRUE)
+  CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
+endif
 
 # Allow for separate installations of the NetCDF C and Fortran libraries
 ifeq ($(NETCDF_SEPARATE), FALSE)
@@ -786,11 +736,11 @@ CMAKE_ENV_VARS += CC=$(CC) \
 		  LDFLAGS="$(LDFLAGS)"
 
 
-# We declare $(GLC_DIR)/Makefile to be a phony target so that cmake is
-# always rerun whenever invoking 'make $(GLC_DIR)/Makefile'; this is
+# We declare GLCMakefile to be a phony target so that cmake is
+# always rerun whenever invoking 'make GLCMakefile'; this is
 # desirable to pick up any new source files that may have been added
-.PHONY: $(GLC_DIR)/Makefile
-$(GLC_DIR)/Makefile:
+.PHONY: GLCMakefile
+GLCMakefile:
 	cd $(GLC_DIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(GLCROOT)/source_cism
 
@@ -828,7 +778,6 @@ Srcfiles: Filepath
 Filepath:
 	@echo "$(VPATH)" > $@
 
-
 #-------------------------------------------------------------------------------
 # echo file names, paths, compile flags, etc. used during build
 #-------------------------------------------------------------------------------
@@ -843,9 +792,6 @@ db_flags:
 	@echo "* cc      := $(CC)  $(CFLAGS) $(INCS) $(INCLDIR)"
 	@echo "* .F.o    := $(FC)  $(FFLAGS) $(FIXEDFLAGS) $(INCS) $(INCLDIR)"
 	@echo "* .F90.o  := $(FC)  $(FFLAGS) $(FREEFLAGS) $(INCS) $(INCLDIR)"
-	ifeq ($(USE_CXX), TRUE)
-	  @echo "* .cpp.o  := $(CXX) $(CXXFLAGS) $(INCS) $(INCLDIR)"
-	endif
 
 #-------------------------------------------------------------------------------
 # Rules used for the tests run by "configure -test"
@@ -868,15 +814,12 @@ test_esmf: test_esmf.o
 #-------------------------------------------------------------------------------
 # create list of component libraries - hard-wired for current ccsm components
 #-------------------------------------------------------------------------------
-ifneq ($(CIME_MODEL),e3sm)
-  ifeq ($(COMP_LND),clm)
-    USE_SHARED_CLM=TRUE
-  else
-    USE_SHARED_CLM=FALSE
-  endif
+ifeq ($(COMP_LND),clm)
+  USE_SHARED_CLM=TRUE
 else
   USE_SHARED_CLM=FALSE
 endif
+
 ifeq ($(USE_SHARED_CLM),FALSE)
   LNDOBJDIR = $(EXEROOT)/lnd/obj
   LNDLIBDIR=$(LIBROOT)
@@ -900,9 +843,6 @@ ifeq ($(LND_PRESENT),TRUE)
 endif
 ifeq ($(COMP_GLC), cism)
   ULIBDEP += $(CISM_LIBDIR)/libglimmercismfortran.a
-  ifeq ($(CISM_USE_TRILINOS), TRUE)
-    ULIBDEP += $(CISM_LIBDIR)/libglimmercismcpp.a
-  endif
 endif
 ifeq ($(OCN_SUBMODEL),moby)
   ULIBDEP += $(LIBROOT)/libmoby.a
@@ -919,6 +859,10 @@ ifdef FV3CORE_LIBDIR
   ULIBDEP += $(EXEROOT)/FMS/libfms.a
 endif
 
+ifdef MPAS_LIBDIR
+  ULIBDEP += $(MPAS_LIBDIR)/libmpas.a
+endif
+
 ifndef CLIBS
    ifdef ULIBDEP
      # For each occurrence of something like /path/to/foo/libbar.a in ULIBDEP,
@@ -929,6 +873,11 @@ endif
 
 # libcsm_share.a is in ULIBDEP, but -lcsm_share is in ULIBS rather than CLIBS,
 # so this needs to be added after creating CLIBS above
+ifeq ($(CIME_MODEL),cesm)
+  ifneq ($(COMP_INTERFACE), nuopc)
+    CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
+  endif
+endif
 CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
@@ -954,8 +903,10 @@ $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 
 $(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 
-ifneq ($(MODEL),csm_share)
-  $(OBJS):  $(CSMSHARELIB)
+ifneq ($(findstring csm_share,$(MODEL)),csm_share)
+  $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
+else ifeq ($(MODEL),csm_share_cpl7)
+  complib: install_lib_cpl7
 else
   complib: install_lib
 endif
@@ -963,6 +914,10 @@ endif
 install_lib: $(COMPLIB)
 	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
 	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
+
+install_lib_cpl7: $(COMPLIB)
+	$(CP) -p $(COMPLIB) $(CSMSHARELIB_CPL7)
+	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
@@ -1035,6 +990,7 @@ clean_dependslnd:
 
 clean_dependscsmshare:
 	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
+	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7/Srcfiles
 
 clean_depends: clean_dependsatm clean_dependscpl clean_dependswav clean_dependsglc clean_dependsice clean_dependsrof clean_dependslnd clean_dependscsmshare clean_dependsesp clean_dependsiac
 
@@ -1081,6 +1037,7 @@ cleanlnd:
 cleancsmshare:
 	$(RM) -f $(CSMSHARELIB)
 	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7
 
 cleanpio:
 	$(RM) -f $(PIO_LIBDIR)/libpio*

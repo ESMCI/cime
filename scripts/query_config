@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Displays information about available compsets, component settings, grids and/or
 machines. Typically run with one of the arguments --compsets, --settings,
@@ -30,7 +30,7 @@ def query_grids(files, long_output, xml=False):
 
     grids = Grids(config_file)
     if xml:
-        print("{}".format(grids.get_raw_record()))
+        print("{}".format(grids.get_raw_record().decode("UTF-8")))
     elif long_output:
         grids.print_values(long_output=long_output)
     else:
@@ -47,10 +47,10 @@ def query_machines(files, machine_name='all', xml=False):
     machines = Machines(config_file, machine="Query")
     if xml:
         if machine_name == 'all':
-            print("{}".format(machines.get_raw_record()))
+            print("{}".format(machines.get_raw_record().decode("UTF-8")))
         else:
             machines.set_machine(machine_name)
-            print("{}".format(machines.get_raw_record(root=machines.machine_node)))
+            print("{}".format(machines.get_raw_record(root=machines.machine_node).decode("UTF-8")))
     else:
         machines.print_values(machine_name=machine_name)
 
@@ -110,7 +110,7 @@ def print_compset(name, files, all_components=False, xml=False):
     compsets = Compsets(config_file)
     # print compsets associated with component without help text
     if xml:
-        print("{}".format(compsets.get_raw_record()))
+        print("{}".format(compsets.get_raw_record().decode("UTF-8")))
     else:
         compsets.print_values(arg_help=False)
 
@@ -180,7 +180,7 @@ def query_component(name, files, all_components=False, xml=False):
     # determine component xml content
     component = Component(config_file, "CPL")
     if xml:
-        print("{}".format(component.get_raw_record()))
+        print("{}".format(component.get_raw_record().decode("UTF-8")))
     else:
         component.print_values()
 
@@ -350,8 +350,10 @@ class Machines(CIME.XML.machines.Machines):
                 # it simply provides a list of mpilibs available on the machine
                 mpilibs = list(set(mpilibs))
                 max_tasks_per_node = self.text(self.get_child("MAX_TASKS_PER_NODE"))
-                mpitasks_node = self.get_optional_child("MAX_MPITASKS_PER_NODE")
+                mpitasks_node = self.get_optional_child("MAX_MPITASKS_PER_NODE", root=self.machine_node)
                 max_mpitasks_per_node = self.text(mpitasks_node) if mpitasks_node else max_tasks_per_node
+                max_gpus_node = self.get_optional_child("MAX_GPUS_PER_NODE", root=self.machine_node)
+                max_gpus_per_node = self.text(max_gpus_node) if max_gpus_node else 0
 
                 current_machine = self.probe_machine_name(warn=False)
                 name += " (current)" if current_machine and current_machine in name else ""
@@ -363,6 +365,8 @@ class Machines(CIME.XML.machines.Machines):
                     print("      pes/node       ",max_mpitasks_per_node)
                 if max_tasks_per_node is not None:
                     print("      max_tasks/node ",max_tasks_per_node)
+                if max_gpus_per_node is not None:
+                    print("      max_gpus/node ",max_gpus_per_node)
                 print('')
 
 def _main_func(description):

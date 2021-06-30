@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+import sys,os
+cimeroot = os.getenv("CIMEROOT")
+sys.path.append(os.path.join(cimeroot,"scripts","Tools"))
 
 import glob, re
 from standard_script_setup import *
@@ -48,9 +51,9 @@ def buildlib(bldroot, installpath, case):
     cime_model = case.get_value("MODEL")
     caseroot = case.get_value("CASEROOT")
     pio_version = case.get_value("PIO_VERSION")
+    srcroot = case.get_value("SRCROOT")
     scorpio_src_root_dir = None
     if cime_model == "e3sm":
-        srcroot = case.get_value("SRCROOT")
         scorpio_src_root_dir = os.path.join(srcroot, "externals")
         # Scorpio classic is derived from PIO1
         scorpio_classic_dir = "scorpio_classic"
@@ -85,7 +88,8 @@ def buildlib(bldroot, installpath, case):
     if pio_version == 1 or scorpio_src_root_dir:
         cmake_opts = "\"-D GENF90_PATH=$CIMEROOT/src/externals/genf90 \""
     else:
-        cmake_opts = "\"-D GENF90_PATH=$CIMEROOT/src/externals/pio2/scripts/ \""
+        cmake_opts = "\"-D GENF90_PATH="+srcroot+"/libraries/parallelio/scripts/ \""
+
 
     stdargs = get_standard_makefile_args(case, shared_lib=True)
 
@@ -154,7 +158,7 @@ def buildlib(bldroot, installpath, case):
                 if item_time  > installed_file_time:
                     safe_copy(item, installed_file)
         expect_string = "NetCDF_C_LIBRARY-ADVANCED"
-        pnetcdf_string = "PnetCDF_C_LIBRARY-ADVANCED"
+        pnetcdf_string = "WITH_PNETCDF:BOOL=ON"
         netcdf4_string = "NetCDF_C_HAS_PARALLEL:BOOL=TRUE"
 
 
@@ -178,6 +182,7 @@ def buildlib(bldroot, installpath, case):
         valid_values += ",pnetcdf"
     if netcdf4_parallel_found:
         valid_values += ",netcdf4p,netcdf4c"
+
     _set_pio_valid_values(case, valid_values)
 
 
@@ -192,7 +197,7 @@ def _set_pio_valid_values(case, valid_values):
         comp_pio_typename = "{}_PIO_TYPENAME".format(comp)
         current_value = case.get_value(comp_pio_typename)
         if current_value not in valid_values:
-            logger.warning("Resetting PIO_TYPENAME to netcdf for component {}".format(comp))
+            logger.warning("Resetting PIO_TYPENAME=netcdf for component {}".format(comp))
             env_run.set_value(comp_pio_typename,"netcdf")
 
 def _main(argv, documentation):

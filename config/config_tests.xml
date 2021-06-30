@@ -427,6 +427,15 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
+  <test NAME="TESTRUNFAILRESET" INFRASTRUCTURE_TEST="TRUE">
+    <DESC>For testing infra only. Insta-fail run step, also testing that settings get reset upon rerun.</DESC>
+    <INFO_DBUG>1</INFO_DBUG>
+    <STOP_OPTION>ndays</STOP_OPTION>
+    <STOP_N>11</STOP_N>
+    <CHECK_TIMING>FALSE</CHECK_TIMING>
+    <DOUT_S>FALSE</DOUT_S>
+  </test>
+
   <test NAME="TESTRUNSTARCFAIL" INFRASTRUCTURE_TEST="TRUE">
     <DESC>For testing infra only. Insta-fail st archive test with exception.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
@@ -513,13 +522,14 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
   <test NAME="TESTRUNUSERXMLCHANGE" INFRASTRUCTURE_TEST="TRUE">
     <DESC>For testing infra only. Test simultaneous xmlchanges while first run is running.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <STOP_OPTION>ndays</STOP_OPTION>
+    <STOP_OPTION>nsteps</STOP_OPTION>
     <STOP_N>3</STOP_N>
+    <NTASKS>1</NTASKS>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
-    <DOUT_S>FALSE</DOUT_S>
     <REST_OPTION>none</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
+    <DOUT_S>FALSE</DOUT_S>
   </test>
 
   <test NAME="NODEFAIL" INFRASTRUCTURE_TEST="TRUE">

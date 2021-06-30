@@ -3,7 +3,7 @@ Common interface to XML files, this is an abstract class and is expected to
 be used by other XML interface modules and not directly.
 """
 from CIME.XML.standard_module_setup import *
-from CIME.utils import safe_copy
+from CIME.utils import safe_copy, get_src_root
 
 import xml.etree.ElementTree as ET
 #pylint: disable=import-error
@@ -528,7 +528,7 @@ class GenericXML(object):
                 cimeroot = get_cime_root()
                 item_data = item_data.replace(m.group(), cimeroot)
             elif var == "SRCROOT":
-                srcroot = os.path.normpath(os.path.join(get_cime_root(),".."))
+                srcroot = get_src_root()
                 item_data = item_data.replace(m.group(), srcroot)
             elif var == "USER":
                 item_data = item_data.replace(m.group(), getpass.getuser())

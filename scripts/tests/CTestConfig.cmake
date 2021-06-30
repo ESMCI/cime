@@ -7,7 +7,12 @@ set(CTEST_PROJECT_NAME "CIME")
 string(TIMESTAMP CURRTIME "%H:%M:%S" UTC)
 set(CTEST_NIGHTLY_START_TIME "${CURRTIME} UTC")
 
-set(CTEST_DROP_METHOD "http")
+set(CTEST_DROP_METHOD "https")
+set (
+   CTEST_CURL_OPTIONS
+     "CURLOPT_SSL_VERIFYPEER_OFF"
+     "CURLOPT_SSL_VERIFYHOST_OFF"
+ )
 set(CTEST_DROP_SITE "my.cdash.org")
 set(CTEST_DROP_LOCATION "/submit.php?project=CIME")
 set(CTEST_DROP_SITE_CDASH TRUE)
@@ -28,4 +33,10 @@ else()
    set(mpilib "default")
 endif()
 
-set(BUILDNAME "scripts_regression_${shell}_${compiler}_${mpilib}")
+if (DEFINED ENV{CIME_DRIVER})
+  set(driver $ENV{CIME_DRIVER})
+else()
+  set(driver "mct")
+endif()
+
+set(BUILDNAME "scripts_regression_${shell}_${compiler}_${mpilib}_${driver}")

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Allows changing variables in env_*xml files via a command-line interface.
@@ -183,7 +183,7 @@ def xmlchange_single_value(case, xmlid, xmlval, subgroup, append, force, dryrun,
 def xmlchange(caseroot, listofsettings, xmlfile, xmlid, xmlval, subgroup,
               append, noecho, force, dryrun):
 
-    with Case(caseroot, read_only=False) as case:
+    with Case(caseroot, read_only=False, record=True) as case:
         comp_classes = case.get_values("COMP_CLASSES")
         env_test = None
         if (case.get_value("TEST") and os.path.exists(os.path.join(caseroot,"env_test.xml"))) and not (xmlfile or xmlfile == "env_test.xml"):

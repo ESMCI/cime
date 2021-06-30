@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 config_pes_converter.py -- convert (or verify) config_pes elements from CIME2
 format to CIME5. This tool will compare the two versions and suggest updates to
@@ -152,6 +152,8 @@ class Cime2PesNode(PesNode):
                     if val[0] == '$':
                         resolvetag = val[1:]
                         if resolvetag == "MAX_TASKS_PER_NODE":
+                            val = '-1'
+                        elif resolvetag == "MAX_GPUS_PER_NODE":
                             val = '-1'
                         else:
                             refnode = xmlnode.find(resolvetag)

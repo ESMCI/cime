@@ -3,7 +3,8 @@ Base class for CIME system tests
 """
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
-from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError
+from CIME.XML.env_test import EnvTest
+from CIME.utils import append_testlog, get_model, safe_copy, get_timestamp, CIMEError, expect, get_current_commit, SharedArea
 from CIME.test_status import *
 from CIME.hist_utils import copy_histfiles, compare_test, generate_teststatus, \
     compare_baseline, get_ts_synopsis, generate_baseline
@@ -11,7 +12,7 @@ from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
-import glob, gzip, time, traceback, six, shutil
+import glob, gzip, time, traceback, six, os
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +34,10 @@ class SystemTestsCommon(object):
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
-        self._cpllog = "med" if self._case.get_value("COMP_INTERFACE")=="nuopc" else "cpl"
-        self._old_build = False
+        self._cpllog = "drv" if self._case.get_value("COMP_INTERFACE")=="nuopc" else "cpl"
         self._ninja     = False
         self._dry_run   = False
+        self._user_separate_builds = False
 
     def _init_environment(self, caseroot):
         """
@@ -63,23 +64,25 @@ class SystemTestsCommon(object):
         """
         # We never want to re-setup if we're doing the resubmitted run
         phase_status = self._test_status.get_status(phase)
-        if reset or (self._case.get_value("IS_FIRST_RUN") and phase_status != TEST_PEND_STATUS):
+        phase_comment = self._test_status.get_comment(phase)
+        rerunning = (phase_status != TEST_PEND_STATUS or
+                     phase_comment == TEST_RERUN_COMMENT)
+        if reset or (self._case.get_value("IS_FIRST_RUN") and rerunning):
 
             logging.warning("Resetting case due to detected re-run of phase {}".format(phase))
             self._case.set_initial_test_values()
-
             self._case.case_setup(reset=True, test_mode=True)
 
-    def build(self, sharedlib_only=False, model_only=False, old_build=False, ninja=False, dry_run=False):
+    def build(self, sharedlib_only=False, model_only=False, ninja=False, dry_run=False, separate_builds=False):
         """
         Do NOT override this method, this method is the framework that
         controls the build phase. build_phase is the extension point
         that subclasses should use.
         """
         success = True
-        self._old_build = old_build
-        self._ninja     = ninja
-        self._dry_run   = dry_run
+        self._ninja           = ninja
+        self._dry_run         = dry_run
+        self._user_separate_builds = separate_builds
         for phase_name, phase_bool in [(SHAREDLIB_BUILD_PHASE, not model_only),
                                        (MODEL_BUILD_PHASE, not sharedlib_only)]:
             if phase_bool:
@@ -128,7 +131,8 @@ class SystemTestsCommon(object):
         build.case_build(self._caseroot, case=self._case,
                          sharedlib_only=sharedlib_only, model_only=model_only,
                          save_build_provenance=not model=='cesm',
-                         use_old=self._old_build, ninja=self._ninja, dry_run=self._dry_run)
+                         ninja=self._ninja, dry_run=self._dry_run, separate_builds=self._user_separate_builds)
+        logger.info("build_indv complete")
 
     def clean_build(self, comps=None):
         if comps is None:
@@ -201,10 +205,11 @@ class SystemTestsCommon(object):
                 # If run phase worked, remember the time it took in order to improve later walltime ests
                 baseline_root = self._case.get_value("BASELINE_ROOT")
                 if success:
-                    save_test_time(baseline_root, self._casebaseid, time_taken)
+                    srcroot = self._case.get_value("SRCROOT")
+                    save_test_time(baseline_root, self._casebaseid, time_taken, get_current_commit(repo=srcroot))
 
                 # If overall things did not pass, offer the user some insight into what might have broken things
-                overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)
+                overall_status = self._test_status.get_overall_test_status(ignore_namelists=True)[0]
                 if overall_status != TEST_PASS_STATUS:
                     srcroot = self._case.get_value("SRCROOT")
                     worked_before, last_pass, last_fail_transition = \
@@ -258,7 +263,7 @@ class SystemTestsCommon(object):
         self._case.load_env(reset=True)
         self._caseroot = case.get_value("CASEROOT")
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
         """
         Perform an individual run. Raises an EXCEPTION on fail.
         """
@@ -266,7 +271,10 @@ class SystemTestsCommon(object):
         stop_option = self._case.get_value("STOP_OPTION")
         run_type    = self._case.get_value("RUN_TYPE")
         rundir      = self._case.get_value("RUNDIR")
-        is_batch    = self._case.get_value("BATCH_SYSTEM") != "none"
+        if submit_resubmits is None:
+            do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
+        else:
+            do_resub = submit_resubmits
 
         # remove any cprnc output leftover from previous runs
         for compout in glob.iglob(os.path.join(rundir,"*.cprnc.out")):
@@ -283,7 +291,7 @@ class SystemTestsCommon(object):
 
         logger.info(infostr)
 
-        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=is_batch)
+        self._case.case_run(skip_pnl=self._skip_pnl, submit_resubmits=do_resub)
 
         if not self._coupler_log_indicates_run_complete():
             expect(False, "Coupler did not indicate run passed")
@@ -314,6 +322,24 @@ class SystemTestsCommon(object):
         comments = copy_histfiles(self._case, suffix)
         append_testlog(comments, self._orig_caseroot)
 
+    def _log_cprnc_output_tail(self, filename_pattern, prepend=None):
+        rundir = self._case.get_value('RUNDIR')
+
+        glob_pattern = "{}/{}".format(rundir, filename_pattern)
+
+        cprnc_logs = glob.glob(glob_pattern)
+
+        for output in cprnc_logs:
+            with open(output) as fin:
+                cprnc_log_tail = fin.readlines()[-20:]
+            
+            cprnc_log_tail.insert(0, "tail -n20 {}\n\n".format(output))
+
+            if prepend is not None:
+                cprnc_log_tail.insert(0, "{}\n\n".format(prepend))
+
+            append_testlog("".join(cprnc_log_tail), self._orig_caseroot)
+
     def _component_compare_test(self, suffix1, suffix2,
                                 success_change=False,
                                 ignore_fieldlist_diffs=False):
@@ -332,6 +358,12 @@ class SystemTestsCommon(object):
             success = not success
 
         append_testlog(comments, self._orig_caseroot)
+
+        pattern = "*.nc.{}.cprnc.out".format(suffix1)
+        message = "compared suffixes suffix1 {!r} suffix2 {!r}".format(suffix1, suffix2)
+
+        self._log_cprnc_output_tail(pattern, message)
+
         status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         with self._test_status:
             self._test_status.set_status("{}_{}_{}".format(COMPARE_PHASE, suffix1, suffix2), status)
@@ -419,9 +451,9 @@ class SystemTestsCommon(object):
                     self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS, comments="insuffiencient data for memleak test")
                 else:
                     finaldate = int(memlist[-1][0])
-                    originaldate = int(memlist[0][0])
+                    originaldate = int(memlist[1][0]) # skip first day mem record, it can be too low while initializing
                     finalmem = float(memlist[-1][1])
-                    originalmem = float(memlist[0][1])
+                    originalmem = float(memlist[1][1])
                     memdiff = -1
                     if originalmem > 0:
                         memdiff = (finalmem - originalmem)/originalmem
@@ -527,10 +559,12 @@ class SystemTestsCommon(object):
                         if tolerance is None:
                             tolerance = 0.1
                         expect(tolerance > 0.0, "Bad value for throughput tolerance in test")
+                        comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(diff*100)
+                        append_testlog(comment, self._orig_caseroot)
                         if diff < tolerance and self._test_status.get_status(THROUGHPUT_PHASE) is None:
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
                         elif self._test_status.get_status(THROUGHPUT_PHASE) != TEST_FAIL_STATUS:
-                            comment = "Error: Computation time increase > {:d} pct from baseline".format(int(tolerance*100))
+                            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(int(tolerance*100))
                             self._test_status.set_status(THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment)
                             append_testlog(comment, self._orig_caseroot)
 
@@ -541,7 +575,13 @@ class SystemTestsCommon(object):
         with self._test_status:
             # compare baseline
             success, comments = compare_baseline(self._case)
+
             append_testlog(comments, self._orig_caseroot)
+
+            pattern = "*.nc.cprnc.out"
+
+            self._log_cprnc_output_tail(pattern)
+
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASECMP_CASE")
             ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
@@ -562,12 +602,13 @@ class SystemTestsCommon(object):
             # copy latest cpl log to baseline
             # drop the date so that the name is generic
             newestcpllogfiles = self._get_latest_cpl_logs()
-            for cpllog in newestcpllogfiles:
-                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog),cpllog)
-                if m is not None:
-                    baselog = os.path.join(basegen_dir, m.group(1))+".gz"
-                    safe_copy(cpllog,
-                              os.path.join(basegen_dir,baselog))
+            with SharedArea():
+                for cpllog in newestcpllogfiles:
+                    m = re.search(r"/({}.*.log).*.gz".format(self._cpllog),cpllog)
+                    if m is not None:
+                        baselog = os.path.join(basegen_dir, m.group(1))+".gz"
+                        safe_copy(cpllog,
+                                  os.path.join(basegen_dir,baselog), preserve_meta=False)
 
 class FakeTest(SystemTestsCommon):
     """
@@ -577,9 +618,20 @@ class FakeTest(SystemTestsCommon):
     have names beginnig with "TEST" this is so that the find_system_test
     in utils.py will work with these classes.
     """
+    def __init__(self, case, expected=None):
+        super(FakeTest, self).__init__(case,expected=expected)
+        self._script = None
+        self._requires_exe = False
+        self._original_exe = self._case.get_value("run_exe")
+
     def _set_script(self, script, requires_exe=False):
-        self._script = script # pylint: disable=attribute-defined-outside-init
-        self._requires_exe = requires_exe # pylint: disable=attribute-defined-outside-init
+        self._script = script
+        self._requires_exe = requires_exe
+
+    def _resetup_case(self, phase, reset=False):
+        run_exe = self._case.get_value("run_exe")
+        super(FakeTest, self)._resetup_case(phase, reset=reset)
+        self._case.set_value("run_exe", run_exe)
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         if self._requires_exe:
@@ -587,12 +639,8 @@ class FakeTest(SystemTestsCommon):
 
         if not sharedlib_only:
             exeroot = self._case.get_value("EXEROOT")
-            cime_model = self._case.get_value("MODEL")
-            modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
-            real_modelexe = modelexe + ".real"
-
-            if self._requires_exe:
-                shutil.move(modelexe, real_modelexe)
+            modelexe = os.path.join(exeroot, "fake.exe")
+            self._case.set_value("run_exe",modelexe)
 
             with open(modelexe, 'w') as f:
                 f.write("#!/bin/bash\n")
@@ -602,13 +650,16 @@ class FakeTest(SystemTestsCommon):
 
             if not self._requires_exe:
                 build.post_build(self._case, [], build_complete=True)
+            else:
+                expect(os.path.exists(modelexe),"Could not find expected file {}".format(modelexe))
+                logger.info("FakeTest build_phase complete {} {}".format(modelexe, self._requires_exe))
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
         mpilib = self._case.get_value("MPILIB")
         # This flag is needed by mpt to run a script under mpiexec
         if mpilib == "mpt":
             os.environ["MPI_SHEPHERD"] = "true"
-        super(FakeTest, self).run_indv(suffix, st_archive)
+        super(FakeTest, self).run_indv(suffix, st_archive=st_archive, submit_resubmits=submit_resubmits)
 
 class TESTRUNPASS(FakeTest):
 
@@ -698,6 +749,33 @@ fi
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)
 
+class TESTRUNFAILRESET(TESTRUNFAIL):
+    """This fake test can fail for two reasons:
+    1. As in the TESTRUNFAIL test: If the environment variable TESTRUNFAIL_PASS is *not* set
+    2. Even if that environment variable *is* set, it will fail if STOP_N differs from the
+       original value
+
+    The purpose of (2) is to ensure that test's values get properly reset if the test is
+    rerun after an initial failure.
+    """
+
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
+        # Make sure STOP_N matches the original value for the case. This tests that STOP_N
+        # has been reset properly if we are rerunning the test after a failure.
+        env_test = EnvTest(self._get_caseroot())
+        stop_n = self._case.get_value("STOP_N")
+        stop_n_test = int(env_test.get_test_parameter("STOP_N"))
+        expect(stop_n == stop_n_test, "Expect STOP_N to match original ({} != {})".format(
+            stop_n, stop_n_test))
+
+        # Now modify STOP_N so that an error will be generated if it isn't reset properly
+        # upon a rerun
+        self._case.set_value("STOP_N", stop_n + 1)
+
+        super(TESTRUNFAILRESET, self).run_indv(suffix=suffix,
+                                               st_archive=st_archive,
+                                               submit_resubmits=submit_resubmits)
+
 class TESTRUNFAILEXC(TESTRUNPASS):
 
     def run_phase(self):
@@ -731,39 +809,27 @@ class TESTBUILDFAILEXC(FakeTest):
 class TESTRUNUSERXMLCHANGE(FakeTest):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
-        exeroot = self._case.get_value("EXEROOT")
         caseroot = self._case.get_value("CASEROOT")
-        cime_model = self._case.get_value("MODEL")
-        modelexe = os.path.join(exeroot, "{}.exe".format(cime_model))
+        modelexe = self._case.get_value("run_exe")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
         script = \
 """
 cd {caseroot}
-./xmlchange DOUT_S=TRUE
-./xmlchange DOUT_S=TRUE --file env_test.xml
-./xmlchange RESUBMIT=1
-./xmlchange STOP_N={stopn}
-./xmlchange CONTINUE_RUN=FALSE
-./xmlchange RESUBMIT_SETS_CONTINUE_RUN=FALSE
+./xmlchange --file env_test.xml STOP_N={stopn}
+./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
 cd -
+{originalexe} "$@"
+cd {caseroot}
+./xmlchange run_exe={modelexe}
 sleep 5
-{modelexe}.real "$@"
-sleep 5
-
-# Need to remove self in order to avoid infinite loop
-ls $(dirname {modelexe})
-mv {modelexe} {modelexe}.old
-mv {modelexe}.real {modelexe}
-ls $(dirname {modelexe})
-sleep 5
-""".format(caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
+""".format(originalexe=self._original_exe, caseroot=caseroot, modelexe=modelexe, stopn=str(new_stop_n))
         self._set_script(script, requires_exe=True)
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run_phase(self):
-        self.run_indv(st_archive=True)
+        self.run_indv(submit_resubmits=True)
 
 class TESTRUNSLOWPASS(FakeTest):
 

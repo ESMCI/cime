@@ -30,7 +30,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
-    <schema>$CIMEROOT/config/xml_schemas/config_grids_v2.1.xsd</schema>
+    <schema>$CIMEROOT/config/xml_schemas/config_grids_v2.2.xsd</schema>
   </entry>
 
   <entry id="MACHINES_SPEC_FILE">
@@ -108,9 +108,11 @@
     <type>char</type>
     <values>
       <value component="datm" comp_interface="nuopc" >$SRCROOT/components/cdeps/datm</value>
-      <value component="datm" comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/datm</value>
-      <value component="satm"                        >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm</value>
-      <value component="xatm"                        >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+      <value component="datm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/datm</value>
+      <value component="satm" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/satm</value>
+      <value component="satm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/satm</value>
+      <value component="xatm" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
+      <value component="xatm" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xatm</value>
       <value component="cam"                         >$SRCROOT/components/cam/</value>
       <value component="ufsatm"                      >$SRCROOT/components/fv3/</value>
     </values>
@@ -123,7 +125,12 @@
   <entry id="COMP_ROOT_DIR_CPL">
     <type>char</type>
     <values>
-      <value>$CIMEROOT/src/drivers/$COMP_INTERFACE</value>
+      <value comp_interface="nuopc"                 >$SRCROOT/components/cmeps</value> 
+      <value comp_interface="nuopc" component="cpl" >$SRCROOT/components/cmeps</value> 
+      <value comp_interface="nuopc" component="drv" >$SRCROOT/components/cmeps</value> 
+      <value comp_interface="mct"                   >$SRCROOT/components/cpl7/driver</value> 
+      <value comp_interface="mct" component="cpl"   >$SRCROOT/components/cpl7/driver</value> 
+      <value comp_interface="mct" component="drv"   >$SRCROOT/components/cpl7/driver</value> 
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -138,10 +145,12 @@
       <value component="pop"                          >$SRCROOT/components/pop/</value>
       <value component="mom"                          >$SRCROOT/components/mom/</value>
       <value component="nemo"                         >$SRCROOT/components/nemo/</value>
-      <value component="docn"  comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/docn</value>
+      <value component="docn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/docn</value>
       <value component="docn"  comp_interface="nuopc" >$SRCROOT/components/cdeps/docn</value>
-      <value component="socn"                         >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/socn</value>
-      <value component="xocn"                         >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
+      <value component="socn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/socn</value>
+      <value component="socn"  comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/socn</value>
+      <value component="xocn"  comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
+      <value component="xocn"  comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xocn</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -153,11 +162,14 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
+      <value component="ww3dev"                      >$SRCROOT/components/ww3dev</value>
       <value component="ww3"                         >$SRCROOT/components/ww3/</value>
-      <value component="dwav" comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dwav</value>
+      <value component="dwav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dwav</value>
       <value component="dwav" comp_interface="nuopc" >$SRCROOT/components/cdeps/dwav</value>
-      <value component="swav"                        >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/swav</value>
-      <value component="xwav"                        >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
+      <value component="swav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/swav</value>
+      <value component="swav" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/swav</value>
+      <value component="xwav" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
+      <value component="xwav" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xwav</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -169,10 +181,12 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="cism" >$SRCROOT/components/cism/</value>
-      <value component="dglc" >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dglc</value>
-      <value component="sglc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
-      <value component="xglc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
+      <value component="cism"                        >$SRCROOT/components/cism/</value>
+      <value component="dglc"                        >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dglc</value>
+      <value component="sglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sglc</value>
+      <value component="sglc" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sglc</value>
+      <value component="xglc" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
+      <value component="xglc" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xglc</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -184,11 +198,14 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
+      <value component="cice6"                       >$SRCROOT/components/cice6/</value>
       <value component="cice"                        >$SRCROOT/components/cice/</value>
-      <value component="dice" comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dice</value>
+      <value component="dice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dice</value>
       <value component="dice" comp_interface="nuopc" >$SRCROOT/components/cdeps/dice</value>
-      <value component="sice"                        >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sice</value>
-      <value component="xice"                        >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
+      <value component="sice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sice</value>
+      <value component="sice" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sice</value>
+      <value component="xice" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xice</value>
+      <value component="xice" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -203,10 +220,12 @@
       <value component="rtm"                         >$SRCROOT/components/rtm/</value>
       <value component="mosart"                      >$SRCROOT/components/mosart/</value>
       <value component="mizuroute"                   >$SRCROOT/components/mizuRoute/</value>
-      <value component="drof" comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/drof</value>
+      <value component="drof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/drof</value>
       <value component="drof" comp_interface="nuopc" >$SRCROOT/components/cdeps/drof</value>
-      <value component="srof"                        >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/srof</value>
-      <value component="xrof"                        >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
+      <value component="srof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/srof</value>
+      <value component="srof" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/srof</value>
+      <value component="xrof" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
+      <value component="xrof" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xrof</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -219,10 +238,12 @@
     <default_value>unset</default_value>
     <values>
       <value component="clm"                         >$SRCROOT/components/clm/</value>
-      <value component="dlnd" comp_interface="mct"   >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/dlnd</value>
+      <value component="dlnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/dlnd</value>
       <value component="dlnd" comp_interface="nuopc" >$SRCROOT/components/cdeps/dlnd</value>
-      <value component="slnd"                        >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/slnd</value>
-      <value component="xlnd"                        >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
+      <value component="slnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/slnd</value>
+      <value component="slnd" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/slnd</value>
+      <value component="xlnd" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
+      <value component="xlnd" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xlnd</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -234,8 +255,10 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="siac"      >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/siac</value>
-      <value component="xiac"      >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
+      <value component="siac" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/siac</value>
+      <value component="siac" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/siac</value>
+      <value component="xiac" comp_interface="mct"   >$SRCROOT/components/cpl7/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
+      <value component="xiac" comp_interface="nuopc" >$CIMEROOT/src/components/xcpl_comps_$COMP_INTERFACE/xiac</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -247,8 +270,10 @@
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="desp"      >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/desp</value>
-      <value component="sesp"      >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sesp</value>
+      <value component="desp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/data_comps_$COMP_INTERFACE/desp</value>
+      <value component="desp" comp_interface="nuopc" >$CIMEROOT/src/components/data_comps_$COMP_INTERFACE/desp</value>
+      <value component="sesp" comp_interface="mct"   >$SRCROOT/components/cpl7/components/stub_comps_$COMP_INTERFACE/sesp</value>
+      <value component="sesp" comp_interface="nuopc" >$CIMEROOT/src/components/stub_comps_$COMP_INTERFACE/sesp</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -266,6 +291,7 @@
       <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
+      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
@@ -287,6 +313,7 @@
       <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_pes.xml</value>
+      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
@@ -314,6 +341,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_archive.xml</value>
+      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
@@ -321,6 +349,7 @@
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
       <value component="mizuroute" >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
+      <value component="ww3dev"    >$COMP_ROOT_DIR_WAV/cime_config/config_archive.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -337,6 +366,7 @@
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
+      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/SystemTests</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
@@ -357,6 +387,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/testdefs/testlist_cam.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/testdefs/testlist_cism.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_clm.xml</value>
+      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_pop.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_mom.xml</value>
@@ -386,6 +417,7 @@
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/testdefs/testmods_dirs</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/testdefs/testmods_dirs</value>
+      <value component="cice6"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
@@ -414,6 +446,7 @@
       <value component="cam"      >$COMP_ROOT_DIR_ATM/cime_config/usermods_dirs</value>
       <value component="cism"     >$COMP_ROOT_DIR_GLC/cime_config/usermods_dirs</value>
       <value component="clm"      >$COMP_ROOT_DIR_LND/cime_config/usermods_dirs</value>
+      <value component="cice6"    >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
       <value component="cice"     >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
       <value component="rtm"      >$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
       <value component="mosart"   >$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
@@ -444,6 +477,7 @@
       <!--  TODO
       <value component="cam"  >$COMP_ROOT_DIR_ATM/bld/namelist_files/namelist_definition.xml</value>
       <value component="cism" >$COMP_ROOT_DIR_GLC/bld/namelist_files/namelist_definition_cism.xml</value>
+      <value component="cice6">$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
       <value component="cice" >$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
       <value component="clm"  >$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_ctsm.xml</value>
       <value component="pop"  >$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_pop.xml</value>
@@ -476,7 +510,8 @@
   <entry id="CONFIG_CPL_FILE_MODEL_SPECIFIC">
     <type>char</type>
     <values>
-      <value>$CIMEROOT/src/drivers/$COMP_INTERFACE/cime_config/config_component_$MODEL.xml</value>
+      <value comp_interface="nuopc">$SRCROOT/components/cmeps/cime_config/config_component_$MODEL.xml</value> --> 
+      <value comp_interface="mct">$SRCROOT/components/cpl7/driver/cime_config/config_component_$MODEL.xml</value> --> 
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -593,6 +628,25 @@
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
     <schema version="2.0">$CIMEROOT/config/xml_schemas/entry_id.xsd</schema>
     <schema version="3.0">$CIMEROOT/config/xml_schemas/entry_id_version3.xsd</schema>
+  </entry>
+
+  <entry id="BUILD_LIB_FILE">
+    <type>char</type>
+    <values>
+      <value lib="FMS">$SRCROOT/libraries/FMS/buildlib</value>
+      <value lib="CDEPS">$SRCROOT/components/cdeps/cime_config/buildlib</value>
+      <value lib="CMEPS">$SRCROOT/components/cmeps/cime_config/buildlib</value>
+      <value lib="gptl">$CIMEROOT/src/build_scripts/buildlib.gptl</value>
+      <value lib="pio">$CIMEROOT/src/build_scripts/buildlib.pio</value>
+      <value lib="mct">$CIMEROOT/src/build_scripts/buildlib.mct</value>
+      <value lib="csm_share">$SRCROOT/share/buildlib.csm_share</value>
+      <value lib="csm_share_cpl7">$SRCROOT/components/cpl7/buildlib.csm_share_cpl7</value>
+      <value lib="mpi-serial">$CIMEROOT/src/build_scripts/buildlib.mpi-serial</value>
+      <value lib="cprnc">$CIMEROOT/src/build_scripts/buildlib.cprnc</value>
+    </values>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc> path to buildlib script for the given library </desc>
   </entry>
 
 </entry_id>

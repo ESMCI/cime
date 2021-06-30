@@ -8,12 +8,18 @@ import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils                     import run_and_log_case_status, ls_sorted_by_mtime, symlink_force, safe_copy, find_files
+from CIME.utils                     import batch_jobid
 from CIME.date                      import get_file_date
-from CIME.XML.archive       import Archive
-from CIME.XML.files            import Files
+from CIME.XML.archive               import Archive
+from CIME.XML.files                 import Files
 from os.path                        import isdir, join
 
 logger = logging.getLogger(__name__)
+
+###############################################################################
+def _get_archive_fn_desc(archive_fn):
+###############################################################################
+    return "moving" if archive_fn is shutil.move else "copying"
 
 ###############################################################################
 def _get_archive_file_fn(copy_only):
@@ -196,8 +202,8 @@ def _archive_log_files(dout_s_root, rundir, archive_incomplete, archive_file_fn)
     for logfile in logfiles:
         srcfile = join(rundir, os.path.basename(logfile))
         destfile = join(archive_logdir, os.path.basename(logfile))
+        logger.info("{} {} to {}".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
         archive_file_fn(srcfile, destfile)
-        logger.info("moving {} to {}".format(srcfile, destfile))
 
 ###############################################################################
 def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir,
@@ -234,7 +240,7 @@ def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir
             for rbldfile in rbldfiles:
                 srcfile = join(rundir, rbldfile)
                 destfile = join(archive_rblddir, rbldfile)
-                logger.info("moving {} to {} ".format(srcfile, destfile))
+                logger.info("{} {} to {} ".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                 archive_file_fn(srcfile, destfile)
 
         sfxhst = casename + r'_[0-9][mdy]_' + r'[0-9]*'
@@ -246,7 +252,7 @@ def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir
             for hstfile in hstfiles:
                 srcfile = join(rundir, hstfile)
                 destfile = join(archive_histdir, hstfile)
-                logger.info("moving {} to {} ".format(srcfile, destfile))
+                logger.info("{} {} to {} ".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                 archive_file_fn(srcfile, destfile)
 
     # determine ninst and ninst_string
@@ -267,7 +273,7 @@ def _archive_history_files(archive, compclass, compname, histfiles_savein_rundir
                     logger.info("copying {} to {} ".format(srcfile, destfile))
                     safe_copy(srcfile, destfile)
                 else:
-                    logger.info("moving {} to {} ".format(srcfile, destfile))
+                    logger.info("{} {} to {} ".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                     archive_file_fn(srcfile, destfile)
 
 ###############################################################################
@@ -397,6 +403,10 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
     # the compname is drv but the files are named cpl
     if compname == 'drv':
         compname = 'cpl'
+    if compname == "cice6":
+        compname = 'cice'
+    if compname == "ww3dev":
+        compname = 'ww3'
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):
@@ -462,8 +472,8 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
                     destfile = os.path.join(archive_restdir, rfile)
                     expect(os.path.isfile(srcfile),
                            "restart file {} does not exist ".format(srcfile))
+                    logger.info("{} file {} to {}".format(_get_archive_fn_desc(archive_file_fn), srcfile, destfile))
                     archive_file_fn(srcfile, destfile)
-                    logger.info("moving file {} to {}".format(srcfile, destfile))
 
                     # need to copy the history files needed for interim restarts - since
                     # have not archived all of the history files yet
@@ -729,9 +739,20 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
 
     logger.info("st_archive starting")
 
+    is_batch = self.get_value("BATCH_SYSTEM")
+    msg_func = None
+
+    if is_batch:
+        jobid = batch_jobid()
+        msg_func = lambda *args: jobid if jobid is not None else ""
+
     archive = self.get_env('archive')
     functor = lambda: _archive_process(self, archive, last_date, archive_incomplete_logs, copy_only)
-    run_and_log_case_status(functor, "st_archive", caseroot=caseroot)
+    run_and_log_case_status(functor, "st_archive",
+                            custom_starting_msg_functor=msg_func,
+                            custom_success_msg_functor=msg_func,
+                            caseroot=caseroot,
+                            is_batch=is_batch)
 
     logger.info("st_archive completed")
 

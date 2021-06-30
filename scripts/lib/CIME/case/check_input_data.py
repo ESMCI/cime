@@ -22,7 +22,7 @@ def _download_checksum_file(rundir):
     chksum_found = False
     # download and merge all available chksum files.
     while protocol is not None:
-        protocol, address, user, passwd, chksum_file,_ = inputdata.get_next_server()
+        protocol, address, user, passwd, chksum_file,_,_ = inputdata.get_next_server()
         if protocol not in vars(CIME.Servers):
             logger.info("Client protocol {} not enabled".format(protocol))
             continue
@@ -170,12 +170,16 @@ def check_all_input_data(self, protocol=None, address=None, input_data_root=None
             if not chksum:
                 chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
             success = _downloadfromserver(self, input_data_root, data_list_dir)
+            clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
+            if not success and clm_usrdat_name:
+                success = _downloadfromserver(self, input_data_root, data_list_dir,
+                                              attributes={"CLM_USRDAT_NAME":clm_usrdat_name})
 
     expect(not download or (download and success), "Could not find all inputdata on any server")
     self.stage_refcase(input_data_root=input_data_root, data_list_dir=data_list_dir)
     return success
 
-def _downloadfromserver(case, input_data_root, data_list_dir):
+def _downloadfromserver(case, input_data_root, data_list_dir, attributes=None):
     """
     Download files
     """
@@ -186,7 +190,7 @@ def _downloadfromserver(case, input_data_root, data_list_dir):
         input_data_root = case.get_value('DIN_LOC_ROOT')
 
     while not success and protocol is not None:
-        protocol, address, user, passwd, _, ic_filepath = inputdata.get_next_server()
+        protocol, address, user, passwd, _, ic_filepath, _ = inputdata.get_next_server(attributes=attributes)
         logger.info("Checking server {} with protocol {}".format(address, protocol))
         success = case.check_input_data(protocol=protocol, address=address, download=True,
                                         input_data_root=input_data_root,
@@ -246,6 +250,7 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
         for rpointerfile in glob.iglob(os.path.join("{}","*rpointer*").format(refdir)):
             logger.info("Copy rpointer {}".format(rpointerfile))
             safe_copy(rpointerfile, rundir)
+            os.chmod(os.path.join(rundir, os.path.basename(rpointerfile)), 0o644)
         expect(rpointerfile,"Reference case directory {} does not contain any rpointer files".format(refdir))
         # link everything else
 
@@ -315,8 +320,15 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
             if (line and not line.startswith("#")):
                 tokens = line.split('=')
                 description, full_path = tokens[0].strip(), tokens[1].strip()
-                if description.endswith('datapath') or description.endswith('data_path'):
+                if description.endswith('datapath') or description.endswith('data_path') or full_path.endswith('/dev/null'):
                     continue
+                if description.endswith('file') or description.endswith('filename'):
+                    # There are required input data with key, or 'description' entries
+                    # that specify in their names whether they are files or filenames
+                    # rather than 'datapath's or 'data_path's so we check to make sure
+                    # the input data list has correct non-path values for input files.
+                    # This check happens whether or not a file already exists locally.
+                    expect((not full_path.endswith(os.sep)), "Unsupported directory path in input_data_list named {}. Line entry is '{} = {}'.".format(data_list_file, description, full_path))
                 if(full_path):
                     # expand xml variables
                     full_path = case.get_resolved_value(full_path)
@@ -332,7 +344,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         if ic_filepath:
                             rel_path  = full_path.replace(input_ic_root, ic_filepath)
                         use_ic_path = True
-
                     model = os.path.basename(data_list_file).split('.')[0]
 
                     if ("/" in rel_path and rel_path == full_path and not full_path.startswith('unknown')):
@@ -341,9 +352,24 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # proceed
                         if not os.path.exists(full_path):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
+                            # Data download path must be DIN_LOC_ROOT, DIN_LOC_IC or RUNDIR
+
+                            rundir = case.get_value("RUNDIR")
                             if download:
-                                logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
-                            no_files_missing = False
+                                if full_path.startswith(rundir):
+                                    filepath = os.path.dirname(full_path)
+                                    if not os.path.exists(filepath):
+                                        logger.info("Creating directory {}".format(filepath))
+                                        os.makedirs(filepath)
+                                    tmppath = full_path[len(rundir)+1:]
+                                    success = _download_if_in_repo(server, os.path.join(rundir,"inputdata"),
+                                                                   tmppath[10:],
+                                                                   isdirectory=isdirectory, ic_filepath='/')
+                                    no_files_missing = success
+                                else:
+                                    logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
+                            else:
+                                no_files_missing = False
                         else:
                             logger.debug("  Found input file: '{}'".format(full_path))
                     else:
@@ -357,18 +383,21 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
 
                         if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
-                            no_files_missing = False
                             if (download):
                                 if use_ic_path:
-                                    no_files_missing = _download_if_in_repo(server,
+                                    success = _download_if_in_repo(server,
                                                                             input_ic_root, rel_path.strip(os.sep),
                                                                             isdirectory=isdirectory, ic_filepath=ic_filepath)
                                 else:
-                                    no_files_missing = _download_if_in_repo(server,
+                                    success = _download_if_in_repo(server,
                                                                             input_data_root, rel_path.strip(os.sep),
                                                                             isdirectory=isdirectory, ic_filepath=ic_filepath)
-                                if no_files_missing and chksum:
+                                if not success:
+                                    no_files_missing = False
+                                if success and chksum:
                                     verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)
+                            else:
+                                no_files_missing = False
                         else:
                             if chksum:
                                 verify_chksum(input_data_root, rundir, rel_path.strip(os.sep), isdirectory)

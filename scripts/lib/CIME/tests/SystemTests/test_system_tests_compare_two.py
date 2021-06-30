@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 This module contains unit tests of the core logic in SystemTestsCompareTwo.
@@ -11,6 +11,7 @@ This module contains unit tests of the core logic in SystemTestsCompareTwo.
 
 import unittest
 from collections import namedtuple
+import functools
 import os
 import shutil
 import tempfile
@@ -156,7 +157,7 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
     # SystemTestsCommon
     # ------------------------------------------------------------------------
 
-    def run_indv(self, suffix="base", st_archive=False):
+    def run_indv(self, suffix="base", st_archive=False, submit_resubmits=None):
         """
         This fake implementation appends to the log and raises an exception if
         it's supposed to
@@ -485,6 +486,56 @@ class TestSystemTestsCompareTwo(unittest.TestCase):
         compare_phase_name = self.get_compare_phase_name(mytest)
         self.assertEqual(test_status.TEST_PASS_STATUS,
                          mytest._test_status.get_status(compare_phase_name))
+
+    def test_internal_calls_multisubmit_failed_state(self):
+        run_one_suffix = 'base'
+        run_two_suffix = 'run2'
+        case1root, _ = self.get_caseroots()
+        case1 = CaseFake(case1root)
+
+        def _set_initial_test_values(x):
+            x.set_value('RESUBMIT', 1)
+
+        case1.set_initial_test_values = functools.partial(
+            _set_initial_test_values,
+            case1)
+
+        # Standard first phase
+        case1.set_value('IS_FIRST_RUN', True)
+        case1.set_value('RESUBMIT', 1)
+
+        mytest = SystemTestsCompareTwoFake(
+            case1 = case1,
+            run_one_suffix = run_one_suffix,
+            run_two_suffix = run_two_suffix,
+            multisubmit = True)
+
+        mytest.run()
+
+        expected_calls = [
+            Call(METHOD_case_one_custom_prerun_action, {}),
+            Call(METHOD_run_indv, {'CASEROOT': case1root, 'suffix': 'base'}),
+            Call(METHOD_case_one_custom_postrun_action, {})
+        ]
+
+        self.assertEqual(expected_calls, mytest.log)
+
+        # Emulate a rerun ensure phase 1 still runs
+        case1.set_value('IS_FIRST_RUN', True)
+        case1.set_value('RESUBMIT', 0)
+
+        # Reset the log
+        mytest.log = []
+
+        mytest.run()
+
+        expected_calls = [
+            Call(METHOD_case_one_custom_prerun_action, {}),
+            Call(METHOD_run_indv, {'CASEROOT': case1root, 'suffix': 'base'}),
+            Call(METHOD_case_one_custom_postrun_action, {})
+        ]
+
+        self.assertEqual(expected_calls, mytest.log)
 
     def test_run1_fails(self):
         # Make sure that a failure in run1 is reported correctly
