@@ -789,6 +789,22 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="greenplanet-sib29" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="greenplanet-sky24" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="casper">
   <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
   <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
