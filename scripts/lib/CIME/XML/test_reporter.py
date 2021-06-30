@@ -9,6 +9,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.utils import expect,get_model
 import ssl
+#pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context
 
 class TestReporter(GenericXML):
@@ -68,4 +69,4 @@ class TestReporter(GenericXML):
         url_values = urllib.parse.urlencode(params)
         url="https://csegweb.cgd.ucar.edu/testdb/cgi-bin/processXMLtest.cgi"
         full_url = url + '?' + url_values
-        f = urllib.request.urlopen(full_url)
+        urllib.request.urlopen(full_url)
