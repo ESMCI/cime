@@ -152,27 +152,27 @@ class MVK(SystemTestsCommon):
                                                      CIME.test_status.TEST_PASS_STATUS)
                     break
 
-                status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
-                mach_name = self._case.get_value("MACH")
-                mach_obj = Machines(machine=mach_name)
-                htmlroot = CIME.utils.get_htmlroot(mach_obj)
-                urlroot = CIME.utils.get_urlroot(mach_obj)
-                if htmlroot is not None:
-                    with CIME.utils.SharedArea():
-                        dir_util.copy_tree(evv_out_dir, os.path.join(htmlroot, 'evv', case_name), preserve_mode=False)
-                    if urlroot is None:
-                        urlroot = "[{}_URL]".format(mach_name.capitalize())
-                    viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
-                else:
-                    viewing = "{}\n" \
-                              "    EVV viewing instructions can be found at: " \
-                              "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/" \
-                              "climate_reproducibility/README.md#test-passfail-and-extended-output" \
-                              "".format(evv_out_dir)
+            status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
+            mach_name = self._case.get_value("MACH")
+            mach_obj = Machines(machine=mach_name)
+            htmlroot = CIME.utils.get_htmlroot(mach_obj)
+            urlroot = CIME.utils.get_urlroot(mach_obj)
+            if htmlroot is not None:
+                with CIME.utils.SharedArea():
+                    dir_util.copy_tree(evv_out_dir, os.path.join(htmlroot, 'evv', case_name), preserve_mode=False)
+                if urlroot is None:
+                    urlroot = "[{}_URL]".format(mach_name.capitalize())
+                viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
+            else:
+                viewing = "{}\n" \
+                            "    EVV viewing instructions can be found at: " \
+                            "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/" \
+                            "climate_reproducibility/README.md#test-passfail-and-extended-output" \
+                            "".format(evv_out_dir)
 
-                comments = "{} {} for test '{}'.\n" \
-                           "    {}\n" \
-                           "    EVV results can be viewed at:\n" \
-                           "        {}".format(CIME.test_status.BASELINE_PHASE, status, test_name, comments, viewing)
+            comments = "{} {} for test '{}'.\n" \
+                        "    {}\n" \
+                        "    EVV results can be viewed at:\n" \
+                        "        {}".format(CIME.test_status.BASELINE_PHASE, status, test_name, comments, viewing)
 
-                CIME.utils.append_testlog(comments, self._orig_caseroot)
+            CIME.utils.append_testlog(comments, self._orig_caseroot)
