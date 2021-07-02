@@ -1392,10 +1392,13 @@ directory, NOT in this subdirectory."""
             self._create_caseroot_sourcemods()
         self._create_caseroot_tools()
 
-    def apply_user_mods(self, user_mods_dir=None):
+    def apply_user_mods(self, user_mods_dirs=None):
         """
         User mods can be specified on the create_newcase command line (usually when called from create test)
         or they can be in the compset definition, or both.
+
+        If user_mods_dirs is specified, it should be a list of paths giving the user mods
+        specified on the create_newcase command line.
         """
         all_user_mods = []
         for comp in self._component_classes:
@@ -1409,10 +1412,10 @@ directory, NOT in this subdirectory."""
         comp_user_mods = self._get_comp_user_mods(self._primary_component)
         if comp_user_mods is not None:
             all_user_mods.append(comp_user_mods)
-        if user_mods_dir is not None:
-            all_user_mods.append(user_mods_dir)
+        if user_mods_dirs is not None:
+            all_user_mods.extend(user_mods_dirs)
 
-        # This looping order will lead to the specified user_mods_dir taking
+        # This looping order will lead to the specified user_mods_dirs taking
         # precedence over self._user_mods, if there are any conflicts.
         for user_mods in all_user_mods:
             if os.path.isabs(user_mods):
@@ -1730,7 +1733,7 @@ directory, NOT in this subdirectory."""
             fd.writelines(lines)
 
     def create(self, casename, srcroot, compset_name, grid_name,
-               user_mods_dir=None, machine_name=None,
+               user_mods_dirs=None, machine_name=None,
                project=None, pecount=None, compiler=None, mpilib=None,
                pesfile=None, gridfile=None,
                multi_driver=False, ninst=1, test=False,
@@ -1744,15 +1747,28 @@ directory, NOT in this subdirectory."""
             self.set_lookup_value("CASEROOT", self._caseroot)
             self.set_lookup_value("SRCROOT", srcroot)
             self.set_lookup_value("CASE_HASH", self.new_hash())
-            # if the top level user_mods_dir contains a config_grids.xml file and
-            # gridfile was not set on the command line, use it.
-            if user_mods_dir:
-                um_config_grids = os.path.join(user_mods_dir,"config_grids.xml")
-                if os.path.exists(um_config_grids):
-                    if gridfile:
-                        logger.warning("A config_grids file was found in {} but also provided on the command line {}, command line takes precident".format(um_config_grids, gridfile))
-                    else:
-                        gridfile = um_config_grids
+            # If any of the top level user_mods_dirs contain a config_grids.xml file and
+            # gridfile was not set on the command line, use it. However, if there are
+            # multiple user_mods_dirs, it is an error for more than one of them to contain
+            # a config_grids.xml file, because it would be ambiguous which one we should
+            # use.
+            if user_mods_dirs:
+                found_um_config_grids = False
+                for this_user_mods_dir in user_mods_dirs:
+                    um_config_grids = os.path.join(this_user_mods_dir,"config_grids.xml")
+                    if os.path.exists(um_config_grids):
+                        if gridfile:
+                            # Either a gridfile was found in an earlier user_mods
+                            # directory or a gridfile was given on the command line. The
+                            # first case (which would set found_um_config_grids to True)
+                            # is an error; the second case just generates a warning.
+                            expect(not found_um_config_grids,
+                                   "Cannot handle multiple usermods directories with config_grids.xml files: {} and {}".format(
+                                       gridfile, um_config_grids))
+                            logger.warning("A config_grids file was found in {} but also provided on the command line {}, command line takes precedence".format(um_config_grids, gridfile))
+                        else:
+                            gridfile = um_config_grids
+                            found_um_config_grids = True
 
 
             # Configure the Case
@@ -1773,7 +1789,7 @@ directory, NOT in this subdirectory."""
 
             # Write out the case files
             self.flush(flushall=True)
-            self.apply_user_mods(user_mods_dir)
+            self.apply_user_mods(user_mods_dirs)
 
             # Lock env_case.xml
             lock_file("env_case.xml", self._caseroot)
