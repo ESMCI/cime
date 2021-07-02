@@ -98,8 +98,8 @@ def run_gmake(case, compclass, compname, libroot, bldroot, libname="", user_cppd
         .format(gmake=gmake, gmake_j=gmake_j, compclass=compclass, compname=compname, complib=complib, gmake_args=gmake_args, makefile=makefile, bldroot=bldroot)
     if user_cppdefs:
         cmd = cmd + "USER_CPPDEFS='{}'".format(user_cppdefs )
-    
-    stat, out, err = run_cmd(cmd, combine_output=True, verbose=True)
+
+    stat, out, err = run_cmd(cmd, combine_output=True)
     print(out)
     if stat:
         logger.info("buildlib stat={} err={}".format(stat,err))
