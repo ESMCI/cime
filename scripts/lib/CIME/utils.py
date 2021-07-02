@@ -663,6 +663,16 @@ def parse_test_name(test_name):
     Do not error if a partial testname is provided (TESTCASE or TESTCASE.GRID) instead
     parse and return the partial results.
 
+    TESTMODS use hyphens in a special way:
+    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to
+      the path 'test/mods')
+    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path'
+      indicates two test mods: 'test/mods' and 'other/dir/path')
+
+    If there are one or more TESTMODS, then the testmods component of the result will be a
+    list, where each element of the list is one testmod, and hyphens have been replaced by
+    slashes.
+
     >>> parse_test_name('ERS')
     ['ERS', None, None, None, None, None, None]
     >>> parse_test_name('ERS.fe12_123')
@@ -680,7 +690,9 @@ def parse_test_name(test_name):
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods')
-    ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', 'test/mods']
+    ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more')
+    ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods', 'other/dir/path', 'and/one/more']]
     >>> parse_test_name('SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods') # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -711,7 +723,10 @@ def parse_test_name(test_name):
         rv.pop()
 
     if (rv[-1] is not None):
-        rv[-1] = rv[-1].replace("-", "/")
+        # The last element of the return value - testmods - will be a list of testmods,
+        # built by separating the TESTMODS component on strings of double hyphens
+        testmods = rv[-1].split('--')
+        rv[-1] = [one_testmod.replace("-", "/") for one_testmod in testmods]
 
     expect(num_dots <= 4,
            "'{}' does not look like a CIME test name, expect TESTCASE.GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]]".format(test_name))
@@ -723,6 +738,8 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
     Given a partial CIME test name, return in form TESTCASE.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]
     Use the additional args to fill out the name if needed
 
+    If testmod is provided, it should be a list of one or more testmods, as would be returned by parse_test_name
+
     >>> get_full_test_name("ERS", grid="ne16_fe16", compset="JGF", machine="melvin", compiler="gnu")
     'ERS.ne16_fe16.JGF.melvin_gnu'
     >>> get_full_test_name("ERS", caseopts=["D", "P16"], grid="ne16_fe16", compset="JGF", machine="melvin", compiler="gnu")
@@ -733,8 +750,12 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
     'ERS.ne16_fe16.JGF.melvin_gnu'
     >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods", machine="melvin", compiler="gnu")
     'ERS.ne16_fe16.JGF.melvin_gnu.mods'
-    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmod="mods/test")
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmod=["mods/test"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmod=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmod=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
     """
     partial_testcase, partial_caseopts, partial_grid, partial_compset, partial_machine, partial_compiler, partial_testmod = parse_test_name(partial_test)
 
@@ -762,7 +783,8 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
             # No testmod for this test and that's OK
             pass
         else:
-            result += ".{}".format(testmod.replace("/", "-"))
+            testmod_hyphenated = [one_testmod.replace("/", "-") for one_testmod in testmod]
+            result += ".{}".format('--'.join(testmod_hyphenated))
     elif (testmod is not None):
         expect(testmod == partial_testmod,
                "Mismatch in field testmod, partial string '{}' indicated it should be '{}' but you provided '{}'".format(partial_test, partial_testmod, testmod))
