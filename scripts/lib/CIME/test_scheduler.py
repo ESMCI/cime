@@ -45,7 +45,7 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
     new_test_names = []
     caseopts = []
     for test_name in test_names:
-        testcase, caseopts, grid, compset, machine, compiler, testmod = parse_test_name(test_name)
+        testcase, caseopts, grid, compset, machine, compiler, testmods = parse_test_name(test_name)
         rewrote_caseopt = False
         if caseopts is not None:
             for idx, caseopt in enumerate(caseopts):
@@ -73,7 +73,7 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
             else:
                 caseopts.append(newcaseopt)
 
-        new_test_name = get_full_test_name(testcase, caseopts=caseopts, grid=grid, compset=compset, machine=machine, compiler=compiler, testmod=testmod)
+        new_test_name = get_full_test_name(testcase, caseopts=caseopts, grid=grid, compset=compset, machine=machine, compiler=compiler, testmods=testmods)
         new_test_names.append(new_test_name)
 
     return new_test_names
