@@ -372,6 +372,7 @@
       <value component="dlnd">$COMP_ROOT_DIR_LND/cime_config/namelist_definition_dlnd.xml</value>
       <value component="docn">$COMP_ROOT_DIR_OCN/cime_config/namelist_definition_docn.xml</value>
       <value component="dwav">$COMP_ROOT_DIR_WAV/cime_config/namelist_definition_dwav.xml</value>
+      <value component="desp">$COMP_ROOT_DIR_ESP/cime_config/namelist_definition_desp.xml</value>
       <!-- external model components -->
       <!--  TODO
       <value component="cam"      >$SRCROOT/components/cam/bld/namelist_files/namelist_definition.xml</value>
