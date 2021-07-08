@@ -22,7 +22,9 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, Timeout
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, \
+    safe_copy, CIMEError, get_cime_root, get_src_root, Timeout, \
+    import_from_file
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -123,7 +125,7 @@ class A_RunUnitTests(unittest.TestCase):
         # (i.e., tests defined using python's unittest module).
         #
         # This is analogous to running:
-        #     python -m unittest discover -s CIME/tests -t .
+        #     python3 -m unittest discover -s CIME/tests -t .
         # from cime/scripts/lib
         #
         # Yes, that means we have a bunch of unit tests run from this one unit
@@ -158,7 +160,7 @@ class A_RunUnitTests(unittest.TestCase):
                         content = fd.read()
                     if '>>>' in content:
                         print("Running doctests for {}".format(filepath))
-                        run_cmd_assert_result(self, 'PYTHONPATH={}:$PYTHONPATH python -m doctest {} 2>&1'.format(LIB_DIR, filepath), from_dir=LIB_DIR)
+                        run_cmd_assert_result(self, 'PYTHONPATH={}:$PYTHONPATH python3 -m doctest {} 2>&1'.format(LIB_DIR, filepath), from_dir=LIB_DIR)
                     else:
                         print("{} has no doctests".format(filepath))
 
@@ -586,13 +588,13 @@ class J_TestCreateNewcase(unittest.TestCase):
         cls._testdirs.append(testdir)
 
         if CIME.utils.get_model() == "cesm":
-            # Will need to be updated when cesm brings in new share repo new line will be.
-            # pesfile = os.path.join(get_src_root(),"cpl7","driver","cime_config","config_pes.xml")
-            # or
-            # pesfile = os.path.join(get_src_root(),"components","cmeps","cime_config","config_pes.xml")
-            pesfile = os.path.join("..","src","drivers",CIME.utils.get_cime_default_driver(),"cime_config","config_pes.xml")
+            if CIME.utils.get_cime_default_driver() == "nuopc":
+                pesfile = os.path.join(get_src_root(),"components","cmeps","cime_config","config_pes.xml")
+            else:
+                pesfile = os.path.join(get_src_root(),"components","cpl7","driver","cime_config","config_pes.xml")
         else:
             pesfile = os.path.join("..","src","drivers",CIME.utils.get_cime_default_driver(),"cime_config","config_pes.xml")
+
         args =  "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r" % (testdir, pesfile, cls._testroot)
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"
@@ -2431,19 +2433,16 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_case_submit_interface(self):
     ###########################################################################
-        try:
-            import imp
-        except ImportError:
-            print("imp not found, skipping case.submit interface test")
-            return
         # the current directory may not exist, so make sure we are in a real directory
         os.chdir(os.getenv("HOME"))
         sys.path.append(TOOLS_DIR)
         case_submit_path = os.path.join(TOOLS_DIR, "case.submit")
-        submit_interface = imp.load_source("case_submit_interface", case_submit_path)
+
+        module = import_from_file("case.submit", case_submit_path)
+
         sys.argv = ["case.submit", "--batch-args", "'random_arguments_here.%j'",
                     "--mail-type", "fail", "--mail-user", "'random_arguments_here.%j'"]
-        submit_interface._main_func(None, True)
+        module._main_func(None, True)
 
     ###########################################################################
     def test_xml_caching(self):
@@ -2530,8 +2529,10 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
-        if (NO_FORTRAN_RUN):
+        if NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
+        if TEST_COMPILER and "gpu" in TEST_COMPILER:
+            self.skipTest("Skipping cprnc test for gpu compiler")
 
         testname = "ERS_Ln7.f19_g16_rx1.A"
         casedir = self._create_test([testname, "--no-build"], test_id=self._baseline_name)
@@ -2579,7 +2580,7 @@ class G_TestBuildSystem(TestCreateTestCommon):
     ###########################################################################
     def test_clean_rebuild(self):
     ###########################################################################
-        casedir = self._create_test(["--no-run", "SMS.f19_g16_rx1.A"], test_id=self._baseline_name)
+        casedir = self._create_test(["--no-run", "SMS.f19_g17_rx1.A"], test_id=self._baseline_name)
 
         # Clean a component and a sharedlib
         run_cmd_assert_result(self, "./case.build --clean atm", from_dir=casedir)

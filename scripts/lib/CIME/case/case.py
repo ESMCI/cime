@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Wrapper around all env XML for a case.
 
@@ -128,6 +129,7 @@ class Case(object):
         self.thread_count = None
         self.total_tasks = None
         self.tasks_per_node = None
+        self.ngpus_per_node = 0
         self.num_nodes = None
         self.spare_nodes = None
         self.tasks_per_numa = None
@@ -184,6 +186,11 @@ class Case(object):
             self.num_nodes += self.spare_nodes
 
         logger.debug("total_tasks {} thread_count {}".format(self.total_tasks, self.thread_count))
+
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+
+        if max_gpus_per_node:
+            self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
         smt_factor = max(1,int(self.get_value("MAX_TASKS_PER_NODE") / max_mpitasks_per_node))
@@ -940,7 +947,8 @@ class Case(object):
                   walltime=None, queue=None, output_root=None,
                   run_unsupported=False, answer=None,
                   input_dir=None, driver=None, workflowid="default",
-                  non_local=False, extra_machines_dir=None, case_group=None):
+                  non_local=False, extra_machines_dir=None, case_group=None,
+                  ngpus_per_node=0):
 
         expect(check_name(compset_name, additional_chars='.'), "Invalid compset name {}".format(compset_name))
 
@@ -1006,7 +1014,7 @@ class Case(object):
         nodenames = [x for x in nodenames if
                      '_system' not in x and '_variables' not in x and 'mpirun' not in x and\
                      'COMPILER' not in x and 'MPILIB' not in x and 'MAX_MPITASKS_PER_NODE' not in x and\
-                     'MAX_TASKS_PER_NODE' not in x]
+                     'MAX_TASKS_PER_NODE' not in x and 'MAX_GPUS_PER_NODE' not in x]
 
         for nodename in nodenames:
             value = machobj.get_value(nodename, resolved=False)
@@ -1030,11 +1038,14 @@ class Case(object):
             expect(machobj.is_valid_MPIlib(mpilib, {"compiler":compiler}),
                    "MPIlib {} is not supported on machine {}".format(mpilib, machine_name))
         self.set_value("MPILIB",mpilib)
-        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE"):
+        for name in ("MAX_TASKS_PER_NODE","MAX_MPITASKS_PER_NODE","MAX_GPUS_PER_NODE"):
             dmax = machobj.get_value(name,{'compiler':compiler})
             if not dmax:
                 dmax = machobj.get_value(name)
-            self.set_value(name, dmax)
+            if dmax:
+                self.set_value(name, dmax)
+            else:
+                logger.warning("Variable {} not defined for machine {}".format(name, machine_name))
 
         machdir = machobj.get_machines_dir()
         self.set_value("MACHDIR", machdir)
@@ -1130,6 +1141,32 @@ class Case(object):
 
         if test:
             self.set_value("TEST",True)
+
+        #----------------------------------------------------------------------------------------------------------
+        # Sanity check:
+        #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
+        #     2. For compilers without the string "gpu" in the name:
+        #        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as
+        #             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
+        #        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument
+        #             must be set to 0. Otherwise, an error will be triggered.
+        #     3. For compilers with the string "gpu" in the name:
+        #        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered.
+        #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
+        #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
+        #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
+        #----------------------------------------------------------------------------------------------------------
+        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
+        if max_gpus_per_node:
+            if  "gpu" in compiler:
+                if not ngpus_per_node:
+                    ngpus_per_node = 1
+                    logger.warning("Setting ngpus_per_node to 1 for compiler {}".format(compiler))
+                expect(ngpus_per_node > 0," ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+            else:
+                expect(ngpus_per_node == 0," ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(compiler, ngpus_per_node))
+            if ngpus_per_node >= 0:
+                self.set_value("NGPUS_PER_NODE", ngpus_per_node if ngpus_per_node <= max_gpus_per_node else max_gpus_per_node)
 
         self.initialize_derived_attributes()
 
@@ -1463,14 +1500,15 @@ directory, NOT in this subdirectory."""
         mpirun_cmd_override = self.get_value("MPI_RUN_COMMAND")
         if mpirun_cmd_override not in ["", None, "UNSET"]:
             return self.get_resolved_value(mpirun_cmd_override + " " + run_exe + " " + run_misc_suffix)
+        queue = self.get_value("JOB_QUEUE", subgroup=job)
 
         # Things that will have to be matched against mpirun element attributes
         mpi_attribs = {
-            "compiler" : self.get_value("COMPILER"),
-            "mpilib"   : self.get_value("MPILIB"),
-            "threaded" : self.get_build_threaded(),
-            "queue" : self.get_value("JOB_QUEUE", subgroup=job),
-            "unit_testing" : False,
+            "compiler"       : self.get_value("COMPILER"),
+            "mpilib"         : self.get_value("MPILIB"),
+            "threaded"       : self.get_build_threaded(),
+            "queue"          : queue,
+            "unit_testing"   : False,
             "comp_interface" : self._comp_interface
             }
 
@@ -1494,6 +1532,14 @@ directory, NOT in this subdirectory."""
 
         if self.get_value("BATCH_SYSTEM") == "cobalt":
             mpi_arg_string += " : "
+
+        ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+        if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
+            # 1. this setting is tested on Casper only and may not work on other machines
+            # 2. need to be revisited in the future for a more adaptable implementation
+            rundir = self.get_value("RUNDIR")
+            output_name = rundir+'/set_device_rank.sh'
+            mpi_arg_string = mpi_arg_string + " " + output_name + " "
 
         return self.get_resolved_value("{} {} {} {}".format(executable if executable is not None else "", mpi_arg_string, run_exe, run_misc_suffix), allow_unresolved_envvars=allow_unresolved_envvars)
 
@@ -1694,7 +1740,7 @@ directory, NOT in this subdirectory."""
                walltime=None, queue=None, output_root=None,
                run_unsupported=False, answer=None,
                input_dir=None, driver=None, workflowid="default", non_local=False,
-               extra_machines_dir=None, case_group=None):
+               extra_machines_dir=None, case_group=None, ngpus_per_node=0):
         try:
             # Set values for env_case.xml
             self.set_lookup_value("CASE", os.path.basename(casename))
@@ -1723,7 +1769,8 @@ directory, NOT in this subdirectory."""
                            run_unsupported=run_unsupported, answer=answer,
                            input_dir=input_dir, driver=driver,
                            workflowid=workflowid, non_local=non_local,
-                           extra_machines_dir=extra_machines_dir, case_group=case_group)
+                           extra_machines_dir=extra_machines_dir, case_group=case_group,
+                           ngpus_per_node=ngpus_per_node)
 
             self.create_caseroot()
 
@@ -1786,6 +1833,7 @@ directory, NOT in this subdirectory."""
         write("  total tasks: {}".format(self.total_tasks))
         write("  tasks per node: {}".format(self.tasks_per_node))
         write("  thread count: {}".format(self.thread_count))
+        write("  ngpus per node: {}".format(self.ngpus_per_node))
         write("")
 
         write("BATCH INFO:")

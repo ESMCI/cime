@@ -2,7 +2,9 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, fnmatch
+import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, \
+    importlib, fnmatch
+import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
 import six
@@ -14,6 +16,19 @@ from distutils import file_util
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
 logger = logging.getLogger(__name__)
+
+def import_from_file(name, file_path):
+    loader = importlib.machinery.SourceFileLoader(name, file_path)
+
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+
+    module = importlib.util.module_from_spec(spec)
+
+    sys.modules[name] = module
+
+    spec.loader.exec_module(module)
+
+    return module
 
 @contextmanager
 def redirect_stdout(new_target):
@@ -259,9 +274,8 @@ def get_src_root():
     Return the absolute path to the root of SRCROOT.
 
     """
-    # This if statement will need to be updated when cesm brings in the new share repos.
-    if get_model() == "cesm":
-        srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
+    if os.path.isdir(os.path.join(get_cime_root(),"share")) and get_model() == "cesm":
+        srcroot = os.path.abspath(os.path.join(get_cime_root()))
     else:
         srcroot = os.path.abspath(os.path.join(get_cime_root(),".."))
 
@@ -415,7 +429,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
     if not do_run_cmd:
         try:
-            mod = imp.load_source(subname, cmd)
+            mod = import_from_file(subname, cmd)
             logger.info("   Calling {}".format(cmd))
             # Careful: logfile code is not thread safe!
             if logfile:
@@ -659,6 +673,8 @@ def parse_test_name(test_name):
     ['ERS', ['D'], 'fe12_123', 'JGF', None, None, None]
     >>> parse_test_name('ERS_D_P1.fe12_123.JGF')
     ['ERS', ['D', 'P1'], 'fe12_123', 'JGF', None, None, None]
+    >>> parse_test_name('ERS_D_G2.fe12_123.JGF')
+    ['ERS', ['D', 'G2'], 'fe12_123', 'JGF', None, None, None]
     >>> parse_test_name('SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A')
     ['SMS', ['D', 'Ln9', 'Mmpi-serial'], 'f19_g16_rx1', 'A', None, None, None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler')

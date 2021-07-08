@@ -22,7 +22,7 @@ def _download_checksum_file(rundir):
     chksum_found = False
     # download and merge all available chksum files.
     while protocol is not None:
-        protocol, address, user, passwd, chksum_file,_ = inputdata.get_next_server()
+        protocol, address, user, passwd, chksum_file,_,_ = inputdata.get_next_server()
         if protocol not in vars(CIME.Servers):
             logger.info("Client protocol {} not enabled".format(protocol))
             continue
@@ -190,7 +190,7 @@ def _downloadfromserver(case, input_data_root, data_list_dir, attributes=None):
         input_data_root = case.get_value('DIN_LOC_ROOT')
 
     while not success and protocol is not None:
-        protocol, address, user, passwd, _, ic_filepath = inputdata.get_next_server(attributes=attributes)
+        protocol, address, user, passwd, _, ic_filepath, _ = inputdata.get_next_server(attributes=attributes)
         logger.info("Checking server {} with protocol {}".format(address, protocol))
         success = case.check_input_data(protocol=protocol, address=address, download=True,
                                         input_data_root=input_data_root,
@@ -345,6 +345,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                             rel_path  = full_path.replace(input_ic_root, ic_filepath)
                         use_ic_path = True
                     model = os.path.basename(data_list_file).split('.')[0]
+                    isdirectory=rel_path.endswith(os.sep)
 
                     if ("/" in rel_path and rel_path == full_path and not full_path.startswith('unknown')):
                         # User pointing to a file outside of input_data_root, we cannot determine
@@ -352,9 +353,24 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # proceed
                         if not os.path.exists(full_path):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
+                            # Data download path must be DIN_LOC_ROOT, DIN_LOC_IC or RUNDIR
+
+                            rundir = case.get_value("RUNDIR")
                             if download:
-                                logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
-                            no_files_missing = False
+                                if full_path.startswith(rundir):
+                                    filepath = os.path.dirname(full_path)
+                                    if not os.path.exists(filepath):
+                                        logger.info("Creating directory {}".format(filepath))
+                                        os.makedirs(filepath)
+                                    tmppath = full_path[len(rundir)+1:]
+                                    success = _download_if_in_repo(server, os.path.join(rundir,"inputdata"),
+                                                                   tmppath[10:],
+                                                                   isdirectory=isdirectory, ic_filepath='/')
+                                    no_files_missing = success
+                                else:
+                                    logger.warning("    Cannot download file since it lives outside of the input_data_root '{}'".format(input_data_root))
+                            else:
+                                no_files_missing = False
                         else:
                             logger.debug("  Found input file: '{}'".format(full_path))
                     else:
@@ -364,7 +380,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # basically if rel_path does not contain '/' (a
                         # directory tree) you can assume it's a special
                         # value and ignore it (perhaps with a warning)
-                        isdirectory=rel_path.endswith(os.sep)
 
                         if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))

@@ -1,9 +1,12 @@
 """
 functions for building CIME models
 """
-import glob, shutil, time, threading, subprocess, imp
+import glob, shutil, time, threading, subprocess
 from CIME.XML.standard_module_setup  import *
-from CIME.utils                 import get_model, analyze_build_log, stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, check_for_python, get_logging_options
+from CIME.utils                 import get_model, analyze_build_log, \
+    stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, \
+    run_cmd, get_batch_script_for_job, gzip_existing_file, safe_copy, \
+    check_for_python, get_logging_options, import_from_file
 from CIME.provenance            import save_build_provenance as save_build_provenance_sub
 from CIME.locked_files          import lock_file, unlock_file
 from CIME.XML.files             import Files
@@ -12,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 _CMD_ARGS_FOR_BUILD = \
     ("CASEROOT", "CASETOOLS", "CIMEROOT", "SRCROOT", "COMP_INTERFACE",
-     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT", "LILAC_MODE",
+     "COMPILER", "DEBUG", "EXEROOT", "INCROOT", "LIBROOT",
      "MACH", "MPILIB", "NINST_VALUE", "OS", "PIO_VERSION",
      "SHAREDLIBROOT", "SMP_PRESENT", "USE_ESMF_LIB", "USE_MOAB",
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
@@ -29,6 +32,7 @@ def get_standard_makefile_args(case, shared_lib=False):
 
 def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     cmake_args = "-DCIME_MODEL={} ".format(case.get_value("MODEL"))
+    cmake_args += "-DSRC_ROOT={} ".format(case.get_value("SRCROOT"))
     cmake_args += " -Dcompile_threaded={} ".format(stringify_bool(case.get_build_threaded()))
 
     ocn_model = case.get_value("COMP_OCN")
@@ -379,7 +383,6 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             os.makedirs(shared_item)
 
     mpilib = case.get_value("MPILIB")
-    lilac_mode = case.get_value("LILAC_MODE")
     ufs_driver = os.environ.get("UFS_DRIVER")
     cpl_in_complist = False
     for l in complist:
@@ -389,6 +392,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
     if ufs_driver and ufs_driver == 'nems' and not cpl_in_complist:
         libs = []
+    elif case.get_value("MODEL") == "cesm" and comp_interface == "nuopc":
+        libs = ["gptl", "mct", "pio", "csm_share"]
+    elif case.get_value("MODEL") == "cesm":
+        libs = ["gptl", "mct", "pio", "csm_share", "csm_share_cpl7"]
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
 
@@ -400,14 +407,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     # Build shared code of CDEPS nuopc data models
     build_script = {}
-    if (comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems')
-        and lilac_mode != 'on'):
-        # For now, we avoid building CDEPS with CTSM's LILAC because it's not needed in
-        # this configuration and CDEPS relies on unreleased ESMF code. Eventually we will
-        # require CDEPS (for its streams functionality), at which point CDEPS should only
-        # require released ESMF code; then we should remove the 'lilac_mode' part of this
-        # conditional and the similar conditional in the Makefile (along with the addition
-        # of LILAC_MODE to _CMD_ARGS_FOR_BUILD).
+    if (comp_interface == "nuopc" and (not ufs_driver or ufs_driver != 'nems')):
         libs.append("CDEPS")
 
     ocn_model = case.get_value("COMP_OCN")
@@ -437,7 +437,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         if buildlist is not None and lib not in buildlist:
             continue
 
-        if lib == "csm_share":
+        if lib == "csm_share" or lib == "csm_share_cpl7":
             # csm_share adds its own dir name
             full_lib_path = os.path.join(sharedlibroot, sharedpath)
         elif lib == "mpi-serial":
@@ -546,7 +546,8 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
     """
     bc_path = os.path.join(config_dir, "buildlib_cmake")
     expect(os.path.exists(bc_path), "Missing: {}".format(bc_path))
-    buildlib = imp.load_source("buildlib_cmake", os.path.join(config_dir, "buildlib_cmake"))
+    buildlib = import_from_file("buildlib_cmake", os.path.join(config_dir,
+                                                               "buildlib_cmake"))
     cmake_args = buildlib.buildlib(bldroot, libroot, case)
     return "" if cmake_args is None else cmake_args
 

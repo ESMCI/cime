@@ -85,7 +85,7 @@ class TestCaseFake(unittest.TestCase):
         ]
 
         self._compare_test_results("test1", "test-baseline", phases)
-    
+
     def test_baseline(self):
         compare_test_results.compare_namelists = lambda *args: True
         compare_test_results.compare_history = lambda *args: (True, "Detail comments")

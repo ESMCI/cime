@@ -15,7 +15,13 @@ cmake_minimum_required(VERSION 2.8)
 
 # Find netcdf
 set(NetCDF_PATH ${NETCDF_PATH})
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CIMEROOT}/src/externals/pio2/cmake)
+
+if (EXISTS ${SRC_ROOT}/libraries/parallelio/cmake)
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SRC_ROOT}/libraries/parallelio/cmake)
+else()
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CIMEROOT}/src/externals/pio2/cmake)
+endif()
+
 find_package (NetCDF COMPONENTS Fortran REQUIRED)
 
 # generate compare_vars_mod.F90
