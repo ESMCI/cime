@@ -50,7 +50,7 @@ def buildlib(bldroot, installpath, case):
     if get_model() == "cesm":
         mct_dir = os.path.join(srcroot,"libraries","mct")
     else:
-        mct_dir = os.path.join(cimeroot,"src","externals","mct")
+        mct_dir = os.path.join(srcroot,"externals","mct")
 
     for _file in glob.iglob(os.path.join(mct_dir, "mpi-serial","*.h")):
         copyifnewer(_file, os.path.join(bldroot,os.path.basename(_file)))
