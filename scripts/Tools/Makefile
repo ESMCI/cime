@@ -77,6 +77,11 @@ CPPDEFS := $(USER_CPPDEFS) -D$(OS)
 
 include $(CASEROOT)/Macros.make
 
+ifeq ($(strip $(USE_SMARTSIM)), TRUE)
+  CPPDEFS += -DSMARTREDIS
+  SLIBS += -L$(REDIS_HOME)/install/lib -lsmartredis -Wl,-rpath $(REDIS_HOME)/install/lib
+endif
+
 # Unless DEBUG mode is enabled, use NDEBUG to turn off assert statements.
 ifeq ($(strip $(DEBUG)),TRUE)
   # e3sm still has components that cannot build with -DDEBUG
@@ -360,11 +365,11 @@ endif
 #===============================================================================
 
 ifeq ($(strip $(MPILIB)), mpi-serial)
-  CC	  := $(SCC)
-  FC	  := $(SFC)
-  CXX	  := $(SCXX)
-  MPIFC	  := $(SFC)
-  MPICC	  := $(SCC)
+  CC      := $(SCC)
+  FC      := $(SFC)
+  CXX     := $(SCXX)
+  MPIFC   := $(SFC)
+  MPICC   := $(SCC)
   MPICXX  := $(SCXX)
   CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
 else
