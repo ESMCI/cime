@@ -813,14 +813,14 @@ using a fortran linker.
 
 <compiler MACH="casper" COMPILER="pgi">
   <CFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
   </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
@@ -831,14 +831,14 @@ using a fortran linker.
 
 <compiler MACH="casper" COMPILER="pgi-gpu">
   <CFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
   </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma -acc -ta=tesla:cc70,lineinfo,nofma -Minfo=accel </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
@@ -849,14 +849,14 @@ using a fortran linker.
 
 <compiler MACH="casper" COMPILER="nvhpc">
   <CFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
   </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
@@ -867,14 +867,14 @@ using a fortran linker.
 
 <compiler MACH="casper" COMPILER="nvhpc-gpu">
   <CFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
   </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -Mnofma </append>
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo,nofma -Minfo=accel </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
