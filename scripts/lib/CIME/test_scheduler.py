@@ -475,7 +475,7 @@ class TestScheduler(object):
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "
 
-            for one_test_mod in test_mods:
+            for one_test_mod in test_mods: # pylint: disable=not-an-iterable
                 if one_test_mod.find('/') != -1:
                     (component, modspath) = one_test_mod.split('/', 1)
                 else:
