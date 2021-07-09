@@ -68,6 +68,7 @@ class TestUtils(unittest.TestCase):
     def setUp(self):
         self.base_func = lambda *args: None
 
+        #pylint: disable=unused-argument
         def _error_func(*args):
             raise Exception("Something went wrong")
 
