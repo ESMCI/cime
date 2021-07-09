@@ -733,12 +733,20 @@ def parse_test_name(test_name):
 
     return rv
 
-def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, machine=None, compiler=None, testmods=None):
+def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, machine=None, compiler=None,
+                       testmods_list=None, testmods_string=None):
     """
     Given a partial CIME test name, return in form TESTCASE.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]
     Use the additional args to fill out the name if needed
 
-    If testmods is provided, it should be a list of one or more testmods, as would be returned by parse_test_name
+    Testmods can be provided through one of two arguments, but *not* both:
+    - testmods_list: a list of one or more testmods (as would be returned by
+      parse_test_name, for example)
+    - testmods_string: a single string containing one or more testmods; if there is more
+      than one, then they should be separated by a string of two hyphens ('--')
+
+    For both testmods_list and testmods_string, any slashes as path separators ('/') are
+    replaced by hyphens ('-').
 
     >>> get_full_test_name("ERS", grid="ne16_fe16", compset="JGF", machine="melvin", compiler="gnu")
     'ERS.ne16_fe16.JGF.melvin_gnu'
@@ -750,11 +758,27 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
     'ERS.ne16_fe16.JGF.melvin_gnu'
     >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods", machine="melvin", compiler="gnu")
     'ERS.ne16_fe16.JGF.melvin_gnu.mods'
-    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods=["mods/test"])
+
+    testmods_list can be a single element:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_list=["mods/test"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test'
-    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
+
+    testmods_list can also have multiple elements, separated either by slashes or hyphens:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
-    >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmods=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_list=["mods-test", "mods2-test2-subdir2", "mods3-test3-subdir3"])
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
+    The above testmods_list tests should also work with equivalent testmods_string arguments:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_string="mods/test")
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_string="mods/test--mods2/test2/subdir2--mods3/test3/subdir3")
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_string="mods-test--mods2-test2-subdir2--mods3-test3-subdir3")
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
+    The following tests the consistency check between the test name and various optional arguments:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
     """
     partial_testcase, partial_caseopts, partial_grid, partial_compset, partial_machine, partial_compiler, partial_testmods = parse_test_name(partial_test)
@@ -778,16 +802,21 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
             expect(arg_val == partial_val,
                    "Mismatch in field {}, partial string '{}' indicated it should be '{}' but you provided '{}'".format(name, partial_test, partial_val, arg_val))
 
+    if testmods_string:
+        expect(not testmods_list, "Cannot provide both testmods_list and testmods_string")
+        # Convert testmods_string to testmods_list; after this point, the code will work
+        # the same regardless of whether testmods_string or testmods_list was provided.
+        testmods_list = testmods_string.split('--')
     if (partial_testmods is None):
-        if (testmods is None):
+        if (testmods_list is None):
             # No testmods for this test and that's OK
             pass
         else:
-            testmods_hyphenated = [one_testmod.replace("/", "-") for one_testmod in testmods]
+            testmods_hyphenated = [one_testmod.replace("/", "-") for one_testmod in testmods_list]
             result += ".{}".format('--'.join(testmods_hyphenated))
-    elif (testmods is not None):
-        expect(testmods == partial_testmods,
-               "Mismatch in field testmods, partial string '{}' indicated it should be '{}' but you provided '{}'".format(partial_test, partial_testmods, testmods))
+    elif (testmods_list is not None):
+        expect(testmods_list == partial_testmods,
+               "Mismatch in field testmods, partial string '{}' indicated it should be '{}' but you provided '{}'".format(partial_test, partial_testmods, testmods_list))
 
     if (partial_caseopts is None):
         if caseopts is None:

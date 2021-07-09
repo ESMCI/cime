@@ -206,11 +206,11 @@ def get_test_suite(suite, machine=None, compiler=None, skip_inherit=False, skip_
 
         if (len(test_components) == 4):
             test_name = ".".join(test_components[:-1])
-            test_mods = [test_components[-1]]
+            test_mods = test_components[-1]
         else:
             test_name = item
         if not skip_tests or not test_name in skip_tests:
-            tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmods=test_mods))
+            tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmods_string=test_mods))
 
     if not skip_inherit:
         for inherits in inherits_from:

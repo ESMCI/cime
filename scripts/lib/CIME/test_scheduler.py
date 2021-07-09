@@ -73,7 +73,7 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
             else:
                 caseopts.append(newcaseopt)
 
-        new_test_name = get_full_test_name(testcase, caseopts=caseopts, grid=grid, compset=compset, machine=machine, compiler=compiler, testmods=testmods)
+        new_test_name = get_full_test_name(testcase, caseopts=caseopts, grid=grid, compset=compset, machine=machine, compiler=compiler, testmods_list=testmods)
         new_test_names.append(new_test_name)
 
     return new_test_names
