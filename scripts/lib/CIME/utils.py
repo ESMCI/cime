@@ -671,7 +671,8 @@ def parse_test_name(test_name):
 
     If there are one or more TESTMODS, then the testmods component of the result will be a
     list, where each element of the list is one testmod, and hyphens have been replaced by
-    slashes.
+    slashes. (If there are no TESTMODS in this test, then the TESTMODS component of the
+    result is None, as for other optional components.)
 
     >>> parse_test_name('ERS')
     ['ERS', None, None, None, None, None, None]
@@ -802,8 +803,8 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
             expect(arg_val == partial_val,
                    "Mismatch in field {}, partial string '{}' indicated it should be '{}' but you provided '{}'".format(name, partial_test, partial_val, arg_val))
 
-    if testmods_string:
-        expect(not testmods_list, "Cannot provide both testmods_list and testmods_string")
+    if testmods_string is not None:
+        expect(testmods_list is None, "Cannot provide both testmods_list and testmods_string")
         # Convert testmods_string to testmods_list; after this point, the code will work
         # the same regardless of whether testmods_string or testmods_list was provided.
         testmods_list = testmods_string.split('--')
