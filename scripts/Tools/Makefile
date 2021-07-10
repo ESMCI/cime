@@ -610,7 +610,7 @@ endif
 ifneq ("$(wildcard $(SRCROOT)/libraries)","")
     EXTERN_PATH = $(SRCROOT)/libraries
 else
-    EXTERN_PATH = $(CIMEROOT)/src/externals
+    EXTERN_PATH = $(SRCROOT)/externals
 endif
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
