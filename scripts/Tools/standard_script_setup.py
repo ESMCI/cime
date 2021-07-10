@@ -14,6 +14,6 @@ sys.path.append(_LIB_DIR)
 os.environ["CIMEROOT"] = _CIMEROOT
 
 import CIME.utils
-CIME.utils.check_minimum_python_version(2, 7)
+CIME.utils.check_minimum_python_version(3, 5)
 CIME.utils.stop_buffering_output()
 import logging, argparse
