@@ -45,7 +45,7 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
     new_test_names = []
     caseopts = []
     for test_name in test_names:
-        testcase, caseopts, grid, compset, machine, compiler, testmod = parse_test_name(test_name)
+        testcase, caseopts, grid, compset, machine, compiler, testmods = parse_test_name(test_name)
         rewrote_caseopt = False
         if caseopts is not None:
             for idx, caseopt in enumerate(caseopts):
@@ -73,7 +73,7 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
             else:
                 caseopts.append(newcaseopt)
 
-        new_test_name = get_full_test_name(testcase, caseopts=caseopts, grid=grid, compset=compset, machine=machine, compiler=compiler, testmod=testmod)
+        new_test_name = get_full_test_name(testcase, caseopts=caseopts, grid=grid, compset=compset, machine=machine, compiler=compiler, testmods_list=testmods)
         new_test_names.append(new_test_name)
 
     return new_test_names
@@ -473,28 +473,30 @@ class TestScheduler(object):
             create_newcase_cmd += " --pesfile {} ".format(self._pesfile)
 
         if test_mods is not None:
-            files = Files(comp_interface=self._cime_driver)
+            create_newcase_cmd += " --user-mods-dir "
 
-            if test_mods.find('/') != -1:
-                (component, modspath) = test_mods.split('/', 1)
-            else:
-                error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
-                self._log_output(test, error)
-                return False, error
-
-            testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
-            test_mod_file = os.path.join(testmods_dir, component, modspath)
-            # if no testmod is found check if a usermod of the same name exists and
-            # use it if it does.
-            if not os.path.exists(test_mod_file):
-                usermods_dir = files.get_value("USER_MODS_DIR", {"component": component})
-                test_mod_file = os.path.join(usermods_dir, modspath)
-                if not os.path.exists(test_mod_file):
-                    error = "Missing testmod file '{}', checked {} and {}".format(modspath, testmods_dir, usermods_dir)
+            for one_test_mod in test_mods: # pylint: disable=not-an-iterable
+                if one_test_mod.find('/') != -1:
+                    (component, modspath) = one_test_mod.split('/', 1)
+                else:
+                    error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
                     self._log_output(test, error)
                     return False, error
 
-            create_newcase_cmd += " --user-mods-dir {}".format(test_mod_file)
+                files = Files(comp_interface=self._cime_driver)
+                testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
+                test_mod_file = os.path.join(testmods_dir, component, modspath)
+                # if no testmod is found check if a usermod of the same name exists and
+                # use it if it does.
+                if not os.path.exists(test_mod_file):
+                    usermods_dir = files.get_value("USER_MODS_DIR", {"component": component})
+                    test_mod_file = os.path.join(usermods_dir, modspath)
+                    if not os.path.exists(test_mod_file):
+                        error = "Missing testmod file '{}', checked {} and {}".format(modspath, testmods_dir, usermods_dir)
+                        self._log_output(test, error)
+                        return False, error
+
+                create_newcase_cmd += "{} ".format(test_mod_file)
 
         mpilib = None
         ninst = 1

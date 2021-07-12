@@ -19,7 +19,7 @@ set(NetCDF_PATH ${NETCDF_PATH})
 if (EXISTS ${SRC_ROOT}/libraries/parallelio/cmake)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SRC_ROOT}/libraries/parallelio/cmake)
 else()
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CIMEROOT}/src/externals/pio2/cmake)
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SRC_ROOT}/externals/scorpio/cmake)
 endif()
 
 find_package (NetCDF COMPONENTS Fortran REQUIRED)

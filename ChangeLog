@@ -1,6 +1,45 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 6-29-2021
+Tag: cime6.0.2
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Update externals.
+    - Fix tests.
+    - Add esmf support for casper pgi.
+    - Fix testreporter issues with python3
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+95644f2 update externals
+52f6cca Merge pull request #4022 from jedwards4b/jedwards/fix_tests
+cb316dd Merge pull request #4023 from ESMCI/fischer/casper
+4246060 Merge pull request #4021 from ESMCI/fischer/testreporter_python3
+
+
+Modified files: git diff --name-status [previous_tag]
+M       CMakeLists.txt
+M       Externals.cfg
+M       config/cesm/machines/config_batch.xml
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/lib/CIME/XML/test_reporter.py
+M       src/build_scripts/buildlib.cprnc
+D       src/build_scripts/buildlib.csm_share
+M       src/build_scripts/buildlib.gptl
+M       src/build_scripts/buildlib.mct
+M       src/build_scripts/buildlib.pio
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 6-29-2021 
 Tag: cime6.0.1
 Answer Changes: None

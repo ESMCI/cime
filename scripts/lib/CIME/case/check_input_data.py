@@ -345,6 +345,7 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                             rel_path  = full_path.replace(input_ic_root, ic_filepath)
                         use_ic_path = True
                     model = os.path.basename(data_list_file).split('.')[0]
+                    isdirectory=rel_path.endswith(os.sep)
 
                     if ("/" in rel_path and rel_path == full_path and not full_path.startswith('unknown')):
                         # User pointing to a file outside of input_data_root, we cannot determine
@@ -379,7 +380,6 @@ def check_input_data(case, protocol="svn", address=None, input_data_root=None, d
                         # basically if rel_path does not contain '/' (a
                         # directory tree) you can assume it's a special
                         # value and ignore it (perhaps with a warning)
-                        isdirectory=rel_path.endswith(os.sep)
 
                         if ("/" in rel_path and not os.path.exists(full_path) and not full_path.startswith('unknown')):
                             print("Model {} missing file {} = '{}'".format(model, description, full_path))
