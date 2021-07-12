@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
                       cime_output_root=None, exeroot=None, rundir=None,
-                      user_mods_dir=None):
+                      user_mods_dirs=None):
     """
     Create a case clone
 
@@ -139,15 +139,16 @@ def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
 
         # apply user_mods if appropriate
         newcase_root = newcase.get_value("CASEROOT")
-        if user_mods_dir is not None:
+        if user_mods_dirs is not None:
             if keepexe:
                 # If keepexe CANNOT change any env_build.xml variables - so make a temporary copy of
                 # env_build.xml and verify that it has not been modified
                 safe_copy(os.path.join(newcaseroot, "env_build.xml"),
                           os.path.join(newcaseroot, "LockedFiles", "env_build.xml"))
 
-            # Now apply contents of user_mods directory
-            apply_user_mods(newcase_root, user_mods_dir, keepexe=keepexe)
+            # Now apply contents of all specified user_mods directories
+            for one_user_mods_dir in user_mods_dirs:
+                apply_user_mods(newcase_root, one_user_mods_dir, keepexe=keepexe)
 
             # Determine if env_build.xml has changed
             if keepexe:
