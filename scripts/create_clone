@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from Tools.standard_script_setup import *
 
@@ -28,11 +28,23 @@ def parse_command_line(args):
                         "for example: ./create_clone --clone case.template --case case.001 --ensemble 4 \n"
                         "will create case.001, case.002, case.003, case.004 from existing case.template"  )
 
-    parser.add_argument("--user-mods-dir",
+    # This option supports multiple values, hence the plural ("user-mods-dirs"). However,
+    # we support the singular ("user-mods-dir") for backwards compatibility (and because
+    # the singular may be more intuitive for someone who only wants to use a single
+    # directory).
+    parser.add_argument("--user-mods-dirs", "--user-mods-dir", nargs='*',
                         help="Full pathname to a directory containing any combination of user_nl_* files "
-                        "\nand shell_commands script (typically containing xmlchange commands). "
+                        "\nand a shell_commands script (typically containing xmlchange commands). "
                         "\nThe directory can also contain an SourceMods/ directory with the same structure "
-                        "\nas would be found in a case directory. If this argument is used in conjunction "
+                        "\nas would be found in a case directory."
+                        "\nIt can also contain a file named 'include_user_mods' which gives the path to"
+                        "\none or more other directories that should be included."
+                        "\nMultiple directories can be given to the --user-mods-dirs argument,"
+                        "\nin which case changes from all of them are applied."
+                        "\n(If there are conflicts, later directories take precedence.)"
+                        "\n(Care is needed if multiple directories include the same directory via 'include_user_mods':"
+                        "\nin this case, the included directory will be applied multiple times.)"
+                        "\nIf this argument is used in conjunction "
                         "\nwith the --keepexe flag, then no changes will be permitted to the env_build.xml "
                         "\nin the newly created case directory. ")
 
@@ -73,22 +85,23 @@ def parse_command_line(args):
         startval = m.group(1)
 
     return args.case, args.clone, args.keepexe, args.mach_dir, args.project, \
-        args.cime_output_root, args.user_mods_dir, int(args.ensemble), startval
+        args.cime_output_root, args.user_mods_dirs, int(args.ensemble), startval
 
 ##############################################################################
 def _main_func():
 ###############################################################################
 
-    case, clone, keepexe, mach_dir, project, cime_output_root, user_mods_dir, \
+    case, clone, keepexe, mach_dir, project, cime_output_root, user_mods_dirs, \
         ensemble, startval = parse_command_line(sys.argv)
 
     cloneroot = os.path.abspath(clone)
     expect(os.path.isdir(cloneroot),
            "Missing cloneroot directory %s " % cloneroot)
 
-    if user_mods_dir is not None:
-        if os.path.isdir(user_mods_dir):
-            user_mods_dir = os.path.abspath(user_mods_dir)
+    if user_mods_dirs is not None:
+        user_mods_dirs = [os.path.abspath(one_user_mods_dir) if os.path.isdir(one_user_mods_dir)
+                          else one_user_mods_dir
+                          for one_user_mods_dir in user_mods_dirs]
     nint = len(startval)
 
     for i in range(int(startval), int(startval)+ensemble):
@@ -98,7 +111,7 @@ def _main_func():
             clone.create_clone(case, keepexe=keepexe, mach_dir=mach_dir,
                                project=project,
                                cime_output_root=cime_output_root,
-                               user_mods_dir=user_mods_dir)
+                               user_mods_dirs=user_mods_dirs)
 
 ###############################################################################
 

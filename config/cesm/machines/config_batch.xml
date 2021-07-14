@@ -211,17 +211,46 @@
     </queues>
   </batch_system>
 
-  <batch_system type="slurm" MACH="casper">
-    <batch_submit>sbatch</batch_submit>
-    <submit_args>
-      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
-      <arg flag="-p" name="$JOB_QUEUE"/>
-      <arg flag="--gres=gpu:v100:4"/>
-      <arg flag="--account" name="$PROJECT"/>
-      <arg flag="--mem=0"/> 
-    </submit_args>
+  <!-- casper pbs -->
+  <batch_system MACH="casper" type="pbs">
+    <batch_submit>qsub</batch_submit>
+
+    <directives queue="casper" compiler="pgi-gpu">
+      <!-- Turn on MPS server manually -->
+      <!-- This is a temporary solution and should be removed once MPS is integrated into PBS on Casper -->
+      <directive default="/bin/bash" > -S /glade/u/apps/dav/opt/nvidia-mps/mps_bash </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+      <directive> -l gpu_type=v100 </directive>
+    </directives>
+
+    <directives queue="casper" compiler="nvhpc-gpu">
+      <!-- Turn on MPS server manually -->
+      <!-- This is a temporary solution and should be removed once MPS is integrated into PBS on Casper -->
+      <directive default="/bin/bash" > -S /glade/u/apps/dav/opt/nvidia-mps/mps_bash </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+      <directive> -l gpu_type=v100 </directive>
+    </directives>
+
+    <directives queue="casper" compiler="nvhpc">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+    </directives>
+
+    <directives queue="casper" compiler="pgi">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+    </directives>
+
+    <directives queue="casper" compiler="intel">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+    </directives>
+
+    <!-- Unknown queues use the batch directives for the regular queue -->
+    <unknown_queue_directives>casper</unknown_queue_directives>
+
     <queues>
-      <queue nodemin="1" nodemax="96" default="true">dav</queue>
+      <queue walltimemax="12:00:00" nodemin="1" nodemax="10">casper</queue>
     </queues>
   </batch_system>
 
@@ -430,6 +459,36 @@
     </queues>
   </batch_system>
 
+  <!-- GreenPlanet is SLURM -->
+  <batch_system type="slurm" MACH="greenplanet-sib29">
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <queues>
+      <!-- Want case.st_archiver to run on first available queue, but case.run to use sib2.9
+           We achieve this setting both queues as the default queue but limiting it
+           to jobs that use 8 tasks or fewer; other jobs will land in sib2.9        -->
+      <queue nodemin="1" nodemax="45">sib2.9</queue>
+      <queue default="true" jobmin="1" jobmax="8">sib2.9,sky2.4</queue>
+    </queues>
+  </batch_system>
+  <batch_system type="slurm" MACH="greenplanet-sky24">
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+    </submit_args>
+    <queues>
+      <!-- Want case.st_archiver to run on first available queue, but case.run to use sky2.4
+           We achieve this setting both queues as the default queue but limiting it
+           to jobs that use 8 tasks or fewer; other jobs will land in sky2.4        -->
+      <queue nodemin="1" nodemax="13">sky2.4</queue>
+      <queue default="true" jobmin="1" jobmax="8">sib2.9,sky2.4</queue>
+    </queues>
+  </batch_system>
+
   <!-- hobart is PBS -->
   <batch_system type="pbs" MACH="hobart" >
     <directives>
@@ -553,7 +612,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="357" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 
@@ -567,7 +627,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="357" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 
@@ -581,7 +642,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="500" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 
@@ -595,7 +657,8 @@
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
     </directives>
     <queues>
-      <queue walltimemin="" walltimemax="08:00:00" nodemin="0" nodemax="624" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="08:00:00" nodemin="1" nodemax="5256" default="true">normal</queue>
+      <queue walltimemin="" walltimemax="02:00:00" nodemin="1" nodemax="1800" default="false">devel</queue>
     </queues>
   </batch_system>
 

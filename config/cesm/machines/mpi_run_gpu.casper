@@ -1,0 +1,6 @@
+#!/bin/bash
+unset CUDA_VISIBLE_DEVICES
+let dev_id=$OMPI_COMM_WORLD_LOCAL_RANK%{{ ngpus_per_node }}
+export ACC_DEVICE_NUM=$dev_id
+export CUDA_VISIBLE_DEVICES=$dev_id
+exec $*

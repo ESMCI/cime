@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Script to create, build and run CIME tests. This script can:
@@ -305,6 +305,9 @@ def parse_command_line(args, description):
     parser.add_argument("--workflow",default=workflow_default,
                         help="A workflow from config_workflow.xml to apply to this case. ")
 
+    parser.add_argument("--chksum", action="store_true",
+                        help="Verifies input data checksums.")
+
     CIME.utils.add_mail_type_args(parser)
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
@@ -463,7 +466,12 @@ def parse_command_line(args, description):
         args.namelists_only, args.project, \
         args.test_id, args.parallel_jobs, args.walltime, \
         args.single_submit, args.proc_pool, args.use_existing, args.save_timing, args.queue, \
-        args.allow_baseline_overwrite, args.output_root, args.wait, args.force_procs, args.force_threads, args.mpilib, args.input_dir, args.pesfile, args.retry, args.mail_user, args.mail_type, args.check_throughput, args.check_memory, args.ignore_namelists, args.ignore_memleak, args.allow_pnl, args.non_local, args.single_exe, args.workflow
+        args.allow_baseline_overwrite, args.output_root, args.wait, \
+        args.force_procs, args.force_threads, args.mpilib, args.input_dir, args.pesfile, \
+        args.retry, args.mail_user, args.mail_type, args.check_throughput, \
+        args.check_memory, args.ignore_namelists, args.ignore_memleak, args.allow_pnl, \
+        args.non_local, args.single_exe, args.workflow, args.chksum
+
 
 ###############################################################################
 def get_default_setting(config, varname, default_if_not_found, check_main=False):
@@ -572,7 +580,7 @@ def create_test(test_names, test_data, compiler, machine_name, no_run, no_build,
                 walltime, single_submit, proc_pool, use_existing, save_timing, queue, allow_baseline_overwrite, output_root, wait,
                 force_procs, force_threads, mpilib, input_dir, pesfile, mail_user, mail_type,
                 check_throughput, check_memory, ignore_namelists, ignore_memleak,
-                allow_pnl, non_local, single_exe, workflow):
+                allow_pnl, non_local, single_exe, workflow, chksum):
 ###############################################################################
     impl = TestScheduler(test_names, test_data=test_data,
                          no_run=no_run, no_build=no_build, no_setup=no_setup, no_batch=no_batch,
@@ -586,7 +594,8 @@ def create_test(test_names, test_data, compiler, machine_name, no_run, no_build,
                          queue=queue, allow_baseline_overwrite=allow_baseline_overwrite,
                          output_root=output_root, force_procs=force_procs, force_threads=force_threads,
                          mpilib=mpilib, input_dir=input_dir, pesfile=pesfile, mail_user=mail_user, mail_type=mail_type, allow_pnl=allow_pnl,
-                         non_local=non_local, single_exe=single_exe, workflow=workflow)
+                         non_local=non_local, single_exe=single_exe,
+                         workflow=workflow, chksum=chksum)
 
     success = impl.run_tests(wait=wait,
                              check_throughput=check_throughput,
@@ -626,7 +635,7 @@ def _main_func(description):
     project, test_id, parallel_jobs, walltime, single_submit, proc_pool, use_existing, \
     save_timing, queue, allow_baseline_overwrite, output_root, wait, force_procs, force_threads, mpilib, input_dir, pesfile, \
     retry, mail_user, mail_type, check_throughput, check_memory, ignore_namelists, ignore_memleak, allow_pnl, \
-    non_local, single_exe, workflow = \
+    non_local, single_exe, workflow, chksum = \
         parse_command_line(sys.argv, description)
 
     success = False
@@ -639,7 +648,7 @@ def _main_func(description):
                               project, test_id, parallel_jobs, walltime, single_submit, proc_pool, use_existing, save_timing,
                               queue, allow_baseline_overwrite, output_root, wait, force_procs, force_threads, mpilib, input_dir, pesfile,
                               mail_user, mail_type, check_throughput, check_memory, ignore_namelists, ignore_memleak,
-                              allow_pnl, non_local, single_exe, workflow)
+                              allow_pnl, non_local, single_exe, workflow, chksum)
         run_count += 1
 
         # For testing only

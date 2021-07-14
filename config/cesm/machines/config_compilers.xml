@@ -25,7 +25,8 @@ CC = $SCC
 FC = $SFC
 MPICC = $SCC
 MPIFC = $SFC
-INC_MPI = $(CIMEROOT)/src/externals/mct/mpi-serial
+INC_MPI = $(CIMEROOT)/../libraries/mct/mpi-serial
+
 
 ========================================================================
 Options for including C++ code in the build
@@ -195,7 +196,7 @@ using a fortran linker.
   </CPPDEFS>
   <CXX_LINKER>FORTRAN</CXX_LINKER>
   <FC_AUTO_R8>
-    <base> -fdefault-real-8 </base>
+    <base> -fdefault-real-8 -fdefault-double-8</base>
   </FC_AUTO_R8>
   <FFLAGS>
     <!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
@@ -466,6 +467,141 @@ using a fortran linker.
   <SFC> pgf95 </SFC>
 </compiler>
 
+<compiler COMPILER="pgi-gpu">
+  <CFLAGS>
+    <base> -gopt  -time </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI </append>
+  </CPPDEFS>
+  <CXX_LINKER>CXX</CXX_LINKER>
+  <FC_AUTO_R8>
+    <base> -r8 </base>
+  </FC_AUTO_R8>
+  <FFLAGS>
+    <base>  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  </base>
+    <append compile_threaded="TRUE"> -mp </append>
+    <append DEBUG="TRUE"> -O0 -g -Ktrap=fp -Mbounds -Kieee </append>
+    <append MODEL="datm"> -Mnovect </append>
+    <append MODEL="dlnd"> -Mnovect </append>
+    <append MODEL="drof"> -Mnovect </append>
+    <append MODEL="dwav"> -Mnovect </append>
+    <append MODEL="dice"> -Mnovect </append>
+    <append MODEL="docn"> -Mnovect </append>
+  </FFLAGS>
+  <FFLAGS_NOOPT>
+    <base> -O0 </base>
+  </FFLAGS_NOOPT>
+  <FIXEDFLAGS>
+    <base> -Mfixed </base>
+  </FIXEDFLAGS>
+  <FREEFLAGS>
+    <base> -Mfree </base>
+  </FREEFLAGS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <base> -time -Wl,--allow-multiple-definition </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </LDFLAGS>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicxx </MPICXX>
+  <MPIFC> mpif90 </MPIFC>
+  <SCC> pgcc </SCC>
+  <SCXX> pgc++ </SCXX>
+  <SFC> pgf95 </SFC>
+</compiler>
+
+<compiler COMPILER="nvhpc">
+  <CFLAGS>
+    <base> -gopt  -time </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI </append>
+  </CPPDEFS>
+  <CXX_LINKER>CXX</CXX_LINKER>
+  <FC_AUTO_R8>
+    <base> -r8 </base>
+  </FC_AUTO_R8>
+  <FFLAGS>
+    <base>  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  </base>
+    <append compile_threaded="TRUE"> -mp </append>
+    <append DEBUG="TRUE"> -O0 -g -Ktrap=fp -Mbounds -Kieee </append>
+    <append MODEL="datm"> -Mnovect </append>
+    <append MODEL="dlnd"> -Mnovect </append>
+    <append MODEL="drof"> -Mnovect </append>
+    <append MODEL="dwav"> -Mnovect </append>
+    <append MODEL="dice"> -Mnovect </append>
+    <append MODEL="docn"> -Mnovect </append>
+  </FFLAGS>
+  <FFLAGS_NOOPT>
+    <base> -O0 </base>
+  </FFLAGS_NOOPT>
+  <FIXEDFLAGS>
+    <base> -Mfixed </base>
+  </FIXEDFLAGS>
+  <FREEFLAGS>
+    <base> -Mfree </base>
+  </FREEFLAGS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <base> -time -Wl,--allow-multiple-definition </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </LDFLAGS>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicxx </MPICXX>
+  <MPIFC> mpif90 </MPIFC>
+  <SCC> nvc </SCC>
+  <SCXX> nvc++ </SCXX>
+  <SFC> nvfortran </SFC>
+</compiler>
+
+<compiler COMPILER="nvhpc-gpu">
+  <CFLAGS>
+    <base> -gopt  -time </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </CFLAGS>
+  <CPPDEFS>
+    <append> -DFORTRANUNDERSCORE -DNO_SHR_VMATH -DNO_R16  -DCPRPGI </append>
+  </CPPDEFS>
+  <CXX_LINKER>CXX</CXX_LINKER>
+  <FC_AUTO_R8>
+    <base> -r8 </base>
+  </FC_AUTO_R8>
+  <FFLAGS>
+    <base>  -i4 -gopt  -time -Mextend -byteswapio -Mflushz -Kieee  </base>
+    <append compile_threaded="TRUE"> -mp </append>
+    <append DEBUG="TRUE"> -O0 -g -Ktrap=fp -Mbounds -Kieee </append>
+    <append MODEL="datm"> -Mnovect </append>
+    <append MODEL="dlnd"> -Mnovect </append>
+    <append MODEL="drof"> -Mnovect </append>
+    <append MODEL="dwav"> -Mnovect </append>
+    <append MODEL="dice"> -Mnovect </append>
+    <append MODEL="docn"> -Mnovect </append>
+  </FFLAGS>
+  <FFLAGS_NOOPT>
+    <base> -O0 </base>
+  </FFLAGS_NOOPT>
+  <FIXEDFLAGS>
+    <base> -Mfixed </base>
+  </FIXEDFLAGS>
+  <FREEFLAGS>
+    <base> -Mfree </base>
+  </FREEFLAGS>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <base> -time -Wl,--allow-multiple-definition </base>
+    <append compile_threaded="TRUE"> -mp </append>
+  </LDFLAGS>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicxx </MPICXX>
+  <MPIFC> mpif90 </MPIFC>
+  <SCC> nvc </SCC>
+  <SCXX> nvc++ </SCXX>
+  <SFC> nvfortran </SFC>
+</compiler>
+
 <compiler OS="AIX" COMPILER="ibm">
   <CFLAGS>
     <append> -qarch=auto -qtune=auto -qcache=auto </append>
@@ -653,21 +789,113 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="greenplanet-sib29" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="greenplanet-sky24" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper">
+  <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
+  <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
+  <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+</compiler>
+
 <compiler MACH="casper" COMPILER="pgi">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
   <FFLAGS>
-    <append> -Mnofma -acc -ta=tesla:cc70 -Minfo=accel </append>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
-  <CFLAGS>
-    <append> -Mnofma -acc -ta=tesla:cc70 -Minfo=accel </append>
-  </CFLAGS>
   <LDFLAGS>
-    <append> -acc -ta=tesla:cc70 -Minfo=accel </append>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
   </LDFLAGS>
   <SLIBS>
-    <append> -llapack -lblas -ldl </append>
+    <append> -llapack -lblas </append>
     <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
   </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="pgi-gpu">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append> -I$(EXEROOT)/ocn/obj/FMS </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -llapack -lblas </append>
+    <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="nvhpc">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append> -I$(EXEROOT)/ocn/obj/FMS </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -llapack -lblas </append>
+    <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="nvhpc-gpu">
+  <CFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+  </CFLAGS>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake </append>
+    <append> -I$(EXEROOT)/ocn/obj/FMS </append>
+  </FFLAGS>
+  <LDFLAGS>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -llapack -lblas </append>
+    <append MPILIB="mpi-serial"> -ldl </append>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="casper" COMPILER="intel">
+  <CFLAGS>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+  </CFLAGS>
+  <FFLAGS>
+    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+  </FFLAGS>
+  <CMAKE_OPTS>
+    <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
+  </CMAKE_OPTS>
+  <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="FALSE">$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP</PFUNIT_PATH>
+  <!-- SET to FALSE for intel 17 and 18 TRUE otherwise -->
+  <HAS_F2008_CONTIGUOUS>TRUE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="cheyenne">
@@ -684,6 +912,12 @@ using a fortran linker.
   <CPPDEFS>
     <append MODEL="pio1"> -DNO_MPIMOD </append>
   </CPPDEFS>
+  <FFLAGS>
+    <!-- -fallow-argument-mismatch is needed for building with the mpich library with gfortran10;
+         -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
+         See https://github.com/ESMCI/cime/issues/3846 for details. -->
+    <append> -fallow-argument-mismatch -fallow-invalid-boz </append>
+  </FFLAGS>
   <SLIBS>
     <append> -ldl </append>
   </SLIBS>
@@ -1198,8 +1432,14 @@ using a fortran linker.
 </compiler>
 
 <compiler MACH="pleiades-bro">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xCORE-AVX2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1208,12 +1448,19 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-has">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xCORE-AVX2 </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1222,12 +1469,19 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-ivy">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1236,12 +1490,19 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="pleiades-san">
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CFLAGS>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
+  </CFLAGS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
   </FFLAGS>
   <MPICC>icc</MPICC>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
@@ -1250,7 +1511,8 @@ using a fortran linker.
   <SLIBS>
     <append>-L$ENV{NETCDF}/lib -lnetcdff -lnetcdf</append>
   </SLIBS>
-  <ESMF_LIBDIR>/home6/fvitt/esmf_7_1_0r/esmf/lib/libO/Linux.intel.64.mpi.default</ESMF_LIBDIR>
+  <PNETCDF_PATH>/home6/fvitt/pnetcdf-1.12.2</PNETCDF_PATH>
+  <ESMF_LIBDIR>/home6/fvitt/esmf-8_1_1/lib/libO/Linux.intel.64.mpt.default</ESMF_LIBDIR>
 </compiler>
 
 <compiler MACH="sandiatoss3" COMPILER="intel">

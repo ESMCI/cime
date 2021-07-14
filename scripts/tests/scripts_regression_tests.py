@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Script containing CIME python regression test suite. This suite should be run
@@ -22,7 +22,9 @@ import stat as osstat
 
 import collections
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root, Timeout
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, \
+    safe_copy, CIMEError, get_cime_root, get_src_root, Timeout, \
+    import_from_file
 import get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -123,7 +125,7 @@ class A_RunUnitTests(unittest.TestCase):
         # (i.e., tests defined using python's unittest module).
         #
         # This is analogous to running:
-        #     python -m unittest discover -s CIME/tests -t .
+        #     python3 -m unittest discover -s CIME/tests -t .
         # from cime/scripts/lib
         #
         # Yes, that means we have a bunch of unit tests run from this one unit
@@ -158,7 +160,7 @@ class A_RunUnitTests(unittest.TestCase):
                         content = fd.read()
                     if '>>>' in content:
                         print("Running doctests for {}".format(filepath))
-                        run_cmd_assert_result(self, 'PYTHONPATH={}:$PYTHONPATH python -m doctest {} 2>&1'.format(LIB_DIR, filepath), from_dir=LIB_DIR)
+                        run_cmd_assert_result(self, 'PYTHONPATH={}:$PYTHONPATH python3 -m doctest {} 2>&1'.format(LIB_DIR, filepath), from_dir=LIB_DIR)
                     else:
                         print("{} has no doctests".format(filepath))
 
@@ -585,7 +587,14 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         cls._testdirs.append(testdir)
 
-        pesfile = os.path.join("..","src","drivers","mct","cime_config","config_pes.xml")
+        if CIME.utils.get_model() == "cesm":
+            if CIME.utils.get_cime_default_driver() == "nuopc":
+                pesfile = os.path.join(get_src_root(),"components","cmeps","cime_config","config_pes.xml")
+            else:
+                pesfile = os.path.join(get_src_root(),"components","cpl7","driver","cime_config","config_pes.xml")
+        else:
+            pesfile = os.path.join("..","src","drivers",CIME.utils.get_cime_default_driver(),"cime_config","config_pes.xml")
+
         args =  "--case %s --compset 2000_SATM_XLND_SICE_SOCN_XROF_XGLC_SWAV  --pesfile %s --res f19_g16 --output-root %s --handle-preexisting-dirs=r" % (testdir, pesfile, cls._testroot)
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"
@@ -706,7 +715,12 @@ class J_TestCreateNewcase(unittest.TestCase):
         if os.path.exists(testdir1):
             shutil.rmtree(testdir1)
         cls._testdirs.append(testdir1)
-        args = ' --case CreateNewcaseTest --script-root {} --compset 2000_DATM%NYF_SLND_SICE_DOCN%SOMAQP_SROF_SGLC_SWAV --res f19_g16 --output-root {} --handle-preexisting-dirs u' .format(testdir1, cls._testroot)
+
+        args = ' --case CreateNewcaseTest --script-root {} --compset 2000_DATM%NYF_SLND_SICE_DOCN%SOMAQP_SROF_SGLC_SWAV --output-root {} --handle-preexisting-dirs u' .format(testdir1, cls._testroot)
+        if CIME.utils.get_cime_default_driver() == "nuopc":
+            args += " --res f19_g17 "
+        else:
+            args += " --res f19_g16 "
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"
         if TEST_COMPILER is not None:
@@ -736,7 +750,11 @@ class J_TestCreateNewcase(unittest.TestCase):
         if os.path.exists(testdir2):
             shutil.rmtree(testdir2)
         cls._testdirs.append(testdir2)
-        args = ' --case CreateNewcaseTest --script-root {} --compset ADSOMAQP --res f19_g16 --output-root {} --handle-preexisting-dirs u'.format(testdir2, cls._testroot)
+        args = ' --case CreateNewcaseTest --script-root {} --compset ADSOMAQP --output-root {} --handle-preexisting-dirs u'.format(testdir2, cls._testroot)
+        if CIME.utils.get_cime_default_driver() == "nuopc":
+            args += " --res f19_g17 "
+        else:
+            args += " --res f19_g16 "
         if CIME.utils.get_model() == "cesm":
             args += " --run-unsupported"
         if TEST_COMPILER is not None:
@@ -1036,14 +1054,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1056,14 +1074,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished2, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1077,13 +1095,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1099,7 +1117,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -1117,13 +1135,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
         assert_dashboard_has_build(self, build_name)
@@ -1154,7 +1172,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited")
 
         for core_phase in CORE_PHASES[1:]:
             with TestStatus(test_dir=os.path.join(self._testdir_teststatus1, "0")) as ts:
@@ -1163,10 +1181,10 @@ class M_TestWaitForTests(unittest.TestCase):
             time.sleep(5)
 
             if core_phase != last_phase:
-                self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited after passing phase {}".format(core_phase))
+                self.assertTrue(run_thread.is_alive(), msg="wait_for_tests should have waited after passing phase {}".format(core_phase))
             else:
                 run_thread.join(timeout=10)
-                self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished after phase {}".format(core_phase))
+                self.assertFalse(run_thread.is_alive(), msg="wait_for_tests should have finished after phase {}".format(core_phase))
                 break
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
@@ -1534,7 +1552,7 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_d_retry(self):
     ###########################################################################
-        args = ["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAIL_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A", "--retry=1"]
+        args = ["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAILRESET_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A", "--retry=1"]
 
         self._create_test(args)
 
@@ -1630,7 +1648,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
 
         run_thread.join(timeout=30)
 
-        self.assertFalse(run_thread.isAlive(), msg="jenkins_generic_job should have finished")
+        self.assertFalse(run_thread.is_alive(), msg="jenkins_generic_job should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
         assert_dashboard_has_build(self, build_name)
 
@@ -2415,19 +2433,16 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_case_submit_interface(self):
     ###########################################################################
-        try:
-            import imp
-        except ImportError:
-            print("imp not found, skipping case.submit interface test")
-            return
         # the current directory may not exist, so make sure we are in a real directory
         os.chdir(os.getenv("HOME"))
         sys.path.append(TOOLS_DIR)
         case_submit_path = os.path.join(TOOLS_DIR, "case.submit")
-        submit_interface = imp.load_source("case_submit_interface", case_submit_path)
+
+        module = import_from_file("case.submit", case_submit_path)
+
         sys.argv = ["case.submit", "--batch-args", "'random_arguments_here.%j'",
                     "--mail-type", "fail", "--mail-user", "'random_arguments_here.%j'"]
-        submit_interface._main_func(None, True)
+        module._main_func(None, True)
 
     ###########################################################################
     def test_xml_caching(self):
@@ -2514,8 +2529,10 @@ class K_TestCimeCase(TestCreateTestCommon):
     ###########################################################################
     def test_self_build_cprnc(self):
     ###########################################################################
-        if (NO_FORTRAN_RUN):
+        if NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
+        if TEST_COMPILER and "gpu" in TEST_COMPILER:
+            self.skipTest("Skipping cprnc test for gpu compiler")
 
         testname = "ERS_Ln7.f19_g16_rx1.A"
         casedir = self._create_test([testname, "--no-build"], test_id=self._baseline_name)
@@ -2563,7 +2580,7 @@ class G_TestBuildSystem(TestCreateTestCommon):
     ###########################################################################
     def test_clean_rebuild(self):
     ###########################################################################
-        casedir = self._create_test(["--no-run", "SMS.f19_g16_rx1.A"], test_id=self._baseline_name)
+        casedir = self._create_test(["--no-run", "SMS.f19_g17_rx1.A"], test_id=self._baseline_name)
 
         # Clean a component and a sharedlib
         run_cmd_assert_result(self, "./case.build --clean atm", from_dir=casedir)

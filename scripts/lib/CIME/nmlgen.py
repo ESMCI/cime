@@ -17,6 +17,7 @@ from CIME.namelist import Namelist, parse, \
 from CIME.XML.namelist_definition import NamelistDefinition
 from CIME.utils import expect, safe_copy
 from CIME.XML.stream import Stream
+from CIME.XML.grids import GRID_SEP
 
 logger = logging.getLogger(__name__)
 
@@ -629,6 +630,8 @@ class NamelistGenerator(object):
         have_value = False
         # Check for existing value.
         current_literals = self._namelist.get_variable_value(group, name)
+        if current_literals != [""]:
+            have_value = True
 
         # Check for input argument.
         if value is not None:
@@ -643,7 +646,8 @@ class NamelistGenerator(object):
             have_value = True
             default_literals = self._to_namelist_literals(name, default)
             current_literals = merge_literal_lists(default_literals, current_literals)
-        expect(have_value, "No default value found for {}.".format(name))
+        expect(have_value, "No default value found for {} with attributes {}.".format(
+            name, self._definition.get_attributes()))
 
         # Go through file names and prepend input data root directory for
         # absolute pathnames.
@@ -656,19 +660,40 @@ class NamelistGenerator(object):
                     if literal == '':
                         continue
                     file_path = character_literal_to_string(literal)
-                    # NOTE - these are hard-coded here and a better way is to make these extensible
-                    if file_path == 'UNSET' or file_path == 'idmap' or file_path == 'idmap_ignore' or file_path == 'unset':
-                        continue
-                    if file_path in ('null','create_mesh'):
-                        continue
-                    file_path = self.set_abs_file_path(file_path)
-                    if not os.path.exists(file_path):
-                        logger.warning("File not found: {} = {}, will attempt to download in check_input_data phase".format(name, literal))
-                    current_literals[i] = string_to_character_literal(file_path)
+                    abs_file_path = self._convert_to_abs_file_path(file_path, name)
+                    current_literals[i] = string_to_character_literal(abs_file_path)
                 current_literals = compress_literal_list(current_literals)
 
         # Set the new value.
         self._namelist.set_variable_value(group, name, current_literals, var_size)
+
+    def _convert_to_abs_file_path(self, file_path, name):
+        """Convert the given file_path to an abs file path and return the result
+
+        It's possible that file_path actually contains multiple files delimited by
+        GRID_SEP. (This is the case when a component has multiple grids, and so has a file
+        for each grid.) In this case, we split it on GRID_SEP and handle each separated
+        portion as a separate file, then return a new GRID_SEP-delimited string.
+
+        """
+        abs_file_paths = []
+        # In most cases, the list created by the following split will only contain a
+        # single element, but this split is needed to handle grid-related files for
+        # components with multiple grids (e.g., GLC).
+        for one_file_path in file_path.split(GRID_SEP):
+            # NOTE - these are hard-coded here and a better way is to make these extensible
+            if one_file_path == 'UNSET' or one_file_path == 'idmap' or one_file_path == 'idmap_ignore' or one_file_path == 'unset':
+                abs_file_paths.append(one_file_path)
+            elif one_file_path in ('null','create_mesh'):
+                abs_file_paths.append(one_file_path)
+            else:
+                one_abs_file_path = self.set_abs_file_path(one_file_path)
+                if not os.path.exists(one_abs_file_path):
+                    logger.warning("File not found: {} = {}, will attempt to download in check_input_data phase".format(
+                        name, one_abs_file_path))
+                abs_file_paths.append(one_abs_file_path)
+
+        return GRID_SEP.join(abs_file_paths)
 
     def create_shr_strdata_nml(self):
         """Set defaults for `shr_strdata_nml` variables other than the variable domainfile """
@@ -707,33 +732,61 @@ class NamelistGenerator(object):
                         literals = self._namelist.get_variable_value(group_name, variable_name)
                         for literal in literals:
                             file_path = character_literal_to_string(literal)
-                            # NOTE - these are hard-coded here and a better way is to make these extensible
-                            if file_path == 'UNSET' or file_path == 'idmap' or file_path == 'idmap_ignore':
-                                continue
-                            if input_pathname == 'abs':
-                                # No further mangling needed for absolute paths.
-                                # At this point, there are overwrites that should be ignored
-                                if not os.path.isabs(file_path):
-                                    continue
-                                else:
-                                    pass
-                            elif input_pathname.startswith('rel:'):
-                                # The part past "rel" is the name of a variable that
-                                # this variable specifies its path relative to.
-                                root_var = input_pathname[4:]
-                                root_dir = self.get_value(root_var)
-                                file_path = os.path.join(root_dir, file_path)
-                            else:
-                                expect(False,
-                                       "Bad input_pathname value: {}.".format(input_pathname))
-                            # Write to the input data list.
-                            string = "{} = {}".format(variable_name, file_path)
-                            hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
-                            if hashValue not in lines_hash:
-                                logger.debug("Adding line {} with hash {}".format(string,hashValue))
-                                input_data_list.write(string+"\n")
-                            else:
-                                logger.debug("Line already in file {}".format(string))
+                            self._add_file_to_input_data_list(input_data_list=input_data_list,
+                                                              variable_name=variable_name,
+                                                              file_path=file_path,
+                                                              input_pathname=input_pathname,
+                                                              lines_hash=lines_hash)
+
+    def _add_file_to_input_data_list(self, input_data_list, variable_name, file_path, input_pathname, lines_hash):
+        """Add one file to the input data list, if needed
+
+        It's possible that file_path actually contains multiple files delimited by
+        GRID_SEP. (This is the case when a component has multiple grids, and so has a file
+        for each grid.) In this case, we split it on GRID_SEP and handle each separated
+        portion as a separate file.
+
+        Args:
+        - input_data_list: file handle
+        - variable_name (string): name of variable to add
+        - file_path (string): path to file
+        - input_pathname (string): whether this is an absolute or relative path
+        - lines_hash (set): set of hashes of lines already in the given input data list
+
+        """
+        for one_file_path in file_path.split(GRID_SEP):
+            # NOTE - these are hard-coded here and a better way is to make these extensible
+            if one_file_path == 'UNSET' or one_file_path == 'idmap' or one_file_path == 'idmap_ignore':
+                continue
+            if input_pathname == 'abs':
+                # No further mangling needed for absolute paths.
+                # At this point, there are overwrites that should be ignored
+                if not os.path.isabs(one_file_path):
+                    continue
+                else:
+                    pass
+            elif input_pathname.startswith('rel:'):
+                # The part past "rel" is the name of a variable that
+                # this variable specifies its path relative to.
+                root_var = input_pathname[4:]
+                root_dir = self.get_value(root_var)
+                one_file_path = os.path.join(root_dir, one_file_path)
+            else:
+                expect(False,
+                       "Bad input_pathname value: {}.".format(input_pathname))
+
+            # Write to the input data list.
+            #
+            # Note that the same variable name is repeated for each file. This currently
+            # seems okay for check_input_data, but if it becomes a problem, we could
+            # change this, e.g., appending an index to the end of variable_name.
+            string = "{} = {}".format(variable_name, one_file_path)
+            hashValue = hashlib.md5(string.rstrip().encode('utf-8')).hexdigest()
+            if hashValue not in lines_hash:
+                logger.debug("Adding line {} with hash {}".format(string,hashValue))
+                input_data_list.write(string+"\n")
+            else:
+                logger.debug("Line already in file {}".format(string))
 
     def write_output_file(self, namelist_file, data_list_path=None, groups=None, sorted_groups=True):
         """Write out the namelists and input data files.

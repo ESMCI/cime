@@ -24,8 +24,7 @@ from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
 evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
 logger = logging.getLogger(__name__)
-
-NINST = 20
+NINST = 30
 
 
 class MVK(SystemTestsCommon):
@@ -35,6 +34,11 @@ class MVK(SystemTestsCommon):
         initialize an object interface to the MVK test
         """
         SystemTestsCommon.__init__(self, case)
+
+        if self._case.get_value("MODEL") == "e3sm":
+            self.component = "eam"
+        else:
+            self.component = "cam"
 
         if self._case.get_value("RESUBMIT") == 0 \
                 and self._case.get_value("GENERATE_BASELINE") is False:
@@ -56,19 +60,18 @@ class MVK(SystemTestsCommon):
                 if comp != 'CPL':
                     self._case.set_value('NINST_{}'.format(comp), NINST)
 
-            self._case.set_value('ATM_NCPL', 18)
-
             self._case.flush()
 
             case_setup(self._case, test_mode=False, reset=True)
 
-        self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
-
         for iinst in range(1, NINST + 1):
-            with open('user_nl_cam_{:04d}'.format(iinst), 'w') as nl_atm_file:
+            with open('user_nl_{}_{:04d}'.format(self.component, iinst), 'w') as nl_atm_file:
                 nl_atm_file.write('new_random = .true.\n')
                 nl_atm_file.write('pertlim = 1.0e-10\n')
                 nl_atm_file.write('seed_custom = {}\n'.format(iinst))
+                nl_atm_file.write('seed_clock = .true.\n')
+
+        self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
     def _generate_baseline(self):
         """
@@ -83,13 +86,12 @@ class MVK(SystemTestsCommon):
             rundir = self._case.get_value("RUNDIR")
             ref_case = self._case.get_value("RUN_REFCASE")
 
-            model = 'cam'
             env_archive = self._case.get_env("archive")
-            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), model, rundir, [r'h\d*.*\.nc'], ref_case=ref_case)
+            hists = env_archive.get_all_hist_files(self._case.get_value("CASE"), self.component, rundir, ref_case=ref_case)
             logger.debug("MVK additional baseline files: {}".format(hists))
             hists = [os.path.join(rundir,hist) for hist in hists]
             for hist in hists:
-                basename = hist[hist.rfind(model):]
+                basename = hist[hist.rfind(self.component):]
                 baseline = os.path.join(basegen_dir, basename)
                 if os.path.exists(baseline):
                     os.remove(baseline)
@@ -124,7 +126,8 @@ class MVK(SystemTestsCommon):
                     "ref-dir": base_dir,
                     "var-set": "default",
                     "ninst": NINST,
-                    "critical": 13
+                    "critical": 13,
+                    "component": self.component,
                 }
             }
 
@@ -149,27 +152,27 @@ class MVK(SystemTestsCommon):
                                                      CIME.test_status.TEST_PASS_STATUS)
                     break
 
-                status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
-                mach_name = self._case.get_value("MACH")
-                mach_obj = Machines(machine=mach_name)
-                htmlroot = CIME.utils.get_htmlroot(mach_obj)
-                urlroot = CIME.utils.get_urlroot(mach_obj)
-                if htmlroot is not None:
-                    with CIME.utils.SharedArea():
-                        dir_util.copy_tree(evv_out_dir, os.path.join(htmlroot, 'evv', case_name), preserve_mode=False)
-                    if urlroot is None:
-                        urlroot = "[{}_URL]".format(mach_name.capitalize())
-                    viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
-                else:
-                    viewing = "{}\n" \
-                              "    EVV viewing instructions can be found at: " \
-                              "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/" \
-                              "climate_reproducibility/README.md#test-passfail-and-extended-output" \
-                              "".format(evv_out_dir)
+            status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
+            mach_name = self._case.get_value("MACH")
+            mach_obj = Machines(machine=mach_name)
+            htmlroot = CIME.utils.get_htmlroot(mach_obj)
+            urlroot = CIME.utils.get_urlroot(mach_obj)
+            if htmlroot is not None:
+                with CIME.utils.SharedArea():
+                    dir_util.copy_tree(evv_out_dir, os.path.join(htmlroot, 'evv', case_name), preserve_mode=False)
+                if urlroot is None:
+                    urlroot = "[{}_URL]".format(mach_name.capitalize())
+                viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
+            else:
+                viewing = "{}\n" \
+                            "    EVV viewing instructions can be found at: " \
+                            "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/" \
+                            "climate_reproducibility/README.md#test-passfail-and-extended-output" \
+                            "".format(evv_out_dir)
 
-                comments = "{} {} for test '{}'.\n" \
-                           "    {}\n" \
-                           "    EVV results can be viewed at:\n" \
-                           "        {}".format(CIME.test_status.BASELINE_PHASE, status, test_name, comments, viewing)
+            comments = "{} {} for test '{}'.\n" \
+                        "    {}\n" \
+                        "    EVV results can be viewed at:\n" \
+                        "        {}".format(CIME.test_status.BASELINE_PHASE, status, test_name, comments, viewing)
 
-                CIME.utils.append_testlog(comments, self._orig_caseroot)
+            CIME.utils.append_testlog(comments, self._orig_caseroot)

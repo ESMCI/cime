@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 grid_xml_converter.py -- convert (or verify) grid elements from CIME2 format
 to CIME5. This tool will compare the two versions and suggest updates

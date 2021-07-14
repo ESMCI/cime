@@ -44,7 +44,11 @@ TEST_DIFF_STATUS     = "DIFF"   # Implies a failure in the BASELINE phase
 NAMELIST_FAIL_STATUS = "NLFAIL" # Implies a failure in the NLCOMP phase
 
 # Special strings that can appear in comments, indicating particular types of failures
-TEST_NO_BASELINES_COMMENT = "BFAIL" # Implies baseline directory is missing in the baseline comparison phase
+TEST_NO_BASELINES_COMMENT = "BFAIL" # Implies baseline directory is missing in the
+                                    # baseline comparison phase
+TEST_RERUN_COMMENT        = "RERUN" # Added to a PEND status to indicate that the test
+                                    # system has changed this phase to PEND in order to
+                                    # rerun it (e.g., to retry a failed test).
 # The expected and unexpected failure comments aren't used directly in this module, but
 # are included here for symmetry, so other modules can access them from here.
 TEST_EXPECTED_FAILURE_COMMENT = expected_fails.EXPECTED_FAILURE_COMMENT

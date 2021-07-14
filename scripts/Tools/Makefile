@@ -117,16 +117,11 @@ endif
 
 ifeq ($(COMP_INTERFACE), nuopc)
    CPPDEFS += -DNUOPC_INTERFACE
-   ifneq ($(LILAC_MODE), on)
-      # CDEPS isn't required yet when building CTSM with LILAC; once it is needed, we
-      # should remove this conditional and the similar one in build.py (along with the
-      # addition of LILAC_MODE to _CMD_ARGS_FOR_BUILD)
-      INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
-      # FoX libraries are provided and built by CDEPS
-      FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
-      ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
-      SLIBS += $(FoX_LIBS)
-   endif
+   INCLDIR += -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/include -I$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr
+   # FoX libraries are provided and built by CDEPS
+   FoX_LIBS := -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/fox/lib -lFoX_wxml -lFoX_dom -lFoX_sax -lFoX_common -lFoX_utils -lFoX_fsys
+   ULIBS += -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/dshr -ldshr -L$(SHAREDLIBROOT)/$(SHAREDPATH)/CDEPS/streams -lstreams
+   SLIBS += $(FoX_LIBS)
 else
    CPPDEFS += -DMCT_INTERFACE
 endif
@@ -612,21 +607,27 @@ endif
 # Drive configure scripts for support libraries (mct)
 #------------------------------------------------------------------------------
 
+ifneq ("$(wildcard $(SRCROOT)/libraries)","")
+    EXTERN_PATH = $(SRCROOT)/libraries
+else
+    EXTERN_PATH = $(SRCROOT)/externals
+endif
+
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/src/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/src/externals/mct/mpi-serial
+	$(CONFIG_SHELL) $(EXTERN_PATH)/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(EXTERN_PATH)/mct/mpi-serial
 
 ifndef IO_LIB_SRCROOT
   ifndef PIO_SRCROOT
-    PIO_SRCROOT = $(CIMEROOT)/src/externals
+    PIO_SRCROOT = $(EXTERN_PATH)
   endif
 
   ifeq ($(PIO_VERSION),2)
-    PIO_SRC_DIR = $(PIO_SRCROOT)/pio2
+    PIO_SRC_DIR = $(PIO_SRCROOT)/parallelio
   else
     ifneq ("$(wildcard $(PIO_SRCROOT)/pio1/pio)", "")
       PIO_SRC_DIR = $(PIO_SRCROOT)/pio1
@@ -647,13 +648,20 @@ else
   PIOLIB = $(PIO_LIBDIR)/libpio.a
   PIOLIBNAME = -lpio
 endif
-#endif
 
 MCTLIBS = $(MCT_LIBDIR)/libmct.a $(MCT_LIBDIR)/libmpeu.a
 
 GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
-ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
+ULIBS += -L$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib
+
+ifneq ($(COMP_INTERFACE), nuopc)
+  ifneq ("$(wildcard $(SRCROOT)/components/cpl7)","")
+    ULIBS += -lcsm_share_cpl7
+  endif
+endif
+
+ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
@@ -673,7 +681,7 @@ CMAKE_OPTS += -Wno-dev -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(EXTRA_PIO_FPPD
 	      -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
 	      -D PIO_ENABLE_TESTS:BOOL=OFF \
 	      -D PIO_USE_MALLOC:BOOL=ON \
-	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(CIMEROOT)/src/externals/pio2/cmake"
+	      -D USER_CMAKE_MODULE_PATH:LIST="$(CIMEROOT)/src/CMake;$(EXTERN_PATH)/parallelio/cmake"
 
 ifeq ($(DEBUG), TRUE)
   CMAKE_OPTS += -D PIO_ENABLE_LOGGING=ON
@@ -728,11 +736,11 @@ CMAKE_ENV_VARS += CC=$(CC) \
 		  LDFLAGS="$(LDFLAGS)"
 
 
-# We declare $(GLC_DIR)/Makefile to be a phony target so that cmake is
-# always rerun whenever invoking 'make $(GLC_DIR)/Makefile'; this is
+# We declare GLCMakefile to be a phony target so that cmake is
+# always rerun whenever invoking 'make GLCMakefile'; this is
 # desirable to pick up any new source files that may have been added
-.PHONY: $(GLC_DIR)/Makefile
-$(GLC_DIR)/Makefile:
+.PHONY: GLCMakefile
+GLCMakefile:
 	cd $(GLC_DIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(GLCROOT)/source_cism
 
@@ -865,6 +873,11 @@ endif
 
 # libcsm_share.a is in ULIBDEP, but -lcsm_share is in ULIBS rather than CLIBS,
 # so this needs to be added after creating CLIBS above
+ifeq ($(CIME_MODEL),cesm)
+  ifneq ($(COMP_INTERFACE), nuopc)
+    CSMSHARELIB_CPL7 = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share_cpl7.a
+  endif
+endif
 CSMSHARELIB = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/lib/libcsm_share.a
 ULIBDEP += $(CSMSHARELIB)
 
@@ -890,8 +903,10 @@ $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 
 $(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 
-ifneq ($(MODEL),csm_share)
-  $(OBJS):  $(CSMSHARELIB)
+ifneq ($(findstring csm_share,$(MODEL)),csm_share)
+  $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
+else ifeq ($(MODEL),csm_share_cpl7)
+  complib: install_lib_cpl7
 else
   complib: install_lib
 endif
@@ -899,6 +914,10 @@ endif
 install_lib: $(COMPLIB)
 	$(CP) -p $(COMPLIB) $(CSMSHARELIB)
 	$(CP) -p *.$(MOD_SUFFIX) *.h $(INCLUDE_DIR)
+
+install_lib_cpl7: $(COMPLIB)
+	$(CP) -p $(COMPLIB) $(CSMSHARELIB_CPL7)
+	$(CP) -p *.$(MOD_SUFFIX) $(INCLUDE_DIR)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
@@ -971,6 +990,7 @@ clean_dependslnd:
 
 clean_dependscsmshare:
 	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share/Srcfiles
+	$(RM) -f $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7/Srcfiles
 
 clean_depends: clean_dependsatm clean_dependscpl clean_dependswav clean_dependsglc clean_dependsice clean_dependsrof clean_dependslnd clean_dependscsmshare clean_dependsesp clean_dependsiac
 
@@ -1017,6 +1037,7 @@ cleanlnd:
 cleancsmshare:
 	$(RM) -f $(CSMSHARELIB)
 	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share
+	$(RM) -fr $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share_cpl7
 
 cleanpio:
 	$(RM) -f $(PIO_LIBDIR)/libpio*

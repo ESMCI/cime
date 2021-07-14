@@ -24,14 +24,22 @@ class Inputdata(GenericXML):
 
         self._servernode = None
 
-    def get_next_server(self):
+    def get_next_server(self, attributes=None):
         protocol = None
         address = None
         user = ''
         passwd = ''
         chksum_file = None
         ic_filepath = None
-        servernodes = self.get_children("server")
+        servernodes = self.get_children("server", attributes=attributes)
+
+        # inventory is a CSV list of available data files and the valid date for each
+        # expected format is pathtofile,YYYY-MM-DD HH:MM:SS
+        # currently only used for NEON tower data
+        inventory = None
+        if not attributes:
+            servernodes = [x for x in servernodes if not self.attrib(x)]
+
         if self._servernode is None:
             self._servernode = servernodes[0]
         else:
@@ -49,6 +57,10 @@ class Inputdata(GenericXML):
             unode = self.get_optional_child("user", root = self._servernode)
             if unode:
                 user =  self.text(unode)
+            invnode = self.get_optional_child("inventory", root = self._servernode)
+            if invnode:
+                inventory = self.text(invnode)
+
             pnode = self.get_optional_child("password", root = self._servernode)
             if pnode:
                 passwd =  self.text(pnode)
@@ -59,4 +71,4 @@ class Inputdata(GenericXML):
             if icnode:
                 ic_filepath =  self.text(icnode)
 
-        return protocol, address, user, passwd, chksum_file, ic_filepath
+        return protocol, address, user, passwd, chksum_file, ic_filepath, inventory

@@ -8,9 +8,10 @@ import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils                     import run_and_log_case_status, ls_sorted_by_mtime, symlink_force, safe_copy, find_files
+from CIME.utils                     import batch_jobid
 from CIME.date                      import get_file_date
-from CIME.XML.archive       import Archive
-from CIME.XML.files            import Files
+from CIME.XML.archive               import Archive
+from CIME.XML.files                 import Files
 from os.path                        import isdir, join
 
 logger = logging.getLogger(__name__)
@@ -402,6 +403,10 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
     # the compname is drv but the files are named cpl
     if compname == 'drv':
         compname = 'cpl'
+    if compname == "cice6":
+        compname = 'cice'
+    if compname == "ww3dev":
+        compname = 'ww3'
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):
@@ -734,9 +739,20 @@ def case_st_archive(self, last_date_str=None, archive_incomplete_logs=True, copy
 
     logger.info("st_archive starting")
 
+    is_batch = self.get_value("BATCH_SYSTEM")
+    msg_func = None
+
+    if is_batch:
+        jobid = batch_jobid()
+        msg_func = lambda *args: jobid if jobid is not None else ""
+
     archive = self.get_env('archive')
     functor = lambda: _archive_process(self, archive, last_date, archive_incomplete_logs, copy_only)
-    run_and_log_case_status(functor, "st_archive", caseroot=caseroot)
+    run_and_log_case_status(functor, "st_archive",
+                            custom_starting_msg_functor=msg_func,
+                            custom_success_msg_functor=msg_func,
+                            caseroot=caseroot,
+                            is_batch=is_batch)
 
     logger.info("st_archive completed")
 

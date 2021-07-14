@@ -3,7 +3,7 @@ create_clone is a member of the Case class from file case.py
 """
 import os, glob, shutil
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, check_name, safe_copy
+from CIME.utils import expect, check_name, safe_copy, get_model
 from CIME.simple_compare            import compare_files
 from CIME.locked_files         import lock_file
 from CIME.user_mod_support import apply_user_mods
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
                       cime_output_root=None, exeroot=None, rundir=None,
-                      user_mods_dir=None):
+                      user_mods_dirs=None):
     """
     Create a case clone
 
@@ -39,7 +39,10 @@ def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
         logger.warning(" It is NOT recommended to clone cases from different versions of CIME.")
 
     # *** create case object as deepcopy of clone object ***
-    srcroot = os.path.join(newcase_cimeroot,"..")
+    if os.path.isdir(os.path.join(newcase_cimeroot,'share')) and get_model() == "cesm":
+        srcroot = newcase_cimeroot         
+    else:
+        srcroot = os.path.join(newcase_cimeroot,"..")
     newcase = self.copy(newcasename, newcaseroot, newsrcroot=srcroot)
     with newcase:
         newcase.set_value("CIMEROOT", newcase_cimeroot)
@@ -136,15 +139,16 @@ def create_clone(self, newcaseroot, keepexe=False, mach_dir=None, project=None,
 
         # apply user_mods if appropriate
         newcase_root = newcase.get_value("CASEROOT")
-        if user_mods_dir is not None:
+        if user_mods_dirs is not None:
             if keepexe:
                 # If keepexe CANNOT change any env_build.xml variables - so make a temporary copy of
                 # env_build.xml and verify that it has not been modified
                 safe_copy(os.path.join(newcaseroot, "env_build.xml"),
                           os.path.join(newcaseroot, "LockedFiles", "env_build.xml"))
 
-            # Now apply contents of user_mods directory
-            apply_user_mods(newcase_root, user_mods_dir, keepexe=keepexe)
+            # Now apply contents of all specified user_mods directories
+            for one_user_mods_dir in user_mods_dirs:
+                apply_user_mods(newcase_root, one_user_mods_dir, keepexe=keepexe)
 
             # Determine if env_build.xml has changed
             if keepexe:

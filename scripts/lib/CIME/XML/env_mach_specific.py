@@ -115,6 +115,8 @@ class EnvMachSpecific(EnvBase):
 
         self._get_resources_for_case(case)
 
+        return [] if envs_to_set is None else envs_to_set
+
     def _get_resources_for_case(self, case):
         resource_nodes = self.get_children("resource_limits")
         if resource_nodes is not None:
@@ -254,7 +256,8 @@ class EnvMachSpecific(EnvBase):
                     shell, cmd = env_value.split(" ",1)
                     self._source_shell_file("source "+cmd, shell, verbose=verbose)
                 else:
-                    print("Setting Environment {}={}".format(env_name, env_value))
+                    if verbose:
+                        print("Setting Environment {}={}".format(env_name, env_value))
                     logger_func("Setting Environment {}={}".format(env_name, env_value))
                     os.environ[env_name] = env_value
 

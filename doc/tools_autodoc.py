@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """script to auto generate rst documentation for cime/scripts/Tools 
    user facing utilities.
 
