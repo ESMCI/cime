@@ -363,6 +363,7 @@ class GenericXML(object):
 
         # xmllint provides a better format option for the output file
         xmllint = find_executable("xmllint")
+
         if xmllint is not None:
             if isinstance(outfile, six.string_types):
                 run_cmd_no_fail("{} --format --output {} -".format(xmllint, outfile), input_str=xmlstr)
@@ -549,11 +550,10 @@ class GenericXML(object):
         expect(os.path.isfile(filename),"xml file not found {}".format(filename))
         expect(os.path.isfile(schema),"schema file not found {}".format(schema))
         xmllint = find_executable("xmllint")
-        if xmllint is not None:
-            logger.debug("Checking file {} against schema {}".format(filename, schema))
-            run_cmd_no_fail("{} --xinclude --noout --schema {} {}".format(xmllint, schema, filename))
-        else:
-            logger.warning("xmllint not found, could not validate file {}".format(filename))
+        expect(os.path.isfile(xmllint), " xmllint not found, xmllint is required for cime")
+
+        logger.debug("Checking file {} against schema {}".format(filename, schema))
+        run_cmd_no_fail("{} --xinclude --noout --schema {} {}".format(xmllint, schema, filename))
 
     def get_raw_record(self, root=None):
         logger.debug("writing file {}".format(self.filename))
