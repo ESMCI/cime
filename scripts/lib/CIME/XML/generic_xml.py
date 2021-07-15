@@ -550,7 +550,7 @@ class GenericXML(object):
         expect(os.path.isfile(filename),"xml file not found {}".format(filename))
         expect(os.path.isfile(schema),"schema file not found {}".format(schema))
         xmllint = find_executable("xmllint")
-        expect(os.path.isfile(xmllint), " xmllint not found, xmllint is required for cime")
+        expect(os.path.isfile(xmllint), " xmllint not found in PATH, xmllint is required for cime.  PATH={}".format(os.environ["PATH"]))
 
         logger.debug("Checking file {} against schema {}".format(filename, schema))
         run_cmd_no_fail("{} --xinclude --noout --schema {} {}".format(xmllint, schema, filename))
