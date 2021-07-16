@@ -925,6 +925,20 @@ using a fortran linker.
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
 </compiler>
 
+<compiler MACH="casper" COMPILER="gnu">
+  <FFLAGS>
+    <!-- -fallow-argument-mismatch is needed for building with the mpich library with gfortran10 and newer;
+         -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
+         See https://github.com/ESMCI/cime/issues/3846 for details. -->
+<!--    <append> -fallow-argument-mismatch -fallow-invalid-boz </append> -->
+    <!-- gnu 11 supports dwarf-5 but the system does not yet -->
+<!--    <append DEBUG="TRUE"> -gdwarf-4 </append> -->
+  </FFLAGS>
+  <CFLAGS>
+<!--    <append DEBUG="TRUE"> -gdwarf-4 </append> -->
+  </CFLAGS>
+</compiler>
+
 <compiler MACH="cheyenne" COMPILER="gnu">
   <CPPDEFS>
     <append MODEL="pio1"> -DNO_MPIMOD </append>

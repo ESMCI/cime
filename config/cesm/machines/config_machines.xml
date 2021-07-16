@@ -337,7 +337,7 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="csh">module</cmd_path>
       <modules>
         <command name="purge"/>
-        <command name="load">lang/python/3.6.5</command>
+	<command name="load">lang/python/3.6.5</command>
       </modules>
       <modules compiler="gnu">
         <command name="load">compiler/gnu/8.2.0</command>
@@ -358,7 +358,7 @@ This allows using a different mpirun command to launch unit tests
     <DESC>NCAR GPU platform, os is Linux, 36 pes/node, batch system is pbs</DESC>
     <NODENAME_REGEX>casper*</NODENAME_REGEX>
     <OS>LINUX</OS>
-    <COMPILERS>pgi,intel,nvhpc,pgi-gpu,nvhpc-gpu</COMPILERS>
+    <COMPILERS>pgi,intel,nvhpc,pgi-gpu,nvhpc-gpu,gnu</COMPILERS>
     <MPILIBS>openmpi</MPILIBS>
     <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
@@ -397,6 +397,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="purge"/>
         <command name="load">ncarenv/1.3</command>
         <command name="load">cmake/3.18.2</command>
+        <command name="load">python</command>
       </modules>
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
@@ -410,6 +411,9 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="nvhpc-gpu">
         <command name="load">nvhpc/20.9</command>
       </modules>
+      <modules compiler="gnu">
+        <command name="load">gnu/9.1.0</command>
+      </modules>
       <modules compiler="intel">
         <command name="load">intel/19.1.1</command>
         <command name="load">mkl/2020.0.1</command>
@@ -422,22 +426,25 @@ This allows using a different mpirun command to launch unit tests
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/pgi/20.4/</command>
         <command name="load">esmf-8.2.0b11_casper-ncdfio-openmpi-O</command>
       </modules>
-      <modules mpilib="openmpi" compiler="pgi">
+      <modules compiler="gnu" mpilib="openmpi" DEBUG="TRUE">
+        <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/11.1.0/</command>
+        <command name="load">esmf-8.2.0b12_casper-ncdfio-openmpi-g</command>
+      </modules>
+      <modules compiler="gnu" mpilib="openmpi" DEBUG="FALSE">
+        <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/gnu/11.1.0/</command>
+        <command name="load">esmf-8.2.0b12_casper-ncdfio-openmpi-O</command>
+      </modules>
+      <modules mpilib="openmpi">
         <command name="load">openmpi/4.1.0</command>
         <command name="load">netcdf-mpi/4.8.0</command>
         <command name="load">pnetcdf/1.12.2</command>
       </modules>
-      <modules mpilib="mpi-serial" compiler="pgi">
+      <modules mpilib="mpi-serial">
         <command name="load">netcdf/4.8.0</command>
       </modules>
       <modules mpilib="openmpi" compiler="pgi-gpu">
-        <command name="load">openmpi/4.1.0</command>
-        <command name="load">netcdf-mpi/4.7.4</command>
-        <command name="load">pnetcdf/1.12.2</command>
+        <command name="switch">netcdf-mpi/4.7.4</command>
         <command name="load">cuda/11.0.3</command>
-      </modules>
-      <modules mpilib="mpi-serial" compiler="pgi-gpu">
-        <command name="load">netcdf/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="nvhpc">
         <command name="load">openmpi/4.1.0</command>
@@ -563,7 +570,6 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">ncarenv/1.3</command>
         <command name="load">python/3.7.9</command>
         <command name="load">cmake</command>
-        <command name="load">python</command>
       </modules>
       <modules compiler="intel">
         <command name="load">intel/19.1.1</command>
@@ -644,7 +650,7 @@ This allows using a different mpirun command to launch unit tests
       </modules>
       <modules mpilib="mpt" compiler="gnu">
         <command name="load">mpt/2.21</command>
-        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">netcdf-mpi/4.7.3</command>
         <command name="load">pnetcdf/1.12.1</command>
       </modules>
       <modules mpilib="mpt" compiler="intel">
@@ -662,9 +668,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">netcdf-mpi/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="gnu">
-        <command name="load">openmpi/4.0.5</command>
-        <command name="load">netcdf-mpi/4.7.4</command>
-        <command name="load">pnetcdf/1.12.2</command>
+        <command name="load">openmpi/3.1.4</command>
+        <command name="load">netcdf/4.7.1</command>
       </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
@@ -1638,14 +1643,14 @@ This allows using a different mpirun command to launch unit tests
     <!-- PROJECT: A project or account number used for batch jobs
          This value is used for directory names. If different from
          actual accounting project id, use CHARGE_ACCOUNT
-         can be overridden in environment or $HOME/.cime/config -->
+	 can be overridden in environment or $HOME/.cime/config -->
     <!-- <PROJECT>couldbethis</PROJECT> -->
 
     <!-- CHARGE_ACCOUNT: A project or account number used for batch jobs
-         This is the actual project used for cost accounting set in
+	 This is the actual project used for cost accounting set in
          the batch script (ex. #PBS -A charge_account). Will default
          to PROJECT if not set.
-         can be overridden in environment or $HOME/.cime/config -->
+	 can be overridden in environment or $HOME/.cime/config -->
     <!-- <CHARGE_ACCOUNT>couldbethis</CHARGE_ACCOUNT> -->
     <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER/cesm_runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT>
@@ -1666,13 +1671,13 @@ This allows using a different mpirun command to launch unit tests
       <!-- name of the exectuable used to launch mpi jobs -->
       <executable>mpirun</executable>
       <arguments>
-        <arg name="task_count">-np {{ total_tasks }}</arg>
+	<arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
       <executable>mpirun</executable>
       <arguments>
-        <arg name="task_count">-np {{ total_tasks }}</arg>
+	<arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1685,15 +1690,15 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"/>
+	<command name="purge"/>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel/2018.3</command>
-        <command name="load">netcdf/4.7.0</command>
+	<command name="load">intel/2018.3</command>
+	<command name="load">netcdf/4.7.0</command>
       </modules>
       <modules mpilib="openmpi">
-        <command name="load">openmpi/3.1.6</command>
-        <command name="load">pnetcdf/1.10.0</command>
+	<command name="load">openmpi/3.1.6</command>
+	<command name="load">pnetcdf/1.10.0</command>
       </modules>
     </module_system>
 <!-- environment variables, a blank entry will unset a variable -->
@@ -1718,14 +1723,14 @@ This allows using a different mpirun command to launch unit tests
     <!-- PROJECT: A project or account number used for batch jobs
          This value is used for directory names. If different from
          actual accounting project id, use CHARGE_ACCOUNT
-         can be overridden in environment or $HOME/.cime/config -->
+	 can be overridden in environment or $HOME/.cime/config -->
     <!-- <PROJECT>couldbethis</PROJECT> -->
 
     <!-- CHARGE_ACCOUNT: A project or account number used for batch jobs
-         This is the actual project used for cost accounting set in
+	 This is the actual project used for cost accounting set in
          the batch script (ex. #PBS -A charge_account). Will default
          to PROJECT if not set.
-         can be overridden in environment or $HOME/.cime/config -->
+	 can be overridden in environment or $HOME/.cime/config -->
     <!-- <CHARGE_ACCOUNT>couldbethis</CHARGE_ACCOUNT> -->
     <CIME_OUTPUT_ROOT>/DFS-L/SCRATCH/moore/$USER/cesm_runs</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/DFS-L/DATA/moore/cesm/inputdata</DIN_LOC_ROOT>
@@ -1746,13 +1751,13 @@ This allows using a different mpirun command to launch unit tests
       <!-- name of the exectuable used to launch mpi jobs -->
       <executable>mpirun</executable>
       <arguments>
-        <arg name="task_count">-np {{ total_tasks }}</arg>
+	<arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="openmpi">
       <executable>mpirun</executable>
       <arguments>
-        <arg name="task_count">-np {{ total_tasks }}</arg>
+	<arg name="task_count">-np {{ total_tasks }}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1765,15 +1770,15 @@ This allows using a different mpirun command to launch unit tests
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-        <command name="purge"/>
+	<command name="purge"/>
       </modules>
       <modules compiler="intel">
-        <command name="load">intel/2018.3</command>
-        <command name="load">netcdf/4.7.0</command>
+	<command name="load">intel/2018.3</command>
+	<command name="load">netcdf/4.7.0</command>
       </modules>
       <modules mpilib="openmpi">
-        <command name="load">openmpi/3.1.6</command>
-        <command name="load">pnetcdf/1.10.0</command>
+	<command name="load">openmpi/3.1.6</command>
+	<command name="load">pnetcdf/1.10.0</command>
       </modules>
     </module_system>
 <!-- environment variables, a blank entry will unset a variable -->
