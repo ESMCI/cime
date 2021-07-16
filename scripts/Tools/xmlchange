@@ -161,6 +161,7 @@ def xmlchange(caseroot, listofsettings, xmlfile, xmlid, xmlval, subgroup,
               append, noecho, force, dryrun):
 
     with Case(caseroot, read_only=False) as case:
+        expect(os.path.isdir(caseroot), "Directory {} does not appear to be a valid case directory".format(caseroot))
         comp_classes = case.get_values("COMP_CLASSES")
         if xmlfile:
             case.set_file(xmlfile)
