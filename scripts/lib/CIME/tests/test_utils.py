@@ -9,7 +9,7 @@ from unittest import mock
 from CIME.utils import indent_string, run_and_log_case_status, \
     import_from_file
 
-from . import utils
+from CIME.tests import utils
 
 class TestIndentStr(unittest.TestCase):
     """Test the indent_string function.
@@ -216,4 +216,3 @@ class TestUtils(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import unittest
 
 from CIME import provenance
 
-from . import utils
+from CIME.tests import utils
 
 class TestProvenance(unittest.TestCase):
     def test_run_git_cmd_recursively(self):

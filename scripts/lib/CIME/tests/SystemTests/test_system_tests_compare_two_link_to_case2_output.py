@@ -151,3 +151,6 @@ class TestLinkToCase2Output(unittest.TestCase):
         mytest._link_to_case2_output()
 
         # (No verification: Test passes if no exception was raised)
+
+if __name__ == '__main__':
+    unittest.main()
