@@ -75,11 +75,22 @@ def parse_command_line(args, cimeroot, description):
                         "\noptimal PE-layout for your case - if it exists there. "
                         "\nAllowed options are  ('S','M','L','X1','X2','[0-9]x[0-9]','[0-9]').\n")
 
-    parser.add_argument("--user-mods-dir",
+    # This option supports multiple values, hence the plural ("user-mods-dirs"). However,
+    # we support the singular ("user-mods-dir") for backwards compatibility (and because
+    # the singular may be more intuitive for someone who only wants to use a single
+    # directory).
+    parser.add_argument("--user-mods-dirs", "--user-mods-dir", nargs='*',
                         help="Full pathname to a directory containing any combination of user_nl_* files "
                         "\nand a shell_commands script (typically containing xmlchange commands). "
                         "\nThe directory can also contain an SourceMods/ directory with the same structure "
-                        "\nas would be found in a case directory.")
+                        "\nas would be found in a case directory."
+                        "\nIt can also contain a file named 'include_user_mods' which gives the path to"
+                        "\none or more other directories that should be included."
+                        "\nMultiple directories can be given to the --user-mods-dirs argument,"
+                        "\nin which case changes from all of them are applied."
+                        "\n(If there are conflicts, later directories take precedence.)"
+                        "\n(Care is needed if multiple directories include the same directory via 'include_user_mods':"
+                        "\nin this case, the included directory will be applied multiple times.)")
 
     parser.add_argument("--pesfile",
                         help="Full pathname of an optional pes specification file. "
@@ -190,7 +201,7 @@ def parse_command_line(args, cimeroot, description):
 
     return args.case, args.compset, args.res, args.machine, args.compiler,\
         args.mpilib, args.project, args.pecount, \
-        args.user_mods_dir, args.pesfile, \
+        args.user_mods_dirs, args.pesfile, \
         args.gridfile, args.srcroot, args.test, args.multi_driver, \
         args.ninst, args.walltime, args.queue, args.output_root, args.script_root, \
         run_unsupported, args.answer, args.input_dir, args.driver, args.workflow, args.non_local, \
@@ -203,7 +214,7 @@ def _main_func(description):
 
     casename, compset, grid, machine, compiler, \
         mpilib, project, pecount,  \
-        user_mods_dir, pesfile, \
+        user_mods_dirs, pesfile, \
         gridfile, srcroot, test, multi_driver, ninst, walltime, \
         queue, output_root, script_root, run_unsupported, \
         answer, input_dir, driver, \
@@ -214,9 +225,10 @@ def _main_func(description):
     else:
         caseroot = os.path.abspath(script_root)
 
-    if user_mods_dir is not None:
-        if os.path.isdir(user_mods_dir):
-            user_mods_dir = os.path.abspath(user_mods_dir)
+    if user_mods_dirs is not None:
+        user_mods_dirs = [os.path.abspath(one_user_mods_dir) if os.path.isdir(one_user_mods_dir)
+                          else one_user_mods_dir
+                          for one_user_mods_dir in user_mods_dirs]
 
     # create_test creates the caseroot before calling create_newcase
     # otherwise throw an error if this directory exists
@@ -233,7 +245,7 @@ def _main_func(description):
 
     with Case(caseroot, read_only=False) as case:
         # Configure the Case
-        case.create(casename, srcroot, compset, grid, user_mods_dir=user_mods_dir,
+        case.create(casename, srcroot, compset, grid, user_mods_dirs=user_mods_dirs,
                     machine_name=machine, project=project,
                     pecount=pecount, compiler=compiler, mpilib=mpilib,
                     pesfile=pesfile,gridfile=gridfile,

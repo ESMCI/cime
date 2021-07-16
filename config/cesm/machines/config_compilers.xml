@@ -196,7 +196,7 @@ using a fortran linker.
   </CPPDEFS>
   <CXX_LINKER>FORTRAN</CXX_LINKER>
   <FC_AUTO_R8>
-    <base> -fdefault-real-8 </base>
+    <base> -fdefault-real-8 -fdefault-double-8</base>
   </FC_AUTO_R8>
   <FFLAGS>
     <!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS

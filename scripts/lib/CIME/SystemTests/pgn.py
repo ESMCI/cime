@@ -86,8 +86,6 @@ class PGN(SystemTestsCommon):
 
                 case_setup(self._case, test_mode=False, reset=True)
 
-        self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
-
         logger.debug("PGN_INFO: Updating user_nl_* files")
 
         csmdata_root = self._case.get_value("DIN_LOC_ROOT")
@@ -119,6 +117,7 @@ class PGN(SystemTestsCommon):
 
         self._case.set_value("STOP_N", "1")
         self._case.set_value("STOP_OPTION", "nsteps")
+        self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
     def get_var_list(self):
         """
