@@ -121,7 +121,6 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
            "Does not make sense to use --cdash-project without --submit-to-cdash")
 
     machine = Machines(machine=args.machine)
-    machine_name = machine.get_machine_name()
 
     args.machine = machine
     args.test_suite = machine.get_value("TESTS") if args.test_suite is None else args.test_suite
