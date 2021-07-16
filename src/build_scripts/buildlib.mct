@@ -55,7 +55,7 @@ def buildlib(bldroot, installpath, case):
     if get_model() == "cesm":
         mct_dir = os.path.join(srcroot,"libraries","mct")
     else:
-        mct_dir = os.path.join(cimeroot,"src","externals","mct")
+        mct_dir = os.path.join(srcroot,"externals","mct")
 
     for _dir in ("mct", "mpeu"):
         if not os.path.isdir(os.path.join(bldroot,_dir)):
