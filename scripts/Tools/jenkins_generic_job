@@ -14,9 +14,6 @@ from CIME.utils import expect
 from CIME.XML.machines import Machines
 from jenkins_generic_job import jenkins_generic_job
 
-# Don't know if this belongs here longterm
-MACHINES_THAT_MAINTAIN_BASELINES = ("melvin", "sandiatoss3", "mappy")
-
 ###############################################################################
 def parse_command_line(args, description):
 ###############################################################################
@@ -48,8 +45,8 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
     parser.add_argument("-g", "--generate-baselines", action="store_true",
                         help="Generate baselines")
 
-    parser.add_argument("--baseline-compare",
-                        help="Do baseline comparisons (yes/no)")
+    parser.add_argument("--baseline-compare", action="store_true",
+                        help="Do baseline comparisons. Off by default.")
 
     parser.add_argument("--submit-to-cdash", action="store_true",
                         help="Send results to CDash")
@@ -122,16 +119,12 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
            "Does not make sense to use --cdash-build-name without --submit-to-cdash")
     expect(not (args.cdash_project is not CIME.wait_for_tests.E3SM_MAIN_CDASH and not args.submit_to_cdash),
            "Does not make sense to use --cdash-project without --submit-to-cdash")
-    expect (args.baseline_compare in [None, "yes", "no"],
-            "Valid args for --baseline-compare are 'yes' or 'no'")
 
     machine = Machines(machine=args.machine)
     machine_name = machine.get_machine_name()
 
     args.machine = machine
     args.test_suite = machine.get_value("TESTS") if args.test_suite is None else args.test_suite
-    default_maintain_baselines = machine_name in MACHINES_THAT_MAINTAIN_BASELINES
-    args.baseline_compare = default_maintain_baselines if args.baseline_compare is None else args.baseline_compare == "yes"
     args.scratch_root = machine.get_value("CIME_OUTPUT_ROOT") if args.scratch_root is None else args.scratch_root
     args.compiler = machine.get_default_compiler() if args.compiler is None else args.compiler
 
