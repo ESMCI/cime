@@ -676,7 +676,7 @@ using a fortran linker.
 
 <compiler MACH="aleph" COMPILER="intel">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -xCORE-AVX2 </append>
@@ -958,7 +958,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2 </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CPPDEFS>
     <append> -DLINUX </append>
@@ -978,7 +978,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2 </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CPPDEFS>
     <append> -DLINUX </append>
@@ -995,7 +995,7 @@ using a fortran linker.
 
 <compiler MACH="cori-haswell" COMPILER="intel">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -xCORE-AVX2 </append>
@@ -1018,7 +1018,7 @@ using a fortran linker.
 
 <compiler MACH="cori-knl" COMPILER="intel">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -xMIC-AVX512 </append>
@@ -1044,7 +1044,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2 </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CPPDEFS>
     <append> -DLINUX </append>
@@ -1065,7 +1065,7 @@ using a fortran linker.
     <append compile_threaded="FALSE"> -nomp </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CPPDEFS>
     <append> -DLINUX </append>
@@ -1089,7 +1089,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2  </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CPPDEFS>
     <append MODEL="gptl"> -DHAVE_PAPI </append>
@@ -1363,7 +1363,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2  </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CXX_LIBS>
     <base>-lstdc++ -lmpi_cxx</base>
@@ -1416,7 +1416,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2 </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CPPDEFS>
     <append> -DLINUX </append>
@@ -1433,7 +1433,7 @@ using a fortran linker.
 
 <compiler MACH="pleiades-bro">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
@@ -1454,7 +1454,7 @@ using a fortran linker.
 
 <compiler MACH="pleiades-has">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
@@ -1475,7 +1475,7 @@ using a fortran linker.
 
 <compiler MACH="pleiades-ivy">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
@@ -1496,7 +1496,7 @@ using a fortran linker.
 
 <compiler MACH="pleiades-san">
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <CFLAGS>
     <append> -axCORE-AVX2 -xSSE4.2 -no-fma </append>
@@ -1520,7 +1520,7 @@ using a fortran linker.
     <append DEBUG="FALSE"> -O2  </append>
   </CFLAGS>
   <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <ESMF_LIBDIR>/projects/ccsm/esmf-6.3.0rp1/lib/libO/Linux.intel.64.openmpi.default</ESMF_LIBDIR>
   <FFLAGS>
@@ -1618,7 +1618,7 @@ using a fortran linker.
     <append> -xMIC-AVX512 </append>
   </FFLAGS>
     <CONFIG_ARGS>
-    <base> --host=Linux </base>
+    <base> --host=cray </base>
   </CONFIG_ARGS>
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -L$(NETCDF_DIR)/lib -lnetcdf -Wl,-rpath -Wl,$(NETCDF_DIR)/lib </append>
