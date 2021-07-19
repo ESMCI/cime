@@ -356,11 +356,7 @@ contains
 
   !===============================================================================
   subroutine ModelAdvance(gcomp, rc)
-#ifdef SMARTREDIS
-    use nuopc_shr_methods, only : sr_client
-    use iso_c_binding, only : c_double
-    use ESMF, only : ESMF_VMGetCurrent, ESMF_VMGet
-#endif
+    use nuopc_shr_methods, only : use_smartredis
     ! input/output variables
     type(ESMF_GridComp)  :: gcomp
     integer, intent(out) :: rc
@@ -370,17 +366,6 @@ contains
     type(ESMF_State)  :: exportState
     real(r8)          :: nextsw_cday
     integer           :: shrlogunit ! original log unit
-#ifdef SMARTREDIS
-    type(ESMF_VM)     :: vm
-    integer           :: mytask
-    integer, parameter :: dim1 = 1
-    integer, parameter :: dim2 = 2
-    integer, parameter :: dim3 = 3
-    character(len=9) :: key_prefix
-    real(r8),    dimension(dim1, dim2, dim3) :: recv_array_real_64
-    
-    real(kind=c_double),    dimension(dim1, dim2, dim3) :: true_array_real_64
-#endif
     character(len=*),parameter  :: subname=trim(modName)//':(ModelAdvance) '
     !-------------------------------------------------------------------------------
 
@@ -411,24 +396,9 @@ contains
     !--------------------------------
     ! diagnostics
     !--------------------------------
-#ifdef SMARTREDIS
-    call ESMF_VMGetCurrent(vm, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_VMGet(vm, localPet=mytask, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    call random_number(true_array_real_64)
-    call random_number(recv_array_real_64)
-    write(key_prefix, "(A,I6.6)") "pe_",mytask
-    if(mastertask) write(logunit, *) 'putting tenser to smartsim database '
-    call sr_client%put_tensor(key_prefix//"true_array_real_64", true_array_real_64, shape(true_array_real_64))
-    if(mastertask) write(logunit, *)  'retreveing tenser from database '
-    call sr_client%unpack_tensor(key_prefix//"true_array_real_64", recv_array_real_64, shape(recv_array_real_64))
-    if (.not. all(true_array_real_64 == recv_array_real_64)) then
-       call shr_sys_abort('true_array_real_64: FAILED')
+    if(use_smartredis) then
+       call srtest()
     endif
-#endif
-
 
     if (dbug > 1) then
        call state_diagnose(exportState,subname//':ES',rc=rc)
@@ -560,4 +530,43 @@ contains
     end if
   end subroutine ModelFinalize
 
+! Test the smartredis interface
+  subroutine srtest()
+    use nuopc_shr_methods, only : sr_client
+    use iso_c_binding, only : c_double
+    use ESMF, only : ESMF_VMGetCurrent, ESMF_VMGet
+
+
+    type(ESMF_VM)     :: vm
+    integer           :: mytask
+    integer, parameter :: dim1 = 10
+    integer, parameter :: dim2 = 20
+    integer, parameter :: dim3 = 30
+    character(len=9) :: key_prefix
+    real(r8),    dimension(dim1, dim2, dim3) :: recv_array_real_64
+    real(kind=c_double),    dimension(dim1, dim2, dim3) :: true_array_real_64
+    integer :: rc
+
+
+    call ESMF_VMGetCurrent(vm, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    call ESMF_VMGet(vm, localPet=mytask, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+
+    call random_number(true_array_real_64)
+    call random_number(recv_array_real_64)
+    write(key_prefix, "(A,I6.6)") "pe_",mytask
+    if(mastertask) write(logunit, *) 'putting tensor to smartsim database '
+    call sr_client%put_tensor(key_prefix//"true_array_real_64", true_array_real_64, &
+         shape(true_array_real_64))
+    if(mastertask) write(logunit, *)  'retreveing tensor from database '
+    call sr_client%unpack_tensor(key_prefix//"true_array_real_64", recv_array_real_64,&
+         shape(recv_array_real_64))
+    if (.not. all(true_array_real_64 == recv_array_real_64)) then
+       call shr_sys_abort('true_array_real_64: FAILED')
+    endif
+
+
+
+  end subroutine srtest
 end module atm_comp_nuopc
