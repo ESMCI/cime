@@ -77,7 +77,7 @@ using a fortran linker.
   </CPPDEFS>
 
   <INCLDIR>
-        <append MODEL="ufsatm"> -I$(EXEROOT)/atm/obj/FMS </append>
+	<append MODEL="ufsatm"> -I$(EXEROOT)/atm/obj/FMS </append>
   </INCLDIR>
   <FFLAGS>
     <append MODEL="ufsatm"> $(FC_AUTO_R8) </append>
@@ -121,10 +121,10 @@ using a fortran linker.
     <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
     <append compile_threaded="TRUE"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
-         least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
-         7.1.0), gfortran's isnan (which is called in cime via the
-         CPRGNU-specific shr_infnan_isnan) causes a floating point exception
-         when called on a signaling NaN. -->
+	 least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
+	 7.1.0), gfortran's isnan (which is called in cime via the
+	 CPRGNU-specific shr_infnan_isnan) causes a floating point exception
+	 when called on a signaling NaN. -->
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </FFLAGS>
@@ -207,10 +207,10 @@ using a fortran linker.
     <base>  -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none </base>
     <append compile_threaded="TRUE"> -fopenmp </append>
     <!-- Ideally, we would also have 'invalid' in the ffpe-trap list. But at
-         least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
-         7.1.0), gfortran's isnan (which is called in cime via the
-         CPRGNU-specific shr_infnan_isnan) causes a floating point exception
-         when called on a signaling NaN. -->
+	 least with some versions of gfortran (confirmed with 5.4.0, 6.3.0 and
+	 7.1.0), gfortran's isnan (which is called in cime via the
+	 CPRGNU-specific shr_infnan_isnan) causes a floating point exception
+	 when called on a signaling NaN. -->
     <append DEBUG="TRUE"> -g -Wall -Og -fbacktrace -ffpe-trap=zero,overflow -fcheck=bounds </append>
     <append DEBUG="FALSE"> -O </append>
   </FFLAGS>
@@ -907,6 +907,10 @@ using a fortran linker.
   <FFLAGS>
     <append> -qopt-report -xCORE_AVX2 -no-fma</append>
   </FFLAGS>
+  <LDFLAGS>
+    <!-- the path to gcc should match that used in building the SmartRedis lib -->
+    <append>-Wl,-rpath /glade/u/apps/dav/opt/gnu/9.1.0/lib64 -L/glade/u/apps/dav/opt/gnu/9.1.0/lib64 -lgcc </append>
+  </LDFLAGS>
   <CMAKE_OPTS>
     <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
   </CMAKE_OPTS>
@@ -931,8 +935,8 @@ using a fortran linker.
   </CPPDEFS>
   <FFLAGS>
     <!-- -fallow-argument-mismatch is needed for building with the mpich library with gfortran10;
-         -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
-         See https://github.com/ESMCI/cime/issues/3846 for details. -->
+	 -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
+	 See https://github.com/ESMCI/cime/issues/3846 for details. -->
     <append> -fallow-argument-mismatch -fallow-invalid-boz </append>
   </FFLAGS>
   <SLIBS>
@@ -1314,7 +1318,7 @@ using a fortran linker.
 <compiler MACH="homebrew" COMPILER="gnu">
   <LDFLAGS>
     <!-- These LDFLAGS provide lapack and blas support on a Mac. This
-         may require installation of the Apple Developer Tools. -->
+	 may require installation of the Apple Developer Tools. -->
     <append> -framework Accelerate -Wl,-rpath $(NETCDF)/lib</append>
   </LDFLAGS>
 </compiler>
