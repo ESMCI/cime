@@ -78,7 +78,7 @@ CPPDEFS := $(USER_CPPDEFS) -D$(OS)
 include $(CASEROOT)/Macros.make
 
 ifeq ($(strip $(USE_SMARTSIM)), TRUE)
-  SLIBS += -L$(SMARTREDIS_LIB) -lsmartredis
+  SLIBS += -L$(SMARTREDIS_LIB) -lsmartredis -Wl,-rpath $(SMARTREDIS_LIB)
 endif
 
 # Unless DEBUG mode is enabled, use NDEBUG to turn off assert statements.
