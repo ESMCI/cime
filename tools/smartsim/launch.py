@@ -18,36 +18,45 @@ from CIME.case import Case
 
 def parse_command_line(args, description):
     parser = argparse.ArgumentParser(description=description,
-                     formatter_class=argparse.RawTextHelpFormatter)
+		     formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--db-nodes", default=1,
-            help="Number of nodes for the SmartSim database, default=1")
+	    help="Number of nodes for the SmartSim database, default=1")
     parser.add_argument("--ngpus-per-node", default=0,
-            help="Number of gpus per SmartSim database node, default=0")
+	    help="Number of gpus per SmartSim database node, default=0")
     parser.add_argument("--walltime", default="00:30:00",
-            help="Total walltime for submitted job, default=00:30:00")
+	    help="Total walltime for submitted job, default=00:30:00")
     parser.add_argument("--member-nodes", default=1,
-            help="Number of nodes per ensemble member, default=1")
+	    help="Number of nodes per ensemble member, default=1")
     parser.add_argument("--account", default="P93300606",
-            help="Account ID")
+	    help="Account ID")
     parser.add_argument("--db-port", default=6780,
-            help="db port, default=6780")
+	    help="db port, default=6780")
     parser.add_argument("--caseroots" , default=[os.getcwd()],nargs="*",
-            help="Case directory to reference.\n"
-            "Default is current directory.")
+	    help="Case directory to reference.\n"
+	    "Default is current directory.")
+    parser.add_argument("--logroot", default="/glade/scratch/{}".format(os.environ["USER"]),
+                        help="Root directory under which SmartSimdb log files will be written")
+    parser.add_argument("--dryrun", action="store_true",
+                        help="Create job scripts, but do not submit")
+
 
     args = parser.parse_args(args[1:])
     ngpus = ""
     if int(args.ngpus_per_node) > 0:
         ngpus = ":ngpus="+args.ngpus_per_node
 
+    expect(int(args.db_nodes) != 2, "db-nodes size of 2 not allowed, decrease to 1 or increase to 3 or more")
+        
+
     return {"db_nodes":args.db_nodes,
-        "caseroots" : ' '.join('"%s"' % x for x in args.caseroots),
-        "ngpus": ngpus,
-        "walltime": args.walltime,
-        "account" : args.account,
-        "db_port": args.db_port,
-        "cesmroot": CESM_ROOT,
-        "python_sys_path": sys.path}, args.caseroots
+	"caseroots" : ' '.join('"%s"' % x for x in args.caseroots),
+	"ngpus": ngpus,
+	"walltime": args.walltime,
+	"account" : args.account,
+	"db_port": args.db_port,
+	"cesmroot": CESM_ROOT,
+        "logroot" : args.logroot,
+	"python_sys_path": sys.path}, args.caseroots, args.dryrun
 
 def create_submit_files(templatevars):
     template_files = ["resv_job.template", "launch_database_cluster.template"]
@@ -79,15 +88,19 @@ def check_cases(caseroots, db_nodes):
     return member_nodes
 
 def _main_func(desc):
-    templatevars, caseroots = parse_command_line(sys.argv, desc)
+    templatevars, caseroots, dryrun = parse_command_line(sys.argv, desc)
     templatevars["member_nodes"] = check_cases(caseroots, int(templatevars["db_nodes"]))
     templatevars["ensemble_size"] = len(caseroots)
     templatevars["client_nodes"] = int(templatevars["member_nodes"])*len(caseroots)
+    print("Creating submit files")
     create_submit_files(templatevars)
-    run_cmd("qsub resv_job.sh", verbose=True)
-
-
-
+    if not dryrun:
+        print("Submitting job")
+        _, o, e = run_cmd("qsub resv_job.sh", verbose=True)
+        if e:
+            print("ERROR: {}".format(e))
+        if o:
+            print("{}".format(o))
 
 if __name__ == "__main__":
     _main_func(__doc__)

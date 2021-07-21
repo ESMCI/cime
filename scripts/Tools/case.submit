@@ -19,7 +19,7 @@ from standard_script_setup import *
 from CIME.case        import Case
 from CIME.utils        import expect
 from six.moves import configparser
-
+import time
 ###############################################################################
 def parse_command_line(args, description):
 ###############################################################################
@@ -118,9 +118,13 @@ def _main_func(description, test_args=False):
             config.write(fd)
     elif os.path.exists(config_file):
         os.remove(config_file)
-
     if not test_args:
         with Case(caseroot, read_only=False, record=True) as case:
+            use_smartsim = case.get_value("USE_SMARTSIM")
+            # Give the smartsim db time to spin up
+            if use_smartsim:
+                time.sleep(120)
+
             case.submit(job=job, no_batch=no_batch, prereq=prereq, allow_fail=allow_fail,
                         resubmit=resubmit, resubmit_immediate=resubmit_immediate, skip_pnl=skip_pnl,
                         mail_user=mail_user, mail_type=mail_type,

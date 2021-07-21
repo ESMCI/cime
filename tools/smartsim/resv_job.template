@@ -1,7 +1,7 @@
-#!/bin/bash -x
+#!/bin/bash 
 #PBS -N resv_job
 #PBS -l select=$db_nodes:ncpus=1:mpiprocs=1$ngpus+$client_nodes:ncpus=36:mpiprocs=36
-#PBS -l gpu_type=v100
+##PBS -l gpu_type=v100
 #PBS -l walltime=$walltime
 #PBS -W create_resv_from_job=true
 #PBS -j oe
@@ -22,7 +22,7 @@ if [ -z $rsvname ]; then echo "rsv is unset"; exit -1; else echo "rsv name is se
 me=$(whoami)
 pbs_ralter -U $me $rsvname
 
-db_jobid=$(qsub -q $rsvname -vRSVNAME=$rsvname launch_database_cluster.sh)
+db_jobid=$(qsub -q $rsvname -vSMARTSIM_LOG_LEVEL=debug -vRSVNAME=$rsvname launch_database_cluster.sh)
 
 head_host=$(qstat -f $PBS_JOBID|awk '$1 ~ /^exec_host$/{print $3}'|cut -d\/ -f1-1)
 # This gets the ib network
@@ -30,7 +30,6 @@ SSDB="$(getent hosts ${head_host}-ib|awk '{print $1}'):$db_port"
 # This gets the external network
 #SSDB="$(getent hosts ${head_host}.ucar.edu |awk '{print $1}'):$db_port"
 export SSDB
-
 for caseroot in $caseroots;
 do
   ./xmlchange JOB_QUEUE=$rsvname --subgroup case.test --force
