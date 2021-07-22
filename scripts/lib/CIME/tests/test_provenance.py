@@ -20,7 +20,6 @@ class TestProvenance(unittest.TestCase):
         write.assert_any_call("data\n\n")
         write.assert_any_call("data\n")
 
-        print(run_cmd.mock_calls)
         run_cmd.assert_any_call("git status", from_dir="/srcroot")
         run_cmd.assert_any_call(
             "git submodule foreach --recursive \"git status; echo\"",
@@ -53,13 +52,6 @@ class TestProvenance(unittest.TestCase):
 
         with mock.patch("CIME.provenance.open", mock.mock_open()) as m:
             provenance._record_git_provenance("/srcroot", "/output", "5") # pylint: disable=protected-access
-
-        expected = [
-            ("/output/GIT_STATUS.5", "w"),
-            ("/output/GIT_DIFF.5", "w"),
-            ("/output/GIT_LOG.5", "w"),
-            ("/output/GIT_REMOTE.5", "w")
-        ]
 
         m.assert_any_call("/output/GIT_STATUS.5", "w")
         m.assert_any_call("/output/GIT_DIFF.5", "w")
