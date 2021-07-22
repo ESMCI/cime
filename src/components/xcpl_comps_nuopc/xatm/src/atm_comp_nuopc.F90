@@ -356,6 +356,10 @@ contains
 
   !===============================================================================
   subroutine ModelAdvance(gcomp, rc)
+    !
+    ! Test for interface to the CrayLabs smartredis client
+    ! see cime/tools/smartsim/README.md for details
+    !
     use nuopc_shr_methods, only : use_smartredis
     ! input/output variables
     type(ESMF_GridComp)  :: gcomp
@@ -530,7 +534,12 @@ contains
     end if
   end subroutine ModelFinalize
 
-! Test the smartredis interface
+  !
+  ! Test for interface to the CrayLabs smartredis client
+  ! see cime/tools/smartsim/README.md for details
+  ! this simply writes a tensor then reads it back and compares the two
+  ! if everything is working they will be the same
+  !
   subroutine srtest()
     use nuopc_shr_methods, only : sr_client
     use iso_c_binding, only : c_double
