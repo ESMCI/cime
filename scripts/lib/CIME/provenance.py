@@ -474,6 +474,7 @@ def _save_postrun_timing_e3sm(case, lid):
     globs_to_copy.append("timing/*.{}*".format(lid))
     globs_to_copy.append("CaseStatus")
     globs_to_copy.append(os.path.join(rundir, "spio_stats.{}.tar.gz".format(lid)))
+    globs_to_copy.append(os.path.join(caseroot, "replay.sh"))
 
     for glob_to_copy in globs_to_copy:
         for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
