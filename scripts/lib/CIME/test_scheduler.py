@@ -793,25 +793,29 @@ class TestScheduler(object):
     ###########################################################################
         test_dir = self._get_test_dir(test)
 
-        case_opts = parse_test_name(test)[1]
+        _,case_opts,_,_,_,_,testmods = parse_test_name(test)
         if case_opts is not None and "B" in case_opts: # pylint: disable=unsupported-membership-test
             self._log_output(test, "{} SKIPPED for test '{}'".format(RUN_PHASE, test))
             self._update_test_status_file(test, SUBMIT_PHASE, TEST_PASS_STATUS)
             self._update_test_status_file(test, RUN_PHASE,    TEST_PASS_STATUS)
 
-            return True, "SKIPPED"
+            return True, "SKIPPED"        
         else:
-            cmd = "./case.submit"
-            if not self._allow_pnl:
-                cmd += " --skip-preview-namelist"
-            if self._no_batch:
-                cmd += " --no-batch"
-            if self._mail_user:
-                cmd += " --mail-user={}".format(self._mail_user)
-            if self._mail_type:
-                cmd += " -M={}".format(",".join(self._mail_type))
-            if self._chksum:
-                cmd += " --chksum"
+            # SmartSim test needs a wrapper to submit
+            if "drv/smartsim" in testmods:
+                cmd = os.path.join(self._cime_root, "tools", "smartsim", "launch.py")
+            else:
+                cmd = "./case.submit"
+                if not self._allow_pnl:
+                    cmd += " --skip-preview-namelist"
+                if self._no_batch:
+                    cmd += " --no-batch"
+                if self._mail_user:
+                    cmd += " --mail-user={}".format(self._mail_user)
+                if self._mail_type:
+                    cmd += " -M={}".format(",".join(self._mail_type))
+                if self._chksum:
+                    cmd += " --chksum"
 
             return self._shell_cmd_for_phase(test, cmd, RUN_PHASE, from_dir=test_dir)
 
