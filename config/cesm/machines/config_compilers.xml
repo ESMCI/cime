@@ -156,6 +156,7 @@ using a fortran linker.
 <compiler COMPILER="cray">
   <CFLAGS>
     <append compile_threaded="FALSE"> -h noomp </append>
+    <append compile_threaded="TRUE"> -fopenmp </append>
     <append DEBUG="TRUE"> -g -O0 </append>
     <append DEBUG="FALSE"> -O2 </append>
   </CFLAGS>
@@ -171,6 +172,7 @@ using a fortran linker.
   <FFLAGS>
     <base> -f free -N 255  -h byteswapio -x dir </base>
     <append compile_threaded="FALSE"> -h noomp </append>
+    <append compile_threaded="TRUE"> -h omp </append>
     <append DEBUG="TRUE"> -g -O0 -K trap=fp  -m1 </append>
     <append DEBUG="FALSE"> -O2,ipa2 -em </append>
   </FFLAGS>
@@ -180,6 +182,7 @@ using a fortran linker.
   <HAS_F2008_CONTIGUOUS>TRUE</HAS_F2008_CONTIGUOUS>
   <LDFLAGS>
     <base> -Wl,--allow-multiple-definition -h byteswapio </base>
+    <append compile_threaded="TRUE"> -h omp </append>
   </LDFLAGS>
 </compiler>
 
