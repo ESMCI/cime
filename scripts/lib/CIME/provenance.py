@@ -474,6 +474,11 @@ def _save_postrun_timing_e3sm(case, lid):
     globs_to_copy.append("timing/*.{}*".format(lid))
     globs_to_copy.append("CaseStatus")
     globs_to_copy.append(os.path.join(rundir, "spio_stats.{}.tar.gz".format(lid)))
+    # Can't use a single glob, similar files e.g. {filename}.{lid} get picked up.
+    bld_filenames = ["GIT_STATUS", "GIT_DIFF", "GIT_LOG", "GIT_REMOTE",
+                     "GIT_CONFIG", "GIT_SUBMODULE_STATUS"]
+    bld_globs = map(lambda x: f"bld/{x}", bld_filenames)
+    globs_to_copy.extend(bld_globs)
 
     for glob_to_copy in globs_to_copy:
         for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
