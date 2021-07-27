@@ -347,10 +347,17 @@ def _save_prerun_provenance_common(case, lid):
     """
     run_dir = case.get_value("RUNDIR")
 
-    preview_log = os.path.join(run_dir, "preview_run.log.{}".format(lid))
+    base_preview_run = os.path.join(run_dir, "preview_run.log")
+    preview_run = f"{base_preview_run}.{lid}"
 
-    with open(preview_log, "w") as fd:
+    if os.path.exists(base_preview_run):
+        os.remove(base_preview_run)
+
+    with open(base_preview_run, "w") as fd:
         case.preview_run(lambda x: fd.write("{}\n".format(x)), None)
+
+        # Create copy rather than symlink, the log is automatically gzipped
+        safe_copy(base_preview_run, preview_run)
 
 def save_prerun_provenance(case, lid=None):
     with SharedArea():
@@ -479,6 +486,7 @@ def _save_postrun_timing_e3sm(case, lid):
                      "GIT_CONFIG", "GIT_SUBMODULE_STATUS"]
     bld_globs = map(lambda x: f"bld/{x}", bld_filenames)
     globs_to_copy.extend(bld_globs)
+    globs_to_copy.append("run/preview_run.log")
 
     for glob_to_copy in globs_to_copy:
         for item in glob.glob(os.path.join(caseroot, glob_to_copy)):
