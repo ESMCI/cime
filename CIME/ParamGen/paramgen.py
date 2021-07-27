@@ -176,19 +176,23 @@ class ParamGen(ABC):
     def _reduce_recursive(self, data_dict, expand_func=None):
 
         # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
-        if expand_func!=None:
-            new_data_dict  = {}
-            for key in data_dict:
-                new_key = key
-                if has_unexpanded_var(key):
-                    new_key = ParamGen._expand_vars(key, expand_func)
-                new_data_dict[new_key] = data_dict[key]
-            data_dict = new_data_dict
+        def _expand_vars_in_keys(data_dict):
+            if expand_func!=None:
+                new_data_dict  = {}
+                for key in data_dict:
+                    new_key = key
+                    if has_unexpanded_var(key):
+                        new_key = ParamGen._expand_vars(key, expand_func)
+                    new_data_dict[new_key] = data_dict[key]
+                return new_data_dict
+        data_dict = _expand_vars_in_keys(data_dict)
 
         # (2) Evaluate the keys if they are all logical expressions, i.e., guards.
         # Pick the value of the first or last key evaluating to True and drop everything else.
         while ParamGen._is_guarded_dict(data_dict):
             data_dict = self._impose_guards(data_dict)
+            if isinstance(data_dict,dict):
+                data_dict = _expand_vars_in_keys(data_dict)
 
         # If the data_dict is reduced to a string, expand vars and eval formulas as a last step.
         if isinstance(data_dict, str):
