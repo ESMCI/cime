@@ -365,6 +365,37 @@ class ParamGen(ABC):
         self._data = deepcopy(self._original_data)
         self._reduced = False
 
+    def write_nml(self, output_path):
+        """ Writes the reduced data in Fortran namelist format if the data conforms to the format.
+
+        Parameters
+        ----------
+        output_path: str object
+            Path to the namelist file to be created.
+        """
+
+        assert self._reduced, "The data may be written only after the reduce method is called."
+
+        # check *schema*
+        for m, v in self.data.items():
+            # k is the namelist module name, while v is a dictionary corresponding to the vars in namelist
+            assert isinstance(m,str), "Invalid data format"
+            assert isinstance(v,dict), "Invalid data format"
+            for k_, v_ in v.items():
+                # k_ is the var name, and v_ is its value
+                assert isinstance(k_, str), "Invalid data format"
+
+        # write the namelist file
+        with open(output_path, 'w') as nml:
+            for module in self._data:
+                nml.write("&{}\n".format(module))
+                for var in self._data[module]:
+                    val = str(self._data[module][var]).strip()
+                    if val != None:
+                        nml.write("    {} = {}\n".format(var,val))
+                nml.write("/\n\n")
+
+
 class TestParamGen(unittest.TestCase):
     """ A unit test class for testing ParamGen. """
 
