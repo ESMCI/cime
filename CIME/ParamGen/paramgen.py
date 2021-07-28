@@ -13,7 +13,9 @@ except ModuleNotFoundError:
 
 class ParamGen(ABC):
     """
-    Base class for CIME Flexible Parameter Generator.
+    ParamGen is a versatile, generic, lightweight base class to be used when developing namelist
+    and parameter generator tools for scientific modeling applications.
+
     Attributes
     ----------
     data : dict or OrderedDict
@@ -25,7 +27,7 @@ class ParamGen(ABC):
     from_json(input_path)
         Reads in a given json input file and initializes a ParamGen object.
     from_yaml(input_path)
-        Reads in a given yalm input file and initializes a ParamGen object.
+        Reads in a given yaml input file and initializes a ParamGen object.
     """
 
     def __init__(self, data_dict, match='last'):
@@ -56,6 +58,7 @@ class ParamGen(ABC):
     def from_json(cls, input_path, match='last'):
         """
         Reads in a given json input file and initializes a ParamGen object.
+
         Parameters
         ----------
         input_path: str
@@ -77,6 +80,7 @@ class ParamGen(ABC):
     def from_yaml(cls, input_path, match='last'):
         """
         Reads in a given yaml input file and initializes a ParamGen object.
+
         Parameters
         ----------
         input_path: str
@@ -96,6 +100,23 @@ class ParamGen(ABC):
 
     @staticmethod
     def _expand_vars(expr, expand_func):
+        """ Replaces the expandable variables with their values in a given expression (expr) of type str.
+
+        Parameters
+        ----------
+        expr: str
+            expression with expandable variables, e.g., "$OCN_GRID == "tx0.66v1"
+        expand_func:
+            a callable objects that can return the value of any expandable variable specified in expr"
+        Returns
+        -------
+            an expresion of type string where the expandable variables are replaced with their values.
+
+        Example
+        -------
+        >>> ParamGen._expand_vars("$x + 2 == $z", (lambda var: 1 if var=='x' else 3) )
+        '1 + 2 == 3'
+        """
 
         if expand_func==None:
             return expr # No expansion function is provided, so return.
@@ -122,7 +143,22 @@ class ParamGen(ABC):
 
     @staticmethod
     def _is_guarded_dict(data_dict):
-        """ returns true if all the keys of a dictionary are logical expressions, i.e., guards."""
+        """ Returns true if all the keys of a dictionary are logical expressions, i.e., guards.
+        
+        Parameters
+        ----------
+        data_dict: dict
+            A dictionary where the keys may be logical expressions (of type string)
+
+        Example
+        -------
+        >>> ParamGen._is_guarded_dict({True: 'x', 'False': 'y'})
+        True
+        >>> ParamGen._is_guarded_dict({ "$OCN_GRID == 'tx0.66v1'": 'x', False: 'y'})
+        True
+        >>> ParamGen._is_guarded_dict({'i':'x', 'j':'y'})
+        False
+        """
         if not isinstance(data_dict, dict):
             return False
 
@@ -136,6 +172,24 @@ class ParamGen(ABC):
             return False
 
     def _impose_guards(self, data_dict):
+
+        """ Given a data_dict with guarded entries, evaluates the guards and returns the entry whose guard (key)
+        evaluates to True. If multiple guards evaluate to true, the first or the last entry with the True guard is
+        returned, depending on the "match" arg passed to ParamGen initializer. This method is intended to be called
+        from _reduce_recursive only.
+
+        Parameters
+        ----------
+        data_dict: dict
+            A dictionary whose keys are all logical expressions, i.e., guards.
+
+        Example
+        -------
+        >>> obj = ParamGen({1>2: 'a', 3>2: 'b'})
+        >>> new_data = obj._impose_guards(obj.data)
+        >>> new_data
+        'b'
+        """
 
         def _eval_guard(guard):
             """ returns true if a guard evaluates to true."""
@@ -175,6 +229,9 @@ class ParamGen(ABC):
 
     def _reduce_recursive(self, data_dict, expand_func=None):
 
+        """ A recursive method to reduce a given data_dict. This method is intended to be called by the reduce method
+        only. Check the docstring of the reduce method for more information. """
+
         # (1) Expand variables in keys, .e.g, "$OCN_GRID" to "gx1v7":
         def _expand_vars_in_keys(data_dict):
             if expand_func!=None:
@@ -185,6 +242,8 @@ class ParamGen(ABC):
                         new_key = ParamGen._expand_vars(key, expand_func)
                     new_data_dict[new_key] = data_dict[key]
                 return new_data_dict
+            else:
+                return data_dict
         data_dict = _expand_vars_in_keys(data_dict)
 
         # (2) Evaluate the keys if they are all logical expressions, i.e., guards.
@@ -233,6 +292,18 @@ class ParamGen(ABC):
         Reduces the data of a ParamGen instances by recursively expanding its variables,
         imposing conditional guards, and evaluating the formulas in values to determine
         the final values of parameters.
+
+        Parameters
+        ----------
+        expand_func: (optional)
+            a callable objects that can return the value of any expandable variable specified."
+
+        Example
+        -------
+        >>> obj = ParamGen({1>2: 'a', 3>2: 'b'})
+        >>> obj.reduce()
+        >>> obj.data
+        'b'
         """
 
         assert callable(expand_func) or expand_func==None, "expand_func argument must be a function"
@@ -245,6 +316,19 @@ class ParamGen(ABC):
     def append(self, pg):
         """ Adds the data of a given ParamGen instance to the self data. If a data entry already exists in self,
             the value is overriden. Otherwise, the new data entry is simply added to self.
+
+        Parameters
+        ----------
+        pg: ParamGen object
+            A ParamGen instance whose data is to be appended to the self data
+
+        Example
+        -------
+        >>> obj1 = ParamGen({'a':1, 'b':2})
+        >>> obj2 = ParamGen({'b':3, 'c':4})
+        >>> obj1.append(obj2)
+        >>> obj1.data
+        {'a': 1, 'b': 3, 'c': 4}
         """
 
         assert isinstance(pg,ParamGen), "can only append ParamGen to Paramgen"
@@ -264,5 +348,17 @@ class ParamGen(ABC):
         _append_recursive(self._data, pg._data)
 
     def reset(self):
+        """ Resets the ParamGen object to its initial state, i.e., undoes the reduce method.
+
+        Example
+        -------
+        >>> obj = ParamGen({True:1, False:0})
+        >>> obj.reduce()
+        >>> obj.data
+        1
+        >>> obj.reset()
+        >>> obj.data
+        {True: 1, False: 0}
+        """
         self._data = deepcopy(self._original_data)
         self._reduced = False

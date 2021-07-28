@@ -12,6 +12,7 @@ def is_number(var):
     False if var is not a string or if it is not a number.
     This function is an alternative to isnumeric(), which can't handle
     scientific notation.
+
     Parameters
     ----------
     var: str
@@ -19,6 +20,9 @@ def is_number(var):
     Returns
     -------
     True or False
+
+    Example
+    -------
     >>> "1e-6".isnumeric()
     False
     >>> is_number("1e-6") and is_number(1) and is_number(3.14)
@@ -46,6 +50,7 @@ def get_str_type():
 def is_logical_expr(expr):
     """
     Returns True if a string is a logical expression.
+
     Parameters
     ----------
     expr: str
@@ -53,9 +58,12 @@ def is_logical_expr(expr):
     Returns
     -------
     True or False
+
+    Example
+    -------
     >>> is_logical_expr("0 > 1000")
     True
-    >>> is_logical_expr("$x in y)
+    >>> is_logical_expr("$x in y")
     True
     >>> is_logical_expr("3+4")
     False
@@ -84,6 +92,7 @@ def is_formula(expr):
     Returns True if expr is a ParamGen formula to evaluate. This is determined by
     checking whether expr is a string with a length of 1 or greater and if the
     first character of expr is '='.
+
     Parameters
     ----------
     expr: str
@@ -91,6 +100,9 @@ def is_formula(expr):
     Returns
     -------
     True or False
+
+    Example
+    -------
     >>> is_formula("3*5")
     False
     >>> is_formula("= 3*5")
@@ -103,6 +115,7 @@ def has_unexpanded_var(expr):
     """
     Checks if a given expression has an expandable variable, e.g., $OCN_GRID,
     that's not expanded yet.
+
     Parameters
     ----------
     expr: str
@@ -110,6 +123,9 @@ def has_unexpanded_var(expr):
     Returns
     -------
     True or False
+
+    Example
+    -------
     >>> has_unexpanded_var("${OCN_GRID} == tx0.66v1")
     True
     """
@@ -122,6 +138,7 @@ def has_unexpanded_var(expr):
 def get_expandable_vars(expr):
     """
     Returns the set of expandable vars from an expression.
+
     Parameters
     ----------
     expr: str
@@ -129,8 +146,13 @@ def get_expandable_vars(expr):
     Returns
     -------
         a set of strings containing the expandable var names.
-    >>> get_expandable_vars("var1 $var2 var3 ${var4}")
-    {'var2', 'var4'}
+
+    Example
+    -------
+    >>> get_expandable_vars("var1 $var2")
+    {'var2'}
+    >>> get_expandable_vars("var3 ${var4}")
+    {'var4'}
     """
     expandable_vars = re.findall(r'(\$\w+|\${\w+\})',expr)
     expandable_vars_stripped = set()
@@ -150,6 +172,7 @@ def _check_comparison_types(formula):
     A default order comparison (<, >, <=, and >=) is not provided; an attempt
     raises TypeError. A motivation for this default behavior is the lack of a
     similar invariant as for equality.
+
     Parameters
     ----------
     formula: str
@@ -157,6 +180,9 @@ def _check_comparison_types(formula):
     Returns
     -------
     True (or raises TypeError)
+
+    Example
+    -------
     >>> _check_comparison_types("3.1 > 3")
     True
     >>> _check_comparison_types("'3.1' == 3.1")
@@ -175,6 +201,7 @@ def eval_formula(formula):
     """
     This function evaluates a given formula and returns the result. It also
     carries out several sanity checks before evaluation.
+
     Parameters
     ----------
     formula: str
@@ -182,6 +209,9 @@ def eval_formula(formula):
     Returns
     -------
     eval(formula)
+
+    Example
+    -------
     >>> eval_formula("3*5")
     15
     >>> eval_formula("'tx0.66v1' != 'gx1v6'")
