@@ -413,7 +413,7 @@ def _archive_restarts_date_comp(case, casename, rundir, archive, archive_entry,
 #        logger.debug("suffix is {} ninst {}".format(suffix, ninst))
         restfiles = ""
         if compname.find('mpas') == 0 or compname == 'mali':
-            pattern = compname + r'\.' + suffix + r'\.' + '_'.join(datename_str.rsplit('-', 1))
+            pattern = casename + r'\.' + compname + r'\.' + suffix + r'\.' + '_'.join(datename_str.rsplit('-', 1))
             pfile = re.compile(pattern)
             restfiles = [f for f in os.listdir(rundir) if pfile.search(f)]
         elif compname == 'nemo':
