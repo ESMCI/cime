@@ -39,7 +39,6 @@ class TestProvenance(unittest.TestCase):
         write.assert_any_call("error\n\n")
         write.assert_any_call("error\n")
 
-        print(run_cmd.mock_calls)
         run_cmd.assert_any_call("git status", from_dir="/srcroot")
         run_cmd.assert_any_call(
             "git submodule foreach --recursive \"git status; echo\"",
