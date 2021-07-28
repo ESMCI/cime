@@ -216,6 +216,25 @@ class TestCase_RecordCmd(unittest.TestCase):
 
         for x, y in zip(calls, expected):
             self.assertTrue(x == y, calls)
+    @mock.patch("CIME.case.case.Case.__init__", return_value=None)
+    @mock.patch("CIME.case.case.Case.flush")
+    @mock.patch("CIME.case.case.Case.get_value")
+    @mock.patch("CIME.case.case.open", mock.mock_open())
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("sys.argv", ["/src/create_newcase"])
+    def test_error(self, strftime, get_value, flush, init): # pylint: disable=unused-argument
+        Case._force_read_only = False # pylint: disable=protected-access
+
+        with self.tempdir as tempdir, mock.patch("CIME.case.case.open", mock.mock_open()) as m:
+            m.side_effect = PermissionError()
+
+            with Case(tempdir) as case:
+                get_value.side_effect = [
+                    tempdir,
+                    "/src"
+                ]
+
+                case.record_cmd()
 
     @mock.patch("CIME.case.case.Case.__init__", return_value=None)
     @mock.patch("CIME.case.case.Case.flush")
