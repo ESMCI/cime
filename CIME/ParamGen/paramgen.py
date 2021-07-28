@@ -4,6 +4,8 @@ from collections import OrderedDict
 import os, re
 from abc import ABC, abstractmethod
 from copy import deepcopy
+import unittest
+
 try:
     from paramgen_utils import is_logical_expr, is_formula, has_unexpanded_var
     from paramgen_utils import eval_formula
@@ -144,7 +146,7 @@ class ParamGen(ABC):
     @staticmethod
     def _is_guarded_dict(data_dict):
         """ Returns true if all the keys of a dictionary are logical expressions, i.e., guards.
-        
+
         Parameters
         ----------
         data_dict: dict
@@ -362,3 +364,56 @@ class ParamGen(ABC):
         """
         self._data = deepcopy(self._original_data)
         self._reduced = False
+
+class TestParamGen(unittest.TestCase):
+    """ A unit test class for testing ParamGen. """
+
+    def test_init_data(self):
+        # empty
+        obj = ParamGen({})
+        # with data
+        data_dict = {'a': 1, 'b': 2}
+        obj = ParamGen(data_dict)
+
+    def test_reduce(self):
+        data_dict = {'False': 1, 'True': 2}
+        obj = ParamGen(data_dict)
+        obj.reduce()
+        self.assertEqual(obj.data, 2)
+
+    def test_nested_reduce(self):
+        data_dict = {
+            'False': 1,
+            'True': {
+                "2>3": 0,
+                "2<3": 2
+            }
+        }
+        obj = ParamGen(data_dict)
+        obj.reduce()
+        self.assertEqual(obj.data, 2)
+
+    def test_expandable_vars(self):
+
+        # define an expansion function, i.e., a mapping for expandable var names to their values
+        map = {'alpha': 1, 'beta': False, 'gamma': 'xyz'}
+        expand_func = lambda var: map[var]
+
+        # define a data dict
+        data_dict = {
+            'param':
+            {
+                '$alpha > 1': 'foo',
+                '${beta}': 'bar',
+                '"x" in $gamma': 'baz'
+            }
+        }
+
+        # Instantiate a ParamGen object and reduce its data to obtain the final parameter set
+        obj = ParamGen(data_dict)
+        obj.reduce(expand_func)
+        self.assertEqual(obj.data, {'param':'baz'})
+
+
+if __name__ == '__main__':
+    unittest.main()
