@@ -34,7 +34,12 @@ set(CMAKE_COLOR_MAKEFILE "${USE_COLOR}")
 # Compiler info
 #=================================================
 
-list(APPEND CMAKE_MODULE_PATH "../pio2/cmake")
+if (EXISTS ${SRC_ROOT}/libraries/parallelio/cmake)
+  list(APPEND CMAKE_MODULE_PATH "${SRC_ROOT}/libraries/parallelio/cmake")
+else()
+  list(APPEND CMAKE_MODULE_PATH "../pio2/cmake")
+endif()
+
 set(CMAKE_C_FLAGS "${CPPDEFS} ${CFLAGS}")
 set(CMAKE_Fortran_FLAGS "${CPPDEFS} ${FFLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${LDFLAGS} ${SLIBS}")

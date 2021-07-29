@@ -86,6 +86,8 @@ class ArchiveBase(GenericXML):
             model = "fv3"
         if model == "cice6":
             model = "cice"
+        if model == "ww3dev":
+            model = "ww3"
 
         hist_files = []
         extensions = self.get_hist_file_extensions(self.get_entry(dmodel))
@@ -155,6 +157,8 @@ def _get_extension(model, filepath):
         model = "fv3"
     if model == "cice6":
         model = "cice"
+    if model == "ww3dev":
+        model = "ww3"
     basename = os.path.basename(filepath)
     m = None
     ext_regexes = []

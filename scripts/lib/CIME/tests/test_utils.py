@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import shutil
@@ -7,7 +7,9 @@ import tempfile
 
 import unittest
 from unittest import mock
-from CIME.utils import indent_string, _line_defines_python_function, file_contains_python_function, run_and_log_case_status
+from CIME.utils import indent_string, run_and_log_case_status, \
+    import_from_file, \
+    _line_defines_python_function, file_contains_python_function
 
 from CIME.tests import utils
 
@@ -182,6 +184,7 @@ class TestUtils(unittest.TestCase):
     def setUp(self):
         self.base_func = lambda *args: None
 
+        #pylint: disable=unused-argument
         def _error_func(*args):
             raise Exception("Something went wrong")
 
@@ -202,6 +205,19 @@ class TestUtils(unittest.TestCase):
             error.extend([x.rstrip("\n") for x in data])
 
         self.assertTrue(result, msg="\n".join(error))
+
+    def test_import_from_file(self):
+        with tempfile.NamedTemporaryFile() as fd:
+            fd.writelines([
+                b"def test():\n",
+                b"  return 'value'",
+            ])
+
+            fd.flush()
+
+            module = import_from_file("test.py", fd.name)
+
+            assert module.test() == "value"
 
     def test_run_and_log_case_status(self):
         test_lines = [
@@ -316,4 +332,3 @@ class TestUtils(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

@@ -350,12 +350,15 @@ DropLocation: /submit.php?project={3}
 DropSiteUser:
 DropSitePassword:
 DropSiteMode:
-DropMethod: http
+DropMethod: https
 TriggerSite:
 ScpCommand: {4}
 
 # Dashboard start time
 NightlyStartTime: {5} UTC
+
+UseLaunchers:
+CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
 """.format(os.getcwd(), hostname, cdash_build_name, cdash_project,
            find_executable("scp"), cdash_timestamp)
 

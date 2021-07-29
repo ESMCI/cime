@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import print_function
 import os, sys
 _CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../..")
@@ -8,7 +8,7 @@ sys.path.append(os.path.join(_CIMEROOT, "scripts", "fortran_unit_testing", "pyth
 
 from standard_script_setup import *
 from CIME.BuildTools.configure import configure, FakeCase
-from CIME.utils import run_cmd_no_fail, stringify_bool, expect
+from CIME.utils import run_cmd_no_fail, stringify_bool, expect, get_src_root
 from CIME.XML.machines import Machines
 from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
@@ -182,6 +182,7 @@ def cmake_stage(name, test_spec_dir, build_optimized, use_mpiserial, mpirun_comm
             "-C Macros.cmake",
             test_spec_dir,
             "-DCIMEROOT="+_CIMEROOT,
+            "-DSRC_ROOT="+get_src_root(),
             "-DCIME_CMAKE_MODULE_DIRECTORY="+os.path.abspath(os.path.join(_CIMEROOT,"src","CMake")),
             "-DCMAKE_BUILD_TYPE="+build_type,
             "-DPFUNIT_MPIRUN='"+mpirun_command+"'",

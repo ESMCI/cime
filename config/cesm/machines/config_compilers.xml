@@ -25,7 +25,8 @@ CC = $SCC
 FC = $SFC
 MPICC = $SCC
 MPIFC = $SFC
-INC_MPI = $(CIMEROOT)/src/externals/mct/mpi-serial
+INC_MPI = $(CIMEROOT)/../libraries/mct/mpi-serial
+
 
 ========================================================================
 Options for including C++ code in the build
@@ -195,7 +196,7 @@ using a fortran linker.
   </CPPDEFS>
   <CXX_LINKER>FORTRAN</CXX_LINKER>
   <FC_AUTO_R8>
-    <base> -fdefault-real-8 </base>
+    <base> -fdefault-real-8 -fdefault-double-8</base>
   </FC_AUTO_R8>
   <FFLAGS>
     <!-- -ffree-line-length-none and -ffixed-line-length-none need to be in FFLAGS rather than in FIXEDFLAGS/FREEFLAGS
@@ -788,6 +789,22 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
+<compiler MACH="greenplanet-sib29" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="greenplanet-sky24" COMPILER="intel">
+  <NETCDF_PATH>$ENV{NCDIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNDIR}</PNETCDF_PATH>
+  <SLIBS>
+    <append> -L${NETCDF_PATH}/lib -lnetcdf -lnetcdff </append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="casper">
   <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
   <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
@@ -821,7 +838,7 @@ using a fortran linker.
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel -D__OPENACC__ </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>
@@ -857,7 +874,7 @@ using a fortran linker.
     <append> -I$(EXEROOT)/ocn/obj/FMS </append>
   </FFLAGS>
   <LDFLAGS>
-    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel -D__OPENACC__ </append>
+    <append DEBUG="FALSE"> -O -tp=skylake -acc -ta=tesla:cc70,lineinfo -Minfo=accel </append>
   </LDFLAGS>
   <SLIBS>
     <append> -llapack -lblas </append>

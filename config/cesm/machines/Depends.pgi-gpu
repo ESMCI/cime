@@ -12,5 +12,5 @@ shr_spfn_mod.o
 
 ifeq ($(DEBUG),FALSE)
   $(PUMAS_MG_OBJS): %.o: %.F90
-	  $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) -acc -ta=tesla:cc70,lineinfo -Minfo=accel -D__OPENACC__ $<
+	  $(FC) -c $(INCLDIR) $(INCS) $(FFLAGS) $(FREEFLAGS) -acc -ta=tesla:cc70,lineinfo -Minfo=accel $<
 endif

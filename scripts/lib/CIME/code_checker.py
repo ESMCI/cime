@@ -4,7 +4,7 @@ Libraries for checking python code with pylint
 
 from CIME.XML.standard_module_setup import *
 
-from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, is_python_executable, get_cime_default_driver
+from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, get_src_root, is_python_executable, get_cime_default_driver
 
 from multiprocessing.dummy import Pool as ThreadPool
 #pylint: disable=import-error
@@ -21,6 +21,7 @@ def _run_pylint(on_file, interactive):
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
     cmd_options += ",logging-format-interpolation,no-name-in-module"
     cimeroot = get_cime_root()
+    srcroot = get_src_root()
 
     if "scripts/Tools" in on_file:
         cmd_options +=",relative-import"
@@ -30,7 +31,7 @@ def _run_pylint(on_file, interactive):
         (os.path.join(cimeroot,"scripts","lib"),
          os.path.join(cimeroot,"scripts","Tools"),
          os.path.join(cimeroot,"scripts","fortran_unit_testing","python"),
-         os.path.join(cimeroot,"src","drivers","nuopc","cime_config","runseq"))
+         os.path.join(srcroot,"components","cmeps","cime_config","runseq"))
 
     cmd = "%s %s %s" % (pylint, cmd_options, on_file)
     logger.debug("pylint command is %s"%cmd)
@@ -76,12 +77,13 @@ def get_all_checkable_files():
     cimeroot = get_cime_root()
     all_git_files = run_cmd_no_fail("git ls-files", from_dir=cimeroot, verbose=False).splitlines()
     if get_cime_default_driver() == "nuopc":
+        srcroot = get_src_root()
         nuopc_git_files = []
         try:
-            nuopc_git_files = run_cmd_no_fail("git ls-files", from_dir=os.path.join(cimeroot,"src","drivers","nuopc"), verbose=False).splitlines()
+            nuopc_git_files = run_cmd_no_fail("git ls-files", from_dir=os.path.join(srcroot,"components","cmeps"), verbose=False).splitlines()
         except:
             logger.warning("No nuopc driver found in source")
-        all_git_files.extend([os.path.join("src","drivers","nuopc",_file) for _file in nuopc_git_files])
+        all_git_files.extend([os.path.join("components","cmeps",_file) for _file in nuopc_git_files])
     files_to_test = [item for item in all_git_files
                      if ((item.endswith(".py") or is_python_executable(os.path.join(cimeroot, item))) and not _should_pylint_skip(item))]
 

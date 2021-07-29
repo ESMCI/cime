@@ -171,7 +171,7 @@ class EnvBatch(EnvBase):
 
     def get_job_overrides(self, job, case):
         env_workflow = case.get_env('workflow')
-        total_tasks, num_nodes, tasks_per_node, thread_count = env_workflow.get_job_specs(case, job)
+        total_tasks, num_nodes, tasks_per_node, thread_count, ngpus_per_node = env_workflow.get_job_specs(case, job)
         overrides = {}
 
         if total_tasks:
@@ -186,6 +186,7 @@ class EnvBatch(EnvBase):
         if int(total_tasks)*int(thread_count) < case.get_value("MAX_TASKS_PER_NODE"):
             overrides["max_tasks_per_node"] = int(total_tasks)
 
+        overrides["ngpus_per_node"] = ngpus_per_node
         overrides["mpirun"] = case.get_mpirun_cmd(job=job, overrides=overrides)
         return overrides
 
@@ -245,7 +246,7 @@ class EnvBatch(EnvBase):
                 queue = self.select_best_queue(node_count, task_count, name=force_queue, walltime=None, job=job)
                 if queue is not None:
                     # It was, override the walltime if a test, otherwise just warn the user
-                    new_walltime = self.get_queue_specs(queue)[4]
+                    new_walltime = self.get_queue_specs(queue)[5]
                     expect(new_walltime is not None, "Should never make it here")
                     logger.warning("WARNING: Requested walltime '{}' could not be matched by any {} queue".format(walltime, force_queue))
                     if case.get_value("TEST"):
@@ -257,36 +258,39 @@ class EnvBatch(EnvBase):
             if queue is None:
                 logger.warning("WARNING: No queue on this system met the requirements for this job. Falling back to defaults")
                 queue = self.get_default_queue()
-                walltime = self.get_queue_specs(queue)[4]
+                walltime = self.get_queue_specs(queue)[5]
 
-            specs = self.get_queue_specs(queue)
+            _, _, _, walltimedef, walltimemin, walltimemax, _, _, _ = \
+                self.get_queue_specs(queue)
 
             if walltime is None:
-                # Figure out walltime
-                if specs is None:
-                    # Queue is unknown, use specs from default queue
-                    walltime = self.get(self.get_default_queue(), "walltimemax")
-
-                    logger.debug("Using walltimemax {!r} from default "
-                                 "queue {!r}".format(
-                                     walltime, self.text(queue)))
+                # Use default walltime if available for queue
+                if walltimedef is not None:
+                    walltime = walltimedef
                 else:
-                    walltime = specs[4]
+                    # Last chance to figure out a walltime
+                    # No default for queue, take max if available
+                    if walltime is None and walltimemax is not None:
+                        walltime = walltimemax
 
-                    logger.debug("Using walltimemax {!r} from queue "
-                                 "{!r}".format(walltime, self.text(queue)))
+                    # Still no walltime, try max from the default queue
+                    if walltime is None:
+                        # Queue is unknown, use specs from default queue
+                        walltime = self.get(self.get_default_queue(), "walltimemax")
 
-                if walltime is None:
-                    walltime = self._default_walltime
+                        logger.debug("Using walltimemax {!r} from default "
+                                    "queue {!r}".format(
+                                        walltime, self.text(queue)))
 
-                    logger.debug("Last resort using default walltime "
-                                 "{!r}".format(walltime))
+                    # Still no walltime, use the hardcoded default
+                    if walltime is None:
+                        walltime = self._default_walltime
+
+                        logger.debug("Last resort using default walltime "
+                                    "{!r}".format(walltime))
 
             # only enforce when not running a test
             if not case.get_value("TEST"):
-                walltimemin = specs[3]
-                walltimemax = specs[4]
-
                 walltime_seconds = convert_to_seconds(walltime)
 
                 # walltime must not be less than walltimemin
@@ -319,7 +323,8 @@ class EnvBatch(EnvBase):
                 full_bab_time = convert_to_babylonian_time(seconds)
                 walltime = format_time(walltime_format, "%H:%M:%S", full_bab_time)
 
-            env_workflow.set_value("JOB_QUEUE", self.text(queue), subgroup=job, ignore_type=specs is None)
+            env_workflow.set_value("JOB_QUEUE", self.text(queue), subgroup=job,
+                                   ignore_type=False)
             env_workflow.set_value("JOB_WALLCLOCK_TIME", walltime, subgroup=job)
             logger.debug("Job {} queue {} walltime {}".format(job, self.text(queue), walltime))
 
@@ -349,7 +354,7 @@ class EnvBatch(EnvBase):
             if my_value: result = xml_value == "TRUE"
             else: result = xml_value == "FALSE"
         else:
-            result = re.match(xml_value,str(my_value)) is not None
+            result = re.match(xml_value+'$',str(my_value)) is not None
 
         logger.debug("(env_mach_specific) _match {} {} {}".format(my_value, xml_value, result))
         return result
@@ -796,7 +801,7 @@ class EnvBatch(EnvBase):
     def queue_meets_spec(self, queue, num_nodes, num_tasks, walltime=None, job=None):
         specs = self.get_queue_specs(queue)
 
-        nodemin, nodemax, jobname, _, walltimemax, jobmin, \
+        nodemin, nodemax, jobname, _, _, walltimemax, jobmin, \
             jobmax, strict = specs
 
         # A job name match automatically meets spec
@@ -863,12 +868,13 @@ class EnvBatch(EnvBase):
         expect( nodemax is None or jobmax is None, "Cannot specify both nodemax and jobmax for a queue")
 
         jobname = self.get(qnode, "jobname")
+        walltimedef = self.get(qnode, "walltimedef")
         walltimemin = self.get(qnode, "walltimemin")
         walltimemax = self.get(qnode, "walltimemax")
         strict = self.get(qnode, "strict") == "true"
 
-        return nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, \
-            jobmax, strict
+        return nodemin, nodemax, jobname, walltimedef, walltimemin, \
+            walltimemax, jobmin, jobmax, strict
 
     def get_default_queue(self):
         bs_nodes = self.get_children("batch_system")
