@@ -8,7 +8,7 @@
 ##PBS  -q regular
 #PBS  -V
 #PBS  -l select=$db_nodes:ncpus=1:ompthreads=1:mpiprocs=1$ngpus
-#PBS -l gpu_type=v100
+##PBS -l gpu_type=v100
 
 import os, sys, time
 

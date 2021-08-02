@@ -1,12 +1,11 @@
 #!/bin/bash 
 #PBS -N resv_job
 #PBS -l select=$db_nodes:ncpus=1:mpiprocs=1$ngpus+$client_nodes:ncpus=36:mpiprocs=36
-#PBS -l gpu_type=v100
+##PBS -l gpu_type=v100
 #PBS -l walltime=$walltime
 #PBS -W create_resv_from_job=true
 #PBS -j oe
 #PBS -k oed
-#PBS -q casper
 #PBS -A $account
 
 for rsv in $(qstat -Q|awk '$1 ~ /^R/{print $1}')
@@ -22,18 +21,43 @@ if [ -z $rsvname ]; then echo "rsv is unset"; exit -1; else echo "rsv name is se
 me=$(whoami)
 pbs_ralter -U $me $rsvname
 
-db_jobid=$(qsub -q $rsvname -vSMARTSIM_LOG_LEVEL=debug -vRSVNAME=$rsvname launch_database_cluster.sh)
+if [[ "$NCAR_HOST" == "dav" ]]; then
+  gpu_type="-l gpu_type=vt100"
+else
+  gpu_type=""
+fi
+
+#db_jobid=$(qsub -q $rsvname $gpu_type -vSMARTSIM_LOG_LEVEL=debug -vRSVNAME=$rsvname launch_database_cluster.sh)
+db_jobid=$(qsub -q $rsvname $gpu_type -vRSVNAME=$rsvname launch_database_cluster.sh)
+if [ -z $db_jobid ]; then echo "db_jobid is unset"; exit -1; fi
 
 head_host=$(qstat -f $PBS_JOBID|awk '$1 ~ /^exec_host$/{print $3}'|cut -d\/ -f1-1)
 # This gets the ib network
-SSDB="$(getent hosts ${head_host}-ib|awk '{print $1}'):$db_port"
+if [[ "$NCAR_HOST" == "dav" ]]; then
+  host_name=${head_host}-ib
+else
+  host_name=${head_host}-ib0
+fi
+# This gets the ip over ib network and should be prefered
+SSDB="$(getent hosts ${host_name}|awk '{print $1}'):$db_port"
 # This gets the external network
 #SSDB="$(getent hosts ${head_host}.ucar.edu |awk '{print $1}'):$db_port"
+
 export SSDB
+echo "gpu_type is $gpu_type, head_host is $head_host, db_jobid is $db_jobid, SSDB is $SSDB"
 for caseroot in $caseroots;
 do
-  ./xmlchange JOB_QUEUE=$rsvname --subgroup case.test --force
-  ./xmlchange JOB_WALLCLOCK_TIME=00:20:00 --subgroup case.test
+  cd $caseroot
+  testrun=`./xmlquery --value TEST`
+  if [[ "$testrun" == "TRUE" ]]; then
+    echo "Starting Test $caseroot"
+    ./xmlchange JOB_QUEUE=$rsvname --subgroup case.test --force
+    ./xmlchange JOB_WALLCLOCK_TIME=00:20:00 --subgroup case.test
+  else
+    echo "Starting run $caseroot"
+    ./xmlchange JOB_QUEUE=$rsvname --subgroup case.run --force
+    ./xmlchange JOB_WALLCLOCK_TIME=00:20:00 --subgroup case.run
+  fi
   ./case.submit
 done
 

@@ -2,12 +2,14 @@
 import os, sys
 
 CESM_ROOT = os.getenv("CESM_ROOT")
-if not CESM_ROOT:
-    raise SystemExit("ERROR: CESM_ROOT must be defined in environment")
 
 _LIBDIR = os.path.join(CESM_ROOT,"cime","scripts","Tools")
+if not os.path.isdir(_LIBDIR):
+    raise SystemExit("ERROR: CESM_ROOT must be defined in environment {}".format(CESM_ROOT))
 sys.path.append(_LIBDIR)
 _LIBDIR = os.path.join(CESM_ROOT,"cime","scripts","lib")
+if not os.path.isdir(_LIBDIR):
+    raise SystemExit("ERROR: CESM_ROOT must be defined in environment")
 sys.path.append(_LIBDIR)
 
 
@@ -94,9 +96,17 @@ def _main_func(desc):
     templatevars["client_nodes"] = int(templatevars["member_nodes"])*len(caseroots)
     print("Creating submit files")
     create_submit_files(templatevars)
+    host = os.environ.get("NCAR_HOST")
+    if host == "cheyenne":
+        queue_name = "regular"
+        gpu_flag = ""
+    else:
+        queue_name = "casper"
+        gpu_flag =  "-l gpu_type=vt100"
+
     if not dryrun:
         print("Submitting job")
-        _, o, e = run_cmd("qsub resv_job.sh", verbose=True)
+        _, o, e = run_cmd("qsub -q {} {} resv_job.sh ".format(queue_name, gpu_flag), verbose=True)
         if e:
             print("ERROR: {}".format(e))
         if o:

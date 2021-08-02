@@ -941,7 +941,7 @@ using a fortran linker.
     <!-- -fallow-argument-mismatch is needed for building with the mpich library with gfortran10;
 	 -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
 	 See https://github.com/ESMCI/cime/issues/3846 for details. -->
-    <append> -fallow-argument-mismatch -fallow-invalid-boz </append>
+<!--    <append> -fallow-argument-mismatch -fallow-invalid-boz </append> -->
   </FFLAGS>
   <SLIBS>
     <append> -ldl </append>
