@@ -60,6 +60,38 @@ def _run_git_cmd_recursively(cmd, srcroot, output):
         fd.write((output1 if rc1 == 0 else err1) + "\n\n")
         fd.write((output2 if rc2 == 0 else err2) + "\n")
 
+def _parse_dot_git_path(srcroot):
+    dot_git_pattern = r"^(.*/\.git).*"
+
+    m = re.match(dot_git_pattern, srcroot)
+
+    expect(m is not None, f"Could not parse git path from {srcroot!r}")
+
+    return m.group(1)
+
+def _find_git_root(srcroot):
+    gitroot = f"{srcroot}/.git"
+
+    expect(os.path.exists(gitroot),
+           f"{srcroot!r} is not a git repository, failed to collect provenance")
+
+    # Handle normal git repositories
+    if os.path.isdir(gitroot):
+        return gitroot
+
+    # Handle git worktrees
+    with open(gitroot) as fd:
+        line = fd.readline()
+
+    gitdir_pattern = r"^gitdir:\s?(.*)$"
+
+    m = re.match(gitdir_pattern, line)
+
+    expect(m is not None, f"Could not determine git root in {srcroot!r}")
+
+    # First group is the actual gitroot
+    return m.group(1)
+
 def _record_git_provenance(srcroot, exeroot, lid):
     """ Records git provenance
 
@@ -82,8 +114,11 @@ def _record_git_provenance(srcroot, exeroot, lid):
     remote_prov = os.path.join(exeroot, "GIT_REMOTE.{}".format(lid))
     _run_git_cmd_recursively("remote -v", srcroot, remote_prov)
 
+    gitroot = _find_git_root(srcroot)
+    gitroot = _parse_dot_git_path(gitroot)
+
     # Git config
-    config_src = os.path.join(srcroot, ".git", "config")
+    config_src = os.path.join(gitroot, "config")
     config_prov = os.path.join(exeroot, "GIT_CONFIG.{}".format(lid))
     safe_copy(config_src, config_prov, preserve_meta=False)
 
@@ -98,8 +133,10 @@ def _save_build_provenance_e3sm(case, lid):
     with open(describe_prov, "w") as fd:
         fd.write(desc)
 
+    gitroot = _find_git_root(srcroot)
+
     # Save HEAD
-    headfile = os.path.join(srcroot, ".git", "logs", "HEAD")
+    headfile = os.path.join(gitroot, "logs", "HEAD")
     headfile_prov = os.path.join(exeroot, "GIT_LOGS_HEAD.{}".format(lid))
     if os.path.exists(headfile_prov):
         os.remove(headfile_prov)
