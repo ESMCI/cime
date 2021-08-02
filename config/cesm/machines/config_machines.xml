@@ -687,6 +687,12 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">netcdf-mpi/4.7.4</command>
         <command name="load">SmartRedis/0.1.1</command>
       </modules>
+      <modules mpilib="openmpi" compiler="intel">
+        <command name="load">openmpi/4.0.5</command>
+        <command name="load">netcdf-mpi/4.7.4</command>
+        <command name="load">pnetcdf/1.12.1</command>
+        <command name="load">SmartRedis/0.1.1</command>
+      </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
       </modules>
