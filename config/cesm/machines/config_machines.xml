@@ -598,13 +598,21 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="pgi">
         <command name="load">pgi/20.4</command>
       </modules>
-      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
+      <modules compiler="intel" mpilib="mpt" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/</command>
         <command name="load">esmf-8.2.0b13-ncdfio-mpt-g</command>
       </modules>
-      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
+      <modules compiler="intel" mpilib="mpt" DEBUG="FALSE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/</command>
         <command name="load">esmf-8.2.0b13-ncdfio-mpt-O</command>
+      </modules>
+      <modules compiler="intel" mpilib="openmpi" DEBUG="TRUE">
+        <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/</command>
+        <command name="load">esmf-8.2.0b14-ncdfio-openmpi-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="openmpi" DEBUG="FALSE">
+        <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/</command>
+        <command name="load">esmf-8.2.0b14-ncdfio-openmpi-O</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
         <command name="use">/glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/19.1.1/</command>
@@ -688,9 +696,9 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">SmartRedis/0.1.1</command>
       </modules>
       <modules mpilib="openmpi" compiler="intel">
-        <command name="load">openmpi/4.0.5</command>
-        <command name="load">netcdf-mpi/4.7.4</command>
-        <command name="load">pnetcdf/1.12.1</command>
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.8.0</command>
+        <command name="load">pnetcdf/1.12.2</command>
         <command name="load">SmartRedis/0.1.1</command>
       </modules>
       <modules>
