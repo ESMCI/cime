@@ -32,7 +32,7 @@ jobs:
       NETCDF_C_PATH: /usr
       NETCDF_FORTRAN_PATH: ${HOME}/netcdf-fortran
       PNETCDF_PATH: ${HOME}/pnetcdf
-      ESMF_VERSION: ESMF_8_1_1
+      ESMF_VERSION: ESMF_8_2_0_beta_snapshot_14
       CIME_MODEL: cesm
       CIME_DRIVER: nuopc
 
