@@ -198,13 +198,12 @@ class EnvBatch(EnvBase):
             ext = job
         if ext.startswith('.'):
             ext = ext[1:]
-        job_id = ext + '.' + case.get_value("CASE")
-        # pbs limits characters that can be used in this field
-        chars = '+*?<>/{}[\]~`@:_%' 
-        overrides["job_id"] = ""
-        for i in range(0, len(job_id)):
-            if job_id[i] not in chars:
-                overrides["job_id"] = overrides["job_id"] + job_id[i]
+
+        # A job name or job array name can be at most 230 characters.  It must consist only of alphabetic, numeric, plus 
+        # sign ("+"), dash or minus or hyphen ("-"), underscore ("_"), and dot or period (".") characters
+        # most of these are checked in utils:check_name, but % is not one of them.
+
+        overrides["job_id"] = ext + '.' + case.get_value("CASE").replace('%','')
 
         overrides["batchdirectives"] = self.get_batch_directives(case, job, overrides=overrides)
         output_text = transform_vars(open(input_template,"r").read(), case=case, subgroup=job, overrides=overrides)
