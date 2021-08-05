@@ -198,7 +198,14 @@ class EnvBatch(EnvBase):
             ext = job
         if ext.startswith('.'):
             ext = ext[1:]
-        overrides["job_id"] = ext + '.' + case.get_value("CASE")
+        job_id = ext + '.' + case.get_value("CASE")
+        # pbs limits characters that can be used in this field
+        chars = '+*?<>/{}[\]~`@:_%' 
+        overrides["job_id"] = ""
+        for i in range(0, len(job_id)):
+            if job_id[i] not in chars:
+                overrides["job_id"] = overrides["job_id"] + job_id[i]
+
         overrides["batchdirectives"] = self.get_batch_directives(case, job, overrides=overrides)
         output_text = transform_vars(open(input_template,"r").read(), case=case, subgroup=job, overrides=overrides)
         output_name = get_batch_script_for_job(job) if outfile is None else outfile
