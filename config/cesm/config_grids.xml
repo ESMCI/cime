@@ -1912,7 +1912,7 @@
 
     <domain name="ais8">
       <nx>704</nx> <ny>576</ny>
-      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/antarctica_8km_epsg3031_ESMFmesh_c201222.nc</mesh>
+      <mesh driver="nuopc">$DIN_LOC_ROOT/share/meshes/antarctica_8km_epsg3031_ESMFmesh_c210621.nc</mesh>
       <desc>8-km Antarctica grid</desc>
     </domain>
 
