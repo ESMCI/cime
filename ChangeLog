@@ -1,6 +1,48 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 8-6-2021
+Tag: cime6.0.5
+Answer Changes: None
+Tests: scripts_regression_tests 
+Dependencies:
+
+Brief Summary:
+    - Fix an issue with file locks when not run from caseroot.
+    - Strip % from job_id.
+    - Update esmf version.
+    - Support the creation of multiple user_nl files for a component.
+
+User interface changes: 
+    - Allows components to define a get_user_nl_list function in their
+      buildnml file, which supports the creation of multiple user_nl files for
+      the component
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+949b0e798 (HEAD -> master, origin/master, origin/HEAD) Merge pull request #4065 from jedwards4b/fix_not_in_caseroot
+a2b4a90d7 Merge pull request #4064 from jedwards4b/strip_job_id
+9d731e9b3 update esmf version
+e90399193 Merge pull request #4058 from billsacks/multiple_user_nls
+
+
+Modified files: git diff --name-status [previous_tag]
+M       .github/workflows/srt_nuopc.yml
+M       scripts/lib/CIME/XML/env_batch.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_setup.py
+M       scripts/lib/CIME/case/case_submit.py
+M       scripts/lib/CIME/code_checker.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/lib/CIME/tests/test_utils.py
+M       scripts/lib/CIME/utils.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-2-2021
 Tag: cime6.0.4
 Answer Changes: None
