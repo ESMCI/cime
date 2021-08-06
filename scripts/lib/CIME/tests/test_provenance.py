@@ -7,8 +7,6 @@ from unittest import mock
 
 from CIME import provenance
 
-from CIME.tests import utils
-
 class TestProvenance(unittest.TestCase):
     @mock.patch("CIME.provenance.run_cmd")
     def test_run_git_cmd_recursively(self, run_cmd):
