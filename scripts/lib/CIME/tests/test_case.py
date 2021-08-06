@@ -246,6 +246,10 @@ class TestCase_RecordCmd(unittest.TestCase):
                     "/src"
                 ]
 
+                # We didn't need to make tempdir look like a valid case for the Case
+                # constructor because we mock that constructor, but we *do* need to make
+                # it look like a valid case for record_cmd.
+                make_valid_case(tempdir)
                 case.record_cmd()
 
     @mock.patch("CIME.case.case.Case.__init__", return_value=None)
