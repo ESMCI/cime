@@ -487,6 +487,7 @@ def wait_for_tests(test_paths,
         test_results = wait_for_tests_impl(test_paths, no_wait, check_throughput, check_memory, ignore_namelists, ignore_memleak, no_run)
 
     all_pass = True
+    env_loaded = False
     for test_name, test_data in sorted(test_results.items()):
         test_path, test_status, phase = test_data
         case_dir = os.path.dirname(test_path)
@@ -514,15 +515,23 @@ def wait_for_tests(test_paths,
 
         logging.info("    Case dir: {}".format(case_dir))
 
-        if update_success:
+        if update_success or (cdash_build_name and not env_loaded):
             try:
                 # This can fail if the case crashed before setup completed
                 with Case(case_dir, read_only=True) as case:
                     srcroot = case.get_value("SRCROOT")
                     baseline_root = case.get_value("BASELINE_ROOT")
-                    save_test_success(baseline_root, srcroot, test_name, test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS])
+                    # Submitting to cdash requires availability of cmake. We can't guarantee
+                    # that without loading the env for a case
+                    if cdash_build_name and not env_loaded:
+                        case.load_env()
+                        env_loaded = True
+
+                    if update_success:
+                        save_test_success(baseline_root, srcroot, test_name, test_status in [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS])
+
             except CIMEError as e:
-                logging.warning("Failed to update success for Case {}: {}".format(case_dir, e))
+                logging.warning("Failed to update success / load_env for Case {}: {}".format(case_dir, e))
 
     if cdash_build_name:
         create_cdash_xml(test_results, cdash_build_name, cdash_project, cdash_build_group, force_log_upload)

@@ -59,7 +59,7 @@ class GenericXML(object):
         if infile is None:
             return
 
-        if os.path.isfile(infile) and os.access(infile, os.R_OK):
+        if os.path.isfile(infile) and os.access(infile, os.R_OK) and os.stat(infile).st_size > 0:
             # If file is defined and exists, read it
             self.read(infile, schema)
         else:
@@ -363,6 +363,7 @@ class GenericXML(object):
 
         # xmllint provides a better format option for the output file
         xmllint = find_executable("xmllint")
+
         if xmllint is not None:
             if isinstance(outfile, six.string_types):
                 run_cmd_no_fail("{} --format --output {} -".format(xmllint, outfile), input_str=xmlstr)
@@ -549,11 +550,10 @@ class GenericXML(object):
         expect(os.path.isfile(filename),"xml file not found {}".format(filename))
         expect(os.path.isfile(schema),"schema file not found {}".format(schema))
         xmllint = find_executable("xmllint")
-        if xmllint is not None:
-            logger.debug("Checking file {} against schema {}".format(filename, schema))
-            run_cmd_no_fail("{} --xinclude --noout --schema {} {}".format(xmllint, schema, filename))
-        else:
-            logger.warning("xmllint not found, could not validate file {}".format(filename))
+        expect(os.path.isfile(xmllint), " xmllint not found in PATH, xmllint is required for cime.  PATH={}".format(os.environ["PATH"]))
+
+        logger.debug("Checking file {} against schema {}".format(filename, schema))
+        run_cmd_no_fail("{} --xinclude --noout --schema {} {}".format(xmllint, schema, filename))
 
     def get_raw_record(self, root=None):
         logger.debug("writing file {}".format(self.filename))

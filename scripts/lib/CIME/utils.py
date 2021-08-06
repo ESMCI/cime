@@ -396,18 +396,31 @@ def _convert_to_fd(filearg, from_dir, mode="a"):
 
 _hack=object()
 
-def check_for_python(filepath, funcname=None):
-    is_python = is_python_executable(filepath)
-    has_function = True
-    if funcname is not None:
-        has_function = False
-        with open(filepath, 'r') as fd:
-            for line in fd.readlines():
-                if re.search(r"^def\s+{}\(".format(funcname), line) or re.search(r"^from.+import.+\s{}".format(funcname), line):
-                    has_function = True
-                    break
+def _line_defines_python_function(line, funcname):
+    """Returns True if the given line defines the function 'funcname' as a top-level definition
 
-    return is_python and has_function
+    ("top-level definition" means: not something like a class method; i.e., the def should
+    be at the start of the line, not indented)
+
+    """
+    if (re.search(r"^def\s+{}\s*\(".format(funcname), line) or
+        re.search(r"^from\s.+\simport.*\s{}(?:,|\s|$)".format(funcname), line)):
+        return True
+    return False
+
+def file_contains_python_function(filepath, funcname):
+    """Checks whether the given file contains a top-level definition of the function 'funcname'
+
+    Returns a boolean value (True if the file contains this function definition, False otherwise)
+    """
+    has_function = False
+    with open(filepath, 'r') as fd:
+        for line in fd.readlines():
+            if (_line_defines_python_function(line, funcname)):
+                has_function = True
+                break
+
+    return has_function
 
 def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
                    from_dir=None, timeout=None):
@@ -417,15 +430,10 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None,
 
     Raises exception on failure.
     """
-    do_run_cmd = True
-
-    # Before attempting to load the script make sure it contains the subroutine
-    # we are expecting
-    with open(cmd, 'r') as fd:
-        for line in fd.readlines():
-            if re.search(r"^def {}\(".format(subname), line):
-                do_run_cmd = False
-                break
+    if file_contains_python_function(cmd, subname):
+        do_run_cmd = False
+    else:
+        do_run_cmd = True
 
     if not do_run_cmd:
         try:
@@ -663,6 +671,17 @@ def parse_test_name(test_name):
     Do not error if a partial testname is provided (TESTCASE or TESTCASE.GRID) instead
     parse and return the partial results.
 
+    TESTMODS use hyphens in a special way:
+    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to
+      the path 'test/mods')
+    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path'
+      indicates two test mods: 'test/mods' and 'other/dir/path')
+
+    If there are one or more TESTMODS, then the testmods component of the result will be a
+    list, where each element of the list is one testmod, and hyphens have been replaced by
+    slashes. (If there are no TESTMODS in this test, then the TESTMODS component of the
+    result is None, as for other optional components.)
+
     >>> parse_test_name('ERS')
     ['ERS', None, None, None, None, None, None]
     >>> parse_test_name('ERS.fe12_123')
@@ -680,7 +699,9 @@ def parse_test_name(test_name):
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods')
-    ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', 'test/mods']
+    ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more')
+    ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods', 'other/dir/path', 'and/one/more']]
     >>> parse_test_name('SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods') # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -711,17 +732,30 @@ def parse_test_name(test_name):
         rv.pop()
 
     if (rv[-1] is not None):
-        rv[-1] = rv[-1].replace("-", "/")
+        # The last element of the return value - testmods - will be a list of testmods,
+        # built by separating the TESTMODS component on strings of double hyphens
+        testmods = rv[-1].split('--')
+        rv[-1] = [one_testmod.replace("-", "/") for one_testmod in testmods]
 
     expect(num_dots <= 4,
            "'{}' does not look like a CIME test name, expect TESTCASE.GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]]".format(test_name))
 
     return rv
 
-def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, machine=None, compiler=None, testmod=None):
+def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, machine=None, compiler=None,
+                       testmods_list=None, testmods_string=None):
     """
     Given a partial CIME test name, return in form TESTCASE.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]
     Use the additional args to fill out the name if needed
+
+    Testmods can be provided through one of two arguments, but *not* both:
+    - testmods_list: a list of one or more testmods (as would be returned by
+      parse_test_name, for example)
+    - testmods_string: a single string containing one or more testmods; if there is more
+      than one, then they should be separated by a string of two hyphens ('--')
+
+    For both testmods_list and testmods_string, any slashes as path separators ('/') are
+    replaced by hyphens ('-').
 
     >>> get_full_test_name("ERS", grid="ne16_fe16", compset="JGF", machine="melvin", compiler="gnu")
     'ERS.ne16_fe16.JGF.melvin_gnu'
@@ -733,10 +767,30 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
     'ERS.ne16_fe16.JGF.melvin_gnu'
     >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods", machine="melvin", compiler="gnu")
     'ERS.ne16_fe16.JGF.melvin_gnu.mods'
-    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmod="mods/test")
+
+    testmods_list can be a single element:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_list=["mods/test"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test'
+
+    testmods_list can also have multiple elements, separated either by slashes or hyphens:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_list=["mods-test", "mods2-test2-subdir2", "mods3-test3-subdir3"])
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
+    The above testmods_list tests should also work with equivalent testmods_string arguments:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_string="mods/test")
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_string="mods/test--mods2/test2/subdir2--mods3/test3/subdir3")
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+    >>> get_full_test_name("ERS.ne16_fe16.JGF", machine="melvin", compiler="gnu", testmods_string="mods-test--mods2-test2-subdir2--mods3-test3-subdir3")
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
+    The following tests the consistency check between the test name and various optional arguments:
+    >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
+    'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
     """
-    partial_testcase, partial_caseopts, partial_grid, partial_compset, partial_machine, partial_compiler, partial_testmod = parse_test_name(partial_test)
+    partial_testcase, partial_caseopts, partial_grid, partial_compset, partial_machine, partial_compiler, partial_testmods = parse_test_name(partial_test)
 
     required_fields = [
         (partial_grid, grid, "grid"),
@@ -757,15 +811,21 @@ def get_full_test_name(partial_test, caseopts=None, grid=None, compset=None, mac
             expect(arg_val == partial_val,
                    "Mismatch in field {}, partial string '{}' indicated it should be '{}' but you provided '{}'".format(name, partial_test, partial_val, arg_val))
 
-    if (partial_testmod is None):
-        if (testmod is None):
-            # No testmod for this test and that's OK
+    if testmods_string is not None:
+        expect(testmods_list is None, "Cannot provide both testmods_list and testmods_string")
+        # Convert testmods_string to testmods_list; after this point, the code will work
+        # the same regardless of whether testmods_string or testmods_list was provided.
+        testmods_list = testmods_string.split('--')
+    if (partial_testmods is None):
+        if (testmods_list is None):
+            # No testmods for this test and that's OK
             pass
         else:
-            result += ".{}".format(testmod.replace("/", "-"))
-    elif (testmod is not None):
-        expect(testmod == partial_testmod,
-               "Mismatch in field testmod, partial string '{}' indicated it should be '{}' but you provided '{}'".format(partial_test, partial_testmod, testmod))
+            testmods_hyphenated = [one_testmod.replace("/", "-") for one_testmod in testmods_list]
+            result += ".{}".format('--'.join(testmods_hyphenated))
+    elif (testmods_list is not None):
+        expect(testmods_list == partial_testmods,
+               "Mismatch in field testmods, partial string '{}' indicated it should be '{}' but you provided '{}'".format(partial_test, partial_testmods, testmods_list))
 
     if (partial_caseopts is None):
         if caseopts is None:
