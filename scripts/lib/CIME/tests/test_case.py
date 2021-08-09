@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import unittest
 from unittest import mock
@@ -6,6 +8,14 @@ import tempfile
 from CIME.case import case_submit
 from CIME.case import Case
 from CIME import utils as cime_utils
+
+def make_valid_case(path):
+    """Make the given path look like a valid case to avoid errors"""
+    # Case validity is determined by checking for an env_case.xml file. So put one there
+    # to suggest that this directory is a valid case directory. Open in append mode in
+    # case the file already exists.
+    with open(os.path.join(path, "env_case.xml"), 'a'):
+        pass
 
 class TestCaseSubmit(unittest.TestCase):
 
@@ -41,6 +51,7 @@ class TestCaseSubmit(unittest.TestCase):
                 True,
             ]
 
+            make_valid_case(tempdir)
             with Case(tempdir) as case:
                 case.submit(chksum=True)
 
@@ -77,6 +88,7 @@ class TestCase(unittest.TestCase):
     @mock.patch("getpass.getuser", side_effect=["root", "root", "johndoe"])
     def test_new_hash(self, getuser, getfqdn, strftime, read_xml): # pylint: disable=unused-argument
         with self.tempdir as tempdir:
+            make_valid_case(tempdir)
             with Case(tempdir) as case:
                 expected = "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a"
 
@@ -216,6 +228,29 @@ class TestCase_RecordCmd(unittest.TestCase):
 
         for x, y in zip(calls, expected):
             self.assertTrue(x == y, calls)
+    @mock.patch("CIME.case.case.Case.__init__", return_value=None)
+    @mock.patch("CIME.case.case.Case.flush")
+    @mock.patch("CIME.case.case.Case.get_value")
+    @mock.patch("CIME.case.case.open", mock.mock_open())
+    @mock.patch("time.strftime", return_value="00:00:00")
+    @mock.patch("sys.argv", ["/src/create_newcase"])
+    def test_error(self, strftime, get_value, flush, init): # pylint: disable=unused-argument
+        Case._force_read_only = False # pylint: disable=protected-access
+
+        with self.tempdir as tempdir, mock.patch("CIME.case.case.open", mock.mock_open()) as m:
+            m.side_effect = PermissionError()
+
+            with Case(tempdir) as case:
+                get_value.side_effect = [
+                    tempdir,
+                    "/src"
+                ]
+
+                # We didn't need to make tempdir look like a valid case for the Case
+                # constructor because we mock that constructor, but we *do* need to make
+                # it look like a valid case for record_cmd.
+                make_valid_case(tempdir)
+                case.record_cmd()
 
     @mock.patch("CIME.case.case.Case.__init__", return_value=None)
     @mock.patch("CIME.case.case.Case.flush")
@@ -300,6 +335,10 @@ class TestCase_RecordCmd(unittest.TestCase):
                     "/src",
                 ]
 
+                # We didn't need to make tempdir look like a valid case for the Case
+                # constructor because we mock that constructor, but we *do* need to make
+                # it look like a valid case for record_cmd.
+                make_valid_case(tempdir)
                 case.record_cmd(["/some/custom/command", "arg1"])
 
         expected = [

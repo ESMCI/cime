@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import unittest
 from unittest import mock
@@ -25,3 +27,6 @@ class TestTestScheduler(unittest.TestCase):
                 "RUN",
                 from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.cori-haswell_gnu.00:00:00",
             )
+
+if __name__ == '__main__':
+    unittest.main()

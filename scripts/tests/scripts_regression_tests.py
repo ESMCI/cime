@@ -1638,7 +1638,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
     def test_jenkins_generic_job_kill(self):
     ###########################################################################
         build_name = "jenkins_generic_job_kill_%s" % CIME.utils.get_timestamp()
-        run_thread = threading.Thread(target=self.threaded_test, args=(False, " -t cime_test_only_slow_pass -b master --baseline-compare=no", build_name))
+        run_thread = threading.Thread(target=self.threaded_test, args=(False, " -t cime_test_only_slow_pass -b master", build_name))
         run_thread.daemon = True
         run_thread.start()
 

@@ -28,7 +28,7 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
             batch_args=None, workflow=True, chksum=False):
     if job is None:
         job = case.get_first_job()
-
+    caseroot = case.get_value("CASEROOT")
     # Check mediator
     hasMediator = True
     comp_classes = case.get_values("COMP_CLASSES")
@@ -69,13 +69,13 @@ def _submit(case, job=None, no_batch=False, prereq=None, allow_fail=False, resub
         batch_system = "none"
     else:
         batch_system = env_batch.get_batch_system_type()
-    unlock_file(os.path.basename(env_batch.filename))
+    unlock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
     case.set_value("BATCH_SYSTEM", batch_system)
 
     env_batch_has_changed = False
     if not external_workflow:
         try:
-            case.check_lockedfile(os.path.basename(env_batch.filename))
+            case.check_lockedfile(os.path.basename(env_batch.filename), caseroot=caseroot)
         except:
             env_batch_has_changed = True
 
@@ -88,7 +88,7 @@ manual edits to these file will be lost!
 """)
         env_batch.make_all_batch_files(case)
     case.flush()
-    lock_file(os.path.basename(env_batch.filename))
+    lock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
 
     if resubmit:
         # This is a resubmission, do not reinitialize test values
@@ -127,8 +127,8 @@ manual edits to these file will be lost!
 """)
             env_batch.make_all_batch_files(case)
 
-        unlock_file(os.path.basename(env_batch.filename))
-        lock_file(os.path.basename(env_batch.filename))
+        unlock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
+        lock_file(os.path.basename(env_batch.filename), caseroot=caseroot)
 
         case.check_case(skip_pnl=skip_pnl, chksum=chksum)
         if job == case.get_primary_job():

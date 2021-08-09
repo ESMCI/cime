@@ -4,3 +4,19 @@ of the parent (production code) directory.
 So, for example, unit tests for CIME/foo.py should live in
 CIME/tests/test_foo.py, and unit tests for CIME/SystemTests/bar.py should live
 in CIME/tests/SystemTests/test_bar.py.
+
+There are a few methods you can use to run the unit tests here:
+
+- From scripts/tests, run:
+    ./scripts_regression_tests.py A_RunUnitTests
+
+  This runs all of the doctests in CIME and the unit tests defined in
+  this directory.
+
+- From scripts/lib, run:
+    python3 -m unittest discover -s CIME/tests -t .
+
+  This runs all of the unit tests defined in this directory.
+
+- From scripts/lib, run an individual test file, like:
+    ./CIME/tests/test_user_mod_support.py

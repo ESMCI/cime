@@ -176,3 +176,6 @@ derived_combo
                            expected_shell_commands_result = expected_contents,
                            expected_sourcemod = "derived_combo\n",
                            msg = "test_duplicate_includes")
+
+if __name__ == '__main__':
+    unittest.main()

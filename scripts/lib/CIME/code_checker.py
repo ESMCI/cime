@@ -83,7 +83,7 @@ def get_all_checkable_files():
             nuopc_git_files = run_cmd_no_fail("git ls-files", from_dir=os.path.join(srcroot,"components","cmeps"), verbose=False).splitlines()
         except:
             logger.warning("No nuopc driver found in source")
-        all_git_files.extend([os.path.join("components","cmeps",_file) for _file in nuopc_git_files])
+        all_git_files.extend([os.path.join(srcroot,"components","cmeps",_file) for _file in nuopc_git_files])
     files_to_test = [item for item in all_git_files
                      if ((item.endswith(".py") or is_python_executable(os.path.join(cimeroot, item))) and not _should_pylint_skip(item))]
 
