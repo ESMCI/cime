@@ -3,6 +3,8 @@ import unittest
 
 from CIME.XML.namelist_definition import NamelistDefinition
 
+# pylint: disable=protected-access
+
 class TestXMLNamelistDefinition(unittest.TestCase):
 
     def test_set_nodes(self):

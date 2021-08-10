@@ -107,7 +107,6 @@ class NamelistDefinition(EntryID):
             name = self.get(node, "id")
             skip_default_entry = self.get(node, "skip_default_entry") == "true"
             per_stream_entry = self.get(node, "per_stream_entry") == "true"
-            set_node_values = False
 
             if skip_groups:
                 group_name = self.get_group_name(node)

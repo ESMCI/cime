@@ -5,6 +5,7 @@ from unittest import mock
 
 from CIME.nmlgen import NamelistGenerator
 
+# pylint: disable=protected-access
 class TestNamelistGenerator(unittest.TestCase):
 
     def test_init_defaults(self):
