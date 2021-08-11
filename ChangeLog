@@ -1,5 +1,97 @@
 ======================================================================
 
+Originator: Chris Fischer 
+Date: 8-6-2021
+Tag: cime6.0.5
+Answer Changes: None
+Tests: scripts_regression_tests 
+Dependencies:
+
+Brief Summary:
+    - Fix an issue with file locks when not run from caseroot.
+    - Strip % from job_id.
+    - Update esmf version.
+    - Support the creation of multiple user_nl files for a component.
+
+User interface changes: 
+    - Allows components to define a get_user_nl_list function in their
+      buildnml file, which supports the creation of multiple user_nl files for
+      the component
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+949b0e798 (HEAD -> master, origin/master, origin/HEAD) Merge pull request #4065 from jedwards4b/fix_not_in_caseroot
+a2b4a90d7 Merge pull request #4064 from jedwards4b/strip_job_id
+9d731e9b3 update esmf version
+e90399193 Merge pull request #4058 from billsacks/multiple_user_nls
+
+
+Modified files: git diff --name-status [previous_tag]
+M       .github/workflows/srt_nuopc.yml
+M       scripts/lib/CIME/XML/env_batch.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_setup.py
+M       scripts/lib/CIME/case/case_submit.py
+M       scripts/lib/CIME/code_checker.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/lib/CIME/tests/test_utils.py
+M       scripts/lib/CIME/utils.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-2-2021
+Tag: cime6.0.4
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Fix replay archive.
+    - Prepend the casename to mpas component restart file search in st_archive.
+    - Fix e3sm archiving.
+    - Check the size of read only xml files.
+    - Ensure Cmake is available for wait_for_tests.
+    - Fix the failure of ensemble consistency tests for PGI/NVHPC compiler on Casper.
+    - Fix type in centos7-linux definition.
+    - jenkins_generic_job: no reason for this magic config setting here.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+c6f489356 Merge pull request #4053 from jasonb5/fix_replay_archive
+dbaa9b2d2 Merge pull request #4057 from ESMCI/jonbob/fix_mpas_archive_naming
+1ee229961 Merge pull request #4055 from jasonb5/fix_e3sm_archiving
+705640271 Merge pull request #4056 from jedwards4b/jedwards/checksize_of_xml
+231c8e783 Merge pull request #4052 from ESMCI/jgfouca/fix_cmake_avail_for_wft
+4961a210a Merge pull request #4048 from sjsprecious/fix_ect_failure
+d72fc45f1 fix typo in centos7-linux definition
+49342dca5 Merge pull request #4046 from ESMCI/jgfouca/remove_dumb_config
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/Depends.nvhpc-gpu
+M       config/cesm/machines/Depends.pgi-gpu
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/Tools/jenkins_generic_job
+M       scripts/lib/CIME/XML/generic_xml.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_st_archive.py
+M       scripts/lib/CIME/provenance.py
+M       scripts/lib/CIME/tests/test_case.py
+M       scripts/lib/CIME/tests/test_provenance.py
+M       scripts/lib/CIME/wait_for_tests.py
+M       scripts/tests/scripts_regression_tests.py
+
+
+======================================================================
+
+======================================================================
+
 Originator: Bill Sacks
 Date: 7-15-2021
 Tag: cime6.0.3

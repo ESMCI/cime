@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 from unittest import mock
 
@@ -311,3 +313,6 @@ class TestXMLEnvBatch(unittest.TestCase):
                                                ignore_type=False)
         env_workflow.set_value.assert_any_call("JOB_WALLCLOCK_TIME", "12:00:00",
                                                subgroup="case.run")
+
+if __name__ == '__main__':
+    unittest.main()
