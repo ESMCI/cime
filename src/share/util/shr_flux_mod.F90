@@ -370,7 +370,8 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,   &
            psixh  = -5.0_R8*hol*stable + (1.0_R8-stable)*psixhu(xqq)
 
            !--- shift wind speed using old coefficient ---
-           rd   = rdn / (1.0_R8 + rdn/loc_karman*(alz-psimh))
+           ! --- we prevent denominator to go negative
+           rd   = rdn / (1.0_R8 + max( rdn/loc_karman*(alz-psimh), -0.5_r8))
            u10n = vmag * rd / rdn
 
            !--- update transfer coeffs at 10m and neutral stability ---
