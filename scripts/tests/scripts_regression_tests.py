@@ -362,7 +362,8 @@ class J_TestCreateNewcase(unittest.TestCase):
         testdir = os.path.join(cls._testroot, 'testcreatenewcase')
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
-        args =  " --case %s --compset X --output-root %s --handle-preexisting-dirs=r " % (testdir, cls._testroot)
+        args = " --case %s --compset X --output-root %s --handle-preexisting-dirs=r" % (testdir, cls._testroot)
+        args += " --run-unsupported"
         if TEST_COMPILER is not None:
             args = args +  " --compiler %s"%TEST_COMPILER
         if TEST_MPILIB is not None:
@@ -452,6 +453,7 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         user_mods_dir = os.path.join(CIME.utils.get_python_libs_root(), "..", "tests", "user_mods_test1")
         args = " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"% (testdir, user_mods_dir, cls._testroot)
+        args += " --run-unsupported"
         if TEST_COMPILER is not None:
             args = args + " --compiler %s"%TEST_COMPILER
         if TEST_MPILIB is not None:
@@ -645,6 +647,7 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         cls._testdirs.append(testdir)
         args = " --case CreateNewcaseTest --script-root %s --compset X --output-root %s --handle-preexisting-dirs u" % (testdir, cls._testroot)
+        args += " --run-unsupported"
         if TEST_COMPILER is not None:
             args += " --compiler %s"%TEST_COMPILER
         if TEST_MPILIB is not None:
@@ -832,7 +835,8 @@ class J_TestCreateNewcase(unittest.TestCase):
         # config_machines_template.xml
         args = (" --case {testdir} --compset X --mach mymachine"
                 " --output-root {testroot} --non-local"
-                " --extra-machines-dir {extra_machines_dir}".format(
+                " --extra-machines-dir {extra_machines_dir}"
+                " --run-unsupported".format(
                     testdir=testdir, testroot=cls._testroot,
                     extra_machines_dir=extra_machines_dir))
         if CIME.utils.get_cime_default_driver() == "nuopc":

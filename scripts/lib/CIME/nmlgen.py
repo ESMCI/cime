@@ -122,8 +122,6 @@ class NamelistGenerator(object):
         # first clean out any settings left over from previous calls
         self.new_instance()
 
-        self._definition.set_nodes(skip_groups=skip_groups)
-
         # Determine the array of entry nodes that will be acted upon
         self._default_nodes = self._definition.set_nodes(skip_groups=skip_groups)
 

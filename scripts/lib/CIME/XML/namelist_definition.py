@@ -89,6 +89,14 @@ class NamelistDefinition(EntryID):
         self._group_names = CaseInsensitiveDict({})
         self._nodes = {}
 
+    def set_node_values(self, name, node):
+        self._entry_nodes.append(node)
+        self._entry_ids.append(name)
+        self._nodes[name] = node
+        self._entry_types[name] = self._get_type(node)
+        self._valid_values[name] = self._get_valid_values(node)
+        self._group_names[name] = self.get_group_name(node)
+
     def set_nodes(self, skip_groups=None):
         """
         populates the object data types for all nodes that are not part of the skip_groups array
@@ -99,26 +107,21 @@ class NamelistDefinition(EntryID):
             name = self.get(node, "id")
             skip_default_entry = self.get(node, "skip_default_entry") == "true"
             per_stream_entry = self.get(node, "per_stream_entry") == "true"
-            set_node_values = False
+
             if skip_groups:
                 group_name = self.get_group_name(node)
+
                 if not group_name in skip_groups:
-                    self._entry_nodes.append(node)
-                    set_node_values = True
+                    self.set_node_values(name, node)
+
                     if not skip_default_entry and not per_stream_entry:
                         default_nodes.append(node)
             else:
-                self._entry_nodes.append(node)
-                set_node_values = True
+                self.set_node_values(name, node)
+
                 if not skip_default_entry and not per_stream_entry:
                     default_nodes.append(node)
-            if set_node_values:
-                self._entry_nodes.append(node)
-                self._entry_ids.append(name)
-                self._nodes[name] = node
-                self._entry_types[name] = self._get_type(node)
-                self._valid_values[name] = self._get_valid_values(node)
-                self._group_names[name] = self.get_group_name(node)
+
         return default_nodes
 
     def get_group_name(self, node=None):
