@@ -802,7 +802,7 @@ class TestScheduler(object):
             return True, "SKIPPED"        
         else:
             # SmartSim test needs a wrapper to submit
-            if "drv/smartsim" in testmods:
+            if testmods and "drv/smartsim" in testmods:
                 cmd = os.path.join(self._cime_root, "tools", "smartsim", "launch.py")
             else:
                 cmd = "./case.submit"
