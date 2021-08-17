@@ -26,9 +26,8 @@ my $foundExclude = 0;
 foreach $dir (@paths) {  # (could check that directories exist here)
 
     # TMMF 01-2018
-    # the following Sets up .excludes if exists
-    # Only search in 4 dir levels: ./ ../ ../../ & ../../../
-    # Blunt force. Didn't wanna require any "use" statements since there are none.
+    # the following sets up .excludes if exists
+    # Blunt force. Didn't want to require any "use" statements since there are none.
     # At this point, GEOS-Chem is the only dir tree that has dependency subdirs in
     # Filepath generated for CAM by CIME.
     if ( (-e "$dir/.exclude") && (open(EXCLUDE,"$dir/.exclude") ) ) {
@@ -39,30 +38,6 @@ foreach $dir (@paths) {  # (could check that directories exist here)
         $foundExclude = 1;
         print "Found .exclude in: $excludeDir\n";
     }
-#    if ( (-e "$dir/../.exclude") && (open(EXCLUDE,"$dir/../.exclude") ) ) {
-#        @excludes = <EXCLUDE>;
-#        close( EXCLUDE );
-#        $excludeDir = $dir;
-#        $foundExclude = 1;
-#        print "Dir: $dir\n";
-#        print "Exclude:\n @excludes\n\n";
-#    }
-#    if ( (-e "$dir/../../.exclude") && (open(EXCLUDE,"$dir/../../.exclude") ) ) {
-#        @excludes = <EXCLUDE>;
-#        close( EXCLUDE );
-#        $excludeDir = $dir;
-#        $foundExclude = 1;
-#        print "Dir: $dir\n";
-#        print "Exclude:\n @excludes\n\n";
-#    }
-#    if ( (-e "$dir/../../../.exclude") && (open(EXCLUDE,"$dir/../../../.exclude") ) ) {
-#        @excludes = <EXCLUDE>;
-#        close( EXCLUDE );
-#        $excludeDir = $dir;
-#        $foundExclude = 1;
-#        print "Dir: $dir\n";
-#        print "Exclude:\n @excludes\n\n";
-#    }
 
     $dir =~ s!/?\s*$!!;  # remove / and any whitespace at end of directory name
     ($dir) = glob $dir;  # Expand tildes in path names.
