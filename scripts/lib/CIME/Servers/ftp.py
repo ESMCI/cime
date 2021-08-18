@@ -48,7 +48,13 @@ class FTP(GenericServer):
         except RuntimeError:
             logger.warning("ftp login timeout!")
             return None
-        return cls(address, user=user, passwd=passwd, server=ftp)
+        result = None
+        try:
+            result = cls(address, user=user, passwd=passwd, server=ftp)
+        except all_ftp_errors as e:
+            logger.warning("ftp error: {}".format(e))
+
+        return result
 
     def fileexists(self, rel_path):
         try:
