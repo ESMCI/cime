@@ -164,16 +164,17 @@ def check_all_input_data(self, protocol=None, address=None, input_data_root=None
         if chksum:
             chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
 
-        success = self.check_input_data(protocol=protocol, address=address, download=False,
+        clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
+        if download and clm_usrdat_name:
+            success = _downloadfromserver(self, input_data_root, data_list_dir,
+                                          attributes={"CLM_USRDAT_NAME":clm_usrdat_name})
+        if not success:
+            success = self.check_input_data(protocol=protocol, address=address, download=False,
                                         input_data_root=input_data_root, data_list_dir=data_list_dir, chksum=chksum and chksum_found)
         if download and not success:
             if not chksum:
                 chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
             success = _downloadfromserver(self, input_data_root, data_list_dir)
-            clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
-            if not success and clm_usrdat_name:
-                success = _downloadfromserver(self, input_data_root, data_list_dir,
-                                              attributes={"CLM_USRDAT_NAME":clm_usrdat_name})
 
     expect(not download or (download and success), "Could not find all inputdata on any server")
     self.stage_refcase(input_data_root=input_data_root, data_list_dir=data_list_dir)
