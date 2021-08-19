@@ -35,7 +35,7 @@ module seq_drydep_mod
 
   ! !PRIVATE ARRAY SIZES
 
-  integer, private, parameter :: maxspc = 150              ! Maximum number of species
+  integer, private, parameter :: maxspc = 160              ! Maximum number of species
   integer, public,  parameter :: n_species_table = 252     ! Number of species to work with
   integer, private, parameter :: NSeas = 5                 ! Number of seasons
   integer, public,  parameter :: NLUse = 11                ! Number of land-use types
