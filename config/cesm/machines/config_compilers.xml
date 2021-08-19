@@ -765,6 +765,20 @@ using a fortran linker.
   <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
 </compiler>
 
+<compiler MACH="container">
+  <CPPDEFS>
+    <!-- these flags enable nano timers -->
+    <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
+  <NETCDF_PATH>/usr/local</NETCDF_PATH>
+  <PNETCDF_PATH>/usr/local</PNETCDF_PATH>
+  <LDFLAGS>
+  </LDFLAGS>
+  <SLIBS>
+    <append> -lnetcdf -lnetcdff -llapack -lblas </append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="daint" COMPILER="pgi">
   <FFLAGS>
     <append> -I/project/s824/edavin/OASIS3-MCT_2.0/build.pgi/build/lib/mct -I/project/s824/edavin/OASIS3-MCT_2.0/build.pgi/build/lib/psmile.MPI1 </append>
