@@ -49,7 +49,7 @@ def buildlib(bldroot, installpath, case):
 ###############################################################################
     caseroot = case.get_value("CASEROOT")
     cimeroot = case.get_value("CIMEROOT")
-    expect(os.path.abspath(cimeroot) == os.path.abspath(_CIMEROOT), "CIMEROOT mismatch {} vs {}".format(_CIMEROOT,cimeroot))
+    expect(os.path.abspath(os.path.realpath(cimeroot)) == os.path.abspath(os.path.realpath(_CIMEROOT)), "CIMEROOT mismatch {} vs {}".format(_CIMEROOT,cimeroot))
     srcroot  = case.get_value("SRCROOT")
 
     if get_model() == "cesm":
