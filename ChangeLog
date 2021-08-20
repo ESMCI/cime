@@ -1,6 +1,40 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 8-20-2021
+Tag: cime6.0.6
+Answer Changes: [None, Round Off, Climate Changing]
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Make sure CLM_USERDAT_NAME is not UNSET if set.
+    - New mesh file and grid for running CISM over Antarctica.
+    - Handle neon data better by first checking the neon server.
+    - Fixes provenance in git worktree.
+    - Fix namelist duplications.
+    - Changed Addendum to Appendices.
+    - Allow multiple methods for running unit tests.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+2ceb39021 make sure CLM_USRDAT_NAME is not UNSET if set
+99d111786 Merge pull request #4071 from billsacks/update_antarctica_grid
+e54b73654 Merge pull request #4073 from jedwards4b/better_neon_data_handling
+db69f21d4 Merge pull request #4060 from jasonb5/fix_git_worktree
+e66984b24 Merge pull request #4066 from jasonb5/fix_namelist_duplications
+48fc713a9 Merge pull request #4070 from Sukhamjot-Singh/patch-1
+322d52bc6 Merge pull request #4008 from billsacks/unit_tests_multiple_methods
+
+
+Modified files: git diff --name-status [previous_tag]
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-6-2021
 Tag: cime6.0.5
 Answer Changes: None
