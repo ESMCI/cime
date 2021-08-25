@@ -55,10 +55,11 @@ def _build_usernl_files(case, model, comp):
         default_nlfile = "user_nl_{}".format(comp)
         model_nl = os.path.join(model_dir, default_nlfile)
         user_nl_list = _get_user_nl_list(case, default_nlfile, model_dir)
+
         # Note that, even if there are multiple elements of user_nl_list (i.e., we are
         # creating multiple user_nl files for this component with different names), all of
         # them will start out as copies of the single user_nl_comp file in the model's
-        # source tree.
+        # source tree - unless the file has _stream in its name 
         for nlfile in user_nl_list:
             if ninst > 1:
                 for inst_counter in range(1, ninst+1):
@@ -69,12 +70,16 @@ def _build_usernl_files(case, model, comp):
                         # user_nl_foo from model_dir
                         if os.path.exists(nlfile):
                             safe_copy(nlfile, inst_nlfile)
+                        elif "_stream" in nlfile:
+                            safe_copy(os.path.join(model_dir, nlfile), inst_nlfile)
                         elif os.path.exists(model_nl):
                             safe_copy(model_nl, inst_nlfile)
             else:
                 # ninst = 1
                 if not os.path.exists(nlfile):
-                    if os.path.exists(model_nl):
+                    if "_stream" in nlfile:
+                        safe_copy(os.path.join(model_dir, nlfile), nlfile)
+                    elif os.path.exists(model_nl):
                         safe_copy(model_nl, nlfile)
 
 ###############################################################################
