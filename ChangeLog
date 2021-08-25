@@ -1,6 +1,31 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 8-25-2021
+Tag: cime6.0.7
+Answer Changes: None
+Tests: ran the test testlist_cdeps.xml  
+Dependencies:
+
+Brief Summary:
+    - Changes to have new user_nl_stream_xxx for cdeps.
+
+User interface changes:
+    - New user_nl_xxx_streams file to change CDEPS stream files
+
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+173f5c35b Merge pull request #4074 from mvertens/feature/new_userstream_file
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/case/case_setup.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-20-2021
 Tag: cime6.0.6
 Answer Changes: [None, Round Off, Climate Changing]
