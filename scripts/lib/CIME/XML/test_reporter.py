@@ -8,9 +8,7 @@ import urllib.request
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.utils import expect,get_model
-import ssl
 #pylint: disable=protected-access
-ssl._create_default_https_context = ssl._create_unverified_context
 
 class TestReporter(GenericXML):
 
@@ -58,15 +56,16 @@ class TestReporter(GenericXML):
         #
         # Post test result XML to CESM test database
         #
-
         xmlstr = self.get_raw_record()
         username=input("Username:")
         os.system("stty -echo")
         password=input("Password:")
         os.system("stty echo")
-
+        print()
         params={'username':username,'password':password,'testXML':xmlstr}
-        url_values = urllib.parse.urlencode(params)
         url="https://csegweb.cgd.ucar.edu/testdb/cgi-bin/processXMLtest.cgi"
-        full_url = url + '?' + url_values
-        urllib.request.urlopen(full_url)
+        data = urllib.parse.urlencode(params)
+        data = data.encode('ascii')
+        req = urllib.request.Request(url, data)
+        result = urllib.request.urlopen(req) 
+        print(result.read())
