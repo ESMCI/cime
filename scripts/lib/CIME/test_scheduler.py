@@ -472,32 +472,6 @@ class TestScheduler(object):
         if self._pesfile is not None:
             create_newcase_cmd += " --pesfile {} ".format(self._pesfile)
 
-        if test_mods is not None:
-            create_newcase_cmd += " --user-mods-dir "
-
-            for one_test_mod in test_mods: # pylint: disable=not-an-iterable
-                if one_test_mod.find('/') != -1:
-                    (component, modspath) = one_test_mod.split('/', 1)
-                else:
-                    error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
-                    self._log_output(test, error)
-                    return False, error
-
-                files = Files(comp_interface=self._cime_driver)
-                testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
-                test_mod_file = os.path.join(testmods_dir, component, modspath)
-                # if no testmod is found check if a usermod of the same name exists and
-                # use it if it does.
-                if not os.path.exists(test_mod_file):
-                    usermods_dir = files.get_value("USER_MODS_DIR", {"component": component})
-                    test_mod_file = os.path.join(usermods_dir, modspath)
-                    if not os.path.exists(test_mod_file):
-                        error = "Missing testmod file '{}', checked {} and {}".format(modspath, testmods_dir, usermods_dir)
-                        self._log_output(test, error)
-                        return False, error
-
-                create_newcase_cmd += "{} ".format(test_mod_file)
-
         mpilib = None
         ninst = 1
         ncpl = 1
@@ -526,6 +500,32 @@ class TestScheduler(object):
                 elif case_opt.startswith('V'):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)
+
+        if test_mods is not None:
+            create_newcase_cmd += " --user-mods-dir "
+
+            for one_test_mod in test_mods: # pylint: disable=not-an-iterable
+                if one_test_mod.find('/') != -1:
+                    (component, modspath) = one_test_mod.split('/', 1)
+                else:
+                    error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
+                    self._log_output(test, error)
+                    return False, error
+
+                files = Files(comp_interface=self._cime_driver)
+                testmods_dir = files.get_value("TESTS_MODS_DIR", {"component": component})
+                test_mod_file = os.path.join(testmods_dir, component, modspath)
+                # if no testmod is found check if a usermod of the same name exists and
+                # use it if it does.
+                if not os.path.exists(test_mod_file):
+                    usermods_dir = files.get_value("USER_MODS_DIR", {"component": component})
+                    test_mod_file = os.path.join(usermods_dir, modspath)
+                    if not os.path.exists(test_mod_file):
+                        error = "Missing testmod file '{}', checked {} and {}".format(modspath, testmods_dir, usermods_dir)
+                        self._log_output(test, error)
+                        return False, error
+
+                create_newcase_cmd += "{} ".format(test_mod_file)
 
         # create_test mpilib option overrides default but not explicitly set case_opt mpilib
         if mpilib is None and self._mpilib is not None:

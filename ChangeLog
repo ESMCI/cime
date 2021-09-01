@@ -1,5 +1,67 @@
 ======================================================================
 
+Originator: Bill Sacks
+Date: 7-15-2021
+Tag: cime6.0.3
+Answer Changes: [None, Round Off, Climate Changing]
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - WW3 support for E3SM
+    - Allow a test to have multiple testmods
+    - Update python version check to 3.6 and load python module on cheyenne
+    - Update ESMF libraries on cheyenne and izumi
+
+User interface changes:
+    - Allow multiple user mods directories in tests as well as in
+      create_newcase and create_clone. This is completely backwards
+      compatible.
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+45a8622dc Merge pull request #4042 from jedwards4b/jedwards/testmods_path
+4ac7bfb6b Merge pull request #4040 from ESMCI/fischer/esmf
+0067c2dc3 Merge pull request #4038 from ESMCI/mkstratos/fix_clim_repro_bugs
+5e2046fee update standalone externals
+2709797d1 Merge pull request #4035 from billsacks/cheyenne_python_module
+26e38f5e2 Merge pull request #4030 from ESMCI/fix_auto_r8
+5f055413e Merge pull request #4031 from billsacks/multiple_testmods
+790be3994 Merge pull request #4029 from jasonb5/fix_external_mct
+4312d8506 Merge pull request #4028 from jasonb5/add_missing_desp_definition
+2f363cffd Merge pull request #4027 from ESMCI/jonbob/e3sm/support-add-ww3
+cdc40cba4 Merge pull request #4026 from jedwards4b/jedwards/centos7-update
+6788449eb fix pylint issue
+
+Modified files: git diff --name-status [previous_tag]
+M	CMakeLists.txt
+M	ChangeLog
+M	Externals.cfg
+M	config/cesm/machines/config_compilers.xml
+M	config/cesm/machines/config_machines.xml
+M	config/e3sm/config_files.xml
+M	scripts/Tools/Makefile
+M	scripts/Tools/standard_script_setup.py
+M	scripts/create_clone
+M	scripts/create_newcase
+M	scripts/lib/CIME/SystemTests/mvk.py
+M	scripts/lib/CIME/SystemTests/pgn.py
+M	scripts/lib/CIME/XML/generic_xml.py
+M	scripts/lib/CIME/case/case.py
+M	scripts/lib/CIME/case/case_clone.py
+M	scripts/lib/CIME/case/check_input_data.py
+M	scripts/lib/CIME/test_scheduler.py
+M	scripts/lib/CIME/test_utils.py
+M	scripts/lib/CIME/tests/test_utils.py
+M	scripts/lib/CIME/utils.py
+M	scripts/lib/get_tests.py
+M	src/build_scripts/buildlib.mct
+M	src/build_scripts/buildlib.mpi-serial
+M	tools/cprnc/CMakeLists.txt
+
+======================================================================
+
+======================================================================
+
 Originator: Chris Fischer 
 Date: 6-29-2021
 Tag: cime6.0.2
