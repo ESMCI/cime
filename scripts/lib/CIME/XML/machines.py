@@ -29,6 +29,8 @@ class Machines(GenericXML):
         self.machine = None
         self.machines_dir = None
         self.custom_settings = {}
+        self.extra_machines_dir = extra_machines_dir
+
         schema = None
         supported_models = []
         if files is None:
@@ -89,6 +91,9 @@ class Machines(GenericXML):
         Return the directory of the machines file
         """
         return self.machines_dir
+
+    def get_extra_machines_dir(self):
+        return self.extra_machines_dir
 
     def get_machine_name(self):
         """

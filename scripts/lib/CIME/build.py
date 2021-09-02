@@ -21,6 +21,34 @@ _CMD_ARGS_FOR_BUILD = \
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
      "OCN_SUBMODEL", "CISM_USE_TRILINOS", "USE_TRILINOS", "USE_ALBANY", "USE_PETSC")
 
+def generate_makefile_macro(case, caseroot, comp_name):
+    """
+    Only used by E3SM. Generates a flat Makefile macro file based on the CMake cache system.
+    This macro is only used by certain sharedlibs since components use CMake.
+    Since indirection based on comp_name is allowed for sharedlibs, each sharedlib must generate
+    their own macro.
+    """
+    cmake_macro = os.path.join(caseroot, "Macros.cmake")
+    expect(os.path.exists(cmake_macro), "Cannot generate Makefile macro without {}".format(cmake_macro))
+
+    cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
+    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON -DCOMP_NAME={} {} -C Macros.cmake |& grep E3SM_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp_name, cmake_args), from_dir=caseroot)
+
+    # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
+    real_output = output.replace("E3SM_SET_MAKEFILE_VAR ", "").\
+                  replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
+                  replace("SLIBS := ", "SLIBS := $(SLIBS) ")
+
+    with open(os.path.join(caseroot, "Macros.make"), "w") as fd:
+        fd.write(
+"""
+# This file is auto-generated, do not edit. If you want to change
+# sharedlib flags, you can edit the cmake_macros in this case. You
+# can change flags for specific sharedlibs only by checking COMP_NAME.
+
+""")
+        fd.write(real_output)
+
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
@@ -419,7 +447,6 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     for lib in libs:
         build_script[lib] = files.get_value("BUILD_LIB_FILE",{"lib":lib})
 
-
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
     if case.get_value("TEST"):
@@ -458,6 +485,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
         expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
+
+        # generate Makefile macro if e3sm
+        if get_model() == "e3sm":
+            generate_makefile_macro(case, caseroot, lib)
 
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
                        [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
@@ -583,6 +614,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
         casetools = case.get_value("CASETOOLS")
         classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"),
                                            get_standard_makefile_args(case, shared_lib=True))
+        caseroot = case.get_value("CASEROOT")
 
         for clean_item in things_to_clean:
             logging.info("Cleaning {}".format(clean_item))
@@ -592,6 +624,9 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
                 clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
             else:
                 # Item was created by classic build system
+                if get_model() == "e3sm":
+                    generate_makefile_macro(case, caseroot, clean_item)
+
                 clean_cmd = "{} {}{}".format(classic_cmd, "clean" if clean_item in cleanlist else "clean_depends", clean_item)
 
             logger.info("calling {}".format(clean_cmd))

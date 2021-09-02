@@ -3,18 +3,18 @@ Library for case.setup.
 case_setup is a member of class Case from file case.py
 """
 
-import errno
-
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.machines      import Machines
-from CIME.BuildTools.configure import configure
+from CIME.BuildTools.configure import configure, generate_env_mach_specific, copy_depends_files
 from CIME.utils             import run_and_log_case_status, get_model, \
     get_batch_script_for_job, safe_copy, file_contains_python_function, import_from_file
 from CIME.utils             import batch_jobid
 from CIME.utils             import transform_vars
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
+
+import errno, shutil
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +113,47 @@ def _get_user_nl_list(case, default_nlfile, model_dir):
         return [default_nlfile]
 
 ###############################################################################
+def _create_macros_e3sm(case, caseroot, mach_obj, compiler):
+###############################################################################
+    srcroot = case.get_value("SRCROOT")
+    if not os.path.isfile("Macros.cmake"):
+        safe_copy(os.path.join(srcroot, "cime_config/machines/cmake_macros/Macros.cmake"), caseroot)
+    if not os.path.exists("cmake_macros"):
+        shutil.copytree(os.path.join(srcroot, "cime_config/machines/cmake_macros"), os.path.join(caseroot, "cmake_macros"))
+
+    copy_depends_files(mach_obj.get_machine_name(), mach_obj.machines_dir, caseroot, compiler)
+
+###############################################################################
+def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_interface, sysos):
+###############################################################################
+    """
+    creates the Macros.make, Depends.compiler, Depends.machine, Depends.machine.compiler
+    and env_mach_specific.xml if they don't already exist.
+    """
+    reread = not os.path.isfile("env_mach_specific.xml")
+    if reread:
+        case.flush()
+        generate_env_mach_specific(
+            caseroot, mach_obj, compiler, mpilib, debug, comp_interface,
+            sysos, False, threaded=case.get_build_threaded(), noenv=True,)
+        case.read_xml()
+
+    if get_model() == "e3sm": # change "e3sm" to "xxxx" to disable new macro code
+        _create_macros_e3sm(case, caseroot, mach_obj, compiler)
+    else:
+        if not os.path.isfile("Macros.make"):
+            configure(mach_obj,
+                      caseroot, ["Makefile"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
+                      extra_machines_dir=mach_obj.get_extra_machines_dir())
+
+        # Also write out Cmake macro file
+        if not os.path.isfile("Macros.cmake"):
+            configure(mach_obj,
+                      caseroot, ["CMake"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
+                      extra_machines_dir=mach_obj.get_extra_machines_dir())
+
+
+###############################################################################
 def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, keep=None):
 ###############################################################################
     os.chdir(caseroot)
@@ -127,7 +168,10 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
     sysos = case.get_value("OS")
     comp_interface = case.get_value("COMP_INTERFACE")
     extra_machines_dir = case.get_value("EXTRA_MACHDIR")
+
     expect(mach is not None, "xml variable MACH is not set")
+
+    mach_obj = Machines(machine=mach, extra_machines_dir=extra_machines_dir)
 
     # Check that $DIN_LOC_ROOT exists or can be created:
     if not non_local:
@@ -148,10 +192,13 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
     if reset or clean:
         # clean setup-generated files
         batch_script = get_batch_script_for_job(case.get_primary_job())
-        files_to_clean = [batch_script, "env_mach_specific.xml", "Macros.make", "Macros.cmake"]
+        files_to_clean = [batch_script, "env_mach_specific.xml", "Macros.make", "Macros.cmake", "cmake_macros"]
         for file_to_clean in files_to_clean:
             if os.path.exists(file_to_clean) and not (keep and file_to_clean in keep):
-                os.remove(file_to_clean)
+                if os.path.isdir(file_to_clean):
+                    shutil.rmtree(file_to_clean)
+                else:
+                    os.remove(file_to_clean)
                 logger.info("Successfully cleaned {}".format(file_to_clean))
 
         if not test_mode:
@@ -161,32 +208,16 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
         # Cannot leave case in bad state (missing env_mach_specific.xml)
         if clean and not os.path.isfile("env_mach_specific.xml"):
             case.flush()
-            configure(Machines(machine=mach, extra_machines_dir=extra_machines_dir),
-                      caseroot, ["Makefile"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
-                      threaded=case.get_build_threaded(),extra_machines_dir=extra_machines_dir)
+            generate_env_mach_specific(
+                caseroot, mach_obj, compiler, mpilib, debug, comp_interface,
+                sysos, False, threaded=case.get_build_threaded(), noenv=True,)
             case.read_xml()
 
     if not clean:
         if not non_local:
             case.load_env()
 
-        # creates the Macros.make, Depends.compiler, Depends.machine, Depends.machine.compiler
-        # and env_mach_specific.xml if they don't already exist.
-        if not os.path.isfile("Macros.make") or not os.path.isfile("env_mach_specific.xml"):
-            reread = not os.path.isfile("env_mach_specific.xml")
-            if reread:
-                case.flush()
-            configure(Machines(machine=mach, extra_machines_dir=extra_machines_dir),
-                      caseroot, ["Makefile"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
-                      extra_machines_dir=extra_machines_dir)
-            if reread:
-                case.read_xml()
-
-        # Also write out Cmake macro file
-        if not os.path.isfile("Macros.cmake"):
-            configure(Machines(machine=mach, extra_machines_dir=extra_machines_dir),
-                      caseroot, ["CMake"], compiler, mpilib, debug, comp_interface, sysos, noenv=True,
-                      extra_machines_dir=extra_machines_dir)
+        _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_interface, sysos)
 
         # Set tasks to 1 if mpi-serial library
         if mpilib == "mpi-serial":
