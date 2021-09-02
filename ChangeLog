@@ -1,6 +1,40 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 9-02-2021
+Tag: cime6.0.8
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Add ESMF modules for PGI on izumi.
+    - Allow test_reporter to post long list of test results to database.
+    - Set nuopc as the default.
+    - Remove moab.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+1c41537f7 Merge pull request #4080 from ESMCI/fischer/izumi_esmf
+5ba4a6b12 Merge pull request #4075 from ESMCI/fischer/test_reporter_update
+13d2a36eb Merge pull request #4078 from jedwards4b/change_cesm_default_driver_nuopc
+4e9e4f409 Merge pull request #4037 from ESMCI/fischer/moab
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt.yml
+M	.github/workflows/srt_nuopc.yml
+M	config/cesm/machines/config_machines.xml
+M	scripts/lib/CIME/XML/test_reporter.py
+M	scripts/lib/CIME/utils.py
+D	src/drivers/moab
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-25-2021
 Tag: cime6.0.7
 Answer Changes: None
