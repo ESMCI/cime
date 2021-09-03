@@ -483,7 +483,7 @@ class TestScheduler(object):
                     logger.debug (" MPILIB set to {}".format(mpilib))
                 elif case_opt.startswith('N'):
                     expect(ncpl == 1,"Cannot combine _C and _N options")
-                    expect(self._cime_driver /= "nuopc", "_N option not supported by nuopc driver, use _C instead")
+                    expect(self._cime_driver != "nuopc", "_N option not supported by nuopc driver, use _C instead")
                     ninst = case_opt[1:]
                     create_newcase_cmd += " --ninst {}".format(ninst)
                     logger.debug (" NINST set to {}".format(ninst))
