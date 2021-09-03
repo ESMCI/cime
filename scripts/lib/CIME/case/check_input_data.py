@@ -165,6 +165,9 @@ def check_all_input_data(self, protocol=None, address=None, input_data_root=None
             chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
 
         clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
+        if clm_usrdat_name and clm_usrdat_name == "UNSET":
+            clm_usrdat_name = None
+
         if download and clm_usrdat_name:
             success = _downloadfromserver(self, input_data_root, data_list_dir,
                                           attributes={"CLM_USRDAT_NAME":clm_usrdat_name})

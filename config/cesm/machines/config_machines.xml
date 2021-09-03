@@ -2040,6 +2040,22 @@ This allows using a different mpirun command to launch unit tests
         <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/intel/20.0.1</command>
         <command name="load">esmf-8.2.0b13-ncdfio-mvapich2-O</command>
       </modules>
+      <modules compiler="pgi" mpilib="mpi-serial" DEBUG="TRUE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mpiuni-g</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mpi-serial" DEBUG="FALSE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mpiuni-O</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mvapich2" DEBUG="TRUE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mvapich2-g</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mvapich2" DEBUG="FALSE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mvapich2-O</command>
+      </modules>
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">64M</env>

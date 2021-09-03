@@ -294,7 +294,7 @@ def get_cime_default_driver():
                 logger.debug("Setting CIME_driver={} from ~/.cime/config".format(driver))
     if not driver:
         model = get_model()
-        if model == "ufs":
+        if model == "ufs" or model == "cesm":
             driver = "nuopc"
         else:
             driver = "mct"
