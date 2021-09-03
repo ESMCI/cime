@@ -40,35 +40,36 @@ class Inputdata(GenericXML):
         if not attributes:
             servernodes = [x for x in servernodes if not self.attrib(x)]
 
-        if self._servernode is None:
-            self._servernode = servernodes[0]
-        else:
-            prevserver = self._servernode
-            for i, node in enumerate(servernodes):
-                if self._servernode == node and len(servernodes)>i+1:
-                    self._servernode = servernodes[i+1]
-                    break
-            if prevserver is not None and self._servernode == prevserver:
-                self._servernode = None
+        if servernodes:
+            if self._servernode is None:
+                self._servernode = servernodes[0]
+            else:
+                prevserver = self._servernode
+                for i, node in enumerate(servernodes):
+                    if self._servernode == node and len(servernodes)>i+1:
+                        self._servernode = servernodes[i+1]
+                        break
+                if prevserver is not None and self._servernode == prevserver:
+                    self._servernode = None
 
-        if self._servernode is not None:
-            protocol = self.text(self.get_child("protocol", root = self._servernode))
-            address =  self.text(self.get_child("address", root = self._servernode))
-            unode = self.get_optional_child("user", root = self._servernode)
-            if unode:
-                user =  self.text(unode)
-            invnode = self.get_optional_child("inventory", root = self._servernode)
-            if invnode:
-                inventory = self.text(invnode)
+            if self._servernode:
+                protocol = self.text(self.get_child("protocol", root = self._servernode))
+                address =  self.text(self.get_child("address", root = self._servernode))
+                unode = self.get_optional_child("user", root = self._servernode)
+                if unode:
+                    user =  self.text(unode)
+                invnode = self.get_optional_child("inventory", root = self._servernode)
+                if invnode:
+                    inventory = self.text(invnode)
 
-            pnode = self.get_optional_child("password", root = self._servernode)
-            if pnode:
-                passwd =  self.text(pnode)
-            csnode = self.get_optional_child("checksum", root = self._servernode)
-            if csnode:
-                chksum_file =  self.text(csnode)
-            icnode = self.get_optional_child("ic_filepath", root = self._servernode)
-            if icnode:
-                ic_filepath =  self.text(icnode)
+                pnode = self.get_optional_child("password", root = self._servernode)
+                if pnode:
+                    passwd =  self.text(pnode)
+                csnode = self.get_optional_child("checksum", root = self._servernode)
+                if csnode:
+                    chksum_file =  self.text(csnode)
+                icnode = self.get_optional_child("ic_filepath", root = self._servernode)
+                if icnode:
+                    ic_filepath =  self.text(icnode)
 
         return protocol, address, user, passwd, chksum_file, ic_filepath, inventory
