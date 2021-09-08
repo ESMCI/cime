@@ -2752,18 +2752,18 @@ This allows using a different mpirun command to launch unit tests
       <DESC>
           A port of CEM to the leeds ARC4 machine. CEMAC.
       </DESC>
-      <NODENAME_REGEX>.*.arc*</NODENAME_REGEX>
-      <OS>LINUX</OS>
-      <COMPILERS>intel</COMPILERS>
+      <NODENAME_REGEX>.*.ac.uk</NODENAME_REGEX>
+      <OS>CNL</OS>
+      <COMPILERS>cray,gnu</COMPILERS>
       <MPILIBS>mpich</MPILIBS>
-      <PROJECT>earmgr_a01</PROJECT>
+      <PROJECT>ecseac06</PROJECT>
       <SAVE_TIMING_DIR></SAVE_TIMING_DIR>
-      <CIME_OUTPUT_ROOT>$ENV{CESM_HOME}/cesm</CIME_OUTPUT_ROOT>
-      <DIN_LOC_ROOT>/nobackup/CESM/inputdata</DIN_LOC_ROOT>
-      <DIN_LOC_ROOT_CLMFORC>/nobackup/CESM/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
-      <DOUT_S_ROOT>$ENV{CESM_HOME}/archive/$CASE</DOUT_S_ROOT>
-      <BASELINE_ROOT>$ENV{CESM_HOME}/cesm_baselines</BASELINE_ROOT>
-      <CCSM_CPRNC>$ENV{CESM_HOME}/tools/cime/tools/cprnc/cprnc</CCSM_CPRNC>
+      <CIME_OUTPUT_ROOT>/work/ecseac06/ecseac06/$USER/cesm</CIME_OUTPUT_ROOT>
+      <DIN_LOC_ROOT>/work/ecseac06/ecseac06/shared/cesm/inputdata</DIN_LOC_ROOT>
+      <DIN_LOC_ROOT_CLMFORC>/work/ecseac06/ecseac06/shared/cesm/inputdata/lmwg</DIN_LOC_ROOT_CLMFORC>
+      <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+      <BASELINE_ROOT>/work/ecseac06/ecseac06/shared/cesm/cesm_baselines</BASELINE_ROOT>
+      <CCSM_CPRNC>/work/ecseac06/ecseac06/shared/cesm/tools/cprnc/cprnc</CCSM_CPRNC>
       <GMAKE>make</GMAKE>
       <GMAKE_J>16</GMAKE_J>
       <BATCH_SYSTEM>sge</BATCH_SYSTEM>
@@ -2774,41 +2774,46 @@ This allows using a different mpirun command to launch unit tests
       <mpirun mpilib="default">
           <executable>mpiexec</executable>
           <arguments>
-              <arg name="ntasks">
-                  -np
-                  {{ total_tasks }}
-              </arg>
+              <arg name="ntasks">-np {{ total_tasks }}</arg>
           </arguments>
       </mpirun>
 
       <module_system type="module" allow_error="true">
 
-          <init_path lang="perl">/apps/Modules/default/init/perl.pm</init_path>
-          <init_path lang="python">/apps/Modules/default/init/python.py</init_path>
-          <init_path lang="sh">/apps/Modules/default/init/sh</init_path>
-          <init_path lang="csh">/apps/Modules/default/init/csh</init_path>
-          <cmd_path lang="perl">module</cmd_path>
-          <cmd_path lang="python">module</cmd_path>
+          <init_path lang="perl">/usr/local/Modules/init/perl.pm</init_path>
+          <init_path lang="python">/usr/local/Modules/init/python.py</init_path>
+          <init_path lang="sh">/usr/local/Modules/init/sh</init_path>
+          <init_path lang="csh">/usr/local/Modules/init/csh</init_path>
+	  <cmd_path lang="perl">/usr/local/Modules/bin/modulecmd perl</cmd_path>
+	  <cmd_path lang="python">/usr/local/Modules/bin/modulecmd python</cmd_path>
           <cmd_path lang="sh">module</cmd_path>
           <cmd_path lang="csh">module</cmd_path>
-          <!-- 
+	  <modules>
+<!--	    <command name="unload">PrgEnv-cray</command>
+	    <command name="unload">PrgEnv-gnu</command> -->
+	    <command name="unload">gcc</command>
+	    <command name="unload">cce</command>
+	  </modules>
           <modules compiler="gnu">
-          <command name="load">gnu/8.3.0</command>
-          <command name="load">mpi/3.3/gcc-8.2.0</command> 
-          <command name="load">netcdf/4.6.3</command>
-          </modules>-->
-          <modules compiler="intel">
-              <command name="unload">openmpi</command>
-              <command name="load">intel/19.0.4</command>
-              <command name="load">intelmpi/2019.4.243</command>
-              <command name="load">netcdf/4.6.3</command>
+            <command name="restore">PrgEnv-gnu</command>
+	    <command name="rm">gcc</command>
+	    <command name="load">gcc/9.3.0</command>
           </modules>
+          <modules compiler="cray">
+              <command name="restore">PrgEnv-cray</command> 
+              <command name="load">cce/11.0.3</command>
+          </modules>
+	  <modules mpilib="mpich">
+	    <command name="load">cray-netcdf-hdf5parallel/4.7.4.3</command>
+	    <command name="load">cray-parallel-netcdf/1.12.1.3</command>
+	  </modules>
+	  <modules mpilib="mpi-serial">
+	    <command name="load">cray-netcdf/4.7.4.3</command>
+	  </modules>
       </module_system>
       <environment_variables>
           <env name="OMP_STACKSIZE">64M</env>
-          <env name="MKL">-mkl</env>
-          <env name="ILIBS">/apps/developers/libraries/intelmpi/2019.4.243/1/intel-19.0.4</env>
-          <env name="NETCDF_PATH">$ENV{NETCDF_HOME}</env>
+          <env name="NETCDF_PATH">$ENV{NETCDF_DIR}</env>
       </environment_variables>
       <resource_limits>
           <resource name="RLIMIT_STACK">-1</resource>

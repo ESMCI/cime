@@ -1336,7 +1336,12 @@ using a fortran linker.
   <MPICXX>mpiicpc</MPICXX>
   <MPIFC>mpiifort</MPIFC>
 </compiler>
-
+<compiler MACH="arc4">
+  <SCC>cc</SCC>
+  <SFC>ftn</SFC>
+  <MPICC>cc</MPICC>
+  <MPIFC>ftn</MPIFC>
+</compiler>
 <compiler MACH="userdefined">
   <CONFIG_ARGS>
     <base/>
