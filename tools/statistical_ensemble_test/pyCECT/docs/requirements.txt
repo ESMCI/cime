@@ -2,4 +2,4 @@ sphinx
 sphinx_rtd_theme
 nbsphinx
 sphinx-reload
-pillow==8.2.0
+pillow==8.3.2
