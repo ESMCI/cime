@@ -1336,12 +1336,43 @@ using a fortran linker.
   <MPICXX>mpiicpc</MPICXX>
   <MPIFC>mpiifort</MPIFC>
 </compiler>
-<compiler MACH="arc4">
-  <SCC>cc</SCC>
-  <SFC>ftn</SFC>
-  <MPICC>cc</MPICC>
-  <MPIFC>ftn</MPIFC>
+<compiler MACH="archer2">
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <NETCDF_PATH>$ENV{NETCDF_DIR}</NETCDF_PATH>
+  <PNETCDF_PATH>$ENV{PNETCDF_DIR}</PNETCDF_PATH>
+
+  <LDFLAGS>
+     <append MPILIB="mpich"> -dynamic -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf  -Wl,-rpath,${NETCDF_PATH}/lib </append>
+     <append MPILIB="mpich"> -L${PNETCDF_PATH}/lib -lpnetcdf -Wl,-rpath,${PNETCDF_PATH}/lib </append>
+  </LDFLAGS>
+
+  <SLIBS>
+     <append MPILIB="mpi-serial"> -L${NETCDF_PATH}/lib -lnetcdff -lnetcdf -Wl,-rpath,${NETCDF_PATH}/lib </append>
+  </SLIBS>
+
 </compiler>
+<compiler MACH="archer2" COMPILER="gnu">
+  <FFLAGS>
+    <append>  -mcmodel=medium -std=legacy -fcray-pointer  </append>
+<!-- required for gcc 10.x and newer
+    <append> -fallow-argument-mismatch -fallow-invalid-boz </append> -->
+    <append>  -fconvert=big-endian -fconvert=big-endian -ffree-line-length-none -ffixed-line-length-none</append>
+  </FFLAGS>
+  <CFLAGS>
+    <append>  -mcmodel=medium</append>
+  </CFLAGS>
+   <SLIBS>
+    <append> -ldl </append>
+  </SLIBS>
+</compiler>
+<compiler MACH="archer2" COMPILER="cray">
+        <!--does not currently work -->
+  <FFLAGS>
+    <append> -ef -em -h pic -dynamic </append>
+  </FFLAGS>
+</compiler>
+
+
 <compiler MACH="userdefined">
   <CONFIG_ARGS>
     <base/>

@@ -2748,9 +2748,9 @@ This allows using a different mpirun command to launch unit tests
     </resource_limits>
   </machine>
 
-  <machine MACH="arc4">
+  <machine MACH="archer2">
       <DESC>
-          A port of CEM to the leeds ARC4 machine. CEMAC.
+	CrayAMD epyc zen2, 128 pes/node SLURM
       </DESC>
       <NODENAME_REGEX>.*.ac.uk</NODENAME_REGEX>
       <OS>CNL</OS>
@@ -2766,15 +2766,16 @@ This allows using a different mpirun command to launch unit tests
       <CCSM_CPRNC>/work/ecseac06/ecseac06/shared/cesm/tools/cprnc/cprnc</CCSM_CPRNC>
       <GMAKE>make</GMAKE>
       <GMAKE_J>16</GMAKE_J>
-      <BATCH_SYSTEM>sge</BATCH_SYSTEM>
-      <SUPPORTED_BY>cemac-at-leeds.ac.uk</SUPPORTED_BY>
-      <MAX_TASKS_PER_NODE>40</MAX_TASKS_PER_NODE>
-      <MAX_MPITASKS_PER_NODE>40</MAX_MPITASKS_PER_NODE>
+      <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+      <SUPPORTED_BY>mjm at ed.ac.uk</SUPPORTED_BY>
+      <MAX_TASKS_PER_NODE>64</MAX_TASKS_PER_NODE>
+      <MAX_MPITASKS_PER_NODE>64</MAX_MPITASKS_PER_NODE>
       <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
       <mpirun mpilib="default">
-          <executable>mpiexec</executable>
+          <executable>srun</executable>
           <arguments>
-              <arg name="ntasks">-np {{ total_tasks }}</arg>
+	    <arg name="cpubind"> --distribution=block:block --hint=nomultithread</arg>
+            <arg name="ntasks">-n {{ total_tasks }}</arg>
           </arguments>
       </mpirun>
 
@@ -2798,6 +2799,8 @@ This allows using a different mpirun command to launch unit tests
             <command name="restore">PrgEnv-gnu</command>
 	    <command name="rm">gcc</command>
 	    <command name="load">gcc/9.3.0</command>
+	    <command name="load">pnet/1.12.1</command>
+	    <command name="load">snet/4.7.3</command>
           </modules>
           <modules compiler="cray">
               <command name="restore">PrgEnv-cray</command> 
