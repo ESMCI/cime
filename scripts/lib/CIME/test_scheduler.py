@@ -15,7 +15,7 @@ from CIME.XML.standard_module_setup import *
 import six
 from get_tests import get_recommended_test_time, get_build_groups
 from CIME.utils import append_status, append_testlog, TESTS_FAILED_ERR_CODE, parse_test_name, get_full_test_name, get_model, \
-    convert_to_seconds, get_cime_root, get_project, get_timestamp, get_python_libs_root
+    convert_to_seconds, get_cime_root, get_project, get_timestamp, get_python_libs_root, get_cime_default_driver
 from CIME.test_status import *
 from CIME.XML.machines import Machines
 from CIME.XML.generic_xml import GenericXML
@@ -127,7 +127,7 @@ class TestScheduler(object):
     ###########################################################################
         self._cime_root       = get_cime_root()
         self._cime_model      = get_model()
-        self._cime_driver     = "mct"
+        self._cime_driver     = get_cime_default_driver()
         self._save_timing     = save_timing
         self._queue           = queue
         self._test_data       = {} if test_data is None else test_data # Format:  {test_name -> {data_name -> data}}
@@ -483,6 +483,7 @@ class TestScheduler(object):
                     logger.debug (" MPILIB set to {}".format(mpilib))
                 elif case_opt.startswith('N'):
                     expect(ncpl == 1,"Cannot combine _C and _N options")
+                    expect(self._cime_driver != "nuopc", "_N option not supported by nuopc driver, use _C instead")
                     ninst = case_opt[1:]
                     create_newcase_cmd += " --ninst {}".format(ninst)
                     logger.debug (" NINST set to {}".format(ninst))
