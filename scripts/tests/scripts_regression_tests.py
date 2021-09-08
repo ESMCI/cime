@@ -166,8 +166,6 @@ class A_RunUnitTests(unittest.TestCase):
                     else:
                         print("{} has no doctests".format(filepath))
 
-        self.assertTrue(get_model() == "e3sm")
-
 ###############################################################################
 class C_TestGridGeneration(unittest.TestCase):
 ###############################################################################
