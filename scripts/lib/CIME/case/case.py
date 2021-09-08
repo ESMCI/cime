@@ -1304,6 +1304,9 @@ class Case(object):
     def _create_caseroot_sourcemods(self):
         components = self.get_compset_components()
         components.extend(['share', 'drv'])
+        if self._comp_interface == 'nuopc':
+            components.extend(['cdeps'])
+
         readme_message = """Put source mods for the {component} library in this directory.
 
 WARNING: SourceMods are not kept under version control, and can easily

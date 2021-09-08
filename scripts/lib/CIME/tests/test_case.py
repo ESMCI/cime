@@ -120,6 +120,7 @@ class TestCase(unittest.TestCase):
     @mock.patch("CIME.case.case.Case.configure")
     @mock.patch("socket.getfqdn", return_value="host1")
     @mock.patch("getpass.getuser", return_value="root")
+    @mock.patch.dict(os.environ, {"CIME_MODEL": "cesm"})
     def test_copy(self, getuser, getfqdn, configure, create_caseroot, # pylint: disable=unused-argument
                   apply_user_mods, set_lookup_value, lock_file, strftime, # pylint: disable=unused-argument
                   read_xml): # pylint: disable=unused-argument
@@ -129,8 +130,6 @@ class TestCase(unittest.TestCase):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["CIME_MODEL"] = "cesm"
-
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
                 case.create("test1", srcroot, "A", "f19_g16_rx1",
@@ -181,14 +180,13 @@ class TestCase(unittest.TestCase):
     @mock.patch("CIME.case.case.Case.configure")
     @mock.patch("socket.getfqdn", return_value="host1")
     @mock.patch("getpass.getuser", return_value="root")
+    @mock.patch.dict(os.environ, {"CIME_MODEL": "cesm"})
     def test_create(self, get_user, getfqdn, configure, create_caseroot, # pylint: disable=unused-argument
                     apply_user_mods, set_lookup_value, lock_file, strftime, # pylint: disable=unused-argument
                     read_xml): # pylint: disable=unused-argument
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["CIME_MODEL"] = "cesm"
-
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
                 case.create("test1", srcroot, "A", "f19_g16_rx1",
