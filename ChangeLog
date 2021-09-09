@@ -1,6 +1,48 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 9-09-2021
+Tag: cime6.0.9
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Fix scripts_regression_tests on mappy for e3sm.
+    - Update the test_schedualer to reflect default driver change.
+    - Adds a container machine definition.
+    - Bump pillow from 8.2.0 to 8.3.2 in /tools/statistical_ensemble_test/pyCECT/docs.
+    - Update modules and build flags on cori.
+    - Add a SourceMods/src.cdeps directory for shared cdeps sourcemods.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+4fa1194a2 Merge pull request #4085 from ESMCI/jgfouca/fix_scripts_reg
+0eaecd9f0 Merge pull request #4082 from jedwards4b/update_for_nuopc_default
+4981c6277 Merge pull request #4081 from jedwards4b/better_neon_data_handling
+27df61824 Merge pull request #4084 from ESMCI/dependabot/pip/tools/statistical_ensemble_test/pyCECT/docs/pillow-8.3.2
+cd6c7eaf0 Merge pull request #4047 from jedwards4b/cori_update
+4906230e4 Merge pull request #4079 from jedwards4b/add_cdeps_SourceMods
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/lib/CIME/XML/inputdata.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/code_checker.py
+M       scripts/lib/CIME/test_scheduler.py
+M       scripts/lib/CIME/tests/test_case.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/build_scripts/buildlib.mct
+M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 9-02-2021
 Tag: cime6.0.8
 Answer Changes: None
