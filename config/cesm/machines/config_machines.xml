@@ -2866,6 +2866,8 @@ This allows using a different mpirun command to launch unit tests
       <environment_variables>
           <env name="OMP_STACKSIZE">64M</env>
           <env name="NETCDF_PATH">$ENV{NETCDF_DIR}</env>
+	  <!-- make sure python and perl are found here -->
+	  <env name="PATH">/work/n02/shared/CESM2/UEdin/sw/conda/cesm_envir1/bin:$ENV{PATH}</env>
       </environment_variables>
       <resource_limits>
           <resource name="RLIMIT_STACK">-1</resource>
