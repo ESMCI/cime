@@ -113,9 +113,8 @@ def _get_user_nl_list(case, default_nlfile, model_dir):
         return [default_nlfile]
 
 ###############################################################################
-def _create_macros_e3sm(case, caseroot, mach_obj, compiler):
+def _create_macros_e3sm(caseroot, srcroot, mach_obj, compiler):
 ###############################################################################
-    srcroot = case.get_value("SRCROOT")
     if not os.path.isfile("Macros.cmake"):
         safe_copy(os.path.join(srcroot, "cime_config/machines/cmake_macros/Macros.cmake"), caseroot)
     if not os.path.exists("cmake_macros"):
@@ -131,6 +130,8 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
     and env_mach_specific.xml if they don't already exist.
     """
     reread = not os.path.isfile("env_mach_specific.xml")
+    srcroot = case.get_value("SRCROOT")
+    new_cmake_macro = os.path.join(srcroot, "cime_config/machines/cmake_macros/Macros.cmake")
     if reread:
         case.flush()
         generate_env_mach_specific(
@@ -138,8 +139,8 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
             sysos, False, threaded=case.get_build_threaded(), noenv=True,)
         case.read_xml()
 
-    if get_model() == "e3sm": # change "e3sm" to "xxxx" to disable new macro code
-        _create_macros_e3sm(case, caseroot, mach_obj, compiler)
+    if get_model() == "e3sm" and os.path.exists(new_cmake_macro): # change "e3sm" to "xxxx" to disable new macro code
+        _create_macros_e3sm(caseroot, srcroot, mach_obj, compiler)
     else:
         if not os.path.isfile("Macros.make"):
             configure(mach_obj,

@@ -28,6 +28,10 @@ def generate_makefile_macro(case, caseroot, comp_name):
     Since indirection based on comp_name is allowed for sharedlibs, each sharedlib must generate
     their own macro.
     """
+    new_cmake_dir = os.path.join(caseroot, "cmake_macros")
+    if not os.path.isdir(new_cmake_dir):
+        return
+
     cmake_macro = os.path.join(caseroot, "Macros.cmake")
     expect(os.path.exists(cmake_macro), "Cannot generate Makefile macro without {}".format(cmake_macro))
 
