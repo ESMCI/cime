@@ -209,14 +209,12 @@
     <directives queue="standard">
       <directive>--partition=standard</directive>
       <directive>--qos=standard</directive>
-      <directive>--export=none</directive>
     </directives>
 
     <directives queue="short">
       <directive>--partition=standard</directive>
       <directive>--qos=short</directive>
       <directive>--reservation=shortqos</directive>
-      <directive>--export=none</directive>
     </directives>
 
 

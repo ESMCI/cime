@@ -2756,7 +2756,7 @@ This allows using a different mpirun command to launch unit tests
       <OS>CNL</OS>
       <COMPILERS>cray,gnu</COMPILERS>
       <MPILIBS>mpich</MPILIBS>
-      <PROJECT>ecseac06</PROJECT>
+      <PROJECT>ecseac06-guest</PROJECT>
       <SAVE_TIMING_DIR></SAVE_TIMING_DIR>
       <CIME_OUTPUT_ROOT>/work/ecseac06/ecseac06/$USER/cesm</CIME_OUTPUT_ROOT>
       <DIN_LOC_ROOT>/work/ecseac06/ecseac06/shared/cesm/inputdata</DIN_LOC_ROOT>
@@ -2796,15 +2796,64 @@ This allows using a different mpirun command to launch unit tests
 	    <command name="unload">cce</command>
 	  </modules>
           <modules compiler="gnu">
-            <command name="restore">PrgEnv-gnu</command>
-	    <command name="rm">gcc</command>
-	    <command name="load">gcc/9.3.0</command>
-	    <command name="load">pnet/1.12.1</command>
-	    <command name="load">snet/4.7.3</command>
+	    <!-- Does not work on compute nodes           <command name="restore">PrgEnv-gnu</command> -->
+	    <command name="unload"> /work/y07/shared/archer2-modules/modulefiles-cse/epcc-setup-env </command>
+	    <command name="unload"> bolt/0.7</command>
+	    <command name="unload"> cray-libsci/20.10.1.2</command>
+	    <command name="unload"> cray-mpich/8.0.16</command>
+	    <command name="unload"> xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta</command>
+	    <command name="unload"> perftools-base/20.10.0</command>
+	    <command name="unload"> cray-dsmml/0.1.2</command>
+	    <command name="unload"> craype-network-ofi</command>
+	    <command name="unload"> libfabric/1.11.0.0.233</command>
+	    <command name="unload"> craype-x86-rome</command>
+	    <command name="unload"> craype/2.7.2</command>
+	    <command name="unload"> cpe-cray</command>
+	    <command name="load"> cpe-gnu</command>
+	    <command name="load"> gcc/9.3.0</command>
+	    <command name="load"> craype/2.7.2</command>
+	    <command name="load"> craype-x86-rome</command>
+	    <command name="load"> libfabric/1.11.0.0.233</command>
+	    <command name="load"> craype-network-ofi</command>
+	    <command name="load"> cray-dsmml/0.1.2</command>
+	    <command name="load"> perftools-base/20.10.0</command>
+	    <command name="load"> xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta</command>
+	    <command name="load"> cray-mpich/8.0.16</command>
+	    <command name="load"> cray-libsci/20.10.1.2</command>
+	    <command name="load"> bolt/0.7</command>
+	    <command name="load"> /work/y07/shared/archer2-modules/modulefiles-cse/epcc-setup-env</command>
+	    <command name="load"> /usr/local/share/epcc-module/epcc-module-loader</command>
           </modules>
           <modules compiler="cray">
-              <command name="restore">PrgEnv-cray</command> 
-              <command name="load">cce/11.0.3</command>
+	    <!-- Does not work on compute nodes               <command name="restore">PrgEnv-cray</command> -->
+	    <command name="unload"> /usr/local/share/epcc-module/epcc-module-loader</command>
+	    <command name="unload"> /work/y07/shared/archer2-modules/modulefiles-cse/epcc-setup-env</command>
+	    <command name="unload"> bolt/0.7</command>
+	    <command name="unload"> cray-libsci/20.10.1.2</command>
+	    <command name="unload"> cray-mpich/8.0.16</command>
+	    <command name="unload"> xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta</command>
+	    <command name="unload"> perftools-base/20.10.0</command>
+	    <command name="unload"> cray-dsmml/0.1.2</command>
+	    <command name="unload"> craype-network-ofi</command>
+	    <command name="unload"> libfabric/1.11.0.0.233</command>
+	    <command name="unload"> craype-x86-rome</command>
+	    <command name="unload"> craype/2.7.2</command>
+	    <command name="unload"> gcc/10.1.0</command>
+	    <command name="unload"> cpe-gnu</command>
+	    <command name="load"> cpe-cray</command>
+	    <command name="load"> cce/11.0.3</command>
+	    <command name="load"> craype/2.7.2</command>
+	    <command name="load"> craype-x86-rome</command>
+	    <command name="load"> libfabric/1.11.0.0.233</command>
+	    <command name="load"> craype-network-ofi</command>
+	    <command name="load"> cray-dsmml/0.1.2</command>
+	    <command name="load"> perftools-base/20.10.0</command>
+	    <command name="load"> xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta</command>
+	    <command name="load"> cray-mpich/8.0.16</command>
+	    <command name="load"> cray-libsci/20.10.1.2</command>
+	    <command name="load"> bolt/0.7</command>
+	    <command name="load"> /work/y07/shared/archer2-modules/modulefiles-cse/epcc-setup-env</command>
+	    <command name="load"> /usr/local/share/epcc-module/epcc-module-loader</command>
           </modules>
 	  <modules mpilib="mpich">
 	    <command name="load">cray-netcdf-hdf5parallel/4.7.4.3</command>
