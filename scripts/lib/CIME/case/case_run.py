@@ -199,6 +199,11 @@ def _run_model(case, lid, skip_pnl=False, da_cycle=0):
         jobid = batch_jobid()
         msg_func = lambda *args: jobid if jobid is not None else ""
 
+    if case.get_value("USE_SMARTSIM"):
+        logger.info("Give the SmartSim DB time to launch")
+        time.sleep(60)
+        logger.info("launching job")
+
     return run_and_log_case_status(functor, "case.run",
                                    custom_starting_msg_functor=msg_func,
                                    custom_success_msg_functor=msg_func,

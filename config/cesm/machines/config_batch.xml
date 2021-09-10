@@ -10,7 +10,7 @@
      batch_redirect:   Whether a redirect character is needed to submit jobs.
      batch_directive:  The string that prepends a batch directive for the batch system.
      jobid_pattern:    A perl regular expression used to filter out the returned job id from a
-                       queue submission.
+		       queue submission.
 
  ===============================================================
  batch_system
@@ -243,7 +243,12 @@
 
     <directives queue="casper" compiler="intel">
       <directive default="/bin/bash" > -S {{ shell }} </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=700GB:ngpus={{ ngpus_per_node }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }} </directive>
+    </directives>
+
+    <directives queue="casper" compiler="gnu">
+      <directive default="/bin/bash" > -S {{ shell }} </directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }} </directive>
     </directives>
 
     <!-- Unknown queues use the batch directives for the regular queue -->
@@ -423,7 +428,7 @@
   </batch_system>
 
   <batch_system MACH="frontera" type="slurm" >
-    <!-- note this form of batch_submit causes some tests to fail on the system 
+    <!-- note this form of batch_submit causes some tests to fail on the system
     because env variables are not forwarded -->
     <batch_submit>ssh login1 cd $CASEROOT ; sbatch</batch_submit>
     <submit_args>
@@ -468,8 +473,8 @@
     </submit_args>
     <queues>
       <!-- Want case.st_archiver to run on first available queue, but case.run to use sib2.9
-           We achieve this setting both queues as the default queue but limiting it
-           to jobs that use 8 tasks or fewer; other jobs will land in sib2.9        -->
+	   We achieve this setting both queues as the default queue but limiting it
+	   to jobs that use 8 tasks or fewer; other jobs will land in sib2.9        -->
       <queue nodemin="1" nodemax="45">sib2.9</queue>
       <queue default="true" jobmin="1" jobmax="8">sib2.9,sky2.4</queue>
     </queues>
@@ -482,8 +487,8 @@
     </submit_args>
     <queues>
       <!-- Want case.st_archiver to run on first available queue, but case.run to use sky2.4
-           We achieve this setting both queues as the default queue but limiting it
-           to jobs that use 8 tasks or fewer; other jobs will land in sky2.4        -->
+	   We achieve this setting both queues as the default queue but limiting it
+	   to jobs that use 8 tasks or fewer; other jobs will land in sky2.4        -->
       <queue nodemin="1" nodemax="13">sky2.4</queue>
       <queue default="true" jobmin="1" jobmax="8">sib2.9,sky2.4</queue>
     </queues>
@@ -721,7 +726,7 @@
     <queues>
       <queue walltimemax="02:00:00" nodemin="1" nodemax="4" default="true">regular</queue>
     </queues>
-  </batch_system>      
+  </batch_system>
 
   <batch_system MACH="zeus" type="lsf">
     <batch_env>-env</batch_env>

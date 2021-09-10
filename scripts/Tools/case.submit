@@ -118,7 +118,6 @@ def _main_func(description, test_args=False):
             config.write(fd)
     elif os.path.exists(config_file):
         os.remove(config_file)
-
     if not test_args:
         with Case(caseroot, read_only=False, record=True) as case:
             case.submit(job=job, no_batch=no_batch, prereq=prereq, allow_fail=allow_fail,

@@ -826,6 +826,10 @@ using a fortran linker.
   <NETCDF_PATH> $ENV{NETCDF}</NETCDF_PATH>
   <PIO_FILESYSTEM_HINTS>gpfs</PIO_FILESYSTEM_HINTS>
   <PNETCDF_PATH>$ENV{PNETCDF}</PNETCDF_PATH>
+  <CPPDEFS>
+    <!-- these flags enable nano timers -->
+    <append MODEL="gptl"> -DHAVE_NANOTIME -DBIT64 -DHAVE_VPRINTF -DHAVE_BACKTRACE -DHAVE_SLASHPROC -DHAVE_COMM_F2C -DHAVE_TIMES -DHAVE_GETTIMEOFDAY </append>
+  </CPPDEFS>
 </compiler>
 
 <compiler MACH="casper" COMPILER="pgi">
@@ -902,11 +906,15 @@ using a fortran linker.
 
 <compiler MACH="casper" COMPILER="intel">
   <CFLAGS>
-    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+    <append> -qopt-report -xCORE_AVX2 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
     <append> -qopt-report -xCORE_AVX2 -no-fma</append>
   </FFLAGS>
+  <LDFLAGS>
+    <!-- the path to gcc should match that used in building the SmartRedis lib -->
+    <append>-Wl,-rpath /glade/u/apps/dav/opt/gnu/9.1.0/lib64 </append>
+  </LDFLAGS> 
   <CMAKE_OPTS>
     <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
   </CMAKE_OPTS>
@@ -933,7 +941,7 @@ using a fortran linker.
     <!-- -fallow-argument-mismatch is needed for building with the mpich library with gfortran10;
          -fallow-invalid-boz is needed for some components that have non-standard uses of BOZ literal constants with gfortran10.
          See https://github.com/ESMCI/cime/issues/3846 for details. -->
-    <append> -fallow-argument-mismatch -fallow-invalid-boz </append>
+<!--    <append> -fallow-argument-mismatch -fallow-invalid-boz </append> -->
   </FFLAGS>
   <SLIBS>
     <append> -ldl </append>
@@ -954,7 +962,13 @@ using a fortran linker.
   <PFUNIT_PATH MPILIB="mpt" compile_threaded="TRUE">$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_MPI_openMP</PFUNIT_PATH>
   <!-- SET to FALSE for intel 17 and 18 TRUE otherwise -->
   <HAS_F2008_CONTIGUOUS>TRUE</HAS_F2008_CONTIGUOUS>
+  <LDFLAGS>
+    <!-- the path to gcc should match that used in building the SmartRedis lib -->
+    <append MPILIB="openmpi"> -std=c11 -gxx-name=/glade/u/apps/ch/opt/gnu/9.1.0/bin/g++ -Wl,-rpath,/glade/u/apps/ch/opt/gnu/9.1.0/lib64 -L/glade/u/apps/ch/opt/gnu/9.1.0/lib64 -lgcc </append>
+  </LDFLAGS>
+
 </compiler>
+
 
 <compiler MACH="cheyenne" COMPILER="pgi">
   <SLIBS>
