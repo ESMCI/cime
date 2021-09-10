@@ -139,7 +139,8 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
             sysos, False, threaded=case.get_build_threaded(), noenv=True,)
         case.read_xml()
 
-    if get_model() == "e3sm" and os.path.exists(new_cmake_macro): # change "e3sm" to "xxxx" to disable new macro code
+    # export E3SM_NO_CMAKE_MACRO=1 to disable new macros
+    if get_model() == "e3sm" and os.path.exists(new_cmake_macro) and not "E3SM_NO_CMAKE_MACRO" in os.environ:
         _create_macros_e3sm(caseroot, srcroot, mach_obj, compiler)
     else:
         if not os.path.isfile("Macros.make"):
