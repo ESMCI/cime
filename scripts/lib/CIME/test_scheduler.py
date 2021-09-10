@@ -803,6 +803,7 @@ class TestScheduler(object):
         else:
             # SmartSim test needs a wrapper to submit
             if testmods and "drv/smartsim" in testmods:
+                self._log_output(test, "Runnning smartsim launch script")
                 cmd = os.path.join(self._cime_root, "tools", "smartsim", "launch.py")
             else:
                 cmd = "./case.submit"

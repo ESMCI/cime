@@ -906,7 +906,7 @@ using a fortran linker.
 
 <compiler MACH="casper" COMPILER="intel">
   <CFLAGS>
-    <append> -qopt-report -xCORE_AVX2 -no-fma</append>
+    <append> -qopt-report -xCORE_AVX2 -no-fma </append>
   </CFLAGS>
   <FFLAGS>
     <append> -qopt-report -xCORE_AVX2 -no-fma</append>
@@ -914,7 +914,7 @@ using a fortran linker.
   <LDFLAGS>
     <!-- the path to gcc should match that used in building the SmartRedis lib -->
     <append>-Wl,-rpath /glade/u/apps/dav/opt/gnu/9.1.0/lib64 </append>
-  </LDFLAGS>
+  </LDFLAGS> 
   <CMAKE_OPTS>
     <append DEBUG="TRUE"> -DPIO_ENABLE_LOGGING=ON </append>
   </CMAKE_OPTS>

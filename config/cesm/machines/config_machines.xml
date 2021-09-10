@@ -496,6 +496,9 @@ This allows using a different mpirun command to launch unit tests
       <env name="CESMDATAROOT">/glade/p/cesmdata/cseg</env>
       <env name="NETCDF_PATH">$ENV{NETCDF}</env>
     </environment_variables>
+    <environment_variables compiler="intel">
+      <env name="PATH">/glade/u/apps/dav/opt/gnu/9.1.0/bin/:$ENV{PATH}</env>
+    </environment_variables>
     <resource_limits>
       <resource name="RLIMIT_STACK">-1</resource>
     </resource_limits>
