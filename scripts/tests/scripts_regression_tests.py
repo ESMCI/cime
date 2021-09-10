@@ -365,7 +365,8 @@ class J_TestCreateNewcase(unittest.TestCase):
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
         args = " --case %s --compset X --output-root %s --handle-preexisting-dirs=r" % (testdir, cls._testroot)
-        args += " --run-unsupported"
+        if get_model() == "cesm":
+            args += " --run-unsupported"
         if TEST_COMPILER is not None:
             args = args +  " --compiler %s"%TEST_COMPILER
         if TEST_MPILIB is not None:
@@ -455,7 +456,8 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         user_mods_dir = os.path.join(CIME.utils.get_python_libs_root(), "..", "tests", "user_mods_test1")
         args = " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"% (testdir, user_mods_dir, cls._testroot)
-        args += " --run-unsupported"
+        if get_model() == "cesm":
+            args += " --run-unsupported"
         if TEST_COMPILER is not None:
             args = args + " --compiler %s"%TEST_COMPILER
         if TEST_MPILIB is not None:
@@ -649,7 +651,8 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         cls._testdirs.append(testdir)
         args = " --case CreateNewcaseTest --script-root %s --compset X --output-root %s --handle-preexisting-dirs u" % (testdir, cls._testroot)
-        args += " --run-unsupported"
+        if get_model() == "cesm":
+            args += " --run-unsupported"
         if TEST_COMPILER is not None:
             args += " --compiler %s"%TEST_COMPILER
         if TEST_MPILIB is not None:
@@ -837,10 +840,12 @@ class J_TestCreateNewcase(unittest.TestCase):
         # config_machines_template.xml
         args = (" --case {testdir} --compset X --mach mymachine"
                 " --output-root {testroot} --non-local"
-                " --extra-machines-dir {extra_machines_dir}"
-                " --run-unsupported".format(
+                " --extra-machines-dir {extra_machines_dir}".format(
                     testdir=testdir, testroot=cls._testroot,
                     extra_machines_dir=extra_machines_dir))
+        if get_model() == "cesm":
+            args += " --run-unsupported"
+
         if CIME.utils.get_cime_default_driver() == "nuopc":
             args += " --res f19_g17 "
         else:
@@ -854,12 +859,13 @@ class J_TestCreateNewcase(unittest.TestCase):
                               from_dir=testdir)
 
         # Make sure Macros file contains expected text
-        macros_file_name = os.path.join(testdir, "Macros.make")
-        self.assertTrue(os.path.isfile(macros_file_name))
-        with open(macros_file_name) as macros_file:
-            macros_contents = macros_file.read()
-        expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
-        self.assertTrue(expected_re.search(macros_contents))
+        if get_model() != "e3sm":
+            macros_file_name = os.path.join(testdir, "Macros.make")
+            self.assertTrue(os.path.isfile(macros_file_name))
+            with open(macros_file_name) as macros_file:
+                macros_contents = macros_file.read()
+            expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
+            self.assertTrue(expected_re.search(macros_contents))
 
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers

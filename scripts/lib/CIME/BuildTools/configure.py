@@ -48,11 +48,11 @@ def configure(machobj, output_dir, macros_format, compiler, mpilib, debug,
         out_file_name = os.path.join(output_dir,"Macros."+suffixes[form])
         macro_maker.write_macros_file(macros_file=out_file_name, output_format=suffixes[form])
 
-    _copy_depends_files(machobj.get_machine_name(), machobj.machines_dir, output_dir, compiler)
-    _generate_env_mach_specific(output_dir, machobj, compiler, mpilib,
-                                debug, comp_interface, sysos, unit_testing, threaded, noenv=noenv)
+    copy_depends_files(machobj.get_machine_name(), machobj.machines_dir, output_dir, compiler)
+    generate_env_mach_specific(output_dir, machobj, compiler, mpilib,
+                               debug, comp_interface, sysos, unit_testing, threaded, noenv=noenv)
 
-def _copy_depends_files(machine_name, machines_dir, output_dir, compiler):
+def copy_depends_files(machine_name, machines_dir, output_dir, compiler):
     """
     Copy any system or compiler Depends files if they do not exist in the output directory
     If there is a match for Depends.machine_name.compiler copy that and ignore the others
@@ -87,8 +87,8 @@ class FakeCase(object):
         expect(attrib in self._vals, "FakeCase does not support getting value of '%s'" % attrib)
         return self._vals[attrib]
 
-def _generate_env_mach_specific(output_dir, machobj, compiler, mpilib, debug,
-                                comp_interface, sysos, unit_testing, threaded, noenv=False):
+def generate_env_mach_specific(output_dir, machobj, compiler, mpilib, debug,
+                               comp_interface, sysos, unit_testing, threaded, noenv=False):
     """
     env_mach_specific generation.
     """
