@@ -257,9 +257,8 @@ def get_cime_root(case=None):
     >>> os.path.isdir(os.path.join(get_cime_root(), get_scripts_location_within_cime()))
     True
     """
-    script_absdir = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
-    assert script_absdir.endswith(get_python_libs_location_within_cime()), script_absdir
-    cimeroot = os.path.abspath(os.path.join(script_absdir,"..",".."))
+    real_file_dir = os.path.dirname(os.path.realpath(__file__))
+    cimeroot = os.path.abspath(os.path.join(real_file_dir, ".."))
 
     if case is not None:
         case_cimeroot = os.path.abspath(case.get_value("CIMEROOT"))
