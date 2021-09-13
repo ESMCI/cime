@@ -14,7 +14,7 @@ Usage:
    All of the above support the various --xml-* arguments for subsetting which tests are included.
 """
 
-from Tools.standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.test_utils import get_tests_from_xml, test_to_string
 from CIME.XML.tests import Tests
 from CIME.utils import expect
@@ -195,7 +195,7 @@ def list_test_data(test_data, list_type):
         print(item)
 
 ###############################################################################
-def _main_func(description):
+def _main_func(description=None):
 ###############################################################################
     args = parse_command_line(sys.argv, description)
 

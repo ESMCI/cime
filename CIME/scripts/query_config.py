@@ -6,7 +6,7 @@ machines. Typically run with one of the arguments --compsets, --settings,
 information will be listed for each.
 """
 
-from Tools.standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 import re
 from CIME.utils         import expect, get_model
 from CIME.XML.files     import Files
@@ -369,7 +369,7 @@ class Machines(CIME.XML.machines.Machines):
                     print("      max_gpus/node ",max_gpus_per_node)
                 print('')
 
-def _main_func(description):
+def _main_func(description=None):
     """
     main function
     """

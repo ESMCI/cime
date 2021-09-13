@@ -4,7 +4,7 @@
 Script to create a new CIME Case Control System (CSS) experimental case.
 """
 
-from Tools.standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.utils         import expect, get_model, get_cime_config, get_cime_default_driver
 from CIME.case          import Case
 from argparse           import RawTextHelpFormatter
@@ -208,7 +208,7 @@ def parse_command_line(args, cimeroot, description):
         args.extra_machines_dir, args.case_group, args.ngpus_per_node
 
 ###############################################################################
-def _main_func(description):
+def _main_func(description=None):
 ###############################################################################
     cimeroot  = os.path.abspath(CIME.utils.get_cime_root())
 

@@ -26,9 +26,8 @@ Script to create, build and run CIME tests. This script can:
 If this tool is missing any feature that you need, please add an issue on
 https://github.com/ESMCI/cime
 """
-from Tools.standard_script_setup import *
-
-import get_tests
+from CIME.Tools.standard_script_setup import *
+from CIME import get_tests
 from CIME.test_scheduler import TestScheduler, RUN_PHASE
 from CIME.utils          import expect, convert_to_seconds, compute_total_time, convert_to_babylonian_time, run_cmd_no_fail, get_cime_config
 from CIME.XML.machines   import Machines
@@ -628,7 +627,7 @@ def create_test(test_names, test_data, compiler, machine_name, no_run, no_build,
     return success
 
 ###############################################################################
-def _main_func(description):
+def _main_func(description=None):
 ###############################################################################
     test_names, test_data, compiler, machine_name, no_run, no_build, no_setup, no_batch, \
     test_root, baseline_root, clean, baseline_cmp_name, baseline_gen_name, namelists_only, \

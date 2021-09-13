@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from Tools.standard_script_setup import *
-
+from CIME.Tools.standard_script_setup import *
 from CIME.utils import expect
 from CIME.case  import Case
 from argparse   import RawTextHelpFormatter
