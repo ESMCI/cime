@@ -2752,7 +2752,7 @@ This allows using a different mpirun command to launch unit tests
       <DESC>
 	CrayAMD epyc zen2, 128 pes/node SLURM
       </DESC>
-      <NODENAME_REGEX>.*.ac.uk</NODENAME_REGEX>
+      <NODENAME_REGEX>.*.archer2.ac.uk</NODENAME_REGEX>
       <OS>CNL</OS>
       <COMPILERS>cray,gnu</COMPILERS>
       <MPILIBS>mpich</MPILIBS>
