@@ -5,7 +5,7 @@ Output the list of standard makefile args to the command line.  This script
 should only be used when the components buildlib is not written in python
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.build 	  import get_standard_makefile_args
 from CIME.case            import Case

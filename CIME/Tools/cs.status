@@ -8,7 +8,7 @@ Typical usage:
 Returns True if no errors occured (not based on test statuses).
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 import argparse, sys, os, logging, glob
 from CIME.utils import expect
 from CIME.cs_status import cs_status

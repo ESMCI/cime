@@ -46,7 +46,7 @@ Examples:
       ./xmlchange JOB_WALLCLOCK_TIME=0:30
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.utils import expect, convert_to_type, append_case_status, get_batch_script_for_job
 from CIME.case import Case

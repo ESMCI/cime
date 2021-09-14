@@ -21,7 +21,7 @@ import subprocess
 import sys
 from string import Template
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.case       import Case
 from CIME.utils      import is_last_process_complete
 # six is for py2/py3 compatibility

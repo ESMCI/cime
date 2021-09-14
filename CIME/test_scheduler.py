@@ -418,8 +418,11 @@ class TestScheduler(object):
     ###########################################################################
     def _shell_cmd_for_phase(self, test, cmd, phase, from_dir=None):
     ###########################################################################
+        env = os.environ.copy()
+        env["PYTHONPATH"] = get_cime_root()
+
         while True:
-            rc, output, errput = run_cmd(cmd, from_dir=from_dir)
+            rc, output, errput = run_cmd(cmd, from_dir=from_dir, env=env)
             if rc != 0:
                 self._log_output(test,
                                  "{} FAILED for test '{}'.\nCommand: {}\nOutput: {}\n".
@@ -743,7 +746,11 @@ class TestScheduler(object):
 
         # It's OK for this command to fail with baseline diffs but not catastrophically
         if rv[0]:
-            cmdstat, output, _ = run_cmd("./case.cmpgen_namelists", combine_output=True, from_dir=test_dir)
+            env = os.environ.copy()
+            env["PYTHONPATH"] = get_cime_root()
+            cmdstat, output, _ = run_cmd("./case.cmpgen_namelists",
+                                         combine_output=True, from_dir=test_dir,
+                                         env=env)
             expect(cmdstat in [0, TESTS_FAILED_ERR_CODE], "Fatal error in case.cmpgen_namelists: {}".format(output))
 
         return rv

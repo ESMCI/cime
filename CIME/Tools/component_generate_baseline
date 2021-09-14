@@ -4,7 +4,7 @@
 Copies current component history files into baselines
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.case       import Case
 from CIME.hist_utils import generate_baseline

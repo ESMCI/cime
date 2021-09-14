@@ -10,7 +10,7 @@ The location of these files are needed by the script:
 """
 
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd
 from distutils.spawn import find_executable
 import xml.etree.ElementTree as ET

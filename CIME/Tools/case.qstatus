@@ -7,7 +7,7 @@ Typical usage is simply:
    ./case.qstatus
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.case            import Case
 from CIME.test_status     import *

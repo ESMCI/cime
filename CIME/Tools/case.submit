@@ -15,7 +15,7 @@ Other examples:
       Submits the case, requesting mail at job beginning and end
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.case        import Case
 from CIME.utils        import expect
 from six.moves import configparser

@@ -97,7 +97,7 @@ There are two usage modes:
      - The env_mach_specific.xml and env_archive.xml files are not supported by this tool.
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.case import Case
 from CIME.utils import expect, convert_to_string

@@ -21,7 +21,7 @@ You may need to load modules for cprnc to work.
 
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.XML.machines import Machines
 from CIME.compare_test_results import compare_test_results

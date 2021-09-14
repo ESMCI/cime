@@ -3,7 +3,7 @@
 This script compares xml files
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.case import Case
 
 def parse_command_line(args, description):

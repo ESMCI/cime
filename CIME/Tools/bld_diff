@@ -5,7 +5,7 @@ Try to calculate and succinctly present the differences between two bld logs
 for the same component
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd_no_fail
 
 import argparse, sys, os, gzip

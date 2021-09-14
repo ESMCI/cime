@@ -1241,7 +1241,7 @@ class Case(object):
     def _create_caseroot_tools(self):
         machines_dir = os.path.abspath(self.get_value("MACHDIR"))
         machine = self.get_value("MACH")
-        toolsdir = os.path.join(self.get_value("CIMEROOT"),"scripts","Tools")
+        toolsdir = os.path.join(self.get_value("CIMEROOT"),"CIME","Tools")
         casetools = os.path.join(self._caseroot, "Tools")
         # setup executable files in caseroot/
         exefiles = (os.path.join(toolsdir, "case.setup"),

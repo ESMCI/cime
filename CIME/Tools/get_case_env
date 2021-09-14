@@ -5,7 +5,7 @@ Dump what the CIME environment would be for a case.
 
 Only supports E3SM for now.
 """
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 from CIME.XML.machines   import Machines
 from CIME.test_scheduler import TestScheduler
 from CIME.utils import parse_test_name, expect

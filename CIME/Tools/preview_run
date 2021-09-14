@@ -16,7 +16,7 @@ Example:
    ./xmlchange --subgroup=case.run BATCH_COMMAND_FLAGS='--some-flag --other-flag'
 """
 
-from standard_script_setup import *
+from CIME.Tools.standard_script_setup import *
 
 from CIME.case import Case
 
