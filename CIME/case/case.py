@@ -1267,9 +1267,9 @@ class Case(object):
                      os.path.join(toolsdir, "get_standard_makefile_args"),
                      os.path.join(toolsdir, "getTiming"),
                      os.path.join(toolsdir, "save_provenance"),
-                     os.path.join(toolsdir,"Makefile"),
-                     os.path.join(toolsdir,"mkSrcfiles"),
-                     os.path.join(toolsdir,"mkDepends")]
+                     os.path.join(toolsdir, "Makefile"),
+                     os.path.join(toolsdir, "mkSrcfiles"),
+                     os.path.join(toolsdir, "mkDepends")]
 
         # used on Titan
         if os.path.isfile( os.path.join(toolsdir,"mdiag_reduce.csh") ):
