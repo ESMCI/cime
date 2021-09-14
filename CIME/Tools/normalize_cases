@@ -8,7 +8,7 @@ This is for debugging purposes and meant to assist the user
 when they want to run case_diff.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 from CIME.utils import expect, run_cmd_no_fail
 
 import argparse, sys, os, glob

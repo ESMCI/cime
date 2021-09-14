@@ -17,7 +17,7 @@ automatically when running case.submit. However, you can run this if you
 want to perform these checks without actually submitting the case.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.utils import expect
 from CIME.case  import Case

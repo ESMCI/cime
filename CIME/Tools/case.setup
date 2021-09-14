@@ -16,7 +16,7 @@ To rerun after making changes to env_mach_pes.xml or env_mach_specific.xml, run:
    ./case.setup --reset
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 from CIME.case       import Case
 
 ###############################################################################

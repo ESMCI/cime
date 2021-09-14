@@ -7,7 +7,7 @@ wait_for_tests that handles cleanup of old test results and
 ensures that the batch system is left in a clean state.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 import CIME.wait_for_tests
 from CIME.utils import expect

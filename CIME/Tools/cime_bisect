@@ -9,7 +9,7 @@ NOTE: this tool will only work for models that use git and, for bisecting CIME,
 bring in CIME via submodule or clone.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 from CIME.utils import expect, run_cmd_no_fail, run_cmd
 from CIME.XML.machines import Machines
 

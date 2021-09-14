@@ -8,7 +8,7 @@ for the RUN phase specifically and will not terminate if the
 RUN phase didn't happen.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 import CIME.wait_for_tests
 

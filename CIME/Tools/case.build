@@ -42,7 +42,7 @@ other options are specific to one mode or the other:
       ./case.build --clean-depends ...
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 import CIME.build as build
 from CIME.case            import Case

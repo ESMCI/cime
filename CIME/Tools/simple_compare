@@ -5,7 +5,7 @@ Compare files in a normalized way. Used by create_test for
 diffing non-namelist files.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 import CIME.simple_compare
 from CIME.utils import expect
 

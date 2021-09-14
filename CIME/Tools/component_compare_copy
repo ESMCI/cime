@@ -5,7 +5,7 @@ Copy the most recent batch of hist files in a case, adding the given suffix.
 This allows us to save these results if we want to run the case again.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.case       import Case
 from CIME.hist_utils import copy_histfiles

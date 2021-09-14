@@ -4,7 +4,7 @@
 Simple script to populate CESM test database with test results.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.XML.env_build             import EnvBuild
 from CIME.XML.env_case              import EnvCase

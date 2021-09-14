@@ -4,7 +4,7 @@
 Compares two component history files in the testcase directory
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.case       import Case
 from CIME.hist_utils import compare_test

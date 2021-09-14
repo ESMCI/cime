@@ -6,12 +6,12 @@ that every script should do.
 
 import sys, os
 import __main__ as main
-_CIMEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..","..")
-_LIB_DIR = os.path.join(_CIMEROOT, "scripts", "lib")
-sys.path.append(_LIB_DIR)
+real_file_dir = os.path.dirname(os.path.realpath(__file__))
+cimeroot = os.path.abspath(os.path.join(real_file_dir, "..", ".."))
+sys.path.insert(0, cimeroot)
 
 # Important: Allows external tools to link up with CIME
-os.environ["CIMEROOT"] = _CIMEROOT
+os.environ["CIMEROOT"] = cimeroot
 
 import CIME.utils
 CIME.utils.check_minimum_python_version(3, 6)

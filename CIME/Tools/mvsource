@@ -11,7 +11,7 @@ sys.path.append(_LIBDIR)
 _LIBDIR = os.path.join(cimeroot, "scripts", "lib")
 sys.path.append(_LIBDIR)
 try:
-    from CIME.Tools.standard_script_setup import *
+    from standard_script_setup import *
     from CIME.case import Case
     from CIME.utils import symlink_force
 except:

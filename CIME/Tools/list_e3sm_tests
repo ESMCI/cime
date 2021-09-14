@@ -5,7 +5,7 @@ List e3sm test suites. Can be used to show what's being tested. Can just
 list tested grids, compsets, etc.
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 from CIME.utils import expect
 import get_tests
 

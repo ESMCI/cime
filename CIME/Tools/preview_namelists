@@ -15,7 +15,7 @@ Typical usage is simply:
    ./preview_namelists
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.case              import Case
 from CIME.utils             import expect

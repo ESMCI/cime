@@ -4,7 +4,7 @@
 Generates a cylc workflow file for the case.  See https://cylc.github.io for details about cylc
 """
 
-from CIME.Tools.standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.case              import Case
 from CIME.utils             import expect, transform_vars
