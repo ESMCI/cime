@@ -360,7 +360,7 @@
   <entry id="SYSTEM_TESTS_DIR">
     <type>char</type>
     <values>
-      <value component="any"       >$CIMEROOT/scripts/lib/CIME/SystemTests</value>
+      <value component="any"       >$CIMEROOT/CIME/SystemTests</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/SystemTests</value>
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/SystemTests</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
