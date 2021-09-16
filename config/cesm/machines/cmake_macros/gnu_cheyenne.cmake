@@ -1,0 +1,5 @@
+if (MODEL STREQUAL pio1)
+  string(APPEND CPPDEFS " -DNO_MPIMOD")
+endif()
+string(APPEND FFLAGS " -fallow-argument-mismatch -fallow-invalid-boz")
+string(APPEND SLIBS " -ldl")
