@@ -295,19 +295,16 @@ fi
 case $MACH in
   ## cheyenne
   "cheyenne" )
-    esmfvers=8.0.0
+    esmfvers=8.1.0b23
     intelvers=19.0.5
     module purge
-    #module load intel/$intelvers esmf_libs/${esmfvers}
     module load intel/$intelvers esmf_libs
-    esmfvers=8.1.0b23
     module use /glade/p/cesmdata/cseg/PROGS/modulefiles/esmfpkgs/intel/$intelvers
     if [ "$serial" == "TRUE" ]; then
       # No MPIEXEC
       if [ -z "$MPIEXEC" ]; then
         MPIEXEC=""
       fi
-      #module load esmf-${esmfvers}-ncdfio-uni-O
       module load esmf-${esmfvers}-ncdfio-mpiuni-O
     else
       # MPIEXEC should be mpirun -np
@@ -317,7 +314,6 @@ case $MACH in
         fi
         MPIEXEC="mpirun -np $NCPUS"
       fi
-      #module load esmf-${esmfvers}-ncdfio-mpi-O
       module load esmf-${esmfvers}-ncdfio-mpt-O
       module load mpt/2.22
     fi
@@ -357,7 +353,6 @@ if [ ! -z $ESMFBIN_PATH ]; then
 else
   ESMF_REGRID="ESMF_RegridWeightGen"
 fi
-ESMF_REGRID="$ESMF_REGRID --ignore_degenerate "
 
 # Make sure $ESMF_REGRID is a valid command
 command -v $ESMF_REGRID >/dev/null 2>&1 || { echo "Can not find ESMF_RegridWeightGen, make sure it is in your \$PATH or that you specify \$ESMFBIN_PATH." && exit 1; }
@@ -400,7 +395,7 @@ if [ "$mapping" == "NULL" ]; then
   echo "ERROR: $map_type is not a valid option for --maptype"
   exit 9
 fi
-cmd="$MPIEXEC $ESMF_REGRID --ignore_unmapped -m $mapping -w $fmap -s $fsrc -d $fdst $pass_thru"
+cmd="$MPIEXEC $ESMF_REGRID --ignore_unmapped --ignore_degenerate -m $mapping -w $fmap -s $fsrc -d $fdst $pass_thru"
 
 if [ $use_large == "true" ]; then
   cmd="$cmd --64bit_offset"
