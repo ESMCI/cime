@@ -108,7 +108,7 @@ def uses_kokkos(case):
     cam_target = case.get_value("CAM_TARGET")
     # atm_comp   = case.get_value("COMP_ATM") # scream does not use the shared kokkoslib for now
 
-    return get_model() == "e3sm" and cam_target in ("preqx_kokkos", "theta-l")
+    return get_model() == "e3sm" and cam_target in ("preqx_kokkos", "theta-l", "theta-l_kokkos")
 
 ###############################################################################
 def _build_model(build_threaded, exeroot, incroot, complist,
