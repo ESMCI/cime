@@ -5,8 +5,8 @@ import shutil
 import os
 import tempfile
 import re
-import six
-import six_additions
+import CIME.six
+import CIME.six_additions
 from CIME.cs_status import cs_status
 from CIME import test_status
 from CIME.tests.custom_assertions_test_status import CustomAssertionsTestStatus
@@ -25,7 +25,7 @@ class TestCsStatus(CustomAssertionsTestStatus):
 
     def setUp(self):
         self._testroot = tempfile.mkdtemp()
-        self._output = six.StringIO()
+        self._output = CIME.six.StringIO()
 
     def tearDown(self):
         self._output.close()
@@ -125,7 +125,7 @@ class TestCsStatus(CustomAssertionsTestStatus):
                 self.assert_phase_absent(output=self._output.getvalue(),
                                          phase=phase,
                                          test_name=test_name)
-        six_additions.assertNotRegex(self, self._output.getvalue(), r'Overall:')
+        CIME.six_additions.assertNotRegex(self, self._output.getvalue(), r'Overall:')
 
     def test_count_fails(self):
         """Test the count of fails with three tests
@@ -179,9 +179,9 @@ class TestCsStatus(CustomAssertionsTestStatus):
                                      phase=phase_of_interest2,
                                      test_name=test_names[testnum])
         count_regex1 = r'{} +non-passes: +2'.format(re.escape(phase_of_interest1))
-        six.assertRegex(self, self._output.getvalue(), count_regex1)
+        CIME.six.assertRegex(self, self._output.getvalue(), count_regex1)
         count_regex2 = r'{} +non-passes: +1'.format(re.escape(phase_of_interest2))
-        six.assertRegex(self, self._output.getvalue(), count_regex2)
+        CIME.six.assertRegex(self, self._output.getvalue(), count_regex2)
 
     def test_expected_fails(self):
         """With the expected_fails_file flag, expected failures should be flagged as such"""

@@ -120,7 +120,7 @@ def check_code(files, num_procs=10, interactive=False):
 
     if "scripts/lib/six.py" in files_to_check:
         files_to_check.remove("scripts/lib/six.py")
-        logger.info("Not checking contributed file six.py")
+        logger.info("Not checking contributed file CIME.six.py")
 
     expect(len(files_to_check) > 0, "No matching files found")
 

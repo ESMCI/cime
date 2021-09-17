@@ -16,8 +16,8 @@ sys.path.append(LIB_DIR)
 # Remove all pyc files to ensure we're testing the right things
 import subprocess, argparse
 subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
-import six
-from six import assertRaisesRegex
+import CIME.six
+from CIME.six import assertRaisesRegex
 import stat as osstat
 
 import collections
@@ -2094,7 +2094,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             for batch_cmd in batch_commands:
                 self.assertTrue(isinstance(batch_cmd, collections.Sequence), "case.submit_jobs did not return a sequence of sequences")
                 self.assertTrue(len(batch_cmd) > batch_cmd_index, "case.submit_jobs returned internal sequences with length <= {}".format(batch_cmd_index))
-                self.assertTrue(isinstance(batch_cmd[1], six.string_types), "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(batch_cmd[1]))
+                self.assertTrue(isinstance(batch_cmd[1], CIME.six.string_types), "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(batch_cmd[1]))
                 batch_cmd_args = batch_cmd[1]
 
                 jobid_ident = "jobid"
@@ -2756,8 +2756,8 @@ def get_macros(macro_maker, build_xml, build_system):
     """
     # Build.write_macros expects file-like objects as input, so
     # we need to wrap the strings in StringIO objects.
-    xml = six.StringIO(str(build_xml))
-    output = six.StringIO()
+    xml = CIME.six.StringIO(str(build_xml))
+    output = CIME.six.StringIO()
     output_format = None
     if build_system == "Makefile":
         output_format = "make"

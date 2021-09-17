@@ -6,10 +6,10 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
-import glob, os, shutil, math, six, time, hashlib, socket, getpass
+import glob, os, shutil, math, CIME.six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
-from six.moves import input
+from CIME.six.moves import input
 from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, set_model
 from CIME.utils                     import get_project, get_charge_account, check_name
@@ -303,7 +303,7 @@ class Case(object):
                 new_results = []
                 if resolved:
                     for result in results:
-                        if isinstance(result, six.string_types):
+                        if isinstance(result, CIME.six.string_types):
                             result = self.get_resolved_value(result)
                             vtype = env_file.get_type_info(item)
                             if vtype is not None or vtype != "char":
@@ -329,7 +329,7 @@ class Case(object):
             result = env_file.get_value(item, attribute, resolved=False, subgroup=subgroup)
 
             if result is not None:
-                if resolved and isinstance(result, six.string_types):
+                if resolved and isinstance(result, CIME.six.string_types):
                     result = self.get_resolved_value(result)
                     vtype = env_file.get_type_info(item)
                     if vtype is not None and vtype != "char":
@@ -755,7 +755,7 @@ class Case(object):
     def __iter__(self):
         for entryid_file in self._env_entryid_files:
             for key, val in entryid_file:
-                if isinstance(val, six.string_types) and '$' in val:
+                if isinstance(val, CIME.six.string_types) and '$' in val:
                     yield key, self.get_resolved_value(val)
                 else:
                     yield key, val

@@ -7,10 +7,10 @@ import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, \
 import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
-import six
+import CIME.six
 from contextlib import contextmanager
 #pylint: disable=import-error
-from six.moves import configparser
+from CIME.six.moves import configparser
 from distutils import file_util
 
 # Return this error code if the scripts worked but tests failed
@@ -505,12 +505,12 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     # Real defaults for these value should be subprocess.PIPE
     if arg_stdout is _hack:
         arg_stdout = subprocess.PIPE
-    elif isinstance(arg_stdout, six.string_types):
+    elif isinstance(arg_stdout, CIME.six.string_types):
         arg_stdout = _convert_to_fd(arg_stdout, from_dir)
 
     if arg_stderr is _hack:
         arg_stderr = subprocess.STDOUT if combine_output else subprocess.PIPE
-    elif isinstance(arg_stderr, six.string_types):
+    elif isinstance(arg_stderr, CIME.six.string_types):
         arg_stderr = _convert_to_fd(arg_stdout, from_dir)
 
     if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):
@@ -549,7 +549,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     # as much as possible, so we convert bytes to string (which is unicode in py3) via
     # decode. For python2, we do NOT want to do this since decode will yield unicode
     # strings which are not necessarily compatible with the system's default base str type.
-    if not six.PY2:
+    if not CIME.six.PY2:
         if output is not None:
             try:
                 output = output.decode('utf-8', errors='ignore')
@@ -568,7 +568,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
         errput = errput.strip()
 
     stat = proc.wait()
-    if six.PY2:
+    if CIME.six.PY2:
         if isinstance(arg_stdout, file): # pylint: disable=undefined-variable
             arg_stdout.close() # pylint: disable=no-member
         if isinstance(arg_stderr, file) and arg_stderr is not arg_stdout: # pylint: disable=undefined-variable
@@ -618,11 +618,11 @@ def run_cmd_no_fail(cmd, input_str=None, from_dir=None, verbose=None,
         errput = output if not errput else errput
         if errput is None:
             if combine_output:
-                if isinstance(arg_stdout, six.string_types):
+                if isinstance(arg_stdout, CIME.six.string_types):
                     errput = "See {}".format(_get_path(arg_stdout, from_dir))
                 else:
                     errput = ""
-            elif isinstance(arg_stderr, six.string_types):
+            elif isinstance(arg_stderr, CIME.six.string_types):
                 errput = "See {}".format(_get_path(arg_stderr, from_dir))
             else:
                 errput = ""
@@ -1346,11 +1346,11 @@ def convert_to_string(value, type_str=None, vid=""):
     >>> convert_to_string(6.01, type_str="real") == '6.01'
     True
     """
-    if value is not None and not isinstance(value, six.string_types):
+    if value is not None and not isinstance(value, CIME.six.string_types):
         if type_str == "char":
-            expect(isinstance(value, six.string_types), "Wrong type for entry id '{}'".format(vid))
+            expect(isinstance(value, CIME.six.string_types), "Wrong type for entry id '{}'".format(vid))
         elif type_str == "integer":
-            expect(isinstance(value, six.integer_types), "Wrong type for entry id '{}'".format(vid))
+            expect(isinstance(value, CIME.six.integer_types), "Wrong type for entry id '{}'".format(vid))
             value = str(value)
         elif type_str == "logical":
             expect(type(value) is bool, "Wrong type for entry id '{}'".format(vid))

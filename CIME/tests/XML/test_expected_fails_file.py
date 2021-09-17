@@ -4,7 +4,7 @@ import unittest
 import os
 import shutil
 import tempfile
-import six
+import CIME.six
 from CIME.XML.expected_fails_file import ExpectedFailsFile
 from CIME.utils import CIMEError
 from CIME.expected_fails import ExpectedFails
@@ -114,7 +114,7 @@ class TestExpectedFailsFile(unittest.TestCase):
         with open(self._xml_filepath, 'w') as xml_file:
             xml_file.write(contents)
 
-        with six.assertRaisesRegex(self, CIMEError, "Schemas validity error"):
+        with CIME.six.assertRaisesRegex(self, CIMEError, "Schemas validity error"):
             _ = ExpectedFailsFile(self._xml_filepath)
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-import os, re, logging, six
+import os, re, logging, CIME.six
 
 from collections import OrderedDict
 from CIME.utils  import expect, CIMEError
@@ -129,7 +129,7 @@ def _parse_namelists(namelist_lines, filename):
     ...   dval = 'one->two', 'three -> four'
     ...   mdval = 'one   -> two',
     ...           'three -> four',
-    ...           'five -> six'
+    ...           'five -> CIME.six'
     ...   nval = 1850
     ... /
     ...
@@ -394,7 +394,7 @@ def _compare_values(name, gold_value, comp_value, case):
                 comments += "  dict variable '{}' has extra key {} with value {}\n".format(name, key, comp_value[key])
 
     else:
-        expect(isinstance(gold_value, six.string_types), "Unexpected type found: '{}'".format(type(gold_value)))
+        expect(isinstance(gold_value, CIME.six.string_types), "Unexpected type found: '{}'".format(type(gold_value)))
         norm_gold_value = _normalize_string_value(name, gold_value, case)
         norm_comp_value = _normalize_string_value(name, comp_value, case)
 
@@ -420,7 +420,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
     ...   aval = 'one','two', 'three'
     ...   maval = 'one', 'two', 'three', 'four'
     ...   dval = 'one -> two', 'three -> four'
-    ...   mdval = 'one -> two', 'three -> four', 'five -> six'
+    ...   mdval = 'one -> two', 'three -> four', 'five -> CIME.six'
     ...   nval = 1850
     ... /
     ... &nml2

@@ -164,7 +164,7 @@ class MovedAttribute(_LazyDescr):
 class _SixMetaPathImporter(object):
 
     """
-    A meta path importer to import six.moves and its submodules.
+    A meta path importer to import CIME.six.moves and its submodules.
 
     This class implements a PEP302 finder and loader. It should be compatible
     with Python 2.5 and all existing versions of Python3
@@ -321,7 +321,7 @@ _importer._add_module(moves, "moves")
 
 class Module_six_moves_urllib_parse(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_parse"""
+    """Lazy loading of moved objects in CIME.six.moves.urllib_parse"""
 
 
 _urllib_parse_moved_attributes = [
@@ -363,7 +363,7 @@ _importer._add_module(Module_six_moves_urllib_parse(__name__ + ".moves.urllib_pa
 
 class Module_six_moves_urllib_error(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_error"""
+    """Lazy loading of moved objects in CIME.six.moves.urllib_error"""
 
 
 _urllib_error_moved_attributes = [
@@ -383,7 +383,7 @@ _importer._add_module(Module_six_moves_urllib_error(__name__ + ".moves.urllib.er
 
 class Module_six_moves_urllib_request(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_request"""
+    """Lazy loading of moved objects in CIME.six.moves.urllib_request"""
 
 
 _urllib_request_moved_attributes = [
@@ -435,7 +435,7 @@ _importer._add_module(Module_six_moves_urllib_request(__name__ + ".moves.urllib.
 
 class Module_six_moves_urllib_response(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_response"""
+    """Lazy loading of moved objects in CIME.six.moves.urllib_response"""
 
 
 _urllib_response_moved_attributes = [
@@ -456,7 +456,7 @@ _importer._add_module(Module_six_moves_urllib_response(__name__ + ".moves.urllib
 
 class Module_six_moves_urllib_robotparser(_LazyModule):
 
-    """Lazy loading of moved objects in six.moves.urllib_robotparser"""
+    """Lazy loading of moved objects in CIME.six.moves.urllib_robotparser"""
 
 
 _urllib_robotparser_moved_attributes = [
@@ -474,7 +474,7 @@ _importer._add_module(Module_six_moves_urllib_robotparser(__name__ + ".moves.url
 
 class Module_six_moves_urllib(types.ModuleType):
 
-    """Create a six.moves.urllib namespace that resembles the Python 3 namespace"""
+    """Create a CIME.six.moves.urllib namespace that resembles the Python 3 namespace"""
     __path__ = []  # mark as package
     parse = _importer._get_module("moves.urllib_parse")
     error = _importer._get_module("moves.urllib_error")
@@ -490,12 +490,12 @@ _importer._add_module(Module_six_moves_urllib(__name__ + ".moves.urllib"),
 
 
 def add_move(move):
-    """Add an item to six.moves."""
+    """Add an item to CIME.six.moves."""
     setattr(_MovedItems, move.name, move)
 
 
 def remove_move(name):
-    """Remove item from six.moves."""
+    """Remove item from CIME.six.moves."""
     try:
         delattr(_MovedItems, name)
     except AttributeError:
@@ -872,14 +872,14 @@ __path__ = []  # required for PEP 302 and PEP 451
 __package__ = __name__  # see PEP 366 @ReservedAssignment
 if globals().get("__spec__") is not None:
     __spec__.submodule_search_locations = []  # PEP 451 @UndefinedVariable
-# Remove other six meta path importers, since they cause problems. This can
-# happen if six is removed from sys.modules and then reloaded. (Setuptools does
+# Remove other CIME.six meta path importers, since they cause problems. This can
+# happen if CIME.six is removed from sys.modules and then reloaded. (Setuptools does
 # this for some reason.)
 if sys.meta_path:
     for i, importer in enumerate(sys.meta_path):
-        # Here's some real nastiness: Another "instance" of the six module might
+        # Here's some real nastiness: Another "instance" of the CIME.six module might
         # be floating around. Therefore, we can't use isinstance() to check for
-        # the six meta path importer, since the other six instance will have
+        # the CIME.six meta path importer, since the other CIME.six instance will have
         # inserted an importer with different class.
         if (type(importer).__name__ == "_SixMetaPathImporter" and
                 importer.name == __name__):

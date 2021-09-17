@@ -12,7 +12,7 @@ import traceback, stat, threading, time, glob
 from collections import OrderedDict
 
 from CIME.XML.standard_module_setup import *
-import six
+import CIME.six
 from CIME.get_tests import get_recommended_test_time, get_build_groups
 from CIME.utils import append_status, append_testlog, TESTS_FAILED_ERR_CODE, parse_test_name, get_full_test_name, get_model, \
     convert_to_seconds, get_cime_root, get_project, get_timestamp, get_python_libs_root, get_cime_default_driver
@@ -979,7 +979,7 @@ class TestScheduler(object):
 
                             logger.debug("  Current workload:")
                             total_procs = 0
-                            for the_test, the_data in six.iteritems(threads_in_flight):
+                            for the_test, the_data in CIME.six.iteritems(threads_in_flight):
                                 logger.debug("    {}: {} -> {}".format(the_test, the_data[2], the_data[1]))
                                 total_procs += the_data[1]
 

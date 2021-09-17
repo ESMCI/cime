@@ -1,5 +1,5 @@
 #pylint: disable=import-error
-from six.moves import queue
+from CIME.six.moves import queue
 import os, time, threading, socket, signal, shutil, glob
 #pylint: disable=import-error
 from distutils.spawn import find_executable

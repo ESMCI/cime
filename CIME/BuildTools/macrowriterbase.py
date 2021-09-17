@@ -13,7 +13,7 @@ more.
 from abc import ABCMeta, abstractmethod
 from CIME.XML.standard_module_setup import *
 from CIME.utils import get_cime_root
-from six import add_metaclass
+from CIME.six import add_metaclass
 
 logger = logging.getLogger(__name__)
 

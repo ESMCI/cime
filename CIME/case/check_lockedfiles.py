@@ -14,7 +14,7 @@ from CIME.build import clean
 
 logger = logging.getLogger(__name__)
 
-import glob, six
+import glob, CIME.six
 
 def check_pelayouts_require_rebuild(self, models):
     """
@@ -108,7 +108,7 @@ def check_lockedfiles(self, skip=None):
     caseroot = self.get_value("CASEROOT")
     lockedfiles = glob.glob(os.path.join(caseroot, "LockedFiles", "*.xml"))
     skip = [] if skip is None else skip
-    skip = [skip] if isinstance(skip, six.string_types) else skip
+    skip = [skip] if isinstance(skip, CIME.six.string_types) else skip
     for lfile in lockedfiles:
         fpart = os.path.basename(lfile)
         # ignore files used for tests such as env_mach_pes.ERP1.xml by looking for extra dots in the name
