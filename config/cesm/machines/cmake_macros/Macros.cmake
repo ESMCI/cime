@@ -4,8 +4,6 @@
 # and that's the one that gets included by the build system. Feel free
 # to modify this file in the CASEROOT.
 #
-cmake_policy(SET CMP0057 NEW)
-project(cime LANGUAGES C Fortran)
 set(MACROS_DIR ${CASEROOT}/cmake_macros)
 
 set(UNIVERSAL_MACRO ${MACROS_DIR}/universal.cmake)
