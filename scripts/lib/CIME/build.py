@@ -2,6 +2,7 @@
 functions for building CIME models
 """
 import glob, shutil, time, threading, subprocess
+from pathlib import Path
 from CIME.XML.standard_module_setup  import *
 from CIME.utils                 import get_model, analyze_build_log, \
     stringify_bool, run_and_log_case_status, get_timestamp, run_sub_or_cmd, \
@@ -23,7 +24,7 @@ _CMD_ARGS_FOR_BUILD = \
 
 def generate_makefile_macro(case, caseroot, comp_name):
     """
-    Only used by E3SM. Generates a flat Makefile macro file based on the CMake cache system.
+    Generates a flat Makefile macro file based on the CMake cache system.
     This macro is only used by certain sharedlibs since components use CMake.
     Since indirection based on comp_name is allowed for sharedlibs, each sharedlib must generate
     their own macro.
@@ -31,15 +32,17 @@ def generate_makefile_macro(case, caseroot, comp_name):
     new_cmake_dir = os.path.join(caseroot, "cmake_macros")
     if not os.path.isdir(new_cmake_dir):
         return
-
+    cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
+    Path(os.path.join(caseroot,"cmaketmp")).mkdir(parents=False, exist_ok=True)
+    safe_copy(cmake_lists, "cmaketmp")
     cmake_macro = os.path.join(caseroot, "Macros.cmake")
     expect(os.path.exists(cmake_macro), "Cannot generate Makefile macro without {}".format(cmake_macro))
 
     cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
-    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON -DCOMP_NAME={} {} -C Macros.cmake |& grep E3SM_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp_name, cmake_args), from_dir=caseroot)
-
+    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON -DCOMP_NAME={} {} . |& grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp_name, cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
+    
     # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
-    real_output = output.replace("E3SM_SET_MAKEFILE_VAR ", "").\
+    real_output = output.replace("CIME_SET_MAKEFILE_VAR ", "").\
                   replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
                   replace("SLIBS := ", "SLIBS := $(SLIBS) ")
 
@@ -52,6 +55,8 @@ def generate_makefile_macro(case, caseroot, comp_name):
 
 """)
         fd.write(real_output)
+
+    shutil.rmtree(os.path.join(caseroot,"cmaketmp"))
 
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
@@ -490,9 +495,8 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
         expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
 
-        # generate Makefile macro if e3sm
-        if get_model() == "e3sm":
-            generate_makefile_macro(case, caseroot, lib)
+        # generate Makefile macro
+        generate_makefile_macro(case, caseroot, lib)
 
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
                        [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
@@ -628,8 +632,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
                 clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
             else:
                 # Item was created by classic build system
-                if get_model() == "e3sm":
-                    generate_makefile_macro(case, caseroot, clean_item)
+                generate_makefile_macro(case, caseroot, clean_item)
 
                 clean_cmd = "{} {}{}".format(classic_cmd, "clean" if clean_item in cleanlist else "clean_depends", clean_item)
 

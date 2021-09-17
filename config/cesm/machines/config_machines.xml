@@ -661,8 +661,8 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">netcdf-mpi/4.7.4</command>
       </modules>
       <modules mpilib="openmpi" compiler="gnu">
-        <command name="load">openmpi/3.1.4</command>
-        <command name="load">netcdf/4.7.1</command>
+        <command name="load">openmpi/4.1.0</command>
+        <command name="load">netcdf-mpi/4.8.0</command>
       </modules>
       <modules>
         <command name="load">ncarcompilers/0.5.0</command>
