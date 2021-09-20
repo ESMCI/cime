@@ -1,47 +1,42 @@
 """
-Base class for CIME system tests that involve doing two runs and comparing their
-output.
+Base class for CIME system tests that involve doing multiple runs and comparing the base run (index=0)
+with the subsequent runs (indices=1..N-1).
 
 NOTE: Below is the flow of a multisubmit test.
 Non-batch:
 case_submit -> case_run     # PHASE 1
             -> case_run     # PHASE 2
+            ...
+            -> case_run     # PHASE N
 
 batch:
 case_submit -> case_run     # PHASE 1
 case_run    -> case_submit
 case_submit -> case_run     # PHASE 2
+...
+case_submit -> case_run     # PHASE N
 
 In the __init__ method for your test, you MUST call
-    SystemTestsCompareTwo.__init__
+    SystemTestsCompareN.__init__
 See the documentation of that method for details.
 
-Classes that inherit from this are REQUIRED to implement the following methods:
+Classes that inherit from this are REQUIRED to implement the following method:
 
-(1) _case_one_setup
-    This method will be called to set up case 1, the "base" case
-
-(2) _case_two_setup
-    This method will be called to set up case 2, the "test" case
+(1) _case_setup_config
+    This method will be called to set up case i, where i==0 corresponds to the base case
+    and i=={1,..N-1} corresponds to subsequent runs to be compared with the base.
 
 In addition, they MAY require the following methods:
 
 (1) _common_setup
-    This method will be called to set up both cases. It should contain any setup
-    that's needed in both cases. This is called before _case_one_setup or
-    _case_two_setup.
+    This method will be called to set up all cases. It should contain any setup
+    that's needed in all cases. This is called before _case_setup_config
 
-(2) _case_one_custom_prerun_action(self):
-    Use this to do arbitrary actions immediately before running case one
+(2) _case_custom_prerun_action(self, i):
+    Use this to do arbitrary actions immediately before running case i
 
-(3) _case_two_custom_prerun_action(self):
-    Use this to do arbitrary actions immediately before running case two
-
-(4) _case_one_custom_postrun_action(self):
+(3) _case_custom_postrun_action(self, i):
     Use this to do arbitrary actions immediately after running case one
-
-(5) _case_two_custom_postrun_action(self):
-    Use this to do arbitrary actions immediately after running case two
 """
 
 from CIME.XML.standard_module_setup import *
@@ -60,9 +55,8 @@ class SystemTestsCompareN(SystemTestsCommon):
                  case,
                  N = 2,
                  separate_builds = False,
-                 subsq_run_suffix = 'subsq',
-                 base_run_description = '',
-                 subsq_run_description = '',
+                 run_suffixes = None,
+                 run_descriptions = None,
                  multisubmit = False,
                  ignore_fieldlist_diffs = False):
         """
@@ -75,19 +69,17 @@ class SystemTestsCompareN(SystemTestsCommon):
             N (int): number of test cases including the base case.
             separate_builds (bool): Whether separate builds are needed for the
                 cases. If False, case[i:1..N-1] uses the case[0] executable.
-            subsq_run_suffix (str, optional): Suffix appended to the case name for
-                the cases run after the base case. Defaults to 'subsq'. This can be
-                anything other than 'base'.
-            base_run_description (str, optional): Description printed to log file
-                when starting the base run. Defaults to ''.
-            subsq_run_description (str, optional): Description printed to log file
-                when starting the subsequent runs. Defaults to ''.
+            run_suffixes (list of str, optional): List of suffixes appended to the case names.
+                Defaults to ["base", "subsq_1", "subsq_2", .. "subsq_N-1"]. Each
+                suffix must be unique.
+            run_descriptions (list of str, optional): Descriptions printed to log file
+                of each case when starting the runs. Defaults to ['']*N.
             multisubmit (bool): Do base and subsequent runs as different submissions.
                 Designed for tests with RESUBMIT=1
             ignore_fieldlist_diffs (bool): If True, then: If the cases differ only in
                 their field lists (i.e., all shared fields are bit-for-bit, but one case
                 has some diagnostic fields that are missing from the base case), treat
-                the two cases as identical. (This is needed for tests where one case
+                the cases as identical. (This is needed for tests where one case
                 exercises an option that produces extra diagnostic fields.)
         """
         SystemTestsCommon.__init__(self, case)
@@ -95,19 +87,32 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
 
-        self._base_run_suffix = 'base'
-        self._subsq_run_suffix = subsq_run_suffix.rstrip()
-        expect(self._subsq_run_suffix != self._base_run_suffix,
-               "ERROR: Must have different suffixes for base run and subsequent ones")
-
-        self._base_run_description = base_run_description
-        self._subsq_run_description = subsq_run_description
-
         # Initialize cases; it will get set to its true value in
         # _setup_cases_if_not_yet_done
         expect(N>1, "Number of cases must be greater than 1.")
         self._cases = [None]*N
         self.N = N
+
+        if run_suffixes:
+            expect(isinstance(run_suffixes, list) and all([isinstance(sfx,str) for sfx in run_suffixes]),
+                "run_suffixes must be a list of strings")
+            expect(len(run_suffixes) == self.N,
+                "run_suffixes list must include {} strings".format(self.N))
+            expect(len(set(run_suffixes)) == len(run_suffixes),
+                "each suffix in run_suffixes must be unique")
+            self._run_suffixes = [sfx.rstrip() for sfx in run_suffixes]
+        else:
+            self.run_suffixes = ['base'] + ['subsq_{}'.format(i) for i in range(1,N)]
+
+
+        if run_descriptions:
+            expect(isinstance(run_descriptions, list) and all([isinstance(dsc,str) for dsc in run_descriptions]),
+                "run_descriptions must be a list of strings")
+            expect(len(run_descriptions) == self.N,
+                   "run_descriptions list must include {} strings".format(self.N))
+            self._run_descriptions = run_descriptions
+        else:
+            self._run_descriptions = [''] * self.N
 
         # Save case for first run so we can return to it if we switch self._case
         # to point to self._case2
@@ -222,15 +227,14 @@ class SystemTestsCompareN(SystemTestsCommon):
 
         # First run
         if not self._multisubmit or base_phase:
-            logger.info('Doing first run: ' + self._base_run_description)
+            logger.info('Doing first run: ' + self._run_descriptions[0])
 
             # Add a PENDing compare phase so that we'll notice if the second part of compare two
             # doesn't run.
-            subsq_suffix_1 = self._subsq_run_suffix+'_'+str(1) 
             compare_phase_name = "{}_{}_{}".format(
                 COMPARE_PHASE,
-                self._base_run_suffix,
-                subsq_suffix_1)
+                self._run_suffixes[0],
+                self._run_suffixes[1])
             with self._test_status:
                 self._test_status.set_status(
                     compare_phase_name,
@@ -238,7 +242,7 @@ class SystemTestsCompareN(SystemTestsCommon):
 
             self._activate_case(0)
             self._case_custom_prerun_action(0)
-            self.run_indv(suffix = self._base_run_suffix)
+            self.run_indv(suffix = self._run_suffixes[0])
             self._case_custom_postrun_action(0)
 
         # Subsequent runs
@@ -248,9 +252,8 @@ class SystemTestsCompareN(SystemTestsCommon):
             # via clone, not a with statement, so it's not in a writeable state, so we need to
             # use a with statement here to put it in a writeable state.
             for i in range(1,self.N):
-                subsq_suffix_i = self._subsq_run_suffix+'_'+str(i) 
                 with self._cases[i]:
-                    logger.info('Doing run {}: '.format(i) + self._subsq_run_description)
+                    logger.info('Doing run {}: '.format(i) + self._run_descriptions[i])
                     self._activate_case(i)
                     # This assures that case i namelists are populated
                     self._skip_pnl = False
@@ -259,12 +262,12 @@ class SystemTestsCompareN(SystemTestsCommon):
                         self._cases[i].check_case()
 
                     self._case_custom_prerun_action(i)
-                    self.run_indv(suffix = subsq_suffix_i)
+                    self.run_indv(suffix = self._run_suffixes[i])
                     self._case_custom_postrun_action(i)
                 # Compare results
                 self._activate_case(0)
                 self._link_to_subsq_case_output(i)
-                self._component_compare_test(self._base_run_suffix, subsq_suffix_i,
+                self._component_compare_test(self._run_suffixes[0], self._run_suffixes[i],
                                                 success_change=success_change,
                                                 ignore_fieldlist_diffs=self._ignore_fieldlist_diffs)
 
@@ -493,9 +496,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         subsq_casename = self._cases[i].get_value("CASE")
         base_rundir = self._cases[0].get_value("RUNDIR")
         subsq_rundir = self._cases[i].get_value("RUNDIR")
-        subsq_suffix_i = self._subsq_run_suffix+'_'+str(i) 
 
-        pattern = '{}*.nc.{}'.format(subsq_casename, subsq_suffix_i)
+        pattern = '{}*.nc.{}'.format(subsq_casename, self._run_suffixes[i])
         subsq_case_files = glob.glob(os.path.join(subsq_rundir, pattern))
         for one_file in subsq_case_files:
             file_basename = os.path.basename(one_file)
