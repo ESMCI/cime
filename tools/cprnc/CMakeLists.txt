@@ -84,6 +84,5 @@ set (CPRNC_SRCS
 )
 
 add_executable(cprnc ${CPRNC_SRCS})
-add_dependencies(cprnc COMPARE_VARS)
 
 target_link_libraries(cprnc ${NF_LIB_LIST})
