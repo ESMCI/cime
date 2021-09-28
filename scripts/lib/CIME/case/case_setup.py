@@ -14,7 +14,7 @@ from CIME.utils             import transform_vars
 from CIME.test_status       import *
 from CIME.locked_files      import unlock_file, lock_file
 
-import errno, shutil
+import errno, shutil, glob
 
 logger = logging.getLogger(__name__)
 
@@ -149,7 +149,7 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
         extra_machdir = case.get_value("EXTRA_MACHDIR")
         if extra_machdir: 
             if os.path.isdir(os.path.join(extra_machdir,"cmake_macros")):
-                local_macros.append(glob.glob(os.path.join(extra_machdir,"cmake_macros/*.cmake")))
+                local_macros.extend(glob.glob(os.path.join(extra_machdir,"cmake_macros/*.cmake")))
             elif os.path.isfile(os.path.join(extra_machdir,"config_compilers.xml")):
                 logger.warning("WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(extra_machdir))
         dotcime = None
@@ -157,7 +157,8 @@ def _create_macros(case, mach_obj, caseroot, compiler, mpilib, debug, comp_inter
         if home:
             dotcime = os.path.join(home,".cime")
         if dotcime and os.path.isdir(dotcime):
-            local_macros.append(glob.glob(dotcime+"/*.cmake"))
+            local_macros.extend(glob.glob(dotcime+"/*.cmake"))
+
         for macro in local_macros:
             safe_copy(macro, new_cmake_macros_dir)
         if dotcime and os.path.isfile(os.path.join(dotcime,"config_compilers.xml")) and not local_macros:
