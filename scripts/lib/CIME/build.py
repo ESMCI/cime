@@ -37,17 +37,6 @@ def generate_makefile_macro(case, caseroot, comp_name):
     safe_copy(cmake_lists, "cmaketmp")
     cmake_macro = os.path.join(caseroot, "Macros.cmake")
     expect(os.path.exists(cmake_macro), "Cannot generate Makefile macro without {}".format(cmake_macro))
-    dotcime = None
-    local_macros = None
-    home = os.environ.get("HOME")
-    if home:
-        dotcime = os.path.join(home,".cime")
-    if dotcime and os.path.isdir(dotcime):
-        local_macros = glob.glob(dotcime+"/*.cmake")
-    for macro in local_macros:
-        safe_copy(macro, new_cmake_dir)
-    if dotcime and not local_macros:
-        logger.warning("WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(dotcime))
 
     cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
     output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON -DCOMP_NAME={} {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp_name, cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
