@@ -98,8 +98,12 @@ These unit tests are run automatically as part of **scripts_regression_tests** o
 How to add unit testing support on your machine
 -----------------------------------------------
 
-The following instructions assume that you have ported CIME to your machine by following the instructions in :doc:`/users_guide/porting-cime`.
-If you have done that, you can add unit testing support by building pFUnit on your machine and then pointing to the build in your **config_compilers.xml** file. Those processes are described in the following sections.
+The following instructions assume that you have ported CIME to your
+machine by following the instructions in
+:doc:`/users_guide/porting-cime`.  If you have done that, you can add
+unit testing support by building pFUnit on your machine and then
+pointing to the build in your ** *MACH*_*COMPILER*.cmake** file. Those
+processes are described in the following sections.
 
 At a minimum, do a serial build of pFUnit (without MPI or OpenMP) using the default compiler on your machine.
 That is the default that **run_tests.py** and that is required for **scripts_regression_tests.py** to run the unit tests on your machine.
@@ -171,12 +175,7 @@ Adding to the xml file
 ~~~~~~~~~~~~~~~~~~~~~~
 
 After you build pFUnit, tell CIME about your build or builds.
-To do this, specify the appropriate path(s) using the ``PFUNIT_PATH`` element in **config_compilers.xml**.
-For a serial build, your setting will look like this example:
-
-.. code-block:: xml
-
-     <PFUNIT_PATH MPILIB="mpi-serial" compile_threaded="FALSE">$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP</PFUNIT_PATH>
+To do this, specify the appropriate path(s) using the ``PFUNIT_PATH`` element in ** *MACH*_*COMPILER*.cmake** file. 
 
 The ``MPILIB`` attribute should be either:
 

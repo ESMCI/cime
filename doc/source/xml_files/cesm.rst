@@ -34,7 +34,7 @@ CESM XML settings for supported batch queuing systems.
 
 .. literalinclude:: ../../../config/cesm/machines/config_batch.xml
 
-CESM XML settings for supported compilers.
+CESM XML settings for supported compilers.  **DEPRECATED use cmake_macros**
 
 .. literalinclude:: ../../../config/cesm/machines/config_compilers.xml
 
