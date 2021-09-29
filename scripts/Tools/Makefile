@@ -75,7 +75,7 @@ endif
 
 CPPDEFS := $(USER_CPPDEFS) -D$(OS)
 
-include $(CASEROOT)/Macros.make
+-include $(CASEROOT)/Macros.make
 
 # Unless DEBUG mode is enabled, use NDEBUG to turn off assert statements.
 ifeq ($(strip $(DEBUG)),TRUE)
