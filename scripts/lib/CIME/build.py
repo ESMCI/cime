@@ -22,7 +22,7 @@ _CMD_ARGS_FOR_BUILD = \
      "CAM_CONFIG_OPTS", "COMP_LND", "COMPARE_TO_NUOPC", "HOMME_TARGET",
      "OCN_SUBMODEL", "CISM_USE_TRILINOS", "USE_TRILINOS", "USE_ALBANY", "USE_PETSC")
 
-def generate_makefile_macro(case, caseroot, comp_name):
+def generate_makefile_macro(case, caseroot):
     """
     Generates a flat Makefile macro file based on the CMake cache system.
     This macro is only used by certain sharedlibs since components use CMake.
@@ -35,16 +35,32 @@ def generate_makefile_macro(case, caseroot, comp_name):
     cmake_lists = os.path.join(new_cmake_dir, "CMakeLists.txt")
     Path(os.path.join(caseroot,"cmaketmp")).mkdir(parents=False, exist_ok=True)
     safe_copy(cmake_lists, "cmaketmp")
+
+    # Append CMakeLists.txt with compset specific stuff
+    comps = _get_compset_comps(case)
+    comps.extend(["mct", "pio{}".format(case.get_value("PIO_VERSION")), "gptl", "csm_share", "csm_share_cpl7"])
     cmake_macro = os.path.join(caseroot, "Macros.cmake")
     expect(os.path.exists(cmake_macro), "Cannot generate Makefile macro without {}".format(cmake_macro))
 
     cmake_args = get_standard_cmake_args(case, "DO_NOT_USE", shared_lib=True)
-    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON -DCOMP_NAME={} {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp_name, cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
-    
-    # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
+    # run once with no COMP_NAME
+    output = run_cmd_no_fail("cmake -DCONVERT_TO_MAKE=ON {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
     real_output = output.replace("CIME_SET_MAKEFILE_VAR ", "").\
                   replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
-                  replace("SLIBS := ", "SLIBS := $(SLIBS) ")
+                  replace("SLIBS := ", "SLIBS := $(SLIBS) ") + "\n"
+    base_output = real_output.splitlines()
+    print ("base_output is {}".format(set(base_output)))
+    for comp in comps:
+        output = run_cmd_no_fail("cmake -DMODEL={} -DCOMP_NAME={} -DCONVERT_TO_MAKE=ON {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp, comp, cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
+        # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
+        comp_output = (output.replace("CIME_SET_MAKEFILE_VAR ", "").\
+                       replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
+                       replace("SLIBS := ", "SLIBS := $(SLIBS) ")).splitlines()
+        for line in comp_output:
+            if line not in base_output:
+                real_output += "ifeq \"$(MODEL)\" \"{}\"\n".format(comp)
+                real_output += "  "+line+"\n"
+                real_output += "\nendif\n"
 
     with open(os.path.join(caseroot, "Macros.make"), "w") as fd:
         fd.write(
@@ -67,6 +83,19 @@ def get_standard_makefile_args(case, shared_lib=False):
 
     return make_args
 
+def _get_compset_comps(case):
+    comps = []
+    driver = case.get_value("COMP_INTERFACE")
+    for comp_class in case.get_values("COMP_CLASSES"):
+        comp = case.get_value("COMP_{}".format(comp_class))
+        if comp == "cpl":
+            comp = "driver"
+        if comp == "s{}".format(comp_class.lower()) and driver == "nuopc":
+            comp = ""
+        else:
+            comps.append(comp)
+    return comps
+
 def get_standard_cmake_args(case, sharedpath, shared_lib=False):
     cmake_args = "-DCIME_MODEL={} ".format(case.get_value("MODEL"))
     cmake_args += "-DSRC_ROOT={} ".format(case.get_value("SRCROOT"))
@@ -81,7 +110,7 @@ def get_standard_cmake_args(case, sharedpath, shared_lib=False):
 
     if not shared_lib:
         cmake_args += " -DUSE_KOKKOS={} ".format(stringify_bool(uses_kokkos(case)))
-        comps = [case.get_value("COMP_{}".format(comp_class)) for comp_class in case.get_values("COMP_CLASSES")]
+        comps = _get_compset_comps(case)
         cmake_args += " -DCOMP_NAMES='{}' ".format(";".join(comps))
 
     for var in _CMD_ARGS_FOR_BUILD:
@@ -469,6 +498,10 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
 
     logs = []
 
+    # generate Makefile macro
+    generate_makefile_macro(case, caseroot)
+
+
     for lib in libs:
         if buildlist is not None and lib not in buildlist:
             continue
@@ -494,9 +527,6 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             my_file = os.path.join(cimeroot, "src", "build_scripts", "buildlib.{}".format(lib))
         expect(os.path.exists(my_file),"Build script {} for component {} not found.".format(my_file, lib))
         logger.info("Building {} with output to file {}".format(lib,file_build))
-
-        # generate Makefile macro
-        generate_makefile_macro(case, caseroot, lib)
 
         run_sub_or_cmd(my_file, [full_lib_path, os.path.join(exeroot, sharedpath), caseroot], 'buildlib',
                        [full_lib_path, os.path.join(exeroot, sharedpath), case], logfile=file_build)
@@ -632,7 +662,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
                 clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
             else:
                 # Item was created by classic build system
-                generate_makefile_macro(case, caseroot, clean_item)
+                # do I need this? generate_makefile_macro(case, caseroot, clean_item)
 
                 clean_cmd = "{} {}{}".format(classic_cmd, "clean" if clean_item in cleanlist else "clean_depends", clean_item)
 

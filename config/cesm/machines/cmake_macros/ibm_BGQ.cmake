@@ -1,6 +1,6 @@
 set(CONFIG_ARGS "--build=powerpc-bgp-linux --host=powerpc64-suse-linux")
 string(APPEND CPPDEFS " -DLINUX")
-set(FFLAGS "-g -qfullpath -qmaxmem=-1 -qspillsize=2500 -qextname=flush")
+string(APPEND FFLAGS " -g -qfullpath -qmaxmem=-1 -qspillsize=2500 -qextname=flush")
 if (NOT DEBUG)
   string(APPEND FFLAGS " -O3 -qstrict -qinline=auto")
 endif()
