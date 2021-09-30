@@ -33,7 +33,7 @@ SIM_LENGTH = 600  # seconds
 OUT_FREQ = 10  # seconds
 INSPECT_AT = [300, 450, 600]  # seconds
 INIT_COND_FILE_TEMPLATE = \
-    "SMS_Ly5.ne4_ne4.FC5AV1C-04P2.eos_intel.ne45y.{}.{}.0002-{:02d}-01-00000.nc"
+    "20210915.v2.ne4_oQU240.F2010.{}.{}.0002-{:02d}-01-00000.nc"
 VAR_LIST = ["T", "Q", "V", "CLDLIQ", "CLDICE", "NUMLIQ", "NUMICE", "num_a1", "num_a2", "num_a3"]
 P_THRESHOLD = 0.005
 
@@ -47,9 +47,13 @@ class TSC(SystemTestsCommon):
         if self._case.get_value("MODEL") == "e3sm":
             self.atmmod = "eam"
             self.lndmod = "elm"
+            self.atmmodIC = "eam"
+            self.lndmodIC = "elm"
         else:
             self.atmmod = "cam"
             self.lndmod = "clm"
+            self.atmmodIC = "cam"
+            self.lndmodIC = "clm2"
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         # Only want this to happen once. It will impact the sharedlib build
@@ -86,16 +90,16 @@ class TSC(SystemTestsCommon):
         self._case.set_value("STOP_OPTION", "nsteps")
 
         csmdata_root = self._case.get_value("DIN_LOC_ROOT")
-        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4_v1_init")
-        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4_v1_init/b58d55680")
+        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4_v2_init")
+        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4_oQU240_v2_init")
 
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST+1):
             with open(f'user_nl_{self.atmmod}_'+str(iinst).zfill(4), 'w') as atmnlfile, \
                  open(f'user_nl_{self.lndmod}_'+str(iinst).zfill(4), 'w') as lndnlfile:
 
-                fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format('cam', 'i', iinst))
-                flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format('clm2', 'r', iinst))
+                fatm_in = os.path.join(csmdata_atm, INIT_COND_FILE_TEMPLATE.format(self.atmmodIC, 'i', iinst))
+                flnd_in = os.path.join(csmdata_lnd, INIT_COND_FILE_TEMPLATE.format(self.lndmodIC, 'r', iinst))
                 atmnlfile.write("ncdata  = '{}' \n".format(fatm_in))
                 lndnlfile.write("finidat = '{}' \n".format(flnd_in))
 
