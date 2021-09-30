@@ -49,7 +49,6 @@ def generate_makefile_macro(case, caseroot):
                   replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
                   replace("SLIBS := ", "SLIBS := $(SLIBS) ") + "\n"
     base_output = real_output.splitlines()
-    print ("base_output is {}".format(set(base_output)))
     for comp in comps:
         output = run_cmd_no_fail("cmake -DMODEL={} -DCOMP_NAME={} -DCONVERT_TO_MAKE=ON {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp, comp, cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
         # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
