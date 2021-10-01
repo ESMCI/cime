@@ -16,7 +16,7 @@ class EnvMachPes(EnvBase):
         self._components = components
         self._comp_interface = comp_interface
 
-        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_mach_pes.xsd")
+        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_mach_pes.xsd")
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 
     def add_comment(self, comment):

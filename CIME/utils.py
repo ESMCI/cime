@@ -268,6 +268,16 @@ def get_cime_root(case=None):
     logger.debug( "CIMEROOT is " + cimeroot)
     return cimeroot
 
+def get_config_path():
+    cimeroot = get_cime_root()
+
+    return os.path.join(cimeroot, "CIME", "config")
+
+def get_schema_path():
+    config_path = get_config_path()
+
+    return os.path.join(config_path, "xml_schemas")
+
 def get_src_root():
     """
     Return the absolute path to the root of SRCROOT.
@@ -301,12 +311,15 @@ def get_cime_default_driver():
     return driver
 
 def get_all_cime_models():
-    modelsroot = os.path.join(get_cime_root(), "config")
+    config_path = get_config_path()
     models = []
-    for entry in os.listdir(modelsroot):
-        if os.path.isdir(os.path.join(modelsroot,entry)):
+
+    for entry in os.listdir(config_path):
+        if os.path.isdir(os.path.join(config_path, entry)):
             models.append(entry)
+
     models.remove('xml_schemas')
+
     return models
 
 def set_model(model):
@@ -374,7 +387,7 @@ def get_model():
         set_model(model)
         return model
 
-    modelroot = os.path.join(get_cime_root(), "config")
+    modelroot = os.path.join(get_cime_root(), "CIME", "config")
     models = os.listdir(modelroot)
     msg = ".cime/config or environment variable CIME_MODEL must be set to one of: "
     msg += ", ".join([model for model in models

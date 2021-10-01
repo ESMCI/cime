@@ -2,10 +2,11 @@
 Interface to the config_files.xml file.  This class inherits from EntryID.py
 """
 import re
+import os
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.entry_id import EntryID
-from CIME.utils import expect, get_cime_root, get_model
+from CIME.utils import expect, get_cime_root, get_config_path, get_schema_path, get_model
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +21,18 @@ class Files(EntryID):
         '$CIMEROOT/config/config_headers.xml'
         """
         cimeroot = get_cime_root()
-        infile = os.path.join(cimeroot, "config", get_model(), "config_files.xml")
+        cimeroot_parent = os.path.dirname(cimeroot)
+        config_path = get_config_path()
+        schema_path = get_schema_path()
+
+        infile = os.path.join(config_path, get_model(), "config_files.xml")
         expect(os.path.isfile(infile), "Could not find or open file {}".format(infile))
-        schema = os.path.join(cimeroot, "config", "xml_schemas", "entry_id.xsd")
+
+        schema = os.path.join(schema_path, "entry_id.xsd")
+
         EntryID.__init__(self, infile, schema=schema)
-        config_files_override = os.path.join(os.path.dirname(cimeroot),".config_files.xml")
+
+        config_files_override = os.path.join(cimeroot_parent, ".config_files.xml")
         # variables COMP_ROOT_DIR_{} are mutable, all other variables are read only
         self.COMP_ROOT_DIR = {}
         self._comp_interface = comp_interface

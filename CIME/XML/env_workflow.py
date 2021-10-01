@@ -18,7 +18,7 @@ class EnvWorkflow(EnvBase):
         initialize an object interface to file env_workflow.xml in the case directory
         """
         # This arbitrary setting should always be overwritten
-        #        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_workflow.xsd")
+        #        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_workflow.xsd")
         # TODO: define schema for this file
         schema = None
         super(EnvWorkflow,self).__init__(case_root, infile, schema=schema, read_only=read_only)

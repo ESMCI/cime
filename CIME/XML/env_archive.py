@@ -13,7 +13,7 @@ class EnvArchive(ArchiveBase,EnvBase):
         """
         initialize an object interface to file env_archive.xml in the case directory
         """
-        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_archive.xsd")
+        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_archive.xsd")
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 
 

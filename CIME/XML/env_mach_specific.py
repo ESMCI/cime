@@ -24,7 +24,7 @@ class EnvMachSpecific(EnvBase):
         standalone_configure: logical - whether this is being called from the standalone
             configure utility, outside of a case
         """
-        schema = os.path.join(get_cime_root(), "config", "xml_schemas", "env_mach_specific.xsd")
+        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_mach_specific.xsd")
         EnvBase.__init__(self, caseroot, infile, schema=schema, read_only=read_only)
         self._allowed_mpi_attributes = ("compiler", "mpilib", "threaded", "unit_testing", "queue", "comp_interface")
         self._comp_interface = comp_interface

@@ -71,7 +71,7 @@ class Machines(GenericXML):
                     machine = self.probe_machine_name()
                     if machine is None:
                         for potential_model in get_all_cime_models():
-                            local_infile = os.path.join(get_cime_root(), "config",potential_model,"machines","config_machines.xml")
+                            local_infile = os.path.join(get_cime_root(), "CIME", "config",potential_model,"machines","config_machines.xml")
                             if local_infile != infile:
                                 GenericXML.read(self, local_infile, schema)
                                 if self.probe_machine_name() is not None:
