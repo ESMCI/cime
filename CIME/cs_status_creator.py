@@ -24,12 +24,11 @@ def create_cs_status(test_root, test_id, extra_args='', filename=None):
     filename (string): name of the generated cs.status file. If not
         given, this will be built from the test_id.
     """
-    python_libs_root = CIME.utils.get_python_libs_root()
     cime_root = CIME.utils.get_cime_root()
-    template_file = os.path.join(python_libs_root, "cs.status.template")
+    template_path = CIME.utils.get_template_path()
+    template_file = os.path.join(template_path, "cs.status.template")
     template = open(template_file, "r").read()
-    template = template.replace("<PATH>",
-                                os.path.join(cime_root,"scripts","Tools")).replace\
+    template = template.replace("<PATH>", cime_root).replace\
                                 ("<EXTRA_ARGS>", extra_args).replace\
                                 ("<TESTID>", test_id).replace\
                                 ("<TESTROOT>", test_root)

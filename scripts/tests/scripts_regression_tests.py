@@ -11,11 +11,11 @@ import glob, os, re, shutil, signal, sys, tempfile, \
 
 from xml.etree.ElementTree import ParseError
 
-LIB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","lib")
-sys.path.append(LIB_DIR)
+cimeroot = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, cimeroot)
 # Remove all pyc files to ensure we're testing the right things
 import subprocess, argparse
-subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
+subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=cimeroot)
 import CIME.six
 from CIME.six import assertRaisesRegex
 import stat as osstat
@@ -25,7 +25,7 @@ import collections
 from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, \
     safe_copy, CIMEError, get_cime_root, get_src_root, Timeout, \
     import_from_file, get_model
-import get_tests
+import CIME.get_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
 from  CIME.XML.compilers import Compilers
@@ -454,7 +454,7 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         cls._testdirs.append(testdir)
 
-        user_mods_dir = os.path.join(CIME.utils.get_python_libs_root(), "..", "tests", "user_mods_test1")
+        user_mods_dir = os.path.join(CIME.utils.get_cime_root(), "scripts", "tests", "user_mods_test1")
         args = " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"% (testdir, user_mods_dir, cls._testroot)
         if get_model() == "cesm":
             args += " --run-unsupported"
@@ -485,7 +485,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
         prevtestdir = cls._testdirs[0]
-        user_mods_dir = os.path.join(CIME.utils.get_python_libs_root(), "..", "tests", "user_mods_test3")
+        user_mods_dir = os.path.join(CIME.utils.get_cime_root(), "scripts", "tests", "user_modes_test3")
 
         cmd = "%s/create_clone --clone %s --case %s --keepexe --user-mods-dir %s" \
               % (SCRIPT_DIR, prevtestdir, testdir, user_mods_dir)

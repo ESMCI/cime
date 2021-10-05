@@ -8,6 +8,7 @@ phases. All other phases need to handle their own status because
 they can be run outside the context of TestScheduler.
 """
 
+import os
 import traceback, stat, threading, time, glob
 from collections import OrderedDict
 
@@ -15,7 +16,7 @@ from CIME.XML.standard_module_setup import *
 import CIME.six
 from CIME.get_tests import get_recommended_test_time, get_build_groups
 from CIME.utils import append_status, append_testlog, TESTS_FAILED_ERR_CODE, parse_test_name, get_full_test_name, get_model, \
-    convert_to_seconds, get_cime_root, get_project, get_timestamp, get_python_libs_root, get_cime_default_driver
+    convert_to_seconds, get_cime_root, get_project, get_timestamp, get_cime_default_driver, get_template_path
 from CIME.test_status import *
 from CIME.XML.machines import Machines
 from CIME.XML.generic_xml import GenericXML
@@ -1012,16 +1013,16 @@ class TestScheduler(object):
     def _setup_cs_files(self):
     ###########################################################################
         try:
-            python_libs_root = get_python_libs_root()
+            template_path = get_template_path()
 
             create_cs_status(test_root=self._test_root,
                              test_id=self._test_id)
 
-            template_file = os.path.join(python_libs_root, "cs.submit.template")
+            template_file = os.path.join(template_path, "cs.submit.template")
             template = open(template_file, "r").read()
             setup_cmd = "./case.setup" if self._no_setup else ":"
             build_cmd = "./case.build" if self._no_build else ":"
-            test_cmd  = "./case.submit"
+            test_cmd = "./case.submit"
             template = template.replace("<SETUP_CMD>", setup_cmd).\
                        replace("<BUILD_CMD>", build_cmd).\
                        replace("<RUN_CMD>", test_cmd).\
@@ -1035,10 +1036,9 @@ class TestScheduler(object):
                          os.stat(cs_submit_file).st_mode | stat.S_IXUSR | stat.S_IXGRP)
 
             if self._cime_model == "cesm":
-                template_file = os.path.join(python_libs_root, "testreporter.template")
+                template_file = os.path.join(template_path, "testreporter.template")
                 template = open(template_file, "r").read()
-                template = template.replace("<PATH>",
-                                            os.path.join(self._cime_root, "scripts", "Tools"))
+                template = template.replace("<PATH>", os.path.join(self._cime_root))
                 testreporter_file = os.path.join(self._test_root, "testreporter")
                 with open(testreporter_file, "w") as fd:
                     fd.write(template)

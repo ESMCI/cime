@@ -244,18 +244,9 @@ def reset_cime_config():
     global _CIMECONFIG
     _CIMECONFIG = None
 
-def get_python_libs_location_within_cime():
-    """
-    From within CIME, return subdirectory of python libraries
-    """
-    return os.path.join("scripts", "lib")
-
 def get_cime_root(case=None):
     """
     Return the absolute path to the root of CIME that contains this script
-
-    >>> os.path.isdir(os.path.join(get_cime_root(), get_scripts_location_within_cime()))
-    True
     """
     real_file_dir = os.path.dirname(os.path.realpath(__file__))
     cimeroot = os.path.abspath(os.path.join(real_file_dir, ".."))
@@ -277,6 +268,11 @@ def get_schema_path():
     config_path = get_config_path()
 
     return os.path.join(config_path, "xml_schemas")
+
+def get_template_path():
+    cimeroot = get_cime_root()
+
+    return os.path.join(cimeroot, "CIME", "templates")
 
 def get_src_root():
     """
@@ -891,29 +887,9 @@ def get_current_commit(short=False, repo=None, tag=False):
 
     return output if rc == 0 else "unknown"
 
-def get_scripts_location_within_cime():
-    """
-    From within CIME, return subdirectory where scripts live.
-    """
-    return "scripts"
-
-def get_cime_location_within_e3sm():
-    """
-    From within e3sm, return subdirectory where CIME lives.
-    """
-    return "cime"
-
 def get_model_config_location_within_cime(model=None):
     model = get_model() if model is None else model
     return os.path.join("config", model)
-
-def get_e3sm_root():
-    """
-    Return the absolute path to the root of E3SM that contains this script
-    """
-    cime_absdir = get_cime_root()
-    assert cime_absdir.endswith(get_cime_location_within_e3sm()), cime_absdir
-    return os.path.normpath(cime_absdir[:len(cime_absdir)-len(get_cime_location_within_e3sm())])
 
 def get_scripts_root():
     """
@@ -922,16 +898,7 @@ def get_scripts_root():
     >>> os.path.isdir(get_scripts_root())
     True
     """
-    return os.path.join(get_cime_root(), get_scripts_location_within_cime())
-
-def get_python_libs_root():
-    """
-    Get absolute path to scripts
-
-    >>> os.path.isdir(get_python_libs_root())
-    True
-    """
-    return os.path.join(get_cime_root(), get_python_libs_location_within_cime())
+    return os.path.join(get_cime_root(), "scripts")
 
 def get_model_config_root(model=None):
     """
