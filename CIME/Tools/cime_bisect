@@ -11,13 +11,10 @@ bring in CIME via submodule or clone.
 
 from standard_script_setup import *
 from CIME.utils import expect, run_cmd_no_fail, run_cmd
-from CIME.XML.machines import Machines
 
 import argparse, sys, os, re
 
 logger = logging.getLogger(__name__)
-
-_MACHINE = Machines()
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -103,10 +100,18 @@ def cime_bisect(testargs, good, bad, commits_to_skip, custom_script):
     thing_to_run = custom_script if custom_script else "{} {}".format(create_test, testargs)
     bisect_cmd = "git submodule update --recursive && {}".format(thing_to_run)
 
-    is_batch = _MACHINE.has_batch_system()
-    if (is_batch and "--no-run" not in testargs and "--no-build" not in testargs and "--no-setup" not in testargs):
-        expect("--wait" in testargs,
-               "Your create_test command likely needs --wait to work correctly with bisect")
+    if not custom_script:
+        is_batch = False
+        try:
+            from CIME.XML.machines import Machines
+            machine = Machines()
+            is_batch = machine.has_batch_system()
+        except:
+            pass
+
+        if (is_batch and "--no-run" not in testargs and "--no-build" not in testargs and "--no-setup" not in testargs):
+            expect("--wait" in testargs,
+                   "Your create_test command likely needs --wait to work correctly with bisect")
 
     try:
         cmd = "git bisect run sh -c '{}'".format(bisect_cmd)
