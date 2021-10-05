@@ -11,8 +11,6 @@ from CIME.utils import indent_string, run_and_log_case_status, \
     import_from_file, \
     _line_defines_python_function, file_contains_python_function
 
-from CIME.tests import utils
-
 class TestIndentStr(unittest.TestCase):
     """Test the indent_string function.
 
@@ -225,7 +223,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 default success \n",
         ]
 
-        with utils.TemporaryDirectory() as tempdir, MockTime():
+        with tempfile.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "default",
                                     caseroot=tempdir)
 
@@ -237,7 +235,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-        with utils.TemporaryDirectory() as tempdir, MockTime():
+        with tempfile.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "case.submit",
                                     caseroot=tempdir, is_batch=True)
 
@@ -249,7 +247,7 @@ class TestUtils(unittest.TestCase):
             "00:00:00 case.submit success \n",
         ]
 
-        with utils.TemporaryDirectory() as tempdir, MockTime():
+        with tempfile.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(self.base_func, "case.submit",
                                     caseroot=tempdir, is_batch=False)
 
@@ -262,7 +260,7 @@ class TestUtils(unittest.TestCase):
             "Something went wrong\n",
         ]
 
-        with utils.TemporaryDirectory() as tempdir, MockTime():
+        with tempfile.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
                 run_and_log_case_status(self.error_func, "case.submit",
                                         caseroot=tempdir, is_batch=True)
@@ -281,7 +279,7 @@ class TestUtils(unittest.TestCase):
         def normal_func():
             return "data"
 
-        with utils.TemporaryDirectory() as tempdir, MockTime():
+        with tempfile.TemporaryDirectory() as tempdir, MockTime():
             run_and_log_case_status(normal_func, "default",
                                     custom_starting_msg_functor=starting_func,
                                     custom_success_msg_functor=success_func,
@@ -304,7 +302,7 @@ class TestUtils(unittest.TestCase):
         def error_func():
             raise Exception("Error")
 
-        with utils.TemporaryDirectory() as tempdir, MockTime(), \
+        with tempfile.TemporaryDirectory() as tempdir, MockTime(), \
                 self.assertRaises(Exception):
             run_and_log_case_status(error_func, "default",
                                     custom_starting_msg_functor=starting_func,
@@ -323,7 +321,7 @@ class TestUtils(unittest.TestCase):
             "Something went wrong\n",
         ]
 
-        with utils.TemporaryDirectory() as tempdir, MockTime():
+        with tempfile.TemporaryDirectory() as tempdir, MockTime():
             with self.assertRaises(Exception):
                 run_and_log_case_status(self.error_func, "default",
                                         caseroot=tempdir)
