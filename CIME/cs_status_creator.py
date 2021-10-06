@@ -25,10 +25,11 @@ def create_cs_status(test_root, test_id, extra_args='', filename=None):
         given, this will be built from the test_id.
     """
     cime_root = CIME.utils.get_cime_root()
+    tools_path = os.path.join(cime_root, "CIME", "Tools")
     template_path = CIME.utils.get_template_path()
     template_file = os.path.join(template_path, "cs.status.template")
     template = open(template_file, "r").read()
-    template = template.replace("<PATH>", cime_root).replace\
+    template = template.replace("<PATH>", tools_path).replace\
                                 ("<EXTRA_ARGS>", extra_args).replace\
                                 ("<TESTID>", test_id).replace\
                                 ("<TESTROOT>", test_root)
