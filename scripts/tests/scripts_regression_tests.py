@@ -3506,8 +3506,13 @@ def make_pylint_test(pyfile, all_files):
         if B_CheckCode.all_results is None:
             B_CheckCode.all_results = check_code(all_files)
         #pylint: disable=unsubscriptable-object
-        result = B_CheckCode.all_results[pyfile]
-        self.assertTrue(result == "", msg=result)
+        try:
+            result = B_CheckCode.all_results[pyfile]
+        except KeyError:
+            # Missing key == no issues found
+            self.assertTrue(True)
+        else:
+            self.assertTrue(result == "", msg=f"{pyfile}\n{result}")
 
     return test
 

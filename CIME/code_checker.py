@@ -2,6 +2,9 @@
 Libraries for checking python code with pylint
 """
 
+import os
+import json
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, get_src_root, is_python_executable, get_cime_default_driver
@@ -13,18 +16,19 @@ from distutils.spawn import find_executable
 logger = logging.getLogger(__name__)
 
 ###############################################################################
-def _run_pylint(on_file, interactive):
+def _run_pylint(all_files, interactive):
 ###############################################################################
     pylint = find_executable("pylint")
 
     cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
     cmd_options += ",logging-format-interpolation,no-name-in-module,arguments-renamed"
+    cmd_options += " -j 0 -f json"
     cimeroot = get_cime_root()
     srcroot = get_src_root()
 
-    if "scripts/Tools" in on_file:
-        cmd_options +=",relative-import"
+    # if "scripts/Tools" in on_file:
+    #     cmd_options +=",relative-import"
 
     # add init-hook option
     cmd_options += " --init-hook='sys.path.extend((\"%s\",\"%s\",\"%s\",\"%s\"))'"%\
@@ -33,18 +37,42 @@ def _run_pylint(on_file, interactive):
          os.path.join(cimeroot,"scripts","fortran_unit_testing","python"),
          os.path.join(srcroot,"components","cmeps","cime_config","runseq"))
 
-    cmd = "%s %s %s" % (pylint, cmd_options, on_file)
+    files = " ".join(all_files)
+    cmd = "%s %s %s" % (pylint, cmd_options, files)
     logger.debug("pylint command is %s"%cmd)
     stat, out, err = run_cmd(cmd, verbose=False, from_dir=cimeroot)
-    if stat != 0:
-        if interactive:
-            logger.info("File %s has pylint problems, please fix\n    Use command: %s" % (on_file, cmd))
-            logger.info(out + "\n" + err)
-        return (on_file, out + "\n" + err)
-    else:
-        if interactive:
-            logger.info("File %s has no pylint problems" % on_file)
-        return (on_file, "")
+    
+    data = json.loads(out)
+
+    result = {}
+
+    for item in data:
+        if item["type"] != "error":
+            continue
+
+        path = item["path"]
+        message = item["message"]
+        line = item["line"]
+
+        if path in result:
+            result[path].append(f"{message}:{line}")
+        else:
+            result[path] = [message, ]
+
+    for k in result.keys():
+        result[k] = "\n".join(set(result[k]))
+
+    return result
+
+    # if stat != 0:
+    #     if interactive:
+    #         logger.info("File %s has pylint problems, please fix\n    Use command: %s" % (on_file, cmd))
+    #         logger.info(out + "\n" + err)
+    #     return (on_file, out + "\n" + err)
+    # else:
+    #     if interactive:
+    #         logger.info("File %s has no pylint problems" % on_file)
+    #     return (on_file, "")
 
 ###############################################################################
 def _matches(file_path, file_ends):
@@ -63,7 +91,7 @@ def _should_pylint_skip(filepath):
     for dir_to_skip in list_of_directories_to_ignore:
         if dir_to_skip + "/" in filepath:
             return True
-        if filepath == "scripts/lib/six.py":
+        if filepath == "CIME/six.py":
             return True
         # intended to be temporary, file needs update
         if filepath.endswith("archive_metadata") or filepath.endswith("pgn.py"):
@@ -118,18 +146,18 @@ def check_code(files, num_procs=10, interactive=False):
         # Check every python file
         files_to_check = get_all_checkable_files()
 
-    if "scripts/lib/six.py" in files_to_check:
-        files_to_check.remove("scripts/lib/six.py")
-        logger.info("Not checking contributed file CIME.six.py")
-
     expect(len(files_to_check) > 0, "No matching files found")
 
     # No point in using more threads than files
-    if len(files_to_check) < num_procs:
-        num_procs = len(files_to_check)
+    # if len(files_to_check) < num_procs:
+    #     num_procs = len(files_to_check)
 
-    pool = ThreadPool(num_procs)
-    results = pool.map(lambda x : _run_pylint(x, interactive), files_to_check)
-    pool.close()
-    pool.join()
-    return dict(results)
+    results = _run_pylint(files_to_check, interactive)
+
+    return results
+
+    # pool = ThreadPool(num_procs)
+    # results = pool.map(lambda x : _run_pylint(x, interactive), files_to_check)
+    # pool.close()
+    # pool.join()
+    # return dict(results)
