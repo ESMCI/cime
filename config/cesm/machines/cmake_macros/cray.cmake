@@ -34,6 +34,5 @@ endif()
 set(FFLAGS_NOOPT "-O1,fp2,ipa0,scalar0,vector0")
 set(HAS_F2008_CONTIGUOUS "TRUE")
 set(LDFLAGS "-Wl,--allow-multiple-definition -h byteswapio")
-if (compile_threaded)
-  string(APPEND LDFLAGS " -h omp")
-endif()
+string(APPEND LDFLAGS " -h omp")
+

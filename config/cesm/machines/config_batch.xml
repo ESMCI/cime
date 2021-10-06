@@ -688,6 +688,15 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="swan" type="pbs" >
+    <directives>
+      <directive>-l nodes={{ num_nodes }}</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="24:00:00" default="true" >default</queue>
+    </queues>
+  </batch_system>
+  
   <batch_system MACH="theia" type="slurm" >
     <batch_submit>sbatch</batch_submit>
     <submit_args>
