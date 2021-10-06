@@ -175,10 +175,26 @@
       <grid name="lnd">360x720cru</grid>
     </model_grid>
 
-    <model_grid alias="hcru_hcru_mt13" compset="DATM.+CLM">
+    <model_grid alias="hcru_hcru_mt13" not_compset="_POP" compset="DATM.+CLM">
       <grid name="atm">360x720cru</grid>
       <grid name="lnd">360x720cru</grid>
       <grid name="ocnice">tx0.1v3</grid>
+      <mask>tx0.1v3</mask>
+    </model_grid>
+
+    <model_grid alias="hcru_hcru_mt13_rMERIT" not_compset="_POP" compset="DATM.+CLM.+MIZUROUTE">
+      <grid name="atm">360x720cru</grid>
+      <grid name="lnd">360x720cru</grid>
+      <grid name="ocnice">tx0.1v3</grid>
+      <grid name="rof">MERITmz</grid>
+      <mask>tx0.1v3</mask>
+    </model_grid>
+
+    <model_grid alias="hcru_hcru_mt13_rHDMA" not_compset="_POP" compset="DATM.+CLM.+MIZUROUTE">
+      <grid name="atm">360x720cru</grid>
+      <grid name="lnd">360x720cru</grid>
+      <grid name="ocnice">tx0.1v3</grid>
+      <grid name="rof">HDMAmz</grid>
       <mask>tx0.1v3</mask>
     </model_grid>
 

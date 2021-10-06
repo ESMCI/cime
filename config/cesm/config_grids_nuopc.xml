@@ -34,6 +34,20 @@
       <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_MERITmz_TO_f09_aave.210320.nc</map>
     </gridmap>
 
+    <!-- hcru grids -->
+    <gridmap lnd_grid="360x720cru" rof_grid="HDMAmz">
+      <!-- These mapping files were NOT created using ESMF as ESMF regridding failed, but with an offline python script -->
+      <!-- They were then converted to SCRIP mapping file format so they could be read by cime -->
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_hcru_TO_HDMAmz_aave.210924.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_HDMAmz_TO_hcru_aave.210924.nc</map>
+    </gridmap>
+    <gridmap lnd_grid="360x720cru" rof_grid="MERITmz">
+      <!-- These mapping files were NOT created using ESMF as ESMF regridding failed, but with an offline python script -->
+      <!-- They were then converted to SCRIP mapping file format so they could be read by cime -->
+      <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_hcru_TO_MERITmz_aave.210909.nc</map>
+      <map name="ROF2LND_FMAPNAME">rof/mizuRoute/gridmaps/map_MERITmz_TO_hcru_aave.210909.nc</map>
+    </gridmap>
+
     <!-- NLDAS2 grids -->
     <gridmap lnd_grid="0.125nldas2" rof_grid="HDMA_CONUSmz">
       <map name="LND2ROF_FMAPNAME">rof/mizuRoute/gridmaps/map_0.125nldas2_TO_HDMAmz_CONUS_aave.201104.nc</map>
