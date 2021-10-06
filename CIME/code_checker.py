@@ -32,8 +32,8 @@ def _run_pylint(all_files, interactive):
 
     # add init-hook option
     cmd_options += " --init-hook='sys.path.extend((\"%s\",\"%s\",\"%s\",\"%s\"))'"%\
-        (os.path.join(cimeroot,"scripts","lib"),
-         os.path.join(cimeroot,"scripts","Tools"),
+        (os.path.join(cimeroot,"CIME"),
+         os.path.join(cimeroot,"CIME","Tools"),
          os.path.join(cimeroot,"scripts","fortran_unit_testing","python"),
          os.path.join(srcroot,"components","cmeps","cime_config","runseq"))
 
