@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
 import os
+import shutil
 import sys
 import tempfile
 
 import unittest
 from unittest import mock
 from CIME.utils import indent_string, run_and_log_case_status, \
-    import_from_file
+    import_from_file, \
+    _line_defines_python_function, file_contains_python_function
 
-from . import utils
+from CIME.tests import utils
 
 class TestIndentStr(unittest.TestCase):
     """Test the indent_string function.
@@ -39,6 +41,120 @@ goodbye
   goodbye
 """
         self.assertEqual(expected, result)
+
+class TestLineDefinesPythonFunction(unittest.TestCase):
+    """Tests of _line_defines_python_function"""
+
+    # ------------------------------------------------------------------------
+    # Tests of _line_defines_python_function that should return True
+    # ------------------------------------------------------------------------
+
+    def test_def_foo(self):
+        """Test of a def of the function of interest"""
+        line = "def foo():"
+        self.assertTrue(_line_defines_python_function(line, "foo"))
+
+    def test_def_foo_space(self):
+        """Test of a def of the function of interest, with an extra space before the parentheses"""
+        line = "def foo ():"
+        self.assertTrue(_line_defines_python_function(line, "foo"))
+
+    def test_import_foo(self):
+        """Test of an import of the function of interest"""
+        line = "from bar.baz import foo"
+        self.assertTrue(_line_defines_python_function(line, "foo"))
+
+    def test_import_foo_space(self):
+        """Test of an import of the function of interest, with trailing spaces"""
+        line = "from bar.baz import foo  "
+        self.assertTrue(_line_defines_python_function(line, "foo"))
+
+    def test_import_foo_then_others(self):
+        """Test of an import of the function of interest, along with others"""
+        line = "from bar.baz import foo, bar"
+        self.assertTrue(_line_defines_python_function(line, "foo"))
+
+    def test_import_others_then_foo(self):
+        """Test of an import of the function of interest, after others"""
+        line = "from bar.baz import bar, foo"
+        self.assertTrue(_line_defines_python_function(line, "foo"))
+
+    # ------------------------------------------------------------------------
+    # Tests of _line_defines_python_function that should return False
+    # ------------------------------------------------------------------------
+
+    def test_def_barfoo(self):
+        """Test of a def of a different function"""
+        line = "def barfoo():"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+    def test_def_foobar(self):
+        """Test of a def of a different function"""
+        line = "def foobar():"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+    def test_def_foo_indented(self):
+        """Test of a def of the function of interest, but indented"""
+        line = "    def foo():"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+    def test_def_foo_no_parens(self):
+        """Test of a def of the function of interest, but without parentheses"""
+        line = "def foo:"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+    def test_import_foo_indented(self):
+        """Test of an import of the function of interest, but indented"""
+        line = "    from bar.baz import foo"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+    def test_import_barfoo(self):
+        """Test of an import of a different function"""
+        line = "from bar.baz import barfoo"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+    def test_import_foobar(self):
+        """Test of an import of a different function"""
+        line = "from bar.baz import foobar"
+        self.assertFalse(_line_defines_python_function(line, "foo"))
+
+class TestFileContainsPythonFunction(unittest.TestCase):
+    """Tests of file_contains_python_function"""
+
+    def setUp(self):
+        self._workdir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._workdir, ignore_errors=True)
+
+    def create_test_file(self, contents):
+        """Creates a test file with the given contents, and returns the path to that file"""
+
+        filepath = os.path.join(self._workdir, "testfile")
+        with open(filepath, 'w') as fd:
+            fd.write(contents)
+
+        return filepath
+
+    def test_contains_correct_def_and_others(self):
+        """Test file_contains_python_function with a correct def mixed with other defs"""
+        contents = """
+def bar():
+def foo():
+def baz():
+"""
+        filepath = self.create_test_file(contents)
+        self.assertTrue(file_contains_python_function(filepath, "foo"))
+
+    def test_does_not_contain_correct_def(self):
+        """Test file_contains_python_function without the correct def"""
+        contents = """
+def bar():
+def notfoo():
+def baz():
+"""
+        filepath = self.create_test_file(contents)
+        self.assertFalse(file_contains_python_function(filepath, "foo"))
 
 class MockTime(object):
     def __init__(self):
@@ -216,4 +332,3 @@ class TestUtils(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

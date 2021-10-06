@@ -1,6 +1,183 @@
 ======================================================================
 
 Originator: Chris Fischer 
+Date: 9-09-2021
+Tag: cime6.0.9
+Answer Changes: None
+Tests: scripts_regression_tests
+Dependencies:
+
+Brief Summary:
+    - Fix scripts_regression_tests on mappy for e3sm.
+    - Update the test_schedualer to reflect default driver change.
+    - Adds a container machine definition.
+    - Bump pillow from 8.2.0 to 8.3.2 in /tools/statistical_ensemble_test/pyCECT/docs.
+    - Update modules and build flags on cori.
+    - Add a SourceMods/src.cdeps directory for shared cdeps sourcemods.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+4fa1194a2 Merge pull request #4085 from ESMCI/jgfouca/fix_scripts_reg
+0eaecd9f0 Merge pull request #4082 from jedwards4b/update_for_nuopc_default
+4981c6277 Merge pull request #4081 from jedwards4b/better_neon_data_handling
+27df61824 Merge pull request #4084 from ESMCI/dependabot/pip/tools/statistical_ensemble_test/pyCECT/docs/pillow-8.3.2
+cd6c7eaf0 Merge pull request #4047 from jedwards4b/cori_update
+4906230e4 Merge pull request #4079 from jedwards4b/add_cdeps_SourceMods
+
+
+Modified files: git diff --name-status [previous_tag]
+M       config/cesm/machines/config_compilers.xml
+M       config/cesm/machines/config_machines.xml
+M       scripts/lib/CIME/XML/inputdata.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/code_checker.py
+M       scripts/lib/CIME/test_scheduler.py
+M       scripts/lib/CIME/tests/test_case.py
+M       scripts/tests/scripts_regression_tests.py
+M       src/build_scripts/buildlib.mct
+M       tools/statistical_ensemble_test/pyCECT/docs/requirements.txt
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 9-02-2021
+Tag: cime6.0.8
+Answer Changes: None
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Add ESMF modules for PGI on izumi.
+    - Allow test_reporter to post long list of test results to database.
+    - Set nuopc as the default.
+    - Remove moab.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+1c41537f7 Merge pull request #4080 from ESMCI/fischer/izumi_esmf
+5ba4a6b12 Merge pull request #4075 from ESMCI/fischer/test_reporter_update
+13d2a36eb Merge pull request #4078 from jedwards4b/change_cesm_default_driver_nuopc
+4e9e4f409 Merge pull request #4037 from ESMCI/fischer/moab
+
+
+Modified files: git diff --name-status [previous_tag]
+M	.github/workflows/srt.yml
+M	.github/workflows/srt_nuopc.yml
+M	config/cesm/machines/config_machines.xml
+M	scripts/lib/CIME/XML/test_reporter.py
+M	scripts/lib/CIME/utils.py
+D	src/drivers/moab
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-25-2021
+Tag: cime6.0.7
+Answer Changes: None
+Tests: ran the test testlist_cdeps.xml  
+Dependencies:
+
+Brief Summary:
+    - Changes to have new user_nl_stream_xxx for cdeps.
+
+User interface changes:
+    - New user_nl_xxx_streams file to change CDEPS stream files
+
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+173f5c35b Merge pull request #4074 from mvertens/feature/new_userstream_file
+
+Modified files: git diff --name-status [previous_tag]
+M       scripts/lib/CIME/case/case_setup.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-20-2021
+Tag: cime6.0.6
+Answer Changes: [None, Round Off, Climate Changing]
+Tests: 
+Dependencies:
+
+Brief Summary:
+    - Make sure CLM_USERDAT_NAME is not UNSET if set.
+    - New mesh file and grid for running CISM over Antarctica.
+    - Handle neon data better by first checking the neon server.
+    - Fixes provenance in git worktree.
+    - Fix namelist duplications.
+    - Changed Addendum to Appendices.
+    - Allow multiple methods for running unit tests.
+
+User interface changes: 
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+2ceb39021 make sure CLM_USRDAT_NAME is not UNSET if set
+99d111786 Merge pull request #4071 from billsacks/update_antarctica_grid
+e54b73654 Merge pull request #4073 from jedwards4b/better_neon_data_handling
+db69f21d4 Merge pull request #4060 from jasonb5/fix_git_worktree
+e66984b24 Merge pull request #4066 from jasonb5/fix_namelist_duplications
+48fc713a9 Merge pull request #4070 from Sukhamjot-Singh/patch-1
+322d52bc6 Merge pull request #4008 from billsacks/unit_tests_multiple_methods
+
+
+Modified files: git diff --name-status [previous_tag]
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
+Date: 8-6-2021
+Tag: cime6.0.5
+Answer Changes: None
+Tests: scripts_regression_tests 
+Dependencies:
+
+Brief Summary:
+    - Fix an issue with file locks when not run from caseroot.
+    - Strip % from job_id.
+    - Update esmf version.
+    - Support the creation of multiple user_nl files for a component.
+
+User interface changes: 
+    - Allows components to define a get_user_nl_list function in their
+      buildnml file, which supports the creation of multiple user_nl files for
+      the component
+
+PR summary: git log --oneline --first-parent [previous_tag]..master
+949b0e798 (HEAD -> master, origin/master, origin/HEAD) Merge pull request #4065 from jedwards4b/fix_not_in_caseroot
+a2b4a90d7 Merge pull request #4064 from jedwards4b/strip_job_id
+9d731e9b3 update esmf version
+e90399193 Merge pull request #4058 from billsacks/multiple_user_nls
+
+
+Modified files: git diff --name-status [previous_tag]
+M       .github/workflows/srt_nuopc.yml
+M       scripts/lib/CIME/XML/env_batch.py
+M       scripts/lib/CIME/build.py
+M       scripts/lib/CIME/case/case.py
+M       scripts/lib/CIME/case/case_setup.py
+M       scripts/lib/CIME/case/case_submit.py
+M       scripts/lib/CIME/code_checker.py
+M       scripts/lib/CIME/nmlgen.py
+M       scripts/lib/CIME/tests/test_utils.py
+M       scripts/lib/CIME/utils.py
+
+
+======================================================================
+
+======================================================================
+
+Originator: Chris Fischer 
 Date: 8-2-2021
 Tag: cime6.0.4
 Answer Changes: None

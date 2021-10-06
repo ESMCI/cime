@@ -106,18 +106,21 @@ class NamelistGenerator(object):
                       skip_default_for_groups=None):
         """Return array of names of all definition nodes
 
+        infiles should be a list of file paths, each one giving namelist settings that
+        take precedence over the default values. Often there will be only one file in this
+        list. If there are multiple files, earlier files take precedence over later files.
+
         If skip_default_for_groups is provided, it should be a list of namelist group
         names; the add_default call will not be done for any variables in these
         groups. This is often paired with later conditional calls to
         add_defaults_for_group.
+
         """
         if skip_default_for_groups is None:
             skip_default_for_groups = []
 
         # first clean out any settings left over from previous calls
         self.new_instance()
-
-        self._definition.set_nodes(skip_groups=skip_groups)
 
         # Determine the array of entry nodes that will be acted upon
         self._default_nodes = self._definition.set_nodes(skip_groups=skip_groups)

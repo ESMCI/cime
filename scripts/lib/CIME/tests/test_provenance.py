@@ -1,11 +1,55 @@
+#!/usr/bin/env python3
+
 import os
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
 from CIME import provenance
+from CIME import utils
 
+# pylint: disable=protected-access
 class TestProvenance(unittest.TestCase):
+    def test_parse_dot_git_path_error(self):
+        with self.assertRaises(utils.CIMEError):
+            provenance._parse_dot_git_path("/src/CIME")
+
+    def test_parse_dot_git_path(self):
+        value = provenance._parse_dot_git_path("/src/CIME/.git/worktrees/test")
+
+        assert value == "/src/CIME/.git"
+
+    def test_find_git_root(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            os.makedirs(os.path.join(tempdir, ".git"))
+
+            value = provenance._find_git_root(tempdir)
+
+            assert value == f"{tempdir}/.git"
+
+    def test_find_git_root_worktree(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            with open(os.path.join(tempdir, ".git"), "w") as fd:
+                fd.write("gitdir: /src/CIME/.git/worktrees/test")
+
+            value = provenance._find_git_root(tempdir)
+
+            assert value == "/src/CIME/.git/worktrees/test"
+
+    def test_find_git_root_worktree_malformed(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            with open(os.path.join(tempdir, ".git"), "w") as fd:
+                fd.write("some value: /src/CIME/.git/worktrees/test")
+
+            with self.assertRaises(utils.CIMEError):
+                provenance._find_git_root(tempdir)
+
+    def test_find_git_root_error(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            with self.assertRaises(utils.CIMEError):
+                provenance._find_git_root(tempdir)
+
     @mock.patch("CIME.provenance.run_cmd")
     def test_run_git_cmd_recursively(self, run_cmd):
         run_cmd.return_value = (0, "data", None)
@@ -50,7 +94,10 @@ class TestProvenance(unittest.TestCase):
         run_cmd.return_value = (0, "data", None)
 
         with mock.patch("CIME.provenance.open", mock.mock_open()) as m:
-            provenance._record_git_provenance("/srcroot", "/output", "5") # pylint: disable=protected-access
+            with tempfile.TemporaryDirectory() as tempdir:
+                os.makedirs(os.path.join(tempdir, ".git"))
+
+                provenance._record_git_provenance(tempdir, "/output", "5") # pylint: disable=protected-access
 
         m.assert_any_call("/output/GIT_STATUS.5", "w")
         m.assert_any_call("/output/GIT_DIFF.5", "w")
@@ -62,31 +109,31 @@ class TestProvenance(unittest.TestCase):
         write.assert_any_call("data\n\n")
         write.assert_any_call("data\n")
 
-        run_cmd.assert_any_call("git status", from_dir="/srcroot")
+        run_cmd.assert_any_call("git status", from_dir=tempdir)
         run_cmd.assert_any_call(
             "git submodule foreach --recursive \"git status; echo\"",
-            from_dir="/srcroot")
+            from_dir=tempdir)
         run_cmd.assert_any_call(
             "git diff",
-            from_dir="/srcroot")
+            from_dir=tempdir)
         run_cmd.assert_any_call(
             "git submodule foreach --recursive \"git diff; echo\"",
-            from_dir="/srcroot")
+            from_dir=tempdir)
         run_cmd.assert_any_call(
             "git log --first-parent --pretty=oneline -n 5",
-            from_dir="/srcroot")
+            from_dir=tempdir)
         run_cmd.assert_any_call(
             "git submodule foreach --recursive \"git log --first-parent"
             " --pretty=oneline -n 5; echo\"",
-            from_dir="/srcroot")
+            from_dir=tempdir)
         run_cmd.assert_any_call(
             "git remote -v",
-            from_dir="/srcroot")
+            from_dir=tempdir)
         run_cmd.assert_any_call(
             "git submodule foreach --recursive \"git remote -v; echo\"",
-            from_dir="/srcroot")
+            from_dir=tempdir)
 
-        safe_copy.assert_any_call("/srcroot/.git/config",
+        safe_copy.assert_any_call(f"{tempdir}/.git/config",
                                   "/output/GIT_CONFIG.5",
                                   preserve_meta=False)
 

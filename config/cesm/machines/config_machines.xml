@@ -855,6 +855,44 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="container">
+    <DESC>
+      Containerized development environment (Docker/Singularity) for CESM w/ GNU compilers
+    </DESC>
+    <OS>LINUX</OS>
+    <COMPILERS>gnu</COMPILERS>
+    <MPILIBS>mpich</MPILIBS>
+    <CIME_OUTPUT_ROOT>$ENV{HOME}/scratch</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>$DIN_LOC_ROOT/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$ENV{HOME}/archive/$CASE</DOUT_S_ROOT>
+    <GMAKE>make</GMAKE>
+    <GMAKE_J>4</GMAKE_J>
+    <BATCH_SYSTEM>none</BATCH_SYSTEM>
+    <SUPPORTED_BY>cgd</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>4</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>4</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>FALSE</PROJECT_REQUIRED>
+    <mpirun mpilib="mpich">
+      <executable>mpiexec</executable>
+      <arguments>
+	<arg name="anum_tasks"> -n {{ total_tasks }}</arg>
+      </arguments>
+    </mpirun>
+    <module_system type="none">
+    </module_system>
+    <environment_variables>
+      <env name="NETCDF_PATH">/usr/local</env>
+      <env name="PNETCDF_PATH">/usr/local</env>
+      <env name="FPATH">/usr/lib64</env>
+      <env name="CPATH">/usr/lib64</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
+  </machine>
+
+
   <machine MACH="cori-haswell">
     <!-- NODENAME_REGEX makes haswell the default machine for cori -->
     <!-- to make knl the default comment this line and uncomment the one in cori-knl -->
@@ -913,7 +951,7 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="intel">
         <command name="load">PrgEnv-intel</command>
-        <command name="switch">intel intel/19.0.3.199</command>
+        <command name="switch">intel intel/19.1.3.304</command>
         <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" >
@@ -925,33 +963,36 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="cray">
         <command name="load">PrgEnv-cray</command>
-        <command name="switch">cce cce/8.7.9</command>
+        <command name="switch">cce cce/10.0.3</command>
       </modules>
       <modules compiler="gnu">
         <command name="load">PrgEnv-gnu</command>
-        <command name="switch">gcc gcc/8.3.0</command>
+        <command name="switch">gcc gcc/10.1.0</command>
       </modules>
       <modules>
         <command name="load">cray-memkind</command>
-        <command name="swap">craype craype/2.6.2</command>
+        <command name="swap">craype craype/2.7.2</command>
       </modules>
       <modules>
-        <command name="switch">cray-libsci/19.06.1</command>
+        <command name="switch">cray-libsci/20.09.1</command>
       </modules>
       <modules>
-        <command name="load">cray-mpich/7.7.10</command>
+        <command name="load">cray-mpich/7.7.16</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">cray-hdf5/1.10.5.2</command>
-        <command name="load">cray-netcdf/4.6.3.2</command>
+        <command name="rm">cray-netcdf-hdf5parallel</command>
+        <command name="rm">cray-hdf5-parallel</command>
+        <command name="rm">cray-parallel-netcdf</command>
+        <command name="load">cray-hdf5/1.12.0.0</command>
+        <command name="load">cray-netcdf/4.7.4.0</command>
       </modules>
       <modules mpilib="!mpi-serial">
-        <command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
-        <command name="load">cray-hdf5-parallel/1.10.5.2</command>
-        <command name="load">cray-parallel-netcdf/1.11.1.1</command>
+        <command name="load">cray-netcdf-hdf5parallel/4.7.4.0</command>
+        <command name="load">cray-hdf5-parallel/1.12.0.0</command>
+        <command name="load">cray-parallel-netcdf/1.12.1.0</command>
       </modules>
       <modules>
-        <command name="load">cmake/3.14.4</command>
+        <command name="load">cmake/3.20.5</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -1018,7 +1059,7 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="intel">
         <command name="load">PrgEnv-intel</command>
-        <command name="switch">intel intel/19.0.3.199</command>
+        <command name="switch">intel intel/19.1.3.304</command>
         <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" >
@@ -1030,31 +1071,34 @@ This allows using a different mpirun command to launch unit tests
 
       <modules compiler="cray">
         <command name="load">PrgEnv-cray</command>
-        <command name="switch">cce cce/9.1.0</command>
+        <command name="switch">cce cce/10.0.3</command>
       </modules>
       <modules compiler="gnu">
         <command name="load">PrgEnv-gnu</command>
-        <command name="switch">gcc gcc/8.3.0</command>
+        <command name="switch">gcc gcc/10.1.0</command>
       </modules>
       <modules>
         <command name="load">cray-memkind</command>
-        <command name="swap">craype craype/2.6.2</command>
+        <command name="swap">craype craype/2.7.2</command>
         <command name="load">craype-mic-knl</command>
       </modules>
       <modules>
-        <command name="switch">cray-libsci/19.06.1</command>
+        <command name="switch">cray-libsci/20.09.1</command>
       </modules>
       <modules>
-        <command name="load">cray-mpich/7.7.10</command>
+        <command name="load">cray-mpich/7.7.16</command>
       </modules>
       <modules mpilib="mpi-serial">
-        <command name="load">cray-hdf5/1.10.5.2</command>
-        <command name="load">cray-netcdf/4.6.3.2</command>
+        <command name="rm">cray-netcdf-hdf5parallel</command>
+        <command name="rm">cray-hdf5-parallel</command>
+        <command name="rm">cray-parallel-netcdf</command>
+        <command name="load">cray-hdf5/1.12.0.0</command>
+        <command name="load">cray-netcdf/4.7.4.0</command>
       </modules>
       <modules mpilib="!mpi-serial">
-        <command name="load">cray-netcdf-hdf5parallel/4.6.3.2</command>
-        <command name="load">cray-hdf5-parallel/1.10.5.2</command>
-        <command name="load">cray-parallel-netcdf/1.11.1.1</command>
+        <command name="load">cray-netcdf-hdf5parallel/4.7.4.0</command>
+        <command name="load">cray-hdf5-parallel/1.12.0.0</command>
+        <command name="load">cray-parallel-netcdf/1.12.1.0</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -2001,6 +2045,22 @@ This allows using a different mpirun command to launch unit tests
       <modules compiler="intel" mpilib="mvapich2" DEBUG="FALSE">
         <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/intel/20.0.1</command>
         <command name="load">esmf-8.2.0b13-ncdfio-mvapich2-O</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mpi-serial" DEBUG="TRUE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mpiuni-g</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mpi-serial" DEBUG="FALSE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mpiuni-O</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mvapich2" DEBUG="TRUE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mvapich2-g</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mvapich2" DEBUG="FALSE">
+        <command name="use">/fs/cgd/data0/modules/modulefiles/esmfpkgs/pgi/20.1</command>
+        <command name="load">esmf-8.2.0b15-ncdfio-mvapich2-O</command>
       </modules>
     </module_system>
     <environment_variables>

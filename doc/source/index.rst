@@ -23,7 +23,7 @@ Table of contents
    build_cpl/index.rst
    misc_tools/index.rst
 
-Addendum
+Appendices
 ---------
 .. toctree::
    :maxdepth: 2

@@ -19,7 +19,7 @@ def _run_pylint(on_file, interactive):
 
     cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
-    cmd_options += ",logging-format-interpolation,no-name-in-module"
+    cmd_options += ",logging-format-interpolation,no-name-in-module,arguments-renamed"
     cimeroot = get_cime_root()
     srcroot = get_src_root()
 
@@ -83,7 +83,7 @@ def get_all_checkable_files():
             nuopc_git_files = run_cmd_no_fail("git ls-files", from_dir=os.path.join(srcroot,"components","cmeps"), verbose=False).splitlines()
         except:
             logger.warning("No nuopc driver found in source")
-        all_git_files.extend([os.path.join("components","cmeps",_file) for _file in nuopc_git_files])
+        all_git_files.extend([os.path.join(srcroot,"components","cmeps",_file) for _file in nuopc_git_files])
     files_to_test = [item for item in all_git_files
                      if ((item.endswith(".py") or is_python_executable(os.path.join(cimeroot, item))) and not _should_pylint_skip(item))]
 

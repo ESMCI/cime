@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import unittest
 from unittest import mock
@@ -6,6 +8,14 @@ import tempfile
 from CIME.case import case_submit
 from CIME.case import Case
 from CIME import utils as cime_utils
+
+def make_valid_case(path):
+    """Make the given path look like a valid case to avoid errors"""
+    # Case validity is determined by checking for an env_case.xml file. So put one there
+    # to suggest that this directory is a valid case directory. Open in append mode in
+    # case the file already exists.
+    with open(os.path.join(path, "env_case.xml"), 'a'):
+        pass
 
 class TestCaseSubmit(unittest.TestCase):
 
@@ -41,6 +51,7 @@ class TestCaseSubmit(unittest.TestCase):
                 True,
             ]
 
+            make_valid_case(tempdir)
             with Case(tempdir) as case:
                 case.submit(chksum=True)
 
@@ -77,6 +88,7 @@ class TestCase(unittest.TestCase):
     @mock.patch("getpass.getuser", side_effect=["root", "root", "johndoe"])
     def test_new_hash(self, getuser, getfqdn, strftime, read_xml): # pylint: disable=unused-argument
         with self.tempdir as tempdir:
+            make_valid_case(tempdir)
             with Case(tempdir) as case:
                 expected = "134a939f62115fb44bf08a46bfb2bd13426833b5c8848cf7c4884af7af05b91a"
 
@@ -108,6 +120,7 @@ class TestCase(unittest.TestCase):
     @mock.patch("CIME.case.case.Case.configure")
     @mock.patch("socket.getfqdn", return_value="host1")
     @mock.patch("getpass.getuser", return_value="root")
+    @mock.patch.dict(os.environ, {"CIME_MODEL": "cesm"})
     def test_copy(self, getuser, getfqdn, configure, create_caseroot, # pylint: disable=unused-argument
                   apply_user_mods, set_lookup_value, lock_file, strftime, # pylint: disable=unused-argument
                   read_xml): # pylint: disable=unused-argument
@@ -117,8 +130,6 @@ class TestCase(unittest.TestCase):
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["CIME_MODEL"] = "cesm"
-
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
                 case.create("test1", srcroot, "A", "f19_g16_rx1",
@@ -169,14 +180,13 @@ class TestCase(unittest.TestCase):
     @mock.patch("CIME.case.case.Case.configure")
     @mock.patch("socket.getfqdn", return_value="host1")
     @mock.patch("getpass.getuser", return_value="root")
+    @mock.patch.dict(os.environ, {"CIME_MODEL": "cesm"})
     def test_create(self, get_user, getfqdn, configure, create_caseroot, # pylint: disable=unused-argument
                     apply_user_mods, set_lookup_value, lock_file, strftime, # pylint: disable=unused-argument
                     read_xml): # pylint: disable=unused-argument
         with self.tempdir as tempdir:
             caseroot = os.path.join(tempdir, "test1")
             with Case(caseroot, read_only=False) as case:
-                os.environ["CIME_MODEL"] = "cesm"
-
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
                 case.create("test1", srcroot, "A", "f19_g16_rx1",
@@ -234,6 +244,10 @@ class TestCase_RecordCmd(unittest.TestCase):
                     "/src"
                 ]
 
+                # We didn't need to make tempdir look like a valid case for the Case
+                # constructor because we mock that constructor, but we *do* need to make
+                # it look like a valid case for record_cmd.
+                make_valid_case(tempdir)
                 case.record_cmd()
 
     @mock.patch("CIME.case.case.Case.__init__", return_value=None)
@@ -319,6 +333,10 @@ class TestCase_RecordCmd(unittest.TestCase):
                     "/src",
                 ]
 
+                # We didn't need to make tempdir look like a valid case for the Case
+                # constructor because we mock that constructor, but we *do* need to make
+                # it look like a valid case for record_cmd.
+                make_valid_case(tempdir)
                 case.record_cmd(["/some/custom/command", "arg1"])
 
         expected = [
