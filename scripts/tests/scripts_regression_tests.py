@@ -1326,7 +1326,7 @@ class O_TestTestScheduler(TestCreateTestCommon):
     def test_a_phases(self):
     ###########################################################################
         # exclude the MEMLEAK tests here.
-        tests = get_tests.get_full_test_names(["cime_test_only",
+        tests = CIME.get_tests.get_full_test_names(["cime_test_only",
                                                "^TESTMEMLEAKFAIL_P1.f09_g16.X",
                                                "^TESTMEMLEAKPASS_P1.f09_g16.X",
                                                "^TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
@@ -1404,7 +1404,7 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_b_full(self):
     ###########################################################################
-        tests = get_tests.get_full_test_names(["cime_test_only"], self._machine, self._compiler)
+        tests = CIME.get_tests.get_full_test_names(["cime_test_only"], self._machine, self._compiler)
         test_id="%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
         ct = TestScheduler(tests, test_id=test_id, no_batch=NO_BATCH, test_root=self._testroot,
                            output_root=self._testroot,compiler=self._compiler, mpilib=TEST_MPILIB)
@@ -1474,7 +1474,7 @@ class O_TestTestScheduler(TestCreateTestCommon):
     ###########################################################################
     def test_c_use_existing(self):
     ###########################################################################
-        tests = get_tests.get_full_test_names(["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAIL_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A"],
+        tests = CIME.get_tests.get_full_test_names(["TESTBUILDFAIL_P1.f19_g16_rx1.A", "TESTRUNFAIL_P1.f19_g16_rx1.A", "TESTRUNPASS_P1.f19_g16_rx1.A"],
                                                       self._machine, self._compiler)
         test_id="%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
         ct = TestScheduler(tests, test_id=test_id, no_batch=NO_BATCH, test_root=self._testroot,
@@ -1619,7 +1619,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
     ###########################################################################
     def assert_num_leftovers(self, suite):
     ###########################################################################
-        num_tests_in_tiny = len(get_tests.get_test_suite(suite))
+        num_tests_in_tiny = len(CIME.get_tests.get_test_suite(suite))
 
         jenkins_dirs = glob.glob("%s/*%s*/" % (self._jenkins_root, self._baseline_name.capitalize())) # case dirs
         # scratch_dirs = glob.glob("%s/*%s*/" % (self._testroot, test_id)) # blr/run dirs
@@ -2002,7 +2002,7 @@ class Z_FullSystemTest(TestCreateTestCommon):
         skip_tests = None
         if CIME.utils.get_cime_default_driver() == 'nuopc':
             skip_tests=["SMS_Ln3.T42_T42.S","PRE.f19_f19.ADESP_TEST","PRE.f19_f19.ADESP","DAE.ww3a.ADWAV"]
-        tests = get_tests.get_test_suite("cime_developer", machine=self._machine, compiler=self._compiler,skip_tests=skip_tests)
+        tests = CIME.get_tests.get_test_suite("cime_developer", machine=self._machine, compiler=self._compiler,skip_tests=skip_tests)
 
         for test in tests:
             casedir = get_casedir(self, test, cases)
