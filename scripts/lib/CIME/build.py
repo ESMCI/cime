@@ -50,7 +50,7 @@ def generate_makefile_macro(case, caseroot):
                   replace("SLIBS := ", "SLIBS := $(SLIBS) ") + "\n"
     base_output = real_output.splitlines()
     for comp in comps:
-        output = run_cmd_no_fail("cmake -DMODEL={} -DCOMP_NAME={} -DCONVERT_TO_MAKE=ON {} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp, comp, cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
+        output = run_cmd_no_fail("cmake -DMODEL={comp} -DCOMP_NAME={comp} -DCONVERT_TO_MAKE=ON {cmake_args} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp=comp, cmake_args=cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
         # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
         comp_output = (output.replace("CIME_SET_MAKEFILE_VAR ", "").\
                        replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
@@ -651,7 +651,6 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
         casetools = case.get_value("CASETOOLS")
         classic_cmd = "{} -f {} {}".format(gmake, os.path.join(casetools, "Makefile"),
                                            get_standard_makefile_args(case, shared_lib=True))
-        caseroot = case.get_value("CASEROOT")
 
         for clean_item in things_to_clean:
             logging.info("Cleaning {}".format(clean_item))
