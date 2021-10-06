@@ -820,6 +820,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         newmachfile = os.path.join(get_cime_root(),"config",
                                    "xml_schemas","config_machines_template.xml")
         safe_copy(newmachfile, os.path.join(extra_machines_dir, "config_machines.xml"))
+        os.environ["CIME_NO_CMAKE_MACRO"] = "ON"
         config_compilers_text = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <config_compilers version="2.0">
@@ -866,6 +867,7 @@ class J_TestCreateNewcase(unittest.TestCase):
                 macros_contents = macros_file.read()
             expected_re = re.compile("NETCDF_PATH.*/my/netcdf/path")
             self.assertTrue(expected_re.search(macros_contents))
+        del os.environ["CIME_NO_CMAKE_MACRO"] 
 
     def test_m_createnewcase_alternate_drivers(self):
         # Test that case.setup runs for nuopc and moab drivers
