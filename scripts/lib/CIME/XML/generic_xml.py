@@ -59,7 +59,7 @@ class GenericXML(object):
         if infile is None:
             return
 
-        if os.path.isfile(infile) and os.access(infile, os.R_OK):
+        if os.path.isfile(infile) and os.access(infile, os.R_OK) and os.stat(infile).st_size > 0:
             # If file is defined and exists, read it
             self.read(infile, schema)
         else:

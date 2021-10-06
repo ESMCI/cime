@@ -1729,8 +1729,11 @@ directory, NOT in this subdirectory."""
         lines_len = len(lines)
         lines.insert(lines_len-1 if init else lines_len, "{}\n\n".format(cmd))
 
-        with open(os.path.join(caseroot, "replay.sh"), "a") as fd:
-            fd.writelines(lines)
+        try:
+            with open(os.path.join(caseroot, "replay.sh"), "a") as fd:
+                fd.writelines(lines)
+        except PermissionError:
+            logger.warning("Could not write to 'replay.sh' script")
 
     def create(self, casename, srcroot, compset_name, grid_name,
                user_mods_dirs=None, machine_name=None,
