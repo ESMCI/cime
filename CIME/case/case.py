@@ -6,6 +6,7 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy import deepcopy
+import sys
 import glob, os, shutil, math, CIME.six, time, hashlib, socket, getpass
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
@@ -103,13 +104,21 @@ class Case(object):
         if record:
             self.record_cmd()
 
+        cimeroot = get_cime_root()
+
+        # Insert tools path to support external code trying to import
+        # standard_script_setup
+        tools_path = os.path.join(cimeroot, "CIME", "Tools")
+        if tools_path not in sys.path:
+            sys.path.insert(0, tools_path)
+
         # Hold arbitary values. In create_newcase we may set values
         # for xml files that haven't been created yet. We need a place
         # to store them until we are ready to create the file. At file
         # creation we get the values for those fields from this lookup
         # table and then remove the entry.
         self.lookups = {}
-        self.set_lookup_value('CIMEROOT',os.path.abspath(get_cime_root()))
+        self.set_lookup_value('CIMEROOT', cimeroot)
         self._cime_model = get_model()
         self.set_lookup_value('MODEL', self._cime_model)
         self._compsetname = None
