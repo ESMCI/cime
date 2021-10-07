@@ -38,7 +38,7 @@ from  CIME.test_status import *
 from  CIME.provenance import get_test_success, save_test_success
 
 SCRIPT_DIR  = CIME.utils.get_scripts_root()
-TOOLS_DIR   = os.path.join(SCRIPT_DIR,"Tools")
+TOOLS_DIR   = os.path.join(get_cime_root(), "CIME", "Tools")
 TEST_COMPILER = None
 GLOBAL_TIMEOUT = None
 TEST_MPILIB = None
@@ -353,6 +353,9 @@ class J_TestCreateNewcase(unittest.TestCase):
         cls._do_teardown = []
         cls._testroot = os.path.join(TEST_ROOT, 'TestCreateNewcase')
         cls._root_dir = os.getcwd()
+
+        cimeroot = CIME.utils.get_cime_root()
+        sys.path.insert(0, os.path.join(cimeroot, "Tools"))
 
     def tearDown(self):
         cls = self.__class__
