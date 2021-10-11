@@ -4,6 +4,17 @@
 #
 #===============================================================================
 
+ifdef MODEL
+  ifndef COMP_NAME
+    $(warning "Variable MODEL is deprecated, please use COMP_NAME instead")
+    COMP_NAME:=MODEL
+  else
+    ifneq ($(MODEL), $(COMP_NAME))
+      $(error "MODEL is inconsistent with COMP_NAME")
+    endif
+  endif
+endif
+
 # Set up special characters
 null  :=
 comma := ,
