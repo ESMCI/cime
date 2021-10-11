@@ -93,7 +93,7 @@ def buildlib(bldroot, installpath, case):
 
     stdargs = get_standard_makefile_args(case, shared_lib=True)
 
-    gmake_vars =  "CASEROOT={caseroot} MODEL={pio_model} COMP_NAME={pio_model} "\
+    gmake_vars =  "CASEROOT={caseroot} COMP_NAME={pio_model} "\
                   "USER_CMAKE_OPTS={cmake_opts} "\
                   "PIO_LIBDIR={pio_dir} CASETOOLS={casetools} "\
                   "USER_CPPDEFS=-DTIMING"\
