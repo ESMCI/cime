@@ -487,7 +487,6 @@ class TestScheduler(object):
                     logger.debug (" MPILIB set to {}".format(mpilib))
                 elif case_opt.startswith('N'):
                     expect(ncpl == 1,"Cannot combine _C and _N options")
-                    expect(self._cime_driver != "nuopc", "_N option not supported by nuopc driver, use _C instead")
                     ninst = case_opt[1:]
                     create_newcase_cmd += " --ninst {}".format(ninst)
                     logger.debug (" NINST set to {}".format(ninst))
@@ -505,6 +504,12 @@ class TestScheduler(object):
                 elif case_opt.startswith('V'):
                     self._cime_driver = case_opt[1:]
                     create_newcase_cmd += " --driver {}".format(self._cime_driver)
+
+        if "--ninst" in create_newcase_cmd and not "--multi-driver" in create_newcase_cmd:
+            if "--driver nuopc" in create_newcase_cmd or ("--driver" not in create_newcase_cmd and self._cime_driver == "nuopc"):
+                expect(False, "_N option not supported by nuopc driver, use _C instead")
+                
+
 
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "

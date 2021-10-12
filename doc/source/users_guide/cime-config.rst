@@ -53,7 +53,20 @@ CIME recognizes a user-created custom configuration directory, ``$HOME/.cime``. 
 
   For an example of a **config_machines.xml** file for a linux cluster, look at **$CIMEROOT/config/xml_schemas/config_machines_template.xml**.
 
-* ``config_compilers.xml``
+* ``cmake_macros``
+
+  This subdirectory contains a hierarchy of cmake macros files which
+  are used to generate the flags to be used in the compilation of a
+  case.  The cmake macro files are examined in the following order, with later files takeing precidence over earlier ones.
+
+  * universal.cmake
+  * *COMPILER*.cmake
+  * *OS*.cmake
+  * *MACHINE*.cmake
+  * *COMPILER*_*OS*.cmake
+  * *COMPILER*_*MACHINE*.cmake
+
+* ``config_compilers.xml`` **DEPRECATED use cmake_macros**
 
   This file permits you to customize compiler settings for your machine and is appended to the file **$CIMEROOT/config/$model/machines/config_compilers.xml**.
 

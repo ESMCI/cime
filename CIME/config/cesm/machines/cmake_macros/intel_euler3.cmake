@@ -1,0 +1,7 @@
+if (NOT DEBUG)
+  string(APPEND CFLAGS " -xCORE-AVX2")
+endif()
+if (NOT DEBUG)
+  string(APPEND FFLAGS " -xCORE-AVX2")
+endif()
+string(APPEND LDFLAGS " -mkl")
