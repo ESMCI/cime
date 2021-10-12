@@ -50,14 +50,14 @@ def generate_makefile_macro(case, caseroot):
                   replace("SLIBS := ", "SLIBS := $(SLIBS) ") + "\n"
     base_output = real_output.splitlines()
     for comp in comps:
-        output = run_cmd_no_fail("cmake -DMODEL={comp} -DCOMP_NAME={comp} -DCONVERT_TO_MAKE=ON {cmake_args} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp=comp, cmake_args=cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
+        output = run_cmd_no_fail("cmake -DCOMP_NAME={comp} -DCONVERT_TO_MAKE=ON {cmake_args} . 2>&1 | grep CIME_SET_MAKEFILE_VAR | grep -v BUILD_INTERNAL_IGNORE".format(comp=comp, cmake_args=cmake_args), from_dir=os.path.join(caseroot,"cmaketmp"))
         # The Tools/Makefile may have already adding things to CPPDEFS and SLIBS
         comp_output = (output.replace("CIME_SET_MAKEFILE_VAR ", "").\
                        replace("CPPDEFS := ", "CPPDEFS := $(CPPDEFS) ").\
                        replace("SLIBS := ", "SLIBS := $(SLIBS) ")).splitlines()
         for line in comp_output:
             if line not in base_output:
-                real_output += "ifeq \"$(MODEL)\" \"{}\"\n".format(comp)
+                real_output += "ifeq \"$(COMP_NAME)\" \"{}\"\n".format(comp)
                 real_output += "  "+line+"\n"
                 real_output += "\nendif\n"
 
@@ -579,7 +579,7 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
         cmd = os.path.join(config_dir, "buildlib")
         expect(os.path.isfile(cmd), "Could not find buildlib for {}".format(compname))
 
-    compile_cmd = "MODEL={compclass} COMP_CLASS={compclass} COMP_NAME={compname} {cmd} {caseroot} {libroot} {bldroot} ".\
+    compile_cmd = "COMP_CLASS={compclass} COMP_NAME={compname} {cmd} {caseroot} {libroot} {bldroot} ".\
         format(compclass=compclass, compname=compname, cmd=cmd, caseroot=caseroot, libroot=libroot, bldroot=bldroot)
     if get_model() != "ufs":
         compile_cmd = "SMP={} {}".format(stringify_bool(smp), compile_cmd)

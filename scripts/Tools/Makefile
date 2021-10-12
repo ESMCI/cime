@@ -4,6 +4,17 @@
 #
 #===============================================================================
 
+ifdef MODEL
+  ifndef COMP_NAME
+    $(warning "Variable MODEL is deprecated, please use COMP_NAME instead")
+    COMP_NAME:=MODEL
+  else
+    ifneq ($(MODEL), $(COMP_NAME))
+      $(error "MODEL is inconsistent with COMP_NAME")
+    endif
+  endif
+endif
+
 # Set up special characters
 null  :=
 comma := ,
@@ -348,7 +359,7 @@ endif
 ifndef CONFIG_ARGS
   CONFIG_ARGS :=
 endif
-ifeq  ($(findstring pio,$(MODEL)),pio)
+ifeq  ($(findstring pio,$(COMP_NAME)),pio)
   CONFIG_ARGS+= --enable-timing
   ifeq ($DEBUG,TRUE)
      CONFIG_ARGS+= --enable-debug
@@ -408,7 +419,7 @@ ifdef INC_MOAB
   INCLDIR += -I$(INC_MOAB)
 endif
 
-ifeq ($(MODEL),driver)
+ifeq ($(COMP_NAME),driver)
   INCLDIR += -I$(EXEROOT)/atm/obj -I$(EXEROOT)/ice/obj -I$(EXEROOT)/ocn/obj -I$(EXEROOT)/glc/obj -I$(EXEROOT)/rof/obj -I$(EXEROOT)/wav/obj -I$(EXEROOT)/esp/obj -I$(EXEROOT)/iac/obj
 # nagfor and gcc have incompatible LDFLAGS.
 # nagfor requires the weird "-Wl,-Wl,," syntax.
@@ -490,7 +501,7 @@ FFLAGS_NOOPT += $(FPPDEFS)
 ifeq ($(findstring -cosp,$(CAM_CONFIG_OPTS)),-cosp)
   # The following is for the COSP simulator code:
   COSP_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/cosp)
-  ifeq ($(MODEL),driver)
+  ifeq ($(COMP_NAME),driver)
     INCLDIR+=-I$(COSP_LIBDIR)
   endif
 endif
@@ -506,14 +517,14 @@ ifeq ($(strip $(COMP_ATM)),cam)
   ifeq ($(CAM_DYCORE),mpas)
     # For building CAM with the MPAS dycore
     MPAS_LIBDIR:=$(abspath $(EXEROOT)/atm/obj/mpas)
-    ifeq ($(MODEL),driver)
+    ifeq ($(COMP_NAME),driver)
       # This is needed by some compilers when building the driver.
       INCLDIR+=-I$(MPAS_LIBDIR)
     endif
   endif
 endif
 
-ifeq ($(MODEL),cam)
+ifeq ($(COMP_NAME),cam)
   # These RRTMG files take an extraordinarily long time to compile with optimization.
   # Until mods are made to read the data from files, just remove optimization from
   # their compilation.
@@ -834,7 +845,7 @@ else
   LNDOBJDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/clm/obj
   LNDLIBDIR = $(EXEROOT)/$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/lib
   INCLDIR += -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
-  ifeq ($(MODEL),clm)
+  ifeq ($(COMP_NAME),clm)
     INCLUDE_DIR = $(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/include
   endif
 endif
@@ -903,9 +914,9 @@ $(PIOLIB) : $(MPISERIAL) $(GPTLLIB)
 
 $(CSMSHARELIB):  $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 
-ifneq ($(findstring csm_share,$(MODEL)),csm_share)
+ifneq ($(findstring csm_share,$(COMP_NAME)),csm_share)
   $(OBJS):  $(CSMSHARELIB) $(CSMSHARELIB_CPL7)
-else ifeq ($(MODEL),csm_share_cpl7)
+else ifeq ($(COMP_NAME),csm_share_cpl7)
   complib: install_lib_cpl7
 else
   complib: install_lib
@@ -921,7 +932,7 @@ install_lib_cpl7: $(COMPLIB)
 
 # This rule writes the include flags and the link flags used in the $(EXEC_SE) rule below
 # It expects the variable OUTPUT_FILE to be defined
-# Set MODEL=driver to get the same flags as are used when building the driver
+# Set COMP_NAME=driver to get the same flags as are used when building the driver
 .PHONY: write_include_and_link_flags
 write_include_and_link_flags:
 	@$(RM) -f $(OUTPUT_FILE)
@@ -1063,6 +1074,6 @@ ifeq (,$(findstring clean,$(MAKECMDGOALS)))
 endif
 endif
 endif
-ifeq ($(MODEL),csm_share)
+ifeq ($(COMP_NAME),csm_share)
   shr_assert_mod.mod: shr_assert_mod.o
 endif
