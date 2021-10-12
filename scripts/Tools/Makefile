@@ -3,14 +3,14 @@
 # Common Makefile: a framework for building all CIME components and more
 #
 #===============================================================================
-
 ifdef MODEL
   ifndef COMP_NAME
     $(warning "Variable MODEL is deprecated, please use COMP_NAME instead")
-    COMP_NAME:=MODEL
+    COMP_NAME:=$(MODEL)
   else
     ifneq ($(MODEL), $(COMP_NAME))
-      $(error "MODEL is inconsistent with COMP_NAME")
+      $(warning "MODEL is inconsistent with COMP_NAME $(MODEL) $(COMP_NAME)")
+      COMP_NAME:=$(MODEL)
     endif
   endif
 endif
