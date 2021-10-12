@@ -31,6 +31,7 @@ def chdir(path):
     finally:
         os.chdir(old_path)
 
+# pylint: disable=protected-access
 class TestCaseSetup(unittest.TestCase):
 
     @mock.patch("CIME.case.case_setup.copy_depends_files")
