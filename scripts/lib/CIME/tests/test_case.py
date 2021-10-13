@@ -133,11 +133,11 @@ class TestCase(unittest.TestCase):
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
                 case.create("test1", srcroot, "A", "f19_g16_rx1",
-                            machine_name="cori-knl")
+                            machine_name="cori-haswell")
 
                 # Check that they're all called
                 configure.assert_called_with("A", "f19_g16_rx1",
-                                             machine_name="cori-knl",
+                                             machine_name="cori-haswell",
                                              project=None, pecount=None,
                                              compiler=None, mpilib=None,
                                              pesfile=None, gridfile=None,
@@ -190,11 +190,11 @@ class TestCase(unittest.TestCase):
                 srcroot = os.path.abspath(os.path.join(
                     os.path.dirname(__file__), "../../../../../"))
                 case.create("test1", srcroot, "A", "f19_g16_rx1",
-                            machine_name="cori-knl")
+                            machine_name="cori-haswell")
 
                 # Check that they're all called
                 configure.assert_called_with("A", "f19_g16_rx1",
-                                             machine_name="cori-knl",
+                                             machine_name="cori-haswell",
                                              project=None, pecount=None,
                                              compiler=None, mpilib=None,
                                              pesfile=None, gridfile=None,

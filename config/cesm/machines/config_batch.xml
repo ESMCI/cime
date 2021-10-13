@@ -319,7 +319,7 @@
     </submit_args>
   </batch_system>
 
-  <batch_system MACH="cori" type="slurm" >
+  <batch_system MACH="cori-haswell" type="slurm" >
     <batch_submit>sbatch</batch_submit>
     <submit_args>
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>

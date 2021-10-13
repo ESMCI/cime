@@ -893,11 +893,11 @@ This allows using a different mpirun command to launch unit tests
   </machine>
 
 
-  <machine MACH="cori">
+  <machine MACH="cori-haswell">
     <!-- NODENAME_REGEX makes haswell the default machine for cori -->
     <!-- to make knl the default comment this line and uncomment the one in cori-knl -->
     <DESC>NERSC XC40 Haswell, os is CNL, 32 pes/node, batch system is Slurm</DESC>
-    <NODENAME_REGEX>$ENV{NERSC_HOST}:cori</NODENAME_REGEX>
+    <NODENAME_REGEX>cori</NODENAME_REGEX>
     <OS>CNL</OS>
     <COMPILERS>intel,gnu,cray</COMPILERS>
     <MPILIBS>mpt</MPILIBS>
