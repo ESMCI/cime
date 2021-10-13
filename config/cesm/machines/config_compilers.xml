@@ -1010,7 +1010,7 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="cori-haswell" COMPILER="intel">
+<compiler MACH="cori" COMPILER="intel">
   <CONFIG_ARGS>
     <base> --host=cray </base>
   </CONFIG_ARGS>

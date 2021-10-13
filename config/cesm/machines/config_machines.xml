@@ -893,11 +893,11 @@ This allows using a different mpirun command to launch unit tests
   </machine>
 
 
-  <machine MACH="cori-haswell">
+  <machine MACH="cori">
     <!-- NODENAME_REGEX makes haswell the default machine for cori -->
     <!-- to make knl the default comment this line and uncomment the one in cori-knl -->
     <DESC>NERSC XC40 Haswell, os is CNL, 32 pes/node, batch system is Slurm</DESC>
-    <NODENAME_REGEX>cori</NODENAME_REGEX>
+    <NODENAME_REGEX>$ENV{NERSC_HOST}:cori</NODENAME_REGEX>
     <OS>CNL</OS>
     <COMPILERS>intel,gnu,cray</COMPILERS>
     <MPILIBS>mpt</MPILIBS>
@@ -992,7 +992,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">cray-parallel-netcdf/1.12.1.0</command>
       </modules>
       <modules>
-        <command name="load">cmake/3.20.5</command>
+        <command name="load">cmake/3.21.3</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -2533,10 +2533,8 @@ This allows using a different mpirun command to launch unit tests
   </machine>
 
   <machine MACH="perlmutter">
-    <!-- NODENAME_REGEX makes haswell the default machine for cori -->
-    <!-- to make knl the default comment this line and uncomment the one in cori-knl -->
     <DESC>NERSC EX AMD EPYC, os is CNL, 64 pes/node, batch system is Slurm</DESC>
-    <NODENAME_REGEX>perlmutter</NODENAME_REGEX>
+    <NODENAME_REGEX>$ENV{NERSC_HOST}:perlmutter</NODENAME_REGEX>
     <OS>CNL</OS>
     <COMPILERS>gnu,cray,nvidia,aocc</COMPILERS>
     <MPILIBS>mpich</MPILIBS>
