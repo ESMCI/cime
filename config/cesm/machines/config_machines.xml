@@ -2532,6 +2532,104 @@ This allows using a different mpirun command to launch unit tests
     </environment_variables>
   </machine>
 
+  <machine MACH="perlmutter">
+    <!-- NODENAME_REGEX makes haswell the default machine for cori -->
+    <!-- to make knl the default comment this line and uncomment the one in cori-knl -->
+    <DESC>NERSC EX AMD EPYC, os is CNL, 64 pes/node, batch system is Slurm</DESC>
+    <NODENAME_REGEX>perlmutter</NODENAME_REGEX>
+    <OS>CNL</OS>
+    <COMPILERS>gnu,cray,nvidia,aocc</COMPILERS>
+    <MPILIBS>mpich</MPILIBS>
+    <PROJECT>mp9_g</PROJECT>
+    <CIME_OUTPUT_ROOT>$ENV{SCRATCH}</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>/global/cfs/cdirs/ccsm1/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/global/cfs/cdirs/ccsm1/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>/global/cfs/cdirs/ccsm1/ccsm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>/global/cfs/cdirs/ccsm1/tools/cprnc.perlmutter/cprnc</CCSM_CPRNC>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+    <SUPPORTED_BY>cseg</SUPPORTED_BY>
+    <MAX_TASKS_PER_NODE>128</MAX_TASKS_PER_NODE>
+    <MAX_GPUS_PER_NODE>4</MAX_GPUS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>64</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>srun</executable>
+      <arguments>
+        <arg name="label"> --label</arg>
+        <arg name="num_tasks" > -n {{ total_tasks }}</arg>
+        <arg name="binding"> -c {{ srun_binding }}</arg>
+      </arguments>
+    </mpirun>
+    <module_system type="module">
+      <init_path lang="perl">/usr/share/lmod/lmod/init/perl</init_path>
+      <init_path lang="python">/usr/share/lmod/lmod/init/env_modules_python.py</init_path>
+      <init_path lang="sh">/usr/share/lmod/lmod/init/sh</init_path>
+      <init_path lang="csh">/usr/share/lmod/lmod/init/csh</init_path>
+      <cmd_path lang="perl">/usr/share/lmod/lmod/libexec/lmod perl</cmd_path>
+      <cmd_path lang="python">/usr/share/lmod/lmod/libexec/lmod python</cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules>
+        <command name="rm">PrgEnv-nvidia</command>
+        <command name="rm">PrgEnv-cray</command>
+        <command name="rm">PrgEnv-aocc</command>
+        <command name="rm">PrgEnv-gnu</command>
+        <command name="rm">nvidia</command>
+        <command name="rm">cce</command>
+        <command name="rm">gnu</command>
+        <command name="rm">aocc</command>
+        <command name="rm">cray-parallel-netcdf</command>
+        <command name="rm">cray-hdf5-parallel</command>
+        <command name="rm">cray-libsci</command>
+        <command name="rm">cray-mpich</command>
+        <command name="rm">cray-hdf5</command>
+        <command name="rm">cray-netcdf-hdf5parallel</command>
+        <command name="rm">cray-netcdf</command>
+        <command name="rm">craype</command>
+      </modules>
+
+      <modules compiler="cray">
+        <command name="load">PrgEnv-cray</command>
+        <command name="switch">cce cce/12.0.3</command>
+      </modules>
+      <modules compiler="gnu">
+        <command name="load">PrgEnv-gnu</command>
+        <command name="switch">gcc gcc/11.2.0</command>
+      </modules>
+      <modules>
+        <command name="swap">craype craype/2.7.10</command>
+      </modules>
+      <modules>
+        <command name="switch">cray-libsci/21.08.1.2</command>
+      </modules>
+      <modules>
+        <command name="load">cray-mpich/8.1.9</command>
+      </modules>
+      <modules mpilib="mpi-serial">
+        <command name="rm">cray-netcdf-hdf5parallel</command>
+        <command name="rm">cray-hdf5-parallel</command>
+        <command name="rm">cray-parallel-netcdf</command>
+        <command name="load">cray-hdf5/1.12.0.7</command>
+        <command name="load">cray-netcdf/4.7.4.7</command>
+      </modules>
+      <modules mpilib="!mpi-serial">
+        <command name="load">cray-hdf5-parallel/1.12.0.7</command>
+        <command name="load">cray-netcdf-hdf5parallel/4.7.4.7</command>
+        <command name="load">cray-parallel-netcdf/1.12.1.7</command>
+      </modules>
+      <modules>
+        <command name="load">cmake/3.20.5</command>
+      </modules>
+    </module_system>
+    <environment_variables>
+      <env name="OMP_STACKSIZE">256M</env>
+<!--      <env name="OMP_PROC_BIND">spread</env>
+      <env name="OMP_PLACES">threads</env> -->
+    </environment_variables>
+  </machine>
+
   <machine MACH="pleiades-bro">
     <DESC>NASA/AMES Linux Cluster, Linux (ia64), 2.4 GHz Broadwell Intel Xeon E5-2680v4 processors, 28 pes/node (two 14-core processors) and 128 GB of memory/node, batch system is PBS</DESC>
     <OS>LINUX</OS>

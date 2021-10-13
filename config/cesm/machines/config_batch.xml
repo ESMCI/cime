@@ -601,6 +601,22 @@
     </queues>
   </batch_system>
 
+  <batch_system MACH="perlmutter" type="slurm" >
+    <batch_submit>sbatch</batch_submit>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-q" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+    <directives>
+      <directive>-C gpu </directive>
+    </directives>
+    <queues>
+      <queue walltimemax="06:00:00" nodemin="1" nodemax="128">regular</queue>
+      <queue walltimemax="02:00:00" nodemin="1" nodemax="4" default="true">debug</queue>
+    </queues>
+  </batch_system>
+
   <!-- NAS pleiades machines -->
   <batch_system type="pbs" MACH="pleiades-bro" >
     <submit_args>
